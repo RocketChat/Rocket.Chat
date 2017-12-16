@@ -1,0 +1,34 @@
+<template name="e2eFlexTab">
+	<div class="content">
+		<div class="list-view e2e">
+			<div class="title">
+				<h2>End-to-End encrypted conversation</h2>
+				<!-- <h2>{{_ "Off_the_record_conversation"}}</h2> -->
+			</div>
+			{{#if e2eAvailable}}
+				<form>
+					<ul class="list clearfix">
+						{{#if e2eReady}}
+							{{#if established}}
+								<button class="button refresh"><span>Refresh session</span></button>
+								<button class="button end"><span>Stop E2E encryption</span></button>
+							{{else}} {{#if establishing}}
+								<!-- {{_ "Please_wait_while_OTR_is_being_established"}} -->
+								Please wait while an E2E encrypted session is being established
+							{{else}}
+								<button class="button start"><span>Start encrypted session</span></button>
+							{{/if}} {{/if}}
+							<!-- {{#if isGroup}} -->
+								<button class="button clearGroupKey"><span>Clear session key</span></button>
+							<!-- {{/if}} -->
+						{{else}}
+							<button class="button initE2E"><span>Login to E2E</span></button>
+						{{/if}}
+					</ul>
+				</form>
+			{{else}}
+				<h2>End-to-End encryption is not available for your device.</h2>
+			{{/if}}
+		</div>
+	</div>
+</template>

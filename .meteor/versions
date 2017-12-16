@@ -143,6 +143,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:custom-sounds@1.0.0
 rocketchat:dolphin@0.0.2
 rocketchat:drupal@0.0.1
+rocketchat:e2e@0.0.1
 rocketchat:emoji@1.0.0
 rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
