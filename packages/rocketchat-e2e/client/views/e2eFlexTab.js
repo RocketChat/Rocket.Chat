@@ -20,7 +20,7 @@ Template.e2eFlexTab.helpers({
 });
 
 Template.e2eFlexTab.events({
-	'click button.initE2E'(e, t) {
+	'click button.initE2E'(e) {
 		e.preventDefault();
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		if (e2e) {
