@@ -62,7 +62,7 @@ Meteor.methods({
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
 			const user = Meteor.user();
-			const userPref = user && user.settings && user.settings.preferences && user.settings.preferences.mergeChannels && user.settings.preferences.roomsListExhibitionMode === 'category';
+			const userPref = RocketChat.getUserPreference(user, 'mergeChannels') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
 			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
 			const mergeChannels = userPref !== undefined ? userPref : globalPref;
 

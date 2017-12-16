@@ -33,10 +33,6 @@ Meteor.methods({
 				preferences.collapseMediaByDefault = settings.collapseMediaByDefault === '1' ? true : false;
 			}
 
-			if (settings.unreadRoomsMode) {
-				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
-			}
-
 			if (settings.autoImageLoad) {
 				preferences.autoImageLoad = settings.autoImageLoad === '1' ? true : false;
 			}
@@ -50,11 +46,9 @@ Meteor.methods({
 			} else {
 				delete preferences.mergeChannels;
 			}
-			if (settings.unreadRoomsMode) {
-				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
-			}
 
 			preferences.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
+
 			if (settings.unreadAlert) {
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
@@ -70,9 +64,11 @@ Meteor.methods({
 			if (settings.audioNotifications) {
 				preferences.audioNotifications = settings.audioNotifications;
 			}
+
 			if (settings.desktopNotifications) {
 				preferences.desktopNotifications = settings.desktopNotifications;
 			}
+
 			if (settings.mobileNotifications) {
 				preferences.mobileNotifications = settings.mobileNotifications;
 			}
@@ -82,14 +78,16 @@ Meteor.methods({
 
 			preferences.enableAutoAway = settings.enableAutoAway === '1';
 
-			preferences.audioNotificationValue = settings.audioNotificationValue - 0;
+			if (settings.highlights) {
+				preferences.highlights = settings.highlights;
+			}
+
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
 			preferences.viewMode = settings.viewMode || 0;
 			preferences.hideUsernames = settings.hideUsernames === '1';
 			preferences.hideRoles = settings.hideRoles === '1';
 			preferences.hideAvatars = settings.hideAvatars === '1';
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
-			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
 			preferences.roomCounterSidebar = settings.roomCounterSidebar === '1';
 
