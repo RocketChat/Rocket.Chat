@@ -112,6 +112,7 @@ RocketChat.E2E.Room = class {
 
 												// Key has been encrypted. Publish to that user's subscription model for this room.
 												Meteor.call('updateGroupE2EKey', self.roomId, user._id, EJSON.stringify(output), function(error, result) {
+													console.log("E2E key saved.");
 													console.log(result);
 												});
 											});
@@ -130,40 +131,7 @@ RocketChat.E2E.Room = class {
 
 		}		
 	}
-
-	// Starts Signal's E2E session
-	start_session() {
-		const bAddress = new libsignal.SignalProtocolAddress(this.peerRegistrationId, 1);
-		const sessionBuilder = new libsignal.SessionBuilder(RocketChat.E2EStorage, bAddress);
-
-		const self = this;
-
-		const promise = sessionBuilder.processPreKey({
-			identityKey: self.peerIdentityKey,
-			registrationId : self.peerRegistrationId,
-			preKey:  {
-				keyId     : self.peerRegistrationId,
-				publicKey : self.peerPreKey
-			},
-			signedPreKey: {
-				keyId     : self.peerRegistrationId,
-				publicKey : self.peerSignedPreKey,
-				signature : self.peerSignedSignature
-			}
-		});
-
-		promise.then(function onsuccess() {
-			// Signal Session was created successfully.
-			self.establishing.set(false);
-			self.established.set(true);
-			self.cipher = new libsignal.SessionCipher(RocketChat.E2EStorage, bAddress);
-		});
-
-		promise.catch(function onerror(error) {
-			console.log(error);
-		});
-	}
-
+	
 
 	// Clears the session key in use by room
 	clearGroupKey(refresh) {

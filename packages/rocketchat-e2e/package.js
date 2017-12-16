@@ -36,6 +36,7 @@ Package.onUse(function(api) {
 		'server/methods/fetchKeychain.js',
 		'server/methods/emptyKeychain.js',
 		'server/methods/updateGroupE2EKey.js',
-		'server/methods/fetchGroupE2EKey.js'
+		'server/methods/fetchGroupE2EKey.js',
+		'server/methods/fetchMyKeys.js'
 	], 'server');
 });

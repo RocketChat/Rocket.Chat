@@ -78,21 +78,18 @@ class E2E {
 
 	startClient() {
 		// To reset all keys (local and on server):
-		//   Meteor.call("emptyKeychain");
-		//   RocketChat.E2EStorage.store = {}
-		//   localStorage.clear();
+		  // Meteor.call("emptyKeychain");
+		  // RocketChat.E2EStorage.store = {}
+		  // localStorage.clear();
 
 		// This is a new device for signal encryption
 		var userpass = window.prompt("Enter E2E Password");
 		console.log(userpass);
 
-		var salt = "Pick anything you want. This isn't secret.";
         var iterations = 1000;
         var hash = "SHA-256";
 
-        var passwordString = userpass;
-
-                // First, create a PBKDF2 "key" containing the password
+        // First, create a PBKDF2 "key" containing the password
         window.crypto.subtle.importKey(
             "raw",
             str2ab(userpass),
@@ -109,32 +106,84 @@ class E2E {
                     "hash": hash
                 },
                 baseKey,
-                {"name": "AES-CBC", "length": 128}, // Key we want
+                {"name": "AES-CBC", "length": 256}, // Key we want
                 true,                               // Extractable
                 ["encrypt", "decrypt"]              // For new key
                 );
         }).
         // Export it so we can display it
-        then(function(aesKey) {
-            console.log(window.crypto.subtle.exportKey("raw", aesKey));
-
-
-
-
-			promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
-			promise_key.then(function(key) {
-				crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
-					localStorage.setItem('RSA-PubKey', JSON.stringify(result));
-					crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
-						// All signal keys have been generated and stored.
-						localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
-						loadKeyGlobalsFromLS();
-					});
-				});
+        then(function(masterKey) {
+        	RocketChat.E2EStorage.put('E2E-MasterKey', masterKey);
+			window.crypto.subtle.exportKey("jwk", masterKey).then(function(result) {
+				localStorage.setItem('E2E-MasterKey', JSON.stringify(result));
+				console.log(JSON.stringify(result));
 			});
 
 
 
+
+			const RSAKeys = new Promise((resolve) => {
+				Meteor.call('fetchMyKeys', function(error, result) {
+					if (result !== null && result !== undefined && EJSON.parse(result)["RSA-EPrivKey"]!="") {
+						console.log("Key found");
+						console.log(EJSON.parse(result));
+						var pubkey = EJSON.parse(result)["RSA-PubKey"];
+						var eprivkey = EJSON.parse(result)["RSA-EPrivKey"];
+						crypto.subtle.importKey('jwk', EJSON.parse(pubkey), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(public_key) {
+							localStorage.setItem('RSA-PubKey', pubkey);
+							RocketChat.E2EStorage.put('RSA-PubKey', public_key);
+
+							let cipherText = EJSON.parse(eprivkey);
+							const vector = cipherText.slice(0, 16);
+							cipherText = cipherText.slice(16);
+							crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, masterKey, cipherText).then((result) => {
+								console.log("Decrypted private key.");
+								console.log(ab2str(result));
+								localStorage.setItem('RSA-PrivKey', ab2str(result));
+								crypto.subtle.importKey('jwk', EJSON.parse(ab2str(result)), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['decrypt']).then(function(private_key) {
+									RocketChat.E2EStorage.put('RSA-PrivKey', private_key);
+									resolve(true);
+								});
+								//EJSON.parse(ab2str(result));
+							})
+						});
+					}					
+					else {
+						// Could not obtain public-private keypair from server.
+						resolve(false);
+					}
+				});
+
+			}).then(function(val) {
+				if (val === false) {
+					console.log("generate new key");
+					promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
+					promise_key.then(function(key) {
+						crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
+							localStorage.setItem('RSA-PubKey', JSON.stringify(result));
+
+							crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
+								localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
+								const vector = crypto.getRandomValues(new Uint8Array(16));
+								crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, masterKey, str2ab(localStorage.getItem('RSA-PrivKey'))).then((result) => {
+									cipherText = new Uint8Array(result);
+									const output = new Uint8Array(vector.length + cipherText.length);
+									output.set(vector, 0);
+									output.set(cipherText, vector.length);
+									console.log(EJSON.stringify(output));
+									Meteor.call('addKeyToChain', {
+										'RSA-PubKey': localStorage.getItem('RSA-PubKey'),
+										'RSA-EPrivKey': EJSON.stringify(output)
+									});;
+								});
+							});	
+						});
+
+						RocketChat.E2EStorage.put('RSA-PrivKey', key.privateKey);
+						RocketChat.E2EStorage.put('RSA-PubKey', key.publicKey);
+					});
+				}
+			});
 
 		});
 		this.ready.set(true);
