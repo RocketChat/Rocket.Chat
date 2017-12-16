@@ -1,5 +1,3 @@
-@import "lesshat.less";
-
 @header-min-height: 30px;
 @footer-min-height: 55px;
 @link-font-color: #008ce3;
@@ -237,11 +235,10 @@
 								display: block;
 								position: absolute;
 								top: -30px;
-								left: 0;
+								left: calc(~'50% - 70px');
 								font-size: 10px;
 								font-weight: 600;
 								text-align: center;
-								.calc(left, ~'50% - 70px');
 								color: @secondary-font-color;
 								z-index: 10;
 								padding: 0 10px;
@@ -424,10 +421,10 @@
 					left: 50%;
 					z-index: 5;
 					transition: transform 0.3s ease-out;
-					.transform(translateY(-40px));
+					transform: translateY(-40px);
 
 					&.not {
-						.transform(translateY(100%));
+						transform: translateY(100%);
 					}
 				}
 
@@ -439,10 +436,10 @@
 					padding: 5px;
 					z-index: 8;
 					transition: transform 0.2s ease-out;
-					.transform(translateY(100%));
+					transform: translateY(100%);
 
 					&.show {
-						.transform(translateY(0));
+						transform: translateY(0);
 					}
 				}
 			}
@@ -624,18 +621,13 @@
 }
 
 .livechat-section {
-	opacity: 0.5;
-	transition: opacity 0.4s ease;
-
-	&.available {
-		opacity: 1;
-	}
+	margin-bottom: 32px;
 }
 
 .livechat-status {
-	float: right;
-	margin-right: 10px;
 	font-size: 20px;
+	line-height: 18px;
+	color: #9d9fa3;
 }
 
 .external-message {

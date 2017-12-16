@@ -2,12 +2,12 @@ import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
 
+const escapeHTML = (html) => (html || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 Meteor.startup(() => {
 	const initGallery = (selector, items, options) => {
 		const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);
 		gallery.init();
 	};
-
 	const getItems = (selector, imageSrc) => {
 		const results = {
 			index: 0,
@@ -44,7 +44,7 @@ Meteor.startup(() => {
 
 		galleryOptions.index = images.index;
 		galleryOptions.addCaptionHTMLFn = function(item, captionEl) {
-			captionEl.children[0].innerHTML = `${ item.title }<br/><small>${ item.description }</small> `;
+			captionEl.children[0].innerHTML = `${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small> `;
 			return true;
 		};
 

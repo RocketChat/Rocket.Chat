@@ -14,7 +14,7 @@
 						<div class="section-content border-component-color">
 							<div class="alert pending-background pending-color pending-border">
 								<strong>
-									WARNING: Once you enable this, you will not be able to login on the native mobile apps (Rocket.Chat+) using your password until they implement the 2FA.
+									{{_ "Two-factor_authentication_native_mobile_app_warning"}}
 								</strong>
 							</div>
 							{{#if isEnabled}}
@@ -26,6 +26,7 @@
 									<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
 								{{else}}
 									<p>{{_ "Scan_QR_code"}}</p>
+									<p>{{_ "Scan_QR_code_alternative_s" code=imageSecret}}</p>
 
 									<img src="{{imageData}}">
 

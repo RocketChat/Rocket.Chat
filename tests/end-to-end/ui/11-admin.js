@@ -9,11 +9,12 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsAdmin} from '../../data/checks';
 import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
-describe('Admin Login', () => {
+describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 	});
 
 	after(() => {
@@ -21,18 +22,18 @@ describe('Admin Login', () => {
 		sideNav.preferencesClose.click();
 	});
 
-	describe('Admin view', () => {
+	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
-		it('Enter the admin view', () => {
+		it('it should enter the admin view', () => {
 			sideNav.admin.click();
 			admin.flexNavContent.waitForVisible(5000);
 		});
 
-		describe('info', () => {
+		describe('info:', () => {
 			before(() =>{
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
@@ -42,7 +43,7 @@ describe('Admin Login', () => {
 				admin.infoRocketChatTableTitle.getText().should.equal('Rocket.Chat');
 			});
 
-			it('should show the rocket chat table', () => {
+			it('it should show the rocket chat table', () => {
 				admin.infoRocketChatTable.isVisible().should.be.true;
 			});
 
@@ -50,7 +51,7 @@ describe('Admin Login', () => {
 				admin.infoCommitTableTitle.getText().should.equal('Commit');
 			});
 
-			it('should show the Commit table', () => {
+			it('it should show the Commit table', () => {
 				admin.infoCommitTable.isVisible().should.be.true;
 			});
 
@@ -58,7 +59,7 @@ describe('Admin Login', () => {
 				admin.infoRuntimeTableTitle.getText().should.equal('Runtime_Environment');
 			});
 
-			it('should show the Runtime_Environment table', () => {
+			it('it should show the Runtime_Environment table', () => {
 				admin.infoRuntimeTable.isVisible().should.be.true;
 			});
 
@@ -66,12 +67,12 @@ describe('Admin Login', () => {
 				admin.infoBuildTableTitle.getText().should.equal('Build_Environment');
 			});
 
-			it('should show the Build_Environment table', () => {
+			it('it should show the Build_Environment table', () => {
 				admin.infoBuildTable.isVisible().should.be.true;
 			});
 		});
 
-		describe('rooms', () => {
+		describe('[Rooms]', () => {
 			before(() => {
 				admin.roomsLink.waitForVisible(5000);
 				admin.roomsLink.click();
@@ -82,33 +83,33 @@ describe('Admin Login', () => {
 				admin.infoLink.click();
 			});
 
-			describe('render', () => {
-				it('should show the search form', () => {
+			describe('render:', () => {
+				it('it should show the search form', () => {
 					admin.roomsSearchForm.isVisible().should.be.true;
 				});
 
-				it('should show the rooms Filter', () => {
+				it('it should show the rooms Filter', () => {
 					admin.roomsFilter.isVisible().should.be.true;
 				});
 
-				it('should show the channel checkbox', () => {
+				it('it should show the channel checkbox', () => {
 					admin.roomsChannelsCheckbox.isVisible().should.be.true;
 				});
 
-				it('should show the direct messsage checkbox', () => {
+				it('it should show the direct messsage checkbox', () => {
 					admin.roomsDirectCheckbox.isVisible().should.be.true;
 				});
 
-				it('should show the Private channel checkbox', () => {
+				it('it should show the Private channel checkbox', () => {
 					admin.roomsPrivateCheckbox.isVisible().should.be.true;
 				});
 
-				it('should show the general channel', () => {
+				it('it should show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.true;
 				});
 			});
 
-			describe('filter text', () => {
+			describe('filter text:', () => {
 				before(() => {
 					admin.roomsFilter.click();
 					admin.roomsFilter.setValue('general');
@@ -119,12 +120,12 @@ describe('Admin Login', () => {
 					admin.roomsFilter.setValue('');
 				});
 
-				it('should show the general channel', () => {
+				it('it should show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.true;
 				});
 			});
 
-			describe('filter text with wrong channel', () => {
+			describe('filter text with wrong channel:', () => {
 				before(() => {
 					admin.roomsFilter.click();
 					admin.roomsFilter.setValue('something else');
@@ -135,12 +136,12 @@ describe('Admin Login', () => {
 					admin.roomsFilter.setValue('');
 				});
 
-				it('should not show the general channel', () => {
+				it('it should not show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.false;
 				});
 			});
 
-			describe('filter checkbox', () => {
+			describe('filter checkbox:', () => {
 				let checkbox = 1;
 				before(() => {
 					admin.roomsFilter.setValue('');
@@ -178,21 +179,21 @@ describe('Admin Login', () => {
 					}
 				});
 
-				it('should show the general channel', () => {
+				it('it should show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.true;
 				});
 
-				it('should not show the general channel', () => {
+				it('it should not show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.false;
 				});
 
-				it('should not show the general channel', () => {
+				it('it should not show the general channel', () => {
 					admin.roomsGeneralChannel.isVisible().should.be.false;
 				});
 			});
 		});
 
-		describe('users', () => {
+		describe('[Users]', () => {
 			before(() => {
 				admin.usersLink.waitForVisible(5000);
 				admin.usersLink.click();
@@ -203,17 +204,17 @@ describe('Admin Login', () => {
 				admin.infoLink.click();
 			});
 
-			it('should show the search form', () => {
+			it('it should show the search form', () => {
 				admin.usersFilter.isVisible().should.be.true;
 			});
 
 
-			it('should show rocket.cat', () => {
+			it('it should show rocket.cat', () => {
 			//it cant find the user if there is too many users
 				admin.usersRocketCat.isVisible().should.be.true;
 			});
 
-			describe('filter text', () => {
+			describe('filter text:', () => {
 				before(() => {
 					admin.usersFilter.click();
 					admin.usersFilter.setValue('Rocket.Cat');
@@ -224,13 +225,13 @@ describe('Admin Login', () => {
 					admin.usersFilter.setValue('');
 				});
 
-				it('should show rocket.cat', () => {
+				it('it should show rocket.cat', () => {
 					admin.usersRocketCat.waitForVisible();
 					admin.usersRocketCat.isVisible().should.be.true;
 				});
 			});
 
-			describe('filter text with wrong user', () => {
+			describe('filter text with wrong user:', () => {
 				before(() => {
 					admin.usersFilter.click();
 					admin.usersFilter.setValue('something else');
@@ -241,13 +242,13 @@ describe('Admin Login', () => {
 					admin.usersFilter.setValue('');
 				});
 
-				it('should not show rocket.cat', () => {
+				it('it should not show rocket.cat', () => {
 					admin.usersRocketCat.isVisible().should.be.false;
 				});
 			});
 
-			describe('users flex tab ', () => {
-				describe('send invitation', () => {
+			describe('[Flex Tab] ', () => {
+				describe('send invitation:', () => {
 					before(() => {
 						flexTab.usersSendInvitationTab.waitForVisible(5000);
 						flexTab.usersSendInvitationTab.click();
@@ -260,20 +261,20 @@ describe('Admin Login', () => {
 						flexTab.usersSendInvitationTextArea.waitForVisible(5000, true);
 					});
 
-					it('should show the send invitation text area', () => {
+					it('it should show the send invitation text area', () => {
 						flexTab.usersSendInvitationTextArea.isVisible().should.be.true;
 					});
 
-					it('should show the cancel button', () => {
+					it('it should show the cancel button', () => {
 						flexTab.usersButtonCancel.isVisible().should.be.true;
 					});
 
-					it('should show the send button', () => {
+					it('it should show the send button', () => {
 						flexTab.usersSendInvitationSend.isVisible().should.be.true;
 					});
 				});
 
-				describe('create user ', () => {
+				describe('create user:', () => {
 					before(() => {
 						flexTab.usersAddUserTab.waitForVisible(5000);
 						flexTab.usersAddUserTab.click();
@@ -286,58 +287,64 @@ describe('Admin Login', () => {
 						flexTab.usersAddUserName.waitForVisible(5000, true);
 					});
 
-					it('should show the name field', () => {
+					it('it should show the name field', () => {
 						flexTab.usersAddUserName.isVisible().should.be.true;
 					});
 
-					it('should show the username field', () => {
+					it('it should show the username field', () => {
 						flexTab.usersAddUserUsername.isVisible().should.be.true;
 					});
 
-					it('should show the email field', () => {
+					it('it should show the email field', () => {
 						flexTab.usersAddUserEmail.isVisible().should.be.true;
 					});
 
-					it('should show the verified checkbox', () => {
+					it('it should show the verified checkbox', () => {
 						flexTab.usersAddUserVerifiedCheckbox.isVisible().should.be.true;
 					});
 
-					it('should show the password field', () => {
+					it('it should show the password field', () => {
 						flexTab.usersAddUserPassword.isVisible().should.be.true;
 					});
 
-					it('should show the random password button', () => {
+					it('it should show the random password button', () => {
 						flexTab.usersAddUserRandomPassword.isVisible().should.be.true;
 					});
 
-					it('should show the require password change button', () => {
+					it('it should show the require password change button', () => {
 						flexTab.usersAddUserChangePasswordCheckbox.isVisible().should.be.true;
 					});
 
-					it('should show the role dropdown', () => {
-						flexTab.usersAddUserRole.isVisible().should.be.true;
+					it('it should show the role dropdown', () => {
+						flexTab.usersAddUserRoleList.waitForVisible(5000);
+						flexTab.usersAddUserRoleList.isVisible().should.be.true;
 					});
 
-					it('should show the join default channel checkbox', () => {
+					it('ít should show the add role button', () => {
+						flexTab.usersAddUserRoleButton.waitForVisible(5000);
+						flexTab.usersAddUserRoleButton.isVisible().should.be.true;
+					});
+
+					it('it should show the join default channel checkbox', () => {
 						flexTab.usersAddUserDefaultChannelCheckbox.isVisible().should.be.true;
 					});
 
-					it('should show the send welcome checkbox', () => {
+					it('it should show the send welcome checkbox', () => {
 						flexTab.usersAddUserWelcomeEmailCheckbox.isVisible().should.be.true;
 					});
 
-					it('should show the save button', () => {
+					it('it should show the save button', () => {
 						flexTab.usersButtonSave.isVisible().should.be.true;
 					});
 
-					it('should show the cancel button', () => {
+					it('it should show the cancel button', () => {
 						flexTab.usersButtonCancel.isVisible().should.be.true;
 					});
 				});
 			});
 		});
 
-		describe('roles', () => {
+		describe('[Roles]', () => {
 			before(() =>{
 				admin.permissionsLink.waitForVisible(5000);
 				admin.permissionsLink.click();
@@ -348,19 +355,19 @@ describe('Admin Login', () => {
 				admin.infoLink.click();
 			});
 
-			it('should show the permissions grid', () => {
+			it('it should show the permissions grid', () => {
 				admin.rolesPermissionGrid.isVisible().should.be.true;
 			});
 
-			it('should show the new role button', () => {
+			it('it should show the new role button', () => {
 				admin.rolesNewRolesButton.isVisible().should.be.true;
 			});
 
-			it('should show the admin link', () => {
+			it('it should show the admin link', () => {
 				admin.rolesAdmin.isVisible().should.be.true;
 			});
 
-			describe('new role', () => {
+			describe('new role:', () => {
 				before(() => {
 					admin.rolesNewRolesButton.waitForVisible(5000);
 					admin.rolesNewRolesButton.click();
@@ -371,24 +378,24 @@ describe('Admin Login', () => {
 					admin.rolesReturnLink.click();
 				});
 
-				it('should show the return to permissions', () => {
+				it('it should show the return to permissions', () => {
 					admin.rolesReturnLink.isVisible().should.be.true;
 				});
 
-				it('should show the new role name field', () => {
+				it('it should show the new role name field', () => {
 					admin.rolesNewRoleName.isVisible().should.be.true;
 				});
 
-				it('should show the new role description field', () => {
+				it('it should show the new role description field', () => {
 					admin.rolesNewRoleDesc.isVisible().should.be.true;
 				});
 
-				it('should show the new role scope', () => {
+				it('it should show the new role scope', () => {
 					admin.rolesNewRoleScope.isVisible().should.be.true;
 				});
 			});
 
-			describe('admin role', () => {
+			describe('admin role:', () => {
 				before(() => {
 					admin.rolesAdmin.waitForVisible(5000);
 					admin.rolesAdmin.click();
@@ -399,188 +406,207 @@ describe('Admin Login', () => {
 					admin.rolesReturnLink.click();
 				});
 
-				it('should show internal admin', () => {
+				it('it should show internal admin', () => {
 					admin.usersInternalAdmin.isVisible().should.be.true;
 				});
 			});
 		});
 
-		describe('general settings', () => {
+		describe('[General Settings]', () => {
 			before(() => {
+				admin.settingsSearch.setValue('general');
 				admin.generalLink.waitForVisible(5000);
 				admin.generalLink.click();
+				admin.settingsSearch.setValue('');
 				admin.generalSiteUrl.waitForVisible(5000);
 			});
 
-			describe('general', () => {
-				it('should show site url field', () => {
+			describe('general:', () => {
+				it('it should show site url field', () => {
 					admin.generalSiteUrl.isVisible().should.be.true;
 				});
 
-				it('should change site url field', () => {
+				it('it should change site url field', () => {
 					admin.generalSiteUrl.setValue('something');
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalSiteUrlReset.waitForVisible(5000);
 					admin.generalSiteUrlReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalSiteUrlReset.click();
 				});
 
-				it('the site url field should be different from the last input', () => {
+				it('it should that the site url field is different from the last input', () => {
 					admin.generalSiteUrl.getText().should.not.equal('something');
 				});
 
-				it('should show site name field', () => {
+				it('it should show site name field', () => {
 					admin.generalSiteName.isVisible().should.be.true;
 				});
 
-				it('should change site name field', () => {
+				it('it should change site name field', () => {
 					admin.generalSiteName.setValue('something');
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalSiteNameReset.waitForVisible(5000);
 					admin.generalSiteNameReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalSiteNameReset.click();
 				});
 
-				it('the name field should be different from the last input', () => {
+				it('it should be that the name field is different from the last input', () => {
 					admin.generalSiteName.getText().should.not.equal('something');
 				});
 
-				it('should show language field', () => {
+				it('it should show language field', () => {
 					admin.generalLanguage.isVisible().should.be.true;
 				});
 
-				it('should change the language ', () => {
+				it('it should change the language ', () => {
 					admin.generalLanguage.click();
 					admin.generalLanguagePtOption.waitForVisible(5000);
 					admin.generalLanguagePtOption.click();
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalLanguageReset.waitForVisible(5000);
 					admin.generalLanguageReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalLanguageReset.click();
 				});
 
-				it('should show invalid self signed certs checkboxes', () => {
+				it('it should show invalid self signed certs checkboxes', () => {
 					admin.generalSelfSignedCertsFalse.isVisible().should.be.true;
 					admin.generalSelfSignedCertsTrue.isVisible().should.be.true;
 				});
 
-				it('should change the invalid self signed certs checkboxes', () => {
+				it('it should change the invalid self signed certs checkboxes', () => {
 					admin.generalSelfSignedCertsTrue.click();
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalSelfSignedCertsReset.waitForVisible(5000);
 					admin.generalSelfSignedCertsReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalSelfSignedCertsReset.click();
 				});
 
-				it('should show favorite rooms checkboxes', () => {
+				it('it should show favorite rooms checkboxes', () => {
 					admin.generalFavoriteRoomFalse.isVisible().should.be.true;
 					admin.generalFavoriteRoomTrue.isVisible().should.be.true;
 				});
 
-				it('should change the favorite rooms checkboxes', () => {
+				it('it should change the favorite rooms checkboxes', () => {
 					admin.generalFavoriteRoomFalse.click();
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalFavoriteRoomReset.waitForVisible(5000);
 					admin.generalFavoriteRoomReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalFavoriteRoomReset.click();
 				});
 
-				it('should show cdn prefix field', () => {
+				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.isVisible().should.be.true;
+				});
+
+				it('it should change open first channel field', () => {
+					admin.generalOpenFirstChannel.setValue('something');
+				});
+
+				it('it should show the reset button', () => {
+					admin.generalOpenFirstChannelReset.waitForVisible(5000);
+					admin.generalOpenFirstChannelReset.isVisible().should.be.true;
+				});
+
+				it('it should click the reset button', () => {
+					admin.generalOpenFirstChannelReset.click();
+				});
+
+				it('it should show cdn prefix field', () => {
 					admin.generalCdnPrefix.isVisible().should.be.true;
 				});
 
-				it('should change site url field', () => {
+				it('it should change site url field', () => {
 					admin.generalCdnPrefix.setValue('something');
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalCdnPrefixReset.waitForVisible(5000);
 					admin.generalCdnPrefixReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalCdnPrefixReset.click();
 				});
 
-				it('should show the force SSL checkboxes', () => {
+				it('it should show the force SSL checkboxes', () => {
 					admin.generalForceSSLTrue.isVisible().should.be.true;
 					admin.generalForceSSLFalse.isVisible().should.be.true;
 				});
 
-				it('should change the force ssl checkboxes', () => {
+				it('it should change the force ssl checkboxes', () => {
 					admin.generalForceSSLTrue.click();
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalForceSSLReset.waitForVisible(5000);
 					admin.generalForceSSLReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalForceSSLReset.click();
 				});
 
-				it('should show google tag id field', () => {
+				it('it should show google tag id field', () => {
 					admin.generalGoogleTagId.isVisible().should.be.true;
 				});
 
-				it('should change google tag id field', () => {
+				it('it should change google tag id field', () => {
 					admin.generalGoogleTagId.setValue('something');
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalGoogleTagIdReset.waitForVisible(5000);
 					admin.generalGoogleTagIdReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalGoogleTagIdReset.click();
 				});
 
-				it('should show bugsnag key field', () => {
+				it('it should show bugsnag key field', () => {
 					admin.generalBugsnagKey.isVisible().should.be.true;
 				});
 
-				it('should change bugsnag key id field', () => {
+				it('it should change bugsnag key id field', () => {
 					admin.generalBugsnagKey.setValue('something');
 				});
 
-				it('should show the reset button', () => {
+				it('it should show the reset button', () => {
 					admin.generalBugsnagKeyReset.waitForVisible(5000);
 					admin.generalBugsnagKeyReset.isVisible().should.be.true;
 				});
 
-				it('should click the reset button', () => {
+				it('it should click the reset button', () => {
 					admin.generalBugsnagKeyReset.click();
 				});
 			});
 
-			describe('group limit', () => {
+			describe('group limit:', () => {
 				before(() => {
 					admin.generalButtonExpandGroupLimit.waitForVisible(5000);
 					admin.generalButtonExpandGroupLimit.click();
@@ -598,7 +624,7 @@ describe('Admin Login', () => {
 				});
 			});
 
-			describe('iframe', () => {
+			describe('iframe:', () => {
 				before(() => {
 					admin.generalButtonExpandIframe.waitForVisible(5000);
 					admin.generalButtonExpandIframe.click();
@@ -606,39 +632,39 @@ describe('Admin Login', () => {
 					admin.generalIframeSendTrue.scroll();
 				});
 
-				it('should show iframe send checkboxes', () => {
+				it('it should show iframe send checkboxes', () => {
 					admin.generalIframeSendTrue.isVisible().should.be.true;
 					admin.generalIframeSendFalse.isVisible().should.be.true;
 				});
 
-				it('should show send origin field', () => {
+				it('it should show send origin field', () => {
 					admin.generalIframeSendTargetOrigin.isVisible().should.be.true;
 				});
 
-				it('should show iframe send checkboxes', () => {
+				it('it should show iframe send checkboxes', () => {
 					admin.generalIframeRecieveFalse.isVisible().should.be.true;
 					admin.generalIframeRecieveTrue.isVisible().should.be.true;
 				});
 
-				it('should show send origin field', () => {
+				it('it should show send origin field', () => {
 					admin.generalIframeRecieveOrigin.isVisible().should.be.true;
 				});
 			});
 
-			describe('notifications', () => {
+			describe('notifications:', () => {
 				before(() => {
 					admin.generalButtonExpandNotifications.waitForVisible(5000);
 					admin.generalButtonExpandNotifications.click();
-					admin.generalNotificationDuration.waitForVisible(5000);
-					admin.generalNotificationDuration.scroll();
+					admin.generalNotificationsMaxRoomMembers.waitForVisible(5000);
+					admin.generalNotificationsMaxRoomMembers.scroll();
 				});
 
-				it('should show the notifications durations field', () => {
-					admin.generalNotificationDuration.isVisible().should.be.true;
+				it('it should show the max room members field', () => {
+					admin.generalNotificationsMaxRoomMembers.isVisible().should.be.true;
 				});
 			});
 
-			describe('rest api', () => {
+			describe('rest api:', () => {
 				before(() => {
 					admin.generalButtonExpandRest.waitForVisible(5000);
 					admin.generalButtonExpandRest.click();
@@ -646,12 +672,12 @@ describe('Admin Login', () => {
 					admin.generalRestApiUserLimit.scroll();
 				});
 
-				it('should show the API user add limit field', () => {
+				it('it should show the API user add limit field', () => {
 					admin.generalRestApiUserLimit.isVisible().should.be.true;
 				});
 			});
 
-			describe('reporting', () => {
+			describe('reporting:', () => {
 				before(() => {
 					admin.generalButtonExpandReporting.waitForVisible(5000);
 					admin.generalButtonExpandReporting.click();
@@ -659,13 +685,13 @@ describe('Admin Login', () => {
 					admin.generalReportingTrue.scroll();
 				});
 
-				it('should show the report to rocket.chat checkboxes', () => {
+				it('it should show the report to rocket.chat checkboxes', () => {
 					admin.generalReportingTrue.isVisible().should.be.true;
 					admin.generalReportingFalse.isVisible().should.be.true;
 				});
 			});
 
-			describe('stream cast', () => {
+			describe('stream cast:', () => {
 				before(() => {
 					admin.generalButtonExpandStreamCast.waitForVisible(5000);
 					admin.generalButtonExpandStreamCast.click();
@@ -673,12 +699,12 @@ describe('Admin Login', () => {
 					admin.generalStreamCastAdress.scroll();
 				});
 
-				it('should show the stream cast adress field', () => {
+				it('it should show the stream cast adress field', () => {
 					admin.generalStreamCastAdress.isVisible().should.be.true;
 				});
 			});
 
-			describe('stream cast', () => {
+			describe('stream cast:', () => {
 				before(() => {
 					admin.generalButtonExpandUTF8.waitForVisible(5000);
 					admin.generalButtonExpandUTF8.click();
@@ -686,13 +712,259 @@ describe('Admin Login', () => {
 					admin.generalUTF8Regex.scroll();
 				});
 
-				it('should show the utf8 regex field', () => {
+				it('it should show the utf8 regex field', () => {
 					admin.generalUTF8Regex.isVisible().should.be.true;
 				});
 
-				it('should show the utf8 names slug checkboxes', () => {
+				it('it should show the utf8 names slug checkboxes', () => {
 					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
 					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
+				});
+			});
+		});
+
+		describe('[Accounts]', () => {
+			before(() => {
+				admin.settingsSearch.setValue('accounts');
+				admin.accountsLink.waitForVisible(5000);
+				admin.accountsLink.click();
+				admin.settingsSearch.setValue('');
+			});
+
+			describe('default user preferences', () => {
+				before(() => {
+					if (admin.accountsButtonCollapseDefaultUserPreferences.isVisible()) {
+						admin.accountsButtonCollapseDefaultUserPreferences.click();
+					}
+					admin.accountsButtonExpandDefaultUserPreferences.waitForVisible(5000);
+					admin.accountsButtonExpandDefaultUserPreferences.click();
+					admin.accountsNotificationDuration.waitForVisible(5000);
+				});
+
+				it('it should show the enable auto away field', () => {
+					admin.accountsEnableAutoAwayTrue.scroll();
+					admin.accountsEnableAutoAwayTrue.isVisible().should.be.true;
+					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
+				});
+				it('the enable auto away field value should be true', () => {
+					admin.accountsEnableAutoAwayTrue.isSelected().should.be.false;
+					admin.accountsEnableAutoAwayFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the idle timeout limit field', () => {
+					admin.accountsIdleTimeoutLimit.click();
+					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
+				});
+				it('the idle timeout limit field value should be 0', () => {
+					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				});
+
+				it('it should show the notifications durations field', () => {
+					admin.accountsNotificationDuration.click();
+					admin.accountsNotificationDuration.isVisible().should.be.true;
+				});
+				it('the notification duration field value should be 0', () => {
+					admin.accountsNotificationDuration.getValue().should.equal('0');
+				});
+
+				it('it should show the audio notifications select field', () => {
+					admin.accountsAudioNotifications.click();
+					admin.accountsAudioNotifications.isVisible().should.be.true;
+				});
+				it('the audio notifications field value should be mentions', () => {
+					admin.accountsAudioNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the desktop audio notifications select field', () => {
+					admin.accountsDesktopNotifications.click();
+					admin.accountsDesktopNotifications.isVisible().should.be.true;
+				});
+				it('the desktop audio notifications field value should be mentions', () => {
+					admin.accountsDesktopNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the mobile audio notifications select field', () => {
+					admin.accountsMobileNotifications.click();
+					admin.accountsMobileNotifications.isVisible().should.be.true;
+				});
+				it('the mobile audio notifications field value should be mentions', () => {
+					admin.accountsMobileNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the unread tray icon alert field', () => {
+					admin.accountsUnreadAlertTrue.scroll();
+					admin.accountsUnreadAlertTrue.isVisible().should.be.true;
+					admin.accountsUnreadAlertFalse.isVisible().should.be.true;
+				});
+				it('the unread tray icon alert field value should be true', () => {
+					admin.accountsUnreadAlertTrue.isSelected().should.be.true;
+					admin.accountsUnreadAlertFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the use emojis field', () => {
+					admin.accountsUseEmojisTrue.scroll();
+					admin.accountsUseEmojisTrue.isVisible().should.be.true;
+					admin.accountsUseEmojisFalse.isVisible().should.be.true;
+				});
+				it('the use emojis field value should be true', () => {
+					admin.accountsUseEmojisTrue.isSelected().should.be.true;
+					admin.accountsUseEmojisFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the convert ascii to emoji field', () => {
+					admin.accountsConvertAsciiEmojiTrue.scroll();
+					admin.accountsConvertAsciiEmojiTrue.isVisible().should.be.true;
+					admin.accountsConvertAsciiEmojiFalse.isVisible().should.be.true;
+				});
+				it('the convert ascii to emoji field value should be true', () => {
+					admin.accountsConvertAsciiEmojiTrue.isSelected().should.be.true;
+					admin.accountsConvertAsciiEmojiFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the auto load images field', () => {
+					admin.accountsAutoImageLoadTrue.scroll();
+					admin.accountsAutoImageLoadTrue.isVisible().should.be.true;
+					admin.accountsAutoImageLoadFalse.isVisible().should.be.true;
+				});
+				it('the auto load images field value should be true', () => {
+					admin.accountsAutoImageLoadTrue.isSelected().should.be.true;
+					admin.accountsAutoImageLoadFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the save mobile bandwidth field', () => {
+					admin.accountsSaveMobileBandwidthTrue.scroll();
+					admin.accountsSaveMobileBandwidthTrue.isVisible().should.be.true;
+					admin.accountsSaveMobileBandwidthFalse.isVisible().should.be.true;
+				});
+				it('the save mobile bandwidth field value should be true', () => {
+					admin.accountsSaveMobileBandwidthTrue.isSelected().should.be.true;
+					admin.accountsSaveMobileBandwidthFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the collapse embedded media by default field', () => {
+					admin.accountsCollapseMediaByDefaultTrue.scroll();
+					admin.accountsCollapseMediaByDefaultTrue.isVisible().should.be.true;
+					admin.accountsCollapseMediaByDefaultFalse.isVisible().should.be.true;
+				});
+				it('the collapse embedded media by default field value should be false', () => {
+					admin.accountsCollapseMediaByDefaultTrue.isSelected().should.be.false;
+					admin.accountsCollapseMediaByDefaultFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide usernames field', () => {
+					admin.accountsHideUsernamesTrue.scroll();
+					admin.accountsHideUsernamesTrue.isVisible().should.be.true;
+					admin.accountsHideUsernamesFalse.isVisible().should.be.true;
+				});
+				it('the hide usernames field value should be false', () => {
+					admin.accountsHideUsernamesTrue.isSelected().should.be.false;
+					admin.accountsHideUsernamesFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide roles field', () => {
+					admin.accountsHideRolesTrue.scroll();
+					admin.accountsHideRolesTrue.isVisible().should.be.true;
+					admin.accountsHideRolesFalse.isVisible().should.be.true;
+				});
+				it('the hide roles field value should be false', () => {
+					admin.accountsHideRolesTrue.isSelected().should.be.false;
+					admin.accountsHideRolesFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide right sidebar with click field', () => {
+					admin.accountsHideFlexTabTrue.scroll();
+					admin.accountsHideFlexTabTrue.isVisible().should.be.true;
+					admin.accountsHideFlexTabFalse.isVisible().should.be.true;
+				});
+				it('the hide right sidebar with click field value should be false', () => {
+					admin.accountsHideFlexTabTrue.isSelected().should.be.false;
+					admin.accountsHideFlexTabFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide avatars field', () => {
+					admin.accountsHideAvatarsTrue.scroll();
+					admin.accountsHideAvatarsTrue.isVisible().should.be.true;
+					admin.accountsHideAvatarsFalse.isVisible().should.be.true;
+				});
+				it('the hide avatars field value should be false', () => {
+					admin.accountsHideAvatarsTrue.isSelected().should.equal.false;
+					admin.accountsHideAvatarsFalse.isSelected().should.equal.true;
+				});
+
+				it('it should show the sidebar channel list mode field', () => {
+					admin.accountsRoomsListExhibitionMode.click();
+					admin.accountsRoomsListExhibitionMode.isVisible().should.be.true;
+				});
+				it('the sidebar channel list mode field value should be category', () => {
+					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
+				});
+
+				it('it should show the merge channels field', () => {
+					admin.accountsMergeChannelsTrue.scroll();
+					admin.accountsMergeChannelsTrue.isVisible().should.be.true;
+					admin.accountsMergeChannelsFalse.isVisible().should.be.true;
+				});
+				it('the merge channels field value should be false', () => {
+					admin.accountsMergeChannelsTrue.isSelected().should.be.false;
+					admin.accountsMergeChannelsFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the enter key behavior field', () => {
+					admin.accountsSendOnEnter.click();
+					admin.accountsSendOnEnter.isVisible().should.be.true;
+				});
+				it('the enter key behavior field value should be normal', () => {
+					admin.accountsSendOnEnter.getValue().should.equal('normal');
+				});
+
+				it('it should show the view mode field', () => {
+					admin.accountsViewMode.click();
+					admin.accountsViewMode.isVisible().should.be.true;
+				});
+				it('the view mode field value should be 0', () => {
+					admin.accountsViewMode.getValue().should.equal('0');
+				});
+
+				it('it should show the offline email notification field', () => {
+					admin.accountsEmailNotificationMode.click();
+					admin.accountsEmailNotificationMode.isVisible().should.be.true;
+				});
+				it('the offline email notification field value should be all', () => {
+					admin.accountsEmailNotificationMode.getValue().should.equal('all');
+				});
+
+				it('it should show the room counter sidebar field', () => {
+					admin.accountsRoomCounterSidebarTrue.scroll();
+					admin.accountsRoomCounterSidebarTrue.isVisible().should.be.true;
+					admin.accountsRoomCounterSidebarFalse.isVisible().should.be.true;
+				});
+				it('the room counter sidebar field value should be false', () => {
+					admin.accountsRoomCounterSidebarTrue.isSelected().should.be.false;
+					admin.accountsRoomCounterSidebarFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the new room notification field', () => {
+					admin.accountsNewRoomNotification.click();
+					admin.accountsNewRoomNotification.isVisible().should.be.true;
+				});
+				it('the new room notification field value should be door', () => {
+					admin.accountsNewRoomNotification.getValue().should.equal('door');
+				});
+
+				it('it should show the new message notification field', () => {
+					admin.accountsNewMessageNotification.click();
+					admin.accountsNewMessageNotification.isVisible().should.be.true;
+				});
+				it('the new message notification field value should be chime', () => {
+					admin.accountsNewMessageNotification.getValue().should.equal('chime');
+				});
+
+				it('it should show the notification sound volume field', () => {
+					admin.accountsNotificationsSoundVolume.click();
+					admin.accountsNotificationsSoundVolume.isVisible().should.be.true;
+				});
+				it('the notification sound volume field value should be 100', () => {
+					admin.accountsNotificationsSoundVolume.getValue().should.equal('100');
 				});
 			});
 		});

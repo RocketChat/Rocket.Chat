@@ -1,5 +1,4 @@
 @import "utils/_reset.import.less";
-@import "utils/_lesshat.import.less";
 @import "utils/_variables.import.less";
 @import "utils/_keyframes.import.less";
 @import "utils/_loading.import.less";
@@ -258,6 +257,12 @@ input:focus {
 					border-radius: 6px;
 					padding: 5px;
 					float: left;
+					word-wrap: break-word;
+					word-break: break-word;
+					-ms-hyphens: auto;
+					-moz-hyphens: auto;
+					-webkit-hyphens: auto;
+					hyphens: auto;
 
 					&::before {
 						border-style: solid;
@@ -285,11 +290,10 @@ input:focus {
 						display: block;
 						position: absolute;
 						top: -30px;
-						left: 0;
+						left: calc(~'50% - 70px');
 						font-size: 10px;
 						font-weight: 600;
 						text-align: center;
-						.calc(left, ~'50% - 70px');
 						color: @secondary-font-color;
 						z-index: 1;
 						padding: 0 10px;
@@ -471,10 +475,10 @@ input:focus {
 			left: 50%;
 			z-index: 5;
 			transition: transform 0.3s ease-out;
-			.transform(translateY(-40px));
+			transform: translateY(-40px);
 
 			&.not {
-				.transform(translateY(100%));
+				transform: translateY(100%);
 			}
 		}
 
@@ -486,10 +490,10 @@ input:focus {
 			padding: 5px;
 			z-index: 8;
 			transition: transform 0.2s ease-out;
-			.transform(translateY(100%));
+			transform: translateY(100%);
 
 			&.show {
-				.transform(translateY(0));
+				transform: translateY(0);
 			}
 		}
 	}
@@ -582,12 +586,12 @@ input:focus {
 			position: absolute;
 			z-index: 200;
 			transition: transform 0.15s ease, visibility 0.15s ease, opacity 0.15s ease;
-			.transform(translateY(30px));
+			transform: translateY(30px);
 			opacity: 0;
 			visibility: hidden;
 
 			&.show {
-				.transform(translateY(0px));
+				transform: translateY(0);
 				opacity: 1;
 				display: block;
 				visibility: visible;
@@ -815,13 +819,13 @@ input:focus {
 			text-align: center;
 			opacity: 0;
 			visibility: hidden;
-			.transform(translateY(50px));
+			transform: translateY(50px);
 			transition: opacity 0.175s ease-out, transform 0.175s ease-out, visibility 0.175s ease-out;
 
 			&.visible {
 				opacity: 1;
 				visibility: visible;
-				.transform(translateY(0px));
+				transform: translateY(0);
 			}
 
 			.end-call {

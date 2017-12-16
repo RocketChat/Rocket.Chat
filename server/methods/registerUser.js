@@ -1,11 +1,27 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	registerUser(formData) {
-		check(formData, Match.ObjectIncluding({
-			email: String,
-			pass: String,
-			name: String,
-			secretURL: Match.Optional(String)
-		}));
+		const AllowAnonymousRead = RocketChat.settings.get('Accounts_AllowAnonymousRead');
+		const AllowAnonymousWrite = RocketChat.settings.get('Accounts_AllowAnonymousWrite');
+		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
+			const userId = Accounts.insertUserDoc({}, {
+				globalRoles: [
+					'anonymous'
+				]
+			});
+
+			const { id, token } = Accounts._loginUser(this, userId);
+
+			return { id, token };
+		} else {
+			check(formData, Match.ObjectIncluding({
+				email: String,
+				pass: String,
+				name: String,
+				secretURL: Match.Optional(String)
+			}));
+		}
 
 		if (RocketChat.settings.get('Accounts_RegistrationForm') === 'Disabled') {
 			throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', { method: 'registerUser' });

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
@@ -152,7 +154,7 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Closing_chat'),
 			type: 'input',
 			inputPlaceholder: t('Please_add_a_comment'),
@@ -160,12 +162,12 @@ Template.visitorInfo.events({
 			closeOnConfirm: false
 		}, (inputValue) => {
 			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
 			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
@@ -173,7 +175,7 @@ Template.visitorInfo.events({
 				if (error) {
 					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Chat_closed'),
 					text: t('Chat_closed_successfully'),
 					type: 'success',
@@ -187,7 +189,7 @@ Template.visitorInfo.events({
 	'click .return-inquiry'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Would_you_like_to_return_the_inquiry'),
 			type: 'warning',
 			showCancelButton: true,

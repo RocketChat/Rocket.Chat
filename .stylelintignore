@@ -1,2 +1,2 @@
-**/lesshat.less
-**/_lesshat.import.less
+packages/rocketchat-theme/client/vendor/fontello/css/fontello.css
+packages/meteor-autocomplete/client/autocomplete.css

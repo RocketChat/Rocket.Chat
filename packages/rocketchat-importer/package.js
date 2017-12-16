@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'coffeescript',
 		'check',
 		'rocketchat:lib'
 	]);
@@ -18,39 +17,42 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	//Import Framework
-	api.addFiles('lib/_importer.coffee');
-	api.addFiles('lib/importTool.coffee');
-	api.addFiles('server/classes/ImporterBase.coffee', 'server');
-	api.addFiles('server/classes/ImporterProgress.coffee', 'server');
-	api.addFiles('server/classes/ImporterProgressStep.coffee', 'server');
-	api.addFiles('server/classes/ImporterSelection.coffee', 'server');
-	api.addFiles('server/classes/ImporterSelectionChannel.coffee', 'server');
-	api.addFiles('server/classes/ImporterSelectionUser.coffee', 'server');
+	api.addFiles('server/classes/ImporterBase.js', 'server');
+	api.addFiles('server/classes/ImporterProgress.js', 'server');
+	api.addFiles('server/classes/ImporterSelection.js', 'server');
+	api.addFiles('server/classes/ImporterSelectionChannel.js', 'server');
+	api.addFiles('server/classes/ImporterSelectionUser.js', 'server');
+	api.addFiles('server/classes/ImporterWebsocket.js', 'server');
+
+	api.addFiles('lib/ImporterInfo.js');
+	api.addFiles('lib/ImporterProgressStep.js');
+	api.addFiles('lib/Importers.js');
 
 	//Database models
-	api.addFiles('server/models/Imports.coffee', 'server');
-	api.addFiles('server/models/RawImports.coffee', 'server');
+	api.addFiles('server/models/Imports.js', 'server');
+	api.addFiles('server/models/RawImports.js', 'server');
 
 	//Server methods
-	api.addFiles('server/methods/getImportProgress.coffee', 'server');
-	api.addFiles('server/methods/getSelectionData.coffee', 'server');
+	api.addFiles('server/methods/getImportProgress.js', 'server');
+	api.addFiles('server/methods/getSelectionData.js', 'server');
 	api.addFiles('server/methods/prepareImport.js', 'server');
-	api.addFiles('server/methods/restartImport.coffee', 'server');
-	api.addFiles('server/methods/setupImporter.coffee', 'server');
-	api.addFiles('server/methods/startImport.coffee', 'server');
+	api.addFiles('server/methods/restartImport.js', 'server');
+	api.addFiles('server/methods/setupImporter.js', 'server');
+	api.addFiles('server/methods/startImport.js', 'server');
 
 	//Client
 	api.addFiles('client/admin/adminImport.html', 'client');
-	api.addFiles('client/admin/adminImport.coffee', 'client');
+	api.addFiles('client/admin/adminImport.js', 'client');
 	api.addFiles('client/admin/adminImportPrepare.html', 'client');
-	api.addFiles('client/admin/adminImportPrepare.coffee', 'client');
+	api.addFiles('client/admin/adminImportPrepare.js', 'client');
 	api.addFiles('client/admin/adminImportProgress.html', 'client');
-	api.addFiles('client/admin/adminImportProgress.coffee', 'client');
+	api.addFiles('client/admin/adminImportProgress.js', 'client');
 
 	//Imports database records cleanup, mark all as not valid.
-	api.addFiles('server/startup/setImportsToInvalid.coffee', 'server');
+	api.addFiles('server/startup/setImportsToInvalid.js', 'server');
 
-	api.export('Importer');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({

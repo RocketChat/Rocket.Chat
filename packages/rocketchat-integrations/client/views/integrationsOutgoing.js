@@ -9,7 +9,8 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		token: Random.id(24),
 		retryFailedCalls: true,
 		retryCount: 6,
-		retryDelay: 'powers-of-ten'
+		retryDelay: 'powers-of-ten',
+		runOnEdits: true
 	});
 
 	this.updateRecord = () => {
@@ -28,10 +29,11 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			scriptEnabled: $('[name=scriptEnabled]:checked').val().trim() === '1',
 			script: $('[name=script]').val().trim(),
 			targetRoom: $('[name=targetRoom]').val() ? $('[name=targetRoom]').val().trim() : undefined,
-			triggerWordAnywhere: $('[name=triggerWordAnywhere]').val() ? $('[name=triggerWordAnywhere]').val().trim() : undefined,
+			triggerWordAnywhere: $('[name=triggerWordAnywhere]:checked').val().trim() === '1',
 			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
 			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6,
-			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten'
+			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten',
+			runOnEdits: $('[name=runOnEdits]:checked').val().trim() === '1'
 		});
 	};
 
@@ -222,7 +224,7 @@ Template.integrationsOutgoing.events({
 	'click .submit > .delete': () => {
 		const params = Template.instance().data.params();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
 			type: 'warning',
@@ -237,7 +239,7 @@ Template.integrationsOutgoing.events({
 				if (err) {
 					handleError(err);
 				} else {
-					swal({
+					modal.open({
 						title: t('Deleted'),
 						text: t('Your_entry_has_been_deleted'),
 						type: 'success',
@@ -287,11 +289,13 @@ Template.integrationsOutgoing.events({
 
 		let triggerWords;
 		let triggerWordAnywhere;
+		let runOnEdits;
 		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 
-			triggerWordAnywhere = $('[name=triggerWordAnywhere]').val().trim();
+			triggerWordAnywhere = $('[name=triggerWordAnywhere]:checked').val().trim();
+			runOnEdits = $('[name=runOnEdits]:checked').val().trim();
 		}
 
 		let channel;
@@ -338,7 +342,8 @@ Template.integrationsOutgoing.events({
 			retryFailedCalls: retryFailedCalls === '1',
 			retryCount: retryCount ? retryCount : 6,
 			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
-			triggerWordAnywhere: triggerWordAnywhere === '1'
+			triggerWordAnywhere: triggerWordAnywhere === '1',
+			runOnEdits: runOnEdits === '1'
 		};
 
 		const params = Template.instance().data.params? Template.instance().data.params() : undefined;

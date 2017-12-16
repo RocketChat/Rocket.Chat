@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat._setEmail = function(userId, email) {
 	email = s.trim(email);
 	if (!userId) {
@@ -29,5 +31,5 @@ RocketChat._setEmail = function(userId, email) {
 };
 
 RocketChat.setEmail = RocketChat.RateLimiter.limitFunction(RocketChat._setEmail, 1, 60000, {
-	0(userId) { return !userId || !RocketChat.authz.hasPermission(userId, 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
+	0() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); } // Administrators have permission to change others emails, so don't limit those
 });

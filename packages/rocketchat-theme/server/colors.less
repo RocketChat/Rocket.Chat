@@ -28,6 +28,20 @@
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
 /** ----------------------------------------------------------------------------
+ * Mixins
+ */
+
+.buttonColors(@color, @bg) {
+	color: @color;
+	background-color: @bg;
+
+	&:hover {
+		color: mix(@color, contrast(@bg), 60%);
+		background-color: mix(@bg, contrast(@color), 60%);
+	}
+}
+
+/** ----------------------------------------------------------------------------
  * Classes for variables
  */
 
@@ -243,7 +257,42 @@
  * Forms
  */
 
-.input-shade(@primary-font-color, @content-background-color);
+input,
+select,
+textarea {
+	color: @primary-font-color;
+	background-color: transparent;
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-style: solid;
+
+	&::placeholder {
+		color: mix(@primary-font-color, @content-background-color, 75%);
+	}
+
+	&[disabled] {
+		background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	}
+}
+
+.disabled label,
+[disabled] label {
+	color: mix(@primary-font-color, @content-background-color, 75%);
+}
+
+.-autocomplete-container {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
+
+.-autocomplete-item.selected {
+	background-color: mix(contrast(@content-background-color), @content-background-color, 20%);
+}
+
+.rc-old input[type="button"],
+.rc-old input[type="submit"] {
+	color: @primary-font-color;
+	background: mix(contrast(@content-background-color), @content-background-color, 10%);
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+}
 
 .toolbar-search__input {
 	&:focus {
@@ -259,21 +308,56 @@
 	color: fade(@primary-background-contrast, 50%);
 }
 
-.flex-nav {
-	.input-shade(@primary-background-contrast, @transparent-lighter);
+// .flex-nav {
+// 	input,
+// 	select,
+// 	textarea {
+// 		color: @primary-background-contrast;
+// 		background-color: transparent;
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-style: solid;
 
-	input {
-		&:focus {
-			border-color: fade(@primary-background-contrast, 50%);
-		}
-	}
+// 		&::placeholder {
+// 			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 		}
 
-	.input.checkbox.toggle {
-		input:checked + label::before {
-			background-color: @primary-action-color;
-		}
-	}
-}
+// 		&[disabled] {
+// 			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		}
+// 	}
+
+// 	.disabled label,
+// 	[disabled] label {
+// 		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 	}
+
+// 	.-autocomplete-container {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
+
+// 	.-autocomplete-item.selected {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
+// 	}
+
+// 	input[type="button"],
+// 	input[type="submit"] {
+// 		color: @primary-background-contrast;
+// 		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
+
+// 	input {
+// 		&:focus {
+// 			border-color: fade(@primary-background-contrast, 50%);
+// 		}
+// 	}
+
+// 	.input.checkbox.toggle {
+// 		input:checked + label::before {
+// 			background-color: @primary-action-color;
+// 		}
+// 	}
+// }
 
 .input-line {
 	&.setting-changed > label {
@@ -331,10 +415,10 @@ input:-webkit-autofill {
  * Misc typography variants
  */
 
-a:active,
-a:hover {
-	color: @primary-action-color;
-}
+// a:active,
+// a:hover {
+// 	color: @primary-action-color;
+// }
 
 .message,
 .flex-tab {
@@ -391,8 +475,6 @@ a:hover {
 
 .full-page,
 .page-loading {
-	.gradient(shade(@primary-background-color), @primary-background-color);
-
 	a {
 		color: @tertiary-font-color;
 	}
@@ -403,8 +485,6 @@ a:hover {
 }
 
 #login-card {
-	.input-shade(@primary-font-color, @content-background-color);
-
 	.input-text {
 		input:-webkit-autofill {
 			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
@@ -426,7 +506,11 @@ a:hover {
 
 .messages-container {
 	.edit-room-title {
-		.linkColors(@secondary-font-color, @primary-font-color);
+		color: @secondary-font-color;
+
+		&:hover {
+			color: @primary-font-color;
+		}
 	}
 
 	.footer {
@@ -450,10 +534,16 @@ a:hover {
 	}
 }
 
-.popup-item {
-	&.selected {
-		color: @primary-action-contrast;
-		background-color: @primary-action-color;
+.message.editing {
+	background-color: lighten(@pending-color, 40%);
+}
+
+.rc-old {
+	& .popup-item {
+		&.selected {
+			color: @primary-action-contrast;
+			background-color: @primary-action-color;
+		}
 	}
 }
 
@@ -471,25 +561,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-.first-unread {
-	.body {
-		&::before {
-			background: @transparent-darker;
-		}
-
-		&::after {
-			color: @primary-font-color;
-		}
-	}
-}
-
-.first-unread-opaque {
-	.body {
-		&::before {
-			background: @transparent-dark;
-		}
-	}
-}
 
 .message {
 	&.new-day::before {
@@ -515,7 +586,11 @@ a:hover {
 	}
 
 	a {
-		.linkColors(@link-font-color, darken(@link-font-color, 10%));
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 
 	.mention-link {
@@ -537,18 +612,9 @@ a:hover {
  * Side nav
  */
 .side-nav {
-	a,
-	.info {
-		.linkColors(@tertiary-font-color, @tertiary-font-color);
-	}
-
 	.arrow::before,
 	.arrow::after {
 		background-color: @tertiary-font-color;
-	}
-
-	.rooms-list {
-		background-color: lighten(@primary-background-color, 2.5%);
 	}
 
 	li.active {
@@ -572,6 +638,11 @@ a:hover {
 	}
 
 	.unread {
+		color: @success-color;
+		border: 1px solid @success-color;
+	}
+
+	.unread.unread-mention {
 		background-color: @success-color;
 		color: contrast(@success-color, #000000, #ffffff, 50%);
 	}
@@ -582,6 +653,16 @@ a:hover {
 
 	.options button {
 		.buttonColors(@tertiary-font-color, @primary-background-color);
+	}
+}
+
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 }
 
@@ -624,10 +705,6 @@ a:hover {
 			}
 		}
 
-		.button.edit {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
-		}
-
 		.input.checkbox.toggle {
 			input:checked + label::before {
 				background-color: @primary-background-color;
@@ -648,7 +725,10 @@ a:hover {
 		}
 
 		&.attention {
-			.blink(@selection-color);
+			animation-duration: 1000ms;
+			animation-name: blink;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
 		}
 	}
 
@@ -663,6 +743,10 @@ a:hover {
  */
 i.status-online {
 	color: @status-online;
+}
+
+.status-bg-online {
+	background-color: @status-online;
 }
 
 .account-box .status-online .thumb::after,
@@ -683,6 +767,10 @@ i.status-away {
 	color: @status-away;
 }
 
+.status-bg-away {
+	background-color: @status-away;
+}
+
 .account-box .status-away .thumb::after,
 .account-box .status.away::after,
 .popup-user-status-away,
@@ -696,6 +784,10 @@ i.status-busy {
 	color: @status-busy;
 }
 
+.status-bg-busy {
+	background-color: @status-busy;
+}
+
 .account-box .status-busy .thumb::after,
 .account-box .status.busy::after,
 .popup-user-status-busy,
@@ -707,6 +799,10 @@ i.status-busy {
 
 i.status-offline {
 	color: @status-offline;
+}
+
+.status-bg-offline {
+	background-color: @status-offline;
 }
 
 .popup-user-status-offline,
@@ -783,7 +879,11 @@ i.status-offline {
 }
 
 .alert-link {
-	.linkColors(@link-font-color, darken(@link-font-color, 10%));
+	color: @link-font-color;
+
+	&:hover {
+		color: darken(@link-font-color, 10%);
+	}
 }
 
 label.required::after {
@@ -799,4 +899,57 @@ label.required::after {
 	.loading-animation > div {
 		background-color: @primary-font-color;
 	}
+}
+
+@keyframes blink {
+	from {
+		color: @selection-color;
+	}
+
+	to {
+		opacity: inherit;
+	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Input Range Slider
+ */
+
+.range-slider-range::-webkit-slider-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-webkit-slider-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-webkit-slider-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-range::-moz-range-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-moz-range-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-moz-range-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-value {
+	color: lighten(@tertiary-background-color, 50%);
+	background-color: @primary-background-color;
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: @primary-background-color;
+	border-bottom-color: transparent;
+}
+
+.range-slider-range::-moz-range-track {
+	background-color: @tertiary-background-color;
 }

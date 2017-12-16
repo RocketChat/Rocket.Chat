@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;
@@ -13,7 +15,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
-		if (user.username === username) {
+		if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
 			return username;
 		}
 
@@ -28,13 +30,7 @@ Meteor.methods({
 			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
 
-		if (user.username !== undefined) {
-			if (!username.toLowerCase() === user.username.toLowerCase()) {
-				if (!RocketChat.checkUsernameAvailability(username)) {
-					throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'setUsername', field: username });
-				}
-			}
-		} else if (!RocketChat.checkUsernameAvailability(username)) {
+		if (!RocketChat.checkUsernameAvailability(username)) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'setUsername', field: username });
 		}
 

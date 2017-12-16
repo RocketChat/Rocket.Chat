@@ -9,7 +9,7 @@
 			</header>
 			<div class="content">
 				{{#unless isAdmin}}
-					<p>You are not authorized to view this page.</p>
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					<div class="rocket-form">
 						<fieldset>
@@ -33,35 +33,43 @@
 									</div>
 								</div>
 
-								<div class="section">
-									<h1>{{_ "Users"}}</h1>
-									<div class="section-content">
-										<ul>
-											{{#each users}}
-												{{#unless is_bot}}
-													<li>
-														<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
-														{{#if is_deleted }} <em>({{_ "Deleted"}})</em>{{/if}}
-													</li>
-												{{/unless}}
-											{{/each}}
-										</ul>
+								{{#if users.length}}
+									<div class="section">
+										<h1>{{_ "Users"}}</h1>
+										<div class="section-content">
+											<ul>
+												{{#each users}}
+													{{#unless is_bot}}
+														<li>
+															<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
+															{{#if is_deleted }} <em>({{_ "Deleted"}})</em>{{/if}}
+														</li>
+													{{/unless}}
+												{{/each}}
+											</ul>
+										</div>
 									</div>
-								</div>
+								{{/if}}
+
+								{{#if channels.length}}
+									<div class="section">
+										<h1>{{_ "Channels"}}</h1>
+										<div class="section-content">
+											<ul>
+												{{#each channels}}
+													<li>
+														<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
+														{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
+														{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
+													</li>
+												{{/each}}
+											</ul>
+										</div>
+									</div>
+								{{/if}}
 
 								<div class="section">
-									<h1>{{_ "Channels"}}</h1>
-									<div class="section-content">
-										<ul>
-											{{#each channels}}
-												<li>
-													<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
-													{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
-													{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
-												</li>
-											{{/each}}
-										</ul>
-									</div>
+									<h1>{{_ "Messages"}}: {{message_count}}</h1>
 								</div>
 							{{else}}
 								{{#if isPreparing}}

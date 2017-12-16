@@ -31,17 +31,6 @@ Meteor.methods({
 			}
 			return true;
 		}
-		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.typedPassword)) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
-				});
-			}
-
-			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
-				logout: false
-			});
-		}
 
 		if (settings.realname) {
 			RocketChat.setRealName(Meteor.userId(), settings.realname);
@@ -59,6 +48,19 @@ Meteor.methods({
 			}
 
 			Meteor.call('setEmail', settings.email);
+		}
+
+		// Should be the last check to prevent error when trying to check password for users without password
+		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
+			if (!checkPassword(user, settings.typedPassword)) {
+				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+					method: 'saveUserProfile'
+				});
+			}
+
+			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
+				logout: false
+			});
 		}
 
 		RocketChat.models.Users.setProfile(Meteor.userId(), {});

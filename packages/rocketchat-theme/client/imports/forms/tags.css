@@ -1,0 +1,58 @@
+.rc-tags {
+	display: flex;
+
+	width: 100%;
+	min-height: 43px;
+	padding: 0 1rem 0 2.25rem;
+
+	border-width: var(--tags-border-width);
+	border-color: var(--tags-border-color);
+	border-radius: var(--tags-border-radius);
+	background-color: transparent;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+
+	&--no-icon {
+		padding: 0;
+	}
+
+	&__tag {
+		display: flex;
+
+		margin: 0.25rem;
+		padding: 0.35rem 0.5rem;
+
+		color: var(--tags-text-color);
+		background: var(--tags-background);
+		align-items: center;
+
+		&-image {
+			width: var(--tags-avatar-size);
+			height: var(--tags-avatar-size);
+			margin-right: 0.5rem;
+		}
+
+		&-text {
+			margin-right: 0.5rem;
+		}
+
+		&-icon {
+			width: 10px;
+			height: 10px;
+			stroke: #9d9fa3;
+		}
+	}
+
+	&__input {
+		margin: 0.25rem;
+		padding: 0.35rem 0.5rem;
+
+		border: 0;
+
+		font-size: 0.875rem;
+
+		&::placeholder {
+			color: var(--rc-color-primary-light-medium);
+		}
+	}
+}

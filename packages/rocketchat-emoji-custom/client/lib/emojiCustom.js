@@ -1,6 +1,6 @@
 /* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull */
 RocketChat.emoji.packages.emojiCustom = {
-	emojiCategories: { rocket: TAPi18n.__('Custom') },
+	emojiCategories: { rocket: 'Custom' },
 	toneList: {},
 	list: [],
 
@@ -49,16 +49,6 @@ getEmojiUrlFromName = function(name, extension) {
 
 Blaze.registerHelper('emojiUrlFromName', getEmojiUrlFromName);
 
-function updateEmojiPickerList() {
-	let html = '';
-	for (const entry of RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket) {
-		const renderedEmoji = RocketChat.emoji.packages.emojiCustom.render(`:${ entry }:`);
-		html += `<li class="emoji-${ entry }" data-emoji="${ entry }">${ renderedEmoji }</li>`;
-	}
-	$('.rocket.emoji-list').empty().append(html);
-	RocketChat.EmojiPicker.updateRecent();
-}
-
 deleteEmojiCustom = function(emojiData) {
 	delete RocketChat.emoji.list[`:${ emojiData.name }:`];
 	const arrayIndex = RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
@@ -78,7 +68,7 @@ deleteEmojiCustom = function(emojiData) {
 			}
 		}
 	}
-	updateEmojiPickerList();
+	RocketChat.EmojiPicker.updateRecent();
 };
 
 updateEmojiCustom = function(emojiData) {
@@ -154,7 +144,7 @@ updateEmojiCustom = function(emojiData) {
 		}
 	}
 
-	updateEmojiPickerList();
+	RocketChat.EmojiPicker.updateRecent();
 };
 
 Meteor.startup(() =>

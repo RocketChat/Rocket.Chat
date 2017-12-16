@@ -1,4 +1,6 @@
 /* global InstanceStatus, MongoInternals */
+import _ from 'underscore';
+
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
 
@@ -57,6 +59,11 @@ RocketChat.statistics.get = function _getStatistics() {
 		nodeVersion: process.version,
 		pid: process.pid,
 		uptime: process.uptime()
+	};
+
+	statistics.deploy = {
+		method: process.env.DEPLOY_METHOD || 'tar',
+		platform: process.env.DEPLOY_PLATFORM || 'selfinstall'
 	};
 
 	statistics.migration = RocketChat.Migrations._getControl();

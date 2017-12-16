@@ -6,20 +6,11 @@ import {getCredentials, api, login, request, credentials, directMessage, log } f
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('direct messages', function() {
+describe('[Direct Messages]', function() {
 	this.retries(0);
 
-	before((done) => {
-		request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(done);
-	});
+	before(done => getCredentials(done));
+
 	it('/chat.postMessage', (done) => {
 		request.post(api('chat.postMessage'))
 			.set(credentials)

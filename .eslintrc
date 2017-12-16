@@ -1,7 +1,10 @@
 {
 	"parserOptions": {
 		"sourceType": "module",
-		"ecmaVersion": 2017
+		"ecmaVersion": 2017,
+		"ecmaFeatures": {
+				"experimentalObjectRestSpread" : true
+		}
 	},
 	"env": {
 		"browser": true,
@@ -24,6 +27,7 @@
 		"no-delete-var": 2,
 		"no-dupe-keys": 2,
 		"no-dupe-args": 2,
+		"no-dupe-class-members": 2,
 		"no-duplicate-case": 2,
 		"no-empty": 2,
 		"no-empty-character-class": 2,
@@ -85,7 +89,6 @@
 		"object-shorthand": 2
 	},
 	"globals": {
-		"_"                           : false,
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
@@ -105,6 +108,7 @@
 		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
+		"FileUpload"                  : false,
 		"HTTP"                        : false,
 		"getNextAgent"                : false,
 		"handleError"                 : false,
@@ -118,6 +122,7 @@
 		"Logger"                      : false,
 		"Match"                       : false,
 		"Meteor"                      : false,
+		"modal"                       : false,
 		"moment"                      : false,
 		"Mongo"                       : false,
 		"Npm"                         : false,
@@ -128,16 +133,13 @@
 		"ReactiveVar"                 : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
-		"RocketChatFileAvatarInstance": false,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
-		"s"                           : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,
 		"Settings"                    : false,
 		"SHA256"                      : false,
 		"SideNav"                     : false,
-		"swal"                        : false,
 		"t"                           : false,
 		"TAPi18n"                     : false,
 		"TAPi18next"                  : false,

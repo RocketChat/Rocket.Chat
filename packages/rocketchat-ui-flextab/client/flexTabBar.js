@@ -14,6 +14,10 @@ Template.flexTabBar.helpers({
 	},
 
 	visible() {
+		if (!Meteor.userId() && !this.anonymous) {
+			return 'hidden';
+		}
+
 		if (this.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 			return 'hidden';
 		}
@@ -31,17 +35,28 @@ Template.flexTabBar.helpers({
 		return Object.assign(Template.currentData().data || {}, {
 			tabBar: Template.instance().tabBar
 		});
+	},
+
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
 Template.flexTabBar.events({
 	'click .tab-button'(e, instance) {
 		e.preventDefault();
+		const $flexTab = $('.flex-tab-container .flex-tab');
 		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+			$flexTab.attr('template', '');
 			return instance.tabBar.close();
 		} else {
+			$flexTab.attr('template', this.template);
 			return instance.tabBar.open(this);
 		}
+	},
+
+	'click .close-flex-tab'(event, instance) {
+		instance.tabBar.close();
 	}
 });
 

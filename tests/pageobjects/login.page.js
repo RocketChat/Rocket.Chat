@@ -1,4 +1,5 @@
 import Page from './Page';
+import mainContent from './main-content.page';
 
 class LoginPage extends Page {
 	get registerButton() { return browser.element('button.register'); }
@@ -27,11 +28,15 @@ class LoginPage extends Page {
 	gotToRegister() {
 		this.registerButton.waitForVisible(5000);
 		this.registerButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.nameField.waitForVisible(15000);
 	}
 
 	gotToForgotPassword() {
 		this.forgotPasswordButton.waitForVisible(5000);
 		this.forgotPasswordButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.emailField.waitForVisible(15000);
 	}
 
 	registerNewUser({username, email, password}) {
@@ -60,6 +65,12 @@ class LoginPage extends Page {
 		this.passwordField.setValue(password);
 
 		this.submit();
+	}
+
+	loginSucceded({email, password}) {
+		this.login({email, password});
+
+		mainContent.mainContent.waitForVisible(5000);
 	}
 
 	submit() {

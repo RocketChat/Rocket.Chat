@@ -1,4 +1,6 @@
 /* global logger, processWebhookMessage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
@@ -130,7 +132,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (typeof httpResult !== 'undefined') {
-			history.httpResult = httpResult;
+			history.httpResult = JSON.stringify(httpResult, null, 2);
 		}
 
 		if (typeof error !== 'undefined') {
@@ -165,8 +167,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		let tmpRoom;
-		if (nameOrId || trigger.targetRoom) {
-			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || trigger.targetRoom, errorOnEmpty: false }) || room;
+		if (nameOrId || trigger.targetRoom || message.channel) {
+			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
 		} else {
 			tmpRoom = room;
 		}
@@ -389,6 +391,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 				if (message.bot) {
 					data.bot = message.bot;
 				}
+
+				if (message.editedAt) {
+					data.isEdited = true;
+				}
 				break;
 			case 'fileUploaded':
 				data.channel_id = room._id;
@@ -583,6 +589,11 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					return;
 				}
 			}
+		}
+
+		if (message && message.editedAt && !trigger.runOnEdits) {
+			logger.outgoing.debug(`The trigger "${ trigger.name }"'s run on edits is disabled and the message was edited.`);
+			return;
 		}
 
 		const historyId = this.updateHistory({ step: 'start-execute-trigger-url', integration: trigger, event });

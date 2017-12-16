@@ -5,9 +5,9 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 			name: String,
 			enabled: Boolean,
 			username: String,
-			urls: [String],
+			urls: Match.Maybe([String]),
 			channel: String,
-			event: String,
+			event: Match.Maybe(String),
 			triggerWords: Match.Maybe([String]),
 			alias: Match.Maybe(String),
 			avatar: Match.Maybe(String),
@@ -24,6 +24,11 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 			case 'webhook-outgoing':
 				Meteor.runAsUser(this.userId, () => {
 					integration = Meteor.call('addOutgoingIntegration', this.bodyParams);
+				});
+				break;
+			case 'webhook-incoming':
+				Meteor.runAsUser(this.userId, () => {
+					integration = Meteor.call('addIncomingIntegration', this.bodyParams);
 				});
 				break;
 			default:
@@ -103,10 +108,9 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 			return RocketChat.API.v1.failure('An integrationId or target_url needs to be provided.');
 		}
 
+		let integration;
 		switch (this.bodyParams.type) {
 			case 'webhook-outgoing':
-				let integration;
-
 				if (this.bodyParams.target_url) {
 					integration = RocketChat.models.Integrations.findOne({ urls: this.bodyParams.target_url });
 				} else if (this.bodyParams.integrationId) {
@@ -119,6 +123,20 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 
 				Meteor.runAsUser(this.userId, () => {
 					Meteor.call('deleteOutgoingIntegration', integration._id);
+				});
+
+				return RocketChat.API.v1.success({
+					integration
+				});
+			case 'webhook-incoming':
+				integration = RocketChat.models.Integrations.findOne({ _id: this.bodyParams.integrationId });
+
+				if (!integration) {
+					return RocketChat.API.v1.failure('No integration found.');
+				}
+
+				Meteor.runAsUser(this.userId, () => {
+					Meteor.call('deleteIncomingIntegration', integration._id);
 				});
 
 				return RocketChat.API.v1.success({

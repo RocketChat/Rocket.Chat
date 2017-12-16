@@ -1,4 +1,6 @@
 /* global Babel */
+import _ from 'underscore';
+import s from 'underscore.string';
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
@@ -76,6 +78,11 @@ Meteor.methods({
 		}
 
 		const user = RocketChat.models.Users.findOne({ username: currentIntegration.username });
+
+		if (!user || !user._id) {
+			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', { method: 'updateIncomingIntegration' });
+		}
+
 		RocketChat.models.Roles.addUserRoles(user._id, 'bot');
 
 		RocketChat.models.Integrations.update(integrationId, {

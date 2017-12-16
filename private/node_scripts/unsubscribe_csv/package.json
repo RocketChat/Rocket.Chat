@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "coffee unsubscribe.coffee",
-    "test": "mocha --compilers coffee:coffee-script --timeout 5s -R spec"
+    "start": "node unsubscribe.js"
   },
   "dependencies": {
-    "coffee-script": "~1.6.3",
     "commander": "^2.9.0",
     "ddp": "^0.11.0",
     "line-by-line": "^0.1.3",

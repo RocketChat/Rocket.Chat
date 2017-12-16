@@ -40,15 +40,28 @@
 						</label>
 					</div>
 				{{/if}}
-				{{#unless user}}
-					<div class="input-line">
-						<label for="role">{{_ "Role"}}</label>
-						<select id="role">
-							{{#each role}}
-								<option value="{{_id}}" selected="{{selectUserRole}}">{{name}}</option>
+					<div class="input-line" data="{{this}}">
+						<label for="role">{{_ "Add_Role"}}</label>
+						{{#let roles=role}}
+						<select id="roleSelect" {{disabled role}}>
+							<option value="placeholder" disabled selected>{{_ "Select_role"}}</option>
+							{{#each roles}}
+								<option value="{{_id}}">{{name}}</option>
 							{{/each}}
 						</select>
+						{{/let}}
+						<button id="addRole" class="button" {{disabled role}}>{{_ 'Add_Role'}}</button>
+
+						<fieldset>
+							<ul class="chip-container current-user-roles">
+								{{#each userRoles}}
+									<li class="remove-role" title="{{this}}"><i class="icon-cancel-circled"></i>{{this}}</li>
+								{{/each}}
+							</ul>
+						</fieldset>
 					</div>
+
+				{{#unless user}}
 					<div class="input-line">
 						<label for="joinDefaultChannels">
 							<input type="checkbox" id="joinDefaultChannels" value="1" checked="true">

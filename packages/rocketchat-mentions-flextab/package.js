@@ -9,8 +9,6 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
-		'coffeescript',
-		'underscore',
 		'less',
 		'rocketchat:lib'
 	]);
@@ -18,15 +16,15 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/lib/MentionedMessage.coffee',
+		'client/lib/MentionedMessage.js',
 		'client/views/stylesheets/mentionsFlexTab.less',
 		'client/views/mentionsFlexTab.html',
-		'client/views/mentionsFlexTab.coffee',
-		'client/actionButton.coffee',
-		'client/tabBar.coffee'
+		'client/views/mentionsFlexTab.js',
+		'client/actionButton.js',
+		'client/tabBar.js'
 	], 'client');
 
 	api.addFiles([
-		'server/publications/mentionedMessages.coffee'
+		'server/publications/mentionedMessages.js'
 	], 'server');
 });

@@ -1,9 +1,10 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	getRoomRoles(rid) {
-
 		check(rid, String);
 
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 		}
 
@@ -20,7 +21,19 @@ Meteor.methods({
 			}
 		};
 
+		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+
 		const roles = RocketChat.models.Roles.find({ scope: 'Subscriptions', description: { $exists: 1, $ne: '' } }).fetch();
-		return RocketChat.models.Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch();
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch();
+
+		if (!UI_Use_Real_Name) {
+			return subscriptions;
+		} else {
+			return subscriptions.map(subscription => {
+				const user = RocketChat.models.Users.findOneById(subscription.u._id);
+				subscription.u.name = user && user.name;
+				return subscription;
+			});
+		}
 	}
 });

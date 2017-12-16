@@ -17,6 +17,15 @@
 							<span class="colorpicker-swatch border-component-color" style="background-color: {{color}}"></span>
 						</div>
 					</div>
+					<div class="input-line">
+						<label for="showAgentEmail">{{_ "Show_agent_email"}}</label>
+						<div class="inline-fields">
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormTrue" checked="{{showAgentEmailFormTrueChecked}}" value="true">
+							<label for="showAgentEmailFormTrue">{{_ "True"}}</label>
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormFalse" checked="{{showAgentEmailFormFalseChecked}}" value="false">
+							<label for="showAgentEmailFormFalse">{{_ "False"}}</label>
+						</div>
+					</div>
 				</fieldset>
 				<fieldset>
 					<legend>{{_ "Livechat_offline"}}</legend>

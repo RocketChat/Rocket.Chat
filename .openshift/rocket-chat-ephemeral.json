@@ -151,7 +151,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "docker.io/rocket.chat",
+                "dockerImageRepository": "registry.connect.redhat.com/rocketchat",
                 "tags": [
                     {
                         "name": "latest",
@@ -208,8 +208,8 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "openshift",
-                                "name": "rocket-chat:latest"
+                                "namespace": "${NAMESPACE}",
+                                "name": "rocketchat:latest"
                             }
                         }
                     }
@@ -242,7 +242,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "rocketchat/rocket.chat:latest",
+                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
@@ -262,6 +262,30 @@
                                         "mountPath": "/app/uploads"
                                     }
                                 ],
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 5,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 30,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
                                 "terminationMessagePath": "/dev/termination-log",
                                 "imagePullPolicy": "Always"
                             }

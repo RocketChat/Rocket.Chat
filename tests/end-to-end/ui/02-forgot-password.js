@@ -2,51 +2,51 @@
 
 import loginPage from '../../pageobjects/login.page';
 
-describe('register', () => {
+describe('[Forgot Password]', () => {
 	before(() => {
 		loginPage.open();
 		loginPage.gotToForgotPassword();
 	});
 
-	describe('render', () => {
-		it('should not show name field', () => {
+	describe('render:', () => {
+		it('it should not show name field', () => {
 			loginPage.nameField.isVisible().should.be.false;
 		});
 
-		it('should show email field', () => {
+		it('it should show email field', () => {
 			loginPage.emailField.isVisible().should.be.true;
 		});
 
-		it('should not show password field', () => {
+		it('it should not show password field', () => {
 			loginPage.passwordField.isVisible().should.be.false;
 		});
 
-		it('should not show confirm password field', () => {
+		it('it should not show confirm password field', () => {
 			loginPage.confirmPasswordField.isVisible().should.be.false;
 		});
 
-		it('should not show email / username field', () => {
+		it('it should not show email / username field', () => {
 			loginPage.emailOrUsernameField.isVisible().should.be.false;
 		});
 
-		it('should show submit button', () => {
+		it('it should show submit button', () => {
 			loginPage.submitButton.isVisible().should.be.true;
 		});
 
-		it('should not show register button', () => {
+		it('it should not show register button', () => {
 			loginPage.registerButton.isVisible().should.be.false;
 		});
 
-		it('should not show forgot password button', () => {
+		it('it should not show forgot password button', () => {
 			loginPage.forgotPasswordButton.isVisible().should.be.false;
 		});
 
-		it('should show back to login button', () => {
+		it('it should show back to login button', () => {
 			loginPage.backToLoginButton.isVisible().should.be.true;
 		});
 	});
 
-	describe('email', () => {
+	describe('email:', () => {
 		it('it should be required', () => {
 			loginPage.submit();
 			loginPage.emailField.getAttribute('class').should.contain('error');

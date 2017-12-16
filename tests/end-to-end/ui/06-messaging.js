@@ -17,77 +17,77 @@ const message = `message from ${ username }`;
 let currentTest = 'none';
 
 function messagingTest() {
-	describe('Normal message', ()=> {
-		it('send a message', () => {
+	describe('Normal message:', ()=> {
+		it('it should send a message', () => {
 			mainContent.sendMessage(message);
 		});
 
-		it('should show the last message', () => {
+		it('it should show the last message', () => {
 			mainContent.lastMessage.isVisible().should.be.true;
 		});
 
 		if (!currentTest === 'direct') {
-			it('the last message should be from the loged user', () => {
+			it('it should be that the last message is from the loged user', () => {
 				mainContent.lastMessageUser.getText().should.equal(username);
 			});
 		}
 
 		if (currentTest === 'general') {
-			it('should not show the Admin tag', () => {
+			it('it should not show the Admin tag', () => {
 				mainContent.lastMessageUserTag.isVisible().should.be.false;
 			});
 		}
 	});
 
-	describe('fileUpload', ()=> {
+	describe.skip('fileUpload:', ()=> {
 		after(() => {
 		});
-		it('send a attachment', () => {
+		it('it should send a attachment', () => {
 			mainContent.fileUpload(imgURL);
 		});
 
-		it('should show the confirm button', () => {
-			mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+		it('it should show the confirm button', () => {
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
-		it('should show the cancel button', () => {
-			mainContent.popupFileCancelBtn.isVisible().should.be.true;
+		it('it should show the cancel button', () => {
+			Global.modalCancel.isVisible().should.be.true;
 		});
 
-		it('should show the file preview', () => {
-			mainContent.popupFilePreview.isVisible().should.be.true;
+		it('it should show the file preview', () => {
+			Global.modalFilePreview.isVisible().should.be.true;
 		});
 
-		it('should show the confirm button', () => {
-			mainContent.popupFileConfirmBtn.isVisible().should.be.true;
+		it('it should show the confirm button', () => {
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
-		it('should show the file title', () => {
-			mainContent.popupFileTitle.isVisible().should.be.true;
+		it('it should show the file title', () => {
+			Global.modalFileTitle.isVisible().should.be.true;
 		});
 
-		it('should show the file name input', () => {
-			mainContent.popupFileName.isVisible().should.be.true;
+		it('it should show the file name input', () => {
+			Global.modalFileName.isVisible().should.be.true;
 		});
 
-		it('should fill the file name input', () => {
-			mainContent.popupFileName.setValue('File Name');
+		it('it should fill the file name input', () => {
+			Global.modalFileName.setValue('File Name');
 		});
 
-		it('should show the file name input', () => {
-			mainContent.popupFileDescription.isVisible().should.be.true;
+		it('it should show the file name input', () => {
+			Global.modalFileDescription.isVisible().should.be.true;
 		});
 
-		it('should fill the file name input', () => {
-			mainContent.popupFileDescription.setValue('File Description');
+		it('it should fill the file name input', () => {
+			Global.modalFileDescription.setValue('File Description');
 		});
 
-		it('click the confirm', () => {
-			mainContent.popupFileConfirmBtn.click();
-			mainContent.popupFileConfirmBtn.waitForVisible(5000, true);
+		it('it should click the confirm', () => {
+			Global.modalConfirm.click();
+			Global.modalConfirm.waitForVisible(5000, true);
 		});
 
-		it('should show the file in the message', () => {
+		it('it should show the file in the message', () => {
 			mainContent.lastMessageDesc.waitForVisible(10000);
 			mainContent.lastMessageDesc.getText().should.equal('File Description');
 		});
@@ -95,119 +95,116 @@ function messagingTest() {
 }
 
 function messageActionsTest() {
-	describe('Message actions', ()=> {
+	describe('[Actions]', ()=> {
 		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
 		});
-		describe('Message Actions Render', ()=> {
+		describe('Render:', ()=> {
 			before(() => {
 				mainContent.openMessageActionMenu();
 			});
 
 			after(() => {
-				mainContent.selectAction('close');
-				mainContent.messageActionMenu.waitForVisible(5000, true);
+				mainContent.popoverWrapper.click();
 			});
 
-			it('should show the message action menu', () => {
+			it('it should show the message action menu', () => {
 				mainContent.messageActionMenu.isVisible().should.be.true;
 			});
 
-			it('should show the reply action', () => {
+			it('it should show the reply action', () => {
 				mainContent.messageReply.isVisible().should.be.true;
 			});
 
-			it('should show the edit action', () => {
+			it('it should show the edit action', () => {
 				mainContent.messageEdit.isVisible().should.be.true;
 			});
 
-			it('should show the delete action', () => {
+			it('it should show the delete action', () => {
 				mainContent.messageDelete.isVisible().should.be.true;
 			});
 
-			it('should show the permalink action', () => {
+			it('it should show the permalink action', () => {
 				mainContent.messagePermalink.isVisible().should.be.true;
 			});
 
-			it('should show the copy action', () => {
+			it('it should show the copy action', () => {
 				mainContent.messageCopy.isVisible().should.be.true;
 			});
 
-			it('should show the quote the action', () => {
+			it('it should show the quote the action', () => {
 				mainContent.messageQuote.isVisible().should.be.true;
 			});
 
-			it('should show the star action', () => {
+			it('it should show the star action', () => {
 				mainContent.messageStar.isVisible().should.be.true;
 			});
 
-			it('should show the reaction action', () => {
-				mainContent.messageReaction.isVisible().should.be.true;
-			});
+			// it('it should show the reaction action', () => {
+			// 	mainContent.messageReaction.isVisible().should.be.true;
+			// });
 
-			it('should show the close action', () => {
-				mainContent.messageClose.isVisible().should.be.true;
-			});
+			// it('it should show the close action', () => {
+			// 	mainContent.messageClose.isVisible().should.be.true;
+			// });
 
 			if (currentTest === 'general') {
-				it('should not show the pin action', () => {
+				it('it should not show the pin action', () => {
 					mainContent.messagePin.isVisible().should.be.false;
 				});
 			}
 
-			it('should not show the mark as unread action', () => {
+			it('it should not show the mark as unread action', () => {
 				mainContent.messageUnread.isVisible().should.be.false;
 			});
 		});
 
-		describe('Message Actions usage', () => {
-			describe('Message Reply', () => {
+		describe('[Usage]', () => {
+			describe('Reply:', () => {
 				before(() => {
 					mainContent.openMessageActionMenu();
 				});
-				it('reply the message', () => {
+				it('it should reply the message', () => {
 					mainContent.selectAction('reply');
 					mainContent.sendBtn.click();
 				});
 
-				it('checks if the message was replied', () => {
+				it('it should check if the message was replied', () => {
 					mainContent.lastMessageTextAttachment.waitForVisible(5000);
 					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
 				});
 			});
 
-
-			describe('Message edit', () => {
+			describe('Edit:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for Message edit Tests');
 					mainContent.openMessageActionMenu();
 				});
 
-				it('edit the message', () => {
+				it('it should edit the message', () => {
 					mainContent.selectAction('edit');
 					mainContent.sendBtn.click();
 				});
 			});
 
-
-			describe('Message delete', () => {
+			describe('Delete:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for Message Delete Tests');
 					mainContent.openMessageActionMenu();
 				});
 
-				it('delete the message', () => {
+				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
-					mainContent.popupFileConfirmBtn.click();
-					Global.sweetAlertOverlay.waitForVisible(3000, true);
+					Global.modalConfirm.click();
+					Global.modalOverlay.waitForVisible(3000, true);
 				});
 
-				it('should not show the deleted message', () => {
+				it('it should not show the deleted message', () => {
 					mainContent.lastMessage.should.not.equal('Message for Message Delete Tests');
 				});
 			});
 
-			describe('Message quote', () => {
+			describe('Quote:', () => {
 				const message = `Message for quote Tests - ${ Date.now() }`;
 
 				before(() => {
@@ -215,43 +212,43 @@ function messageActionsTest() {
 					mainContent.openMessageActionMenu();
 				});
 
-				it('quote the message', () => {
+				it('it should quote the message', () => {
 					mainContent.selectAction('quote');
 					mainContent.sendBtn.click();
 					mainContent.waitForLastMessageTextAttachmentEqualsText(message);
 				});
 			});
 
-			describe('Message star', () => {
+			describe('Star:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for star Tests');
 					mainContent.openMessageActionMenu();
 				});
 
-				it('star the message', () => {
+				it('it should star the message', () => {
 					mainContent.selectAction('star');
 				});
 			});
 
-			describe('Message copy', () => {
+			describe('Copy:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for copy Tests');
 					mainContent.openMessageActionMenu();
 				});
 
-				it('copy the message', () => {
+				it('it should copy the message', () => {
 					mainContent.selectAction('copy');
 				});
 			});
 
-			describe('Message Permalink', () => {
+			describe('Permalink:', () => {
 				before(() => {
 					mainContent.sendMessage('Message for permalink Tests');
 					mainContent.openMessageActionMenu();
 				});
 
 
-				it('permalink the message', () => {
+				it('it should permalink the message', () => {
 					mainContent.selectAction('permalink');
 				});
 			});
@@ -259,7 +256,7 @@ function messageActionsTest() {
 	});
 }
 
-describe('Messaging in different channels', () => {
+describe('[Message]', () => {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -267,7 +264,7 @@ describe('Messaging in different channels', () => {
 	});
 
 
-	describe('Messaging in GENERAL channel', () => {
+	describe('[GENERAL Channel]', () => {
 		before(()=>{
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
@@ -277,7 +274,7 @@ describe('Messaging in different channels', () => {
 		messageActionsTest();
 	});
 
-	describe('Messaging in created public channel', () => {
+	describe('[Public Channel]', () => {
 		before(()=>{
 			if (!publicChannelCreated) {
 				sideNav.createChannel(publicChannelName, false, false);
@@ -291,7 +288,7 @@ describe('Messaging in different channels', () => {
 		messageActionsTest();
 	});
 
-	describe('Messaging in created private channel', () => {
+	describe('[Private Channel]', () => {
 		before(()=>{
 			if (!privateChannelCreated) {
 				sideNav.createChannel(privateChannelName, true, false);
@@ -305,7 +302,7 @@ describe('Messaging in different channels', () => {
 		messageActionsTest();
 	});
 
-	describe('Messaging in created direct message', () => {
+	describe('[Direct Message]', () => {
 		before(()=>{
 			if (!directMessageCreated) {
 				sideNav.searchChannel(targetUser);

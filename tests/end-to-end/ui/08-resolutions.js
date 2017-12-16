@@ -8,8 +8,10 @@ import sideNav from '../../pageobjects/side-nav.page';
 import {username, email, password} from '../../data/user.js';
 import {checkIfUserIsValid} from '../../data/checks';
 
-describe('resolutions tests', ()=> {
-	describe('mobile render', ()=> {
+
+//skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
+describe.skip('[Resolution]', ()=> {
+	describe('[Mobile Render]', ()=> {
 		before(()=> {
 			checkIfUserIsValid(username, email, password);
 			sideNav.getChannelFromList('general').waitForExist(5000);
@@ -24,74 +26,74 @@ describe('resolutions tests', ()=> {
 			sideNav.spotlightSearch.waitForVisible(5000);
 		});
 
-		describe('moving elements ', () => {
-			it('should close de sidenav', () => {
+		describe('moving elements:', () => {
+			it('it should close de sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
-			it('press the navbar button', () => {
+			it('it should press the navbar button', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('should open de sidenav', () => {
+			it('it should open de sidenav', () => {
 				mainContent.mainContent.getLocation().should.not.deep.equal({x:0, y:0});
 			});
 
-			it('open general channel', () => {
+			it('it should open general channel', () => {
 				sideNav.openChannel('general');
 			});
 
-			it('should close de sidenav', () => {
+			it('it should close de sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
-			it('press the navbar button', () => {
+			it('it should press the navbar button', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('opens the user preferences screen', () => {
-				sideNav.accountBoxUserName.waitForVisible(5000);
-				sideNav.accountBoxUserName.click();
+			it('it should open the user preferences screen', () => {
+				sideNav.accountMenu.waitForVisible(5000);
+				sideNav.accountMenu.click();
 				sideNav.account.waitForVisible(5000);
 				sideNav.account.click();
 			});
 
-			it('press the preferences link', () => {
+			it('it should press the preferences link', () => {
 				sideNav.preferences.waitForVisible(5000);
 				sideNav.preferences.click();
 			});
 
-			it('should close de sidenav', () => {
+			it('it should close de sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
-			it('press the navbar button', () => {
+			it('it should press the navbar button', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('press the profile link', () => {
+			it('it should press the profile link', () => {
 				sideNav.profile.waitForVisible(5000);
 				sideNav.profile.click();
 			});
 
-			it('should close de sidenav', () => {
+			it('it should close de sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
-			it('press the navbar button', () => {
+			it('it should press the navbar button', () => {
 				sideNav.burgerBtn.click();
 			});
 
-			it('press the avatar link', () => {
+			it('it should press the avatar link', () => {
 				sideNav.avatar.waitForVisible(5000);
 				sideNav.avatar.click();
 			});
 
-			it('should close de sidenav', () => {
+			it('it should close de sidenav', () => {
 				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
 			});
 
-			it('press the navbar button', () => {
+			it('it should press the navbar button', () => {
 				sideNav.burgerBtn.click();
 			});
 		});

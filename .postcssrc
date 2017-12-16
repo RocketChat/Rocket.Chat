@@ -1,0 +1,26 @@
+{
+	"plugins": {
+		"postcss-import": {},
+		"postcss-custom-properties": {
+			"preserve": true
+		},
+		"postcss-media-minmax": {},
+		"postcss-selector-not": {},
+		"postcss-nesting": {},
+		"autoprefixer": {
+			"browsers": [
+				"ie > 10",
+				"last 2 Edge versions",
+				"last 2 Firefox versions",
+				"last 1 FirefoxAndroid versions",
+				"last 2 Chrome versions",
+				"last 1 ChromeAndroid versions",
+				"Safari > 7",
+				"last 2 Opera versions",
+				"last 2 iOS versions",
+				"last 1 Android version"
+			]
+		}
+	},
+	"excludedPackages": ["deepwell:bootstrap-datepicker2", "smoral:sweetalert"]
+}

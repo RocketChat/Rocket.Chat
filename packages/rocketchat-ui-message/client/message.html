@@ -1,12 +1,12 @@
 <template name="message">
-	<li id="{{_id}}" class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
-						<div class="avatar-image" style="background-image:url({{avatar}});"></div>
+						<div class="avatar-image" style="background-image:url({{encodeURI avatar}})"></div>
 					</div>
 				</button>
 			{{/if}}
@@ -23,30 +23,32 @@
 		{{/if}}
 		<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span>{{/if}}</button>
 		<span class="info border-component-color color-info-font-color">
-		{{#each roleTags}}
-			<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
-		{{/each}}
-		{{#if isBot}}
-			<span class="is-bot background-info-font-color">BOT</span>
-		{{/if}}
-		<span class="time" title='{{date}} {{time}}'>{{time}}</span>
-		{{#if showTranslated}}
-			<span class="translated">
-				<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
-			</span>
-		{{/if}}
-		{{#if edited}}
-			<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-				<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
-				<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">{{> avatar username=editedBy}}</button>
-			</span>
-		{{/if}}
-		{{#if private}}
-			<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
-		{{/if}}
-			<div class="message-cog-container {{hideCog}}">
-				<i class="icon-cog message-cog" aria-label="{{_ "Actions"}}"></i>
-			</div>
+			{{#each roleTags}}
+				<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
+			{{/each}}
+			{{#if isBot}}
+				<span class="is-bot background-info-font-color">BOT</span>
+			{{/if}}
+			<span class="time" title='{{date}} {{time}}'>{{time}}</span>
+			{{#if showTranslated}}
+				<span class="translated">
+					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+				</span>
+			{{/if}}
+			{{#if sentByEmail}}
+				<span class="sent-by-email">
+					<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
+				</span>
+			{{/if}}
+			{{#if edited}}
+				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
+					<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
+					<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">{{> avatar username=editedBy}}</button>
+				</span>
+			{{/if}}
+			{{#if private}}
+				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+			{{/if}}
 		</span>
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{{body}}}
@@ -59,6 +61,24 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
+		{{#unless system}}
+			<div class="message-actions">
+				{{#if messageActions 'message'}}
+					<div class="message-actions__buttons">
+						{{#each action in messageActions 'message'}}
+							<button class="message-actions__button" data-message-action="{{action.id}}">
+									{{> icon block="message-actions__button-icon" icon=action.icon}}
+							</button>
+						{{/each}}
+					</div>
+				{{/if}}
+				{{#if messageActions 'menu'}}
+					<div class="message-actions__menu">
+						{{> icon block="message-actions__menu-icon" icon="menu"}}
+					</div>
+				{{/if}}
+			</div>
+		{{/unless}}
 		<ul class="actionLinks {{hideActionLinks}}">
 			{{#each actionLink in actionLinks}}
 				<li class="color-primary-action-color">

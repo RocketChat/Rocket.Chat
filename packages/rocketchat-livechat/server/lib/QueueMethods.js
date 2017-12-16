@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
 	 *
@@ -40,6 +42,8 @@ RocketChat.QueueMethods = {
 			alert: true,
 			open: true,
 			unread: 1,
+			userMentions: 1,
+			groupMentions: 0,
 			code: roomCode,
 			u: {
 				_id: agent.agentId,

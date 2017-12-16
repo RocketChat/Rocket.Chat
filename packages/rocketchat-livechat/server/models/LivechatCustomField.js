@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * Livechat Custom Fields model
  */

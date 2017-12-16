@@ -8,11 +8,11 @@
 		<div class="wrapper">
 			<h4>{{_ "Create_new" }}</h4>
 			<div class="input-line no-icon">
-				<span>{{_ "Name"}}</span>
+				<label for="channel-name">{{_ "Name"}}</label>
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line toggle">
-				<span>{{_ "Private"}}</span>
+                <label for="channel-type">{{_ "Private"}}</label>
 				<span class="warning {{groupLimitHidden}}">{{_ "Group_Limit_Warning" number=groupLimitNumber}}</span>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
@@ -20,7 +20,7 @@
 				</div>
 			</div>
 			<div class="input-line toggle">
-				<span>{{_ "Read_only_channel"}}</span>
+				<label for="channel-ro">{{_ "Read_only_channel"}}</label>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-ro">
 					<label class="color-tertiary-font-color" for="channel-ro"></label>

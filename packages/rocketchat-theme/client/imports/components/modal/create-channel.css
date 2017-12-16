@@ -1,0 +1,64 @@
+.create-channel {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	animation-name: fadeIn;
+	animation-duration: 1s;
+
+	&__header,
+	&__switches,
+	&__inputs,
+	& .rc-input:not(:last-child) {
+		margin-bottom: var(--create-channel-gap-between-elements);
+	}
+
+	&__title {
+		padding: 0.25rem 0;
+
+		color: var(--create-channel-title-color);
+
+		font-size: var(--create-channel-title-text-size);
+	}
+
+	&__description {
+		padding: 0.25rem 0;
+
+		color: var(--create-channel-description-color);
+
+		font-size: var(--create-channel-description-text-size);
+	}
+
+	&__content {
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	&__switches {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	& .rc-switch {
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
+	}
+
+	& .rc-input__icon-svg {
+		font-size: 1.2rem;
+	}
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}

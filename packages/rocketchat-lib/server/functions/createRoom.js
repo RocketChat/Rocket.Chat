@@ -1,4 +1,7 @@
 /* globals RocketChat */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
@@ -13,30 +16,11 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
 
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-
-	if (!nameValidation.test(name)) {
-		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
-	}
+	const slugifiedRoomName = RocketChat.getValidRoomName(name);
 
 	const now = new Date();
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
-	}
-
-	// avoid duplicate names
-	let room = RocketChat.models.Rooms.findOneByName(name);
-	if (room) {
-		if (room.archived) {
-			throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${ name }`, { function: 'RocketChat.createRoom', room_name: name });
-		} else {
-			throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ name }' exists`, { function: 'RocketChat.createRoom', room_name: name });
-		}
 	}
 
 	// check group limit
@@ -51,7 +35,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	if (type === 'c') {
 		RocketChat.callbacks.run('beforeCreateChannel', owner, {
 			t: 'c',
-			name,
+			name: slugifiedRoomName,
+			fname: name,
 			ts: now,
 			ro: readOnly === true,
 			sysMes: readOnly !== true,
@@ -69,7 +54,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		sysMes: readOnly !== true
 	});
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, extraData);
+	const room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, slugifiedRoomName, name, owner, members, extraData);
 
 	for (const username of members) {
 		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
@@ -104,6 +89,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	}
 
 	return {
-		rid: room._id
+		rid: room._id,
+		name: slugifiedRoomName
 	};
 };

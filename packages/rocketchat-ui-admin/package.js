@@ -15,8 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'coffeescript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 
@@ -27,7 +25,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/rooms/adminRooms.html', 'client');
 	api.addFiles('client/rooms/adminRoomInfo.html', 'client');
-	api.addFiles('client/rooms/adminRoomInfo.coffee', 'client');
+	api.addFiles('client/rooms/adminRoomInfo.js', 'client');
 	api.addFiles('client/rooms/channelSettingsDefault.html', 'client');
 	api.addFiles('client/rooms/channelSettingsDefault.js', 'client');
 
@@ -37,16 +35,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/users/adminUserInfo.html', 'client');
 	api.addFiles('client/users/adminUsers.html', 'client');
 
-	// coffee files
-	api.addFiles('client/admin.coffee', 'client');
-	api.addFiles('client/adminFlex.coffee', 'client');
-	api.addFiles('client/adminInfo.coffee', 'client');
+	api.addFiles('client/admin.js', 'client');
+	api.addFiles('client/adminFlex.js', 'client');
+	api.addFiles('client/adminInfo.js', 'client');
 
-	api.addFiles('client/rooms/adminRooms.coffee', 'client');
+	api.addFiles('client/rooms/adminRooms.js', 'client');
 
-	api.addFiles('client/users/adminInviteUser.coffee', 'client');
-	api.addFiles('client/users/adminUserChannels.coffee', 'client');
-	api.addFiles('client/users/adminUsers.coffee', 'client');
+	api.addFiles('client/users/adminInviteUser.js', 'client');
+	api.addFiles('client/users/adminUserChannels.js', 'client');
+	api.addFiles('client/users/adminUsers.js', 'client');
 
 	api.addFiles('publications/adminRooms.js', 'server');
 

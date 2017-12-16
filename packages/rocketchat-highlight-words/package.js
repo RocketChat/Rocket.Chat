@@ -16,5 +16,5 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('client.js', 'client');
+	api.addFiles('client/client.js', 'client');
 });

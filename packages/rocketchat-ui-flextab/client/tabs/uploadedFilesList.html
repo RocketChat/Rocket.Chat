@@ -1,35 +1,35 @@
 <template name="uploadedFilesList">
-	<div class="content">
-		<div class="list-view uploaded-files-list">
-			<div class="title">
-				<h2>{{_ "Room_uploaded_file_list"}}</h2>
-			</div>
-			<ul class="list clearfix lines">
-				{{#each files}}
-					<li>
-						{{#if canDelete}}
-						<i class="icon-trash file-delete"></i>
-						{{/if}}
-						<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="file-download" download="">
-							<i class="icon-download file-download"></i>
-						</a>
-						<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="room-file-item file-name {{customClassForFileType}}">
-							<i class="{{getFileIcon type}}"></i>
-							<p>{{name}}</p>
-						</a>
-					</li>
-				{{/each}}
-			</ul>
-			{{#if hasMore}}
-				<div class="load-more">
-					{{> loading}}
-				</div>
-			{{/if}}
-			{{#if Template.subscriptionsReady}}
-				{{#unless hasFiles}}
-					<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
-				{{/unless}}
-			{{/if}}
+	<div class=" list-view flex-tab__header">
+		<div class="title">
+			<h2>{{_ "Room_uploaded_file_list"}}</h2>
 		</div>
+	</div>
+	<div class="uploaded-files-list list-view flex-tab__result js-list">
+		<ul class="list clearfix lines">
+			{{#each files}}
+				<li>
+					{{#if canDelete}}
+					<i class="icon-trash file-delete"></i>
+					{{/if}}
+					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="file-download" download="">
+						<i class="icon-download file-download"></i>
+					</a>
+					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="room-file-item file-name {{customClassForFileType}}">
+						<i class="{{getFileIcon type}}"></i>
+						<p>{{name}}</p>
+					</a>
+				</li>
+			{{/each}}
+		</ul>
+		{{#if hasMore}}
+			<div class="load-more">
+				{{> loading}}
+			</div>
+		{{/if}}
+		{{#if Template.subscriptionsReady}}
+			{{#unless hasFiles}}
+				<h2>{{_ "Room_uploaded_file_list_empty"}}</h2>
+			{{/unless}}
+		{{/if}}
 	</div>
 </template>

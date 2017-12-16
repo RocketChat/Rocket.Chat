@@ -1,0 +1,1 @@
+Mailer = {};//eslint-disable-line

@@ -1,4 +1,5 @@
 /* global slugify */
+import _ from 'underscore';
 
 function slug(text) {
 	text = slugify(text, '.');
@@ -92,7 +93,7 @@ function generateSuggestion(user) {
 	}
 
 	if (usernames.length === 0 || usernames[0].length === 0) {
-		usernames.push('user');
+		usernames.push(RocketChat.settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 	}
 
 	let index = 0;
