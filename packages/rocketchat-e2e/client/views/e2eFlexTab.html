@@ -8,6 +8,7 @@
 			{{#if e2eAvailable}}
 				<form>
 					<ul class="list clearfix">
+						{{#if e2eReady}}
 							{{#if established}}
 								<button class="button refresh"><span>Refresh session</span></button>
 								<button class="button end"><span>Stop E2E encryption</span></button>
@@ -20,6 +21,9 @@
 							<!-- {{#if isGroup}} -->
 								<button class="button clearGroupKey"><span>Clear session key</span></button>
 							<!-- {{/if}} -->
+						{{else}}
+							<button class="button initE2E"><span>Login to E2E</span></button>
+						{{/if}}
 					</ul>
 				</form>
 			{{else}}

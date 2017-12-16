@@ -2,6 +2,9 @@ Template.e2eFlexTab.helpers({
 	e2eAvailable() {
 		return RocketChat.E2E && RocketChat.E2E.isEnabled();
 	},
+	e2eReady() {
+		return RocketChat.E2E && RocketChat.E2E.isReady();
+	},
 	established() {
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		return e2e && e2e.established.get();
@@ -17,6 +20,13 @@ Template.e2eFlexTab.helpers({
 });
 
 Template.e2eFlexTab.events({
+	'click button.initE2E'(e, t) {
+		e.preventDefault();
+		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
+		if (e2e) {
+			RocketChat.E2E.startClient();
+		}
+	},
 	'click button.start'(e, t) {
 		e.preventDefault();
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);

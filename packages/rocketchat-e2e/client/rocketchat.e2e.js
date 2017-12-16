@@ -44,10 +44,15 @@ class E2E {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
+		this.ready = new ReactiveVar(false);
 	}
 
 	isEnabled() {
 		return this.enabled.get();
+	}
+
+	isReady() {
+		return this.ready.get();
 	}
 
 	getInstanceByRoomId(roomId) {
@@ -78,7 +83,44 @@ class E2E {
 		//   localStorage.clear();
 
 		// This is a new device for signal encryption
-		if (localStorage.getItem('RSA-PubKey') == null) {
+		var userpass = window.prompt("Enter E2E Password");
+		console.log(userpass);
+
+		var salt = "Pick anything you want. This isn't secret.";
+        var iterations = 1000;
+        var hash = "SHA-256";
+
+        var passwordString = userpass;
+
+                // First, create a PBKDF2 "key" containing the password
+        window.crypto.subtle.importKey(
+            "raw",
+            str2ab(userpass),
+            {"name": "PBKDF2"},
+            false,
+            ["deriveKey"]).
+        // Derive a key from the password
+        then(function(baseKey){
+            return window.crypto.subtle.deriveKey(
+                {
+                    "name": "PBKDF2",
+                    "salt": str2ab(Meteor.userId()),
+                    "iterations": iterations,
+                    "hash": hash
+                },
+                baseKey,
+                {"name": "AES-CBC", "length": 128}, // Key we want
+                true,                               // Extractable
+                ["encrypt", "decrypt"]              // For new key
+                );
+        }).
+        // Export it so we can display it
+        then(function(aesKey) {
+            console.log(window.crypto.subtle.exportKey("raw", aesKey));
+
+
+
+
 			promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
 			promise_key.then(function(key) {
 				crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
@@ -90,10 +132,13 @@ class E2E {
 					});
 				});
 			});
-		}		else {
-			// This is not a new device. Load keys from browser localstorage.
-			loadKeyGlobalsFromLS();
-		}
+
+
+
+
+		});
+		this.ready.set(true);
+
 	}
 }
 
@@ -138,7 +183,9 @@ Meteor.startup(function() {
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e' && !message.file) {
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 			if (e2eRoom.typeOfRoom === 'p' || e2eRoom.typeOfRoom === 'd') {
-
+				if (!RocketChat.E2E.isReady()) {
+					RocketChat.E2E.startClient();
+				}
 				// If session key exists in browser, no need to download again
 				if (e2eRoom.groupSessionKey != null) {
 					return e2eRoom.decrypt(message.msg).then((data) => {
