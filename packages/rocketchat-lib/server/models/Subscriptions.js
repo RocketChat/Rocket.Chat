@@ -128,18 +128,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdForAlert(roomId, options) {
-		const query = {
-			rid: roomId,
-			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
-			]
-		};
-
-		return this.find(query, options);
-	}
-
 	findByRoomIdAndNotUserId(roomId, userId, options) {
 		const query = {
 			rid: roomId,
@@ -431,20 +419,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateUserSubscription(rid, userId) {
-		const query = {
-			rid,
-			'u._id': userId
-		};
-		const update = {
-			$set: {
-				open: true,
-				lastActivity: new Date
-			}
-		};
-		return this.update(query, update);
-	}
-
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
 			rid: roomId,
@@ -452,29 +426,27 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				$ne: userId
 			},
 			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
+				{ alert: { $ne: true } }
 			]
 		};
 
 		const update = {
 			$set: {
-				alert: true,
-				open: true
+				alert: true
 			}
 		};
+
 		return this.update(query, update, { multi: true });
 	}
 
-	setAlertForUserSubscribed(userId, showHiddenRoom) {
+	setOpenRoomBySubscriptionId(_id) {
 		const update = {
 			$set: {
-				alert: true,
-				open: showHiddenRoom
+				open: true
 			}
 		};
 
-		return this.update({'u._id': userId}, update);
+		return this.update(_id, update);
 	}
 
 	setBlockedByRoomId(rid, blocked, blocker) {

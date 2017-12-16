@@ -108,21 +108,21 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// Update all other subscriptions to alert their owners but without incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
-	const subscriptions = RocketChat.models.Subscriptions.findByRoomIdForAlert(message.rid);
-	if (subscriptions) {
-		let userSubscribed = {};
-		let showHiddenRoom;
-		subscriptions.forEach(function(subscription) {
-			if (subscription.u._id !== message.u._id) {
-				userSubscribed = RocketChat.models.Users.findById(message.u._id);
-				showHiddenRoom = userSubscribed && userSubscribed.settings && userSubscribed.settings.preferences && userSubscribed.settings.preferences.showHiddenRoomsWhenUnreadMessages;
-				RocketChat.models.Subscriptions.setAlertForUserSubscribed(subscription.u._id, showHiddenRoom);
-			}
-		});
-	}
 
-	// Used to order subscriptions by activity
-	RocketChat.models.Subscriptions.updateUserSubscription(message.rid, message.u._id);
+	const subscriptions = RocketChat.models.Subscriptions.findByRoomIdAndNotUserId(message.rid, message.u._id).fetch();
+
+	let user = {};
+	let openRoom;
+
+	subscriptions.forEach(subscription => {
+		user = RocketChat.models.Users.findOneById(subscription.u._id);
+
+		openRoom = user && user.settings && user.settings.preferences && user.settings.preferences.showHiddenRoomsWhenUnreadMessages;
+
+		if (typeof openRoom === 'undefined' || openRoom === true) {
+			RocketChat.models.Subscriptions.setOpenRoomBySubscriptionId(subscription._id);
+		}
+	});
 
 	return message;
 
