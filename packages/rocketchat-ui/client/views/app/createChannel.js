@@ -137,6 +137,19 @@ Template.createChannel.helpers({
 				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
 			}
 		).filter((roomType) => roomType.creationTemplate);
+	},
+	groupLimitHidden() {
+		return (Template.instance().type.get() === 'p' && RocketChat.settings.get('Group_Limit_Enable')) ? '' : 'hidden';
+	},
+	groupLimitNumber() {
+		return RocketChat.settings.get('Group_Limit_Number');
+	},
+	groupLimitExceeded() {
+		const type = Template.instance().type.get();
+		const limitEnabled = RocketChat.settings.get('Group_Limit_Enable');
+		const limit = RocketChat.settings.get('Group_Limit_Number');
+		const users = Template.instance().selectedUsers.get();
+		return type === 'p' && limitEnabled && (users.length > limit - 1);
 	}
 });
 

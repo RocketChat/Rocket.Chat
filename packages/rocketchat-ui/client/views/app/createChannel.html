@@ -21,6 +21,7 @@
 							<span class="rc-switch__text">
 								{{typeLabel}}
 							</span>
+                            <span class="{{groupLimitHidden}} rc-switch__text">{{_ "Group_Limit_Warning" number=groupLimitNumber}}</span>
 						</label>
 						<span class="rc-switch__description">{{typeDescription}}</span>
 					</div>
@@ -83,6 +84,14 @@
 								{{/if}}
 							{{/with}}
 						</label>
+						{{#if groupLimitExceeded}}
+                            <div class="rc-input__error">
+                                <div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+                                </div>
+                                <div class="rc-input__error-message">{{_ "Group_limit_exceeded"}}</div>
+                            </div>
+						{{/if}}
 					</div>
 				</div>
 				{{#if tokenAccessEnabled}}

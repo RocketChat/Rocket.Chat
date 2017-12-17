@@ -51,6 +51,10 @@
 	& .rc-input__icon-svg {
 		font-size: 1.2rem;
 	}
+
+	& .hidden {
+		display: none;
+	}
 }
 
 @keyframes fadeIn {
