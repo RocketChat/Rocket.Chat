@@ -55,6 +55,10 @@ this.modal = {
 			e.preventDefault();
 			e.stopPropagation();
 
+			if (modal.config.input) {
+				return modal.confirm($('.js-modal-input').val());
+			}
+
 			modal.confirm(true);
 		} else if (e.key === 'Escape') {
 			e.preventDefault();
@@ -77,6 +81,10 @@ Template.rc_modal.helpers({
 Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
+	}
+
+	if (this.data.input) {
+		$('.js-modal-input').focus();
 	}
 
 	document.addEventListener('keydown', modal.onKeydown);
