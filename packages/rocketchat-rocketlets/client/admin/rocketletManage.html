@@ -90,34 +90,36 @@
 											<div class="setting-field">
 												{{#if $eq type 'string'}}
 													{{#if multiline}}
-														<textarea class="input-monitor" name="{{id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
+														<textarea class="input-monitor" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
 													{{else}}
-														<input class="input-monitor" type="text" name="{{id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+														<input class="input-monitor" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
 													{{/if}}
 												{{/if}}
 
 												{{#if $eq type 'relativeUrl'}}
-													<input class="input-monitor" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
+													<input class="input-monitor" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{_ i18nPlaceholder}}" {{isReadonly}}/>
 												{{/if}}
 
 												{{#if $eq type 'password'}}
-													<input class="input-monitor" type="password" name="{{id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
 												{{/if}}
 
 												{{#if $eq type 'int'}}
-													<input class="input-monitor" type="number" name="{{id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
 												{{/if}}
 
 												{{#if $eq type 'boolean'}}
-													<label><input class="input-monitor" type="radio" name="{{id}}" value="1" checked="{{$eq value true}}" {{isDisabled}}/> {{_ "True"}}</label>
-													<label><input class="input-monitor" type="radio" name="{{id}}" value="0" checked="{{$eq value false}}" {{isDisabled}}/> {{_ "False"}}</label>
+													<div class="input checkbox toggle">
+														<input type="checkbox" name="{{id}}" checked="{{$eq value true}}" />
+														<label for="{{id}}"></label>
+													</div>
 												{{/if}}
 
 												{{#if $eq type 'select'}}
 													<div class="select-arrow">
 														<i class="icon-down-open secondary-font-color"></i>
 													</div>
-													<select class="input-monitor" name="{{id}}" {{isDisabled}}>
+													<select class="input-monitor" name="{{id}}">
 														{{#each values}}
 															<option value="{{key}}" selected="{{selectedOption ../id key}}">{{_ i18nLabel}}</option>
 														{{/each}}
@@ -128,7 +130,7 @@
 													<div class="select-arrow">
 														<i class="icon-down-open secondary-font-color"></i>
 													</div>
-													<select class="input-monitor" name="{{id}}" {{isDisabled}}>
+													<select class="input-monitor" name="{{id}}">
 														{{#each languages}}
 														<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
 														{{/each}}
@@ -139,13 +141,13 @@
 													<div class="horizontal">
 														{{#if $eq editor 'color'}}
 															<div class="flex-grow-1">
-																<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off" {{isDisabled}}/>
+																<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off"/>
 																<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
 															</div>
 														{{/if}}
 														{{#if $eq editor 'expression'}}
 															<div class="flex-grow-1">
-																<input class="input-monitor" type="text" name="{{id}}" value="{{value}}" {{isDisabled}}/>
+																<input class="input-monitor" type="text" name="{{id}}" value="{{value}}"/>
 															</div>
 														{{/if}}
 														<div class="color-editor">
@@ -163,7 +165,7 @@
 												{{/if}}
 
 												{{#if $eq type 'font'}}
-													<input class="input-monitor" type="text" name="{{id}}" value="{{value}}" {{isDisabled}}/>
+													<input class="input-monitor" type="text" name="{{id}}" value="{{value}}"/>
 												{{/if}}
 
 												{{#if $eq type 'code'}}
@@ -188,7 +190,7 @@
 													{{#if hasChanges section}}
 														<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
 													{{else}}
-														<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}" {{isDisabled}}>{{_ actionText}}</button>
+														<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
 													{{/if}}
 												{{/if}}
 
