@@ -360,7 +360,7 @@ const createApi = function _createApi(enableCors) {
 		RocketChat.API.v1 = new API({
 			version: 'v1',
 			useDefaultAuth: true,
-			prettyJson: true,
+			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
 			auth: getUserAuth()
 		});
@@ -369,7 +369,7 @@ const createApi = function _createApi(enableCors) {
 	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
 		RocketChat.API.default = new API({
 			useDefaultAuth: true,
-			prettyJson: true,
+			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
 			auth: getUserAuth()
 		});

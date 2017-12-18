@@ -9,17 +9,12 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
-const DEFAULT_IDLE_TIME_LIMIT = 300000;
-
-const userHasPreferences = (user) => {
-	const userHasSettings = user.hasOwnProperty('settings');
-
-	if (!userHasSettings) {
-		return false;
+function checkedSelected(property, value, defaultValue=undefined) {
+	if (defaultValue && defaultValue.hash) {
+		defaultValue = undefined;
 	}
-
-	return user.settings.hasOwnProperty('preferences');
-};
+	return RocketChat.getUserPreference(Meteor.user(), property, defaultValue) === value;
+}
 
 Template.accountPreferences.helpers({
 	showMergedChannels() {
@@ -29,12 +24,10 @@ Template.accountPreferences.helpers({
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
 	},
 	newMessageNotification() {
-		const user = Meteor.user();
-		return (user && user.settings && user.settings.preferences && user.settings.preferences.newMessageNotification) || 'chime';
+		return RocketChat.getUserPreference(Meteor.user(), 'newMessageNotification');
 	},
 	newRoomNotification() {
-		const user = Meteor.user();
-		return (user && user.settings && user.settings.preferences && user.settings.preferences.newRoomNotification) || 'door';
+		return RocketChat.getUserPreference(Meteor.user(), 'newRoomNotification');
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -56,33 +49,15 @@ Template.accountPreferences.helpers({
 		}
 		return result;
 	},
-	checked(property, value, defaultValue) {
-		const user = Meteor.user();
-
-		if (!userHasPreferences(user)) {
-			return defaultValue;
-		}
-
-		const userPreferences = user.settings.preferences;
-
-		if (userPreferences.hasOwnProperty(property)) {
-			return value === userPreferences[property];
-		}
-
-		return defaultValue;
+	checked(property, value, defaultValue=undefined) {
+		return checkedSelected(property, value, defaultValue);
 	},
-	selected(property, value, defaultValue) {
-		const user = Meteor.user();
-		const propertyeExists = !!(user && user.settings && user.settings.preferences && user.settings.preferences[property]);
-		if (propertyeExists) {
-			return user.settings.preferences[property] === value;
-		} else {
-			return defaultValue === true;
-		}
+	selected(property, value, defaultValue=undefined) {
+		return checkedSelected(property, value, defaultValue);
 	},
 	highlights() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences['highlights'] && user.settings.preferences['highlights'].join('\n');
+		const userHighlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
+		return userHighlights ? userHighlights.join(', ') : undefined;
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -90,38 +65,30 @@ Template.accountPreferences.helpers({
 	desktopNotificationDisabled() {
 		return KonchatNotification.notificationStatus.get() === 'denied' || (window.Notification && Notification.permission === 'denied');
 	},
-	defaultAudioNotification() {
-		return notificationLabels[RocketChat.settings.get('Audio_Notifications_Default_Alert')];
-	},
-	defaultAudioNotificationValue() {
-		return RocketChat.settings.get('Audio_Notifications_Value');
-	},
 	desktopNotificationDuration() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.desktopNotificationDuration;
+		const userPref = RocketChat.getUserPreference(Meteor.user(), 'desktopNotificationDuration', 'undefined');
+		return userPref !== 'undefined' ? userPref : undefined;
 	},
 	defaultDesktopNotificationDuration() {
-		return RocketChat.settings.get('Desktop_Notifications_Duration');
+		return RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration');
 	},
 	idleTimeLimit() {
-		const user = Meteor.user();
-		return (user && user.settings && user.settings.preferences && user.settings.preferences.idleTimeLimit) || DEFAULT_IDLE_TIME_LIMIT;
+		return RocketChat.getUserPreference(Meteor.user(), 'idleTimeLimit');
 	},
 	defaultIdleTimeLimit() {
-		return DEFAULT_IDLE_TIME_LIMIT;
+		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit');
 	},
 	defaultDesktopNotification() {
-		return notificationLabels[RocketChat.settings.get('Desktop_Notifications_Default_Alert')];
+		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications')];
 	},
 	defaultMobileNotification() {
-		return notificationLabels[RocketChat.settings.get('Mobile_Notifications_Default_Alert')];
+		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications')];
 	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
 	},
 	notificationsSoundVolume() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.notificationsSoundVolume || 100;
+		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
 	}
 });
 
@@ -135,12 +102,8 @@ Template.accountPreferences.onCreated(function() {
 
 	settingsTemplate.child.push(this);
 
-	if (user && user.settings && user.settings.preferences) {
-		this.roomsListExhibitionMode = new ReactiveVar(user.settings.preferences.roomsListExhibitionMode || 'category');
-		this.useEmojis = new ReactiveVar(user.settings.preferences.desktopNotificationDuration == null || user.settings.preferences.useEmojis);
-	} else {
-		this.roomsListExhibitionMode = new ReactiveVar('category');
-	}
+	this.roomsListExhibitionMode = new ReactiveVar(RocketChat.getUserPreference(user, 'roomsListExhibitionMode'));
+	this.useEmojis = new ReactiveVar(RocketChat.getUserPreference(user, 'useEmojis'));
 
 	let instance = this;
 
@@ -177,7 +140,6 @@ Template.accountPreferences.onCreated(function() {
 		data.hideAvatars = $('#hideAvatars').find('input:checked').val();
 		data.mergeChannels = $('#mergeChannels').find('input:checked').val();
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
-		data.unreadRoomsMode = $('input[name=unreadRoomsMode]:checked').val();
 		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
 		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
@@ -201,15 +163,10 @@ Template.accountPreferences.onCreated(function() {
 		let reload = false;
 
 		// if highlights changed we need page reload
-		const user = Meteor.user();
-		if (user &&
-			user.settings &&
-			user.settings.preferences &&
-			user.settings.preferences['highlights'] &&
-			user.settings.preferences['highlights'].join('\n') !== data.highlights.join('\n')) {
+		const highlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
+		if (highlights && highlights.join('\n') !== data.highlights.join('\n')) {
 			reload = true;
 		}
-
 
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
 			localStorage.setItem('userLanguage', selectedLanguage);

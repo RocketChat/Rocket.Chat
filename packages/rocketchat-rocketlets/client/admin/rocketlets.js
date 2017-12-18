@@ -45,7 +45,7 @@ Template.rocketlets.events({
 		}
 	},
 
-	'click .install'() {
+	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/rocketlet/install');
 	}
 });
