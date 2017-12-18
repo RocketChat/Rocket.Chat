@@ -203,14 +203,18 @@ RocketChat.Livechat = {
 
 	closeRoom({ user, room, comment }) {
 		const now = new Date();
-		RocketChat.models.Rooms.closeByRoomId(room._id, {
+
+		const closeData = {
 			user: {
 				_id: user._id,
 				username: user.username
 			},
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000
-		});
+		};
+
+		RocketChat.models.Rooms.closeByRoomId(room._id, closeData);
+		RocketChat.models.LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
 			t: 'livechat-close',
@@ -373,7 +377,7 @@ RocketChat.Livechat = {
 
 	getLivechatRoomGuestInfo(room) {
 		const visitor = RocketChat.models.Users.findOneById(room.v._id);
-		const agent = RocketChat.models.Users.findOneById(room.servedBy._id);
+		const agent = RocketChat.models.Users.findOneById(room.servedBy && room.servedBy._id);
 
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
@@ -398,14 +402,21 @@ RocketChat.Livechat = {
 				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
 				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
 				customFields: visitor.livechatData
-			},
-			agent: {
+			}
+		};
+
+		if (agent) {
+			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null
+			};
+
+			if (agent.emails && agent.emails.length > 0) {
+				postData.agent.email = agent.emails[0].address;
 			}
-		};
+		}
 
 		if (room.crmData) {
 			postData.crmData = room.crmData;
@@ -416,10 +427,6 @@ RocketChat.Livechat = {
 		}
 		if (visitor.phone && visitor.phone.length > 0) {
 			postData.visitor.phone = visitor.phone[0].phoneNumber;
-		}
-
-		if (agent.emails && agent.emails.length > 0) {
-			postData.agent.email = agent.emails[0].address;
 		}
 
 		return postData;
