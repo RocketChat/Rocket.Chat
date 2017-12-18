@@ -20,17 +20,21 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return RocketChat.API.v1.success(_.pick(this.user, [
+		const me = _.pick(this.user, [
 			'_id',
 			'name',
 			'emails',
-			'status',
-			'statusConnection',
-			'username',
+		 	'status',
+		 	'statusConnection',
+		 	'username',
 			'utcOffset',
 			'active',
 			'language'
-		]));
+		]);
+
+		me.email = (this.user.emails.length) ? this.user.emails[0].address : undefined;
+
+		return RocketChat.API.v1.success(me);
 	}
 });
 
