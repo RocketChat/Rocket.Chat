@@ -1,3 +1,26 @@
+<a name="0.60.0-rc.4"></a>
+# 0.60.0-rc.4 (2017-12-18)
+
+
+### Bug Fixes
+
+- [#9169](https://github.com/RocketChat/Rocket.Chat/pull/9169) Last sent message reoccurs in textbox
+- [#9171](https://github.com/RocketChat/Rocket.Chat/pull/9171) modal data on enter and modal style for file preview
+- [#9170](https://github.com/RocketChat/Rocket.Chat/pull/9170) show oauth logins when adblock is used
+
+
+<details>
+<summary>Others</summary>
+
+- [#9146](https://github.com/RocketChat/Rocket.Chat/pull/9146) Fix test without oplog by waiting a successful login on changing users
+- [#9162](https://github.com/RocketChat/Rocket.Chat/pull/9162) Fix: Can’t login using LDAP via REST
+- [#9165](https://github.com/RocketChat/Rocket.Chat/pull/9165) Fix: Click on channel name - hover area bigger than link area
+- [#9166](https://github.com/RocketChat/Rocket.Chat/pull/9166) Fix: UI: Descenders of glyphs are cut off
+- [#9149](https://github.com/RocketChat/Rocket.Chat/pull/9149) Fix: Unread line
+</details>
+
+
+
 <a name="0.60.0-rc.3"></a>
 # 0.60.0-rc.3 (2017-12-15)
 
