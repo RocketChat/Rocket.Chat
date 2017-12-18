@@ -71,7 +71,8 @@
 	border-radius: var(--sidebar-item-radius);
 
 	background-color: var(--sidebar-item-background);
-	align-items: center;
+
+	align-items: stretch;
 
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
