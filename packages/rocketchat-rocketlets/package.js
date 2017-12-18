@@ -39,6 +39,7 @@ Package.onUse(function(api) {
 
 	// Communication pieces
 	api.addFiles([
+		'server/communication/methods.js',
 		'server/communication/rest.js',
 		'server/communication/websockets.js',
 		'server/communication/index.js'
@@ -83,8 +84,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'temporary-rocketlets-server': '0.2.2',
-	'temporary-rocketlets-ts-definition': '0.6.33'
+	'temporary-rocketlets-server': '0.2.6',
+	'temporary-rocketlets-ts-definition': '0.6.34'
 });
-
-// TODO: Save whether a rocketlet is enabled or not, that way when the server restarts it doesn't enable one that isn't enabled

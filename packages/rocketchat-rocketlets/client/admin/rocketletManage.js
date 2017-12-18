@@ -100,11 +100,26 @@ Template.rocketletManage.events({
 			const info = t.rocketlet.get();
 			info.status = result.status;
 			t.rocketlet.set(info);
+
+			if (info.status.indexOf('disabled') !== -1) {
+				$('#enabled').prop('checked', false);
+			}
 		}).catch(() => {
 			$('#enabled').prop('checked', !$('#enabled').prop('checked'));
 		}).then(() => {
 			t.processingEnabled.set(false);
 			$('#enabled').prop('disabled', false);
+		});
+	},
+
+	'click .uninstall': (e, t) => {
+		t.ready.set(false);
+
+		RocketChat.API.delete(`rocketlets/${ t.id.get() }`).then(() => {
+			FlowRouter.go('/admin/rocketlets');
+		}).catch((err) => {
+			console.warn('Error:', err);
+			t.ready.set(true);
 		});
 	},
 
