@@ -27,6 +27,7 @@ Template.rocketletManage.onCreated(function() {
 
 	RocketChat.API.get(`rocketlets/${ id }/settings`).then((result) => {
 		Object.keys(result.settings).forEach((k) => {
+			result.settings[k].value = result.settings[k].value || result.settings[k].packageValue;
 			result.settings[k].oldValue = result.settings[k].value;
 		});
 
@@ -146,8 +147,21 @@ Template.rocketletManage.events({
 		});
 	},
 
+	'click .input.checkbox label': (e, t) => {
+		const labelFor = $(e.currentTarget).attr('for');
+		const isChecked = $(`input[name="${ labelFor }"]`).prop('checked');
+
+		$(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
+
+		const setting = t.settings.get()[labelFor];
+		setting.value = !isChecked;
+
+		t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+	},
+
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
+		console.log(value);
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
