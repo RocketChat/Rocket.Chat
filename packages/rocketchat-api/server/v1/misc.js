@@ -24,15 +24,15 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'_id',
 			'name',
 			'emails',
-		 	'status',
-		 	'statusConnection',
-		 	'username',
+			'status',
+			'statusConnection',
+			'username',
 			'utcOffset',
 			'active',
 			'language'
 		]);
 
-		me.email = (this.user.emails.length) ? this.user.emails[0].address : undefined;
+		me.email = (me.emails.length) ? me.emails[0].address : undefined;
 
 		return RocketChat.API.v1.success(me);
 	}
