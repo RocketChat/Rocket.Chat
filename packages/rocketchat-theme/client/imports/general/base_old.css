@@ -4534,7 +4534,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .social-login {
+.rc-old .oauth-login {
 	margin-bottom: 16px;
 	margin-left: -4px;
 	flex-wrap: wrap;
@@ -5585,7 +5585,7 @@ body:not(.is-cordova) {
 		}
 	}
 
-	.rc-old .social-login {
+	.rc-old .oauth-login {
 		margin-bottom: 6px;
 	}
 
