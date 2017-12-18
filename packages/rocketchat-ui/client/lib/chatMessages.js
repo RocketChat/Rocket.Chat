@@ -255,6 +255,9 @@ this.ChatMessages = class ChatMessages {
 				}
 
 				Meteor.call('sendMessage', msgObject);
+
+				localStorage.setItem(`messagebox_${ rid }`, '');
+
 				return done();
 			});
 
