@@ -161,6 +161,15 @@ class API extends Restivus {
 		const loginCompatibility = (bodyParams) => {
 			// Grab the username or email that the user is logging in with
 			const {user, username, email, password, code} = bodyParams;
+
+			if (password == null) {
+				return bodyParams;
+			}
+
+			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
+				return bodyParams;
+			}
+
 			const auth = {
 				password
 			};
@@ -177,7 +186,7 @@ class API extends Restivus {
 				return bodyParams;
 			}
 
-			if (auth.password && auth.password.hashed) {
+			if (auth.password.hashed) {
 				auth.password = {
 					digest: auth.password,
 					algorithm: 'sha-256'
