@@ -51,6 +51,29 @@ Template.rocketletInstall.events({
 		}
 
 		const files = $('#upload-rocketlet')[0].files;
-		console.log('to install:', files);
+		if (!(files instanceof FileList)) {
+			return;
+		}
+
+		const data = new FormData();
+		for (let i = 0; i < files.length; i++) {
+			const f = files[0];
+
+			if (f.type === 'application/zip') {
+				data.append('rocketlet', f, f.name);
+			}
+		}
+
+		if (!data.has('rocketlet')) {
+			return;
+		}
+
+		t.isInstalling.set(true);
+		RocketChat.API.upload('rocketlets', data).then((result) => {
+			FlowRouter.go(`/admin/rocketlets/${ result.rocketlet.id }`);
+		}).catch((err) => {
+			console.warn('err', err);
+			t.isInstalling.set(false);
+		});
 	}
 });
