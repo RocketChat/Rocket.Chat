@@ -73,6 +73,10 @@
 				fill: var(--rc-color-error);
 			}
 		}
+
+		&--star-filled .rc-icon {
+			fill: currentColor;
+		}
 	}
 
 	&__icon {

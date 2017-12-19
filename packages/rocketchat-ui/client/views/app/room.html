@@ -83,18 +83,18 @@
 									{{#if error}}
 										<div class="upload-progress-text">
 											{{error}}
-											<button>
-												{{_ "close"}}
-											</button>
 										</div>
+										<button>
+											{{_ "close"}}
+										</button>
 									{{else}}
 										<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 										<div class="upload-progress-text">
-											{{name}}... {{percentage}}%
-											<button>
-												{{_ "Cancel"}}
-											</button>
+											[{{percentage}}%] {{name}}
 										</div>
+										<button>
+											{{_ "Cancel"}}
+										</button>
 									{{/if}}
 								</div>
 							{{/each}}
