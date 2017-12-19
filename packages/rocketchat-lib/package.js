@@ -9,7 +9,7 @@ Npm.depends({
 	'bad-words': '1.3.1',
 	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
-	'localforage': '1.4.2',
+	'localforage': '1.5.5',
 	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0',
 	'prom-client': '7.0.1'
@@ -32,6 +32,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
@@ -48,20 +49,36 @@ Package.onUse(function(api) {
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
+	// ROOM TYPES
+	api.addFiles('lib/RoomTypeConfig.js');
+	api.addFiles([
+		'lib/roomTypes/channels.js',
+		'lib/roomTypes/conversation.js',
+		'lib/roomTypes/direct.js',
+		'lib/roomTypes/favorite.js',
+		'lib/roomTypes/index.js',
+		'lib/roomTypes/private.js',
+		'lib/roomTypes/public.js',
+		'lib/roomTypes/unread.js'
+	]);
+
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getAvatarColor.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
-	api.addFiles('lib/roomTypesCommon.js');
+	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+
+	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -222,7 +239,10 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
-	api.export('RocketChatTabBar');
+
+	// exports
+	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');
 });
