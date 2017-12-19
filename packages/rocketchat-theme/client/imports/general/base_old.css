@@ -1739,7 +1739,7 @@
 	line-height: 40px;
 
 	& ~ .container-bars {
-		top: 95px;
+		top: 45px;
 	}
 }
 
@@ -2146,7 +2146,7 @@
 .rc-old .container-bars {
 	position: absolute;
 	z-index: 2;
-	top: 4px; /* --header-height */
+	top: 5px; /* --header-height */
 	right: 10px;
 	left: 10px;
 
