@@ -146,6 +146,10 @@ Template.createChannel.events({
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
+	'click .rc-icon'(e, t) {
+		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
 	'change [name=setTokensRequired]'(e, t) {
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
