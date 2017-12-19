@@ -131,7 +131,7 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'forward-message',
-		icon: 'forward',
+		icon: 'jump',
 		label: 'Forward',
 		context: ['message', 'message-mobile'],
 		action() {
