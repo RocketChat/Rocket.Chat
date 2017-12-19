@@ -3,7 +3,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-Template.livechatIntegrations.helpers({
+Template.livechatIntegrationWebhook.helpers({
 	webhookUrl() {
 		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		return setting && setting.value;
@@ -25,7 +25,7 @@ Template.livechatIntegrations.helpers({
 	}
 });
 
-Template.livechatIntegrations.onCreated(function() {
+Template.livechatIntegrationWebhook.onCreated(function() {
 	this.disableTest = new ReactiveVar(true);
 
 	this.autorun(() => {
@@ -36,7 +36,7 @@ Template.livechatIntegrations.onCreated(function() {
 	this.subscribe('livechat:integration');
 });
 
-Template.livechatIntegrations.events({
+Template.livechatIntegrationWebhook.events({
 	'change #webhookUrl, blur #webhookUrl'(e, instance) {
 		const setting = LivechatIntegration.findOne('Livechat_webhookUrl');
 		instance.disableTest.set(!setting || e.currentTarget.value !== setting.value);
@@ -47,7 +47,11 @@ Template.livechatIntegrations.events({
 				if (err) {
 					return handleError(err);
 				}
-				swal(t('It_works'), null, 'success');
+				modal.open({
+					title: t('It_works'),
+					type: 'success',
+					timer: 2000
+				});
 			});
 		}
 	},

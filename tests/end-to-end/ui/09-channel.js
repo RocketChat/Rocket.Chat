@@ -384,13 +384,13 @@ describe('[Channel]', ()=> {
 					channel.moveToObject();
 					sideNav.channelLeave.waitForVisible(5000);
 					sideNav.channelLeave.click();
-					Global.sweetAlert.waitForVisible(5000);
+					Global.modal.waitForVisible(5000);
 				});
 
-				it('it should show the sweet alert popup', () => {
-					Global.sweetAlert.waitForVisible(5000);
-					Global.sweetAlert.isVisible().should.be.true;
-					Global.sweetAlertConfirm.isVisible().should.be.true;
+				it('it should show the modal alert popup', () => {
+					Global.modal.waitForVisible(5000);
+					Global.modal.isVisible().should.be.true;
+					Global.modalConfirm.isVisible().should.be.true;
 				});
 
 				it('it should close the popup', () => {

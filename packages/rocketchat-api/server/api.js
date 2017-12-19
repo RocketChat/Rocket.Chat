@@ -161,6 +161,15 @@ class API extends Restivus {
 		const loginCompatibility = (bodyParams) => {
 			// Grab the username or email that the user is logging in with
 			const {user, username, email, password, code} = bodyParams;
+
+			if (password == null) {
+				return bodyParams;
+			}
+
+			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
+				return bodyParams;
+			}
+
 			const auth = {
 				password
 			};
@@ -177,7 +186,7 @@ class API extends Restivus {
 				return bodyParams;
 			}
 
-			if (auth.password && auth.password.hashed) {
+			if (auth.password.hashed) {
 				auth.password = {
 					digest: auth.password,
 					algorithm: 'sha-256'
@@ -203,7 +212,9 @@ class API extends Restivus {
 				const args = loginCompatibility(this.bodyParams);
 
 				const invocation = new DDPCommon.MethodInvocation({
-					connection: {}
+					connection: {
+						close() {}
+					}
 				});
 
 				let auth;
@@ -357,7 +368,7 @@ const createApi = function(enableCors) {
 		RocketChat.API.v1 = new API({
 			version: 'v1',
 			useDefaultAuth: true,
-			prettyJson: true,
+			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
 			auth: getUserAuth()
 		});
@@ -366,7 +377,7 @@ const createApi = function(enableCors) {
 	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
 		RocketChat.API.default = new API({
 			useDefaultAuth: true,
-			prettyJson: true,
+			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
 			auth: getUserAuth()
 		});

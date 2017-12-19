@@ -9,7 +9,7 @@ Npm.depends({
 	'bad-words': '1.3.1',
 	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
-	'localforage': '1.4.2',
+	'localforage': '1.5.5',
 	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0',
 	'prom-client': '7.0.1'
@@ -77,6 +77,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+
+	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
