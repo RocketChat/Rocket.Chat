@@ -15,17 +15,17 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to login with username and password', (done) => {
 		const query = `
-        mutation login{
-          loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
-            user {
-              username,
-							email
-            },
-            tokens {
-              accessToken
-            }
+      mutation login{
+        loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
+          user {
+            username,
+						email
+          },
+          tokens {
+            accessToken
           }
-        }`;
+        }
+      }`;
 		request.post('/graphql')
 			.send({
 				query
@@ -47,17 +47,18 @@ describe('GraphQL Tests', function() {
 	});
 	it('Is able to login with email and password', (done) => {
 		const query = `
-        mutation login{
-          loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
-            user {
-              username,
-							email
-            },
-            tokens {
-              accessToken
-            }
+      mutation login{
+        loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
+          user {
+            username,
+						email,
+						id
+          },
+          tokens {
+            accessToken
           }
-        }`;
+        }
+      }`;
 		request.post('/graphql')
 			.send({
 				query
@@ -78,16 +79,16 @@ describe('GraphQL Tests', function() {
 	});
 	it('Fails when trying to login with wrong password', (done) => {
 		const query = `
-        mutation login{
-          loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
-            user {
-              username
-            },
-            tokens {
-              accessToken
-            }
+      mutation login{
+        loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
+          user {
+            username
+          },
+          tokens {
+            accessToken
           }
-        }`;
+        }
+      }`;
 		request.post('/graphql')
 			.send({
 				query
@@ -105,21 +106,21 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to get user data (/me)', (done) => {
 		const query = `
-				{
-					me {
-						username,
-						name,
-						email,
-						channels {
-							id,
-							name
-						},
-						directMessages {
-							id,
-							name
-						}
+			{
+				me {
+					username,
+					name,
+					email,
+					channels {
+						id,
+						name
+					},
+					directMessages {
+						id,
+						name
 					}
-				}`;
+				}
+			}`;
 		request.post('/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
@@ -143,24 +144,24 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to send messages to channel', (done) => {
 		const query = `
-        mutation sendMessage{
-          sendMessage(channelId: "${ channel.id }", content: "${ message.content }") {
-						id,
-						author {
-							username,
-							name
-						},
-						content,
-						channel {
-							name,
-							id
-						},
-						reactions {
-							username,
-							icon
-						}
+      mutation sendMessage{
+        sendMessage(channelId: "${ channel.id }", content: "${ message.content }") {
+					id,
+					author {
+						username,
+						name
+					},
+					content,
+					channel {
+						name,
+						id
+					},
+					reactions {
+						username,
+						icon
 					}
-        }`;
+				}
+      }`;
 		request.post('/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
@@ -215,6 +216,45 @@ describe('GraphQL Tests', function() {
 				expect(data).to.have.property('content', message.modifiedContent);
 				expect(data).to.have.property('channel');
 				expect(data.channel).to.have.property('id', channel.id);
+			})
+			.end(done);
+	});
+	it('Can read messages from channel', (done) => {
+		const query = `
+			{
+				messages (channelId: "${ channel.id }") {
+					channel {
+						id,
+						name
+					},
+					messagesArray {
+						id,
+						author {
+							username
+						},
+						content
+					}
+				}
+			}`;
+		request.post('/graphql')
+			.set('Authorization', user.accessToken)
+			.send({
+				query
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('data');
+				expect(res.body).to.not.have.property('errors');
+				const data = res.body.data.messages;
+				expect(data).to.have.property('channel');
+				expect(data.channel).to.have.property('id', channel.id);
+
+				expect(data).to.have.property('messagesArray');
+				expect(data.messagesArray[0]).to.have.property('id', message.id);
+				expect(data.messagesArray[0]).to.have.property('author');
+				expect(data.messagesArray[0].author).to.have.property('username', user.username);
+				expect(data.messagesArray[0]).to.have.property('content', message.modifiedContent);
 			})
 			.end(done);
 	});
