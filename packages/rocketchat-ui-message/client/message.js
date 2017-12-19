@@ -281,6 +281,9 @@ Template.message.helpers({
 		}
 
 		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
+	},
+	isSnippet() {
+		return this.actionContext === 'snippeted';
 	}
 });
 
