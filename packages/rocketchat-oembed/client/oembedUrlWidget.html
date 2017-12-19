@@ -6,7 +6,11 @@
 					{{#if meta.ogImageUserGenerated}}
 						<div>
 							<a href="{{url}}" target="{{target}}">
-								<img src="{{image}}" height="200" />
+								{{#if meta.ogImage}}
+									<img src="{{meta.ogImage}}" height="200" />
+								{{else}}
+									<img src="{{image}}" height="200" />
+								{{/if}}
 							</a>
 						</div>
 					{{else}}
