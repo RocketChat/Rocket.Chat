@@ -6,7 +6,7 @@ import schema from '../../schemas/messages/addReactionToMessage.graphqls';
 
 const resolver = {
 	Mutation: {
-		addReactionToMassage: authenticated((root, { id, icon }, { user }) => {
+		addReactionToMessage: authenticated((root, { id, icon }, { user }) => {
 			return new Promise((resolve) => {
 				Meteor.runAsUser(user._id, () => {
 					Meteor.call('setReaction', id.messageId, icon, () => {
