@@ -46,7 +46,7 @@
 				}
 
 				&-bottom {
-					margin-top: 6px;
+					margin-top: 4px;
 				}
 			}
 		}
@@ -71,7 +71,8 @@
 	border-radius: var(--sidebar-item-radius);
 
 	background-color: var(--sidebar-item-background);
-	align-items: center;
+
+	align-items: stretch;
 
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
@@ -217,7 +218,7 @@
 		text-overflow: ellipsis;
 
 		font-size: 12px;
-		line-height: 12px;
+		line-height: 14px;
 
 		& > p, & code, & pre {
 			display: inline;
