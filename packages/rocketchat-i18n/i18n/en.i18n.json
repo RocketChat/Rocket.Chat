@@ -1706,6 +1706,7 @@
   "SMTP_Username": "SMTP Username",
   "snippet-message": "Snippet Message",
   "snippet-message_description": "Permission to create snippet message",
+  "Snippet_name": "Snippet name",
   "Snippet_Added": "Created on %s",
   "Snippet_Messages": "Snippet Messages",
   "Snippeted_a_message": "Created a snippet __snippetLink__",
