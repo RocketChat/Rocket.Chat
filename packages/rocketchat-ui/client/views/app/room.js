@@ -186,7 +186,23 @@ Template.room.helpers({
 			}
 		};
 
-		return ChatMessage.find(query, options);
+		let previousMessageType = '';
+		const messages = ChatMessage.find(query, options).fetch().reduce((messages, message) => {
+			if (previousMessageType === message.t &&
+					message.t === 'uj') {
+				if (messages[messages.length - 1].otherJoins) {
+					messages[messages.length - 1].otherJoins.push(message);
+				} else {
+					messages[messages.length - 1].otherJoins = [message];
+				}
+
+			} else {
+				messages.push(message);
+			}
+			previousMessageType = message.t;
+			return messages;
+		}, []);
+		return messages;
 	},
 
 	hasMore() {
