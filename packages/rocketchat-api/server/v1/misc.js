@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'language'
 		]);
 
-		me.email = me.emails.length ? me.emails[0].address : undefined;
+		me.email = me.emails.length ? me.emails.find((email) => email.verified) : undefined;
 
 		return RocketChat.API.v1.success(me);
 	}
