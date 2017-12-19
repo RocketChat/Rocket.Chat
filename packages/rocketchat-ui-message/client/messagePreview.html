@@ -1,0 +1,31 @@
+<template name="messagePreview">
+	<div class="attachment">
+		<div class="attachment-block">
+			<div class="attachment-block-border background-info-font-color"></div>
+
+			<div class="attachment-author">
+				<img src="/avatar/{{u.username}}?_dc=0">
+				<span>{{u.username}}</span>
+				<span class="time">{{date}} {{time}}</span>
+			</div>
+
+			<div class="attachment-flex">
+				<div class="attachment-flex-column-grow attachment-text">
+					<div class="body color-primary-font-color" dir="auto">
+						{{{body}}}
+
+						{{#if hasOembed}}
+							{{#each urls}}
+								{{injectIndex . @index}} {{> oembedBaseWidget}}
+							{{/each}}
+						{{/if}}
+
+						{{#each attachments}}
+							{{injectIndex . @index}} {{> messageAttachment}}
+						{{/each}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

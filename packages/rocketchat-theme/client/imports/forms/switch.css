@@ -41,6 +41,7 @@
 		display: block;
 		flex: 0 32px;
 
+		width: 32px;
 		height: 20px;
 		margin-right: 0.25rem;
 		margin-left: 0.25rem;
@@ -49,9 +50,9 @@
 		transition: all 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
 
 		border-width: 1px;
-		border-color: var(--rc-color-error-light);
+		border-color: var(--color-dark-light);
 		border-radius: 13px;
-		background-color: var(--rc-color-error);
+		background-color: var(--color-gray);
 	}
 
 	&__button-inside {

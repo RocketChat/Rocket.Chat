@@ -1,0 +1,39 @@
+.rc-checklist {
+	display: flex;
+
+	width: 100%;
+	min-height: 43px;
+	padding: 3.25rem 1rem 0 3.25rem;
+
+	&__item {
+		display: flex;
+
+		margin: 0.5rem 0;
+		padding: 0.35rem 0.5rem;
+
+		color: var(--tags-text-color);
+		background: var(--tags-background);
+		align-items: center;
+
+		&-avatar {
+			width: var(--tags-avatar-size);
+			height: var(--tags-avatar-size);
+			margin-right: 0.5rem;
+		}
+
+		&-name {
+			margin-right: 0.5rem;
+		}
+
+		&-icon {
+			&::before {
+				 margin-top: 3px;
+			}
+		}
+
+		&-switch {
+			 margin-top: 6px;
+			 margin-left: auto;
+		}
+	}
+}

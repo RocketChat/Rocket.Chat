@@ -9,6 +9,7 @@
 @import 'imports/general/forms.css';
 @import 'imports/forms/button.css';
 @import 'imports/forms/input.css';
+@import 'imports/forms/checklist.css';
 @import 'imports/forms/popup-list.css';
 @import 'imports/forms/select-avatar.css';
 @import 'imports/forms/switch.css';
@@ -38,6 +39,7 @@
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
+@import 'imports/components/modal/forward-message.css';
 
 /* RTL */
 @import 'imports/general/rtl.css';
