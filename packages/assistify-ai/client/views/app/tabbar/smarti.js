@@ -1,4 +1,4 @@
-/* globals TAPi18n */
+/* globals TAPi18n, RocketChat */
 
 Template.AssistifySmarti.onCreated(function() {
 	this.helpRequest = new ReactiveVar(null);
@@ -26,6 +26,7 @@ Template.AssistifySmarti.onDestroyed(function() {
 
 /**
  * Create Smarti (as soon as the script is loaded)
+ * @namespace SmartiWidget
  */
 Template.AssistifySmarti.onRendered(function() {
 
@@ -45,46 +46,23 @@ Template.AssistifySmarti.onRendered(function() {
 			}
 		} else {
 			instance.smartiLoaded.set(true);
-			const DBS_AI_Redlink_URL =
-				RocketChat.settings.get('DBS_AI_Redlink_URL').endsWith('/') ?
-					RocketChat.settings.get('DBS_AI_Redlink_URL') :
-					`${ RocketChat.settings.get('DBS_AI_Redlink_URL') }/`;
-
-			const SITE_URL_W_SLASH =
-				RocketChat.settings.get('Site_Url').endsWith('/') ?
-					RocketChat.settings.get('Site_Url') :
-					`${ RocketChat.settings.get('Site_Url') }/`;
-
+			const ROCKET_CHAT_URL = RocketChat.settings.get('Site_Url').replace(/\/?$/, '/');
 			// stripping only the protocol ("http") from the site-url either creates a secure or an insecure websocket connection
-			const WEBSOCKET_URL = `ws${ SITE_URL_W_SLASH.substring(4) }websocket/`;
-
-			let customSuffix = RocketChat.settings.get('Assistify_AI_DBSearch_Suffix') || '';
-			customSuffix = customSuffix.replace(/\r\n|\r|\n/g, '');
-
+			const WEBSOCKET_URL = `ws${ ROCKET_CHAT_URL.substring(4) }websocket/`;
 			const WIDGET_POSTING_TYPE = RocketChat.settings.get('Assistify_AI_Widget_Posting_Type') || 'postRichText';
-			console.log(WIDGET_POSTING_TYPE, RocketChat.settings.get('Assistify_AI_Widget_Posting_Type'));
+			const SMARTI_CLIENT_NAME = RocketChat.settings.get('Assistify_AI_Smarti_Domain');
 
 			const smartiOptions = {
 				socketEndpoint: WEBSOCKET_URL,
-				smartiEndpoint: DBS_AI_Redlink_URL,
+				clientName: SMARTI_CLIENT_NAME,
 				channel: instance.data.rid,
 				postings: {
 					type: WIDGET_POSTING_TYPE,
 					cssInputSelector: '.rc-message-box .js-input-message'
 				},
-				widget: {
-					'query.dbsearch': {
-						numOfRows: 2,
-						suffix: customSuffix
-					},
-					'query.dbsearch.keyword': {
-						numOfRows: 2,
-						suffix: customSuffix,
-						disabled: true
-					}
-				},
 				lang: 'de'
 			};
+			console.debug('Initializing Smarti with options: ', JSON.stringify(smartiOptions, null, 2));
 			instance.smarti = new window.SmartiWidget(instance.find('.smarti-widget'), smartiOptions);
 		}
 	}
@@ -131,25 +109,3 @@ Template.AssistifySmarti.helpers({
 	}
 });
 
-/**
- * Load Smarti script
- */
-RocketChat.settings.onload('DBS_AI_Redlink_URL', function() {
-	Meteor.call('getSmartiUiScript', function(error, script) {
-		if (error) {
-			console.error('could not load Smarti:', error.message);
-		} else {
-			// generate a script tag for smarti JS
-			const doc = document;
-			const smartiScriptTag = doc.createElement('script');
-			smartiScriptTag.type = 'text/javascript';
-			smartiScriptTag.async = true;
-			smartiScriptTag.defer = true;
-			smartiScriptTag.innerHTML = script;
-			// insert the smarti script tag as first script tag
-			const firstScriptTag = doc.getElementsByTagName('script')[0];
-			firstScriptTag.parentNode.insertBefore(smartiScriptTag, firstScriptTag);
-			console.debug('loaded Smarti successfully');
-		}
-	});
-});

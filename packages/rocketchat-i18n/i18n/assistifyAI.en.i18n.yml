@@ -1,23 +1,24 @@
-Assistify_AI_DBSearch_Suffix: Custom search suffix
+Assistify_AI_Source: Knowledge source
+Assistify_AI_Source_Description: Select a knowledge source.
+Assistify_AI_Source_Smarti: Smarti
+Assistify_AI_Source_APIAI: API.ai
+Assistify_AI_Reload: Refresh
+Assistify_AI_Reload_Description: Reload the settings in order to update the Smarti widget.
+Assistify_AI_Smarti_Base_URL: Smarti URL
+Assistify_AI_Smarti_Base_URL_Description: Enter the URL of your Smarti-Server (e.g. http://localhost:8080/).
+Assistify_AI_Smarti_Domain: Smarti Client-Name
+Assistify_AI_Smarti_Domain_Description: Enter your Smarti Client-Name, that belongs to this Rocket.Chat instance.
+Assistify_AI_Smarti_Auth_Token: Smarti Client-Token
+Assistify_AI_Smarti_Auth_Token_Description: Enter your Smarti Client-Token, to authorize Rocket.Chat to access Smarti.
+Assistify_AI_Widget_Posting_Type: Widget posting behaviour
+Assistify_AI_Widget_Posting_Type_Description: Select how to send Smarti suggestions.
 Assistify_AI_Widget_Posting_Type_PostRichText: post rich text
 Assistify_AI_Widget_Posting_Type_PostText: post text
 Assistify_AI_Widget_Posting_Type_SuggestText: suggest text
-Assistify_AI_Widget_Posting_Type: Widget posting behaviour
-DBS_AI_Redlink_Auth_Token: Basic-Auth token
-DBS_AI_Redlink_Domain: Domain for messages
-DBS_AI_Redlink_Hook_Token: Token for incoming Messages
-DBS_AI_Redlink_URL: URL of service
-DBS_AI_Source_APIAI: API.ai
-DBS_AI_Source_Redlink: Redlink
-DBS_AI_Source_Smarti: Smarti
-DBS_AI_Source: Knowledge source
-error-unreachable-url: URL not reachable
-Link_provided: Similar question at
-No_room_link_possible: Origin conversation was not provided within this chat. Cannot insert a link. Please pick individual messages.
-reload_Assistify: Aktualisieren
-Reload_Settings: Reload settings
-settings-reloaded-successfully: Settings have been successfully reloaded
-similar_requests: Similar requests
-similar_to: Similar to
+Assistify_AI_RocketChat_Webhook_Token: Rocket.Chat Token
+Assistify_AI_RocketChat_Webhook_Token_Description: Appoint a token for incoming Smarti messages (z.B. key123).
 Widget_could_not_load: The knowledge base cannot be displayed. We're more than sorry for that! If you're connected to the intranet (you have to in order to fetch results), please let us know so we can fix the issue!
 Widget_loading: Knowledge-base has been loading for a while now. Something seems to wrong here...
+Reload_Settings: Reload settings
+settings-reloaded-successfully: Settings have been successfully reloaded
+error-unreachable-url: URL not reachable

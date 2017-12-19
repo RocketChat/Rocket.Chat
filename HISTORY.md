@@ -1,3 +1,7 @@
+<a name="assistify-0.5.1"></a>
+## Assistify-0.5.1 (2017-12-19)
+This is a bug fix release. You may notice that your notification settings from a topic are now copied to a request. Hopefully, you are more happy responding to questions now.
+
 <a name="assistify-0.5.0"></a>
 ## Assistify-0.5.0 (2017-12-07)
 

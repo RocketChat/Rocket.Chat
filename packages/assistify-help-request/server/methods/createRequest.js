@@ -1,4 +1,3 @@
-
 Meteor.methods({
 	createRequest(name, expertise = '', openingQuestion, members = [], environment) {
 		const requestTitle = name;
@@ -34,18 +33,29 @@ Meteor.methods({
 			}
 		};
 
-		const createNotifications = function(roomId, usernames) {
+		const createNotifications = function(requestId, usernames) {
+			const request = RocketChat.models.Rooms.findOneById(requestId);
+			const expertise = RocketChat.models.Rooms.findByNameContainingAndTypes(request.expertise, 'e').fetch()[0];
+
 			usernames.forEach((username) => {
 				const user = RocketChat.models.Users.findOneByUsername(username);
-				const room = RocketChat.models.Rooms.findOneById(roomId);
-				let subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, user._id);
+				let subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(requestId, user._id);
 				if (!subscription) {
-					subscription = RocketChat.models.Subscriptions.createWithRoomAndUser(room, user);
+					subscription = RocketChat.models.Subscriptions.createWithRoomAndUser(request, user);
 				}
 
-				RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, 'all');
-				RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, 'all');
-				RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, 'all');
+				if (expertise) {
+					const expertiseSubscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(expertise._id, user._id);
+					RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, expertiseSubscription.desktopNotifications);
+					RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, expertiseSubscription.mobilePushNotifications);
+					RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, expertiseSubscription.emailNotifications);
+					RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, expertiseSubscription.audioNotifications);
+				} else {
+					// Fallback: notify everything
+					RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, 'all');
+					RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, 'all');
+					RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, 'all');
+				}
 			});
 		};
 
@@ -70,13 +80,13 @@ Meteor.methods({
 		}
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
 		if (requestTitle) {
-			RocketChat.saveRoomTopic (roomCreateResult.rid, expertise, Meteor.user());
+			RocketChat.saveRoomTopic(roomCreateResult.rid, expertise, Meteor.user());
 		}
 		createNotifications(roomCreateResult.rid, members.concat([Meteor.user().username]));
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		if (openingQuestion) {
 			const msg = openingQuestion;
-			const msgObject = { _id: Random.id(), rid:roomCreateResult.rid, msg};
+			const msgObject = {_id: Random.id(), rid: roomCreateResult.rid, msg};
 			RocketChat.sendMessage(Meteor.user(), msgObject, room);
 		}
 

@@ -1,9 +1,10 @@
 application: Application
-Asssitify_room_count: Roomcount
+Assistify_room_count: Roomcount
 Choose_experts: Choose experts
 Close_HelpRequest: Close chat
 Close_request_comment: You can add (famous) last words
 Close_request_warning: Please do close the request once you are finished answering the questions asked. This way, we can learn from what you have written.
+Deactivate_close_comment: Don't allow closing comments
 Expertise_description: A topic is an area of knowledge with known experts.
 Expertise_does_not_exist: Expertise does not exist
 Expertise_explanation: A topic is an area of knowledge. Experts join a topic in order to help others solve their question in that area.
