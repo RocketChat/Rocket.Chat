@@ -78,11 +78,15 @@ describe('[User Preferences]', ()=> {
 				preferencesMainContent.changeEmail(`EditedUserEmail${ username }@gmail.com`);
 			});
 
+			it.skip('it should put the password in the modal input', ()=> {
+				preferencesMainContent.acceptPasswordOverlay(password);
+			});
+
 			it('it should save the settings', () => {
 				preferencesMainContent.saveChanges();
 			});
 
-			it.skip('it should put the password in the sweet alert input', () => {
+			it.skip('it should put the password in the modal input', () => {
 				preferencesMainContent.acceptPasswordOverlay(password);
 			});
 

@@ -41,6 +41,7 @@
 		display: block;
 		flex: 0 32px;
 
+		width: 32px;
 		height: 20px;
 		margin-right: 0.25rem;
 		margin-left: 0.25rem;

@@ -1,11 +1,10 @@
-import _ from 'underscore';
 import toastr from 'toastr';
 
 Template.forwardMessage.helpers({
 	subscriptions() {
 		return RocketChat.models.Subscriptions.find({
 			'u._id': Meteor.userId(),
-			open: true
+			rid: { $ne: Template.instance().data.message.rid }
 		}, {
 			fields: {
 				rid: 1,
@@ -18,44 +17,48 @@ Template.forwardMessage.helpers({
 		});
 	},
 	selected() {
-		return Template.instance().forwardDestinationList;
+		return Template.instance().forwardRoomsList;
 	},
-	forwardIsDisabled() {
-		// TODO: #396
+	forwardDisabled() {
+		return Template.instance().forwardDisabled.get() ? 'disabled' : '';
 	}
 });
 
 Template.forwardMessage.onCreated(function() {
 	this.data.message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
-
-	this.forwardDestinationList = [];
+	this.forwardRoomsList = [];
+	this.forwardDisabled = new ReactiveVar(true);
 });
 
 Template.forwardMessage.events({
 	'change .rc-switch__input'(event, instance) {
 		if (event.target.checked) {
-			instance.forwardDestinationList.push(event.target.name);
+			instance.forwardRoomsList.push(event.target.name);
 		} else {
-			instance.forwardDestinationList = _.without(
-				instance.forwardDestinationList, _.findWhere(
-					instance.forwardDestinationList, event.target.name
-				)
-			);
+			instance.forwardRoomsList = instance.forwardRoomsList.filter(rid => rid !== event.target.name);
 		}
-		console.log('Selected: ', instance.forwardDestinationList);
+
+		instance.forwardDisabled.set(instance.forwardRoomsList.length === 0);
 	},
 
 	'submit .forward-message__content'(event, instance) {
 		event.preventDefault();
+		event.stopPropagation();
 
-		instance.forwardDestinationList.forEach(destination => {
-			// TODO: #396
-			console.log(destination);
+		if (instance.forwardRoomsList.length > 0) {
+			instance.forwardRoomsList.forEach(rid => {
+				Meteor.call('sendMessage', {
+					_id: Random.id(),
+					rid,
+					msg: instance.data.message.msg
+				});
+			});
 
-			// Send attached message...
-			RocketChat.sendMessage(user, message, room);
-		});
+			toastr.success(TAPi18n.__('Message_Has_Been_Forward'));
 
-		toastr.success(TAPi18n.__('Forwarded'));
+			history.back();
+		} else {
+			toastr.error(TAPi18n.__('Forward_Has_Empty_Destination'));
+		}
 	}
 });

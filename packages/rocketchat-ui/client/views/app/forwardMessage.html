@@ -22,14 +22,12 @@
 							<i class="rc-checklist__item-icon icon-hash"></i>
 						{{/if}}
 					</span>
-
 					<span class="rc-checklist__item-name"> <strong>{{this.name}}</strong></span>
-
-					<span class="rc-checklist__item-switch">{{> switch name=this._id}}</span>
+					<span class="rc-checklist__item-switch">{{> switch name=this.rid}}</span>
 				</span>
 			{{/each}}
 
-			<input class="rc-button rc-button--primary" type="submit" data-button="forward" {{forwardIsDisabled}} value="{{_ "Forward"}}">
+			<input class="rc-button rc-button--primary" type="submit" data-button="forward" value="{{_ "Forward"}}" {{forwardDisabled}}>
 		</form>
 	</section>
 </template>
