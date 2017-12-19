@@ -212,8 +212,18 @@
 		font-size: 12px;
 		line-height: normal;
 
-		& > p, & code, & pre {
+		& .emojione {
+			width: 13px !important;
+			min-width: 13px;
+			height: 13px !important;
+			min-height: 13px;
+		}
+
+		& > p,
+		& code,
+		& pre {
 			display: inline;
+
 			white-space: unset;
 		}
 
