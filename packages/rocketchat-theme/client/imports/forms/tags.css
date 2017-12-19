@@ -46,6 +46,7 @@
 	&__input {
 		margin: 0.25rem;
 		padding: 0.35rem 0.5rem;
+		width: 100%;
 
 		border: 0;
 
