@@ -36,6 +36,7 @@
 
 			&__message {
 				flex-direction: column;
+				height: var(--sidebar-item-big-thumb-size);
 
 				&-top,
 				&-bottom {
@@ -43,10 +44,6 @@
 
 					width: 100%;
 					align-items: center;
-				}
-
-				&-bottom {
-					margin-top: 4px;
 				}
 			}
 		}
@@ -181,15 +178,10 @@
 
 		margin: 0 -3px;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
 
 		&-top {
 			overflow: hidden;
-			flex: 1;
-		}
-
-		&-bottom {
-			flex: 0 0;
 		}
 	}
 
@@ -218,7 +210,7 @@
 		text-overflow: ellipsis;
 
 		font-size: 12px;
-		line-height: 14px;
+		line-height: normal;
 
 		& > p, & code, & pre {
 			display: inline;
