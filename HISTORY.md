@@ -1,8 +1,8 @@
 <a name="assistify-0.5.1"></a>
 ## Assistify-0.5.1 (2017-12-19)
 This is a bug fix release. You may notice that your notification settings from a topic are now copied to a request. Hopefully, you are more happy responding to questions now.
-
 <a name="assistify-0.5.0"></a>
+
 ## Assistify-0.5.0 (2017-12-07)
 
 ### Enhancements
@@ -19,7 +19,7 @@ This is a bug fix release. You may notice that your notification settings from a
 - Based on <a href="#0.59.3">Rocket.Chat 0.59.3</a>
 - Provide more explanation texts for dialogs
 - [#140](https://github.com/assistify/Rocket.Chat/issues/140) Provide more information for disabled users when trying to log-in
-- [#121](https://github.com/assistify/Rocket.Chat/pull/121) Improved closing of requests 
+- [#121](https://github.com/assistify/Rocket.Chat/pull/121) Improved closing of requests
 
 ### Bug Fixes
 - Properly invalidate Smarti widget on settings change
