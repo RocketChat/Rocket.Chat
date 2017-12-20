@@ -29,6 +29,10 @@
 				margin: 0 auto;
 			}
 
+			&__room-type {
+				height: var(--sidebar-item-big-height);
+			}
+
 			&__user-thumb {
 				width: var(--sidebar-item-big-thumb-size);
 				height: var(--sidebar-item-big-thumb-size);
@@ -108,6 +112,18 @@
 	&__icon {
 		font-size: 1rem;
 		fill: currentColor;
+		display: flex;
+		align-items: center;
+	}
+
+	&__room-type {
+		left: 4px;
+		font-size: 1rem;
+		fill: currentColor;
+		display: flex;
+		align-items: center;
+		position: absolute;
+		height: var(--sidebar-item-height);
 	}
 
 	&__user-thumb {
@@ -119,7 +135,7 @@
 		position: absolute;
 
 		top: 50%;
-		left: 10px;
+		left: 8px;
 
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
