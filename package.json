@@ -96,7 +96,7 @@
 		"postcss-custom-properties": "^6.2.0",
 		"postcss-import": "^11.0.0",
 		"postcss-media-minmax": "^3.0.0",
-		"postcss-nesting": "^3.0.0",
+		"postcss-nested": "^3.0.0",
 		"postcss-selector-not": "^3.0.1",
 		"proxyquire": "^1.8.0",
 		"simple-git": "^1.85.0",
