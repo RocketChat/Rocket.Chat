@@ -1,3 +1,4 @@
+
 Meteor.methods({
 	createRequest(name, expertise = '', openingQuestion, members = [], environment) {
 		const requestTitle = name;
@@ -80,13 +81,13 @@ Meteor.methods({
 		}
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
 		if (requestTitle) {
-			RocketChat.saveRoomTopic(roomCreateResult.rid, expertise, Meteor.user());
+			RocketChat.saveRoomTopic (roomCreateResult.rid, expertise, Meteor.user());
 		}
 		createNotifications(roomCreateResult.rid, members.concat([Meteor.user().username]));
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		if (openingQuestion) {
 			const msg = openingQuestion;
-			const msgObject = {_id: Random.id(), rid: roomCreateResult.rid, msg};
+			const msgObject = { _id: Random.id(), rid:roomCreateResult.rid, msg};
 			RocketChat.sendMessage(Meteor.user(), msgObject, room);
 		}
 
