@@ -105,7 +105,7 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"@google-cloud/storage": "^1.5.1",
+		"@google-cloud/storage": "^1.4.0",
 		"aws-sdk": "^2.172.0",
 		"babel-runtime": "^6.26.0",
 		"bcrypt": "^1.0.3",
