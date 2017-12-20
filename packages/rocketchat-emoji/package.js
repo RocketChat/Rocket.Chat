@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:theme',
 		'rocketchat:ui-message'
 	]);
 
