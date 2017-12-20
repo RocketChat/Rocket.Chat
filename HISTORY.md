@@ -1,3 +1,40 @@
+<a name="0.60.0-rc.5"></a>
+# 0.60.0-rc.5 (2017-12-20)
+
+
+### New Features
+
+- [#9066](https://github.com/RocketChat/Rocket.Chat/pull/9066) Make Custom oauth accept nested usernameField
+
+
+### Bug Fixes
+
+- [#9182](https://github.com/RocketChat/Rocket.Chat/pull/9182) "Use Emoji" preference not working
+- [#9168](https://github.com/RocketChat/Rocket.Chat/pull/9168) channel create scroll on small screens
+- [#9185](https://github.com/RocketChat/Rocket.Chat/pull/9185) Cursor position when reply on safari
+- [#9186](https://github.com/RocketChat/Rocket.Chat/pull/9186) Emoji size on last message preview
+- [#9040](https://github.com/RocketChat/Rocket.Chat/pull/9040) Error when user roles is missing or is invalid
+- [#9172](https://github.com/RocketChat/Rocket.Chat/pull/9172) go to replied message
+- [#9193](https://github.com/RocketChat/Rocket.Chat/pull/9193) Made welcome emails more readable
+- [#8922](https://github.com/RocketChat/Rocket.Chat/pull/8922) Make mentions and menu icons color darker
+- [#9176](https://github.com/RocketChat/Rocket.Chat/pull/9176) make the cross icon on user selection at channel creation page work
+- [#9188](https://github.com/RocketChat/Rocket.Chat/pull/9188) Unread bar position when room have announcement
+
+
+<details>
+<summary>Others</summary>
+
+- [#9197](https://github.com/RocketChat/Rocket.Chat/pull/9197) Dependencies Update
+- [#9196](https://github.com/RocketChat/Rocket.Chat/pull/9196) Fix: Rooms and users are using different avatar style
+- [#9184](https://github.com/RocketChat/Rocket.Chat/pull/9184) Fix: Snippet name to not showing in snippet list
+- [#9181](https://github.com/RocketChat/Rocket.Chat/pull/9181) Fix: UI: Descenders of glyphs are cut off
+- [#9183](https://github.com/RocketChat/Rocket.Chat/pull/9183) Fix/api me only return verified
+- [#9200](https://github.com/RocketChat/Rocket.Chat/pull/9200) Replace postcss-nesting with postcss-nested
+- [#9190](https://github.com/RocketChat/Rocket.Chat/pull/9190) Typo: German language file
+</details>
+
+
+
 <a name="0.60.0-rc.4"></a>
 # 0.60.0-rc.4 (2017-12-18)
 
