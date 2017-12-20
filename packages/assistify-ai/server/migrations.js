@@ -33,6 +33,9 @@ const settingsDbsToAssistify = function() {
 	// the next ones got new defaults, so just remove the old one
 	RocketChat.models.Settings.removeById('DBS_AI_Source');
 	RocketChat.models.Settings.removeById('reload_Assistify');
+
+	// remove obsolete settings
+	RocketChat.models.Settings.removeById('Assistify_AI_DBSearch_Suffix');
 };
 
 Meteor.startup(() => {
