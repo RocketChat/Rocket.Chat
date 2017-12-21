@@ -87,8 +87,11 @@ Object.assign(FileUpload, {
 			if (err) { throw err; }
 			callback(out.toString('base64'));
 		});
-
-		image.pipe(transformer);
+		if (/^image\/.+/.test(file.type)) {
+			image.pipe(transformer);
+		} else {
+			callback();
+		}
 	},
 
 	uploadsTransformWrite(readStream, writeStream, fileId, file) {
