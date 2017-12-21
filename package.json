@@ -128,6 +128,7 @@
 		"poplib": "^0.1.7",
 		"prom-client": "^10.2.2",
 		"semver": "^5.4.1",
+		"sharp": "^0.18.4",
 		"toastr": "^2.1.2",
 		"underscore": "^1.8.3",
 		"underscore.string": "^3.3.4",
