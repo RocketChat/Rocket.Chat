@@ -32,42 +32,46 @@ Meteor.methods({
 			title_link_download: true
 		};
 
-		if (/^image\/.+/.test(file.type)) {
-			attachment.image_url = fileUrl;
-			attachment.image_type = file.type;
-			attachment.image_size = file.size;
-			if (file.identify && file.identify.size) {
-				attachment.image_dimensions = file.identify.size;
+		Meteor.wrapAsync(FileUpload.resizeImagePreview(file, Meteor.bindEnvironment(function(base64Preview) {
+
+			if (/^image\/.+/.test(file.type)) {
+				attachment.image_preview = base64Preview;
+				attachment.image_url = fileUrl;
+				attachment.image_type = file.type;
+				attachment.image_size = file.size;
+				if (file.identify && file.identify.size) {
+					attachment.image_dimensions = file.identify.size;
+				}
+			} else if (/^audio\/.+/.test(file.type)) {
+				attachment.audio_url = fileUrl;
+				attachment.audio_type = file.type;
+				attachment.audio_size = file.size;
+			} else if (/^video\/.+/.test(file.type)) {
+				attachment.video_url = fileUrl;
+				attachment.video_type = file.type;
+				attachment.video_size = file.size;
 			}
-		} else if (/^audio\/.+/.test(file.type)) {
-			attachment.audio_url = fileUrl;
-			attachment.audio_type = file.type;
-			attachment.audio_size = file.size;
-		} else if (/^video\/.+/.test(file.type)) {
-			attachment.video_url = fileUrl;
-			attachment.video_type = file.type;
-			attachment.video_size = file.size;
-		}
 
-		const user = Meteor.user();
-		let msg = Object.assign({
-			_id: Random.id(),
-			rid: roomId,
-			ts: new Date(),
-			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type
-			},
-			groupable: false,
-			attachments: [attachment]
-		}, msgData);
+			const user = Meteor.user();
+			let msg = Object.assign({
+				_id: Random.id(),
+				rid: roomId,
+				ts: new Date(),
+				msg: '',
+				file: {
+					_id: file._id,
+					name: file.name,
+					type: file.type
+				},
+				groupable: false,
+				attachments: [attachment]
+			}, msgData);
 
-		msg = Meteor.call('sendMessage', msg);
+			msg = Meteor.call('sendMessage', msg);
 
-		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+			Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
 
-		return msg;
+			return msg;
+		})));
 	}
 });
