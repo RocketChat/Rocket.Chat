@@ -4,6 +4,7 @@ import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
+import sharp from 'sharp';
 
 Object.assign(FileUpload, {
 	handlers: {},
@@ -77,7 +78,20 @@ Object.assign(FileUpload, {
 		}));
 		return future.wait();
 	},
+	resizeImagePreview(file, callback) {
 
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+
+		const transformer = sharp().resize(50, 50).max().toBuffer(function(err, out) {
+			if (err) { throw err; }
+			callback(out.toString('base64'));
+		});
+		if (/^image\/.+/.test(file.type)) {
+			image.pipe(transformer);
+		} else {
+			callback();
+		}
+	},
 	uploadsTransformWrite(readStream, writeStream, fileId, file) {
 		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
 			return readStream.pipe(writeStream);
