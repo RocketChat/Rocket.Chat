@@ -35,20 +35,17 @@ RocketChat.Livechat = {
 	},
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
-		if (departments.count() > 0) {
-			return departments.fetch().find((dept) => {
-				if (dept.showOnRegistration) {
-					if (onlineRequired) {
-						const onlineAgents = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-						if (onlineAgents.count() > 0) {
-							return true;
-						}
-					} else {
-						return true;
-					}
-				}
-			});
-		}
+
+		return departments.fetch().find((dept) => {
+			if (!dept.showOnRegistration) {
+				return false;
+			}
+			if (!onlineRequired) {
+				return true;
+			}
+			const onlineAgents = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			return onlineAgents.count() > 0;
+		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
 		let room = RocketChat.models.Rooms.findOneById(message.rid);
