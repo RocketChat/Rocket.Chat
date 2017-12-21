@@ -2,7 +2,7 @@ Meteor.startup(function() {
 	return Tracker.autorun(function() {
 		if (RocketChat.settings.get('Message_AllowPinning')) {
 			RocketChat.TabBar.addButton({
-				groups: ['channel', 'group', 'direct'],
+				groups: ['channel', 'group', 'direct', 'groupchat'],
 				id: 'pinned-messages',
 				i18nTitle: 'Pinned_Messages',
 				icon: 'pin',

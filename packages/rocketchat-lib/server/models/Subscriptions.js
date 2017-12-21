@@ -334,8 +334,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			$set: {
 				name,
 				fname,
-				alert: true,
-				groupChat: false
+				alert: true
 			}
 		};
 
@@ -603,8 +602,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				username: user.username,
 				name: user.name
 			},
-			usernames: this.getUsernames(room, user),
-			groupChat: room.groupChat
+			usernames: this.getUsernames(room, user)
 		};
 
 		_.extend(subscription, extraData);

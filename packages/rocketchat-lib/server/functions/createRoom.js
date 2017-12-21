@@ -42,12 +42,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	extraData = Object.assign({}, extraData, {
 		ts: now,
 		ro: readOnly === true,
-		sysMes: readOnly !== true,
-		groupChat: type === 'g'
+		sysMes: readOnly !== true
 	});
-	if (type === 'g') {
-		type = 'p';
-	}
 
 	const room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, slugifiedRoomName, name, owner, members, extraData);
 
