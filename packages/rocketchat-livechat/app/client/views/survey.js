@@ -1,3 +1,5 @@
+/* globals swal */
+
 Template.survey.events({
 	'click button.skip'(e, instance) {
 		instance.$('#survey').remove();

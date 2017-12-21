@@ -29,6 +29,10 @@
 				margin: 0 auto;
 			}
 
+			&__room-type {
+				height: var(--sidebar-item-big-height);
+			}
+
 			&__user-thumb {
 				width: var(--sidebar-item-big-thumb-size);
 				height: var(--sidebar-item-big-thumb-size);
@@ -36,6 +40,7 @@
 
 			&__message {
 				flex-direction: column;
+				height: var(--sidebar-item-big-thumb-size);
 
 				&-top,
 				&-bottom {
@@ -43,10 +48,6 @@
 
 					width: 100%;
 					align-items: center;
-				}
-
-				&-bottom {
-					margin-top: 6px;
 				}
 			}
 		}
@@ -71,7 +72,8 @@
 	border-radius: var(--sidebar-item-radius);
 
 	background-color: var(--sidebar-item-background);
-	align-items: center;
+
+	align-items: stretch;
 
 	&:hover {
 		background-color: var(--sidebar-item-hover-background);
@@ -108,8 +110,20 @@
 	}
 
 	&__icon {
-		font-size: 1.25rem;
+		font-size: 1rem;
 		fill: currentColor;
+		display: flex;
+		align-items: center;
+	}
+
+	&__room-type {
+		left: 4px;
+		font-size: 1rem;
+		fill: currentColor;
+		display: flex;
+		align-items: center;
+		position: absolute;
+		height: var(--sidebar-item-height);
 	}
 
 	&__user-thumb {
@@ -121,7 +135,7 @@
 		position: absolute;
 
 		top: 50%;
-		left: 10px;
+		left: 8px;
 
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
@@ -151,12 +165,15 @@
 		display: flex;
 		flex: 0 0 var(--sidebar-item-thumb-size);
 
+		height: 20px;
+
 		margin: 0 4px;
 
 		color: var(--sidebar-item-unread-color);
 		border-radius: var(--sidebar-item-radius);
 
 		align-items: center;
+		justify-content: center;
 	}
 
 	&__body {
@@ -177,15 +194,10 @@
 
 		margin: 0 -3px;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
 
 		&-top {
 			overflow: hidden;
-			flex: 1;
-		}
-
-		&-bottom {
-			flex: 0 0;
 		}
 	}
 
@@ -214,10 +226,20 @@
 		text-overflow: ellipsis;
 
 		font-size: 12px;
-		line-height: 12px;
+		line-height: normal;
 
-		& > p, & code, & pre {
+		& .emojione {
+			width: 13px !important;
+			min-width: 13px;
+			height: 13px !important;
+			min-height: 13px;
+		}
+
+		& > p,
+		& code,
+		& pre {
 			display: inline;
+
 			white-space: unset;
 		}
 
