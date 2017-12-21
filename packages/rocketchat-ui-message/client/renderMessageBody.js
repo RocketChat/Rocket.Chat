@@ -9,7 +9,7 @@ renderMessageBody = function(msg) {
 	}
 
 	const message = RocketChat.callbacks.run('renderMessage', msg);
-
+	console.log(msg);
 	if (message.tokens && message.tokens.length > 0) {
 		for (const {token, text} of message.tokens) {
 			message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
