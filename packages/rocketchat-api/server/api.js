@@ -59,7 +59,9 @@ class API extends Restivus {
 		if (_.isObject(result)) {
 			result.success = true;
 			// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-			result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
+			if(process.env.NODE_ENV === 'development'){
+				result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
+			}
 		}
 
 		return {
