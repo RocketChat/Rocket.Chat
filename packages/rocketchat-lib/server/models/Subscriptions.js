@@ -574,13 +574,11 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	getUsernames(room, user) {
+	getUsernames(room) {
 		if (!room.usernames) {
 			return null;
 		}
-		return room.usernames.filter(function(u) {
-			return u !== user.username;
-		});
+		return room.usernames;
 	}
 
 	// INSERT
@@ -602,7 +600,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				username: user.username,
 				name: user.name
 			},
-			usernames: this.getUsernames(room, user)
+			usernames: this.getUsernames(room)
 		};
 
 		_.extend(subscription, extraData);

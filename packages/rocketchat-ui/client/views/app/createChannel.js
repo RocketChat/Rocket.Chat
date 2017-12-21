@@ -229,6 +229,7 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const isPrivate = type === 'p';
 		let method = isPrivate ? 'createPrivateGroup' : 'createChannel';
+		let route = isPrivate ? 'group' : 'channel';
 		const users = instance.selectedUsers.get().map(user => user.username);
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -241,6 +242,7 @@ Template.createChannel.events({
 			}
 			name = users.sort().join('-');
 			method = 'createGroupChat';
+			route = 'groupchat';
 		}
 		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
@@ -266,7 +268,7 @@ Template.createChannel.events({
 				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
 
-			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+			return FlowRouter.go(route, { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
 	}

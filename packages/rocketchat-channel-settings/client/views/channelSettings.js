@@ -213,6 +213,69 @@ Template.channelSettingsEditing.onCreated(function() {
 				return saveRoomSettings();
 			}
 		},
+		t2: {
+			type: 'boolean',
+			label: 'Private_Channel',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			disabled(room) {
+				return room['default'] && !RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+			},
+			message(room) {
+				if (RocketChat.authz.hasAllPermission('edit-room', room._id) && room['default']) {
+					if (!RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+						return 'Room_type_of_default_rooms_cant_be_changed';
+					}
+				}
+			},
+			canView(room) {
+				if (!['g'].includes(room.t)) {
+					return false;
+				} else if (room.t === 'g' && !RocketChat.authz.hasAllPermission('create-p')) {
+					return false;
+				}
+				Meteor.call('cleanGroupChatHistory', { roomId: room._id });
+				return true;
+			},
+			canEdit(room) {
+				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+			},
+			save(value, room) {
+				const saveRoomSettings = () => {
+					this.processing.set(true);
+					value = value ? 'p' : 'c';
+					RocketChat.callbacks.run('roomTypeChanged', room);
+					return Meteor.call('saveRoomSettings', room._id, 'roomType', value, (err) => {
+						if (err) {
+							return handleError(err);
+						}
+						this.processing.set(false);
+						return toastr.success(TAPi18n.__('Room_type_changed_successfully'));
+					});
+				};
+				if (room['default']) {
+					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+						modal.open({
+							title: t('Room_default_change_to_private_will_be_default_no_more'),
+							type: 'warning',
+							showCancelButton: true,
+							confirmButtonColor: '#DD6B55',
+							confirmButtonText: t('Yes'),
+							cancelButtonText: t('Cancel'),
+							closeOnConfirm: true,
+							html: false
+						}, function(confirmed) {
+							if (confirmed) {
+								return saveRoomSettings();
+							}
+						});
+					}
+					return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'g');
+				} else {
+					return saveRoomSettings();
+				}
+			}
+		},
 		ro: {
 			type: 'boolean',
 			label: 'Read_only',

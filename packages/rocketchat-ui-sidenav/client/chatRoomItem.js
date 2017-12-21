@@ -7,7 +7,8 @@ Template.chatRoomItem.helpers({
 			name = this.fname;
 		}
 		if (this.t === 'g') {
-			name = this.usernames.join(', ');
+			const username = this.u.username;
+			name = this.usernames.filter(function(u) { return u !== username; }).join(', ');
 		}
 
 		let unread = false;
