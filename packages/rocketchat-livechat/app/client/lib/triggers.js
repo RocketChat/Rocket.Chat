@@ -32,6 +32,8 @@ function getAgent(triggerAction) {
 			resolve({
 				username: params.name
 			});
+		} else {
+			reject('Unknown sender');
 		}
 	});
 }
