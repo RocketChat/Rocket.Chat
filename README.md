@@ -36,6 +36,7 @@
   * [Ubuntu VPS](#ubuntu-vps)
   * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
+  * [D2C.io](#d2cio)
 * [About Rocket.Chat](#about-rocketchat)
   * [On the News](#on-the-news)
   * [Features](#features)
@@ -231,6 +232,11 @@ Follow their [deployment instructions](https://docs.rocket.chat/installation/paa
 Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
 
 [![Install](https://avatars3.githubusercontent.com/u/10002920?v=4&s=100)](https://docs.rocket.chat/installation/paas-deployments/wedeploy/)
+
+## D2C.io
+Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
+
+[![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
 
 # About Rocket.Chat
 

@@ -123,6 +123,9 @@ Template.accountProfile.helpers({
 		const user = Meteor.user();
 		return user.emails && user.emails[0] && user.emails[0].verified;
 	},
+	allowRealNameChange() {
+		return RocketChat.settings.get('Accounts_AllowRealNameChange');
+	},
 	allowUsernameChange() {
 		return RocketChat.settings.get('Accounts_AllowUsernameChange') && RocketChat.settings.get('LDAP_Enable') !== true;
 	},
@@ -203,7 +206,14 @@ Template.accountProfile.onCreated(function() {
 			data.newPassword = self.password.get();
 		}
 		if (s.trim(self.realname.get()) !== user.name) {
-			data.realname = s.trim(self.realname.get());
+			if (!RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+				toastr.remove();
+				toastr.error(t('RealName_Change_Disabled'));
+				instance.clearForm();
+				return cb && cb();
+			} else {
+				data.realname = s.trim(self.realname.get());
+			}
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!RocketChat.settings.get('Accounts_AllowUsernameChange')) {
@@ -238,7 +248,7 @@ Template.accountProfile.onCreated(function() {
 			if (results) {
 				toastr.remove();
 				toastr.success(t('Profile_saved_successfully'));
-				swal.close();
+				modal.close();
 				instance.clearForm();
 				self.password.set();
 			}
@@ -327,7 +337,7 @@ Template.accountProfile.events({
 		if (!reqPass) {
 			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
 		}
-		swal({
+		modal.open({
 			title: t('Please_enter_your_password'),
 			text: t('For_your_security_you_must_enter_your_current_password_to_continue'),
 			type: 'input',
@@ -342,7 +352,7 @@ Template.accountProfile.events({
 				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
 				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
 			} else {
-				swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;
 			}
 		});
@@ -369,7 +379,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		const user = Meteor.user();
 		if (s.trim(user && user.services && user.services.password && user.services.password.bcrypt)) {
-			swal({
+			modal.open({
 				title: t('Are_you_sure_you_want_to_delete_your_account'),
 				text: t('If_you_are_sure_type_in_your_password'),
 				type: 'input',
@@ -385,18 +395,18 @@ Template.accountProfile.events({
 					Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
 						if (error) {
 							toastr.remove();
-							swal.showInputError(t('Your_password_is_wrong'));
+							modal.showInputError(t('Your_password_is_wrong'));
 						} else {
-							swal.close();
+							modal.close();
 						}
 					});
 				} else {
-					swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+					modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 					return false;
 				}
 			});
 		} else {
-			swal({
+			modal.open({
 				title: t('Are_you_sure_you_want_to_delete_your_account'),
 				text: t('If_you_are_sure_type_in_your_username'),
 				type: 'input',
@@ -412,13 +422,13 @@ Template.accountProfile.events({
 					Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
 						if (error) {
 							toastr.remove();
-							swal.showInputError(t('Your_password_is_wrong'));
+							modal.showInputError(t('Your_password_is_wrong'));
 						} else {
-							swal.close();
+							modal.close();
 						}
 					});
 				} else {
-					swal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
+					modal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
 					return false;
 				}
 			});

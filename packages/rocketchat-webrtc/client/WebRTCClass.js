@@ -427,7 +427,7 @@ class WebRTCClass {
 		}
 		const getScreen = (audioStream) => {
 			const refresh = function() {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
 				});
@@ -437,7 +437,7 @@ class WebRTCClass {
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
 					text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
@@ -738,7 +738,7 @@ class WebRTCClass {
 			icon = 'phone';
 			title = `Group audio call from ${ subscription.name }`;
 		}
-		swal({
+		modal.open({
 			title: `<i class='icon-${ icon } alert-icon success-color'></i>${ title }`,
 			text: 'Do you want to accept?',
 			html: true,

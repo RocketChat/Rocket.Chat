@@ -3,6 +3,12 @@
 
 	font-size: 18px;
 
+	&--disabled {
+		cursor: default;
+
+		color: var(--message-box-container-border-color);
+	}
+
 	&::before {
 		transition: transform 0.2s ease;
 	}
