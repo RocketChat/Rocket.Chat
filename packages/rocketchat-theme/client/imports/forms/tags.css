@@ -3,7 +3,7 @@
 
 	width: 100%;
 	min-height: 43px;
-	padding: 0 1rem 0 3.25rem;
+	padding: 0 1rem 0 2.25rem;
 
 	border-width: var(--tags-border-width);
 	border-color: var(--tags-border-color);
@@ -11,6 +11,10 @@
 	background-color: transparent;
 	flex-wrap: wrap;
 	justify-content: flex-start;
+
+	&--no-icon {
+		padding: 0;
+	}
 
 	&__tag {
 		display: flex;
@@ -22,13 +26,13 @@
 		background: var(--tags-background);
 		align-items: center;
 
-		&-avatar {
+		&-image {
 			width: var(--tags-avatar-size);
 			height: var(--tags-avatar-size);
 			margin-right: 0.5rem;
 		}
 
-		&-username {
+		&-text {
 			margin-right: 0.5rem;
 		}
 

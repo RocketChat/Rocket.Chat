@@ -73,6 +73,10 @@
 				fill: var(--rc-color-error);
 			}
 		}
+
+		&--star-filled .rc-icon {
+			fill: currentColor;
+		}
 	}
 
 	&__icon {
@@ -130,7 +134,7 @@
 
 @keyframes dropdown-show {
 	0% {
-		transform: translate(0, -2%);
+		transform: translate(0, -5%);
 
 		opacity: 0;
 	}
