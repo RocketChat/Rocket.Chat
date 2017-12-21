@@ -17,14 +17,16 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	//Import Framework
-	api.addFiles('lib/_importer.js');
-	api.addFiles('lib/importTool.js');
 	api.addFiles('server/classes/ImporterBase.js', 'server');
 	api.addFiles('server/classes/ImporterProgress.js', 'server');
-	api.addFiles('server/classes/ImporterProgressStep.js', 'server');
 	api.addFiles('server/classes/ImporterSelection.js', 'server');
 	api.addFiles('server/classes/ImporterSelectionChannel.js', 'server');
 	api.addFiles('server/classes/ImporterSelectionUser.js', 'server');
+	api.addFiles('server/classes/ImporterWebsocket.js', 'server');
+
+	api.addFiles('lib/ImporterInfo.js');
+	api.addFiles('lib/ImporterProgressStep.js');
+	api.addFiles('lib/Importers.js');
 
 	//Database models
 	api.addFiles('server/models/Imports.js', 'server');
@@ -49,7 +51,8 @@ Package.onUse(function(api) {
 	//Imports database records cleanup, mark all as not valid.
 	api.addFiles('server/startup/setImportsToInvalid.js', 'server');
 
-	api.export('Importer');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({

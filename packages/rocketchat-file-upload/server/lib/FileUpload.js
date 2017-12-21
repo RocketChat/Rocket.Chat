@@ -277,6 +277,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
+		fileData.size = parseInt(fileData.size) || 0;
+
+		// Check if the fileData matches store filter
+		const filter = this.store.getFilter();
+		if (filter && filter.check) {
+			filter.check(fileData);
+		}
+
 		const fileId = this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
