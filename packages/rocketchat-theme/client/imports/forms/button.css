@@ -1,8 +1,10 @@
 .rc-button {
+	margin: 0.5rem 0;
 	padding: var(--button-padding);
 
 	cursor: pointer;
 	transition: background-color 0.3s;
+	text-align: center;
 
 	border-width: var(--button-border-width);
 	border-style: solid;
@@ -19,10 +21,28 @@
 		background-color: var(--button-disabled-background);
 	}
 
+	&--nude {
+		border: none;
+		background: inherit;
+	}
+
+	&--invisible {
+		visibility: hidden;
+	}
+
 	&--primary {
 		color: var(--button-primary-text-color);
 		border: 0;
 		background-color: var(--button-primary-background);
+	}
+
+	&--secondary {
+		border: 0;
+	}
+
+	&--cancel {
+		color: var(--button-primary-text-color);
+		border: 0;
 	}
 
 	&--small {
@@ -62,5 +82,11 @@
 			border-top-color: white;
 			border-radius: 50%;
 		}
+	}
+}
+
+@media (width < 780px) {
+	.rc-button--full {
+		width: 100%;
 	}
 }
