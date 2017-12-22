@@ -12,5 +12,6 @@ Package.onUse(function(api) {
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('server/irc-server.js', 'server');
+	api.addFiles('server/irc-server-bridge.js', 'server');
+	api.addFiles('server/irc-server-settings.js', 'server');
 });

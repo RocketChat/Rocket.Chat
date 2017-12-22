@@ -49,14 +49,13 @@ class IrcServer {
 		this.onReceiveSQUIT = this.onReceiveSQUIT.bind(this);
 		this.onReceivePRIVMSG = this.onReceivePRIVMSG.bind(this);
 
-		// TODO: Make configurable by admin on settings
-		this.ircPort = 6667;
-		this.ircHost = 'chat.freenode.net';
-		this.serverId = 'freenode';
-		this.sendPassword = 'password';
-		this.receivePassword = 'password';
-		this.serverName = 'rocket.chat';
-		this.serverDescription = 'Federated Rocket.Chat Server';
+		this.ircPort = RocketChat.settings.get('IRC_Server_Port');
+		this.ircHost = RocketChat.settings.get('IRC_Server_Host');
+		this.serverId = RocketChat.settings.get('IRC_Server_Id');
+		this.sendPassword = RocketChat.settings.get('IRC_Server_Send_Password');
+		this.receivePassword = RocketChat.settings.get('IRC_Server_Receive_Password');
+		this.serverName = RocketChat.settings.get('IRC_Server_Name');
+		this.serverDescription = RocketChat.settings.get('IRC_Server_Description');
 
 		this.logCommands = true;
 
@@ -957,40 +956,42 @@ class IrcServer {
 	}
 }
 
-const ircServer = new IrcServer;
+if (!!RocketChat.settings.get('IRC_Server_Enabled') === true) {
+	const ircServer = new IrcServer;
 
-const IrcServerLoginer = function(login) {
-	if (login.user != null) { ircServer.loginUser(login.user); }
-	return login;
-};
+	const IrcServerLoginer = function(login) {
+		if (login.user != null) { ircServer.loginUser(login.user); }
+		return login;
+	};
 
-const IrcServerSender = (message, room) => ircServer.sendMessage(message, room);
+	const IrcServerSender = (message, room) => ircServer.sendMessage(message, room);
 
-const IrcServerRoomJoiner = function(user, room) {
-	ircServer.joinRoom(user, room);
-	return room;
-};
+	const IrcServerRoomJoiner = function(user, room) {
+		ircServer.joinRoom(user, room);
+		return room;
+	};
 
-const IrcServerRoomLeaver = function(user, room) {
-	ircServer.leaveRoom(user, room);
-	return room;
-};
+	const IrcServerRoomLeaver = function(user, room) {
+		ircServer.leaveRoom(user, room);
+		return room;
+	};
 
-const IrcServerLogoutCleanUper = function(user) {
-	ircServer.logoutUser(user);
-	return user;
-};
+	const IrcServerLogoutCleanUper = function(user) {
+		ircServer.logoutUser(user);
+		return user;
+	};
 
-const IrcServerRoomCreator = (owner, room) => ircServer.createRoom(owner, room);
+	const IrcServerRoomCreator = (owner, room) => ircServer.createRoom(owner, room);
 
-RocketChat.callbacks.add('afterValidateLogin', IrcServerLoginer, RocketChat.callbacks.priority.LOW, 'irc-server-loginer');
-RocketChat.callbacks.add('afterSaveMessage', IrcServerSender, RocketChat.callbacks.priority.LOW, 'irc-server-sender');
-RocketChat.callbacks.add('beforeJoinRoom', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner');
-RocketChat.callbacks.add('beforeCreateChannel', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner-create-channel');
-RocketChat.callbacks.add('beforeLeaveRoom', IrcServerRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-server-room-leaver');
-RocketChat.callbacks.add('afterLogoutCleanUp', IrcServerLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-server-clean-up');
-RocketChat.callbacks.add('afterCreateRoom', IrcServerRoomCreator, RocketChat.callbacks.priority.LOW, 'irc-server-room-creator');
+	RocketChat.callbacks.add('afterValidateLogin', IrcServerLoginer, RocketChat.callbacks.priority.LOW, 'irc-server-loginer');
+	RocketChat.callbacks.add('afterSaveMessage', IrcServerSender, RocketChat.callbacks.priority.LOW, 'irc-server-sender');
+	RocketChat.callbacks.add('beforeJoinRoom', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner');
+	RocketChat.callbacks.add('beforeCreateChannel', IrcServerRoomJoiner, RocketChat.callbacks.priority.LOW, 'irc-server-room-joiner-create-channel');
+	RocketChat.callbacks.add('beforeLeaveRoom', IrcServerRoomLeaver, RocketChat.callbacks.priority.LOW, 'irc-server-room-leaver');
+	RocketChat.callbacks.add('afterLogoutCleanUp', IrcServerLogoutCleanUper, RocketChat.callbacks.priority.LOW, 'irc-server-clean-up');
+	RocketChat.callbacks.add('afterCreateRoom', IrcServerRoomCreator, RocketChat.callbacks.priority.LOW, 'irc-server-room-creator');
 
-Meteor.startup(() => {
-	Meteor.setTimeout((() => ircServer.connect()), 30000);
-});
+	Meteor.startup(() => {
+		Meteor.setTimeout((() => ircServer.connect()), 30000);
+	});
+}
