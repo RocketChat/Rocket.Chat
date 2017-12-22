@@ -50,13 +50,13 @@ class IrcServer {
 		this.onReceivePRIVMSG = this.onReceivePRIVMSG.bind(this);
 
 		// TODO: Make configurable by admin on settings
-		this.ircPort = 6666;
-		this.ircHost = 'localhost';
-		this.serverId = '777';
+		this.ircPort = 6667;
+		this.ircHost = 'chat.freenode.net';
+		this.serverId = 'freenode';
 		this.sendPassword = 'password';
 		this.receivePassword = 'password';
 		this.serverName = 'rocket.chat';
-		this.serverDescription = 'federated rocketchat server';
+		this.serverDescription = 'Federated Rocket.Chat Server';
 
 		this.logCommands = true;
 
@@ -67,7 +67,7 @@ class IrcServer {
 		this.nextUid = parseInt('a00001', 36);
 
 		this.socket = new net.Socket;
-		this.socket.setNoDelay; // TODO It's really necessary?
+		this.socket.setNoDelay();
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
 		this.socket.setTimeout(90000);
@@ -249,8 +249,7 @@ class IrcServer {
 
 		this.sendUser(user);
 
-		// TODO: Review this function on models...
-		return RocketChat.models.Rooms.findByContainigUsername(user.username, {fields: { ts: 1, name: 1, t: 1 } }).forEach(room => this.joinRoom(user, room));
+		return RocketChat.models.Rooms.findWithUsername(user.username, {fields: { ts: 1, name: 1, t: 1 } }).forEach(room => this.joinRoom(user, room));
 	}
 
 	leaveRoom(user, room) {
@@ -258,8 +257,7 @@ class IrcServer {
 			return;
 		}
 
-		// TODO: Review this test expression
-		if (room.t === 'd' || this.localUsersById.includes(!user._id)) {
+		if (room.t === 'd' || !this.localUsersById.includes(user._id)) {
 			return;
 		}
 
@@ -285,8 +283,7 @@ class IrcServer {
 			return;
 		}
 
-		// TODO: Review this test expression
-		if (this.localUsersById.includes(!user._id)) {
+		if (!this.localUsersById.includes(user._id)) {
 			return;
 		}
 
@@ -379,7 +376,6 @@ class IrcServer {
 
 		while (queue.length > 0) {
 			const id = queue.pop();
-
 			disconnectedIds.push(id);
 
 			queue = queue.concat(this.ircServers[id].proxiesServers);
@@ -474,7 +470,7 @@ class IrcServer {
 		result.parameters = () => {
 			const elementResult = [];
 
-			while ((currentIndex !== command.length) && (command[currentIndex] !== ':')) {
+			while (currentIndex !== command.length && command[currentIndex] !== ':') {
 				split = command.indexOf(' ', currentIndex);
 
 				if (split === -1) {
@@ -499,10 +495,10 @@ class IrcServer {
 	}
 
 	writeCommand(command) {
-		let buffer = (command.prefix != null) ? `:${ command.prefix } ` : '';
+		let buffer = command.prefix != null ? `:${ command.prefix } ` : '';
 		buffer += command.command;
 
-		if ((command.parameters != null) && (command.parameters.length > 0)) {
+		if (command.parameters != null && command.parameters.length > 0) {
 			buffer += ` ${ command.parameters.join(' ') }`;
 		}
 
@@ -661,9 +657,10 @@ class IrcServer {
 		return this.state = 'bursting';
 	}
 
+	// eslint-disable-next-line no-unused-vars
 	onReceiveCAPAB(command) {
 		// TODO: Review it
-		return this.otherServerCapabilities = command.trailer.split(' ');
+		// return this.otherServerCapabilities = command.trailer.split(' ');
 	}
 
 	onReceiveSERVER(command) {
@@ -714,7 +711,6 @@ class IrcServer {
 	}
 
 	onReceiveSID(command) {
-		// TODO Transform to Meteor check...
 		if (!command.parameters || command.parameters.length !== 3 || command.trailer == null || command.prefix == null) {
 			this.handleMalformed(command);
 			return;
@@ -730,12 +726,10 @@ class IrcServer {
 		this.ircServers[serverId] = {serverName, proxiesServers: []};
 		this.ircServers[connectedTo].proxiesServers.push(serverId);
 
-		// TODO It's right? Return log console?
 		return console.log(`[irc-server] New server connected: ${ serverName } via ${ this.ircServers[connectedTo].serverName }`);
 	}
 
 	onReceiveSJOIN(command) {
-		// TODO Transform to Meteor check...
 		if (command.parameters.length !== 3 || command.trailer == null) {
 			this.handleMalformed(command);
 			return;
@@ -758,7 +752,7 @@ class IrcServer {
 
 		if ((room == null)) {
 			const firstOperator = _.find(users, user => user.isOperator);
-			if ((firstOperator == null)) {
+			if (firstOperator == null) {
 				return;
 			}
 
@@ -871,17 +865,17 @@ class IrcServer {
 		const [invitedUserId, channel, channelTimestamp] = command.parameters;
 
 		const invitingUser = this.ircUsers[invitingUserId];
-		if ((invitingUser == null)) {
+		if (invitingUser == null) {
 			return;
 		}
 
 		const invitedUser = this.localUsersByIrcId[invitedUserId];
-		if ((invitedUser == null)) {
+		if (invitedUser == null) {
 			return;
 		}
 
 		const room = RocketChat.models.Rooms.findOneByName(channel.substring(1));
-		if ((room == null)) {
+		if (room == null) {
 			return;
 		}
 
@@ -900,17 +894,17 @@ class IrcServer {
 		const [channel, kickedUserId] = command.parameters;
 
 		const kickingUser = this.ircUsers[kickingUserId];
-		if ((kickingUser == null)) {
+		if (kickingUser == null) {
 			return;
 		}
 
 		const kickedUser = this.localUsersByIrcId[kickedUserId];
-		if ((kickedUser == null)) {
+		if (kickedUser == null) {
 			return;
 		}
 
 		const room = RocketChat.models.Rooms.findOneByName(channel.substring(1));
-		if ((room == null)) {
+		if (room == null) {
 			return;
 		}
 

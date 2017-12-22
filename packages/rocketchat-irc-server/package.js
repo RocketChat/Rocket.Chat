@@ -5,18 +5,12 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'coffee-script': '1.9.3'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'coffeescript',
 		'underscore',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('server/irc-server.coffee', 'server');
-	api.addFiles('server/irc-server-transcript.js', 'server');
+	api.addFiles('server/irc-server.js', 'server');
 });
