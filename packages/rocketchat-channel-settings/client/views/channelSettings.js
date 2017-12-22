@@ -231,7 +231,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			canView(room) {
 				if (!['g'].includes(room.t)) {
 					return false;
-				} else if (room.t === 'g' && !RocketChat.authz.hasAllPermission('create-p')) {
+				} else if (room.t === 'g' && !RocketChat.authz.hasAllPermission('create-g')) {
 					return false;
 				}
 				Meteor.call('cleanGroupChatHistory', { roomId: room._id });

@@ -46,7 +46,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 		const user = Meteor.user();
 		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
 		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-g-room');
 	}
 
 	isGroupChat() {
@@ -54,7 +54,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 	}
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
+		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-g-room', 'add-user-to-joined-room'], room._id);
 	}
 
 	allowRoomSettingChange(room, setting) {

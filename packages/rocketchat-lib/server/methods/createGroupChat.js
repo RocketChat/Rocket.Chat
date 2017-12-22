@@ -7,7 +7,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createGroupChat' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-g')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createGroupChat' });
 		}
 
