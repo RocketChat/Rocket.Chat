@@ -1635,6 +1635,7 @@
   "room_changed_privacy": "Room type changed to: <em>__room_type__</em> by <em>__user_by__</em>",
   "room_changed_topic": "Room topic changed to: <em>__room_topic__</em> by <em>__user_by__</em>",
   "Room_default_change_to_private_will_be_default_no_more": "This is a default channel and changing it to a private group will cause it to no longer be a default channel. Do you want to proceed?",
+  "Room_history_clean": "Are you sure? Room history will be cleared.",
   "Room_description_changed_successfully": "Room description changed successfully",
   "Room_has_been_archived": "Room has been archived",
   "Room_has_been_deleted": "Room has been deleted",
