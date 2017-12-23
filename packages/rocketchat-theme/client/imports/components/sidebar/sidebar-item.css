@@ -216,6 +216,10 @@
 		line-height: 1.2rem;
 	}
 
+	&__me {
+		text-transform: lowercase;
+	}
+
 	&__last-message {
 		overflow: hidden;
 		flex: 1;
