@@ -17,6 +17,9 @@ Template.sidebarItem.helpers({
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
+	},
+	mySelf() {
+		return this.t === 'd' && this.name === Meteor.user().username;
 	}
 });
 
