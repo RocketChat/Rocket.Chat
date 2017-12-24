@@ -50,7 +50,7 @@
   "Accounts_EmailVerification_Description": "Make sure you have correct SMTP settings to use this feature",
   "Accounts_Enrollment_Email": "Enrollment Email",
   "Accounts_Enrollment_Email_Default": "<h2>Welcome to <h1>[Site_Name]</h1></h2><p>Go to [Site_URL] and try the best open source chat solution available today!</p>",
-  "Accounts_Enrollment_Email_Description": "You may use the following placeholders: <br /><ul><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
+  "Accounts_Enrollment_Email_Description": "You may use the following placeholders: <br /><ul><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li><li>[Invite_URL] for the URL including the Secret Hash (if set in Accounts).</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Welcome to [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Forget User Session on Window Close",
   "Accounts_Iframe_api_method": "Api Method",

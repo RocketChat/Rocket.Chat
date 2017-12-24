@@ -36,7 +36,7 @@
   "Accounts_EmailVerification_Description": "Um diese Funktion nutzen zu können, stellen Sie bitte sicher, dass ihre SMTP-Einstellungen korrekt sind.",
   "Accounts_Enrollment_Email": "Registrierungsmail",
   "Accounts_Enrollment_Email_Default": "<h2> Willkommen zu <h1>[Site_Name]</h1></h2><p>Besuchen Sie [Site_URL] und probieren Sie noch heute die beste Open-Source-Chat-Lösung aus.</p>",
-  "Accounts_Enrollment_Email_Description": "Sie können die folgenden Platzhalter verwenden: <br /><ul><li> [name], [fname], [lname] für den vollständigen Namen des Benutzers, Vornamen oder Nachnamen. </li><li> [email] für die E-Mail-Adresse des Benutzers. </li><li> [Site_Name] und [Site_URL] für den Anwendungsname und die URL. </li></ul>",
+  "Accounts_Enrollment_Email_Description": "Sie können die folgenden Platzhalter verwenden: <br /><ul><li> [name], [fname], [lname] für den vollständigen Namen des Benutzers, Vornamen oder Nachnamen. </li><li> [email] für die E-Mail-Adresse des Benutzers. </li><li> [Site_Name] und [Site_URL] für den Anwendungsname und die URL. </li><li> [Invite_URL] für die zusammengesetzte geheime URL (sofern gesetzt in Konten). </li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Willkommen zu [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Benutzer Session vergessen, wenn Fenster geschlossen wird",
   "Accounts_Iframe_api_method": "API-Methode",
