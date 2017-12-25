@@ -18,8 +18,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'g',
-			order: 40,
-			icon: 'lock',
+			order: 50,
 			label: 'Direct_Messages',
 			route: new GroupChatRoute()
 		});
