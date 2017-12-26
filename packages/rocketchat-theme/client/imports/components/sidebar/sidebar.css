@@ -49,7 +49,7 @@
 	&__footer {
 		width: auto;
 		height: var(--sidebar-footer-height);
-		padding: calc(var(--sidebar-footer-padding) / 2) var(--sidebar-footer-padding);
+		padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
 
 		text-align: center;
 
