@@ -10,15 +10,25 @@ import cors from 'cors';
 
 import { executableSchema } from './schema';
 
-const subscriptionPort = 3100;
+const subscriptionPort = RocketChat.settings.get('Graphql_Subscription_Port') || 3100;
 
 // the Meteor GraphQL server is an Express server
 const graphQLServer = express();
 
-graphQLServer.use(cors());
+if (RocketChat.settings.get('Graphql_CORS')) {
+	graphQLServer.use(cors());
+}
+
+graphQLServer.use(RocketChat.settings.get('Graphql_Endpoint'), (req, res, next) => {
+	if (RocketChat.settings.get('Graphql_Enabled')) {
+		next();
+	} else {
+		res.send(400, 'Graphql is not enabled in this server');
+	}
+});
 
 graphQLServer.use(
-	'/graphql',
+	RocketChat.settings.get('Graphql_Endpoint'),
 	bodyParser.json(),
 	graphqlExpress(request => {
 		return {
@@ -37,12 +47,12 @@ graphQLServer.use(
 graphQLServer.use(
 	'/graphiql',
 	graphiqlExpress({
-		endpointURL: '/graphql',
+		endpointURL: RocketChat.settings.get('Graphql_Endpoint'),
 		subscriptionsEndpoint: `ws://localhost:${ subscriptionPort }`
 	})
 );
 
-function startSubscriptionServer() {
+const startSubscriptionServer = () => {
 	SubscriptionServer.create({
 		schema: executableSchema,
 		execute,
@@ -55,10 +65,12 @@ function startSubscriptionServer() {
 	});
 
 	console.log('GraphQL Subscription server runs on port:', subscriptionPort);
-}
+};
 
 WebApp.onListening(() => {
-	startSubscriptionServer();
+	if (RocketChat.settings.get('Graphql_Enabled')) {
+		startSubscriptionServer();
+	}
 });
 
 // this binds the specified paths to the Express server running Apollo + GraphiQL
