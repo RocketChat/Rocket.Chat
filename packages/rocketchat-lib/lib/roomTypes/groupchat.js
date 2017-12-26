@@ -69,10 +69,6 @@ export class GroupChatRoomType extends RoomTypeConfig {
 		return true;
 	}
 
-	preventRenaming(/* room */) {
-		return true;
-	}
-
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
