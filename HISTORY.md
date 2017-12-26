@@ -1,3 +1,13 @@
+<a name="0.60.0-rc.7"></a>
+# 0.60.0-rc.7 (2017-12-26)
+
+
+### Bug Fixes
+
+- [#9243](https://github.com/RocketChat/Rocket.Chat/pull/9243) Move emojipicker css to theme package
+
+
+
 <a name="0.60.0-rc.6"></a>
 # 0.60.0-rc.6 (2017-12-26)
 
