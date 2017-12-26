@@ -1,3 +1,26 @@
+<a name="0.60.0-rc.6"></a>
+# 0.60.0-rc.6 (2017-12-26)
+
+
+### Bug Fixes
+
+- [#9194](https://github.com/RocketChat/Rocket.Chat/pull/9194) "Enter usernames" placeholder is cutting in "create channel" view
+- [#9206](https://github.com/RocketChat/Rocket.Chat/pull/9206) File upload not working on IE and weird on Chrome
+- [#9241](https://github.com/RocketChat/Rocket.Chat/pull/9241) Show modal with announcement
+
+
+<details>
+<summary>Others</summary>
+
+- [#9229](https://github.com/RocketChat/Rocket.Chat/pull/9229) Fix: Missing option to set user's avatar from a url
+- [#9240](https://github.com/RocketChat/Rocket.Chat/pull/9240) Fix: Unneeded warning in payload of REST API calls
+- [#9227](https://github.com/RocketChat/Rocket.Chat/pull/9227) Fix: updating last message on message edit or delete
+- [#9215](https://github.com/RocketChat/Rocket.Chat/pull/9215) Fix: Upload access control too distributed
+- [#9217](https://github.com/RocketChat/Rocket.Chat/pull/9217) Fix: Username find is matching partially
+</details>
+
+
+
 <a name="0.60.0-rc.5"></a>
 # 0.60.0-rc.5 (2017-12-20)
 
