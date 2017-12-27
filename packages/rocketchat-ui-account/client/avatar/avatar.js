@@ -11,6 +11,11 @@ Template.avatar.helpers({
 				return;
 			}
 			Session.get(`avatar_random_${ username }`);
+
+			if (this.roomIcon) {
+				username = `@${ username }`;
+			}
+
 			url = getAvatarUrlFromUsername(username);
 		}
 		return `background-image:url(${ url });`;

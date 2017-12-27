@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "Public",
   "Accounts_RegistrationForm_Secret_URL": "URL secret",
   "Accounts_RegistrationForm_SecretURL": "URL secret din formularul de înregistrare",
-  "Accounts_RegistrationForm_SecretURL_Description": "Trebuie să furnizați un șir aleatoriu care va fi adăugat la URL-ul dvs. de înregistrare. Exemplu: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Trebuie să furnizați un șir aleatoriu care va fi adăugat la URL-ul dvs. de înregistrare. Exemplu: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Cere nume pentru înregistrare",
   "Accounts_ShowFormLogin": "Arată formularul pentru autentificare",
   "Accounts_UseDefaultBlockedDomainsList": "Implicit utilizare blocate Listă Domenii",

@@ -38,18 +38,32 @@
 									{{#if allowAvatarChange}}
 										{{#if suggestions.ready}}
 											<div class="rc-select-avatar__list">
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "Username_initials" }}">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
 													{{> avatar username=initialsUsername }}
 												</div>
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_file" }}">
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
 													<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
 														{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
 													</label>
 													<input type="file" name="" value="" id="upload-avatar" style="display:none;">
 												</div>
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"  aria-label="{{_ "Use_url_for_avatar" }}">
+													<label class="rc-select-avatar__upload-label avatar">
+														{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+													</label>
+												</div>
 												{{#each service in services}}
 													{{ > avatarService service}}
 												{{/each}}
+												<div class="rc-input">
+
+													<label class="rc-input__label">
+														<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
+														<div class="rc-input__wrapper">
+															<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+														</div>
+													</label>
+												</div>
 											</div>
 										{{else}}
 											<div class="rc-select-avatar__loading">
@@ -60,14 +74,19 @@
 							</div>
 						</div>
 						<div class="rc-form-group rc-grid">
+							{{# with canChange=allowRealNameChange}}
 							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" >
+										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" {{ifThenElse canChange '' 'disabled'}}>
 									</div>
 								</label>
+								{{# unless canChange}}
+									<div class="rc-input__description">{{_ 'RealName_Change_Disabled'}}</div>
+								{{/unless}}
 							</div>
+							{{/with}}
 							{{# with canChange=allowUsernameChange}}
 							<div class="rc-input rc-w50 padded {{#if usernameInvalid}}rc-input--error{{/if}} {{#unless usernameAvaliable}}rc-input--error{{/unless}}">
 								<label class="rc-input__label">
@@ -116,7 +135,7 @@
 								{{/unless}}
 								{{#unless emailVerified}}
 									<div class="rc-input__error">
-										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_mail"}}</button>
+										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
 									</div>
 								{{/unless}}
 							</div>

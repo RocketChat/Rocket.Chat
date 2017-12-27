@@ -1,5 +1,7 @@
+import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
+
 Template.mailMessagesInstructions.helpers({
 	name() {
 		return Meteor.user().name;

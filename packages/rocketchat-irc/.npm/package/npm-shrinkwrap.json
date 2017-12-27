@@ -1,14 +1,15 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "coffee-script": {
       "version": "1.9.3",
       "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.9.3.tgz",
-      "from": "coffee-script@1.9.3"
+      "integrity": "sha1-WW5ug/z8tnxZZKtw1ES+/wrASsc="
     },
     "lru-cache": {
       "version": "2.6.5",
       "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz",
-      "from": "lru-cache@2.6.5"
+      "integrity": "sha1-5W1jVBSO3o13B7WNFDIg/QjfD9U="
     }
   }
 }
