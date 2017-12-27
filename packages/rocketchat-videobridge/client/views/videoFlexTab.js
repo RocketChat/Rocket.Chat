@@ -40,7 +40,7 @@ Template.videoFlexTab.onRendered(function() {
 		RocketChat.TabBar.updateButton('video', { class: '' });
 	};
 
-	swal({
+	modal.open({
 		title: t('Video_Conference'),
 		text: t('Start_video_call'),
 		type: 'warning',
