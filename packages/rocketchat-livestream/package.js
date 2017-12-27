@@ -17,7 +17,9 @@ Package.onUse(function(api) {
 		'client/tabBar.js'
 	], 'client');
 
-	api.addFiles('server/models/Rooms.js', 'server');
-	api.addFiles('server/functions/saveStreamingOptions.js', 'server');
-
+	api.addFiles([
+		'server/models/Rooms.js',
+		'server/functions/saveStreamingOptions.js',
+		'server/settings.js'
+	], 'server');
 });
