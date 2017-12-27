@@ -43,6 +43,21 @@ class LivechatInquiry extends RocketChat.models._Base {
 	getStatus(inquiryId) {
 		return this.findOne({'_id': inquiryId}).status;
 	}
+
+	updateVisitorStatus(token, status) {
+		const query = {
+			'v.token': token,
+			status: 'open'
+		};
+
+		const update = {
+			$set: {
+				'v.status': status
+			}
+		};
+
+		return this.update(query, update);
+	}
 }
 
 RocketChat.models.LivechatInquiry = new LivechatInquiry();
