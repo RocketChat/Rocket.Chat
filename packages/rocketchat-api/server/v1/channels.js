@@ -1,14 +1,21 @@
+import _ from 'underscore';
+
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findChannelByIdOrName({ params, checkedArchived = true }) {
+function findChannelByIdOrName({ params, checkedArchived = true, returnUsernames = false }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
+	const fields = { ...RocketChat.API.v1.defaultFieldsToExclude };
+	if (returnUsernames) {
+		delete fields.usernames;
+	}
+
 	let room;
 	if (params.roomId) {
-		room = RocketChat.models.Rooms.findOneById(params.roomId, { fields: RocketChat.API.v1.defaultFieldsToExclude });
+		room = RocketChat.models.Rooms.findOneById(params.roomId, { fields });
 	} else if (params.roomName) {
-		room = RocketChat.models.Rooms.findOneByName(params.roomName, { fields: RocketChat.API.v1.defaultFieldsToExclude });
+		room = RocketChat.models.Rooms.findOneByName(params.roomName, { fields });
 	}
 
 	if (!room || room.t !== 'c') {
@@ -419,7 +426,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();

@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
-		'underscore',
 		'webapp'
 	]);
 

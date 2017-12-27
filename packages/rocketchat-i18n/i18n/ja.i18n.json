@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "公開",
   "Accounts_RegistrationForm_Secret_URL": "非公開 URL",
   "Accounts_RegistrationForm_SecretURL": "登録フォームの非公開 URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "ランダムな文字列を入力してください。この文字列は、登録フォームの URL に使用されます。 例: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "ランダムな文字列を入力してください。この文字列は、登録フォームの URL に使用されます。 例: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "登録時にユーザー名を必須にする",
   "Accounts_ShowFormLogin": "ログインフォームを表示する",
   "Accounts_UseDefaultBlockedDomainsList": "既定のブロックされたドメイン一覧を利用する",

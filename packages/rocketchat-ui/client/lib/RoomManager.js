@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -23,14 +25,10 @@ const RoomManager = new function() {
 						return RocketChat.roomTypes.findRoom(type, name, user);
 					});
 
-					if (room == null) {
-						record.ready = true;
-					} else {
+					if (room != null) {
 						openedRooms[typeName].rid = room._id;
 
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-						record.ready = RoomHistoryManager.isLoading(room._id) === false;
-						Dep.changed();
 
 						if (openedRooms[typeName].streamActive !== true) {
 							openedRooms[typeName].streamActive = true;
@@ -67,7 +65,10 @@ const RoomManager = new function() {
 							RocketChat.Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 						}
 					}
-					return Dep.changed();
+					Meteor.defer(() => {
+						record.ready = true;
+						Dep.changed();
+					});
 				});
 			});
 		}

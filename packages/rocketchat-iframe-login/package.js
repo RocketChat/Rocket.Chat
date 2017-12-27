@@ -13,7 +13,6 @@ Package.onUse(function(api) {
 
 	api.use('rocketchat:lib');
 	api.use('accounts-base');
-	api.use('underscore');
 	api.use('ecmascript');
 	api.use('reactive-var');
 	api.use('http');
