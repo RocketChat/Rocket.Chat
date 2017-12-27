@@ -2,8 +2,11 @@
 this.roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const templateData = Blaze.getData(document.querySelector('.flex-tab'));
-		templateData && templateData.tabBar && templateData.tabBar.close();
+		const flex = document.querySelector('.flex-tab');
+		if (flex) {
+			const templateData = Blaze.getData(flex);
+			templateData && templateData.tabBar && templateData.tabBar.close();
+		}
 	}
 	RocketChat.callbacks.run('roomExit');
 	BlazeLayout.render('main', {

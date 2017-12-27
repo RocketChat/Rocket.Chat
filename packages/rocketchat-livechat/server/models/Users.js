@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 /**
  * Sets an user as (non)operator
  * @param {string} _id - User's _id
@@ -288,10 +290,13 @@ RocketChat.models.Users.getAgentInfo = function(agentId) {
 		fields: {
 			name: 1,
 			username: 1,
-			emails: 1,
 			customFields: 1
 		}
 	};
+
+	if (RocketChat.settings.get('Livechat_show_agent_email')) {
+		options.fields.emails = 1;
+	}
 
 	return this.findOne(query, options);
 };

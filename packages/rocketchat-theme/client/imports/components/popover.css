@@ -1,56 +1,31 @@
-:root {
-	--rc-popover-open: {
-		display: flex;
-
-		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		align-items: flex-start;
-	}
-	--rc-popover-open-mobile: {
-		position: fixed;
-		top: initial;
-		bottom: 0;
-		left: 0;
-
-		display: inline-block;
-
-		width: 100vw;
-		padding: 8px;
-
-		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-	}
-}
-
-.rc-popover-anchor {
-	display: none;
-
-	&:checked + .rc-popover {
-		@apply --rc-popover-open;
-	}
-}
-
 .rc-popover {
-	position: absolute;
+	position: fixed;
 	z-index: 9999;
 
+	top: 0;
+	left: 0;
+
 	display: none;
-	will-change: transform;
+
+	width: 100vw;
+	height: 100vh;
 
 	&__content {
+		position: absolute;
+
 		display: flex;
 
 		padding: var(--popover-padding);
 
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
 		white-space: nowrap;
 
-		cursor: default;
+		opacity: 0;
 
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
-	}
-
-	&--show {
-		@apply --rc-popover-open;
 	}
 
 	&__column {
@@ -90,6 +65,18 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&--alert {
+			color: var(--rc-color-error);
+
+			& .rc-icon {
+				fill: var(--rc-color-error);
+			}
+		}
+
+		&--star-filled .rc-icon {
+			fill: currentColor;
+		}
 	}
 
 	&__icon {
@@ -103,6 +90,10 @@
 
 	&__icon-element {
 		font-size: 18px;
+
+		&--star {
+			fill: none;
+		}
 	}
 
 	&__item-text {
@@ -115,12 +106,35 @@
 		margin: 1rem 0;
 
 		background: var(--popover-divider-color);
+
+		&:last-child {
+			display: none;
+		}
+	}
+}
+
+[data-message-action="unstar-message"] .rc-popover__icon-element--star {
+	fill: currentColor;
+}
+
+@media (width <= 500px) {
+	.rc-popover {
+		& .rc-popover__content {
+			top: initial !important;
+			bottom: 0;
+			left: 0 !important;
+
+			width: calc(100vw - 16px) !important;
+			margin: 8px !important;
+
+			animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
 	}
 }
 
 @keyframes dropdown-show {
 	0% {
-		transform: translate(0, -2%);
+		transform: translate(0, -5%);
 
 		opacity: 0;
 	}
@@ -146,14 +160,9 @@
 	}
 }
 
-@media (width <= 400px) {
-	.rc-popover {
-		&-anchor:checked + .rc-popover {
-			@apply --rc-popover-open-mobile;
-		}
-
-		&--show {
-			@apply --rc-popover-open-mobile;
-		}
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
 	}
 }

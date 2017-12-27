@@ -1,11 +1,11 @@
 .message-actions {
 	position: absolute;
 	top: 2px;
-	right: 2px;
+	right: 0.4rem;
 
 	display: none;
 
-	color: #6c727a;
+	color: var(--color-darkest);
 
 	font-size: 1rem;
 
@@ -17,38 +17,29 @@
 		margin: 0 0.2rem;
 
 		&:hover {
-			color: var(--color-button-primary);
-		}
-	}
-
-	&__label {
-		padding: 2px 10px;
-
-		cursor: pointer;
-
-		&:hover {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
 	&__menu {
-		fill: currentColor;
+		padding: 2px 0;
+
+		cursor: pointer;
+
+		&:hover &-icon {
+			fill: var(--rc-color-button-primary);
+		}
+
+		&-icon {
+			fill: currentColor;
+		}
 	}
 }
 
 .message {
-	&:hover,
-	&.active {
-		background-color: rgba(0, 0, 0, 0.05);
-
-		& .message-actions {
-			display: flex;
-		}
-	}
-
 	&.active {
 		& .message-actions__label {
-			color: var(--color-button-primary);
+			color: var(--rc-color-button-primary);
 		}
 	}
 
@@ -56,10 +47,11 @@
 		display: block;
 
 		visibility: hidden;
-		opacity: 0;
 
 		width: 0;
 		height: 0;
+
+		opacity: 0;
 	}
 
 	& .rc-popover {
@@ -87,6 +79,20 @@
 	padding: 0;
 }
 
-.first-unread .message-actions {
-	top: 18px;
+.rtl .message-actions {
+	right: auto;
+	left: 2px;
+}
+
+@media (width >= 500px) {
+	.message {
+		&:hover,
+		&.active {
+			background-color: rgba(0, 0, 0, 0.05);
+
+			& .message-actions {
+				display: flex;
+			}
+		}
+	}
 }

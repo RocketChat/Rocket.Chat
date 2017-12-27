@@ -1,7 +1,8 @@
 /* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
+import s from 'underscore.string';
 
-RocketChat.settings.collection.find({_id:'theme-custom-variables'}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -16,7 +17,7 @@ Template.body.onRendered(function() {
 		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			return swal({
+			modal.open({
 				title: t('Clear_all_unreads_question'),
 				type: 'warning',
 				confirmButtonText: t('Yes_clear_all'),
@@ -60,16 +61,14 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.input-message');
+		const inputMessage = $('.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
-		return inputMessage.focus();
+		inputMessage.focus();
 	});
 
 	$(document.body).on('click', function(e) {
-		const target = $(e.target);
-
 		if (e.target.tagName === 'A') {
 			const link = e.currentTarget;
 			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
@@ -83,16 +82,12 @@ Template.body.onRendered(function() {
 				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
 			}
 		}
-
-		if ([...target[0].classList].includes('rc-popover') || target.closest('[data-popover="label"], [data-popover="popover"]').length === 0 && target.data('popover') !== 'anchor') {
-			$('[data-popover="anchor"]:checked').prop('checked', false);
-		}
 	});
 
 	Tracker.autorun(function(c) {
 		const w = window;
 		const d = document;
-		const s = 'script';
+		const script = 'script';
 		const l = 'dataLayer';
 		const i = RocketChat.settings.get('GoogleTagManager_id');
 		if (Match.test(i, String) && i.trim() !== '') {
@@ -109,7 +104,7 @@ Template.body.onRendered(function() {
 				j.async = true;
 				j.src = `//www.googletagmanager.com/gtm.js?id=${ i }${ dl }`;
 				return f.parentNode.insertBefore(j, f);
-			}(w, d, s, l, i));
+			}(w, d, script, l, i));
 		}
 	});
 	if (Meteor.isCordova) {
@@ -193,13 +188,8 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		swal.setDefaults({
-			cancelButtonText: t('Cancel')
-		});
 		const user = Meteor.user();
-		const settings = user && user.settings;
-		const prefs = settings && settings.preferences;
-		if (prefs && prefs.hideUsernames != null) {
+		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});

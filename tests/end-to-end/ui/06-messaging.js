@@ -47,44 +47,44 @@ function messagingTest() {
 		});
 
 		it('it should show the confirm button', () => {
-			Global.sweetAlertConfirm.isVisible().should.be.true;
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
 		it('it should show the cancel button', () => {
-			Global.sweetAlertCancel.isVisible().should.be.true;
+			Global.modalCancel.isVisible().should.be.true;
 		});
 
 		it('it should show the file preview', () => {
-			Global.sweetAlertFilePreview.isVisible().should.be.true;
+			Global.modalFilePreview.isVisible().should.be.true;
 		});
 
 		it('it should show the confirm button', () => {
-			Global.sweetAlertConfirm.isVisible().should.be.true;
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
 		it('it should show the file title', () => {
-			Global.sweetAlertFileTitle.isVisible().should.be.true;
+			Global.modalFileTitle.isVisible().should.be.true;
 		});
 
 		it('it should show the file name input', () => {
-			Global.sweetAlertFileName.isVisible().should.be.true;
+			Global.modalFileName.isVisible().should.be.true;
 		});
 
 		it('it should fill the file name input', () => {
-			Global.sweetAlertFileName.setValue('File Name');
+			Global.modalFileName.setValue('File Name');
 		});
 
 		it('it should show the file name input', () => {
-			Global.sweetAlertFileDescription.isVisible().should.be.true;
+			Global.modalFileDescription.isVisible().should.be.true;
 		});
 
 		it('it should fill the file name input', () => {
-			Global.sweetAlertFileDescription.setValue('File Description');
+			Global.modalFileDescription.setValue('File Description');
 		});
 
 		it('it should click the confirm', () => {
-			Global.sweetAlertConfirm.click();
-			Global.sweetAlertConfirm.waitForVisible(5000, true);
+			Global.modalConfirm.click();
+			Global.modalConfirm.waitForVisible(5000, true);
 		});
 
 		it('it should show the file in the message', () => {
@@ -105,7 +105,7 @@ function messageActionsTest() {
 			});
 
 			after(() => {
-				mainContent.closeMessageActionMenu();
+				mainContent.popoverWrapper.click();
 			});
 
 			it('it should show the message action menu', () => {
@@ -195,8 +195,8 @@ function messageActionsTest() {
 
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
-					Global.sweetAlertConfirm.click();
-					Global.sweetAlertOverlay.waitForVisible(3000, true);
+					Global.modalConfirm.click();
+					Global.modalOverlay.waitForVisible(3000, true);
 				});
 
 				it('it should not show the deleted message', () => {

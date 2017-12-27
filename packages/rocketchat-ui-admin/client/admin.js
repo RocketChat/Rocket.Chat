@@ -1,5 +1,8 @@
 /*globals jscolor, i18nDefaultQuery */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
+
 const TempSettings = new Mongo.Collection(null);
 
 RocketChat.TempSettings = TempSettings;
@@ -20,11 +23,9 @@ const setFieldValue = function(settingId, value, type, editor) {
 			input.next()[0].CodeMirror.setValue(value);
 			break;
 		case 'color':
+			editor = value && value[0] === '#' ? 'color' : 'expression';
 			input.parents('.horizontal').find('select[name="color-editor"]').val(editor).change();
 			input.val(value).change();
-			if (editor === 'color') {
-				new jscolor(input); //eslint-disable-line
-			}
 			break;
 		case 'roomPick':
 			const selectedRooms = Template.instance().selectedRooms.get();
@@ -334,13 +335,16 @@ Template.admin.helpers({
 
 Template.admin.events({
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e) {
-		let value = _.trim($(e.target).val());
+		let value = s.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
 				break;
 			case 'boolean':
 				value = value === '1';
+				break;
+			case 'color':
+				$(e.target).siblings('.colorpicker-swatch').css('background-color', value);
 		}
 		TempSettings.update({
 			_id: this._id
@@ -352,8 +356,9 @@ Template.admin.events({
 		});
 	}, 500),
 	'change select[name=color-editor]'(e) {
-		const value = _.trim($(e.target).val());
+		const value = s.trim($(e.target).val());
 		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
+		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value }});
 	},
 	'click .submit .discard'() {
 		const group = FlowRouter.getParam('group');
@@ -426,12 +431,12 @@ Template.admin.events({
 			closeOnConfirm: true,
 			inputPlaceholder: TAPi18n.__('Custom_oauth_unique_name')
 		};
-		swal(config, function(inputValue) {
+		modal.open(config, function(inputValue) {
 			if (inputValue === false) {
 				return false;
 			}
 			if (inputValue === '') {
-				swal.showInputError(TAPi18n.__('Name_cant_be_empty'));
+				modal.showInputError(TAPi18n.__('Name_cant_be_empty'));
 				return false;
 			}
 			Meteor.call('addOAuthService', inputValue, function(err) {
@@ -462,7 +467,7 @@ Template.admin.events({
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: true
 		};
-		swal(config, function() {
+		modal.open(config, function() {
 			Meteor.call('removeOAuthService', name);
 		});
 	},
@@ -566,14 +571,16 @@ Template.admin.onRendered(function() {
 		SideNav.openFlex();
 	});
 	Tracker.autorun(function() {
-		const hasColor = TempSettings.findOne({
+		const hasColor = TempSettings.find({
 			group: FlowRouter.getParam('group'),
 			type: 'color'
-		}, { fields: { _id: 1 }});
+		}, { fields: { _id: 1, editor: 1 }}).fetch().length;
 		if (hasColor) {
 			Meteor.setTimeout(function() {
 				$('.colorpicker-input').each(function(index, el) {
-					new jscolor(el); //eslint-disable-line
+					if (!el._jscLinkedInstance) {
+						new jscolor(el); //eslint-disable-line
+					}
 				});
 			}, 400);
 		}

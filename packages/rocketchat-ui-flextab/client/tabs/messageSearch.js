@@ -1,14 +1,15 @@
+import _ from 'underscore';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'jump-to-search-message',
-		icon: 'right-hand',
+		icon: 'jump',
 		label: 'Jump_to_message',
 		context: [
 			'search'
 		],
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.hideDropDown();
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
@@ -46,7 +47,7 @@ Template.messageSearch.helpers({
 	},
 
 	message() {
-		return _.extend(this, { customClass: 'search' });
+		return _.extend(this, { customClass: 'search', actionContext: 'search'});
 	}
 });
 
@@ -72,23 +73,6 @@ Template.messageSearch.events({
 		t.limit.set(20);
 		return t.search();
 	}, 500),
-
-	'click .message-cog'(e, t) {
-		e.stopPropagation();
-		e.preventDefault();
-		const message_id = $(e.currentTarget).closest('.message').attr('id');
-		const searchResult = t.searchResult.get();
-		RocketChat.MessageAction.hideDropDown();
-		t.$(`\#${ message_id } .message-dropdown`).remove();
-		if (searchResult) {
-			const message = _.findWhere(searchResult.messages, { _id: message_id });
-			const actions = RocketChat.MessageAction.getButtons(message, 'search');
-			const el = Blaze.toHTMLWithData(Template.messageDropdown, { actions });
-			t.$(`\#${ message_id } .message-cog-container`).append(el);
-			const dropDown = t.$(`\#${ message_id } .message-dropdown`);
-			return dropDown.show();
-		}
-	},
 
 	'click .load-more button'(e, t) {
 		t.limit.set(t.limit.get() + 20);
