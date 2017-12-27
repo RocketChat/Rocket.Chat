@@ -1,3 +1,18 @@
+<a name="0.60.0-rc.8"></a>
+# 0.60.0-rc.8 (2017-12-27)
+
+
+<details>
+<summary>Others</summary>
+
+- [#9248](https://github.com/RocketChat/Rocket.Chat/pull/9248) Add curl, its missing on worker nodes so has to be explicitly added
+- [#9257](https://github.com/RocketChat/Rocket.Chat/pull/9257) Do not change room icon color when room is unread
+- [#9247](https://github.com/RocketChat/Rocket.Chat/pull/9247) Fix: Sidebar item on rtl and small devices
+- [#9256](https://github.com/RocketChat/Rocket.Chat/pull/9256) LingoHub based on develop
+</details>
+
+
+
 <a name="0.60.0-rc.7"></a>
 # 0.60.0-rc.7 (2017-12-26)
 
