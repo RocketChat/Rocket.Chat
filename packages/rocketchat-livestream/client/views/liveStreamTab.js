@@ -8,18 +8,20 @@ Template.liveStreamTab.helpers({
 		} else {
 			const parsedUrl = streamingOptions.url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 			let source = streamingOptions.url;
-			if (parsedUrl[3].includes('youtu')) {
-				source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
-			} else if (parsedUrl[3].includes('vimeo')) {
-				source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
-			} else if (parsedUrl[3].includes('twitch')) {
-				source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
+			if (parsedUrl != null) {
+				if (parsedUrl[3].includes('youtu')) {
+					source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
+				} else if (parsedUrl[3].includes('vimeo')) {
+					source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
+				} else if (parsedUrl[3].includes('twitch')) {
+					source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
+				}
+				// @TODO add support for other urls
+				return source;
+			} else {
+				return '';
 			}
-			// @TODO add support for other urls
-
-			return source;
 		}
-
 	},
 	hasSource() {
 		return !!Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().url !== '';

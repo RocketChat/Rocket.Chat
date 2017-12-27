@@ -5,7 +5,7 @@ Meteor.startup(function() {
 				groups: ['channel', 'group'],
 				id: 'livestream',
 				i18nTitle: 'Livestream',
-				icon: 'play',
+				icon: 'podcast',
 				template: 'liveStreamTab',
 				order: 3
 			});
