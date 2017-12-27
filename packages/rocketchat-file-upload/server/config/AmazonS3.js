@@ -1,5 +1,6 @@
 /* globals FileUpload */
 
+import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 

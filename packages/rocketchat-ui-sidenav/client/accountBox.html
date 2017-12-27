@@ -6,7 +6,11 @@
 					{{> avatar username=username}}
 				</div>
 				<div class="sidebar__account-data">
-					<h3 class="sidebar__account-username" data-username="{{username}}">@{{username}}</h3>
+					{{#if fname}}
+						<h3 class="sidebar__account-username" data-username="{{username}}">{{fname}}</h3>
+					{{else}}
+						<h3 class="sidebar__account-username" data-username="{{username}}">@{{username}}</h3>
+					{{/if}}
 					<div class="sidebar__account-status">
 						<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
 						<div class="sidebar__account-visual-status">{{visualStatus}}</div>

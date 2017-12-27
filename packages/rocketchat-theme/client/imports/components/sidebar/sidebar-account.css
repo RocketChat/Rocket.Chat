@@ -61,6 +61,7 @@
 
 		font-size: var(--sidebar-account-username-size);
 		font-weight: var(--sidebar-account-username-weight);
+		line-height: calc(var(--sidebar-account-username-size) + 0.1rem);
 	}
 
 	&-visual-status {

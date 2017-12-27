@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
@@ -7,7 +9,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	} else if (message.editedAt) {
-		// skips this callback if the message was edited
+
+		// only updates last message if it was edited (skip rest of callback)
+		if (RocketChat.settings.get('Store_Last_Message') && (!room.lastMessage || room.lastMessage._id === message._id)) {
+			RocketChat.models.Rooms.setLastMessageById(message.rid, message);
+		}
 		return message;
 	}
 
@@ -61,7 +67,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 
 		highlights.forEach(function(user) {
-			if (user && user.settings && user.settings.preferences && messageContainsHighlight(message, user.settings.preferences.highlights)) {
+			const userHighlights = RocketChat.getUserPreference(user, 'highlights');
+			if (userHighlights && messageContainsHighlight(message, userHighlights)) {
 				if (user._id !== message.u._id) {
 					highlightsIds.push(user._id);
 				}
@@ -100,7 +107,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	RocketChat.models.Rooms.incMsgCountAndSetLastMessageTimestampById(message.rid, 1, message.ts);
+	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
