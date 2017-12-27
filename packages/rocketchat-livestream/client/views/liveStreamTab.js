@@ -12,7 +12,7 @@ Template.liveStreamTab.helpers({
 				source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
 			} else if (parsedUrl[3].includes('vimeo')) {
 				source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
-			} else if (parsedUrl[3].includes('twitch')) {
+			} else if (parsedUrl[3].includes('twitch') && !parsedUrl[5].includes('embed')) {
 				source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
 			} else {
 				// @TODO add support for other urls
