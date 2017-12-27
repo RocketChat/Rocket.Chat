@@ -4,9 +4,6 @@ import zlib from 'zlib';
 import util from 'util';
 
 import { FileUploadClass } from '../lib/FileUpload';
-import { Cookies } from 'meteor/ostrio:cookies';
-
-const cookie = new Cookies();
 
 const logger = new Logger('FileUpload');
 
@@ -126,46 +123,15 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	}
 };
 
-const onRead = function(fileId, file, req, res) {
-	if (RocketChat.settings.get('FileUpload_ProtectFiles')) {
-		let uid;
-		let token;
-
-		if (req && req.headers && req.headers.cookie) {
-			const rawCookies = req.headers.cookie;
-
-			if (rawCookies) {
-				uid = cookie.get('rc_uid', rawCookies) ;
-				token = cookie.get('rc_token', rawCookies);
-			}
-		}
-
-		if (!uid) {
-			uid = req.query.rc_uid;
-			token = req.query.rc_token;
-		}
-
-		if (!uid || !token || !RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)) {
-			res.writeHead(403);
-			return false;
-		}
-	}
-
-	res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
-	return true;
-};
-
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
-	collectionName: 'rocketchat_uploads',
-	onRead
+	collectionName: 'rocketchat_uploads'
 });
 
 // DEPRECATED: backwards compatibility (remove)
 UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
 
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
-	collectionName: 'rocketchat_avatars',
-	onRead
+	collectionName: 'rocketchat_avatars'
 });
 
 
