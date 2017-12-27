@@ -124,6 +124,7 @@
 		align-items: center;
 		position: absolute;
 		height: var(--sidebar-item-height);
+		color: var(--sidebar-item-text-color);
 	}
 
 	&__user-thumb {
@@ -286,7 +287,11 @@
 		left: 0;
 	}
 
-	&__user-status,
+	&__user-status {
+		right: 8px;
+		left: initial;
+	}
+
 	&__room-type {
 		right: 4px;
 		left: initial;
