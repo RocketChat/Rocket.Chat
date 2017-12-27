@@ -1,5 +1,7 @@
 import _ from 'underscore';
 
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken) {
 		const info = {
@@ -8,6 +10,7 @@ Meteor.methods({
 			color: null,
 			registrationForm: null,
 			room: null,
+			visitor: null,
 			triggers: [],
 			departments: [],
 			allowSwitchingDepartments: null,
@@ -34,6 +37,18 @@ Meteor.methods({
 
 		if (room && room.length > 0) {
 			info.room = room[0];
+		}
+
+		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {
+			fields: {
+				name: 1,
+				username: 1,
+				visitorEmails: 1
+			}
+		});
+
+		if (room) {
+			info.visitor = visitor;
 		}
 
 		const initSettings = RocketChat.Livechat.getInitSettings();
