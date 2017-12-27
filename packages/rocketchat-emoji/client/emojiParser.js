@@ -6,7 +6,8 @@ import s from 'underscore.string';
  * @param {Object} message - The message object
  */
 RocketChat.callbacks.add('renderMessage', (message) => {
-	if (isSetNotNull(() => Meteor.user().settings.preferences.useEmojis) && !Meteor.user().settings.preferences.useEmojis) {
+	if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) &&
+		!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
 		return message;
 	}
 

@@ -1,4 +1,5 @@
 import Page from './Page';
+import mainContent from './main-content.page';
 
 class LoginPage extends Page {
 	get registerButton() { return browser.element('button.register'); }
@@ -64,6 +65,12 @@ class LoginPage extends Page {
 		this.passwordField.setValue(password);
 
 		this.submit();
+	}
+
+	loginSucceded({email, password}) {
+		this.login({email, password});
+
+		mainContent.mainContent.waitForVisible(5000);
 	}
 
 	submit() {
