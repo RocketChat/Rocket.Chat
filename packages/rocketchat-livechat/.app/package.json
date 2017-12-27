@@ -1,0 +1,32 @@
+{
+  "name": "rocketchat-livechat",
+  "version": "1.0.0",
+  "description": "Livechat app from Rocket.Chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RocketChat/Rocket.Chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RocketChat/Rocket.Chat/issues",
+    "email": "support@rocket.chat"
+  },
+  "dependencies": {
+    "autolinker": "^1.6.0",
+    "jquery": "^3.2.1",
+    "babel-runtime": "^6.26.0",
+    "bcrypt": "^1.0.3",
+    "moment": "^2.20.1",
+    "toastr": "^2.1.4",
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4"
+  }
+}

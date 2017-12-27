@@ -11,7 +11,8 @@ export class ChannelsRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && preferences.mergeChannels;
+		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
+		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		return ['unread', 'category'].includes(roomsListExhibitionMode) && mergeChannels;
 	}
 }
