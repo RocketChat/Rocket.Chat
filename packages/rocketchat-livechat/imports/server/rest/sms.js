@@ -44,29 +44,26 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		sendMessage.message.msg = sms.body;
 		sendMessage.guest = visitor;
 
-		if (sms.hasMedia) {
-			sendMessage.message.attachments = [];
-			for (let mediaIndex = 0; mediaIndex < sms.media.length; mediaIndex++) {
-				const attachment = {};
-				const contenttype = sms.media[mediaIndex].contenttype;
+		sms.media.map(function(curr) {
+			const attachment = {};
+			const contentType = curr.contentType;
 
-				switch (contenttype.substr(0, contenttype.indexOf('/'))) {
-					case 'image':
-						attachment.image_url = sms.media[mediaIndex].url;
-						break;
-					case 'video':
-						attachment.video_url = sms.media[mediaIndex].url;
-						break;
-					case 'audio':
-						attachment.audio_url = sms.media[mediaIndex].url;
-						break;
-				}
-
-				attachment.message_link = sms.media[mediaIndex].url;
-
-				sendMessage.message.attachments.push(attachment);
+			switch (contentType.substr(0, contentType.indexOf('/'))) {
+				case 'image':
+					attachment.image_url = curr.url;
+					break;
+				case 'video':
+					attachment.video_url = curr.url;
+					break;
+				case 'audio':
+					attachment.audio_url = curr.url;
+					break;
 			}
-		}
+
+			attachment.message_link = curr.url;
+
+			sendMessage.message.attachments.push(attachment);
+		});
 
 		try {
 			const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
