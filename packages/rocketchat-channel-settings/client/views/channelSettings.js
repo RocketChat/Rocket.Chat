@@ -83,7 +83,7 @@ Template.channelSettings.helpers({
 
 Template.channelSettings.events({
 	'click .delete'() {
-		return swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('Delete_Room_Warning'),
 			type: 'warning',
@@ -94,13 +94,11 @@ Template.channelSettings.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			swal.disableButtons();
 			Meteor.call('eraseRoom', this.rid, function(error) {
 				if (error) {
-					handleError(error);
-					return swal.enableButtons();
+					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Deleted'),
 					text: t('Room_has_been_deleted'),
 					type: 'success',
@@ -309,7 +307,7 @@ Template.channelSettings.onCreated(function() {
 				};
 				if (room['default']) {
 					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
-						swal({
+						modal.open({
 							title: t('Room_default_change_to_private_will_be_default_no_more'),
 							type: 'warning',
 							showCancelButton: true,
@@ -366,13 +364,13 @@ Template.channelSettings.onCreated(function() {
 			},
 			save(value, room) {
 				this.processing.set(true);
-				return Meteor.call('saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err) => {
+				Meteor.call('saveRoomSettings', room._id, 'reactWhenReadOnly', value, (err) => {
 					if (err) {
 						return handleError(err);
 					}
 
 					this.processing.set(false);
-					return toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
+					toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
 				});
 			}
 		},
@@ -388,7 +386,7 @@ Template.channelSettings.onCreated(function() {
 				return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id);
 			},
 			save(value, room) {
-				return swal({
+				modal.open({
 					title: t('Are_you_sure'),
 					type: 'warning',
 					showCancelButton: true,
@@ -398,16 +396,14 @@ Template.channelSettings.onCreated(function() {
 					closeOnConfirm: false,
 					html: false
 				}, function(confirmed) {
-					swal.disableButtons();
 					if (confirmed) {
 						const action = value ? 'archiveRoom' : 'unarchiveRoom';
-						return Meteor.call(action, room._id, function(err) {
+						Meteor.call(action, room._id, function(err) {
 							if (err) {
-								swal.enableButtons();
 								handleError(err);
 							}
 
-							swal({
+							modal.open({
 								title: value ? t('Room_archived') : t('Room_has_been_archived'),
 								text: value ? t('Room_has_been_archived') : t('Room_has_been_unarchived'),
 								type: 'success',
@@ -415,7 +411,7 @@ Template.channelSettings.onCreated(function() {
 								showConfirmButton: false
 							});
 
-							return RocketChat.callbacks.run(action, room);
+							RocketChat.callbacks.run(action, room);
 						});
 					} else {
 						return $('.channel-settings form [name=\'archived\']').prop('checked', !!room.archived);

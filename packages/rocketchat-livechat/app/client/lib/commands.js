@@ -1,4 +1,4 @@
-/* globals LivechatVideoCall, Livechat */
+/* globals LivechatVideoCall, Livechat, swal */
 // Functions to call on messages of type 'command'
 this.Commands = {
 	survey() {

@@ -11,7 +11,6 @@ export class ConversationRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return preferences.roomsListExhibitionMode === 'activity';
+		return RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'activity';
 	}
 }
