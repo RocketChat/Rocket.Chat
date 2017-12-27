@@ -1,4 +1,43 @@
+/* globals Livechat */
 import visitor from '../../imports/client/visitor';
+
+function getAgent(triggerAction) {
+	return new Promise((resolve, reject) => {
+		const { params } = triggerAction;
+		if (params.sender === 'queue') {
+			const cache = localStorage.getItem('triggerAgent');
+			if (cache) {
+				const cacheAgent = JSON.parse(cache);
+
+				// cache valid for 1h
+				if (cacheAgent.ts && Date.now() - cacheAgent.ts < 3600000) {
+					return resolve(cacheAgent.agent);
+				}
+			}
+
+			Meteor.call('livechat:getNextAgent', {
+				token: visitor.getToken(),
+				department: Livechat.department
+			}, (error, result) => {
+				if (error) {
+					return reject(error);
+				}
+				localStorage.setItem('triggerAgent', JSON.stringify({
+					agent: result,
+					ts: Date.now()
+				}));
+
+				resolve(result);
+			});
+		} else if (params.sender === 'custom') {
+			resolve({
+				username: params.name
+			});
+		} else {
+			reject('Unknown sender');
+		}
+	});
+}
 
 this.Triggers = (function() {
 	let triggers = [];
@@ -15,23 +54,27 @@ this.Triggers = (function() {
 				// flag to skip the trigger if the action is 'send-message'
 				trigger.skip = true;
 
-				let roomId = visitor.getRoom();
+				getAgent(action).then((agent) => {
+					let roomId = visitor.getRoom();
 
-				if (!roomId) {
-					roomId = Random.id();
-					visitor.setRoom(roomId);
-				}
-
-				Session.set('triggered', true);
-				ChatMessage.insert({
-					msg: action.params.msg,
-					rid: roomId,
-					u: {
-						username: action.params.name
+					if (!roomId) {
+						roomId = Random.id();
+						visitor.setRoom(roomId);
 					}
-				});
 
-				parentCall('openWidget');
+					Session.set('triggered', true);
+					ChatMessage.insert({
+						msg: action.params.msg,
+						rid: roomId,
+						u: agent
+					});
+
+					if (agent._id) {
+						Livechat.agent = agent;
+					}
+
+					parentCall('openWidget');
+				});
 			}
 		});
 	};
