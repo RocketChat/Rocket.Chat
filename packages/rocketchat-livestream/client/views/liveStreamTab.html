@@ -1,7 +1,7 @@
 <template name="liveStreamTab">
 	<div class="contextual-bar__header flex-tab__header">
 		<div class="title">
-			<h2>LiveStream</h2>
+			<h2>{{_ "Livestream_title" }}</h2>
 		</div>
 	</div>
 	<div class="contextual-bar__content flex-tab">
@@ -23,7 +23,7 @@
 				frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen>
 			</iframe>
 		{{else}}
-			<div> Nenhum livestream listado. </div>
+			<div> {{_ "Livestream_not_found" }}</div>
 		{{/if}}
 	</div>
 </template>
