@@ -31,6 +31,24 @@ RocketChat.models.Users.findOnlineAgents = function() {
 };
 
 /**
+ * Find an online agent by his username
+ * @return
+ */
+RocketChat.models.Users.findOneOnlineAgentByUsername = function(username) {
+	const query = {
+		username,
+		status: {
+			$exists: true,
+			$ne: 'offline'
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent'
+	};
+
+	return this.findOne(query);
+};
+
+/**
  * Gets all agents
  * @return
  */
