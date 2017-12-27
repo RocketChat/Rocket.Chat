@@ -2,8 +2,7 @@ import toastr from 'toastr';
 
 Template.liveStreamTab.helpers({
 	streamingSource() {
-	//	return 'https://youtu.be/DZISOmiXpf4';
-		return Template.instance().streamingOptions.get().url;
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},
 	hasSource() {
 		return !!Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().url !== '';
@@ -18,13 +17,11 @@ Template.liveStreamTab.helpers({
 
 Template.liveStreamTab.onCreated(function() {
 	this.editing = new ReactiveVar(false);
-	this.streamingOptions = new ReactiveVar('');
+	this.streamingOptions = new ReactiveVar();
 
 	this.autorun(() => {
 		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
-		//	if (room.streamingOptions.url !== this.streamingOptions.get().url) {
-		this.streamingOptions.set(room.streamingOptions || '');
-		//}
+		this.streamingOptions.set(room.streamingOptions);
 	});
 });
 
