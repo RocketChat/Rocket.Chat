@@ -1,4 +1,5 @@
 /* globals UserPresence, readMessage */
+import _ from 'underscore';
 
 let timer = undefined;
 if (Meteor.isCordova) {

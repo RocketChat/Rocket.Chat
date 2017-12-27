@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'sendFileMessage'(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {

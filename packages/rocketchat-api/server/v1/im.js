@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
@@ -266,13 +268,11 @@ RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 	post() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
-		if (findResult.subscription.open) {
-			return RocketChat.API.v1.failure(`The direct message room, ${ this.bodyParams.name }, is already open for the sender`);
+		if (!findResult.subscription.open) {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('openRoom', findResult.room._id);
+			});
 		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('openRoom', findResult.room._id);
-		});
 
 		return RocketChat.API.v1.success();
 	}
