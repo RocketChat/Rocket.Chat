@@ -1,7 +1,7 @@
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
-	sendMessageLivechat({ token, _id, rid, msg }) {
+	sendMessageLivechat({ token, _id, rid, msg }, agent) {
 		check(token, String);
 		check(_id, String);
 		check(rid, String);
@@ -27,7 +27,8 @@ Meteor.methods({
 				rid,
 				msg,
 				token
-			}
+			},
+			agent
 		});
 	}
 });
