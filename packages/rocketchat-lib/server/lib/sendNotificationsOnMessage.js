@@ -166,6 +166,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 	const user = RocketChat.models.Users.findOneById(message.u._id);
 
+	// might be a livechat visitor
+	if (!user) {
+		return message;
+	}
+
 	/*
 	Increment unread couter if direct messages
 	 */
@@ -206,9 +211,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	subscriptions.forEach((s) => {
 		userIds.push(s.u._id);
 	});
-	const userSettings = {};
-	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
-		userSettings[user._id] = user.settings;
+	const users = {};
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences': 1 } }).forEach((user) => {
+		users[user._id] = user;
 	});
 
 	subscriptions.forEach(subscription => {
@@ -218,16 +223,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			settings.dontNotifyAudioUsers.push(subscription.u._id);
 			return;
 		}
-		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
-		const userAudioNotificationPreference = preferences.audioNotifications !== 'default' ? preferences.audioNotifications : undefined;
-		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
-		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
-		// Set defaults if they don't exist
+
 		const {
-			audioNotifications = userAudioNotificationPreference || RocketChat.settings.get('Audio_Notifications_Default_Alert'),
-			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
-			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+			audioNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'audioNotifications'),
+			desktopNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'desktopNotifications'),
+			mobilePushNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'mobileNotifications')
 		} = subscription;
+
 		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}

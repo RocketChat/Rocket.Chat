@@ -279,9 +279,24 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	findOneBySlackTs(slackTs) {
-		const query =	{slackTs};
+		const query = {slackTs};
 
 		return this.findOne(query);
+	}
+
+	getLastMessageSentWithNoTypeByRoomId(rid) {
+		const query = {
+			rid,
+			t: { $exists: false }
+		};
+
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+
+		return this.findOne(query, options);
 	}
 
 	cloneAndSaveAsHistoryById(_id) {

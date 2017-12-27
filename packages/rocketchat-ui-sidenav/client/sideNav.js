@@ -85,11 +85,7 @@ Template.sideNav.onCreated(function() {
 				'settings.preferences.mergeChannels': 1
 			}
 		});
-		let userPref = null;
-		if (user && user.settings && user.settings.preferences) {
-			userPref = user.settings.preferences.roomsListExhibitionMode === 'category' && user.settings.preferences.mergeChannels;
-		}
-
-		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'mergeChannels');
+		this.mergedChannels.set(userPref ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
 	});
 });
