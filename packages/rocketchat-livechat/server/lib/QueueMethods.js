@@ -26,7 +26,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status || 'online'
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -109,7 +110,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status || 'online'
 			},
 			t: 'l'
 		};
@@ -125,7 +127,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status
 			},
 			cl: false,
 			open: true,

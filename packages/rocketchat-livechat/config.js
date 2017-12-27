@@ -131,6 +131,27 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_request_on_offline_messages'
 	});
 
+	RocketChat.settings.add('Livechat_webhook_on_capture', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_lead_capture'
+	});
+
+	RocketChat.settings.add('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Lead_capture_email_regex'
+	});
+
+	RocketChat.settings.add('Livechat_lead_phone_regex', '((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Lead_capture_phone_regex'
+	});
+
 	RocketChat.settings.add('Livechat_Knowledge_Enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
