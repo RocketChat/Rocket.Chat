@@ -10,6 +10,9 @@ Template.accountSecurity.helpers({
 	imageData() {
 		return Template.instance().imageData.get();
 	},
+	imageSecret() {
+		return Template.instance().imageSecret.get();
+	},
 	isEnabled() {
 		const user = Meteor.user();
 		return user && user.services && user.services.totp && user.services.totp.enabled;
@@ -27,6 +30,7 @@ Template.accountSecurity.helpers({
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
 		Meteor.call('2fa:enable', (error, result) => {
+			instance.imageSecret.set(result.secret);
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
 
 			instance.state.set('registering');
@@ -38,7 +42,7 @@ Template.accountSecurity.events({
 	},
 
 	'click .disable-2fa'() {
-		swal({
+		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
 			type: 'input',
@@ -60,7 +64,7 @@ Template.accountSecurity.events({
 				if (result) {
 					toastr.success(t('Two-factor_authentication_disabled'));
 				} else {
-					return toastr.error(t('Invalid_two_factor_code'));
+					toastr.error(t('Invalid_two_factor_code'));
 				}
 			});
 		});
@@ -83,7 +87,7 @@ Template.accountSecurity.events({
 	},
 
 	'click .regenerate-codes'(event, instance) {
-		swal({
+		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
 			type: 'input',
@@ -105,7 +109,7 @@ Template.accountSecurity.events({
 				if (result) {
 					instance.showBackupCodes(result.codes);
 				} else {
-					return toastr.error(t('Invalid_two_factor_code'));
+					toastr.error(t('Invalid_two_factor_code'));
 				}
 			});
 		});
@@ -115,6 +119,7 @@ Template.accountSecurity.events({
 Template.accountSecurity.onCreated(function() {
 	this.showImage = new ReactiveVar(false);
 	this.imageData = new ReactiveVar();
+	this.imageSecret = new ReactiveVar();
 
 	this.state = new ReactiveVar();
 
@@ -125,7 +130,7 @@ Template.accountSecurity.onCreated(function() {
 			return (index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `;
 		}).join('');
 		const codes = `<code class="text-center allow-text-selection">${ backupCodes }</code>`;
-		swal({
+		modal.open({
 			title: t('Backup_codes'),
 			text: `${ t('Make_sure_you_have_a_copy_of_your_codes', { codes }) }`,
 			html: true

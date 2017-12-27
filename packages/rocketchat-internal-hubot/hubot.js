@@ -1,4 +1,7 @@
 /* globals __meteor_bootstrap__ */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const CoffeeScript = Npm.require('coffee-script');
 CoffeeScript.register();
 const Hubot = Npm.require('hubot');
@@ -102,7 +105,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 			if (DEBUG) { console.log(`priv ${ envelope.room }: ${ string } (${ envelope.user.id })`); }
 			return Meteor.call('sendMessage', {
 				u: {
-					username: 'rocketbot'
+					username: RocketChat.settings.get('InternalHubot_Username')
 				},
 				to: `${ envelope.user.id }`,
 				msg: string,
