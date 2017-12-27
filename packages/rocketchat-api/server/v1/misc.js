@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
 		const user = this.getLoggedInUser();
@@ -18,7 +20,7 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return RocketChat.API.v1.success(_.pick(this.user, [
+		const me = _.pick(this.user, [
 			'_id',
 			'name',
 			'emails',
@@ -28,7 +30,13 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'utcOffset',
 			'active',
 			'language'
-		]));
+		]);
+
+		const verifiedEmail = me.emails.find((email) => email.verified);
+
+		me.email = verifiedEmail ? verifiedEmail.address : undefined;
+
+		return RocketChat.API.v1.success(me);
 	}
 });
 
