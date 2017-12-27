@@ -55,13 +55,13 @@ git.status()
 	if (status.current === 'release-candidate') {
 		return semver.inc(pkgJson.version, 'prerelease', 'rc');
 	}
-	if (status.current === 'master') {
+	if (status.current === 'release-0.60.0') {
 		return semver.inc(pkgJson.version, 'patch');
 	}
 	if (status.current === 'develop') {
 		return semver.inc(semver.inc(pkgJson.version, 'minor'), 'minor')+'-develop';
 	}
-	return Promise.reject(`No release action for branch ${ status.current }`);
+	return Promise.reject(`No relea se action for branch ${ status.current }`);
 })
 .then(nextVersion => inquirer.prompt([{
 	type: 'list',
