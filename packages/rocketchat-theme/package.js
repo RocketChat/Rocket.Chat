@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:assets');
 	api.use('ecmascript');
 	api.use('less');
-	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
 	api.use('templating', 'client');
@@ -27,8 +26,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/vendor/jscolor.js', 'client');
 
 	// Photoswipe
-	api.addFiles('client/vendor/photoswipe.less', 'client');
+	api.addFiles('client/vendor/photoswipe.css', 'client');
 
+	api.addAssets('client/imports/general/variables.css', 'server');
 	// Fontello
 	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
 	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');

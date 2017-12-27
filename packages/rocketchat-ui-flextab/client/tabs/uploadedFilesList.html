@@ -1,8 +1,10 @@
 <template name="uploadedFilesList">
-	<div class="list-view uploaded-files-list">
+	<div class=" list-view flex-tab__header">
 		<div class="title">
 			<h2>{{_ "Room_uploaded_file_list"}}</h2>
 		</div>
+	</div>
+	<div class="uploaded-files-list list-view flex-tab__result js-list">
 		<ul class="list clearfix lines">
 			{{#each files}}
 				<li>

@@ -49,7 +49,7 @@ SAML.prototype.initialize = function(options) {
 
 SAML.prototype.generateUniqueID = function() {
 	const chars = 'abcdef0123456789';
-	let uniqueID = '';
+	let uniqueID = 'id-';
 	for (let i = 0; i < 20; i++) {
 		uniqueID += chars.substr(Math.floor((Math.random() * 15)), 1);
 	}
@@ -258,6 +258,10 @@ SAML.prototype.getElement = function(parentElement, elementName) {
 		return parentElement[`saml2p:${ elementName }`];
 	} else if (parentElement[`saml2:${ elementName }`]) {
 		return parentElement[`saml2:${ elementName }`];
+	} else if (parentElement[`ns0:${ elementName }`]) {
+		return parentElement[`ns0:${ elementName }`];
+	} else if (parentElement[`ns1:${ elementName }`]) {
+		return parentElement[`ns1:${ elementName }`];
 	}
 	return parentElement[elementName];
 };
@@ -314,7 +318,8 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 		console.log(`Validating response with relay state: ${ xml }`);
 	}
 	const parser = new xml2js.Parser({
-		explicitRoot: true
+		explicitRoot: true,
+		xmlns:true
 	});
 
 	parser.parseString(xml, function(err, doc) {

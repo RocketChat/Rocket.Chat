@@ -1,5 +1,5 @@
 <template name="messageSearch">
-	<div class="list-view search-messages-list">
+	<div class="list-view flex-tab__header search-messages-list">
 		<div class="title">
 			<h2>{{_ "Search_Messages"}}</h2>
 			<p>{{_ "You_can_search_using_RegExp_eg"}} <code class="code-colors inline">/^text$/i</code></p>
@@ -20,16 +20,18 @@
 	</div>
 	{{#if currentSearchTerm}}
 		{{#if searchResultMessages}}
+		<div class="flex-tab__result js-list">
 			<ul class="list clearfix">
 				{{#each searchResultMessages}}
 					{{#nrr nrrargs 'message' message}}{{/nrr}}
 				{{/each}}
 			</ul>
 			{{#if hasMore}}
-				<div class="load-more">
-					{{> loading}}
-				</div>
+			<div class="load-more">
+				{{> loading}}
+			</div>
 			{{/if}}
+		</div >
 		{{/if}}
 	{{/if}}
 </template>

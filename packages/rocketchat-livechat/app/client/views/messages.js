@@ -1,4 +1,5 @@
 /* globals Livechat, LivechatVideoCall, MsgTyping */
+import _ from 'underscore';
 
 Template.messages.helpers({
 	messages() {

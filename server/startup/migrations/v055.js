@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.Migrations.add({
 	version: 55,
 	up() {

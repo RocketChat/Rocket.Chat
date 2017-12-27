@@ -30,7 +30,7 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank">{{_ "Attachment_File_Uploaded"}} : {{title}}</a>
+						<a href="{{fixCordova title_link}}" target="_blank">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
 						{{/if}}
@@ -69,6 +69,13 @@
 							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
 								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
 							</div>
+							{{#if labels}}
+								<div class="image-labels">
+									{{#each labels}}
+										<span class="image-label primary-background-color color-content-background-color" style="background-color: {{bgColor}}; color: {{fontColor}};">{{label}}</span>
+									{{/each}}
+								</div>
+							{{/if}}
 							{{#if description}}
 								<figcaption class="attachment-description">{{description}}</figcaption>
 							{{/if}}

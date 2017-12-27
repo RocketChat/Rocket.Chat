@@ -9,7 +9,7 @@ Npm.depends({
 	'bad-words': '1.3.1',
 	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
-	'localforage': '1.4.2',
+	'localforage': '1.5.5',
 	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0',
 	'prom-client': '7.0.1'
@@ -27,13 +27,12 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
-	api.use('underscore');
 	api.use('mongo');
 	api.use('oauth');
-	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
@@ -50,18 +49,36 @@ Package.onUse(function(api) {
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
+	// ROOM TYPES
+	api.addFiles('lib/RoomTypeConfig.js');
+	api.addFiles([
+		'lib/roomTypes/channels.js',
+		'lib/roomTypes/conversation.js',
+		'lib/roomTypes/direct.js',
+		'lib/roomTypes/favorite.js',
+		'lib/roomTypes/index.js',
+		'lib/roomTypes/private.js',
+		'lib/roomTypes/public.js',
+		'lib/roomTypes/unread.js'
+	]);
+
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getAvatarColor.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
-	api.addFiles('lib/roomTypesCommon.js');
+	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
+	api.addFiles('lib/templateVarHandler.js');
+
+	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -99,8 +116,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/configLogger.js', 'server');
 	api.addFiles('server/lib/PushNotification.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
+	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
 	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
+	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
@@ -137,6 +156,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
+	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
@@ -147,6 +167,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
+	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
@@ -172,6 +193,7 @@ Package.onUse(function(api) {
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
+	api.addFiles('server/startup/settingsOnLoadDirectReply.js', 'server');
 	api.addFiles('server/startup/settingsOnLoadSMTP.js', 'server');
 	api.addFiles('server/startup/oAuthServicesUpdate.js', 'server');
 	api.addFiles('server/startup/settings.js', 'server');
@@ -184,6 +206,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');
@@ -216,7 +239,10 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
-	api.export('RocketChatTabBar');
+
+	// exports
+	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');
 });

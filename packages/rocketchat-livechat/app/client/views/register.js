@@ -1,4 +1,5 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import _ from 'underscore';
 
 Template.register.helpers({
 	error() {

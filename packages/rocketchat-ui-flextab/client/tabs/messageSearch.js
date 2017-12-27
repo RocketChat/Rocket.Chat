@@ -1,20 +1,23 @@
+import _ from 'underscore';
+
 Meteor.startup(function() {
-	return RocketChat.MessageAction.addButton({
+	RocketChat.MessageAction.addButton({
 		id: 'jump-to-search-message',
-		icon: 'icon-right-hand',
-		i18nLabel: 'Jump_to_message',
+		icon: 'jump',
+		label: 'Jump_to_message',
 		context: [
 			'search'
 		],
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.hideDropDown();
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
-			return RoomHistoryManager.getSurroundingMessages(message, 50);
+
+			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		order: 100
+		order: 100,
+		group: 'menu'
 	});
 });
 
@@ -44,7 +47,7 @@ Template.messageSearch.helpers({
 	},
 
 	message() {
-		return _.extend(this, { customClass: 'search' });
+		return _.extend(this, { customClass: 'search', actionContext: 'search'});
 	}
 });
 
@@ -71,29 +74,12 @@ Template.messageSearch.events({
 		return t.search();
 	}, 500),
 
-	'click .message-cog'(e, t) {
-		e.stopPropagation();
-		e.preventDefault();
-		const message_id = $(e.currentTarget).closest('.message').attr('id');
-		const searchResult = t.searchResult.get();
-		RocketChat.MessageAction.hideDropDown();
-		t.$(`\#${ message_id } .message-dropdown`).remove();
-		if (searchResult) {
-			const message = _.findWhere(searchResult.messages, { _id: message_id });
-			const actions = RocketChat.MessageAction.getButtons(message, 'search');
-			const el = Blaze.toHTMLWithData(Template.messageDropdown, { actions });
-			t.$(`\#${ message_id } .message-cog-container`).append(el);
-			const dropDown = t.$(`\#${ message_id } .message-dropdown`);
-			return dropDown.show();
-		}
-	},
-
 	'click .load-more button'(e, t) {
 		t.limit.set(t.limit.get() + 20);
 		return t.search();
 	},
 
-	'scroll .content': _.throttle(function(e, t) {
+	'scroll .js-list': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			t.limit.set(t.limit.get() + 20);
 			return t.search();

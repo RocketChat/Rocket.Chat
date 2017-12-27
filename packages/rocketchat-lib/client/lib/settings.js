@@ -28,20 +28,20 @@ RocketChat.settings.init = function() {
 		added(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		changed(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			return RocketChat.settings.load(record._id, record.value, initialLoad);
+			RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		removed(record) {
 			delete Meteor.settings[record._id];
 			RocketChat.settings.dict.set(record._id, null);
-			return RocketChat.settings.load(record._id, null, initialLoad);
+			RocketChat.settings.load(record._id, null, initialLoad);
 		}
 	});
-	return initialLoad = false;
+	initialLoad = false;
 };
 
 RocketChat.settings.init();
@@ -60,8 +60,8 @@ Meteor.startup(function() {
 		}
 		Meteor.setTimeout(function() {
 			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-			if (__meteor_runtime_config__.ROOT_URL !== currentUrl) {
-				swal({
+			if (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
+				modal.open({
 					type: 'warning',
 					title: t('Warning'),
 					text: `${ t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Site_Url'), siteUrl, currentUrl) }<br/><br/>${ t('Do_you_want_to_change_to_s_question', currentUrl) }`,
@@ -72,7 +72,7 @@ Meteor.startup(function() {
 					html: true
 				}, function() {
 					Meteor.call('saveSetting', 'Site_Url', currentUrl, function() {
-						swal({
+						modal.open({
 							title: t('Saved'),
 							type: 'success',
 							timer: 1000,

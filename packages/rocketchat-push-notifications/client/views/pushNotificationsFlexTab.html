@@ -5,7 +5,7 @@
 		</div>
 		<form>
 			<ul class="list clearfix">
-				<li>
+				<li class="disable-notifications">
 					<label>{{_ "Disable_Notifications"}}</label>
 					<div class="input checkbox toggle">
 						<input type="checkbox" id="disableNotifications" name="disableNotifications" value="1" checked="{{$eq disableNotifications true}}" />
@@ -13,28 +13,33 @@
 					</div>
 				</li>
 				{{#if $neq disableNotifications true}}
-					<li>
+					<li class="audio-notifications">
 						<label>{{_ "Audio"}}</label>
 						<div>
-							{{#if editing 'audioNotification'}}
+							{{#if editing 'audioNotifications'}}
+								<label><input type="radio" name="audioNotifications" value="default" checked="{{$eq audioNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultAudioNotification}})</label>
+								<label><input type="radio" name="audioNotifications" value="all" checked="{{$eq audioNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+								<label><input type="radio" name="audioNotifications" value="mentions" checked="{{$eq audioNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+								<br />
+
 								<label>
-									<select name="audioNotification" class="audio">
-										<option value="none" selected="{{$eq audioNotification 'none'}}">{{_ "None"}}</option>
-										<option value="" selected="{{$eq audioNotification ''}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
-										<option value="chime" selected="{{$eq audioNotification 'chime'}}">Chime</option>
+									<select name="audioNotificationValue" class="audio">
+										<option value="none" selected="{{$eq audioNotificationValue 'none'}}">{{_ "None"}}</option>
+										<option value="" selected="{{$eq audioNotificationValue subValue 'audioNotifications'}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
+										<option value="chime" selected="{{$eq audioNotificationValue 'chime'}}">Chime</option>
 										{{#each audioAssets}}
-											<option value="{{_id}}" selected="{{$eq audioNotification _id}}">{{name}}</option>
+											<option value="{{_id}}" selected="{{$eq audioNotificationValue _id}}">{{name}}</option>
 										{{/each}}
 									</select>
 								</label>
 								<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 								<button type="button" class="button primary save">{{_ "Save"}}</button>
 							{{else}}
-								<span class="current-setting">{{audioValue}} <i class="icon-play-circled" data-play="{{audioNotification}}"></i> <i class="icon-pencil" data-edit="audioNotification"></i></span>
+								<span class="current-setting">{{subValue 'audioNotifications'}} : {{audioNotificationValue}}<i class="icon-play-circled" data-play="{{audioNotificationValue}}"></i> <i class="icon-pencil" data-edit="audioNotifications"></i></span>
 							{{/if}}
 						</div>
 					</li>
-					<li>
+					<li class="desktop-notifications">
 						<label>{{_ "Desktop"}}</label>
 						<div>
 							{{#if editing 'desktopNotifications'}}
@@ -57,14 +62,14 @@
 						</div>
 					</li>
 					{{#unless editing 'desktopNotifications'}}
-					<li>
+					<li class="desktop-notifications-duration">
 						<label>{{_ "Desktop_Notifications_Duration"}}</label>
 						<div>
 							<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
 						</div>
 					</li>
 					{{/unless}}
-					<li>
+					<li class="mobile-notifications">
 						<label>{{_ "Mobile"}}</label>
 						<div>
 							{{#if editing 'mobilePushNotifications'}}
@@ -79,7 +84,7 @@
 							{{/if}}
 						</div>
 					</li>
-					<li>
+					<li class="email-notifications">
 						<label>{{_ "Email"}}</label>
 						<div>
 							{{#if editing 'emailNotifications'}}
@@ -97,21 +102,21 @@
 						</div>
 					</li>
 					{{#unless emailVerified}}
-					<li>
+					<li class="email-alerts">
 						<div class="alert alert-warning pending-background pending-border">
 							{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
 						</div>
 					</li>
 					{{/unless}}
 				{{/if}}
-				<li>
+				<li class="unread-room-status">
 					<label>{{_ "Hide_Unread_Room_Status"}}</label>
 					<div class="input checkbox toggle">
 						<input type="checkbox" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq hideUnreadStatus true}}" />
 						<label for="hideUnreadStatus"></label>
 					</div>
 				</li>
-				<li>
+				<li class="unread-alerts">
 					<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 					<div>
 						{{#if editing 'unreadAlert'}}

@@ -1,19 +1,23 @@
 <template name="flexTabBar">
-	<div class="flex-tab-container border-component-color {{opened}}">
-		<section class="flex-tab border-component-color">
-			<div class="content">
-				<button class="close-flex-tab secondary-font-color">
-					<span class="secondary-background-color"><i class="icon-cancel"></i></span>
-				</button>
-				{{> Template.dynamic template=template data=flexData}}
-			</div>
-		</section>
-		<div class="flex-tab-bar content-background-color" role="toolbar">
-			{{#each buttons}}
-				<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
-					<button aria-label="{{title}}"><i class="{{icon}}"></i></button>
+	{{#unless embeddedVersion}}
+		<div class="flex-tab-container border-component-color {{opened}}">
+			<section class="flex-tab border-component-color">
+				<div class="content flex-tab__content">
+					<button class="close-flex-tab secondary-font-color">
+						<span class="secondary-background-color"><i class="icon-cancel"></i></span>
+					</button>
+					{{> Template.dynamic template=template data=flexData}}
 				</div>
-			{{/each}}
+			</section>
+			<div class="flex-tab-bar content-background-color" role="toolbar">
+				{{#each buttons}}
+					<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
+						<button aria-label="{{title}}">
+							{{> icon block="tab-button-icon" icon=icon }}
+						</button>
+					</div>
+				{{/each}}
+			</div>
 		</div>
-	</div>
+	{{/unless}}
 </template>

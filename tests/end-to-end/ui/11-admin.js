@@ -24,7 +24,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountBoxUserName.click();
+			sideNav.accountMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
@@ -414,8 +414,10 @@ describe('[Administration]', () => {
 
 		describe('[General Settings]', () => {
 			before(() => {
+				admin.settingsSearch.setValue('general');
 				admin.generalLink.waitForVisible(5000);
 				admin.generalLink.click();
+				admin.settingsSearch.setValue('');
 				admin.generalSiteUrl.waitForVisible(5000);
 			});
 
@@ -515,6 +517,23 @@ describe('[Administration]', () => {
 
 				it('it should click the reset button', () => {
 					admin.generalFavoriteRoomReset.click();
+				});
+
+				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.isVisible().should.be.true;
+				});
+
+				it('it should change open first channel field', () => {
+					admin.generalOpenFirstChannel.setValue('something');
+				});
+
+				it('it should show the reset button', () => {
+					admin.generalOpenFirstChannelReset.waitForVisible(5000);
+					admin.generalOpenFirstChannelReset.isVisible().should.be.true;
+				});
+
+				it('it should click the reset button', () => {
+					admin.generalOpenFirstChannelReset.click();
 				});
 
 				it('it should show cdn prefix field', () => {
@@ -618,12 +637,12 @@ describe('[Administration]', () => {
 				before(() => {
 					admin.generalButtonExpandNotifications.waitForVisible(5000);
 					admin.generalButtonExpandNotifications.click();
-					admin.generalNotificationDuration.waitForVisible(5000);
-					admin.generalNotificationDuration.scroll();
+					admin.generalNotificationsMaxRoomMembers.waitForVisible(5000);
+					admin.generalNotificationsMaxRoomMembers.scroll();
 				});
 
-				it('it should show the notifications durations field', () => {
-					admin.generalNotificationDuration.isVisible().should.be.true;
+				it('it should show the max room members field', () => {
+					admin.generalNotificationsMaxRoomMembers.isVisible().should.be.true;
 				});
 			});
 
@@ -682,6 +701,252 @@ describe('[Administration]', () => {
 				it('it should show the utf8 names slug checkboxes', () => {
 					admin.generalUTF8NamesSlugTrue.isVisible().should.be.true;
 					admin.generalUTF8NamesSlugFalse.isVisible().should.be.true;
+				});
+			});
+		});
+
+		describe('[Accounts]', () => {
+			before(() => {
+				admin.settingsSearch.setValue('accounts');
+				admin.accountsLink.waitForVisible(5000);
+				admin.accountsLink.click();
+				admin.settingsSearch.setValue('');
+			});
+
+			describe('default user preferences', () => {
+				before(() => {
+					if (admin.accountsButtonCollapseDefaultUserPreferences.isVisible()) {
+						admin.accountsButtonCollapseDefaultUserPreferences.click();
+					}
+					admin.accountsButtonExpandDefaultUserPreferences.waitForVisible(5000);
+					admin.accountsButtonExpandDefaultUserPreferences.click();
+					admin.accountsNotificationDuration.waitForVisible(5000);
+				});
+
+				it('it should show the enable auto away field', () => {
+					admin.accountsEnableAutoAwayTrue.scroll();
+					admin.accountsEnableAutoAwayTrue.isVisible().should.be.true;
+					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
+				});
+				it('the enable auto away field value should be true', () => {
+					admin.accountsEnableAutoAwayTrue.isSelected().should.be.false;
+					admin.accountsEnableAutoAwayFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the idle timeout limit field', () => {
+					admin.accountsIdleTimeoutLimit.click();
+					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
+				});
+				it('the idle timeout limit field value should be 0', () => {
+					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				});
+
+				it('it should show the notifications durations field', () => {
+					admin.accountsNotificationDuration.click();
+					admin.accountsNotificationDuration.isVisible().should.be.true;
+				});
+				it('the notification duration field value should be 0', () => {
+					admin.accountsNotificationDuration.getValue().should.equal('0');
+				});
+
+				it('it should show the audio notifications select field', () => {
+					admin.accountsAudioNotifications.click();
+					admin.accountsAudioNotifications.isVisible().should.be.true;
+				});
+				it('the audio notifications field value should be mentions', () => {
+					admin.accountsAudioNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the desktop audio notifications select field', () => {
+					admin.accountsDesktopNotifications.click();
+					admin.accountsDesktopNotifications.isVisible().should.be.true;
+				});
+				it('the desktop audio notifications field value should be mentions', () => {
+					admin.accountsDesktopNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the mobile audio notifications select field', () => {
+					admin.accountsMobileNotifications.click();
+					admin.accountsMobileNotifications.isVisible().should.be.true;
+				});
+				it('the mobile audio notifications field value should be mentions', () => {
+					admin.accountsMobileNotifications.getValue().should.equal('mentions');
+				});
+
+				it('it should show the unread tray icon alert field', () => {
+					admin.accountsUnreadAlertTrue.scroll();
+					admin.accountsUnreadAlertTrue.isVisible().should.be.true;
+					admin.accountsUnreadAlertFalse.isVisible().should.be.true;
+				});
+				it('the unread tray icon alert field value should be true', () => {
+					admin.accountsUnreadAlertTrue.isSelected().should.be.true;
+					admin.accountsUnreadAlertFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the use emojis field', () => {
+					admin.accountsUseEmojisTrue.scroll();
+					admin.accountsUseEmojisTrue.isVisible().should.be.true;
+					admin.accountsUseEmojisFalse.isVisible().should.be.true;
+				});
+				it('the use emojis field value should be true', () => {
+					admin.accountsUseEmojisTrue.isSelected().should.be.true;
+					admin.accountsUseEmojisFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the convert ascii to emoji field', () => {
+					admin.accountsConvertAsciiEmojiTrue.scroll();
+					admin.accountsConvertAsciiEmojiTrue.isVisible().should.be.true;
+					admin.accountsConvertAsciiEmojiFalse.isVisible().should.be.true;
+				});
+				it('the convert ascii to emoji field value should be true', () => {
+					admin.accountsConvertAsciiEmojiTrue.isSelected().should.be.true;
+					admin.accountsConvertAsciiEmojiFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the auto load images field', () => {
+					admin.accountsAutoImageLoadTrue.scroll();
+					admin.accountsAutoImageLoadTrue.isVisible().should.be.true;
+					admin.accountsAutoImageLoadFalse.isVisible().should.be.true;
+				});
+				it('the auto load images field value should be true', () => {
+					admin.accountsAutoImageLoadTrue.isSelected().should.be.true;
+					admin.accountsAutoImageLoadFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the save mobile bandwidth field', () => {
+					admin.accountsSaveMobileBandwidthTrue.scroll();
+					admin.accountsSaveMobileBandwidthTrue.isVisible().should.be.true;
+					admin.accountsSaveMobileBandwidthFalse.isVisible().should.be.true;
+				});
+				it('the save mobile bandwidth field value should be true', () => {
+					admin.accountsSaveMobileBandwidthTrue.isSelected().should.be.true;
+					admin.accountsSaveMobileBandwidthFalse.isSelected().should.be.false;
+				});
+
+				it('it should show the collapse embedded media by default field', () => {
+					admin.accountsCollapseMediaByDefaultTrue.scroll();
+					admin.accountsCollapseMediaByDefaultTrue.isVisible().should.be.true;
+					admin.accountsCollapseMediaByDefaultFalse.isVisible().should.be.true;
+				});
+				it('the collapse embedded media by default field value should be false', () => {
+					admin.accountsCollapseMediaByDefaultTrue.isSelected().should.be.false;
+					admin.accountsCollapseMediaByDefaultFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide usernames field', () => {
+					admin.accountsHideUsernamesTrue.scroll();
+					admin.accountsHideUsernamesTrue.isVisible().should.be.true;
+					admin.accountsHideUsernamesFalse.isVisible().should.be.true;
+				});
+				it('the hide usernames field value should be false', () => {
+					admin.accountsHideUsernamesTrue.isSelected().should.be.false;
+					admin.accountsHideUsernamesFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide roles field', () => {
+					admin.accountsHideRolesTrue.scroll();
+					admin.accountsHideRolesTrue.isVisible().should.be.true;
+					admin.accountsHideRolesFalse.isVisible().should.be.true;
+				});
+				it('the hide roles field value should be false', () => {
+					admin.accountsHideRolesTrue.isSelected().should.be.false;
+					admin.accountsHideRolesFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide right sidebar with click field', () => {
+					admin.accountsHideFlexTabTrue.scroll();
+					admin.accountsHideFlexTabTrue.isVisible().should.be.true;
+					admin.accountsHideFlexTabFalse.isVisible().should.be.true;
+				});
+				it('the hide right sidebar with click field value should be false', () => {
+					admin.accountsHideFlexTabTrue.isSelected().should.be.false;
+					admin.accountsHideFlexTabFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the hide avatars field', () => {
+					admin.accountsHideAvatarsTrue.scroll();
+					admin.accountsHideAvatarsTrue.isVisible().should.be.true;
+					admin.accountsHideAvatarsFalse.isVisible().should.be.true;
+				});
+				it('the hide avatars field value should be false', () => {
+					admin.accountsHideAvatarsTrue.isSelected().should.equal.false;
+					admin.accountsHideAvatarsFalse.isSelected().should.equal.true;
+				});
+
+				it('it should show the sidebar channel list mode field', () => {
+					admin.accountsRoomsListExhibitionMode.click();
+					admin.accountsRoomsListExhibitionMode.isVisible().should.be.true;
+				});
+				it('the sidebar channel list mode field value should be category', () => {
+					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
+				});
+
+				it('it should show the merge channels field', () => {
+					admin.accountsMergeChannelsTrue.scroll();
+					admin.accountsMergeChannelsTrue.isVisible().should.be.true;
+					admin.accountsMergeChannelsFalse.isVisible().should.be.true;
+				});
+				it('the merge channels field value should be false', () => {
+					admin.accountsMergeChannelsTrue.isSelected().should.be.false;
+					admin.accountsMergeChannelsFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the enter key behavior field', () => {
+					admin.accountsSendOnEnter.click();
+					admin.accountsSendOnEnter.isVisible().should.be.true;
+				});
+				it('the enter key behavior field value should be normal', () => {
+					admin.accountsSendOnEnter.getValue().should.equal('normal');
+				});
+
+				it('it should show the view mode field', () => {
+					admin.accountsViewMode.click();
+					admin.accountsViewMode.isVisible().should.be.true;
+				});
+				it('the view mode field value should be 0', () => {
+					admin.accountsViewMode.getValue().should.equal('0');
+				});
+
+				it('it should show the offline email notification field', () => {
+					admin.accountsEmailNotificationMode.click();
+					admin.accountsEmailNotificationMode.isVisible().should.be.true;
+				});
+				it('the offline email notification field value should be all', () => {
+					admin.accountsEmailNotificationMode.getValue().should.equal('all');
+				});
+
+				it('it should show the room counter sidebar field', () => {
+					admin.accountsRoomCounterSidebarTrue.scroll();
+					admin.accountsRoomCounterSidebarTrue.isVisible().should.be.true;
+					admin.accountsRoomCounterSidebarFalse.isVisible().should.be.true;
+				});
+				it('the room counter sidebar field value should be false', () => {
+					admin.accountsRoomCounterSidebarTrue.isSelected().should.be.false;
+					admin.accountsRoomCounterSidebarFalse.isSelected().should.be.true;
+				});
+
+				it('it should show the new room notification field', () => {
+					admin.accountsNewRoomNotification.click();
+					admin.accountsNewRoomNotification.isVisible().should.be.true;
+				});
+				it('the new room notification field value should be door', () => {
+					admin.accountsNewRoomNotification.getValue().should.equal('door');
+				});
+
+				it('it should show the new message notification field', () => {
+					admin.accountsNewMessageNotification.click();
+					admin.accountsNewMessageNotification.isVisible().should.be.true;
+				});
+				it('the new message notification field value should be chime', () => {
+					admin.accountsNewMessageNotification.getValue().should.equal('chime');
+				});
+
+				it('it should show the notification sound volume field', () => {
+					admin.accountsNotificationsSoundVolume.click();
+					admin.accountsNotificationsSoundVolume.isVisible().should.be.true;
+				});
+				it('the notification sound volume field value should be 100', () => {
+					admin.accountsNotificationsSoundVolume.getValue().should.equal('100');
 				});
 			});
 		});

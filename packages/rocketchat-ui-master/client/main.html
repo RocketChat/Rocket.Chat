@@ -24,7 +24,7 @@
 <template name="main">
 	{{#if subsReady}}
 		{{#unless logged}}
-			<div class="connection-status">
+			<div class="rc-old connection-status">
 				{{> status}}
 			</div>
 			{{#if useIframe}}
@@ -45,15 +45,15 @@
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
 					<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
-						<div class="connection-status">
-							{{> status}}
-						</div>
-						<div class="main-content content-background-color {{#if modal}}main-modal{{/if}}">
-							{{> Template.dynamic template=center}}
-						</div>
 						{{#unless modal}}
 							{{> sideNav }}
 						{{/unless}}
+						<div class="rc-old main-content content-background-color {{#if modal}}main-modal{{/if}}">
+							{{> Template.dynamic template=center}}
+						</div>
+					</div>
+					<div class="rc-old connection-status">
+						{{> status}}
 					</div>
 					{{> audioNotification }}
 				{{/if}}

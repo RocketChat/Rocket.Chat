@@ -1,0 +1,23 @@
+.chip-container {
+	margin: 15px;
+	font-size: 15px;
+	list-style-type: none;
+}
+
+.chip-container li {
+	display: inline-block;
+
+	margin: 1px 0;
+	padding: 2px 8px 2px 2px;
+
+	cursor: pointer;
+
+	border-radius: 10px;
+	background-color: var(--chip-background);
+}
+
+.chip-container li .icon-plus-circled {
+	opacity: 0.5;
+
+	font-size: 0.8rem;
+}

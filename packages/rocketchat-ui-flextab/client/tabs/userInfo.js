@@ -1,8 +1,43 @@
 /* globals RoomRoles, UserRoles*/
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
 Template.userInfo.helpers({
+	customField() {
+		if (!RocketChat.authz.hasAllPermission('view-full-other-user-info')) {
+			return;
+		}
+
+		const sCustomFieldsToShow = RocketChat.settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
+		const customFields = [];
+
+		if (sCustomFieldsToShow) {
+			const user = Template.instance().user.get();
+			const userCustomFields = user && user.customFields || {};
+			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
+
+			_.map(listOfCustomFieldsToShow, (el) => {
+				let content = '';
+				if (_.isObject(el)) {
+					_.map(el, (key, label) => {
+						const value = RocketChat.templateVarHandler(key, userCustomFields);
+						if (value) {
+							content = `${ label }: ${ value }`;
+						}
+					});
+				} else {
+					content = RocketChat.templateVarHandler(el, userCustomFields);
+				}
+				if (content) {
+					customFields.push(content);
+				}
+			});
+		}
+		return customFields;
+	},
+
 	name() {
 		const user = Template.instance().user.get();
 		return user && user.name ? user.name : TAPi18n.__('Unnamed');
@@ -225,7 +260,7 @@ Template.userInfo.events({
 		const room = ChatRoom.findOne(rid);
 		const user = instance.user.get();
 		if (user && RocketChat.authz.hasAllPermission('remove-user', rid)) {
-			return swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('The_user_will_be_removed_from_s', room.name),
 				type: 'warning',
@@ -236,11 +271,11 @@ Template.userInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, () => {
-				return Meteor.call('removeUserFromRoom', { rid, username: user.username }, (err) => {
+				Meteor.call('removeUserFromRoom', { rid, username: user.username }, (err) => {
 					if (err) {
 						return handleError(err);
 					}
-					swal({
+					modal.open({
 						title: t('Removed'),
 						text: t('User_has_been_removed_from_s', room.name),
 						type: 'success',
@@ -248,11 +283,11 @@ Template.userInfo.events({
 						showConfirmButton: false
 					});
 
-					return instance.clear();
+					instance.clear();
 				});
 			});
 		} else {
-			return toastr.error(TAPi18n.__('error-not-allowed'));
+			toastr.error(TAPi18n.__('error-not-allowed'));
 		}
 	},
 
@@ -262,7 +297,7 @@ Template.userInfo.events({
 		const room = ChatRoom.findOne(rid);
 		const user = instance.user.get();
 		if (user && RocketChat.authz.hasAllPermission('mute-user', rid)) {
-			return swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('The_user_wont_be_able_to_type_in_s', room.name),
 				type: 'warning',
@@ -273,11 +308,11 @@ Template.userInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, () => {
-				return Meteor.call('muteUserInRoom', { rid, username: user.username }, function(err) {
+				Meteor.call('muteUserInRoom', { rid, username: user.username }, function(err) {
 					if (err) {
 						return handleError(err);
 					}
-					return swal({
+					modal.open({
 						title: t('Muted'),
 						text: t('User_has_been_muted_in_s', room.name),
 						type: 'success',
@@ -483,7 +518,7 @@ Template.userInfo.events({
 		e.preventDefault();
 		const user = instance.user.get();
 		if (user) {
-			return swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Delete_User_Warning'),
 				type: 'warning',
@@ -494,13 +529,11 @@ Template.userInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, function() {
-				swal.disableButtons();
-				return Meteor.call('deleteUser', user._id, function(error) {
+				Meteor.call('deleteUser', user._id, function(error) {
 					if (error) {
 						handleError(error);
-						return swal.enableButtons();
 					} else {
-						swal({
+						modal.open({
 							title: t('Deleted'),
 							text: t('User_has_been_deleted'),
 							type: 'success',
@@ -508,7 +541,7 @@ Template.userInfo.events({
 							showConfirmButton: false
 						});
 
-						return instance.tabBar.close();
+						instance.tabBar.close();
 					}
 				});
 			});

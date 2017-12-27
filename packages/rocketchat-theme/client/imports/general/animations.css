@@ -1,0 +1,174 @@
+@keyframes fadeIn {
+	0% {
+		visibility: hidden;
+
+		opacity: 0;
+	}
+
+	1% {
+		visibility: visible;
+
+		opacity: 0;
+	}
+
+	100% {
+		visibility: visible;
+
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	0% {
+		visibility: visible;
+
+		opacity: 1;
+	}
+
+	99% {
+		visibility: visible;
+
+		opacity: 0;
+	}
+
+	100% {
+		visibility: hidden;
+
+		opacity: 0;
+	}
+}
+
+@keyframes highlight {
+	0% {
+		background: #ffff99;
+	}
+
+	100% {
+		background: none;
+	}
+}
+
+@keyframes modalEnter {
+	0% {
+		visibility: hidden;
+
+		opacity: 0;
+	}
+
+	1% {
+		visibility: visible;
+
+		transform: translateY(-150px);
+
+		opacity: 0;
+	}
+
+	100% {
+		visibility: visible;
+
+		transform: translateY(0);
+
+		opacity: 1;
+	}
+}
+
+@keyframes modalExit {
+	0% {
+		visibility: visible;
+
+		opacity: 1;
+	}
+
+	99% {
+		visibility: visible;
+
+		transform: translateY(150px);
+
+		opacity: 0;
+	}
+
+	100% {
+		visibility: hidden;
+
+		opacity: 0;
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes spinh {
+	from {
+		transform: rotateY(0deg);
+	}
+
+	to {
+		transform: rotateY(360deg);
+	}
+}
+
+@keyframes dropdown-in {
+	0% {
+		display: none;
+
+		opacity: 0;
+	}
+
+	1% {
+		display: block;
+
+		transform: scale(0);
+
+		opacity: 0;
+	}
+
+	100% {
+		transform: scale(1);
+
+		opacity: 1;
+	}
+}
+
+.pulse {
+	animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+	from {
+		transform: scale3d(0.9, 0.9, 0.9);
+	}
+
+	50% {
+		transform: scale3d(1.1, 1.1, 1.1);
+	}
+
+	to {
+		transform: scale3d(0.9, 0.9, 0.9);
+	}
+}
+
+.fadeInDown {
+	animation-name: fadeInDown;
+	animation-duration: 0.3s;
+}
+
+@keyframes fadeInDown {
+	from {
+		transform: translate3d(0, -20px, 0);
+
+		opacity: 0;
+	}
+
+	to {
+		transform: none;
+
+		opacity: 1;
+	}
+}

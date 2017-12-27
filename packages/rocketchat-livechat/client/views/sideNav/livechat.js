@@ -22,10 +22,10 @@ Template.livechat.helpers({
 		};
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.unreadRoomsMode': 1 }
+			fields: { 'settings.preferences.roomsListExhibitionMode': 1 }
 		});
 
-		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
+		if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
 			query.alert = { $ne: true };
 		}
 
@@ -78,14 +78,10 @@ Template.livechat.helpers({
 		const statusLivechat = Template.instance().statusLivechat.get();
 
 		return {
-			status: statusLivechat === 'available' ? 'status-online' : 'status-offline',
+			status: statusLivechat === 'available' ? 'status-online' : '',
 			icon: statusLivechat === 'available' ? 'icon-toggle-on' : 'icon-toggle-off',
 			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
 		};
-	},
-
-	livechatAvailable() {
-		return Template.instance().statusLivechat.get();
 	},
 
 	isLivechatAvailable() {
@@ -116,11 +112,11 @@ Template.livechat.events({
 		});
 	},
 
-	'click .inquiries .open-room'(event) {
+	'click .inquiries .sidebar-item'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		swal({
+		modal.open({
 			title: t('Livechat_Take_Confirm'),
 			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,

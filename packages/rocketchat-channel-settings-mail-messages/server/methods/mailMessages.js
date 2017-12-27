@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import moment from 'moment';
 
 Meteor.methods({
@@ -55,7 +56,8 @@ Meteor.methods({
 		if (data.language !== 'en') {
 			const localeFn = Meteor.call('loadLocale', data.language);
 			if (localeFn) {
-				Function(localeFn)();
+				Function(localeFn).call({moment});
+				moment.locale(data.language);
 			}
 		}
 
