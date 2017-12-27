@@ -78,19 +78,17 @@ Object.assign(FileUpload, {
 		}));
 		return future.wait();
 	},
-	resizeImagePreview(file, callback) {
+	resizeImagePreview(file) {
+		return new Promise(function(resolve, reject) {
+			const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
-
-		const transformer = sharp().resize(50, 50).max().toBuffer(function(err, out) {
-			if (err) { throw err; }
-			callback(out.toString('base64'));
-		});
-		if (/^image\/.+/.test(file.type)) {
+			const transformer = sharp().resize(50, 50).max().toBuffer(function(err, out) {
+				if (err) { reject(err); }
+				resolve(out.toString('base64'));
+			});
 			image.pipe(transformer);
-		} else {
-			callback();
-		}
+
+		});
 	},
 	uploadsTransformWrite(readStream, writeStream, fileId, file) {
 		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
