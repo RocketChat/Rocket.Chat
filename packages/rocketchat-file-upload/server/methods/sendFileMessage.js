@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import sharp from 'sharp';
 
 Meteor.methods({
 	'sendFileMessage'(roomId, store, file, msgData = {}) {
