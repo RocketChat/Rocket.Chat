@@ -61,7 +61,21 @@ RocketChat.Livechat = {
 			return RocketChat.models.Users.findOnlineAgents();
 		}
 	},
-	getRoom(guest, message, roomInfo) {
+	getRequiredDepartment(onlineRequired = true) {
+		const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
+
+		return departments.fetch().find((dept) => {
+			if (!dept.showOnRegistration) {
+				return false;
+			}
+			if (!onlineRequired) {
+				return true;
+			}
+			const onlineAgents = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			return onlineAgents.count() > 0;
+		});
+	},
+	getRoom(guest, message, roomInfo, agent) {
 		let room = RocketChat.models.Rooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -72,20 +86,17 @@ RocketChat.Livechat = {
 
 		if (room == null) {
 			// if no department selected verify if there is at least one active and pick the first
-			if (!guest.department) {
-				const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
-				if (departments.count() > 0) {
-					departments.forEach((dept) => {
-						if (!guest.department && dept.showOnRegistration) {
-							guest.department = dept._id;
-						}
-					});
+			if (!agent && !guest.department) {
+				const department = this.getRequiredDepartment();
+
+				if (department) {
+					guest.department = department._id;
 				}
 			}
 
 			// delegate room creation to QueueMethods
 			const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
-			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo);
+			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo, agent);
 
 			newRoom = true;
 		}
@@ -96,8 +107,8 @@ RocketChat.Livechat = {
 
 		return { room, newRoom };
 	},
-	sendMessage({ guest, message, roomInfo }) {
-		const { room, newRoom } = this.getRoom(guest, message, roomInfo);
+	sendMessage({ guest, message, roomInfo, agent }) {
+		const { room, newRoom } = this.getRoom(guest, message, roomInfo, agent);
 		if (guest.name) {
 			message.alias = guest.name;
 		}
