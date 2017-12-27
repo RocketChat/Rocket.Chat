@@ -74,7 +74,7 @@ Template.adminRoomInfo.helpers({
 
 Template.adminRoomInfo.events({
 	'click .delete'() {
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('Delete_Room_Warning'),
 			type: 'warning',
@@ -85,13 +85,11 @@ Template.adminRoomInfo.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			swal.disableButtons();
 			Meteor.call('eraseRoom', this.rid, function(error) {
 				if (error) {
 					handleError(error);
-					swal.enableButtons();
 				} else {
-					swal({
+					modal.open({
 						title: t('Deleted'),
 						text: t('Room_has_been_deleted'),
 						type: 'success',
@@ -209,7 +207,7 @@ Template.adminRoomInfo.onCreated(function() {
 					if (!AdminChatRoom.findOne(rid, { fields: { 'default': 1 }})['default']) {
 						return saveRoomSettings();
 					}
-					swal({
+					modal.open({
 						title: t('Room_default_change_to_private_will_be_default_no_more'),
 						type: 'warning',
 						showCancelButton: true,

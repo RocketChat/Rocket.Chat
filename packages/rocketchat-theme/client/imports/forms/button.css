@@ -26,6 +26,10 @@
 		background: inherit;
 	}
 
+	&--invisible {
+		visibility: hidden;
+	}
+
 	&--primary {
 		color: var(--button-primary-text-color);
 		border: 0;
@@ -33,15 +37,12 @@
 	}
 
 	&--secondary {
-		color: var(--button-secondary-text-color);
 		border: 0;
-		background-color: var(--button-secondary-background);
 	}
 
 	&--cancel {
 		color: var(--button-primary-text-color);
 		border: 0;
-		background-color: var(--button-cancel-color);
 	}
 
 	&--small {
