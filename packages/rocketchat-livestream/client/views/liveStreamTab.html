@@ -1,0 +1,29 @@
+<template name="liveStreamTab">
+	<div class="contextual-bar__header flex-tab__header">
+		<div class="title">
+			<h2>LiveStream</h2>
+		</div>
+	</div>
+	<div class="contextual-bar__content flex-tab">
+		{{#if canEdit}}
+			{{#if editing}}
+				<form class="liveStreamTab_form">
+					<input type="text" name="streamingOptions" class="content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
+					<button type="button" class="button js-cancel" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
+					<button type="button" class="button primary js-save">{{_ "Save"}}</button>
+				</form>
+			{{else}}
+				<div class="setting-block">
+					<span class="current-setting streamingSourceSetting"> {{ streamingSource }} </span>
+				</div>
+			{{/if}}
+		{{/if}}
+		{{#if hasSource}}
+			<iframe width="356" height="350" src="{{ streamingSource }}"
+				frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen>
+			</iframe>
+		{{else}}
+			<div> Nenhum livestream listado. </div>
+		{{/if}}
+	</div>
+</template>
