@@ -40,6 +40,7 @@
   "Accounts_CustomFields_Description": "Ожидается валидный JSON-объект, в котором каждый ключ - это имя поля, а содержимое - словарь настроек поля. Пример:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}\n</code>",
   "Accounts_CustomFieldsToShowInUserInfo": "Кастомные поля для отображения в информации пользователя",
   "Accounts_DefaultUsernamePrefixSuggestion": "Предлагаемая подсказка префикса логина",
+  "Accounts_Default_User_Preferences_desktopNotifications": "Стандартные оповещения на рабочем столе",
   "Accounts_denyUnverifiedEmail": "Запретить неподтверждённые адреса электронной почты",
   "Accounts_EmailVerification": "Подтверждение адреса электронной почты",
   "Accounts_EmailVerification_Description": "Убедитесь, что у вас верные настройки SMTP для использования этой функции",
