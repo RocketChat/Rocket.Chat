@@ -704,6 +704,15 @@ Template.room.events({
 			removeClass.forEach(message => $(`.messages-box #${ message }`).removeClass('selected'));
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
+	},
+	'click .announcement'(e) {
+		modal.open({
+			title: t('Announcement'),
+			text: $(e.target).attr('aria-label'),
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close')
+		});
 	}
 });
 
