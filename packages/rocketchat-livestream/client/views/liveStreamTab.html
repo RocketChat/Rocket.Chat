@@ -5,6 +5,7 @@
 		</div>
 	</div>
 	<div class="contextual-bar__content flex-tab">
+		<button type="button" name="livestream-popout" class="button primary livestreamPopout"> Pop Out </button>
 		{{#if canEdit}}
 			{{#if editing}}
 				<form class="liveStreamTab_form">
@@ -19,9 +20,7 @@
 			{{/if}}
 		{{/if}}
 		{{#if hasSource}}
-			<iframe width="356" height="350" src="{{ streamingSource }}"
-				frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen>
-			</iframe>
+			{{> liveStreamView streamingSource=streamingSource }}
 		{{else}}
 			<div> {{_ "Livestream_not_found" }}</div>
 		{{/if}}
