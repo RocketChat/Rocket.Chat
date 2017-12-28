@@ -1,27 +1,25 @@
+/* globals popout */
 import toastr from 'toastr';
+
+function parseUrl(url) {
+	const parsedUrl = url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
+	let source = url;
+	if (parsedUrl != null) {
+		if (parsedUrl[3].includes('youtu')) {
+			source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
+		} else if (parsedUrl[3].includes('vimeo')) {
+			source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
+		} else if (parsedUrl[3].includes('twitch')) {
+			source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
+		}
+		// @TODO add support for other urls
+		return source;
+	}
+}
 
 Template.liveStreamTab.helpers({
 	streamingSource() {
-		const streamingOptions = Template.instance().streamingOptions.get();
-		if (streamingOptions == null) {
-			return '';
-		} else {
-			const parsedUrl = streamingOptions.url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
-			let source = streamingOptions.url;
-			if (parsedUrl != null) {
-				if (parsedUrl[3].includes('youtu')) {
-					source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
-				} else if (parsedUrl[3].includes('vimeo')) {
-					source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
-				} else if (parsedUrl[3].includes('twitch')) {
-					source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
-				}
-				// @TODO add support for other urls
-				return source;
-			} else {
-				return '';
-			}
-		}
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},
 	hasSource() {
 		return !!Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().url !== '';
@@ -49,8 +47,9 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 
 		const streamingOptions = {
-			url: i.find('[name=streamingOptions]').value
+			url: parseUrl(i.find('[name=streamingOptions]').value)
 		};
+
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
 			if (err) {
 				return handleError(err);
@@ -63,5 +62,16 @@ Template.liveStreamTab.events({
 	'click .streamingSourceSetting'(e, i) {
 		e.preventDefault();
 		i.editing.set(true);
+	},
+	'click .livestreamPopout'(e, i) {
+		e.preventDefault();
+		console.log('t');
+		popout.open({
+			content: 'liveStreamView',
+			data: {
+				'streamingSource': i.streamingOptions.get().url
+			}
+		});
+		//Blaze.renderWithData(Template.liveStreamView, {'streamingSource': i.streamingOptions.get().url}, document.body.querySelector('#user-card-popover'));
 	}
 });
