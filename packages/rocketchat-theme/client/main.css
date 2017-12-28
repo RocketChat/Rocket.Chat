@@ -34,6 +34,7 @@
 @import 'imports/components/slider.css';
 @import 'imports/components/chip.css';
 @import 'imports/components/messages.css';
+@import 'imports/components/emojiPicker.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
