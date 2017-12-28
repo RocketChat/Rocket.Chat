@@ -173,14 +173,14 @@ Object.assign(FileUpload, {
 			return true;
 		}
 
-		let { uid, token } = query;
+		let { rc_uid, rc_token } = query;
 
-		if (!uid && headers.cookie) {
-			uid = cookie.get('rc_uid', headers.cookie) ;
-			token = cookie.get('rc_token', headers.cookie);
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_token = cookie.get('rc_token', headers.cookie);
 		}
 
-		if (!uid || !token || !RocketChat.models.Users.findOneByIdAndLoginToken(uid, token)) {
+		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
 			return false;
 		}
 
