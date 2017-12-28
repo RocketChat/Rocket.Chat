@@ -55,7 +55,7 @@ git.status()
 	if (status.current === 'release-candidate') {
 		return semver.inc(pkgJson.version, 'prerelease', 'rc');
 	}
-	if (status.current === 'release-0.60.0') {
+	if (status.current === 'master') {
 		return semver.inc(pkgJson.version, 'patch');
 	}
 	if (status.current === 'develop') {

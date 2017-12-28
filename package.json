@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.60.0",
+	"version": "0.60.1",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
