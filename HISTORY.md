@@ -1,3 +1,13 @@
+<a name="0.60.1"></a>
+## 0.60.1 (2017-12-28)
+
+
+### Bug Fixes
+
+- [#9262](https://github.com/RocketChat/Rocket.Chat/pull/9262) File access not working when passing credentials via querystring
+
+
+
 <a name="0.60.0"></a>
 # 0.60.0 (2017-12-27)
 
