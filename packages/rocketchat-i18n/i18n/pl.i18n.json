@@ -33,6 +33,7 @@
   "Accounts_BlockedDomainsList_Description": "Oddzielonych przecinkami lista zablokowanych domen",
   "Accounts_BlockedUsernameList": "Lista zablokowanych użytkowników",
   "Accounts_BlockedUsernameList_Description": "Oddzielona przecinkami lista zablokowanych użytkowników (bez uwzględniania wielkości liter)",
+  "Accounts_Default_User_Preferences_mobileNotifications": "Domyślne powiadomnienia mobilne",
   "Accounts_denyUnverifiedEmail": "Odrzucaj niezweryfikowane adresy email",
   "Accounts_EmailVerification": "Weryfikacja adresu email",
   "Accounts_EmailVerification_Description": "Upewnij się, że masz odpowiednie ustawienia SMTP by korzystać z tej funkcji",

@@ -40,6 +40,7 @@
   "Accounts_CustomFields_Description": "Anahtarların, alan ayarları sözlüğü bulunduran alan isimleri olduğu geçerli bir JSON olmalı. Örnek:<br/><code>{\n\n \"role\": {\n\n  \"type\": \"select\",\n\n  \"defaultValue\": \"student\",\n\n  \"options\": [\"teacher\", \"student\"],\n\n  \"required\": true,\n\n  \"modifyRecordField\": {\n\n   \"array\": true,\n\n   \"field\": \"roles\"\n\n  }\n\n },\n\n \"twitter\": {\n\n  \"type\": \"text\",\n\n  \"required\": true,\n\n  \"minLength\": 2,\n\n  \"maxLength\": 10\n\n }\n\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "Kullanıcı Bilgilerini Göstermek için Özel alanlar",
   "Accounts_DefaultUsernamePrefixSuggestion": "Varsayılan kullanıcı adı ön eki tavsiyesi",
+  "Accounts_Default_User_Preferences_audioNotifications": "Sesli Mesaj için Varsayılan Uyarı",
   "Accounts_denyUnverifiedEmail": "Doğrulanmamış e-posta'yı reddet",
   "Accounts_EmailVerification": "E-Posta Doğrulama",
   "Accounts_EmailVerification_Description": "Bu özelliği kullanmak için doğru SMTP ayarlarına sahip olduğunuza emin olun",
