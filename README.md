@@ -299,7 +299,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Full text search
 - Live chat / Messaging call center
 - LDAP Authentication
-- CAS 1.0, 2.0 support for education institutions and hosting providers worldwide
+- CAS 1.0, 2.0 support for educational institutions and hosting providers worldwide
 - Support for Okta SSO through SAML v2
 - I18n - Supports 22 Languages
 - Hubot Friendly
