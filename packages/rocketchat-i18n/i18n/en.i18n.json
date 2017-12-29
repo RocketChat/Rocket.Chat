@@ -1280,7 +1280,7 @@
   "No_such_command": "No such command: `/__command__`",
   "No_user_with_username_%s_was_found": "No user with username <strong>\"%s\"</strong> was found!",
   "Nobody_available": "Nobody available",
-  "Node_version": "Node version",
+  "Node_version": "Node Version",
   "None": "None",
   "Normal": "Normal",
   "Not_authorized": "Not authorized",
