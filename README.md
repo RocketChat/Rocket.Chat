@@ -317,7 +317,7 @@ It is a great solution for communities and companies wanting to privately host t
 - API access from [Perl](https://metacpan.org/pod/Net::RocketChat) and [Java](https://github.com/baloise/rocket-chat-rest-client)  (community contributions)
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - Massively scalable hosting and provisioning (beta testing now)
-- Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
+- Native Cross-Platform Desktop Application [Windows, macOS, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on App Store](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 - Native Firefox OS Application (also for Desktop Firefox and Firefox for Android) - [Check the docs page for install instructions](https://docs.rocket.chat/installation/mobile-and-desktop-apps/#native-firefox-os-app)
