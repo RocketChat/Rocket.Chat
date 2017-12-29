@@ -6,7 +6,7 @@ function parseUrl(url) {
 	let source = url;
 	if (parsedUrl != null) {
 		if (parsedUrl[3].includes('youtu')) {
-			source = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
+			source = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0`;
 		} else if (parsedUrl[3].includes('vimeo')) {
 			source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
 		} else if (parsedUrl[3].includes('twitch')) {
@@ -65,13 +65,11 @@ Template.liveStreamTab.events({
 	},
 	'click .livestreamPopout'(e, i) {
 		e.preventDefault();
-		console.log('t');
 		popout.open({
 			content: 'liveStreamView',
 			data: {
 				'streamingSource': i.streamingOptions.get().url
 			}
 		});
-		//Blaze.renderWithData(Template.liveStreamView, {'streamingSource': i.streamingOptions.get().url}, document.body.querySelector('#user-card-popover'));
 	}
 });
