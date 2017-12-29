@@ -75,11 +75,11 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 ## Native Mobile Apps
 *Note: currently the native apps doesn't support all the features that web does. If you're looking for it, you should download the Cordova apps.*
 
-[![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
+[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
 
 ## Hybrid Mobile Apps (Cordova)
 
-[![Rocket.Chat on Apple AppStore](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
 
 *Now compatible with all Android devices as old as version 4.0.x - [download here](https://docs.rocket.chat/developer-guides/mobile-apps/), even on BlackBerry Passport!*
 
@@ -318,9 +318,9 @@ It is a great solution for communities and companies wanting to privately host t
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
 - Massively scalable hosting and provisioning (beta testing now)
 - Native Cross-Platform Desktop Application [Windows, Mac OSX, or Linux](https://rocket.chat/)
-- Mobile app for iPhone, iPad, and iPod touch [Download on AppStore!](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
-- Mobile app for Android phone, tablet, and TV stick [Available now on Google Play!](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
-- Native Firefox OS Application (also for Desktop Firefox and Firefox for Android!) - [Check the docs page for install instructions](https://docs.rocket.chat/installation/mobile-and-desktop-apps/#native-firefox-os-app)
+- Mobile app for iPhone, iPad, and iPod touch [Download on App Store](https://geo.itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8)
+- Mobile app for Android phone, tablet, and TV stick [Available now on Google Play](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
+- Native Firefox OS Application (also for Desktop Firefox and Firefox for Android) - [Check the docs page for install instructions](https://docs.rocket.chat/installation/mobile-and-desktop-apps/#native-firefox-os-app)
 - Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 - Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
