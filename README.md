@@ -276,7 +276,7 @@ It is a great solution for communities and companies wanting to privately host t
 
 ## Features
 
-- BYOS (bring your own server)
+- BYOS (Bring Your Own Server)
 - Multiple Rooms
 - Direct Messages
 - Private Groups
