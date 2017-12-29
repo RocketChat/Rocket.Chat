@@ -110,7 +110,7 @@
   "Accounts_RegistrationForm_Public": "公开",
   "Accounts_RegistrationForm_Secret_URL": "Secret URL",
   "Accounts_RegistrationForm_SecretURL": "注册表单 Secret URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "您必须提供一个随机字符串，该字符串将被添加到您的注册地址中。例如：https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "您必须提供一个随机字符串，该字符串将被添加到您的注册地址中。例如：https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "姓名必须填写",
   "Accounts_RequirePasswordConfirmation": "请再次确认密码",
   "Accounts_SetDefaultAvatar": "设置默认头像",

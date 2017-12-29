@@ -93,7 +93,7 @@
   "Accounts_RegistrationForm_Public": "Publik",
   "Accounts_RegistrationForm_Secret_URL": "URL rahasia",
   "Accounts_RegistrationForm_SecretURL": "Formulir Pendaftaran Rahasia URL",
-  "Accounts_RegistrationForm_SecretURL_Description": "Anda harus memberikan string acak yang akan ditambahkan ke URL pendaftaran Anda. Contoh: https://demo.rocket.chat/register/[secret_hash]",
+  "Accounts_RegistrationForm_SecretURL_Description": "Anda harus memberikan string acak yang akan ditambahkan ke URL pendaftaran Anda. Contoh: https://open.rocket.chat/register/[secret_hash]",
   "Accounts_RequireNameForSignUp": "Membutuhkan Nama Untuk Pendaftaran",
   "Accounts_ShowFormLogin": "berbasis bentuk acara Login",
   "Accounts_UseDefaultBlockedDomainsList": "Gunakan Default Diblokir Daftar Domain",

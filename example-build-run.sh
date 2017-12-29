@@ -3,7 +3,7 @@ set -x
 set -euvo pipefail
 IFS=$'\n\t'
 
-# Requies Node.js version 4.x
+# Requires Node.js version 4.x
 # Do not run as root
 
 DEPLOY_DIR=/var/www/rocket.chat
