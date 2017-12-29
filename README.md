@@ -38,7 +38,7 @@
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
 * [About Rocket.Chat](#about-rocketchat)
-  * [On the News](#on-the-news)
+  * [In the News](#in-the-news)
   * [Features](#features)
   * [Roadmap](#roadmap)
   * [How it all started](#how-it-all-started)
@@ -244,7 +244,7 @@ Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](ht
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
-## On the News
+## In the News
 
 ##### [Wired](http://www.wired.com/2016/03/open-source-devs-racing-build-better-versions-slack/)
 > Open Sourcers Race to Build Better Versions of Slack
