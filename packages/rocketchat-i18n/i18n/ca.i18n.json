@@ -40,6 +40,8 @@
   "Accounts_CustomFields_Description": "Ha de ser un objecte JSON vàlid on les claus són els noms dels camps i contenen un diccionari amb les opcions del camp. Exemple:<br/><code>{\n \"role\": {\n  \"type\": \"select\",\n  \"defaultValue\": \"student\",\n  \"options\": [\"teacher\", \"student\"],\n  \"required\": true,\n  \"modifyRecordField\": {\n   \"array\": true,\n   \"field\": \"roles\"\n  }\n },\n \"twitter\": {\n  \"type\": \"text\",\n  \"required\": true,\n  \"minLength\": 2,\n  \"maxLength\": 10\n }\n}</code> ",
   "Accounts_CustomFieldsToShowInUserInfo": "Camps personalitzats a mostrar a l'informació d'usuari",
   "Accounts_DefaultUsernamePrefixSuggestion": "Prefix suggerit per al nom d'usuari per defecte",
+  "Accounts_Default_User_Preferences_desktopNotifications": "Alerta per defecte per a les notificacions d'escriptori",
+  "Accounts_Default_User_Preferences_mobileNotifications": "Alerta per defecte notificacions mòbil",
   "Accounts_denyUnverifiedEmail": "Denegar correu electrònic sense verificar",
   "Accounts_EmailVerification": "Verificació de correu electrònic",
   "Accounts_EmailVerification_Description": "Assegura't que la configuració SMTP és correcta per fer servir aquesta funcionalitat",
