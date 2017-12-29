@@ -62,3 +62,5 @@ Template.popout.events({
 		}
 	}
 });
+
+RocketChat.callbacks.add('afterLogoutCleanUp', () => popout.close(), RocketChat.callbacks.priority.MEDIUM, 'popout-close-after-logout-cleanup');
