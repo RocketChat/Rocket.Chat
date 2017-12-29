@@ -43,6 +43,10 @@ Template.liveStreamTab.onCreated(function() {
 });
 
 Template.liveStreamTab.events({
+	'click .js-cancel'(e, i) {
+		e.preventDefault();
+		i.editing.set(false);
+	},
 	'click .js-save'(e, i) {
 		e.preventDefault();
 
