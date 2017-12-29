@@ -312,7 +312,7 @@ It is a great solution for communities and companies wanting to privately host t
 - Drupal 7.x and 8.x Plug-in (both stable and development flavours) ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://git.drupal.org/project/rocket_chat.git) )
 - XMPP bridge ([try it](https://open.rocket.chat/channel/general))
 - REST APIs
-- Remote Locations Video Monitoring
+- Remote Video Monitoring
 - Native real-time APIs for Microsoft C#, Visual Basic, F# and other .NET supported languages ([Get it!](https://www.nuget.org/packages/Rocket.Chat.Net/0.0.12-pre))
 - API access from [Perl](https://metacpan.org/pod/Net::RocketChat) and [Java](https://github.com/baloise/rocket-chat-rest-client)  (community contributions)
 - Chat-ops powered by Hubot: scalable horizontal app integration (early access)
