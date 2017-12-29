@@ -12,7 +12,7 @@
 		position: absolute;
 		z-index: 10;
 		top: calc(var(--header-min-height) + 10px);
-		right: 50px;
+		left: calc(var(--sidebar-width) + 10px);
 		display: -webkit-flex;
 		display: flex;
 
@@ -32,6 +32,11 @@
 		cursor: pointer;
 		transform: rotate(45deg);
 
+		font-size: 20px;
+	}
+	&__minimize {
+		cursor: pointer;
+		transition: transform linear .2s;
 		font-size: 20px;
 	}
 
@@ -99,6 +104,12 @@
 		background: var(--rc-color-error);
 
 		line-height: 2;
+	}
+
+	&--closed {
+		& .rc-popout__minimize {
+			transform: rotate(180deg);
+		}
 	}
 
 }

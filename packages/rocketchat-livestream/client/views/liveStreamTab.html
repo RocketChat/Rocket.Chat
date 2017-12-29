@@ -4,8 +4,7 @@
 			<h2>{{_ "Livestream_title" }}</h2>
 		</div>
 	</div>
-	<div class="contextual-bar__content flex-tab">
-		<button type="button" name="livestream-popout" class="button primary livestreamPopout"> Pop Out </button>
+	<div class="contextual-bar__content flex-tab-bar">
 		{{#if canEdit}}
 			{{#if editing}}
 				<form class="liveStreamTab_form">
@@ -21,6 +20,7 @@
 		{{/if}}
 		{{#if hasSource}}
 			{{> liveStreamView streamingSource=streamingSource }}
+			<button type="button" name="livestream-popout" class="button primary livestreamPopout"> {{_ "Livestream_popout" }} </button>
 		{{else}}
 			<div> {{_ "Livestream_not_found" }}</div>
 		{{/if}}
