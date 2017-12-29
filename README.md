@@ -58,7 +58,7 @@
 
 
 # Community
-Join thousands of members world-wide 24 x 7 in our [community server](https://open.rocket.chat).
+Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=support)](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
 
