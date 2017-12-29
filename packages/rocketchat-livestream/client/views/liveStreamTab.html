@@ -4,13 +4,13 @@
 			<h2>{{_ "Livestream_title" }}</h2>
 		</div>
 	</div>
-	<div class="contextual-bar__content flex-tab-bar">
+	<section class="contextual-bar__content flex-tab-bar">
 		{{#if canEdit}}
 			{{#if editing}}
-				<form class="liveStreamTab_form">
-					<input type="text" name="streamingOptions" class="content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
-					<button type="button" class="button js-cancel" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
-					<button type="button" class="button primary js-save">{{_ "Save"}}</button>
+				<form class="liveStreamTab__form">
+					<input type="text" name="streamingOptions" class="rc-input__element content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
+						<button type="button" class="rc-button rc-button--nude js-cancel button-block" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary js-save button-block">{{_ "Save"}}</button>
 				</form>
 			{{else}}
 				<div class="setting-block">
@@ -20,9 +20,9 @@
 		{{/if}}
 		{{#if hasSource}}
 			{{> liveStreamView streamingSource=streamingSource }}
-			<button type="button" name="livestream-popout" class="button primary livestreamPopout"> {{_ "Livestream_popout" }} </button>
+			<button type="button" name="livestream-popout" class="rc-button rc-button--primary livestreamPopout"> {{_ "Livestream_popout" }} </button>
 		{{else}}
-			<div> {{_ "Livestream_not_found" }}</div>
+		 {{_ "Livestream_not_found" }}
 		{{/if}}
-	</div>
+	</section>
 </template>

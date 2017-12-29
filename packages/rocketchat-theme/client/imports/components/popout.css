@@ -13,12 +13,9 @@
 		z-index: 10;
 		top: calc(var(--header-min-height) + 10px);
 		left: calc(var(--sidebar-width) + 10px);
-		display: -webkit-flex;
 		display: flex;
 
-		-webkit-align-items: center;
 		align-items: center;
-		-webkit-justify-content: center;
 		justify-content: center;
 	}
 
