@@ -60,7 +60,7 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
-			return toastr.success(TAPi18n.__('Streaming_source_changed_succesfully'));
+			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
 	'click .streamingSourceSetting'(e, i) {
