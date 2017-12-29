@@ -28,7 +28,7 @@ Template.liveStreamTab.helpers({
 		return RocketChat.authz.hasAllPermission('edit-room', this.rid);
 	},
 	editing() {
-		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && Template.instance().streamingOptions.get().url === '');
+		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && (Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''));
 	}
 });
 
