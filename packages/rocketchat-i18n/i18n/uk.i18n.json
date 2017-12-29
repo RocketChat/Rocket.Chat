@@ -86,7 +86,7 @@
   "Accounts_OAuth_Twitter_id": "Twitter Id",
   "Accounts_OAuth_Twitter_secret": "Twitter Секретний",
   "Accounts_OAuth_Wordpress": "WordPress Увійти",
-  "Accounts_OAuth_Wordpress_callback_url": "URL Wordpress Зворотній дзвінок",
+  "Accounts_OAuth_Wordpress_callback_url": "URL WordPress Зворотній дзвінок",
   "Accounts_OAuth_Wordpress_id": "WordPress Id",
   "Accounts_OAuth_Wordpress_secret": "WordPress Секретний",
   "Accounts_PasswordReset": "Скидання пароля",
