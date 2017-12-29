@@ -20,24 +20,12 @@ this.popout = {
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
-	},
-	confirm(value) {
-		if (this.fn) {
-			this.fn(value);
-		} else {
-			this.close();
-		}
-
-		this.config.closeOnConfirm && this.close();
 	}
 };
 
 Template.popout.helpers({
-	hasAction() {
-		return !!this.action;
-	},
-	modalIcon() {
-		return `modal-${ this.type }`;
+	state() {
+		return Template.instance().isMinimized.get() ? 'closed' : 'open';
 	}
 });
 
@@ -46,7 +34,10 @@ Template.popout.onRendered(function() {
 		this.data.onRendered();
 	}
 });
-
+Template.popout.onCreated(function() {
+	this.locatePopout = new ReactiveVar('close');
+	this.isMinimized = new ReactiveVar(false);
+});
 Template.popout.onDestroyed(function() {
 });
 
@@ -59,5 +50,15 @@ Template.popout.events({
 	'click .js-close'(e) {
 		e.stopPropagation();
 		popout.close();
+	},
+	'click .js-minimize'(e, i) {
+		e.stopPropagation();
+		if (i.isMinimized.get()) {
+			i.isMinimized.set(false);
+			document.querySelector('.rc-popout iframe').height = '350px';
+		} else {
+			i.isMinimized.set(true);
+			document.querySelector('.rc-popout iframe').height = '40px';
+		}
 	}
 });
