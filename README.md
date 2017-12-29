@@ -12,8 +12,8 @@
 
 
 * [Community](#community)
-* [Mobile apps](#mobile-apps)
-* [Desktop apps](#desktop-apps)
+* [Mobile Apps](#mobile-apps)
+* [Desktop Apps](#desktop-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
    * [RocketChatLauncher](#rocketchatlauncher)
