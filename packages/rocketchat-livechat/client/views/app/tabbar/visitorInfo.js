@@ -1,3 +1,5 @@
+/* globals LivechatVisitor */
+
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -243,6 +245,6 @@ Template.visitorInfo.onCreated(function() {
 	}
 
 	this.autorun(() => {
-		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
+		this.user.set(LivechatVisitor.findOne({ '_id': this.visitorId.get() }));
 	});
 });
