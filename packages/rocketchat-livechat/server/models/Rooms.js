@@ -117,11 +117,11 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	return this.find(query);
 };
 
-RocketChat.models.Rooms.findOneOpenByVisitorId = function(visitorId, roomId) {
+RocketChat.models.Rooms.findOneOpenByVisitorToken = function(token, roomId) {
 	const query = {
 		_id: roomId,
 		open: true,
-		'v._id': visitorId
+		'v.token': token
 	};
 
 	return this.findOne(query);
@@ -150,12 +150,11 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 		_id: roomId
 	}, {
 		$set: {
-			closedBy: {
-				_id: closeInfo.user._id,
-				username: closeInfo.user.username
-			},
+			closer: closeInfo.closer,
+			closedBy: closeInfo.closedBy,
 			closedAt: closeInfo.closedAt,
-			chatDuration: closeInfo.chatDuration
+			chatDuration: closeInfo.chatDuration,
+			'v.status': 'offline'
 		},
 		$unset: {
 			open: 1
@@ -199,6 +198,21 @@ RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
 	const update = {
 		$set: {
 			crmData
+		}
+	};
+
+	return this.update(query, update);
+};
+
+RocketChat.models.Rooms.updateVisitorStatus = function(token, status) {
+	const query = {
+		'v.token': token,
+		open: true
+	};
+
+	const update = {
+		$set: {
+			'v.status': status
 		}
 	};
 
