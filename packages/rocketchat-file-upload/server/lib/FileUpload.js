@@ -91,16 +91,13 @@ Object.assign(FileUpload, {
 		return future.wait();
 	},
 	resizeImagePreview(file) {
-		return new Promise(function(resolve, reject) {
-			const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-			const transformer = sharp().resize(50, 50).max().toBuffer(function(err, out) {
-				if (err) { reject(err); }
-				resolve(out.toString('base64'));
-			});
-			image.pipe(transformer);
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		});
+		const transformer = sharp().resize(50, 50);
+		const result = transformer.toBuffer().then((out) => out.toString('base64'));
+		image.pipe(transformer);
+		return result;
 	},
 	uploadsTransformWrite(readStream, writeStream, fileId, file) {
 		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {

@@ -24,59 +24,53 @@ Meteor.methods({
 
 		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
-		const attachment = {
-			title: file.name,
-			type: 'file',
-			description: file.description,
-			title_link: fileUrl,
-			title_link_download: true
-		};
+		(async function() {
+			const attachment = {
+				title: file.name,
+				type: 'file',
+				description: file.description,
+				title_link: fileUrl,
+				title_link_download: true
+			};
 
-		if (/^image\/.+/.test(file.type)) {
-			attachment.image_url = fileUrl;
-			attachment.image_type = file.type;
-			attachment.image_size = file.size;
-			if (file.identify && file.identify.size) {
-				attachment.image_dimensions = file.identify.size;
+			if (/^image\/.+/.test(file.type)) {
+				attachment.image_url = fileUrl;
+				attachment.image_type = file.type;
+				attachment.image_size = file.size;
+				if (file.identify && file.identify.size) {
+					attachment.image_dimensions = file.identify.size;
+				}
+				attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			} else if (/^audio\/.+/.test(file.type)) {
+				attachment.audio_url = fileUrl;
+				attachment.audio_type = file.type;
+				attachment.audio_size = file.size;
+			} else if (/^video\/.+/.test(file.type)) {
+				attachment.video_url = fileUrl;
+				attachment.video_type = file.type;
+				attachment.video_size = file.size;
 			}
 
-		} else if (/^audio\/.+/.test(file.type)) {
-			attachment.audio_url = fileUrl;
-			attachment.audio_type = file.type;
-			attachment.audio_size = file.size;
-		} else if (/^video\/.+/.test(file.type)) {
-			attachment.video_url = fileUrl;
-			attachment.video_type = file.type;
-			attachment.video_size = file.size;
-		}
+			const user = Meteor.user();
+			let msg = Object.assign({
+				_id: Random.id(),
+				rid: roomId,
+				ts: new Date(),
+				msg: '',
+				file: {
+					_id: file._id,
+					name: file.name,
+					type: file.type
+				},
+				groupable: false,
+				attachments: [attachment]
+			}, msgData);
 
-		const user = Meteor.user();
-		let msg = Object.assign({
-			_id: Random.id(),
-			rid: roomId,
-			ts: new Date(),
-			msg: '',
-			file: {
-				_id: file._id,
-				name: file.name,
-				type: file.type
-			},
-			groupable: false,
-			attachments: [attachment]
-		}, msgData);
+			msg = Meteor.call('sendMessage', msg);
 
-		const isImage = file => (/^image\/.+/.test(file.type));
-		const sendMessage = () => msg = Meteor.call('sendMessage', msg);
+			Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
 
-		isImage(file)
-			? FileUpload.resizeImagePreview(file)
-				.then(r => msg.attachments[0].imagePreview = r)
-				.then(sendMessage)
-			: sendMessage();
-
-		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
-
-		return msg;
-
+			return msg;
+		}());
 	}
 });
