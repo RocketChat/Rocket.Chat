@@ -80,7 +80,7 @@
   "Accounts_OAuth_Drupal_secret": "Drupal oAuth2 Client Secret",
   "Accounts_OAuth_Facebook": "Facebook Login",
   "Accounts_OAuth_Facebook_callback_url": "Facebook Callback URL",
-  "Accounts_OAuth_Facebook_id": "Facebook App Id",
+  "Accounts_OAuth_Facebook_id": "Facebook App ID",
   "Accounts_OAuth_Facebook_secret": "Facebook Secret",
   "Accounts_OAuth_Github": "OAuth Enabled",
   "Accounts_OAuth_Github_callback_url": "Github Callback URL",
