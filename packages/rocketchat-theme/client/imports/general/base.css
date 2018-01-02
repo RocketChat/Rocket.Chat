@@ -145,7 +145,6 @@ button {
 
 		content: attr(data-unread-text);
 		text-align: right;
-		text-transform: lowercase;
 
 		color: var(--rc-color-error);
 		background: #ffffff;
