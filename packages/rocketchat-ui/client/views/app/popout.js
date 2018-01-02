@@ -2,6 +2,7 @@
 
 this.popout = {
 	context: null,
+	docked: true,
 	open(config = {}, fn) {
 		this.close();
 		this.context = Blaze.renderWithData(Template.popout, config, document.body);
@@ -11,11 +12,15 @@ this.popout = {
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
+		if (config.docked != null) {
+			this.docked = config.docked;
+		}
 	},
 	close() {
 		if (this.context) {
 			Blaze.remove(this.context);
 		}
+		this.context = null;
 		this.fn = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
@@ -26,6 +31,12 @@ this.popout = {
 Template.popout.helpers({
 	state() {
 		return Template.instance().isMinimized.get() ? 'closed' : 'open';
+	},
+	style() {
+		return Template.instance().isDocked.get() ? 'docked' : 'undocked';
+	},
+	isDocked() {
+		return Template.instance().isDocked.get();
 	}
 });
 
@@ -35,7 +46,7 @@ Template.popout.onRendered(function() {
 	}
 });
 Template.popout.onCreated(function() {
-	this.locatePopout = new ReactiveVar('close');
+	this.isDocked = new ReactiveVar(popout.docked);
 	this.isMinimized = new ReactiveVar(false);
 });
 Template.popout.onDestroyed(function() {
@@ -47,19 +58,38 @@ Template.popout.events({
 		e.stopPropagation();
 		popout.close();
 	},
-	'click .js-close'(e) {
+	'click .js-close'(e, i) {
 		e.stopPropagation();
-		popout.close();
+		popout.docked = true;
+		const livestreamTab = document.querySelector('.flex-tab--livestream');
+		const livestreamTabSource = Blaze.getView(livestreamTab).templateInstance().streamingOptions.get().url;
+		const popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+		if (livestreamTab == null || livestreamTabSource !== popoutSource) {
+			popout.close();
+			popout.open({
+				content: 'liveStreamView',
+				data: {
+					'streamingSource': livestreamTabSource
+				}
+			});
+		} else {
+			i.isDocked.set(true);
+		}
 	},
 	'click .js-minimize'(e, i) {
 		e.stopPropagation();
 		if (i.isMinimized.get()) {
 			i.isMinimized.set(false);
-			document.querySelector('.rc-popout iframe').height = '350px';
+			document.querySelector('.rc-popout object').height = '350px';
 		} else {
 			i.isMinimized.set(true);
-			document.querySelector('.rc-popout iframe').height = '40px';
+			document.querySelector('.rc-popout object').height = '40px';
 		}
+	},
+	'click .js-dock'(e, i) {
+		e.stopPropagation();
+		popout.docked = !i.isDocked.get();
+		i.isDocked.set(!i.isDocked.get());
 	}
 });
 

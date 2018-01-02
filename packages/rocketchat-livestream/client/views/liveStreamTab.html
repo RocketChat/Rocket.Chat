@@ -1,5 +1,5 @@
 <template name="liveStreamTab">
-	<div class="contextual-bar__header flex-tab__header">
+	<div class="contextual-bar__header flex-tab__header flex-tab--livestream">
 		<div class="title">
 			<h2>{{_ "Livestream_title" }}</h2>
 		</div>
@@ -19,8 +19,13 @@
 			{{/if}}
 		{{/if}}
 		{{#if hasSource}}
-			{{> liveStreamView streamingSource=streamingSource }}
-			<button type="button" name="livestream-popout" class="rc-button rc-button--primary livestreamPopout"> {{_ "Livestream_popout" }} </button>
+			{{#unless isDocked}}
+				{{#if canDock}}
+					<button type="button" class="rc-button rc-button--nude js-dock button-block" title="{{_ 'Livestream_dock'}}" >{{_ "Livestream_dock"}}</button>
+				{{else}}
+					<button type="button" class="rc-button rc-button--nude js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
+				{{/if}}
+			{{/unless}}
 		{{else}}
 		 {{_ "Livestream_not_found" }}
 		{{/if}}

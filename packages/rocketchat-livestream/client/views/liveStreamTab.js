@@ -29,6 +29,18 @@ Template.liveStreamTab.helpers({
 	},
 	editing() {
 		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && (Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''));
+	},
+	canDock() {
+		const livestreamTabSource = Template.instance().streamingOptions.get().url;
+		const popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+		if (livestreamTabSource === popoutSource) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	isDocked() {
+		return popout.docked;
 	}
 });
 
@@ -40,7 +52,22 @@ Template.liveStreamTab.onCreated(function() {
 		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
 		this.streamingOptions.set(room.streamingOptions);
 	});
+	if (popout.context == null) {
+		popout.open({
+			content: 'liveStreamView',
+			data: {
+				'streamingSource': this.streamingOptions.get().url
+			}
+		});
+	}
 });
+
+Template.liveStreamTab.onDestroyed(function() {
+	if (popout.docked) {
+		popout.close();
+	}
+});
+
 
 Template.liveStreamTab.events({
 	'click .js-cancel'(e, i) {
@@ -67,12 +94,17 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		i.editing.set(true);
 	},
-	'click .livestreamPopout'(e, i) {
-		e.preventDefault();
+	'click .js-dock'(e) {
+		e.stopPropagation();
+		popout.docked = true;
+	},
+	'click .js-close'(e) {
+		e.stopPropagation();
+		popout.close();
 		popout.open({
 			content: 'liveStreamView',
 			data: {
-				'streamingSource': i.streamingOptions.get().url
+				'streamingSource': Template.instance().streamingOptions.get().url
 			}
 		});
 	}

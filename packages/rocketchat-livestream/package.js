@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'rocketchat:livestream',
-	version: '0.0.2',
+	version: '0.0.3',
 	summary: 'Embed livestream to Rocket.Chat channels',
 	git: ''
 });
