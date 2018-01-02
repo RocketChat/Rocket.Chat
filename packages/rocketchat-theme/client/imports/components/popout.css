@@ -18,6 +18,18 @@
 		align-items: center;
 		justify-content: center;
 	}
+	&--docked {
+		top: calc(var(--header-min-height) + 135px);
+		right: 55px;
+		left: auto;
+
+		& .contextual-bar__close {
+			display: none;
+		}
+		& .rc-popout {
+			box-shadow: none;
+		}
+	}
 
 	&__title {
 		flex: 1 1 auto;
