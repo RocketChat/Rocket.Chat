@@ -277,6 +277,18 @@
 								</div>
 							</div>
 							<div class="input-line double-col">
+								<label>{{_ "Focus_Window_Notification"}}</label>
+								<div>
+									<select name="focusWindowNotification" class="audio">
+										<option value="none" selected="{{$eq focusWindowNotification 'none'}}">{{_ "None"}} ({{_ "Default"}})</option>
+										<option value="chime" selected="{{$eq focusWindowNotification 'chime'}}">Chime</option>
+										{{#each audioAssets}}
+											<option value="{{_id}}" selected="{{$eq focusWindowNotification _id}}">{{name}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+							<div class="input-line double-col">
 								<label>{{_ "Notifications_Sound_Volume"}}</label>
 								<div>
 									{{> slider id="notificationsSoundVolume" min="0" max="100" value=notificationsSoundVolume}}

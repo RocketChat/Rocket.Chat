@@ -402,6 +402,21 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'New_Message_Notification'
 		});
+		this.add('Accounts_Default_User_Preferences_focusWindowNotification', 'none', {
+			type: 'select',
+			values: [
+				{
+					key: 'none',
+					i18nLabel: 'None'
+				},
+				{
+					key: 'chime',
+					i18nLabel: 'Default'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Focus_Window_Notification'
+		});
 		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			'public': true,
