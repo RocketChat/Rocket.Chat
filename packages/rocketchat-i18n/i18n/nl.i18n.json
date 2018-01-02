@@ -82,7 +82,7 @@
   "Accounts_OAuth_Twitter_id": "Twitter Id",
   "Accounts_OAuth_Twitter_secret": "Twitter Secret",
   "Accounts_OAuth_Wordpress": "WordPress Inloggen",
-  "Accounts_OAuth_Wordpress_callback_url": "Wordpress Callback URL",
+  "Accounts_OAuth_Wordpress_callback_url": "WordPress Callback URL",
   "Accounts_OAuth_Wordpress_id": "WordPress Id",
   "Accounts_OAuth_Wordpress_secret": "WordPress Geheim (secret)",
   "Accounts_PasswordReset": "Wachtwoord reset",
