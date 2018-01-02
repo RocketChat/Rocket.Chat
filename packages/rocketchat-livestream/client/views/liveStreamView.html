@@ -1,7 +1,12 @@
 <template name="liveStreamView">
   <div class="streaming-popup">
-    <iframe width="356" height="350" src="{{ streamingSource }}"
+    <!-- <iframe width="356" height="350" src="{{ streamingSource }}"
       frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen>
-    </iframe>
+    </iframe> -->
+    <object width="356" height="350">
+    <param name="movie" value="{{ streamingSource }}"/>
+    <param name="allowscriptaccess" value="always"/>
+    <embed width="356" height="350" src="{{ streamingSource }}" class="youtube-player" type="text/html" allowscriptaccess="always" allowfullscreen="true"/>
+</object>
   </div>
 </template>
