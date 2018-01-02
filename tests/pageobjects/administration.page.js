@@ -211,6 +211,9 @@ class Administration extends Page {
 	get accountsNewMessageNotification() { return browser.element('[name="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 	get accountsNewMessageNotificationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 
+	get accountsFocusWindowNotification() { return browser.element('[name="Accounts_Default_User_Preferences_focusWindowNotification"]'); }
+	get accountsFocusWindowNotificationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_focusWindowNotification"]'); }
+
 	get accountsNotificationsSoundVolume() { return browser.element('[name="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 	get accountsNotificationsSoundVolumeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 
