@@ -28,6 +28,7 @@
 		overflow: auto;
 
 		flex: 1 1 auto;
+		justify-content: space-between;
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
