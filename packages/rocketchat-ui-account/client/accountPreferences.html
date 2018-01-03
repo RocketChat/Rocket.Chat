@@ -276,16 +276,11 @@
 									</select>
 								</div>
 							</div>
-							<div class="input-line double-col">
-								<label>{{_ "Focus_Window_Notification"}}</label>
+							<div class="input-line double-col" id="muteFocusedConversations">
+								<label>{{_ "Mute_Focused_Conversations"}}</label>
 								<div>
-									<select name="focusWindowNotification" class="audio">
-										<option value="none" selected="{{$eq focusWindowNotification 'none'}}">{{_ "None"}} ({{_ "Default"}})</option>
-										<option value="chime" selected="{{$eq focusWindowNotification 'chime'}}">Chime</option>
-										{{#each audioAssets}}
-											<option value="{{_id}}" selected="{{$eq focusWindowNotification _id}}">{{name}}</option>
-										{{/each}}
-									</select>
+									<label><input type="radio" name="muteFocusedConversations" value="1" checked="{{checked 'muteFocusedConversations' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="muteFocusedConversations" value="0" checked="{{checked 'muteFocusedConversations' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col">

@@ -17,8 +17,8 @@ Meteor.methods({
 				preferences.newMessageNotification = settings.newMessageNotification;
 			}
 
-			if (settings.focusWindowNotification) {
-				preferences.focusWindowNotification = settings.focusWindowNotification;
+			if (settings.muteFocusedConversations) {
+				preferences.muteFocusedConversations = settings.muteFocusedConversations === '1' ? true : false;
 			}
 
 			if (settings.useEmojis) {

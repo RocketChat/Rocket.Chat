@@ -51,7 +51,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/notification.js', 'client');
 	api.addFiles('client/lib/parentTemplate.js', 'client');
 	api.addFiles('client/lib/readMessages.js', 'client');
-	api.addFiles('client/lib/focusWindow.js', 'client');
 	api.addFiles('client/lib/rocket.js', 'client');
 	api.addFiles('client/lib/RoomHistoryManager.js', 'client');
 	api.addFiles('client/lib/RoomManager.js', 'client');

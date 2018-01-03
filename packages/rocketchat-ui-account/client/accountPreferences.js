@@ -29,8 +29,8 @@ Template.accountPreferences.helpers({
 	newRoomNotification() {
 		return RocketChat.getUserPreference(Meteor.user(), 'newRoomNotification');
 	},
-	focusWindowNotification() {
-		return RocketChat.getUserPreference(Meteor.user(), 'focusWindowNotification');
+	muteFocusedConversations() {
+		return RocketChat.getUserPreference(Meteor.user(), 'muteFocusedConversations');
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -132,7 +132,7 @@ Template.accountPreferences.onCreated(function() {
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val();
 		data.newMessageNotification = $('select[name=newMessageNotification]').val();
-		data.focusWindowNotification = $('select[name=focusWindowNotification]').val();
+		data.muteFocusedConversations = $('#muteFocusedConversations').find('input:checked').val();
 		data.useEmojis = $('input[name=useEmojis]:checked').val();
 		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val();
 		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val();

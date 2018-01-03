@@ -104,18 +104,6 @@ const KonchatNotification = {
 		}
 	},
 
-	focusWindow() {
-		const user = Meteor.user();
-		const focusWindowNotification = RocketChat.getUserPreference(user, 'focusWindowNotification');
-		const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
-
-		const [audio] = $(`audio#${ focusWindowNotification }`);
-		if (audio && audio.play) {
-			audio.volume = Number((audioVolume/100).toPrecision(2));
-			return audio.play();
-		}
-	},
-
 	newRoom(rid/*, withSound = true*/) {
 		Tracker.nonreactive(function() {
 			let newRoomSound = Session.get('newRoomSound');
