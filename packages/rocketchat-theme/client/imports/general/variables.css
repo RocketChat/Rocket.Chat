@@ -144,10 +144,8 @@
 		--sidebar-background-light-hover: var(--rc-color-primary-light);
 		--sidebar-default-padding: 24px;
 		--sidebar-small-default-padding: 16px;
-		--sidebar-header-padding: 16px;
-		--sidebar-header-small-padding: 12px;
+		--sidebar-extra-small-default-padding: 12px;
 		--sidebar-footer-height: 70px;
-		--sidebar-footer-padding: var(--sidebar-header-padding);
 		--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 		/*
