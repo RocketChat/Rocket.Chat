@@ -393,6 +393,72 @@ Template.channelSettings.events({
 	'click .js-edit'(e, t) {
 		t.editing.set(true);
 	},
+	'click .js-leave'(e, instance) {
+		let warnText;
+		const { rid, name, t : type } = instance.room;
+		switch (type) {
+			case 'c': warnText = 'Leave_Room_Warning'; break;
+			case 'p': warnText = 'Leave_Group_Warning'; break;
+			case 'd': warnText = 'Leave_Private_Warning'; break;
+			case 'l': warnText = 'Leave_Livechat_Warning'; break;
+		}
+
+		swal({
+			title: t('Are_you_sure'),
+			text: warnText ? t(warnText, name) : '',
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes_leave_it'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: true,
+			html: false
+		}, async function() {
+			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+				FlowRouter.go('home');
+			}
+
+			await call('leaveRoom', rid);
+
+			if (rid === Session.get('openedRoom')) {
+				Session.delete('openedRoom');
+			}
+
+		});
+	},
+	'click .js-hide'(e, instance) {
+		let warnText;
+		const { rid, name, t: type } = instance.room;
+		switch (type) {
+			case 'c': warnText = 'Hide_Room_Warning'; break;
+			case 'p': warnText = 'Hide_Group_Warning'; break;
+			case 'd': warnText = 'Hide_Private_Warning'; break;
+			case 'l': warnText = 'Hide_Livechat_Warning'; break;
+		}
+
+		swal({
+			title: t('Are_you_sure'),
+			text: warnText ? t(warnText, name) : '',
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes_hide_it'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: true,
+			html: false
+		}, async function() {
+			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+				FlowRouter.go('home');
+			}
+
+			await call('hideRoom', rid);
+
+			if (rid === Session.get('openedRoom')) {
+				Session.delete('openedRoom');
+			}
+
+		});
+	},
 	'click .js-cancel'(e, t) {
 		t.editing.set(false);
 	},
@@ -433,10 +499,18 @@ Template.channelSettingsInfo.helpers({
 	channelSettings() {
 		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
+	canLeaveRoom() {
+		const { cl: canLeave, t: roomType } = Template.instance().room;
+		return roomType !== 'd' && canLeave !== false;
+	},
 	canDeleteRoom() {
 		const {room} = Template.instance();
 		const roomType = room && room.t;
 		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, room._id);
+	},
+	canEditRoom() {
+		const { _id } = Template.instance().room;
+		return RocketChat.authz.hasAllPermission('edit-room', _id);
 	},
 	name() {
 		return Template.instance().room.name;

@@ -3,6 +3,13 @@
 		opacity: 0.6;
 	}
 
+	& > svg {
+		font-size: 20px;
+		fill: currentColor;
+	}
+
+	display: flex;
+
 	min-height: 40px;
 	margin: 0.5rem 0;
 	padding: var(--button-padding);
@@ -11,12 +18,19 @@
 	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
 	text-align: center;
 
+	color: #000000;
+
 	border-width: var(--button-border-width);
 	border-style: solid;
+	border-color: #000000;
+
 	border-radius: var(--button-border-radius);
 	background-color: transparent;
 
 	font-size: var(--button-text-size);
+
+	align-items: center;
+	justify-content: space-evenly;
 
 	&:disabled {
 		cursor: default;
