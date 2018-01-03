@@ -1,3 +1,26 @@
+<a name="0.60.3"></a>
+## 0.60.3 (2018-01-03)
+
+
+### Bug Fixes
+
+- [#9314](https://github.com/RocketChat/Rocket.Chat/pull/9314) custom emoji size on sidebar item
+- [#9285](https://github.com/RocketChat/Rocket.Chat/pull/9285) English Typos
+- [#9309](https://github.com/RocketChat/Rocket.Chat/pull/9309) LDAP/AD is not importing all users
+- [#9249](https://github.com/RocketChat/Rocket.Chat/pull/9249) sidebar footer padding
+- [#9311](https://github.com/RocketChat/Rocket.Chat/pull/9311) svg render on firefox
+- [#9289](https://github.com/RocketChat/Rocket.Chat/pull/9289) Wrong position of notifications alert in accounts preference page
+
+
+<details>
+<summary>Others</summary>
+
+- [#9290](https://github.com/RocketChat/Rocket.Chat/pull/9290) Fix: Improved README.md
+- [#9286](https://github.com/RocketChat/Rocket.Chat/pull/9286) Fix: README typo
+</details>
+
+
+
 <a name="0.60.2"></a>
 ## 0.60.2 (2017-12-29)
 
@@ -2370,7 +2393,7 @@
 - [#6498](https://github.com/RocketChat/Rocket.Chat/pull/6498) Convert Ui-Master Package to Js
 - [#6473](https://github.com/RocketChat/Rocket.Chat/pull/6473) Convert ui-vrecord Package to JS
 - [#6494](https://github.com/RocketChat/Rocket.Chat/pull/6494) Convert Version Package to JS
-- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert Wordpress Package to js
+- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert WordPress Package to js
 - [#6496](https://github.com/RocketChat/Rocket.Chat/pull/6496) converted getAvatarUrlFromUsername
 - [#6500](https://github.com/RocketChat/Rocket.Chat/pull/6500) converted messageAttachment coffee to js
 - [#6467](https://github.com/RocketChat/Rocket.Chat/pull/6467) converted rocketchat-mentions coffee to js
