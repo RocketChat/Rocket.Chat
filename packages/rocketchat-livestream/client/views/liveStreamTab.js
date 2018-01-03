@@ -22,7 +22,7 @@ Template.liveStreamTab.helpers({
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},
 	hasSource() {
-		return !!Template.instance().streamingOptions.get() && Template.instance().streamingOptions.get().url !== '';
+		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().url && Template.instance().streamingOptions.get().url !== '';
 	},
 	canEdit() {
 		return RocketChat.authz.hasAllPermission('edit-room', this.rid);
@@ -32,11 +32,17 @@ Template.liveStreamTab.helpers({
 	},
 	canDock() {
 		const livestreamTabSource = Template.instance().streamingOptions.get().url;
-		const popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
-		if (livestreamTabSource === popoutSource) {
-			return true;
-		} else {
+		let popoutSource = null;
+		try {
+			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+		} catch (e) {
 			return false;
+		} finally {
+			if (livestreamTabSource === popoutSource) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	},
 	isDocked() {
@@ -52,7 +58,9 @@ Template.liveStreamTab.onCreated(function() {
 		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
 		this.streamingOptions.set(room.streamingOptions);
 	});
-	if (popout.context == null) {
+});
+Template.liveStreamTab.onRendered(function() {
+	if (popout.context == null && (!!this.streamingOptions.get().url && this.streamingOptions.get().url !== '')) {
 		popout.open({
 			content: 'liveStreamView',
 			data: {
@@ -109,3 +117,21 @@ Template.liveStreamTab.events({
 		});
 	}
 });
+
+RocketChat.callbacks.add('enter-room', function() {
+	if (popout.context != null && popout.docked) {
+		const room = RocketChat.models.Rooms.findOne(Session.get('openedRoom'), { fields: { streamingOptions : 1 } });
+
+		if (room.streamingOptions && room.streamingOptions.url !== popout.config.data.streamingSource) {
+			popout.close();
+			if (document.querySelector('.flex-tab-bar .tab-button.active') && document.querySelector('.flex-tab-bar .tab-button.active').title === 'Livestream') {
+				popout.open({
+					content: 'liveStreamView',
+					data: {
+						'streamingSource': room.streamingOptions.url
+					}
+				});
+			}
+		}
+	}
+}, RocketChat.callbacks.priority.HIGH, 'close-docked-popout');

@@ -4,13 +4,14 @@
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
-	background: white;
+	background: #f4f4f4;
 
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	&-wrapper {
 		position: absolute;
 		z-index: 10;
+
 		top: calc(var(--header-min-height) + 10px);
 		left: calc(var(--sidebar-width) + 10px);
 		display: flex;
@@ -63,8 +64,6 @@
 		display: flex;
 
 		flex-direction: column;
-
-		padding: 5px;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		align-items: stretch;
