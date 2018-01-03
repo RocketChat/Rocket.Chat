@@ -62,18 +62,25 @@ Template.popout.events({
 		e.stopPropagation();
 		popout.docked = true;
 		const livestreamTab = document.querySelector('.flex-tab--livestream');
-		const livestreamTabSource = Blaze.getView(livestreamTab).templateInstance().streamingOptions.get().url;
-		const popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
-		if (livestreamTab == null || livestreamTabSource !== popoutSource) {
+		let livestreamTabSource;
+		let popoutSource;
+		try {
+			livestreamTabSource = Blaze.getView(livestreamTab).templateInstance().streamingOptions.get().url;
+			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+			if (livestreamTab == null || livestreamTabSource !== popoutSource) {
+				popout.close();
+				popout.open({
+					content: 'liveStreamView',
+					data: {
+						'streamingSource': livestreamTabSource
+					}
+				});
+			} else {
+				i.isDocked.set(true);
+			}
+		} catch (e) {
+			console.log(e);
 			popout.close();
-			popout.open({
-				content: 'liveStreamView',
-				data: {
-					'streamingSource': livestreamTabSource
-				}
-			});
-		} else {
-			i.isDocked.set(true);
 		}
 	},
 	'click .js-minimize'(e, i) {
