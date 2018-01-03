@@ -178,10 +178,16 @@
 			</div>
 		{{/each}}
 		<div class="rc-user-info__flex">
-			{{#if canDeleteRoom}}
-				<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+			{{#if canEditRoom}}
+			<button class="rc-button rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
 			{{/if}}
-			<button class="rc-button rc-button--outline rc-button--secondary js-edit" type="submit" data-button="Edit" {{createIsDisabled}}>{{> icon icon='edit'}}{{_ "Edit"}}</button>
+			<button class="rc-button rc-button--outline js-hide" type="submit">{{> icon icon='eye-off'}}{{_ "Hide"}}</button>
+			{{#if canLeaveRoom}}
+			<button class="rc-button rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
+			{{/if}}
+			<!-- {{#if canDeleteRoom}}
+				<button class="rc-button rc-button-outline rc-button-cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+			{{/if}} -->
 		</div>
 	</main>
 </template>
