@@ -44,6 +44,7 @@ Meteor.startup(function() {
 						KonchatNotification.showDesktop(notification);
 					}
 				} else {
+					if (!hasFocus || !messageIsInOpenedRoom) {
 						// Play a sound and show a notification.
 						KonchatNotification.newMessage(notification.payload.rid);
 						KonchatNotification.showDesktop(notification);
@@ -67,6 +68,7 @@ Meteor.startup(function() {
 						// Play a notification sound
 						KonchatNotification.newMessage(notification.payload.rid);
 					}
+				} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
 					// Play a notification sound
 					KonchatNotification.newMessage(notification.payload.rid);
 				}
