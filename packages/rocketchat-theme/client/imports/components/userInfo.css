@@ -57,6 +57,11 @@
 
 	&__scroll {
 		overflow: auto;
+
+		&.archived .rc-user-info__name,
+		&.archived .rc-user-info__label {
+			color: #9ea2a8;
+		}
 	}
 
 	&__flex {
