@@ -21,9 +21,11 @@
 		{{#if hasSource}}
 			{{#unless isDocked}}
 				{{#if canDock}}
-					<button type="button" class="rc-button rc-button--nude js-dock button-block" title="{{_ 'Livestream_dock'}}" >{{_ "Livestream_dock"}}</button>
+					<div class="setting-block">
+						<span class="current-setting streamingSourceSetting"> {{_ "Livestream_undocked" }} </span>
+					</div>
 				{{else}}
-					<button type="button" class="rc-button rc-button--nude js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
+					<button type="button" class="rc-button rc-button--primary js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
 				{{/if}}
 			{{/unless}}
 		{{else}}
