@@ -493,6 +493,9 @@ Template.channelSettingsInfo.onCreated(function() {
 });
 
 Template.channelSettingsInfo.helpers({
+	archived() {
+		return Template.instance().room.archived;
+	},
 	unscape(value) {
 		return s.unescapeHTML(value);
 	},
