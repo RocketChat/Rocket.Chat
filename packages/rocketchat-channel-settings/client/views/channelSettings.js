@@ -134,9 +134,9 @@ Template.channelSettingsEditing.onCreated(function() {
 		},
 		t: {
 			type: 'boolean',
-			label() {
-				return this.value.get()? 'Private' : 'Public';
-			},
+			// label() {
+			// 	return ;
+			// },
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			getValue() {
@@ -323,8 +323,8 @@ Template.channelSettingsEditing.onCreated(function() {
 	Object.keys(this.settings).forEach(key => {
 		const setting = this.settings[key];
 		const def =setting.getValue ? setting.getValue(this.room): this.room[key];
-		setting.default = new ReactiveVar(def);
-		setting.value = new ReactiveVar(def);
+		setting.default = new ReactiveVar(def || false);
+		setting.value = new ReactiveVar(def || false);
 	});
 });
 
@@ -345,8 +345,8 @@ Template.channelSettingsEditing.helpers({
 		const {settings} = Template.instance();
 		return !Object.keys(settings).some(key => settings[key].default.get() !== settings[key].value.get()) ? text : '';
 	},
-	equal(text = '', text2 = '') {
-		return text !== text2 ? '*':'';
+	equal(text = '', text2 = '', ret = '*') {
+		return text !== text2 ? ret:'';
 	},
 	getIcon(room) {
 		const roomType = RocketChat.models.Rooms.findOne(room._id).t;

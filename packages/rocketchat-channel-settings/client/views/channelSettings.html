@@ -12,7 +12,7 @@
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
 							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
 						</div>
@@ -26,7 +26,7 @@
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
 							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
 						</div>
@@ -39,7 +39,7 @@
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
 							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
 						</div>
@@ -52,7 +52,7 @@
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
 							<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
 						</div>
@@ -62,33 +62,56 @@
 		{{/with}}
 
 		{{#with settings.t}}
-			<div class="rc-user-info__row">
-				<div class="rc-switch">
-					<label class="rc-switch__label">
-						<span class="rc-switch__text">
-							{{_ label}}{{equal default value}}
-						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="readOnly" {{checked}} {{./disabled}}>
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-					</label>
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+						{{_ "Private"}}
+						<div class="rc-switch-double__description">
+							{{_ "Just_invited_people_can_access_this_channel"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="t" {{checked}} {{./disabled}}>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Public"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Everyone_can_access_this_channel"}}
+						</div>
+					</div>
+
 				</div>
 			</div>
 		{{/with}}
 
 		{{#with settings.ro}}
-			<div class="rc-user-info__row">
-				<div class="rc-switch">
-					<label class="rc-switch__label">
-						<span class="rc-switch__text">
-							{{_ label}}{{equal default value}}
-						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="ro" {{checked}} {{./disabled}}>
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-					</label>
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+						{{_ "Colaborative"}}
+						<div class="rc-switch-double__description">
+							{{_ "All_users_in_the_channel_can_write_new_messages"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="ro" {{checked}} {{./disabled}}>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Read_only"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Only_authorized_users_can_write_new_messages"}}
+						</div>
+					</div>
 				</div>
 			</div>
 		{{/with}}
@@ -96,17 +119,28 @@
 
 		{{#with settings.reactWhenReadOnly}}
 			{{#if canView}}
-			<div class="rc-user-info__row">
-				<div class="rc-switch">
-					<label class="rc-switch__label">
-						<span class="rc-switch__text">
-							{{_ label}}{{equal default value}}
-						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" {{checked}} {{./disabled}}>
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-					</label>
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "React_when_read_only"}}
+						<div class="rc-switch-double__description">
+							{{_ "React_when_read_only"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" {{checked}} {{./disabled}}>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+						{{_ "No_reactions"}}
+						<div class="rc-switch-double__description">
+							{{_ "No_reactions"}}
+						</div>
+					</div>
 				</div>
 			</div>
 			{{/if}}
@@ -114,10 +148,10 @@
 		{{#with settings.archived}}
 			{{#if canView}}
 			<div class="rc-user-info__row">
-				<div class="rc-switch">
+				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
 						<span class="rc-switch__text">
-							{{_ label}}{{equal default value}}
+							{{_ label}}{{equal default value '*'}}
 						</span>
 						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" {{checked}} {{./disabled}}>
 						<span class="rc-switch__button">
@@ -132,7 +166,7 @@
 			<div class="rc-user-info__row">
 				<div class="rc-input">
 					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value}}</div>
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
 							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
 						</div>
@@ -150,14 +184,19 @@
 <template name="channelSettingsInfo">
 	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
 		{{# with settings=settings}}
-			{{#if archived}}
-			<label class="rc-user-info__label">
-				{{_ "Room_archived"}}
-			</label>
-			{{/if}}
+				{{#if archived}}
+					<label class="rc-user-info__label">
+						{{_ "Room_archived"}}
+					</label>
+				{{/if}}
 
 				<div class="rc-user-info">
 					<h3 title="{{name}}" class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
+					{{#if password}}
+						<label class="rc-user-info__label">
+							{{_ "Room_archived"}}
+						</label>
+					{{/if}}
 				</div>
 				<label class="rc-user-info__label">
 					{{_ "Description"}}
