@@ -1744,9 +1744,9 @@
 	}
 
 	a {
-		color: currentColor;
-
 		text-decoration: underline;
+
+		color: currentColor;
 	}
 }
 
