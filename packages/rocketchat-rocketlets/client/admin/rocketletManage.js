@@ -154,9 +154,11 @@ Template.rocketletManage.events({
 		$(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
 
 		const setting = t.settings.get()[labelFor];
-		setting.value = !isChecked;
 
-		t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+		if (setting) {
+			setting.value = !isChecked;
+			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+		}
 	},
 
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e, t) {
