@@ -2073,7 +2073,7 @@
   "Visitor_Navigation": "Visitor Navigation",
   "Visitor_page_URL": "Visitor page URL",
   "Visitor_time_on_site": "Visitor time on site",
-  "Wait_activation_warning": "Before you can login, your account must be manually activated by an administrator.",
+  "Wait_activation_warning": "Before you can login, you need to confirm your email and your account must be manually activated by an administrator.",
   "Warnings": "Warnings",
   "We_are_offline_Sorry_for_the_inconvenience": "We are offline. Sorry for the inconvenience.",
   "We_have_sent_password_email": "We have sent you an email with password reset instructions. If you do not receive an email shortly, please come back and try again.",
