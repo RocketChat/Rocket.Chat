@@ -396,7 +396,7 @@ const actions = [
 		group: 'admin',
 		condition: () => !Template.instance().data.hideAdminControls && hasPermission('edit-other-user-info'),
 		action: prevent(getUser, function(user) {
-			this.instance.editingUser.set(user._id);
+			this.editingUser.set(user._id);
 		})
 	}, {
 		icon : 'trash',

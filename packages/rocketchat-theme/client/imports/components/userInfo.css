@@ -56,7 +56,8 @@
 	}
 
 	&__scroll {
-		overflow: auto;
+		overflow-x: hidden;
+		overflow-y: auto;
 
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
@@ -105,6 +106,11 @@
 			& > .rc-switch__label > .rc-switch__text {
 				flex: 1;
 			}
+		}
+
+		&--separator {
+			padding: 29px 0;
+    	border-bottom: 1px solid #D7D7D7;
 		}
 	}
 
@@ -178,6 +184,42 @@
 		&__item {
 			display: flex;
 			flex-direction: column;
+		}
+	}
+}
+
+.rc-switch-double {
+	display: flex;
+	width: 100%;
+
+	&__description {
+		margin: 5px 2px;
+		font-size: 13px;
+	}
+
+	&__label {
+		flex: 1 1 100%;
+		font-size: 16px;
+		&:first-child {
+			text-align: right;
+		}
+
+		&:last-child {
+			text-align: left;
+		}
+
+
+			&.disabled {
+				color: #A1A1A1;
+			}
+	}
+
+	& .rc-switch {
+		flex: 0 0;
+		margin: 0 23px;
+
+		& .rc-switch__button {
+			margin: 0;
 		}
 	}
 }
