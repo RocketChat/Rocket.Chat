@@ -6,6 +6,22 @@
 		align-items: center;
 	}
 
+	&--blue {
+		& .rc-switch__button {
+			border-color: #D7D7D7;
+			background-color: var(--color-gray-light);
+		}
+
+		& .rc-switch__input {
+			&:checked {
+				& + .rc-switch__button {
+				 border-color: #1757B7;
+				 background-color: var(--button-primary-background);
+			 }
+			}
+		}
+	}
+
 	&__input {
 		display: none;
 
