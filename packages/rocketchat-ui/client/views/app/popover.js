@@ -1,6 +1,8 @@
 /* globals popover isRtl */
 import _ from 'underscore';
 
+import {UiTextContext} from 'meteor/rocketchat:lib';
+
 this.popover = {
 	renderedPopover: null,
 	open(config) {
@@ -125,7 +127,7 @@ Template.popover.events({
 
 		if (e.currentTarget.dataset.id === 'report-abuse') {
 			const message = t.data.data._arguments[1];
-			swal({
+			modal.open({
 				title: TAPi18n.__('Report_this_message_question_mark'),
 				text: message.msg,
 				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
@@ -142,13 +144,13 @@ Template.popover.events({
 				}
 
 				if (inputValue === '') {
-					swal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 					return false;
 				}
 
 				Meteor.call('reportMessage', message._id, inputValue);
 
-				swal({
+				modal.open({
 					title: TAPi18n.__('Report_sent'),
 					text: TAPi18n.__('Thank_you_exclamation_mark '),
 					type: 'success',
@@ -204,15 +206,9 @@ Template.popover.events({
 		const { rid, name, template } = instance.data.data;
 
 		if (e.currentTarget.dataset.id === 'hide') {
-			let warnText;
-			switch (template) {
-				case 'c': warnText = 'Hide_Room_Warning'; break;
-				case 'p': warnText = 'Hide_Group_Warning'; break;
-				case 'd': warnText = 'Hide_Private_Warning'; break;
-				case 'l': warnText = 'Hide_Livechat_Warning'; break;
-			}
+			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
-			return swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -235,7 +231,11 @@ Template.popover.events({
 					}
 				});
 			});
-		} else {
+
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'leave') {
 			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Leave_Room_Warning'; break;
@@ -244,9 +244,9 @@ Template.popover.events({
 				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
 
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
-				text: t(warnText, name),
+				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#DD6B55',
@@ -258,14 +258,14 @@ Template.popover.events({
 				if (isConfirm) {
 					Meteor.call('leaveRoom', rid, function(err) {
 						if (err) {
-							swal({
+							modal.open({
 								title: t('Warning'),
 								text: handleError(err, false),
 								type: 'warning',
 								html: false
 							});
 						} else {
-							swal.close();
+							modal.close();
 							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 								FlowRouter.go('home');
 							}
@@ -273,10 +273,26 @@ Template.popover.events({
 							RoomManager.close(rid);
 						}
 					});
-				} else {
-					swal.close();
 				}
 			});
+
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'read') {
+			Meteor.call('readMessages', rid);
+			return false;
+		}
+
+		if (e.currentTarget.dataset.id === 'favorite') {
+			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
+				popover.close();
+				if (err) {
+					handleError(err);
+				}
+			});
+
+			return false;
 		}
 	}
 });

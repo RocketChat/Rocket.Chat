@@ -1,22 +1,26 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
-
+import { RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
 const can = {
 	canLeaveRoom() {
 		const { cl: canLeave, t: roomType } = Template.instance().room;
 		return roomType !== 'd' && canLeave !== false;
 	},
 	canDeleteRoom() {
-		const {room} = Template.instance();
+		const room = ChatRoom.findOne(this.rid, {
+			fields: {
+				t: 1
+			}
+		});
+
 		const roomType = room && room.t;
-		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, room._id);
+		return roomType && RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
 		return RocketChat.authz.hasAllPermission('edit-room', _id);
 	}
 };
-
 const call = (method, ...params) => {
 	return new Promise((resolve, reject) => {
 		Meteor.call(method, ...params, (err, result)=> {
@@ -28,6 +32,7 @@ const call = (method, ...params) => {
 		});
 	});
 };
+
 
 Template.channelSettingsEditing.events({
 	'input .js-input'(e) {
@@ -62,7 +67,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'text',
 			label: 'Name',
 			canView() {
-				return room.t !== 'd';
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.NAME);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
@@ -71,19 +76,19 @@ Template.channelSettingsEditing.onCreated(function() {
 				if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}
+
 				return room.name;
 			},
 			save(value) {
 				let nameValidation;
-				if (!RocketChat.authz.hasAllPermission('edit-room', room._id) || (room.t !== 'c' && room.t !== 'p')) {
-					return Promise.reject(toastr.error(t('error-not-allowed')));
-				}
+
 				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 					try {
 						nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 					} catch (error1) {
 						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 					}
+
 					if (!nameValidation.test(value)) {
 						return Promise.reject(toastr.error(t('error-invalid-room-name', {
 							room_name: {
@@ -92,11 +97,12 @@ Template.channelSettingsEditing.onCreated(function() {
 						})));
 					}
 				}
-				return call('saveRoomSettings', room._id, 'roomName', value).then(function() {
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.NAME, value).then(function() {
 					RocketChat.callbacks.run('roomNameChanged', {
 						_id: room._id,
 						name: value
 					});
+
 					return toastr.success(TAPi18n.__('Room_name_changed_successfully'));
 				});
 			}
@@ -105,13 +111,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'markdown',
 			label: 'Topic',
 			canView() {
-				return true;
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.TOPIC);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'roomTopic', value).then(function() {
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.TOPIC, value).then(function() {
 					toastr.success(TAPi18n.__('Room_topic_changed_successfully'));
 					return RocketChat.callbacks.run('roomTopicChanged', room);
 				});
@@ -121,13 +127,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'markdown',
 			label: 'Announcement',
 			canView() {
-				return true;
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'roomAnnouncement', value).then(() => {
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.ANNOUNCEMENT, value).then(() => {
 					toastr.success(TAPi18n.__('Room_announcement_changed_successfully'));
 					return RocketChat.callbacks.run('roomAnnouncementChanged', room);
 				});
@@ -137,13 +143,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'text',
 			label: 'Description',
 			canView() {
-				return room.t !== 'd';
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.DESCRIPTION);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'roomDescription', value).then(function() {
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.DESCRIPTION, value).then(function() {
 					return toastr.success(TAPi18n.__('Room_description_changed_successfully'));
 				});
 			}
@@ -169,7 +175,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				}
 			},
 			canView() {
-				if (['c', 'p'].includes(room.t) === false) {
+				if (!['c', 'p'].includes(room.t)) {
 					return false;
 				} else if (room.t === 'p' && !RocketChat.authz.hasAllPermission('create-c')) {
 					return false;
@@ -192,7 +198,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				if (room['default']) {
 					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 						return new Promise((resolve, reject)=> {
-							swal({
+							modal.open({
 								title: t('Room_default_change_to_private_will_be_default_no_more'),
 								type: 'warning',
 								showCancelButton: true,
@@ -207,6 +213,7 @@ Template.channelSettingsEditing.onCreated(function() {
 								}
 								return reject();
 							});
+
 						});
 					}
 					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
@@ -220,13 +227,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return room.t !== 'd';
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('set-readonly', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'readOnly', value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));
+				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));
 			}
 		},
 		reactWhenReadOnly: {
@@ -234,15 +241,15 @@ Template.channelSettingsEditing.onCreated(function() {
 			label: 'React_when_read_only',
 			isToggle: true,
 			processing: new ReactiveVar(false),
-			canView: () => {
-				return this.settings.t.value && this.settings.t.value.get() !== 'd' && this.settings.ro.value.get();
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY) && room.ro;
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'reactWhenReadOnly', value).then(() => {
-					return toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
+					toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
 				});
 			}
 		},
@@ -251,15 +258,15 @@ Template.channelSettingsEditing.onCreated(function() {
 			label: 'Room_archivation_state_true',
 			isToggle: true,
 			processing: new ReactiveVar(false),
-			canView: () => {
-				return this.settings.t.value && this.settings.t.value.get() !== 'd';
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id);
 			},
 			save(value) {
 				return new Promise((resolve, reject)=>{
-					swal({
+					modal.open({
 						title: t('Are_you_sure'),
 						type: 'warning',
 						showCancelButton: true,
@@ -269,11 +276,10 @@ Template.channelSettingsEditing.onCreated(function() {
 						closeOnConfirm: false,
 						html: false
 					}, function(confirmed) {
-						swal.disableButtons();
 						if (confirmed) {
 							const action = value ? 'archiveRoom' : 'unarchiveRoom';
 							return resolve(call(action, room._id).then(() => {
-								swal({
+								modal.open({
 									title: value ? t('Room_archived') : t('Room_has_been_archived'),
 									text: value ? t('Room_has_been_archived') : t('Room_has_been_unarchived'),
 									type: 'success',
@@ -281,11 +287,10 @@ Template.channelSettingsEditing.onCreated(function() {
 									showConfirmButton: false
 								});
 								return RocketChat.callbacks.run(action, room);
-							}, () => swal.enableButtons()));
+							}));
 						}
 						return reject();
 					});
-
 				});
 			}
 		},
@@ -294,8 +299,8 @@ Template.channelSettingsEditing.onCreated(function() {
 			label: 'Password',
 			showingValue: new ReactiveVar(false),
 			realValue: null,
-			canView:() => {
-				return this.setting.t.value && this.setting.t.value.get() === 'c' && RocketChat.authz.hasAllPermission('edit-room', room._id);
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.JOIN_CODE) && RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			canEdit() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
@@ -420,7 +425,7 @@ Template.channelSettings.events({
 			case 'l': warnText = 'Leave_Livechat_Warning'; break;
 		}
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: warnText ? t(warnText, name) : '',
 			type: 'warning',
@@ -453,7 +458,7 @@ Template.channelSettings.events({
 			case 'l': warnText = 'Hide_Livechat_Warning'; break;
 		}
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: warnText ? t(warnText, name) : '',
 			type: 'warning',
@@ -480,7 +485,7 @@ Template.channelSettings.events({
 		t.editing.set(false);
 	},
 	'click .js-delete'() {
-		return swal({
+		return modal.open({
 			title: t('Are_you_sure'),
 			text: t('Delete_Room_Warning'),
 			type: 'warning',
@@ -491,16 +496,15 @@ Template.channelSettings.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			swal.disableButtons();
 			call('eraseRoom', this.rid).then(() => {
-				swal({
+				modal.open({
 					title: t('Deleted'),
 					text: t('Room_has_been_deleted'),
 					type: 'success',
 					timer: 2000,
 					showConfirmButton: false
 				});
-			}, () => swal.enableButtons());
+			});
 		});
 	}
 });

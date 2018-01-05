@@ -15,9 +15,9 @@
 .sidebar__account {
 	display: flex;
 
-	margin: 0 0 var(--sidebar-header-small-padding);
+	margin: 0 0 var(--sidebar-extra-small-default-padding);
 
-	padding: var(--sidebar-header-small-padding) var(--sidebar-default-padding) var(--sidebar-header-small-padding);
+	padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
 
 	transition: background-color 0.3s;
 

@@ -1,4 +1,6 @@
-/* globals RocketChatTabBar , chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -21,7 +23,7 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	if (['c', 'p', 'd'].includes(roomData.t)) {
+	if (RocketChat.roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
 		instance.setUserDetail(username);
 	}
 
@@ -223,7 +225,9 @@ Template.room.helpers({
 		return {
 			_id: this._id,
 			onResize: () => {
-				instance.sendToBottomIfNecessary();
+				if (instance.sendToBottomIfNecessary) {
+					instance.sendToBottomIfNecessary();
+				}
 			}
 		};
 	},
@@ -232,6 +236,29 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return roomData.announcement;
+	},
+
+	roomIcon() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
+
+		const roomIcon = RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+
+		// Remove this 'codegueira' on header redesign
+		if (!roomIcon) {
+			return 'at';
+		}
+
+		return roomIcon;
+	},
+
+	tokenAccessChannel() {
+		return Template.instance().hasTokenpass.get();
+	},
+
+	userStatus() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
 	},
 
 	maxMessageLength() {
@@ -283,7 +310,7 @@ Template.room.helpers({
 
 	viewMode() {
 		const user = Meteor.user();
-		const viewMode = user && user.settings && user.settings.preferences && user.settings.preferences.viewMode;
+		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -294,12 +321,12 @@ Template.room.helpers({
 
 	hideUsername() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideUsernames ? 'hide-usernames' : undefined;
+		return RocketChat.getUserPreference(user, 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideAvatars ? 'hide-avatars' : undefined;
+		return RocketChat.getUserPreference(user, 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
@@ -358,7 +385,7 @@ Template.room.events({
 	'click .messages-container-main'() {
 		const user = Meteor.user();
 
-		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
+		if ((Template.instance().tabBar.getState() === 'opened') && RocketChat.getUserPreference(user, 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -566,7 +593,11 @@ Template.room.events({
 
 		popover.open(config);
 	},
-
+	'click .time a'(e) {
+		e.preventDefault();
+		const repliedMessageId = this._arguments[1].attachments[0].message_link.split('?msg=')[1];
+		FlowRouter.go(FlowRouter.current().context.pathname, null, {msg: repliedMessageId, hash: Random.id()});
+	},
 	'click .mention-link'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
@@ -678,6 +709,15 @@ Template.room.events({
 			removeClass.forEach(message => $(`.messages-box #${ message }`).removeClass('selected'));
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
+	},
+	'click .announcement'(e) {
+		modal.open({
+			title: t('Announcement'),
+			text: $(e.target).attr('aria-label'),
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close')
+		});
 	}
 });
 
@@ -753,6 +793,16 @@ Template.room.onCreated(function() {
 		this.userDetail.set(null);
 	};
 
+	this.hasTokenpass = new ReactiveVar(false);
+
+	if (RocketChat.settings.get('API_Tokenpass_URL') !== '') {
+		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
+			if (!error) {
+				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
+			}
+		});
+	}
+
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			handleError(error);
@@ -783,6 +833,8 @@ Template.room.onCreated(function() {
 			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 		}
 	});
+
+	this.sendToBottomIfNecessary = () => {};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
@@ -883,26 +935,36 @@ Template.room.onRendered(function() {
 
 	const rtl = $('html').hasClass('rtl');
 
-	const updateUnreadCount = _.throttle(function() {
-		let lastInvisibleMessageOnScreen;
+	const getElementFromPoint = function(topOffset = 0) {
 		const messageBoxOffset = messageBox.offset();
 
+		let element;
 		if (rtl) {
-			lastInvisibleMessageOnScreen = document.elementFromPoint((messageBoxOffset.left + messageBox.width()) - 1, messageBoxOffset.top + 1);
+			element = document.elementFromPoint((messageBoxOffset.left + messageBox.width()) - 1, messageBoxOffset.top + topOffset + 1);
 		} else {
-			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + 1);
+			element = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + topOffset + 1);
 		}
 
-		if ((lastInvisibleMessageOnScreen != null ? lastInvisibleMessageOnScreen.id : undefined) != null) {
-			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-			if (lastMessage != null) {
-				const subscription = ChatSubscription.findOne({ rid: template.data._id });
-				const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: (subscription != null ? subscription.ls : undefined) } }).count();
-				template.unreadCount.set(count);
-			} else {
-				template.unreadCount.set(0);
-			}
+		if (element && element.classList.contains('message')) {
+			return element;
 		}
+	};
+
+	const updateUnreadCount = _.throttle(function() {
+		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
+
+		if (lastInvisibleMessageOnScreen == null || lastInvisibleMessageOnScreen.id == null) {
+			return template.unreadCount.set(0);
+		}
+
+		const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
+		if (lastMessage == null) {
+			return template.unreadCount.set(0);
+		}
+
+		const subscription = ChatSubscription.findOne({ rid: template.data._id }, {reactive: false});
+		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
+		template.unreadCount.set(count);
 	}, 300);
 
 	readMessage.onRead(function(rid) {

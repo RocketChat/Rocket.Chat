@@ -1,0 +1,48 @@
+<template name="rc_modal">
+	<div class="rc-modal-wrapper">
+		<div class="rc-modal rc-modal--{{modalClass}}" data-modal="modal">
+			{{#if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{else}}
+				<header class="rc-modal__header">
+					<h1 class="rc-modal__title">{{title}}</h1>
+					<button class="contextual-bar__close js-close">
+						{{> icon classes="rc-modal__close" icon="plus"}}
+					</button>
+				</header>
+
+				<main class="rc-modal__content">
+					{{#if content}}
+						{{> Template.dynamic template=content data=data}}
+					{{/if}}
+					{{#if type}}
+						{{> icon block="rc-modal__content-icon" icon=modalIcon}}
+					{{/if}}
+					{{#if text}}
+						<div class="rc-modal__content-text">
+							{{#if html}}
+								{{{text}}}
+							{{else}}
+								{{text}}
+							{{/if}}
+						</div>
+					{{/if}}
+					{{#if input}}
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__wrapper">
+									<input name="name" type="{{inputType}}" class="rc-input__element js-modal-input" placeholder="{{inputPlaceholder}}">
+								</div>
+							</label>
+						</div>
+						<div class="rc-modal__content-error"></div>
+					{{/if}}
+				</main>
+				<div class="rc-modal__footer {{#unless showFooter}}rc-modal__footer--empty{{/unless}}">
+					<input class="rc-button rc-button--nude js-close {{#unless showCancelButton}}rc-button--invisible{{/unless}}" type="submit" data-button="cancel" value="{{cancelButtonText}}">
+					<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm {{#unless showConfirmButton}}rc-button--invisible{{/unless}}" type="submit" data-button="create" value="{{confirmButtonText}}">
+				</div>
+			{{/if}}
+		</div>
+	</div>
+</template>

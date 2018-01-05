@@ -128,7 +128,63 @@ button {
 .ps-scrollbar-y-rail {
 	background: transparent !important;
 }
-
 .ps-scrollbar-y {
 	width: 4px !important;
+}
+
+.first-unread .body {
+	&::before {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+
+		width: 100%;
+		height: 1px;
+
+		content: "";
+
+		background: var(--rc-color-error);
+
+		pointer-events: none;
+	}
+
+	&::after {
+		position: absolute;
+		z-index: 2;
+		top: -6px;
+		right: 0;
+
+		padding: 0 5px;
+		padding-bottom: 2px;
+
+		content: attr(data-unread-text);
+		text-align: right;
+		text-transform: lowercase;
+
+		color: var(--rc-color-error);
+		background: #ffffff;
+
+		font-size: 10px;
+
+		pointer-events: none;
+		line-height: 10px;
+		border-radius: 2px;
+	}
+}
+
+.message.new-day.first-unread {
+	&::after {
+		border-color: var(--rc-color-error);
+	}
+
+	& .body {
+		&::before {
+			display: none;
+		}
+
+		&::after {
+			top: -26px;
+		}
+	}
 }

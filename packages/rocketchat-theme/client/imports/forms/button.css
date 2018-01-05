@@ -42,6 +42,15 @@
 		background-color: var(--button-disabled-background);
 	}
 
+	&--nude {
+		border: none;
+		background: inherit;
+	}
+
+	&--invisible {
+		visibility: hidden;
+	}
+
 	&--primary {
 		color: var(--button-primary-text-color);
 		border: 0;
@@ -121,5 +130,11 @@
 			border-top-color: white;
 			border-radius: 50%;
 		}
+	}
+}
+
+@media (width < 780px) {
+	.rc-button--full {
+		width: 100%;
 	}
 }

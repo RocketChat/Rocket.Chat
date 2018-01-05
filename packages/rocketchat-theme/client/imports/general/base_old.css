@@ -104,8 +104,6 @@
 }
 
 .upload-preview {
-	padding: 1rem;
-
 	& .upload-preview-file {
 		height: 200px;
 
@@ -121,7 +119,7 @@
 	border-radius: 0 0 5px 5px;
 }
 
-.rc-old .copyonly {
+.copyonly {
 	display: inline-block;
 	float: left;
 
@@ -133,50 +131,6 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
-}
-
-.rc-old .first-unread,
-.rc-old .cozy .first-unread,
-.rc-old .compact .first-unread {
-	&.message,
-	&.sequential.message {
-		padding-top: 20px;
-	}
-
-	& .body {
-		&::before {
-			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
-
-			display: block;
-
-			height: 16px;
-
-			content: "";
-			transition: background-color, 0.5s, linear;
-		}
-
-		&::after {
-			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
-
-			display: block;
-
-			padding: 0 5px;
-
-			content: attr(data-unread-text);
-			transition: color, 0.5s, linear;
-			text-align: center;
-			text-transform: uppercase;
-
-			font-size: 12px;
-			line-height: 16px;
-		}
-	}
 }
 
 .rc-old .text-center {
@@ -1741,8 +1695,12 @@
 	overflow: hidden;
 
 	height: 40px;
+	padding: 0 20px;
 
+	cursor: pointer;
 	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 
 	color: white;
 	background-color: #04436a;
@@ -1751,7 +1709,7 @@
 	line-height: 40px;
 
 	& ~ .container-bars {
-		top: 95px;
+		top: 45px;
 	}
 }
 
@@ -2157,8 +2115,8 @@
 
 .rc-old .container-bars {
 	position: absolute;
-	z-index: 1;
-	top: 4px; /* --header-height */
+	z-index: 2;
+	top: 5px; /* --header-height */
 	right: 10px;
 	left: 10px;
 
@@ -2215,8 +2173,14 @@
 			right: 0;
 			left: 0;
 
+			overflow: hidden;
+
+			width: 50%;
+
 			height: 100%;
 			padding: 0 10px;
+
+			text-overflow: ellipsis;
 
 			& > a {
 				float: right;
@@ -2227,6 +2191,9 @@
 		}
 
 		& button {
+			position: relative;
+			z-index: 3;
+
 			float: right;
 
 			text-transform: uppercase;
@@ -2882,7 +2849,7 @@
 	}
 
 	&.new-day {
-		margin-top: 60px;
+		margin-top: 40px;
 
 		&::before {
 			position: absolute;
@@ -2900,6 +2867,8 @@
 
 			font-size: 12px;
 			font-weight: 600;
+
+			pointer-events: none;
 		}
 
 		&::after {
@@ -2914,6 +2883,8 @@
 			content: " ";
 
 			border-width: 1px 0 0;
+
+			pointer-events: none;
 		}
 	}
 
@@ -3096,6 +3067,7 @@
 		&:hover .edited {
 			display: none;
 		}
+
 	}
 
 	&.system .body {
@@ -3497,11 +3469,13 @@ body:not(.is-cordova) {
 			-webkit-overflow-scrolling: touch;
 
 			& > div {
+				overflow-y: auto;
+
 				transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s;
 			}
 
 			& > .animated-hidden {
-				transform: translateX(100%);
+				transform: translateX(calc(100% + 40px));
 
 				opacity: 0;
 			}
@@ -3535,6 +3509,10 @@ body:not(.is-cordova) {
 					line-height: var(--header-min-height);
 				}
 			}
+		}
+
+		& .channel-settings .button {
+			visibility: initial;
 		}
 
 		& footer {
@@ -4539,7 +4517,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .social-login {
+.rc-old .oauth-login {
 	margin-bottom: 16px;
 	margin-left: -4px;
 	flex-wrap: wrap;
@@ -5489,7 +5467,9 @@ body:not(.is-cordova) {
 	.rc-old .flex-tab-container.opened .flex-tab {
 		position: absolute;
 		z-index: 100;
+
 		right: 40px;
+		height: 100%;
 
 		border-width: 0 0 0 1px;
 	}
@@ -5588,7 +5568,7 @@ body:not(.is-cordova) {
 		}
 	}
 
-	.rc-old .social-login {
+	.rc-old .oauth-login {
 		margin-bottom: 6px;
 	}
 

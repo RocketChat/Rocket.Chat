@@ -8,6 +8,10 @@
 				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 			</div>
 		{{/if}}
+		<!-- TODO: fix it style and helper -->
+		{{#if tokenAccessChannel}}
+			<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
+		{{/if}}
 		{{#if isChannel}}
 			<div class="rc-header__content rc-header__block">
 				{{#if isDirect}}
