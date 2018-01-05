@@ -6,6 +6,7 @@
 	& > svg {
 		font-size: 20px;
 		fill: currentColor;
+		margin: 0 5px;
 	}
 
 	display: flex;
@@ -30,7 +31,7 @@
 	font-size: var(--button-text-size);
 
 	align-items: center;
-	justify-content: space-evenly;
+	justify-content: center;
 
 	&:disabled {
 		cursor: default;
