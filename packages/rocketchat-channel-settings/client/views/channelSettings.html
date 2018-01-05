@@ -14,7 +14,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
@@ -28,7 +28,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
@@ -41,7 +41,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
@@ -54,7 +54,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+							<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
@@ -72,7 +72,7 @@
 					</div>
 					<div class="rc-switch rc-switch--blue">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" name="t" {{checked}} {{./disabled}}>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="t" checked="{{checked}}" disabled="{{./disabled}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
@@ -92,24 +92,24 @@
 		{{#with settings.ro}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
-						{{_ "Colaborative"}}
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Read_only"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
-							{{_ "All_users_in_the_channel_can_write_new_messages"}}
+							{{_ "Only_authorized_users_can_write_new_messages"}}
 						</div>
 					</div>
 					<div class="rc-switch rc-switch--blue">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" name="ro" {{checked}} {{./disabled}}>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="ro" checked="{{checked}}" disabled="{{disabled}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
-						{{_ "Read_only"}}{{equal default value '*'}}
+					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+						{{_ "Colaborative"}}
 						<div class="rc-switch-double__description">
-							{{_ "Only_authorized_users_can_write_new_messages"}}
+							{{_ "All_users_in_the_channel_can_write_new_messages"}}
 						</div>
 					</div>
 				</div>
@@ -129,7 +129,7 @@
 					</div>
 					<div class="rc-switch rc-switch--blue">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" {{checked}} {{./disabled}}>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" checked="{{checked}}" disabled="{{./disabled}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
@@ -153,7 +153,7 @@
 						<span class="rc-switch__text">
 							{{_ label}}{{equal default value '*'}}
 						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" {{checked}} {{./disabled}}>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -168,17 +168,24 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" {{./disabled}}/>
+							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 						</div>
 					</label>
 				</div>
 			</div>
 		{{/with}}
 	</div>
-	<div class="rc-user-info__flex rc-user-info__row">
-		<button class="rc-button rc-button--secondary js-cancel rc-button--outline" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
-		<button class="rc-button rc-button--secondary js-reset" {{modified 'disabled'}} title="{{_ 'Reset'}}">{{_ 'Reset'}}</button>
-		<button class="rc-button rc-button--primary js-save" {{modified 'disabled'}} title="{{_ 'Save'}}">{{_ 'Save'}}</button>
+	<div class="rc-user-info__row">
+		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
+			<button class="rc-button js-cancel rc-button--outline" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
+			<button class="rc-button rc-button--secondary js-reset" {{modified 'disabled'}} title="{{_ 'Reset'}}">{{_ 'Reset'}}</button>
+			<button class="rc-button rc-button--primary js-save" {{modified 'disabled'}} title="{{_ 'Save'}}">{{_ 'Save'}}</button>
+		</div>
+		<div class="rc-user-info__flex">
+			{{#if canDeleteRoom}}
+			<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+			{{/if}}
+		</div>
 	</div>
 </template>
 <template name="channelSettingsInfo">
@@ -216,13 +223,14 @@
 						{{unscape topic}}
 					</div>
 				</label>
+				{{/with}}
 				{{#each channelSettings}}
 				<div class="rc-user-info__row">
 					{{> Template.dynamic template=template data=data}}
 				</div>
 				{{/each}}
-				{{/with}}
 	</main>
+
 	<div class="rc-user-info__flex rc-user-info__row">
 		{{#if canEditRoom}}
 		<button class="rc-button rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>

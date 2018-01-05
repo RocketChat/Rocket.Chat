@@ -93,11 +93,14 @@
 
 	&__row {
 
-		display: flex;
+		/*display: flex;*/
 		flex-direction: row;
 
 		padding: 15px 0;
 
+		&:last-child {
+			padding-bottom: 0;
+		}
 		& > .rc-switch {
 			flex: 1;
 
@@ -109,8 +112,8 @@
 		}
 
 		&--separator {
-			padding: 29px 0;
-    	border-bottom: 1px solid #D7D7D7;
+	    border-bottom: 1px solid #D7D7D7;
+	    margin: 14px 0;
 		}
 	}
 

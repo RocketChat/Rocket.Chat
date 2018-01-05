@@ -1,6 +1,22 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
 
+const can = {
+	canLeaveRoom() {
+		const { cl: canLeave, t: roomType } = Template.instance().room;
+		return roomType !== 'd' && canLeave !== false;
+	},
+	canDeleteRoom() {
+		const {room} = Template.instance();
+		const roomType = room && room.t;
+		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, room._id);
+	},
+	canEditRoom() {
+		const { _id } = Template.instance().room;
+		return RocketChat.authz.hasAllPermission('edit-room', _id);
+	}
+};
+
 const call = (method, ...params) => {
 	return new Promise((resolve, reject) => {
 		Meteor.call(method, ...params, (err, result)=> {
@@ -329,6 +345,7 @@ Template.channelSettingsEditing.onCreated(function() {
 });
 
 Template.channelSettingsEditing.helpers({
+	...can,
 	value() {
 		return this.value.get();
 	},
@@ -336,17 +353,17 @@ Template.channelSettingsEditing.helpers({
 		return this.default.get();
 	},
 	disabled() {
-		return !this.canEdit() ? '' : 'disabled';
+		return !this.canEdit();
 	},
 	checked() {
-		return !this.value.get() ? '' : 'checked';
+		return this.value.get();// ? '' : 'checked';
 	},
 	modified(text = '') {
 		const {settings} = Template.instance();
 		return !Object.keys(settings).some(key => settings[key].default.get() !== settings[key].value.get()) ? text : '';
 	},
 	equal(text = '', text2 = '', ret = '*') {
-		return text !== text2 ? ret:'';
+		return text === text2 ? '' : ret;
 	},
 	getIcon(room) {
 		const roomType = RocketChat.models.Rooms.findOne(room._id).t;
@@ -502,19 +519,7 @@ Template.channelSettingsInfo.helpers({
 	channelSettings() {
 		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
-	canLeaveRoom() {
-		const { cl: canLeave, t: roomType } = Template.instance().room;
-		return roomType !== 'd' && canLeave !== false;
-	},
-	canDeleteRoom() {
-		const {room} = Template.instance();
-		const roomType = room && room.t;
-		return roomType && RocketChat.authz.hasAtLeastOnePermission(`delete-${ roomType }`, room._id);
-	},
-	canEditRoom() {
-		const { _id } = Template.instance().room;
-		return RocketChat.authz.hasAllPermission('edit-room', _id);
-	},
+	...can,
 	name() {
 		return Template.instance().room.name;
 	},
