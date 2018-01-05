@@ -1,0 +1,22 @@
+<template name="userStatusInfo">
+  {{#if editingUserStatus}}
+    {{> userStatusEdit (userStatusToEdit)}}
+  {{else}}
+    {{#with userStatus}}
+    <div class="about clearfix">
+      <div class="thumb">
+        {{> userStatusPreview name=name}}
+      </div>
+      <div class="info">
+        <h3 title="{{name}}">{{name}}</h3>
+      </div>
+    </div>
+    {{/with}}
+    <nav>
+      {{#if hasPermission 'manage-user-status'}}
+      <button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+      <button class='button button-block primary edit-user-satus'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+      {{/if}}
+    </nav>
+  {{/if}}
+</template>

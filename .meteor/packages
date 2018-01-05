@@ -138,6 +138,8 @@ rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
+rocketchat:user-status
+rocketchat:user-status-custom
 rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc

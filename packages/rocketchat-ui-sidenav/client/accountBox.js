@@ -56,36 +56,16 @@ Template.accountBox.events({
 					groups: [
 						{
 							title: t('User'),
-							items: [
-								{
+							items: Object.keys(RocketChat.userStatus.list).map((key,index) => {
+								const userStatus = RocketChat.userStatus.list[key];
+								return {
 									icon: 'circle',
-									name: t('Online'),
+									name: userStatus.name,
 									type: 'set-state',
-									id: 'online',
-									modifier: 'online'
-								},
-								{
-									icon: 'circle',
-									name: t('Away'),
-									type: 'set-state',
-									id: 'away',
-									modifier: 'away'
-								},
-								{
-									icon: 'circle',
-									name: t('Busy'),
-									type: 'set-state',
-									id: 'busy',
-									modifier: 'busy'
-								},
-								{
-									icon: 'circle',
-									name: t('Invisible'),
-									type: 'set-state',
-									id: 'offline',
-									modifier: 'offline'
-								}
-							]
+									id: userStatus.id,
+									modifier: userStatus.statusType
+								};
+							})
 						},
 						{
 							items: AccountBox.getItems().map(item => {

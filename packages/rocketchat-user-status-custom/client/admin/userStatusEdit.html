@@ -1,0 +1,31 @@
+<template name="userStatusEdit">
+  {{#unless hasPermission 'manage-user-status'}}
+    <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+  {{else}}
+    <div class="about clearfix">
+      <form class="edit-form" autocomplete="off">
+        {{#if userStatus}}
+          <h3>{{userStatus.name}}</h3>
+        {{else}}
+          <h3>{{_ "Custom_User_Status_Add"}}</h3>
+        {{/if}}
+        <div class="input-line">
+          <label for="name">{{_ "Name"}}</label>
+          <input type="text" id="name" autocomplete="off" value="{{userStatus.name}}" class="content-background-color">
+        </div>
+        <div class="input-line">
+          <label for="statusType">{{_ "StatusType"}}</label>
+          <select id="statusType" name="statusType" class="content-background-color">
+            {{#each options}}
+            <option value="{{value}}" {{selected}}>{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <nav>
+          <button class='button button-block cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+          <button class='button button-block primary save'><span>{{_ "Save"}}</span></button>
+        </nav>
+      </form>
+    </div>
+  {{/unless}}
+</template>
