@@ -60,8 +60,9 @@ Template.accountBox.events({
 								const userStatus = RocketChat.userStatus.list[key];
 								return {
 									icon: 'circle',
-									name: userStatus.name,
+									name: userStatus.localizeName ? t(userStatus.name) : userStatus.name,
 									type: 'set-state',
+									statusType: userStatus.statusType,
 									id: userStatus.id,
 									modifier: userStatus.statusType
 								};
