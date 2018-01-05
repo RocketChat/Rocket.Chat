@@ -3,7 +3,7 @@
 this.modal = {
 	renderedModal: null,
 	open(config = {}, fn) {
-		config.confirmButtonText = config.confirmButtonText || t('Send');
+		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
