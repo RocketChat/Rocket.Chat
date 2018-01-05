@@ -2,7 +2,7 @@
 	/*
 	* General Colors
 	*/
-	--color-primary: var(--color-dark);
+
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
@@ -13,23 +13,17 @@
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-	--color-error: #f5455c;
-	--color-error-light: #e1364c;
-	--color-alert: #ffd21f;
-	--color-alert-light: #f6c502;
-	--color-success: #2de0a5;
-	--color-success-light: #25d198;
-	--color-button-primary: #1d74f5;
-	--color-link-active: #1d74f5;
-	--color-button-primary-light: #175cc4;
+
 	--rc-color-error: #f5455c;
 	--rc-color-error-light: #e1364c;
 	--rc-color-alert: #ffd21f;
 	--rc-color-alert-light: #f6c502;
 	--rc-color-success: #2de0a5;
 	--rc-color-success-light: #25d198;
+
 	--rc-color-button-primary: #1d74f5;
 	--rc-color-button-primary-light: #175cc4;
+
 	--rc-color-primary: var(--color-dark);
 	--rc-color-primary-darkest: var(--color-darkest);
 	--rc-color-primary-dark: var(--color-dark-medium);
@@ -38,9 +32,11 @@
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
 
+
 	/*
 	* General
 	*/
+	--text-size: 0.875rem;
 	--header-min-height: 60px;
 	--toolbar-height: 55px;
 	--footer-min-height: 70px;
@@ -51,18 +47,18 @@
 	--user-image-square: 20px;
 	--border: 2px;
 	--border-radius: 2px;
-	--status-online: var(--color-success);
-	--status-away: var(--color-alert);
-	--status-busy: var(--color-error);
+	--status-online: var(--rc-color-success);
+	--status-away: var(--rc-color-alert);
+	--status-busy: var(--rc-color-error);
 	--status-invisible: var(--color-gray-medium);
+	--status-invisible-sidebar: var(--rc-color-primary-darkest);
+	--default-padding: 1.5rem;
+	--default-small-padding: 1rem;
 	--status-bullet-size: 12px;
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
-	--status-invisible-sidebar: var(--color-darkest);
-	--default-small-padding: 1rem;
-	--default-padding: 24px;
-	--text-size: 0.875rem;
+
 
 	/*
 	* General Typography
@@ -97,9 +93,9 @@
 	--button-border-radius: var(--border-radius);
 	--button-disabled-background: var(--color-gray-light);
 	--button-disabled-text-color: var(--color-white);
-	--button-primary-background: var(--color-button-primary);
+	--button-primary-background: var(--rc-color-button-primary);
 	--button-primary-text-color: var(--color-white);
-	--button-cancel-color: var(--color-error);
+	--button-cancel-color: var(--rc-color-error);
 	--button-secondary-background: var(--color-gray-medium);
 	--button-secondary-text-color: var(--color-dark-medium);
 
@@ -152,16 +148,14 @@
 	*/
 	--sidebar-width: 280px;
 	--sidebar-small-width: 90%;
-	--sidebar-background: var(--color-primary);
-	--sidebar-background-hover: var(--color-dark-medium);
-	--sidebar-background-light: var(--color-gray-lightest);
-	--sidebar-background-light-hover: var(--color-gray-light);
-	--sidebar-default-padding: var(--default-padding);
+	--sidebar-background: var(--rc-color-primary);
+	--sidebar-background-hover: var(--rc-color-primary-dark);
+	--sidebar-background-light: var(--rc-color-primary-lightest);
+	--sidebar-background-light-hover: var(--rc-color-primary-light);
+	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
-	--sidebar-header-padding: 16px;
-	--sidebar-header-small-padding: 12px;
+	--sidebar-extra-small-default-padding: 12px;
 	--sidebar-footer-height: 70px;
-	--sidebar-footer-padding: var(--sidebar-header-padding);
 	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 	/*
@@ -203,6 +197,8 @@
 	--sidebar-small-item-user-status-size: 4px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 1rem;
+	--sidebar-item-big-height: 62px;
+	--sidebar-item-big-thumb-size: 36px;
 
 	/*
 	* Modal
@@ -279,7 +275,7 @@
 	--header-height: 77px;
 	--header-padding: 16px;
 	--header-toggle-favorite-color: var(--color-gray-medium);
-	--header-toggle-favorite-star-color: var(--color-alert-light);
+	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: var(--text-default-size);
 	--header-title-font-size--subtitle: var(--text-small-size);

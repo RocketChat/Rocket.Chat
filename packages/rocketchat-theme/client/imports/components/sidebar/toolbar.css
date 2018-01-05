@@ -90,8 +90,7 @@
 	}
 
 	& .rc-button {
-		margin-right: 0.25rem;
-		margin-left: 0.25rem;
+		margin: 0 0.25rem;
 
 		color: var(--rc-color-primary-light);
 		border-color: var(--rc-color-primary-dark);

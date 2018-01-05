@@ -330,7 +330,7 @@ const actions = [
 				if (!RocketChat.authz.hasAllPermission('mute-user', rid)) {
 					return toastr.error(TAPi18n.__('error-not-allowed'));
 				}
-				swal({
+				modal.open({
 					title: t('Are_you_sure'),
 					text: t('The_user_wont_be_able_to_type_in_s', room.name),
 					type: 'warning',
@@ -342,7 +342,7 @@ const actions = [
 					html: false
 				}, () =>
 					Meteor.call('muteUserInRoom', { rid, username }, success(() => {
-						swal({
+						modal.open({
 							title: t('Muted'),
 							text: t('User_has_been_muted_in_s', room.name),
 							type: 'success',
@@ -364,7 +364,7 @@ const actions = [
 			if (!RocketChat.authz.hasAllPermission('remove-user', rid)) {
 				return toastr.error(TAPi18n.__('error-not-allowed'));
 			}
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('The_user_will_be_removed_from_s', room.name),
 				type: 'warning',
@@ -376,7 +376,7 @@ const actions = [
 				html: false
 			}, () => {
 				return Meteor.call('removeUserFromRoom', { rid, username: user.username }, success(() => {
-					swal({
+					modal.open({
 						title: t('Removed'),
 						text: t('User_has_been_removed_from_s', room.name),
 						type: 'success',
@@ -402,7 +402,7 @@ const actions = [
 		icon : 'trash',
 		name: 'Delete',
 		action: prevent(getUser, ({_id}) => {
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Delete_User_Warning'),
 				type: 'warning',
@@ -413,9 +413,8 @@ const actions = [
 				closeOnConfirm: false,
 				html: false
 			}, () => {
-				swal.disableButtons();
 				Meteor.call('deleteUser', _id, success(() => {
-					swal({
+					modal.open({
 						title: t('Deleted'),
 						text: t('User_has_been_deleted'),
 						type: 'success',
