@@ -9,7 +9,7 @@
 
 	display: none;
 
-	color: #6c727a;
+	color: var(--color-darkest);
 
 	font-size: 1rem;
 
@@ -81,10 +81,6 @@
 
 .messages-box .rc-popover__list {
 	padding: 0;
-}
-
-.first-unread .message-actions {
-	top: 18px;
 }
 
 .rtl .message-actions {

@@ -80,9 +80,9 @@ class FlexTab extends Page {
 	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
 	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
-	get usersButtonCancel() { return browser.element('button.cancel'); }
-	get usersSendInvitationSend() { return browser.element('button.send'); }
-	get usersButtonSave() { return browser.element('button.save'); }
+	get usersButtonCancel() { return browser.element('.button.cancel'); }
+	get usersSendInvitationSend() { return browser.element('.button.send'); }
+	get usersButtonSave() { return browser.element('.button.save'); }
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }

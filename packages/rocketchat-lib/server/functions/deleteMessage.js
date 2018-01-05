@@ -29,6 +29,12 @@ RocketChat.deleteMessage = function(message, user) {
 		});
 	}
 
+	// update last message
+	if (RocketChat.settings.get('Store_Last_Message')) {
+		const lastMessage = RocketChat.models.Messages.getLastMessageSentWithNoTypeByRoomId(message.rid);
+		RocketChat.models.Rooms.setLastMessageById(message.rid, lastMessage);
+	}
+
 	if (showDeletedStatus) {
 		RocketChat.models.Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
