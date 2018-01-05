@@ -1,3 +1,13 @@
+<a name="0.60.4-rc.0"></a>
+## 0.60.4-rc.0 (2018-01-05)
+
+
+### Bug Fixes
+
+- [#9343](https://github.com/RocketChat/Rocket.Chat/pull/9343) LDAP TLS not working in some cases
+
+
+
 <a name="0.60.3"></a>
 ## 0.60.3 (2018-01-03)
 
