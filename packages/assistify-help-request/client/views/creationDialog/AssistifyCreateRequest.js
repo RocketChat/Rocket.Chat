@@ -6,15 +6,9 @@ import {ReactiveVar} from 'meteor/reactive-var';
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
+		t.debounceValidateExpertise(this.item.name);
 	},
 	'keydown [name="expertise"]'(e, t) {
-		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
-			const users = t.selectedUsers;
-			const usersArr = users.get();
-			usersArr.pop();
-			return users.set(usersArr);
-		}
-
 		t.ac.onKeyDown(e);
 	},
 	'keyup [name="expertise"]'(e, t) {
@@ -25,8 +19,10 @@ const acEvents = {
 	},
 	'blur [name="expertise"]'(e, t) {
 		t.ac.onBlur(e);
+		t.debounceValidateExpertise(e.target.value);
 	}
 };
+
 
 Template.AssistifyCreateRequest.helpers({
 	autocomplete(key) {
@@ -36,9 +32,6 @@ Template.AssistifyCreateRequest.helpers({
 	},
 	items() {
 		return Template.instance().ac.filteredList();
-	},
-	errorMessage() {
-		return Template.instance().errorMessage.get();
 	},
 	config() {
 		const filter = Template.instance().expertise;
@@ -57,13 +50,26 @@ Template.AssistifyCreateRequest.helpers({
 	createIsDisabled() {
 		const instance = Template.instance();
 
-		if (instance.validExpertise.get()) {
+		if (instance.validExpertise.get() && !instance.titleError.get()) {
 			return '';
 		} else {
 			return 'disabled';
 		}
+	},
+	expertiseError() {
+		const instance = Template.instance();
+		return instance.expertiseError.get();
+	},
+	expertise() {
+		const instance = Template.instance();
+		return instance.expertise.get();
+	},
+	titleError() {
+		const instance = Template.instance();
+		return instance.titleError.get();
 	}
 });
+
 
 Template.AssistifyCreateRequest.events({
 	...acEvents,
@@ -72,59 +78,101 @@ Template.AssistifyCreateRequest.events({
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
-		if (input.value) {
-			t.checkExpertise(input.value);
-			t.expertise.set(input.value);
+		t.expertise.set(input.value);
+		t.validExpertise.set(false);
+		t.expertiseError.set('');
+	},
+	'input #request_title'(e, t) {
+		const input = e.target;
+		t.requestTitle.set(input.value);
+		if (!input.value) {
+			t.titleError.set('');
 		} else {
-			t.validExpertise.set(false);
-			t.expertise.set('');
+			t.debounceValidateRequestName(input.value);
+		}
+
+	},
+	'input #first_question'(e, t) {
+		const input = e.target;
+		if (input.value) {
+			t.openingQuestion.set(input.value);
+		} else {
+			t.openingQuestion.set('');
 		}
 	},
 	'submit create-channel__content, click .js-save-request'(event, instance) {
 		event.preventDefault();
 		const expertise = instance.expertise.get();
-
+		const requestTitle = instance.requestTitle.get();
+		const openingQuestion = instance.openingQuestion.get();
 		if (expertise) {
-			instance.errorMessage.set(null);
-			Meteor.call('createRequest', '', expertise, (err, result) => {
+			instance.titleError.set(null);
+			Meteor.call('createRequest', requestTitle, expertise, openingQuestion, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							toastr.error(TAPi18n.__('Invalid_room_name', `${ expertise }...`));
+							instance.titleError.set(TAPi18n.__('Invalid_room_name', `${ expertise }...`));
 							return;
 						case 'error-duplicate-channel-name':
-							toastr.error(TAPi18n.__('Request_already_exists'));
+							instance.titleError.set(TAPi18n.__('Request_already_exists'));
 							return;
 						case 'error-archived-duplicate-name':
-							toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
+							instance.titleError.set(TAPi18n.__('Duplicate_archived_channel_name', name));
+							return;
+						case 'error-invalid-room-name':
+							console.log('room name slug error');
+							// 	toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
+							instance.titleError.set(TAPi18n.__('Invalid_room_name', err.details.channel_name));
 							return;
 						default:
 							return handleError(err);
 					}
 				}
-
+				console.log('Room Created');
+				// toastr.success(TAPi18n.__('New_request_created'));
 				const roomCreated = RocketChat.models.Rooms.findOne({_id: result.rid});
 				FlowRouter.go('request', {name: roomCreated.name}, FlowRouter.current().queryParams);
 			});
-		} else {
-			instance.validExpertise.set(true);
 		}
 	}
 });
 
 Template.AssistifyCreateRequest.onRendered(function() {
 	const instance = this;
-	this.find('input[name="expertise"]').focus();
-	this.ac.element = this.find('input[name="expertise"]');
-	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	const expertiseElement = this.find('input[name="expertise"]');
+	const titleElement = this.find('input[name="request_title"]');
+	const questionElement = this.find('input[name="first_question"]');
+
+	instance.ac.element = expertiseElement;
+	instance.ac.$element = $(instance.ac.element);
+	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.expertise.set(item.name);
 		$('input[name="expertise"]').val(item.name);
-		instance.checkExpertise(item.name);
+		instance.debounceValidateExpertise(item.name);
 
 		return instance.find('.js-save-request').focus();
 	});
+
+	if (instance.requestTitle.get()) {
+		titleElement.value = instance.requestTitle.get();
+	}
+
+	if (instance.openingQuestion.get()) {
+		questionElement.value = instance.openingQuestion.get();
+	}
+
+	// strategy for setting the focus (yac!)
+	if (!expertiseElement.value) {
+		expertiseElement.focus();
+	} else if (!questionElement.value) {
+		questionElement.focus();
+	} else if (!titleElement.value) {
+		titleElement.focus();
+	} else {
+		questionElement.focus();
+	}
+
 });
 
 Template.AssistifyCreateRequest.onCreated(function() {
@@ -132,23 +180,60 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 	instance.expertise = new ReactiveVar(''); //the value of the text field
 	instance.validExpertise = new ReactiveVar(false);
-	instance.errorMessage = new ReactiveVar(null);
+	instance.expertiseError = new ReactiveVar(null);
+	instance.titleError = new ReactiveVar(null);
+	instance.requestTitle = new ReactiveVar('');
+	instance.openingQuestion = new ReactiveVar('');
 
-	this.checkExpertise = _.debounce((expertise) => {
+	instance.debounceValidateExpertise = _.debounce((expertise) => {
+		if (!expertise) {
+			return false; //expertise is mandatory
+		}
 		return Meteor.call('assistify:isValidExpertise', expertise, (error, result) => {
 			if (error) {
 				instance.validExpertise.set(false);
 			} else {
 				instance.validExpertise.set(result);
+				if (!result) {
+					instance.expertiseError.set('Expertise_does_not_exist');
+				} else {
+					instance.expertiseError.set('');
+				}
 			}
 		});
 	}, 500);
 
-	// instance.clearForm = function() {
-	// 	instance.requestRoomName.set('');
-	// 	instance.expertise.set('');
-	// 	instance.find('#expertise-search').value = '';
-	// };
+	instance.debounceValidateRequestName = _.debounce((name) => {
+		instance.titleError.set('');
+		if (!name) {
+			return; //"none" is a valid name
+		}
+		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+			Meteor.call('roomDisplayNameExists', name, (error, result) => {
+				if (error) {
+					return;
+				}
+				if (result) {
+					instance.titleError.set('Request_already_exists');
+				}
+			});
+		} else {
+			const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+			const passesRegex = name.length === 0 || reg.test(name);
+			if (!passesRegex) {
+				instance.titleError.set('Request_no_special_char');
+			} else {
+				Meteor.call('roomNameExists', name, (error, result) => {
+					if (error) {
+						return;
+					}
+					if (result) {
+						instance.titleError.set('Request_already_exists');
+					}
+				});
+			}
+		}
+	}, 500);
 
 	this.ac = new AutoComplete({
 		selector: {
@@ -174,4 +259,23 @@ Template.AssistifyCreateRequest.onCreated(function() {
 
 	});
 	this.ac.tmplInst = this;
+
+	//prefill form based on query parameters if passed
+	if (FlowRouter.current().queryParams) {
+		const expertise = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('expertise');
+		if (expertise) {
+			instance.expertise.set(expertise);
+			instance.debounceValidateExpertise(expertise);
+		}
+
+		const title = FlowRouter.getQueryParam('title');
+		if (title) {
+			instance.requestTitle.set(title);
+		}
+
+		const question = FlowRouter.getQueryParam('question');
+		if (question) {
+			instance.openingQuestion.set(question);
+		}
+	}
 });

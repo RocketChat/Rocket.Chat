@@ -1,23 +1,24 @@
-Assistify_AI_DBSearch_Suffix: Eigener Such-Suffix
-Assistify_AI_Widget_Posting_Type_PostRichText: RichText posten
-Assistify_AI_Widget_Posting_Type_PostText: Text posten
-Assistify_AI_Widget_Posting_Type_SuggestText: Text vorschlagen
+Assistify_AI_Source: Wissensquelle
+Assistify_AI_Source_Description: Wähle eine Wissesquelle aus.
+Assistify_AI_Source_Smarti: Smarti
+Assistify_AI_Source_APIAI: API.ai
+Assistify_AI_Reload: Aktualisieren
+Assistify_AI_Reload_Description: Lade die Einstellungen neu, um das Smarti Widget zu aktualisieren.
+Assistify_AI_Smarti_Base_URL: Smarti URL
+Assistify_AI_Smarti_Base_URL_Description: Trage hier die URL des Smarti-Servers ein (z.B. http://localhost:8080/).
+Assistify_AI_Smarti_Domain: Smarti Client-Name
+Assistify_AI_Smarti_Domain_Description: Trage hier den Smarti Client-Name ein, der zu dieser Rocket.Chat Instanz gehört.
+Assistify_AI_Smarti_Auth_Token: Smarti Client-Token
+Assistify_AI_Smarti_Auth_Token_Description: Trage hier den Smarti Client-Token ein, damit sich Rocket.Chat gegenüber Smarti authentifizieren kann.
 Assistify_AI_Widget_Posting_Type: Posting-Verhalten des Widgets
-DBS_AI_Redlink_Auth_Token: Basic-Auth Token
-DBS_AI_Redlink_Domain: Domäne für Nachrichten
-DBS_AI_Redlink_Hook_Token: Token für eingende Nachrichten
-DBS_AI_Redlink_URL: URL des Service
-DBS_AI_Source_APIAI: API.ai
-DBS_AI_Source_Redlink: Redlink
-DBS_AI_Source_Smarti: Smarti
-DBS_AI_Source: Wissensquelle
-error-unreachable-url: URL nicht erreichbar
-Link_provided: Ich habe hier eine ähnliche Konversation gefunden
-No_room_link_possible: Die originale Konversation fand nicht über diesen Chat statt. Daher kann ich sie leider nicht verlinken. Bitte wähle einzelne Nachtichten aus.
-reload_Assistify: Aktualisieren
-Reload_Settings: Einstellungen neu laden
-settings-reloaded-successfully: Einstellung wurden erfolgreich neu geladen
-similar_requests: Ähnliche Anfragen
-similar_to: Ähnliches zu
+Assistify_AI_Widget_Posting_Type_Description: Wähle wie die Vorschläge von Smarti in den Chat übernommen werden sollen.
+Assistify_AI_Widget_Posting_Type_SuggestText: Plain Text vorschlagen
+Assistify_AI_Widget_Posting_Type_PostText: Plain Text direkt posten
+Assistify_AI_Widget_Posting_Type_PostRichText: Rich Text direkt posten
+Assistify_AI_RocketChat_Webhook_Token: Rocket.Chat Token
+Assistify_AI_RocketChat_Webhook_Token_Description: Vergib einen Token für eingende Nachrichten von Smarti (z.B. key123).
 Widget_could_not_load: Die Wissensbasis kann nicht angezeigt werden. Das tut uns echt leid! Ein möglicher Grund ist eine fehlende Intranetverbindung. Sollte der Rest des Intranets erreichbar sein, nimm bitte Kontakt mit uns auf!
 Widget_loading: Die Wissensbasis lädt gerade - und zwar schon ungewöhnlich lange. Da scheint etwas nicht zu stimmen...
+Reload_Settings: Einstellungen neu laden
+settings-reloaded-successfully: Einstellung wurden erfolgreich neu geladen
+error-unreachable-url: URL nicht erreichbar

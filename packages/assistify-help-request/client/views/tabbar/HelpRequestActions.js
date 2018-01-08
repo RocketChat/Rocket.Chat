@@ -1,4 +1,8 @@
-import { RocketChat, UiTextContext } from 'meteor/rocketchat:lib';
+import {RocketChat, UiTextContext} from 'meteor/rocketchat:lib';
+
+const showClosingComment = function() {
+	return !RocketChat.settings.get('Assistify_Deactivate_request_closing_comments');
+};
 
 Template.HelpRequestActions.helpers({
 	helprequestOpen() {
@@ -36,20 +40,28 @@ Template.HelpRequestActions.helpers({
 	}
 });
 
+
 Template.HelpRequestActions.events({
 	'click .close-helprequest'(event, instance) {
 		event.preventDefault();
 		const warnText = RocketChat.roomTypes.roomTypes['r'].getUiText(UiTextContext.CLOSE_WARNING);
 
-		swal(_.extend({
+		let swalConfig = {
 			title: t('Closing_chat'),
 			text: warnText ? t(warnText) : '',
-			type: 'input',
-			inputPlaceholder: t('Close_request_comment'),
 			showCancelButton: true,
 			closeOnConfirm: false,
 			roomId: instance.data.roomId
-		}), (inputValue) => {
+		};
+
+		if (showClosingComment()) {
+			swalConfig = _.extend(swalConfig, {
+				type: 'input',
+				inputPlaceholder: t('Close_request_comment')
+			});
+		}
+
+		swal(swalConfig, (inputValue) => {
 			//inputValue is false on "cancel" and has a string value of the input if confirmed.
 			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
 				Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
@@ -74,14 +86,21 @@ Template.HelpRequestActions.events({
 	},
 	'click .close-livechat'(event) {
 		event.preventDefault();
-
-		swal({
+		let swalConfig = {
 			title: t('Closing_chat'),
-			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
+			type: showClosingComment(),
 			showCancelButton: true,
 			closeOnConfirm: false
-		}, (inputValue) => {
+		};
+
+		if (showClosingComment()) {
+			swalConfig = _.extend(swalConfig, {
+				type: 'input',
+				inputPlaceholder: t('Please_add_a_comment')
+			});
+		}
+
+		swal(swalConfig, (inputValue) => {
 			//inputValue is false on "cancel" and has a string value of the input if confirmed.
 			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
 

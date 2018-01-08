@@ -17,8 +17,7 @@ Meteor.publish('assistify:helpRequests', function(roomId) {
 	}
 
 
-	if (room.helpRequestId) {
-		// this.ready();
+	if (room && room.helpRequestId) {
 		return RocketChat.models.HelpRequests.findByRoomId(room._id, {
 			fields: {
 				_id: 1,

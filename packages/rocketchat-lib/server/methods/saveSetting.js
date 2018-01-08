@@ -8,9 +8,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting')
+			&& !(
+				RocketChat.authz.hasAllPermission(Meteor.userId(), ['manage-selected-settings', `change-setting-${ _id }`])
+			)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
-				method: 'saveSetting'
+				method: 'saveSetting',
+				settingId: _id
 			});
 		}
 

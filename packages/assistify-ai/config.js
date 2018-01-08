@@ -1,35 +1,35 @@
+/* globals RocketChat */
+
 Meteor.startup(() => {
 	const addAISettings = function() {
 
 		this.section('Knowledge_Base', function() {
 
-			this.add('DBS_AI_Enabled', false, {
+			this.add('Assistify_AI_Enabled', false, {
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'Enabled'
 			});
 
-			this.add('DBS_AI_Source', '', {
+			this.add('Assistify_AI_Source', '0', {
 				type: 'select',
 				values: [
-					{key: '0', i18nLabel: 'DBS_AI_Source_APIAI'},
-					{key: '1', i18nLabel: 'DBS_AI_Source_Redlink'},
-					{key: '2', i18nLabel: 'DBS_AI_Source_Smarti'}
+					{key: '0', i18nLabel: 'Assistify_AI_Source_Smarti'},
+					{key: '1', i18nLabel: 'Assistify_AI_Source_APIAI'}
 				],
 				public: true,
-				i18nLabel: 'DBS_AI_Source'
+				i18nLabel: 'Assistify_AI_Source'
 			});
 
-			this.add('DBS_AI_Redlink_URL', '', {
-				type: 'string',
-				public: true,
-				i18nLabel: 'DBS_AI_Redlink_URL'
+			this.add('Assistify_AI_Reload', 'reloadSmarti', {
+				type: 'action',
+				actionText: 'Reload_Settings'
 			});
 
-			this.add('DBS_AI_Redlink_Hook_Token', '', {
+			this.add('Assistify_AI_Smarti_Base_URL', '', {
 				type: 'string',
 				public: true,
-				i18nLabel: 'DBS_AI_Redlink_Hook_Token'
+				i18nLabel: 'Assistify_AI_Smarti_Base_URL'
 			});
 
 			let domain = RocketChat.settings.get('Site_Url');
@@ -41,10 +41,16 @@ Meteor.startup(() => {
 					domain = domain.substr(0, domain.length - 1);
 				}
 			}
-			this.add('DBS_AI_Redlink_Domain', domain, {
+			this.add('Assistify_AI_Smarti_Domain', domain, {
 				type: 'string',
 				public: true,
-				i18nLabel: 'DBS_AI_Redlink_Domain'
+				i18nLabel: 'Assistify_AI_Smarti_Domain'
+			});
+
+			this.add('Assistify_AI_Smarti_Auth_Token', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_Smarti_Auth_Token'
 			});
 
 			this.add('Assistify_AI_Widget_Posting_Type', '', {
@@ -58,9 +64,10 @@ Meteor.startup(() => {
 				i18nLabel: 'Assistify_AI_Widget_Posting_Type'
 			});
 
-			this.add('reload_Assistify', 'reloadSmarti', {
-				type: 'action',
-				actionText: 'Reload_Settings'
+			this.add('Assistify_AI_RocketChat_Webhook_Token', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_RocketChat_Webhook_Token'
 			});
 		});
 	};

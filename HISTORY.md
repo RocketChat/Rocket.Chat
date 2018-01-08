@@ -1,3 +1,30 @@
+<a name="assistify-0.5.1"></a>
+## Assistify-0.5.1 (2017-12-19)
+This is a bug fix release. You may notice that your notification settings from a topic are now copied to a request. Hopefully, you are more happy responding to questions now.
+<a name="assistify-0.5.0"></a>
+
+## Assistify-0.5.0 (2017-12-07)
+
+### Enhancements
+- You can add a title and the actual question to the request while creating it
+- Roles can be authorized to change particular settings only. This allows you to customize Assistify with respect to colors, texts and more - given you've got the `config-expert` role!
+- The request creation screen allows to pass url-parameters. This allow for a very loosely coupled integration, e. g. into a [confluence-based wiki](https://github.com/assistify/confluence-integration)
+- :de: Wir kennen euch nun besser. Wir wollen ab jetzt “Du” zu einander sagen, ok? 😉 :de:
+
+
+<a name="assistify-0.4.4"></a>
+## Assistify-0.4.4 (2017-11-10)
+
+### Enhancements
+- Based on <a href="#0.59.3">Rocket.Chat 0.59.3</a>
+- Provide more explanation texts for dialogs
+- [#140](https://github.com/assistify/Rocket.Chat/issues/140) Provide more information for disabled users when trying to log-in
+- [#121](https://github.com/assistify/Rocket.Chat/pull/121) Improved closing of requests
+
+### Bug Fixes
+- Properly invalidate Smarti widget on settings change
+
+
 <a name="0.59.3"></a>
 ## 0.59.3 (2017-10-29)
 

@@ -1,4 +1,4 @@
-/* globals Systemlogger */
+/* globals SystemLogger */
 
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
@@ -125,7 +125,7 @@ class ModelRooms extends RocketChat.models._Base {
 				if (item._room) {
 					return item._room;
 				}
-				Systemlogger.info('Empty Room for Subscription', item);
+				SystemLogger.info('Empty Room for Subscription', item);
 				return {};
 			});
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
@@ -150,7 +150,7 @@ class ModelRooms extends RocketChat.models._Base {
 				if (item._room) {
 					return item._room;
 				}
-				Systemlogger.info('Empty Room for Subscription', item);
+				SystemLogger.info('Empty Room for Subscription', item);
 				return {};
 			});
 			data = data.filter(item => item._updatedAt > _updatedAt);

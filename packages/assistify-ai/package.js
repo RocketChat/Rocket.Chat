@@ -27,8 +27,15 @@ Package.onUse(function(api) {
 	addDirectory(api, 'server/hooks', 'server');
 	addDirectory(api, 'server/methods', 'server');
 
+	// Smarti proxy and router
+	api.addFiles('server/SmartiProxy.js', 'server');
+	api.addFiles('server/SmartiRouter.js', 'server');
+
 	//Configuration
 	api.addFiles('config.js', 'server');
+
+	//migration scripts
+	api.addFiles('server/migrations.js', 'server');
 
 	//Client business logic
 	api.addFiles('client/tabbar.js', 'client');
@@ -36,6 +43,7 @@ Package.onUse(function(api) {
 
 	//client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
+	api.addFiles('client/smartiLoader.js', 'client');
 
 	//styling
 	api.addFiles('client/public/stylesheets/smarti.css', 'client');
