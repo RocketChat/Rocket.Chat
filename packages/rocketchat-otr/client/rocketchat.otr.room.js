@@ -202,7 +202,7 @@ RocketChat.OTR.Room = class {
 						this.reset();
 					}
 
-					swal({
+					modal.open({
 						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
 						html: true,
@@ -222,7 +222,7 @@ RocketChat.OTR.Room = class {
 
 				timeout = Meteor.setTimeout(() => {
 					this.establishing.set(false);
-					swal.close();
+					modal.close();
 				}, 10000);
 
 				break;
@@ -237,7 +237,7 @@ RocketChat.OTR.Room = class {
 				if (this.establishing.get()) {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
-					swal({
+					modal.open({
 						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
 						html: true
@@ -249,7 +249,7 @@ RocketChat.OTR.Room = class {
 				if (this.established.get()) {
 					this.reset();
 					const user = Meteor.users.findOne(this.peerId);
-					swal({
+					modal.open({
 						title: `<i class='icon-key alert-icon success-color'></i>${ TAPi18n.__('OTR') }`,
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true

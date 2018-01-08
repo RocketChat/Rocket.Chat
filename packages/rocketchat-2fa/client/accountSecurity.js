@@ -42,7 +42,7 @@ Template.accountSecurity.events({
 	},
 
 	'click .disable-2fa'() {
-		swal({
+		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
 			type: 'input',
@@ -64,7 +64,7 @@ Template.accountSecurity.events({
 				if (result) {
 					toastr.success(t('Two-factor_authentication_disabled'));
 				} else {
-					return toastr.error(t('Invalid_two_factor_code'));
+					toastr.error(t('Invalid_two_factor_code'));
 				}
 			});
 		});
@@ -87,7 +87,7 @@ Template.accountSecurity.events({
 	},
 
 	'click .regenerate-codes'(event, instance) {
-		swal({
+		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
 			type: 'input',
@@ -109,7 +109,7 @@ Template.accountSecurity.events({
 				if (result) {
 					instance.showBackupCodes(result.codes);
 				} else {
-					return toastr.error(t('Invalid_two_factor_code'));
+					toastr.error(t('Invalid_two_factor_code'));
 				}
 			});
 		});
@@ -130,7 +130,7 @@ Template.accountSecurity.onCreated(function() {
 			return (index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `;
 		}).join('');
 		const codes = `<code class="text-center allow-text-selection">${ backupCodes }</code>`;
-		swal({
+		modal.open({
 			title: t('Backup_codes'),
 			text: `${ t('Make_sure_you_have_a_copy_of_your_codes', { codes }) }`,
 			html: true
