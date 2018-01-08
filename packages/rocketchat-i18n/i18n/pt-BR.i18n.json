@@ -452,6 +452,7 @@
   "error-the-field-is-required": "O campo __field__ é obrigatório.",
   "error-too-many-requests": "Erro, muitas solicitações. Por favor, diminua a velocidade. Você deve esperar __seconds__ segundos antes de tentar novamente.",
   "error-user-is-not-activated": "O usuário não está ativo",
+  "error-user-has-no-roles": "O usuário não possui permissões",
   "error-user-not-in-room": "O usuário não está nesta sala",
   "error-user-registration-disabled": "O registro do usuário está desativado",
   "error-user-registration-secret": "O registro de usuário é permitido somente via URL secreta",
