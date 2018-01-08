@@ -35,7 +35,7 @@ describe('[Smarti Connection]', () => {
 		});
 	});
 
-	describe('[]', function () {
+	describe('[Smarti Configuration]', function () {
 		describe('[Client]', () => {
 			var clientid;
 			var token;
@@ -145,6 +145,113 @@ describe('[Smarti Connection]', () => {
 					.expect(200)
 					.end(done);
 			});
+
+			it('Logout from Rocketchat api', function (done) {
+				console.log('authToken-o', authToken);
+				console.log('userId-o', userId);
+				rcrequest.get('/api/v1/logout')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.expect(200)
+					.end(done);
+			});
+		});
+	});
+
+	describe('[RC Configuration]', function () {
+		var authToken;
+		var userId;
+
+		it('Login to Rocket.Chat api', function (done) {
+			rcrequest.post('/api/v1/login')
+				.set('Content-Type', 'application/json')
+				.send({
+					username: adminUsername,
+					password: adminPassword
+				})
+				.end(function (err, res) {
+					authToken = res.body.data.authToken;
+					userId = res.body.data.userId;
+					expect(res.status).to.be.equal(200);
+					console.log('authToken', authToken);
+					console.log('userId', userId);
+					done();
+				});
+		});
+
+		it('Check Assistify_AI_Smarti_Domain', function (done) {
+			rcrequest.get('/api/v1/settings/Assistify_AI_Smarti_Domain')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(function (err, res) {
+					expect(res.status).to.be.equal(200);
+					expect(res.body.value).to.be.equal('testclient');
+					console.log('', res.body.value);
+					done();
+				});
+		});
+
+		it('Check Assistify_AI_Source', function (done) {
+			rcrequest.get('/api/v1/settings/Assistify_AI_Source')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(function (err, res) {
+					expect(res.status).to.be.equal(200);
+					expect(res.body.value).to.be.equal('0');
+					console.log('Assistify_AI_Source', res.body.value);
+					done();
+				});
+		});
+
+		it('Check Assistify_AI_Enabled', function (done) {
+			rcrequest.get('/api/v1/settings/Assistify_AI_Enabled')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(function (err, res) {
+					expect(res.status).to.be.equal(200);
+					expect(res.body.value).to.be.equal(true);
+					console.log('Assistify_AI_Enabled', res.body.value);
+					done();
+				});
+		});
+
+		it('Check Assistify_AI_RocketChat_Webhook_Token', function (done) {
+			rcrequest.get('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(function (err, res) {
+					expect(res.status).to.be.equal(200);
+					expect(res.body.value).to.be.equal('key123');
+					console.log('Assistify_AI_RocketChat_Webhook_Token', res.body.value);
+					done();
+				});
+		});
+
+		it('Check Assistify_AI_Smarti_Base_URL', function (done) {
+			rcrequest.get('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(function (err, res) {
+					expect(res.status).to.be.equal(200);
+					expect(res.body.value).to.be.equal('http://localhost:8080/');
+					console.log('Assistify_AI_Smarti_Base_URL', res.body.value);
+					done();
+				});
+		});
+
+		it('Logout from Rocketchat api', function (done) {
+			console.log('authToken-o', authToken);
+			console.log('userId-o', userId);
+			rcrequest.get('/api/v1/logout')
+				.set('X-Auth-Token', authToken)
+				.set('X-User-Id', userId)
+				.expect(200)
+				.end(done);
 		});
 	});
 
@@ -155,3 +262,9 @@ describe('[Smarti Connection]', () => {
 	// });
 
 });
+
+// OVERWRITE_SETTING_Assistify_AI_Smarti_Domain: testclient
+// - OVERWRITE_SETTING_Assistify_AI_Source: 0
+// - OVERWRITE_SETTING_Assistify_AI_Enabled: true
+// - OVERWRITE_SETTING_Assistify_AI_RocketChat_Webhook_Token: key123
+// - OVERWRITE_SETTING_Assistify_AI_Smarti_Base_URL: http://localhost:8080/
