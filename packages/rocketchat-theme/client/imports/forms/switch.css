@@ -47,7 +47,7 @@
 				background-color: var(--rc-color-success);
 
 				& .rc-switch__button-inside {
-					transform: translate3d(1px, 1px, 0);
+					transform: translate3d(13px, 1px, 0);
 				}
 			}
 		}
@@ -78,7 +78,7 @@
 		height: 16px;
 
 		transition: all 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
-		transform: translate3d(13px, 1px, 0);
+		transform: translate3d(1px, 1px, 0);
 
 		border-width: 1px;
 		border-color: #f2f3f5;
@@ -113,10 +113,10 @@
 	}
 
 	&__button-inside {
-		transform: translate3d(-13px, 1px, 0);
+		transform: translate3d(-1px, 1px, 0);
 	}
 
 	&__input:checked + .rc-switch__button .rc-switch__button-inside {
-		transform: translate3d(-1px, 1px, 0);
+		transform: translate3d(-13px, 1px, 0);
 	}
 }

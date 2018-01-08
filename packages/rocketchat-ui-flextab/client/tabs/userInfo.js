@@ -428,7 +428,7 @@ const actions = [
 		group: 'admin',
 		condition: () => !Template.instance().data.hideAdminControls && hasPermission('delete-user')
 	}, () => {
-		if (!Template.instance().data.hideAdminControls || !hasPermission('assign-admin-role')) {
+		if (Template.instance().data.hideAdminControls || !hasPermission('assign-admin-role')) {
 			return;
 		}
 		if (hasAdminRole()) {
@@ -446,7 +446,7 @@ const actions = [
 			action: prevent(getUser, ({_id}) => Meteor.call('setAdminStatus', _id, true, success(() => toastr.success(t('User_is_now_an_admin')))))
 		};
 	}, () => {
-		if (!Template.instance().data.hideAdminControls || !hasPermission('edit-other-user-active-status')) {
+		if (Template.instance().data.hideAdminControls || !hasPermission('edit-other-user-active-status')) {
 			return;
 		}
 		if (active()) {

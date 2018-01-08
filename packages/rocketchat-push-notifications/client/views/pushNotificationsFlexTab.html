@@ -1,19 +1,82 @@
 <template name="pushNotificationsFlexTab">
 	<div class="list-view push-notifications">
-		<form>
-			<ul class="list clearfix">
-				<li class="disable-notifications">
-					<label>{{_ "Disable_Notifications"}}</label>
-					<div class="rc-switch">
-						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" id="disableNotifications" name="disableNotifications" value="1" checked="{{$eq disableNotifications true}}">
+		<main class="rc-user-info__scroll">
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label">
+						{{_ "Turn_OFF"}}
+						<div class="rc-switch-double__description">
+							{{_ "Mute_all_notifications"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications false}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
 						</label>
 					</div>
-				</li>
-				{{#if $neq disableNotifications true}}
+					<div class="rc-switch-double__label">
+						{{_ "Turn_ON"}}
+						<div class="rc-switch-double__description">
+							{{_ "Receive_alerts"}}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label">
+						{{_ "Hide_counter"}}
+						<div class="rc-switch-double__description">
+							{{_ "Do_not_display_unread_counter"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq hideUnreadStatus true}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label">
+						{{_ "Show_counter"}}
+						<div class="rc-switch-double__description">
+							{{_ "Display_unread_counter"}}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="rc-user-info__row rc-user-info__row--separator">
+					<div class="rc-switch-double">
+						<div class="rc-switch-double__label">
+							{{_ "User_default"}}
+							<div class="rc-switch-double__description">
+								{{_ "Keep_default_user_settings"}}
+							</div>
+						</div>
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<input type="checkbox" class="rc-switch__input js-input-check" id="customize" name="customize" value="1" checked="{{$eq customize true}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+						<div class="rc-switch-double__label">
+							{{_ "Customize"}}
+							<div class="rc-switch-double__description">
+								{{_ "Create_unique_rules_for_this_channel"}}
+							</div>
+						</div>
+					</div>
+				</div>
+		</main>
+		<form>
+			<ul class="list clearfix">
+				{{#if $eq disableNotifications false}}
 					<li class="audio-notifications">
 						<label>{{_ "Audio"}}</label>
 						<div>
@@ -125,17 +188,6 @@
 					</li>
 					{{/unless}}
 				{{/if}}
-				<li class="unread-room-status">
-					<label>{{_ "Hide_Unread_Room_Status"}}</label>
-					<div class="rc-switch">
-						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq hideUnreadStatus true}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
-					</div>
-				</li>
 				<li class="unread-alerts">
 					<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 					<div>
