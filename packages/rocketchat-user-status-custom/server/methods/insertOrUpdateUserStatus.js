@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import s from 'underscore.string';
 
 Meteor.methods({

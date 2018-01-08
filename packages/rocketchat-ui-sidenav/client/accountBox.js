@@ -56,7 +56,7 @@ Template.accountBox.events({
 					groups: [
 						{
 							title: t('User'),
-							items: Object.keys(RocketChat.userStatus.list).map((key,index) => {
+							items: Object.keys(RocketChat.userStatus.list).map((key) => {
 								const userStatus = RocketChat.userStatus.list[key];
 								return {
 									icon: 'circle',

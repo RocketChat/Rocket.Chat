@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:user-status-custom',
 	version: '1.0.0',
 	summary: '',
-	git: '',
+	git: ''
 });
 
 Package.onUse(function(api) {
@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 		'server/publications/fullUserStatusData.js',
 		'server/methods/insertOrUpdateUserStatus.js',
 		'server/methods/listCustomUserStatus.js',
-		'server/methods/deleteCustomUserStatus.js',
+		'server/methods/deleteCustomUserStatus.js'
 	], 'server');
 
 	api.addFiles([
