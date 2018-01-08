@@ -1,3 +1,23 @@
+<a name="0.60.4-rc.1"></a>
+## 0.60.4-rc.1 (2018-01-08)
+
+
+### Bug Fixes
+
+- [#9330](https://github.com/RocketChat/Rocket.Chat/pull/9330) announcement hyperlink color
+- [#9335](https://github.com/RocketChat/Rocket.Chat/pull/9335) Deleting message with store last message not removing
+- [#9345](https://github.com/RocketChat/Rocket.Chat/pull/9345) last message cutting on bottom
+- [#9328](https://github.com/RocketChat/Rocket.Chat/pull/9328) popover on safari for iOS
+
+
+<details>
+<summary>Others</summary>
+
+- [#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346) Update Marked dependecy to 0.3.9
+</details>
+
+
+
 <a name="0.60.4-rc.0"></a>
 ## 0.60.4-rc.0 (2018-01-05)
 
