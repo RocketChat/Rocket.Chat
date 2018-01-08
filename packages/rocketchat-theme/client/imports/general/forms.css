@@ -233,6 +233,10 @@
 		width: 100%;
 		padding: 25px;
 	}
+
+	&--apps .preferences-page__header {
+		justify-content: space-between;
+	}
 }
 
 @media (width < 780px) {
