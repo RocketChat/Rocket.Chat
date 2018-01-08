@@ -1,3 +1,4 @@
+/* globals deleteCustomUserStatus:true, updateCustomUserStatus:true */
 RocketChat.userStatus.packages.customUserStatus = {
 	list: []
 };
@@ -44,3 +45,5 @@ Meteor.startup(() =>
 		}
 	})
 );
+
+/* exported updateCustomUserStatus, deleteCustomUserStatus */
