@@ -4,6 +4,8 @@ import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
+this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
@@ -17,7 +19,7 @@ Template.body.onRendered(function() {
 		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			return swal({
+			modal.open({
 				title: t('Clear_all_unreads_question'),
 				type: 'warning',
 				confirmButtonText: t('Yes_clear_all'),
@@ -188,9 +190,6 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		swal.setDefaults({
-			cancelButtonText: t('Cancel')
-		});
 		const user = Meteor.user();
 		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {

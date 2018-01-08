@@ -58,8 +58,6 @@ class API extends Restivus {
 	success(result = {}) {
 		if (_.isObject(result)) {
 			result.success = true;
-			// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-			result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
 		}
 
 		return {
@@ -140,7 +138,20 @@ class API extends Restivus {
 							return RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						return result ? result : RocketChat.API.v1.success();
+						result = result ? result : RocketChat.API.v1.success();
+
+						if (
+							/(channels|groups)\./.test(route)
+							&& result
+							&& result.body
+							&& result.body.success === true
+							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
+						) {
+							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
+							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
+						}
+
+						return result;
 					};
 
 					for (const [name, helperMethod] of this.helperMethods) {
@@ -160,6 +171,15 @@ class API extends Restivus {
 		const loginCompatibility = (bodyParams) => {
 			// Grab the username or email that the user is logging in with
 			const {user, username, email, password, code} = bodyParams;
+
+			if (password == null) {
+				return bodyParams;
+			}
+
+			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
+				return bodyParams;
+			}
+
 			const auth = {
 				password
 			};
@@ -176,7 +196,7 @@ class API extends Restivus {
 				return bodyParams;
 			}
 
-			if (auth.password && auth.password.hashed) {
+			if (auth.password.hashed) {
 				auth.password = {
 					digest: auth.password,
 					algorithm: 'sha-256'
