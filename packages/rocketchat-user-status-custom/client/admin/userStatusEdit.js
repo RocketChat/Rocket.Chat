@@ -10,21 +10,21 @@ Template.userStatusEdit.helpers({
 		const userStatusType = this.userStatus ? this.userStatus.statusType : 'online';
 
 		return [{
-			"value": 'online',
-			"name": t('Online'),
-			"selected": userStatusType === 'online' ? 'selected' : ''
+			'value': 'online',
+			'name': t('Online'),
+			'selected': userStatusType === 'online' ? 'selected' : ''
 		}, {
-			"value": 'away',
-			"name": t('Away'),
-			"selected": userStatusType === 'away' ? 'selected' : ''
+			'value': 'away',
+			'name': t('Away'),
+			'selected': userStatusType === 'away' ? 'selected' : ''
 		}, {
-			"value" : 'busy',
-			"name": t('Busy'),
-			"selected": userStatusType === 'busy' ? 'selected' : ''
+			'value' : 'busy',
+			'name': t('Busy'),
+			'selected': userStatusType === 'busy' ? 'selected' : ''
 		}, {
-			"value": 'offline',
-			"name": t('Invisible'),
-			"selected": userStatusType === 'offline' ? 'selected' : ''
+			'value': 'offline',
+			'name': t('Invisible'),
+			'selected': userStatusType === 'offline' ? 'selected' : ''
 		}];
 	}
 });
