@@ -10,15 +10,15 @@ Template.rocketlets.onCreated(function() {
 		instance.ready.set(true);
 	});
 
-	Tracker.autorun(() => {
-		if (this.ready.get() === true) {
-			console.log('render');
-			const grid = new Masonry('.rc-discovery-wrap', {
-				itemSelector: '.rc-discovery__item',
-				columnWidth: 350
-			});
-		}
-	});
+	// Tracker.autorun(() => {
+	// 	if (this.ready.get() === true) {
+	// 		console.log('render');
+	// 		const grid = new Masonry('.rc-discovery-wrap', {
+	// 			itemSelector: '.rc-discovery__item',
+	// 			columnWidth: 350
+	// 		});
+	// 	}
+	// });
 });
 
 Template.rocketlets.helpers({
