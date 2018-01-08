@@ -191,13 +191,16 @@
 <template name="channelSettingsInfo">
 	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
 		{{# with settings=settings}}
-				{{#if archived}}
-					<label class="rc-user-info__label">
-						{{_ "Room_archived"}}
-					</label>
-				{{/if}}
 
 				<div class="rc-user-info">
+					<div class="rc-user-info__avatar">
+						{{#if archived}}
+						<div class="rc-user-info__banner">
+							{{_ "Room_archived"}}
+						</div>
+						{{/if}}
+						{{> avatar username=channelName}}
+					</div>
 					<h3 title="{{name}}" class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
 					{{#if password}}
 						<label class="rc-user-info__label">

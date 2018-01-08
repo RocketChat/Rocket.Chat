@@ -35,12 +35,36 @@
 		flex: 1 1;
 	}
 
+	&__banner {
+		background: #1d74f5;
+	    color: white;
+
+	    display: flex;
+	    border-radius: 3px;
+	    position: absolute;
+	    z-index: 1;
+	    bottom: 50px;
+	    width: 100%;
+	    -webkit-justify-content: center;
+	    align-items: center;
+	    margin: 0 -6px;
+
+	    width: 132px;
+	    height: 32px;
+	}
+
 	&__avatar {
 		width: 120px;
 		height: 120px;
 		margin: var(--default-padding);
+		position: relative;
 
 		border-radius: 2px;
+
+		.archived & > .avatar{
+			filter: blur(1px);
+			opacity: 0.8;
+		}
 	}
 
 	&__name {
