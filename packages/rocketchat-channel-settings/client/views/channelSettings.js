@@ -514,6 +514,10 @@ Template.channelSettingsInfo.onCreated(function() {
 });
 
 Template.channelSettingsInfo.helpers({
+	...can,
+	channelName() {
+		return `@${ Template.instance().room.name }`;
+	},
 	archived() {
 		return Template.instance().room.archived;
 	},
@@ -523,7 +527,6 @@ Template.channelSettingsInfo.helpers({
 	channelSettings() {
 		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
-	...can,
 	name() {
 		return Template.instance().room.name;
 	},
