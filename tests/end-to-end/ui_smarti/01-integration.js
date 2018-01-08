@@ -13,7 +13,7 @@ const comment = 'Anfrage wurde erfolgreich beantwortet';
 
 import supertest from 'supertest';
 
-export const request = supertest.agent('http://rocketchat:3000');
+export const request = supertest.agent('http://localhost:3000');
 
 import {checkIfUserIsAdmin} from '../../data/checks';
 
