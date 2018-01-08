@@ -25,38 +25,6 @@
 								</div>
 							</div>
 						{{/each}}
-						{{#each rocketlets}}
-						<div class="rc-discovery__item">
-							<div class="rc-discovery__item-image-wrap">
-								<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
-							</div>
-							<div class="rc-discovery__item-footer">
-								<div class="rc-discovery__container">
-									<div class="discovery__item-footer-title">{{name}}</div>
-									<div class="rc-discovery__item-footer-description">{{description}}</div>
-								</div>
-								<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
-									{{> icon icon="cog"}}
-								</button>
-							</div>
-						</div>
-					{{/each}}
-					{{#each rocketlets}}
-					<div class="rc-discovery__item">
-						<div class="rc-discovery__item-image-wrap">
-							<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
-						</div>
-						<div class="rc-discovery__item-footer">
-							<div class="rc-discovery__container">
-								<div class="discovery__item-footer-title">{{name}}</div>
-								<div class="rc-discovery__item-footer-description">{{description}}</div>
-							</div>
-							<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_Rocketlet"}}">
-								{{> icon icon="cog"}}
-							</button>
-						</div>
-					</div>
-				{{/each}}
 					</div>
 				</div>
 			{{/requiresPermission}}
