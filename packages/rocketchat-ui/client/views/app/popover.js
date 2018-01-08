@@ -275,3 +275,7 @@ Template.popover.events({
 		}
 	}
 });
+
+Template.popover.helpers({
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
+});
