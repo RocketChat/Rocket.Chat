@@ -1,58 +1,58 @@
 <template name="adminUserStatus">
-  <div class="main-content-flex">
-    <section class="page-container page-list flex-tab-main-content">
-      <header class="fixed-title border-component-color">
-        {{> burger}}
-        <h2>
-          <span class="room-title">{{_ "Custom_User_Status"}}</span>
-        </h2>
-      </header>
-      <div class="content">
-        {{#unless hasPermission 'manage-user-status'}}
-          <p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
-        {{else}}
-          <form class="search-form" role="form">
-            <div class="input-line search">
-              <input type="text" id="user-status-filter" placeholder="{{_ "Search"}}" dir="auto">
-              <i class="icon-search secondary-font-color"></i>
-              {{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
-            </div>
-          </form>
-          <div class="results">
-            {{{_ "Showing_results" customUserStatus.length}}}
-          </div>
-          <div class="list">
-            <table class="secondary-background-color">
-              <thead>
-                <tr class="admin-table-row">
-                  <th class="content-background-color border-component-color">&nbsp;</th>
-                  <th class="content-background-color border-component-color" width="50%">{{_ "Name"}}</th>
-                  <th class="content-background-color border-component-color" width="50%">{{_ "StatusType"}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#each customUserStatus}}
-                <tr class="user-status-info row-link admin-table-row">
-                  <td class="border-component-color">
-                    <div class="userStatusAdminPreview">
-                      {{> userStatusPreview name=name}}
-                    </div>
-                  </td>
-                  <td class="border-component-color">{{name}}</td>
-                  <td class="border-component-color">{{localizedStatusType}}</td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
-            {{#if hasMore}}
-              <button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-            {{/if}}
-          </div>
-        {{/unless}}
-      </div>
-    </section>
-    {{#with flexData}}
-      {{> flexTabBar}}
-    {{/with}}
-  </div>
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			<header class="fixed-title border-component-color">
+				{{> burger}}
+				<h2>
+					<span class="room-title">{{_ "Custom_User_Status"}}</span>
+				</h2>
+			</header>
+			<div class="content">
+				{{#unless hasPermission 'manage-user-status'}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<input type="text" id="user-status-filter" placeholder="{{_ "Search"}}" dir="auto">
+							<i class="icon-search secondary-font-color"></i>
+							{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
+						</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" customUserStatus.length}}}
+					</div>
+					<div class="list">
+						<table class="secondary-background-color">
+							<thead>
+								<tr class="admin-table-row">
+									<th class="content-background-color border-component-color">&nbsp;</th>
+									<th class="content-background-color border-component-color" width="50%">{{_ "Name"}}</th>
+									<th class="content-background-color border-component-color" width="50%">{{_ "StatusType"}}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{{#each customUserStatus}}
+								<tr class="user-status-info row-link admin-table-row">
+									<td class="border-component-color">
+										<div class="userStatusAdminPreview">
+											{{> userStatusPreview name=name}}
+										</div>
+									</td>
+									<td class="border-component-color">{{name}}</td>
+									<td class="border-component-color">{{localizedStatusType}}</td>
+								</tr>
+								{{/each}}
+							</tbody>
+						</table>
+						{{#if hasMore}}
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						{{/if}}
+					</div>
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
 </template>

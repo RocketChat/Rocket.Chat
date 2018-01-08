@@ -1,27 +1,27 @@
 import s from 'underscore.string';
 
 Meteor.publish('fullUserStatusData', function(filter, limit) {
-  if (!this.userId) {
-    return this.ready();
-  }
+	if (!this.userId) {
+		return this.ready();
+	}
 
-  const fields = {
-    name: 1,
-    statusType: 1
-  };
+	const fields = {
+		name: 1,
+		statusType: 1
+	};
 
-  filter = s.trim(filter);
+	filter = s.trim(filter);
 
-  const options = {
-    fields,
-    limit,
-    sort: { name: 1 }
-  };
+	const options = {
+		fields,
+		limit,
+		sort: { name: 1 }
+	};
 
-  if (filter) {
-    const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-    return RocketChat.models.CustomUserStatus.findByName(filterReg, options);
-  }
+	if (filter) {
+		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
+		return RocketChat.models.CustomUserStatus.findByName(filterReg, options);
+	}
 
-  return RocketChat.models.CustomUserStatus.find({}, options);
+	return RocketChat.models.CustomUserStatus.find({}, options);
 });
