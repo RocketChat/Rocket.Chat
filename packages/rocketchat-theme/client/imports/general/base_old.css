@@ -1733,8 +1733,7 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 
-	color: white;
-	background-color: #04436a;
+	color: var(--rc-color-content);
 
 	font-size: 1.2em;
 	line-height: 40px;
