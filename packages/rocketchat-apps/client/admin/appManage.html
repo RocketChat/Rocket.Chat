@@ -1,0 +1,247 @@
+<template name="appManage">
+	{{#with app}}
+		<section class="page-container page-list page-settings flex-tab-main-content">
+			<header class="fixed-title">
+				{{> burger}}
+				<a href="{{pathFor "apps"}}" title="{{_ "Back_to_Manage_Apps"}}">
+					<i class="icon-left-open"></i>
+				</a> &nbsp;
+
+				<h2>
+					<span class="room-title">{{_ "Manage_the_App"}}: "{{name}}"</span>
+				</h2>
+
+				<div class="submit">
+					<button class="button danger uninstall">{{_ "Uninstall"}}</button>
+				</div>
+			</header>
+			<div class="content background-transparent-dark">
+				{{#requiresPermission 'manage-apps'}}
+					{{#if isReady}}
+						<div class="rocket-form">
+							<div class="section">
+								<div class="section-title">
+									<div class="section-title-text">
+										{{_ "App_Information"}}
+									</div>
+									<div class="section-title-right">
+										<button class="button primary collapse">
+											<span>{{_ "Collapse"}}</span>
+										</button>
+									</div>
+								</div>
+								<div class="section-content">
+									<div class="input-line double-col">
+										<label>{{_ "Enabled"}}</label>
+										<div class="input checkbox toggle" style="margin: 10px 0 0;">
+											<input type="checkbox" id="enabled" name="enabledToggle" checked="{{isEnabled}}" />
+											<label for="enabled"></label>
+											{{#if isProcessingEnabled}}
+												<div class="app-enable-loading">
+													{{> loading}}
+												</div>
+											{{/if}}
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Name"}}</label>
+										<div>
+											<input class="input-monitor" type="text" disabled value="{{name}}">
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Description"}}</label>
+										<div>
+											<input class="input-monitor" type="text" disabled value="{{description}}">
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Version"}}</label>
+										<div>
+											<input class="input-monitor" type="text" disabled value="{{version}}">
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label>{{_ "Author_Information"}}</label>
+										<div>
+											<input class="input-monitor app-author-name" type="text" disabled value="{{author.name}}">
+											{{#if author.homepage}}<a class="button" target="_blank" href="{{author.homepage}}">{{_ "Website"}}</a>{{/if}}
+											{{#if author.support}}<a class="button" target="_blank" href="{{author.support}}">{{_ "Support"}}</a>{{/if}}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="section section-collapsed">
+								<div class="section-title">
+									<div class="section-title-text">
+										{{_ "Apps_Settings"}}
+									</div>
+									<div class="section-title-right">
+										<button class="button save">{{_ "Save"}}</button>
+										<button class="button primary expand">
+											<span>{{_ "Expand"}}</span>
+										</button>
+									</div>
+								</div>
+								<div class="section-content">
+									{{#each settings}}
+										<div class="input-line double-col">
+											<label class="setting-label">{{_ i18nLabel}}</label>
+											<div class="setting-field">
+												{{#if $eq type 'string'}}
+													{{#if multiline}}
+														<textarea class="input-monitor" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+													{{else}}
+														<input class="input-monitor" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+													{{/if}}
+												{{/if}}
+
+												{{#if $eq type 'relativeUrl'}}
+													<input class="input-monitor" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{_ i18nPlaceholder}}" {{isReadonly}}/>
+												{{/if}}
+
+												{{#if $eq type 'password'}}
+													<input class="input-monitor" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+												{{/if}}
+
+												{{#if $eq type 'int'}}
+													<input class="input-monitor" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+												{{/if}}
+
+												{{#if $eq type 'boolean'}}
+													<div class="input checkbox toggle">
+														<input type="checkbox" name="{{id}}" checked="{{$eq value true}}" />
+														<label for="{{id}}"></label>
+													</div>
+												{{/if}}
+
+												{{#if $eq type 'select'}}
+													<div class="select-arrow">
+														<i class="icon-down-open secondary-font-color"></i>
+													</div>
+													<select class="input-monitor" name="{{id}}">
+														{{#each values}}
+															<option value="{{key}}" selected="{{selectedOption ../id key}}">{{_ i18nLabel}}</option>
+														{{/each}}
+													</select>
+												{{/if}}
+
+												{{#if $eq type 'language'}}
+													<div class="select-arrow">
+														<i class="icon-down-open secondary-font-color"></i>
+													</div>
+													<select class="input-monitor" name="{{id}}">
+														{{#each languages}}
+														<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
+														{{/each}}
+													</select>
+												{{/if}}
+
+												{{#if $eq type 'color'}}
+													<div class="horizontal">
+														{{#if $eq editor 'color'}}
+															<div class="flex-grow-1">
+																<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off"/>
+																<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
+															</div>
+														{{/if}}
+														{{#if $eq editor 'expression'}}
+															<div class="flex-grow-1">
+																<input class="input-monitor" type="text" name="{{id}}" value="{{value}}"/>
+															</div>
+														{{/if}}
+														<div class="color-editor">
+															<div class="select-arrow">
+																<i class="icon-down-open secondary-font-color"></i>
+															</div>
+															<select name="color-editor">
+																{{#each allowedTypes}}
+																	<option value="{{.}}" selected="{{$eq ../editor .}}">{{_ .}}</option>
+																{{/each}}
+															</select>
+														</div>
+													</div>
+													<div class="settings-description">Variable name: {{getColorVariable id}}</div>
+												{{/if}}
+
+												{{#if $eq type 'font'}}
+													<input class="input-monitor" type="text" name="{{id}}" value="{{value}}"/>
+												{{/if}}
+
+												{{#if $eq type 'code'}}
+													{{#if isDisabled.disabled}}
+														{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+													{{else}}
+														<div class="code-mirror-box" data-editor-id="{{id}}">
+															<div class="title">
+																{{label}}
+															</div>
+															{{> CodeMirror name=id options=getEditorOptions code=value }}
+															{{setEditorOnBlur id}}
+															<div class="buttons">
+																<button class="button primary button-fullscreen">Full Screen</button>
+																<button class="button primary button-restore">Exit Full Screen</button>
+															</div>
+														</div>
+													{{/if}}
+												{{/if}}
+
+												{{#if $eq type 'action'}}
+													{{#if hasChanges section}}
+														<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
+													{{else}}
+														<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
+													{{/if}}
+												{{/if}}
+
+												{{#if $eq type 'asset'}}
+													{{#if value.url}}
+														<div class="settings-file-preview">
+															<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
+															<div class="action">
+																<button type="button" class="button danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
+															</div>
+														</div>
+													{{else}}
+														<div class="settings-file-preview">
+															<div class="preview no-file background-transparent-light secondary-font-color"><i class="icon-upload secondary-font-color"></i></div>
+															<div class="action">
+																<div class="button primary">{{_ 'Select_file'}}
+																	<input type="file" accept="{{assetAccept fileConstraints}}" />
+																</div>
+															</div>
+														</div>
+													{{/if}}
+												{{/if}}
+
+												{{#if $eq type 'roomPick'}}
+													<div>
+														{{> inputAutocomplete settings=autocompleteRoom id=id name=id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
+														<ul class="selected-rooms">
+															{{#each selectedRooms}}
+																<li class="remove-room" data-setting={{../id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
+															{{/each}}
+														</ul>
+													</div>
+												{{/if}}
+
+												{{#if i18nDescription}}
+													<div class="settings-description">{{{parseDescription i18nDescription}}}</div>
+												{{/if}}
+												{{#if i18nAlert}}
+													<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ i18nAlert}}}</div>
+												{{/if}}
+											</div>
+										</div>
+									{{/each}}
+								</div>
+							</div>
+						</div>
+					{{else}}
+						{{> loading}}
+					{{/if}}
+				{{/requiresPermission}}
+			</div>
+		</section>
+	{{/with}}
+</template>
