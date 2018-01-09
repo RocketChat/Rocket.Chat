@@ -75,4 +75,6 @@
     <symbol viewBox="0 0 20 20" id="icon-file-generic"><g fill="#FFF" fill-rule="evenodd"><path d="M1 5h5.455v1.091H1z"/><path opacity=".6" d="M1 8.273h16.365v1.091H1zM1 11.546h18.001v1.091H1zM1 14.819h15.82v1.091H1z"/></g></symbol>
     <symbol viewBox="0 0 20 20" id="icon-file-pdf"><path d="M8.848 2.08l11.217 15.147L2.24 19.732z" fill="#FFF" fill-rule="evenodd" opacity=".75"/></symbol>
     <symbol viewBox="0 0 20 20" id="icon-file-sheets"><g transform="translate(1 1)" fill="#FFF" fill-rule="evenodd" opacity=".75"><circle cx="6.12" cy="6.12" r="6.12"/><path d="M4.32 5.04h12.96V18H4.32z"/></g></symbol>
+    <symbol viewBox="0 0 24 24" id="icon-arrow-down"><path d="M18.585 12.1L12.5 18.185 6.415 12.1" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd"/></symbol>
+    <symbol viewBox="0 0 320 512" id="icon-mobile"><path d="M192 416c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zM320 48v416c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V48C0 21.5 21.5 0 48 0h224c26.5 0 48 21.5 48 48zm-32 0c0-8.8-7.2-16-16-16H48c-8.8 0-16 7.2-16 16v416c0 8.8 7.2 16 16 16h224c8.8 0 16-7.2 16-16V48z"/></symbol>
 </svg>

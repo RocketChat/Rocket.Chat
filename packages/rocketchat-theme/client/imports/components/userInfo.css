@@ -213,6 +213,57 @@
 			flex-direction: column;
 		}
 	}
+
+	&__config {
+		&-header {
+			display: flex;
+			align-items: center;
+		}
+
+		&-label {
+			margin: 0 0.75rem;
+
+			font-size: 0.75rem;
+			font-weight: 600;
+		}
+
+		&-icon {
+			font-size: 1.25rem;
+		}
+
+		&-content {
+			display: flex;
+
+			margin: 0.75rem 2rem;
+			align-items: flex-end;
+
+			&-icon {
+				font-size: 1.25rem;
+				color: #444444;
+			}
+		}
+
+		&-name,
+		&-value {
+			font-size: 0.75rem;
+			font-weight: 600;
+		}
+
+		&-name {
+			color: #777777;
+		}
+
+		&-value {
+			margin: 0 0.25rem;
+
+			cursor: pointer;
+
+			color: #1d73f3;
+
+			display: flex;
+			align-items: flex-end;
+		}
+	}
 }
 
 .rc-switch-double {
