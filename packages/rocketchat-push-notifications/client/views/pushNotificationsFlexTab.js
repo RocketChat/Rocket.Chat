@@ -1,5 +1,5 @@
 import toastr from 'toastr';
-/* globals ChatSubscription */
+/* globals ChatSubscription popover */
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -316,5 +316,33 @@ Template.pushNotificationsFlexTab.events({
 		e.preventDefault();
 		instance.editing.set($(e.currentTarget).attr('name'));
 		instance.saveSetting();
+	},
+
+	'click .rc-user-info__config-value'(e, instance) {
+		console.log(instance);
+		const config = {
+			popoverClass: 'notifications-preferences',
+			template: 'pushNotificationsPopover',
+			mousePosition: () => ({
+				x: e.currentTarget.getBoundingClientRect().left,
+				y: e.currentTarget.getBoundingClientRect().bottom + 50
+			}),
+			customCSSProperties: () => ({
+				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+			})
+		};
+
+		popover.open(config);
+	}
+});
+
+Template.pushNotificationsPopover.helpers({
+	defaultDesktopNotification() {
+		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		if (preference === 'default') {
+			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+		}
+		return notificationLabels[preference];
 	}
 });
