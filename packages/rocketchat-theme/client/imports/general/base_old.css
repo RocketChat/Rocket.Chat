@@ -1742,6 +1742,12 @@
 	& ~ .container-bars {
 		top: 45px;
 	}
+
+	a {
+		text-decoration: underline;
+
+		color: currentColor;
+	}
 }
 
 .rc-old .cms-page {

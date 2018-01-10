@@ -1,3 +1,79 @@
+<a name="0.60.4"></a>
+## 0.60.4 (2018-01-10)
+
+
+### Bug Fixes
+
+- [#9343](https://github.com/RocketChat/Rocket.Chat/pull/9343) LDAP TLS not working in some cases
+- [#9330](https://github.com/RocketChat/Rocket.Chat/pull/9330) announcement hyperlink color
+- [#9335](https://github.com/RocketChat/Rocket.Chat/pull/9335) Deleting message with store last message not removing
+- [#9345](https://github.com/RocketChat/Rocket.Chat/pull/9345) last message cutting on bottom
+- [#9328](https://github.com/RocketChat/Rocket.Chat/pull/9328) popover on safari for iOS
+- [#9364](https://github.com/RocketChat/Rocket.Chat/pull/9364) Highlight setting not working correctly
+
+<details>
+<summary>Others</summary>
+
+- [#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346) Update Marked dependecy to 0.3.9
+</details>
+
+
+<details>
+<summary>Details</summary>
+<a name="0.60.4-rc.1"></a>
+## 0.60.4-rc.1 (2018-01-08)
+
+
+### Bug Fixes
+
+- [#9330](https://github.com/RocketChat/Rocket.Chat/pull/9330) announcement hyperlink color
+- [#9335](https://github.com/RocketChat/Rocket.Chat/pull/9335) Deleting message with store last message not removing
+- [#9345](https://github.com/RocketChat/Rocket.Chat/pull/9345) last message cutting on bottom
+- [#9328](https://github.com/RocketChat/Rocket.Chat/pull/9328) popover on safari for iOS
+
+
+<details>
+<summary>Others</summary>
+
+- [#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346) Update Marked dependecy to 0.3.9
+</details>
+
+
+
+<a name="0.60.4-rc.0"></a>
+## 0.60.4-rc.0 (2018-01-05)
+
+
+### Bug Fixes
+
+- [#9343](https://github.com/RocketChat/Rocket.Chat/pull/9343) LDAP TLS not working in some cases
+
+</details>
+
+
+<a name="0.60.3"></a>
+## 0.60.3 (2018-01-03)
+
+
+### Bug Fixes
+
+- [#9314](https://github.com/RocketChat/Rocket.Chat/pull/9314) custom emoji size on sidebar item
+- [#9285](https://github.com/RocketChat/Rocket.Chat/pull/9285) English Typos
+- [#9309](https://github.com/RocketChat/Rocket.Chat/pull/9309) LDAP/AD is not importing all users
+- [#9249](https://github.com/RocketChat/Rocket.Chat/pull/9249) sidebar footer padding
+- [#9311](https://github.com/RocketChat/Rocket.Chat/pull/9311) svg render on firefox
+- [#9289](https://github.com/RocketChat/Rocket.Chat/pull/9289) Wrong position of notifications alert in accounts preference page
+
+
+<details>
+<summary>Others</summary>
+
+- [#9290](https://github.com/RocketChat/Rocket.Chat/pull/9290) Fix: Improved README.md
+- [#9286](https://github.com/RocketChat/Rocket.Chat/pull/9286) Fix: README typo
+</details>
+
+
+
 <a name="0.60.2"></a>
 ## 0.60.2 (2017-12-29)
 
@@ -2395,7 +2471,7 @@ This is a bug fix release. You may notice that your notification settings from a
 - [#6498](https://github.com/RocketChat/Rocket.Chat/pull/6498) Convert Ui-Master Package to Js
 - [#6473](https://github.com/RocketChat/Rocket.Chat/pull/6473) Convert ui-vrecord Package to JS
 - [#6494](https://github.com/RocketChat/Rocket.Chat/pull/6494) Convert Version Package to JS
-- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert Wordpress Package to js
+- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert WordPress Package to js
 - [#6496](https://github.com/RocketChat/Rocket.Chat/pull/6496) converted getAvatarUrlFromUsername
 - [#6500](https://github.com/RocketChat/Rocket.Chat/pull/6500) converted messageAttachment coffee to js
 - [#6467](https://github.com/RocketChat/Rocket.Chat/pull/6467) converted rocketchat-mentions coffee to js
