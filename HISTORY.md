@@ -1,3 +1,25 @@
+<a name="0.60.4"></a>
+## 0.60.4 (2018-01-10)
+
+
+### Bug Fixes
+
+- [#9343](https://github.com/RocketChat/Rocket.Chat/pull/9343) LDAP TLS not working in some cases
+- [#9330](https://github.com/RocketChat/Rocket.Chat/pull/9330) announcement hyperlink color
+- [#9335](https://github.com/RocketChat/Rocket.Chat/pull/9335) Deleting message with store last message not removing
+- [#9345](https://github.com/RocketChat/Rocket.Chat/pull/9345) last message cutting on bottom
+- [#9328](https://github.com/RocketChat/Rocket.Chat/pull/9328) popover on safari for iOS
+- [#9364](https://github.com/RocketChat/Rocket.Chat/pull/9364) Highlight setting not working correctly
+
+<details>
+<summary>Others</summary>
+
+- [#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346) Update Marked dependecy to 0.3.9
+</details>
+
+
+<details>
+<summary>Details</summary>
 <a name="0.60.4-rc.1"></a>
 ## 0.60.4-rc.1 (2018-01-08)
 
@@ -26,6 +48,7 @@
 
 - [#9343](https://github.com/RocketChat/Rocket.Chat/pull/9343) LDAP TLS not working in some cases
 
+</details>
 
 
 <a name="0.60.3"></a>
