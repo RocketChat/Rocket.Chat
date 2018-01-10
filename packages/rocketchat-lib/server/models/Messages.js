@@ -284,11 +284,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.findOne(query);
 	}
 
-	getLastMessageSentWithNoTypeByRoomId(rid) {
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
 		const query = {
 			rid,
+			_hidden: { $ne: true },
 			t: { $exists: false }
 		};
+
+		if (messageId) {
+			query._id = { $ne: messageId };
+		}
 
 		const options = {
 			sort: {
