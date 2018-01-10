@@ -118,7 +118,7 @@
 		"imap": "^0.8.19",
 		"jquery": "^3.2.1",
 		"ldapjs": "^1.0.1",
-		"mailparser-node4": "^2.0.2-2",
+		"mailparser": "^2.1.0",
 		"mime-db": "^1.32.0",
 		"mime-type": "^3.0.5",
 		"moment": "^2.20.1",
