@@ -1728,6 +1728,7 @@
 	height: 40px;
 	padding: 0 20px;
 
+	cursor: pointer;
 	text-align: center;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -1740,6 +1741,12 @@
 
 	& ~ .container-bars {
 		top: 45px;
+	}
+
+	a {
+		text-decoration: underline;
+
+		color: currentColor;
 	}
 }
 
