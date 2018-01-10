@@ -230,7 +230,7 @@
 		line-height: normal;
 
 		& .emojione,
-		& .emoji, {
+		& .emoji {
 			width: 13px !important;
 			min-width: 13px;
 			height: 13px !important;
