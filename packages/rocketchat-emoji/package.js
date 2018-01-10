@@ -21,9 +21,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/emojiPicker.html', 'client');
 	api.addFiles('client/emojiPicker.js', 'client');
-	api.addFiles('client/emojiPicker.css', 'client');
-
-	api.addFiles('client/emoji.css', 'client');
 
 	api.addFiles('client/lib/emojiRenderer.js', 'client');
 	api.addFiles('client/lib/EmojiPicker.js', 'client');

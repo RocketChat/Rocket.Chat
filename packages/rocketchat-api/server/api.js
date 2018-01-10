@@ -58,8 +58,6 @@ class API extends Restivus {
 	success(result = {}) {
 		if (_.isObject(result)) {
 			result.success = true;
-			// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-			result.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
 		}
 
 		return {
@@ -141,7 +139,20 @@ class API extends Restivus {
 							return RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						return result ? result : RocketChat.API.v1.success();
+						result = result ? result : RocketChat.API.v1.success();
+
+						if (
+							/(channels|groups)\./.test(route)
+							&& result
+							&& result.body
+							&& result.body.success === true
+							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
+						) {
+							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
+							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
+						}
+
+						return result;
 					};
 
 					for (const [name, helperMethod] of this.helperMethods) {
