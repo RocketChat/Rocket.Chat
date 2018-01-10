@@ -124,6 +124,7 @@
 		align-items: center;
 		position: absolute;
 		height: var(--sidebar-item-height);
+		color: var(--sidebar-item-text-color);
 	}
 
 	&__user-thumb {
@@ -228,7 +229,8 @@
 		font-size: 12px;
 		line-height: normal;
 
-		& .emojione {
+		& .emojione,
+		& .emoji {
 			width: 13px !important;
 			min-width: 13px;
 			height: 13px !important;
@@ -280,30 +282,49 @@
 	}
 }
 
-.rtl .sidebar-item__menu {
-	right: auto;
-	left: 0;
-}
+.rtl .sidebar-item {
+	&__menu {
+		right: auto;
+		left: 0;
+	}
 
-.rtl .sidebar-item__user-status {
-	right: 4px;
-	left: initial;
+	&__user-status {
+		right: 8px;
+		left: initial;
+	}
+
+	&__room-type {
+		right: 4px;
+		left: initial;
+	}
 }
 
 @media (width <= 400px) {
 	.sidebar-item {
-		padding: 0 calc(var(--sidebar-small-default-padding) - 8px);
+		padding: 0 0 0 var(--sidebar-small-default-padding);
 
 		& .badge {
 			margin: 0 0 0 3px;
 		}
 
 		&__user-status {
+			left: 4px;
+		}
+
+		&__room-type {
 			left: 0;
 		}
 	}
 
-	.rtl .sidebar-item__user-status {
-		right: 0;
+	.rtl .sidebar-item {
+		padding: 0 var(--sidebar-small-default-padding) 0 0;
+
+		&__user-status {
+			right: 4px;
+		}
+
+		&__room-type {
+			right: 0;
+		}
 	}
 }
