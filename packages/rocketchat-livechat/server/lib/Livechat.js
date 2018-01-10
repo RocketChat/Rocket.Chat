@@ -1,4 +1,6 @@
 /* globals HTTP */
+import _ from 'underscore';
+import s from 'underscore.string';
 import UAParser from 'ua-parser-js';
 
 RocketChat.Livechat = {
@@ -62,7 +64,7 @@ RocketChat.Livechat = {
 			room = Meteor.call('canAccessRoom', message.rid, guest._id);
 		}
 		if (!room) {
-			throw new Meteor.Error('cannot-acess-room');
+			throw new Meteor.Error('cannot-access-room');
 		}
 
 		return { room, newRoom };

@@ -68,6 +68,7 @@ Meteor.startup(function() {
 
 	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
 	RocketChat.settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
+	RocketChat.settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 	RocketChat.settings.add('Livechat_guest_count', 1, { type: 'int', group: 'Livechat' });
 
 	RocketChat.settings.add('Livechat_Room_Count', 1, {
@@ -234,6 +235,26 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Livechat_AllowedDomainsList',
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_Enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'Facebook'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Key', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Facebook',
+		i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours'
+	});
+
+	RocketChat.settings.add('Livechat_Facebook_API_Secret', '', {
+		type: 'string',
+		group: 'Livechat',
+		section: 'Facebook',
+		i18nDescription: 'If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours'
 	});
 
 	RocketChat.settings.add('Livechat_RDStation_Token', '', {

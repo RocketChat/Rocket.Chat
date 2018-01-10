@@ -1,4 +1,5 @@
 import localforage from 'localforage';
+import _ from 'underscore';
 
 class CachedCollectionManager {
 	constructor() {

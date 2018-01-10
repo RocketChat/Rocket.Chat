@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -18,6 +21,10 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findOneByUsername(username, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ username }$`, 'i');
+		}
+
 		const query = {username};
 
 		return this.findOne(query, options);
@@ -560,14 +567,17 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, {
+		const options = {
 			fields: {
 				name: 1,
 				username: 1,
 				emails: 1,
-				'settings.preferences.emailNotificationMode': 1
+				'settings.preferences.emailNotificationMode': 1,
+				language: 1
 			}
-		});
+		};
+
+		return this.find(query, options);
 	}
 }
 

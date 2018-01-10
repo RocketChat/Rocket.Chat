@@ -3,7 +3,7 @@
 		"sourceType": "module",
 		"ecmaVersion": 2017,
 		"ecmaFeatures": {
-				"experimentalObjectRestSpread" : true,
+				"experimentalObjectRestSpread" : true
 		}
 	},
 	"env": {
@@ -89,7 +89,6 @@
 		"object-shorthand": 2
 	},
 	"globals": {
-		"_"                           : false,
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
@@ -123,6 +122,7 @@
 		"Logger"                      : false,
 		"Match"                       : false,
 		"Meteor"                      : false,
+		"modal"                       : false,
 		"moment"                      : false,
 		"Mongo"                       : false,
 		"Npm"                         : false,
@@ -135,13 +135,11 @@
 		"RocketChatFile"              : false,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
-		"s"                           : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,
 		"Settings"                    : false,
 		"SHA256"                      : false,
 		"SideNav"                     : false,
-		"swal"                        : false,
 		"t"                           : false,
 		"TAPi18n"                     : false,
 		"TAPi18next"                  : false,

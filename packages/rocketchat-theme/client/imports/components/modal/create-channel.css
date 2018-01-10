@@ -7,9 +7,14 @@
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
+	&__wrapper {
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
 	&__header,
 	&__switches,
-	&__inputs,
+	&__inputs:not(:last-child),
 	& .rc-input:not(:last-child) {
 		margin-bottom: var(--create-channel-gap-between-elements);
 	}
@@ -28,10 +33,6 @@
 		color: var(--create-channel-description-color);
 
 		font-size: var(--create-channel-description-text-size);
-	}
-
-	&__content {
-		overflow-y: auto;
 	}
 
 	&__switches {

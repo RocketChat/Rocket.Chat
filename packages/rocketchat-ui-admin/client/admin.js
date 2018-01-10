@@ -374,8 +374,8 @@ Template.admin.events({
 	}, 500),
 	'change select[name=color-editor]'(e) {
 		const value = s.trim($(e.target).val());
-		TempSettings.update({_id: this._id}, {$set: {editor: value}});
-		RocketChat.settings.collectionPrivate.update({_id: this._id}, {$set: {editor: value}});
+		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
+		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value }});
 	},
 	'click .submit .discard'() {
 		const group = FlowRouter.getParam('group');
@@ -455,12 +455,12 @@ Template.admin.events({
 			closeOnConfirm: true,
 			inputPlaceholder: TAPi18n.__('Custom_oauth_unique_name')
 		};
-		swal(config, function(inputValue) {
+		modal.open(config, function(inputValue) {
 			if (inputValue === false) {
 				return false;
 			}
 			if (inputValue === '') {
-				swal.showInputError(TAPi18n.__('Name_cant_be_empty'));
+				modal.showInputError(TAPi18n.__('Name_cant_be_empty'));
 				return false;
 			}
 			Meteor.call('addOAuthService', inputValue, function(err) {
@@ -491,7 +491,7 @@ Template.admin.events({
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: true
 		};
-		swal(config, function() {
+		modal.open(config, function() {
 			Meteor.call('removeOAuthService', name);
 		});
 	},

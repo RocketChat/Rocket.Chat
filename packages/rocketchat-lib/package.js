@@ -9,7 +9,7 @@ Npm.depends({
 	'bad-words': '1.3.1',
 	'object-path': '0.9.2',
 	'node-dogstatsd': '0.0.6',
-	'localforage': '1.4.2',
+	'localforage': '1.5.5',
 	'lokijs': '1.4.1',
 	'bugsnag': '1.8.0',
 	'prom-client': '7.0.1'
@@ -27,10 +27,8 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('tracker');
 	api.use('ddp-rate-limiter');
-	api.use('underscore');
 	api.use('mongo');
 	api.use('oauth');
-	api.use('underscorestring:underscore.string@3.3.4');
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
@@ -69,6 +67,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
+	api.addFiles('lib/getAvatarColor.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
@@ -78,6 +77,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+
+	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics.js', 'server');
@@ -206,6 +207,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');

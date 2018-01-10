@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.createCombinedFlex.helpers({
 	showStandardFeatures() {
 		return RocketChat.settings.get('Assistify_Show_Standard_Features');
