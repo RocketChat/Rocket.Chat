@@ -1,5 +1,7 @@
-import { AppsModel } from './rl-model';
-import { AppsPersistenceModel } from './rl-persistence-model';
+import { AppsLogsModel } from './apps-logs-model';
+import { AppsModel } from './apps-model';
+import { AppsPersistenceModel } from './apps-persistence-model';
+import { AppRealLogsStorage } from './logs-storage';
 import { AppRealStorage } from './storage';
 
-export { AppsModel, AppsPersistenceModel, AppRealStorage };
+export { AppsLogsModel, AppsModel, AppsPersistenceModel, AppRealLogsStorage, AppRealStorage };

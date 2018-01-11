@@ -17,8 +17,9 @@ Package.onUse(function(api) {
 
 	// Storage
 	api.addFiles([
-		'server/storage/rl-model.js',
-		'server/storage/rl-persistence-model.js',
+		'server/storage/apps-logs-model.js',
+		'server/storage/apps-model.js',
+		'server/storage/apps-persistence-model.js',
 		'server/storage/storage.js',
 		'server/storage/index.js'
 	], 'server');
@@ -84,6 +85,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'@rocket.chat/apps-engine': '0.3.1',
-	'@rocket.chat/apps-ts-definition': '0.7.2'
+	'@rocket.chat/apps-engine': '0.3.2',
+	'@rocket.chat/apps-ts-definition': '0.7.5'
 });
