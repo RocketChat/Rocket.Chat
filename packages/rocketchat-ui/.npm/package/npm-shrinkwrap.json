@@ -7,9 +7,9 @@
       "integrity": "sha1-Ng1taUbpmnof7zleQrqStem1oWs="
     },
     "delegate": {
-      "version": "3.1.3",
-      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.3.tgz",
-      "integrity": "sha1-moJRp3fXAl+qVXN7w7BxdCEnqf0="
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.2.0.tgz",
+      "integrity": "sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw=="
     },
     "good-listener": {
       "version": "1.2.2",
