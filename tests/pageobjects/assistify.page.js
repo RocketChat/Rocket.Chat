@@ -4,7 +4,13 @@ import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
 
+
+const Keys = {
+	'TAB': '\uE004',
+	'ENTER': '\uE007'
+};
 class Assistify extends Page {
+
 	get knowledgebaseTab() {
 		return browser.element('.tab-button:not(.hidden) .tab-button-icon--lightbulb');
 	}
@@ -39,6 +45,7 @@ class Assistify extends Page {
 	}
 
 	// new Topic
+
 	get topicName() {
 		return browser.element('.create-channel__content input[name="expertise"]');
 	}
@@ -108,7 +115,7 @@ class Assistify extends Page {
 	createHelpRequest(topicName, message) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
-
+		this.tabs.waitForVisible(5000);
 		if (this.tabs) {
 			this.createRequestTab.waitForVisible(5000);
 			this.createRequestTab.click();
@@ -116,15 +123,7 @@ class Assistify extends Page {
 
 		this.topicName.waitForVisible(5000);
 		this.topicName.setValue(topicName);
-
-		browser.pause(1000);
-		try {
-			browser.element('.create-channel__content .rc-popup-list').click();
-			browser.pause(500);
-		}
-		catch (e) {
-			console.log(e);
-		}
+		browser.keys(Keys.ENTER);
 
 		browser.waitUntil(function () {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
