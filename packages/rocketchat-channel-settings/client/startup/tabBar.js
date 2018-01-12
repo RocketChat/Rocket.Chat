@@ -8,4 +8,14 @@ Meteor.startup(() => {
 		template: 'channelSettings',
 		order: 0
 	});
+
+	RocketChat.TabBar.addButton({
+		groups: ['channel', 'group', 'direct'],
+		id: 'mail-messages',
+		anonymous: true,
+		i18nTitle: 'Mail_Messages',
+		icon: 'mail',
+		template: 'mailMessagesInstructions',
+		order: 10
+	});
 });
