@@ -170,7 +170,7 @@ rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
 rocketchat:livechat@0.0.1
-rocketchat:livestream@0.0.3
+rocketchat:livestream@0.0.5
 rocketchat:logger@0.0.1
 rocketchat:login-token@1.0.0
 rocketchat:mailer@0.0.1
