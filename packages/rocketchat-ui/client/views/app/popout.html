@@ -1,6 +1,6 @@
 <template name="popout">
-	<div class="rc-popout-wrapper rc-popout--{{ style }}">
-		<div class="rc-popout rc-popout--{{state}}" data-modal="modal">
+	<div class="rc-popout-wrapper rc-popout--{{ type }}" draggable="true">
+		<div class="rc-popout rc-popout--{{ state }}" data-modal="modal">
 			<header class="rc-popout__header">
 				<h1 class="rc-popout__title">{{title}}</h1>
 				<button class="contextual-bar__minimize js-minimize">
@@ -16,9 +16,6 @@
 				{{#if content}}
 					{{> Template.dynamic template=content data=data}}
 				{{/if}}
-				{{#if type}}
-					{{> icon block="rc-popout__content-icon" icon=modalIcon}}
-				{{/if}}
 				{{#if text}}
 					<div class="rc-popout__content-text">
 						{{#if html}}
@@ -29,9 +26,7 @@
 					</div>
 				{{/if}}
 			</main>
-			{{#if isDocked}}
-				<button type="button" name="livestream-popout" class="rc-button rc-button--primary js-dock"> {{_ "Livestream_popout" }} </button>
-			{{/if}}
+
 		</div>
 	</div>
 </template>

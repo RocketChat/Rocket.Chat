@@ -2,24 +2,32 @@
 import toastr from 'toastr';
 
 function parseUrl(url) {
+	const options = {};
 	const parsedUrl = url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
-	let source = url;
+	options.url = url;
 	if (parsedUrl != null) {
 		if (parsedUrl[3].includes('youtu')) {
-			source = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0`;
+			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0`;
+			options.thumbnail = `https://img.youtube.com/vi/${ parsedUrl[6] }/0.jpg`;
 		} else if (parsedUrl[3].includes('vimeo')) {
-			source = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
+			options.url = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
 		} else if (parsedUrl[3].includes('twitch')) {
-			source = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
+			options.url = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
 		}
 		// @TODO add support for other urls
-		return source;
 	}
+	return options;
 }
 
 Template.liveStreamTab.helpers({
 	streamingSource() {
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
+	},
+	thumbnailUrl() {
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().thumbnail : '';
+	},
+	hasThumbnail() {
+		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().thumbnail && Template.instance().streamingOptions.get().thumbnail !== '';
 	},
 	hasSource() {
 		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().url && Template.instance().streamingOptions.get().url !== '';
@@ -34,25 +42,28 @@ Template.liveStreamTab.helpers({
 		const livestreamTabSource = Template.instance().streamingOptions.get().url;
 		let popoutSource = null;
 		try {
-			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+			if (popout.context) {
+				popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+			}
 		} catch (e) {
 			return false;
 		} finally {
-			if (livestreamTabSource === popoutSource) {
+			if (popoutSource != null && livestreamTabSource === popoutSource) {
 				return true;
 			} else {
 				return false;
 			}
 		}
 	},
-	isDocked() {
-		return popout.docked;
+	isPopoutOpen() {
+		return Template.instance().popoutOpen.get();
 	}
 });
 
 Template.liveStreamTab.onCreated(function() {
 	this.editing = new ReactiveVar(false);
 	this.streamingOptions = new ReactiveVar();
+	this.popoutOpen = new ReactiveVar(popout.context != null);
 
 	this.autorun(() => {
 		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
@@ -60,14 +71,15 @@ Template.liveStreamTab.onCreated(function() {
 	});
 });
 Template.liveStreamTab.onRendered(function() {
-	if (popout.context == null && (!!this.streamingOptions.get().url && this.streamingOptions.get().url !== '')) {
-		popout.open({
-			content: 'liveStreamView',
-			data: {
-				'streamingSource': this.streamingOptions.get().url
-			}
-		});
-	}
+	// console.log('rendered');
+	// if (popout.context == null && (!!this.streamingOptions.get().url && this.streamingOptions.get().url !== '')) {
+	// 	popout.open({
+	// 		content: 'liveStreamView',
+	// 		data: {
+	// 			'streamingSource': this.streamingOptions.get().url
+	// 		}
+	// 	});
+	// }
 });
 
 Template.liveStreamTab.onDestroyed(function() {
@@ -85,9 +97,7 @@ Template.liveStreamTab.events({
 	'click .js-save'(e, i) {
 		e.preventDefault();
 
-		const streamingOptions = {
-			url: parseUrl(i.find('[name=streamingOptions]').value)
-		};
+		const streamingOptions = parseUrl(i.find('[name=streamingOptions]').value);
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
 			if (err) {
@@ -115,23 +125,39 @@ Template.liveStreamTab.events({
 				'streamingSource': Template.instance().streamingOptions.get().url
 			}
 		});
+	},
+	'submit [name=streamingOptions]'(e) {
+		e.preventDefault();
+	},
+	'click .js-popout'(e, i) {
+		e.preventDefault();
+		popout.open({
+			content: 'liveStreamView',
+			data: {
+				'streamingSource': Template.instance().streamingOptions.get().url
+			}
+		});
+		i.popoutOpen.set(true);
 	}
 });
 
-RocketChat.callbacks.add('enter-room', function() {
+RocketChat.callbacks.add('roomExit', function() {
 	if (popout.context != null && popout.docked) {
-		const room = RocketChat.models.Rooms.findOne(Session.get('openedRoom'), { fields: { streamingOptions : 1 } });
-
-		if (room.streamingOptions && room.streamingOptions.url !== popout.config.data.streamingSource) {
-			popout.close();
-			if (document.querySelector('.flex-tab-bar .tab-button.active') && document.querySelector('.flex-tab-bar .tab-button.active').title === 'Livestream') {
-				popout.open({
-					content: 'liveStreamView',
-					data: {
-						'streamingSource': room.streamingOptions.url
-					}
-				});
-			}
-		}
+		popout.close();
 	}
 }, RocketChat.callbacks.priority.HIGH, 'close-docked-popout');
+
+RocketChat.callbacks.add('enter-room', function() {
+	// console.log('enter-room');
+	// const room = RocketChat.models.Rooms.findOne(Session.get('openedRoom'), { fields: { streamingOptions : 1 } });
+	// if (popout.docked && (room.streamingOptions && room.streamingOptions.url !== popout.config.data.streamingSource)) {
+	// 	if (document.querySelector('.flex-tab-bar .tab-button.active') && document.querySelector('.flex-tab-bar .tab-button.active').title === 'Livestream') {
+	// 		popout.open({
+	// 			content: 'liveStreamView',
+	// 			data: {
+	// 				'streamingSource': room.streamingOptions.url
+	// 			}
+	// 		});
+	// 	}
+	// }
+}, RocketChat.callbacks.priority.HIGH, 'reopen-popout');
