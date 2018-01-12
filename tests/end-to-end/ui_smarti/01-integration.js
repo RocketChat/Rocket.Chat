@@ -21,6 +21,8 @@ import {checkIfUserIsAdmin} from '../../data/checks';
 describe('[Smarti Integration]', () => {
 
 	before(() => {
+		browser.pause(5000); // wait some time to make sure that all settings on both sides are actually persisted
+
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword); // is broken -- if not admin it will log in as user or create a user
 	});
 
@@ -66,6 +68,7 @@ describe('[Smarti Integration]', () => {
 			});
 			it('close request', () => {
 				assistify.closeRequest(comment);
+
 			});
 		});
 		describe('Second request', () => {
