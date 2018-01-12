@@ -36,11 +36,14 @@ this.popout = {
 	drop(event) {
 		const e = event.originalEvent || event;
 		e.preventDefault();
-		const popoutElement = document.querySelector('.rc-popout-wrapper');
-		const positionTop = e.clientY - popout.y;
-		const positionLeft = e.clientX - popout.x;
-		popoutElement.style.left = `${ positionLeft >= 0 ? positionLeft : 0 }px`;
-		popoutElement.style.top = `${ positionTop >= 0 ? positionTop : 0 }px`;
+		// do not mess with the position if we are dropping files in the dropzone
+		if (!event.target.classList.contains('dropzone-overlay')) {
+			const popoutElement = document.querySelector('.rc-popout-wrapper');
+			const positionTop = e.clientY - popout.y;
+			const positionLeft = e.clientX - popout.x;
+			popoutElement.style.left = `${ positionLeft >= 0 ? positionLeft : 0 }px`;
+			popoutElement.style.top = `${ positionTop >= 0 ? positionTop : 0 }px`;
+		}
 	}
 };
 
