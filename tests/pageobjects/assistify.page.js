@@ -123,7 +123,10 @@ class Assistify extends Page {
 
 		this.topicName.waitForVisible(5000);
 		this.topicName.setValue(topicName);
-		browser.keys(Keys.ENTER);
+
+		browser.pause(100);
+		browser.keys(Keys.TAB);
+		browser.pause(300);
 
 		browser.waitUntil(function () {
 			return browser.isEnabled('.create-channel__content [data-button="create"]');
