@@ -5,16 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'bad-words': '1.3.1',
-	'object-path': '0.9.2',
-	'node-dogstatsd': '0.0.6',
-	'localforage': '1.5.5',
-	'lokijs': '1.4.1',
-	'bugsnag': '1.8.0',
-	'prom-client': '7.0.1'
-});
-
 Package.onUse(function(api) {
 	api.use('rate-limit');
 	api.use('webapp');
