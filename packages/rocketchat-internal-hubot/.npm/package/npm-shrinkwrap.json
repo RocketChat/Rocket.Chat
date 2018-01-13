@@ -106,9 +106,9 @@
       "integrity": "sha1-6RHnQaCtLiTSnm+rLPifoyLVnHY="
     },
     "coffee-script": {
-      "version": "1.10.0",
-      "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.10.0.tgz",
-      "integrity": "sha1-EpOLz5vhlI+gBvkuDEyegXBRCMA="
+      "version": "1.6.3",
+      "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.6.3.tgz",
+      "integrity": "sha1-Y1XTLPGwTN/2tITl5xF4Ky8MOb4="
     },
     "commander": {
       "version": "2.6.0",
@@ -338,19 +338,12 @@
     "hubot": {
       "version": "2.19.0",
       "resolved": "https://registry.npmjs.org/hubot/-/hubot-2.19.0.tgz",
-      "integrity": "sha1-h8Vy0hD7DV+J91YXeuACDUn/ujY=",
-      "dependencies": {
-        "coffee-script": {
-          "version": "1.6.3",
-          "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.6.3.tgz",
-          "integrity": "sha1-Y1XTLPGwTN/2tITl5xF4Ky8MOb4="
-        }
-      }
+      "integrity": "sha1-h8Vy0hD7DV+J91YXeuACDUn/ujY="
     },
     "hubot-help": {
-      "version": "0.2.0",
-      "resolved": "https://registry.npmjs.org/hubot-help/-/hubot-help-0.2.0.tgz",
-      "integrity": "sha1-N1sP16Hq+ypxzy5Ui8sia/fmZkI="
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/hubot-help/-/hubot-help-0.2.2.tgz",
+      "integrity": "sha1-zqF+eCzndrdD9lOTk1s0MMLoGXw="
     },
     "iconv-lite": {
       "version": "0.4.11",
@@ -544,9 +537,9 @@
       "integrity": "sha1-/6cbq5UtYvfB1Jt0NDVfvGjf/Fo=",
       "dependencies": {
         "depd": {
-          "version": "1.1.1",
-          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.1.tgz",
-          "integrity": "sha1-V4O04cRZ8G+lyif5kfPQbnoxA1k="
+          "version": "1.1.2",
+          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
+          "integrity": "sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak="
         }
       }
     },
@@ -627,9 +620,9 @@
       "integrity": "sha1-zlpuzTEB/tXsCYJ9rCKpwpv7BTU=",
       "dependencies": {
         "depd": {
-          "version": "1.1.1",
-          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.1.tgz",
-          "integrity": "sha1-V4O04cRZ8G+lyif5kfPQbnoxA1k="
+          "version": "1.1.2",
+          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
+          "integrity": "sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak="
         },
         "ee-first": {
           "version": "1.1.1",
