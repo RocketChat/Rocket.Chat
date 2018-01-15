@@ -1,0 +1,38 @@
+.contextual-bar__header-title {
+    padding: 5px;
+    &h2 {
+      font-size: 20px;
+    }
+}
+
+.thumbnail-container {
+  position: relative;
+  height: 360px;
+  filter: opacity(0.75);
+
+  & .--absolute-center {
+    position: absolute;
+    top: calc(50% - 25px);
+    left: calc(50% - 25px);
+
+    font-size: 50px;
+
+    filter: opacity(1);
+      & .--play {
+        fill: white;
+      }
+  }
+}
+.liveStreamTab__form {
+  margin: 10px auto;
+
+  & .rc-button {
+    width: 49%;
+  }
+}
+
+.livestream--url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
