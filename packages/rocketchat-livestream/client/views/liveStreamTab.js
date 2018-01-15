@@ -7,7 +7,7 @@ function parseUrl(url) {
 	options.url = url;
 	if (parsedUrl != null) {
 		if (parsedUrl[3].includes('youtu')) {
-			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0`;
+			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0&autoplay=1`;
 			options.thumbnail = `https://img.youtube.com/vi/${ parsedUrl[6] }/0.jpg`;
 		} else if (parsedUrl[3].includes('vimeo')) {
 			options.url = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
@@ -116,15 +116,22 @@ Template.liveStreamTab.events({
 		e.stopPropagation();
 		popout.docked = true;
 	},
-	'click .js-close'(e) {
+	'click .js-close'(e, i) {
 		e.stopPropagation();
+		let popoutSource = '';
+		if (popout.context) {
+			popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
+		}
 		popout.close();
-		popout.open({
-			content: 'liveStreamView',
-			data: {
-				'streamingSource': Template.instance().streamingOptions.get().url
-			}
-		});
+		if (popoutSource !== Template.instance().streamingOptions.get().url) {
+			popout.open({
+				content: 'liveStreamView',
+				data: {
+					'streamingSource': Template.instance().streamingOptions.get().url
+				},
+				onCloseCallback: () => i.popoutOpen.set(false)
+			});
+		}
 	},
 	'submit [name=streamingOptions]'(e) {
 		e.preventDefault();
@@ -135,7 +142,9 @@ Template.liveStreamTab.events({
 			content: 'liveStreamView',
 			data: {
 				'streamingSource': Template.instance().streamingOptions.get().url
-			}
+			},
+			onCloseCallback: () => i.popoutOpen.set(false)
+
 		});
 		i.popoutOpen.set(true);
 	}
