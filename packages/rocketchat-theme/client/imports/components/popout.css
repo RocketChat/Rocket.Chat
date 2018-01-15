@@ -115,6 +115,15 @@
 		& .rc-popout__minimize {
 			transform: rotate(180deg);
 		}
+
+		&.rc-popout__content {
+			height: 0px;
+
+			& .streaming-object {
+				visibility: 'hidden';
+				height: 0px;
+			}
+		}
 	}
 
 }
