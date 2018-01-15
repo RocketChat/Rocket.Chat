@@ -1,10 +1,30 @@
 <template name="liveStreamTab">
 	<div class="contextual-bar__header flex-tab__header flex-tab--livestream">
-		<div class="title">
-			<h2>{{_ "Livestream_title" }}</h2>
+		<div class="title contextual-bar__header-data">
+			<h2 class="contextual-bar__header-title">{{> icon block="contextual-bar__header-icon" icon="podcast"}} {{_ "Livestream_title" }}</h2>
 		</div>
 	</div>
 	<section class="contextual-bar__content flex-tab-bar">
+		{{#if hasSource}}
+			{{#if isPopoutOpen}}
+				{{#if canDock}}
+					<button type="button" class="rc-button rc-button--primary js-close button-block" title="{{_ 'Livestream_close'}}" >{{_ "Livestream_close"}}</button>
+				{{else}}
+					<button type="button" class="rc-button rc-button--primary js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
+				{{/if}}
+			{{else}}
+				<!-- {{> liveStreamView streamingSource=streamingSource }} -->
+				{{#if hasThumbnail}}
+					<div class="thumbnail-container" style="background: url({{thumbnailUrl}}) 100% no-repeat no-repeat;">
+							<a href="#" class="js-popout --absolute-center">
+							{{> icon icon="play"}}
+						</a>
+					</div>
+				{{/if}}
+			{{/if}}
+		{{else}}
+		 {{_ "Livestream_not_found" }}
+		{{/if}}
 		{{#if canEdit}}
 			{{#if editing}}
 				<form class="liveStreamTab__form">
@@ -13,21 +33,13 @@
 					<button type="button" class="rc-button rc-button--primary js-save button-block">{{_ "Save"}}</button>
 				</form>
 			{{else}}
-				<div class="setting-block">
+				<div class="setting-block livestream--url">
+					{{> icon icon="permalink"}}
 					<span class="current-setting streamingSourceSetting"> {{ streamingSource }} </span>
+					<button type="button" class="rc-button rc-button--primary js-save button-block">{{_ "Edit"}}</button>
 				</div>
 			{{/if}}
 		{{/if}}
-		{{#if hasSource}}
-			{{#unless isPopoutOpen}}
-				<button type="button" class="rc-button rc-button--primary js-popout button-block" title="{{_ 'Livestream_popout'}}" >{{_ "Livestream_popout"}}</button>
-			{{else}}
-				{{#unless canDock}}
-					<button type="button" class="rc-button rc-button--primary js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
-				{{/unless}}
-			{{/unless}}
-		{{else}}
-		 {{_ "Livestream_not_found" }}
-		{{/if}}
+
 	</section>
 </template>

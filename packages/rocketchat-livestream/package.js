@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/views/liveStreamTab.html',
 		'client/views/liveStreamTab.js',
+		'client/styles/liveStreamTab.css',
 		'client/views/liveStreamView.html',
 		'client/views/liveStreamView.js',
 		'client/tabBar.js'
