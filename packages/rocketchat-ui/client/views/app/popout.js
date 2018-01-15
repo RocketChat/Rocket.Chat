@@ -10,6 +10,7 @@ this.popout = {
 		this.context = Blaze.renderWithData(Template.popout, config, document.body);
 		this.fn = fn;
 		this.config = config;
+		this.onCloseCallback = config.onCloseCallback || null;
 		this.timer = null;
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);
@@ -26,6 +27,9 @@ this.popout = {
 		this.fn = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
+		}
+		if (typeof(this.onCloseCallback) === 'function') {
+			this.onCloseCallback();
 		}
 	},
 	dragover(event) {
