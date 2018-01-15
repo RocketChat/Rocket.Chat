@@ -17,7 +17,12 @@
 			<div class="sidebar-item__body">
 				<div class="sidebar-item__message">
 					<div class="sidebar-item__message-top">
-						<div class="sidebar-item__name">{{name}}</div>
+						<div class="sidebar-item__name">
+							{{name}}
+							{{#if mySelf}}
+								<span class="sidebar-item__me">({{_ "You"}})</span>
+							{{/if}}
+						</div>
 						{{#if lastMessageTs}}
 							<span class="sidebar-item__time">{{lastMessageTs}}</span>
 						{{/if}}
