@@ -110,6 +110,13 @@ Template.sidebarItem.events({
 				type: 'sidebar-item',
 				id: 'read'
 			});
+		} else {
+			items.push({
+				icon: 'flag',
+				name: t('Mark_as_unread'),
+				type: 'sidebar-item',
+				id: 'unread'
+			});
 		}
 
 		if (canFavorite) {
