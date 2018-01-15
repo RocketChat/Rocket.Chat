@@ -97,7 +97,7 @@ Template.liveStreamTab.events({
 	'click .js-save'(e, i) {
 		e.preventDefault();
 
-		const streamingOptions = parseUrl(i.find('[name=streamingOptions]').value);
+		const streamingOptions = parseUrl(i.find('[name=streaming-options]').value);
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
 			if (err) {
@@ -108,7 +108,7 @@ Template.liveStreamTab.events({
 			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
-	'click .streamingSourceSetting'(e, i) {
+	'click .streaming-source-settings'(e, i) {
 		e.preventDefault();
 		i.editing.set(true);
 	},
@@ -127,13 +127,13 @@ Template.liveStreamTab.events({
 			popout.open({
 				content: 'liveStreamView',
 				data: {
-					'streamingSource': Template.instance().streamingOptions.get().url
+					streamingSource: Template.instance().streamingOptions.get().url
 				},
 				onCloseCallback: () => i.popoutOpen.set(false)
 			});
 		}
 	},
-	'submit [name=streamingOptions]'(e) {
+	'submit [name=streaming-options]'(e) {
 		e.preventDefault();
 	},
 	'click .js-popout'(e, i) {
@@ -141,10 +141,9 @@ Template.liveStreamTab.events({
 		popout.open({
 			content: 'liveStreamView',
 			data: {
-				'streamingSource': Template.instance().streamingOptions.get().url
+				streamingSource: Template.instance().streamingOptions.get().url
 			},
 			onCloseCallback: () => i.popoutOpen.set(false)
-
 		});
 		i.popoutOpen.set(true);
 	}

@@ -35,4 +35,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  margin: 10px auto;
+  padding: 10px 0;
+  font-size: 15px;
+
+  & .current-setting {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--rc-color-primary-dark);
+  }
+
+  & .rc-button {
+    width: 49%
+  }
 }

@@ -94,10 +94,8 @@ Template.popout.events({
 		e.stopPropagation();
 		if (i.isMinimized.get()) {
 			i.isMinimized.set(false);
-			document.querySelector('.streaming-object').height = '350px';
 		} else {
 			i.isMinimized.set(true);
-			document.querySelector('.streaming-object').height = '40px';
 		}
 	},
 	'dragstart .rc-popout-wrapper'(event) {
