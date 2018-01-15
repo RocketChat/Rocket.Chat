@@ -68,6 +68,10 @@ class MainContent extends Page {
 	// Popover
 	get popoverWrapper() { return browser.element('.rc-popover'); }
 
+	// Landing Page
+	get GlobalAnnouncement() { return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div'); }
+	get GlobalAnnouncementBtn() { return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > button'); }
+
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
