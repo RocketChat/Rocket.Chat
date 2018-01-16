@@ -239,6 +239,11 @@ Package.onUse(function(api) {
 	// EXPORT
 	api.export('RocketChat');
 
+	// For enabling integration tests
+	api.addFiles('client/views/SimpleRoomCreateDialog.html', 'client');
+	api.addFiles('client/views/SimpleRoomCreateDialog.js', 'client');
+	api.addFiles('server/methods/createRoomType.js', 'server');
+
 	// exports
 	api.mainModule('server/lib/index.js', 'server');
 	api.mainModule('client/lib/index.js', 'client');
