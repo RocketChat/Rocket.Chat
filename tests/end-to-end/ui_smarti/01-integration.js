@@ -50,7 +50,7 @@ describe('[Smarti Integration]', () => {
 		describe('Message', () => {
 			it('it should send a message', () => {
 				assistify.clickKnowledgebase();
-				mainContent.sendMessage(message);
+				assistify.sendTopicMessage(message);
 			});
 		});
 	});

@@ -85,6 +85,8 @@ class Assistify extends Page {
 		return browser.element('.flex-tab-container.border-component-color.opened .tab-button.active');
 	}
 
+	get numberOfRequests() { return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge'); }
+
 	createTopic(topicName, expert) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
@@ -100,7 +102,8 @@ class Assistify extends Page {
 		this.topicExperts.waitForVisible(10000);
 		this.topicExperts.setValue(expert);
 		browser.pause(500);
-		browser.element('.rc-popup-list__item').click();
+		browser.keys(Keys.TAB);
+		// browser.element('.rc-popup-list__item').click();
 		browser.pause(500);
 
 		browser.waitUntil(function () {

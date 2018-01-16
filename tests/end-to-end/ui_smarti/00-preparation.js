@@ -47,13 +47,12 @@ describe('[Smarti Connection]', () => {
 					.auth(credentials['username'], credentials['password'])
 					.expect(200)
 					.expect(function (res) {
-						if (typeof res.body[0] !== 'undefined') {
-							clientid = res.body[0].id;
+						for (var cl in res.body) {
+							if (res.body[cl].name == 'testclient') {
+								clientid = res.body[cl].id;
+								console.log('check if client exists', clientid)
+							}
 						}
-						else {
-							clientid = undefined;
-						}
-						console.log('check if client exists', clientid)
 					})
 					.end(done);
 			});
@@ -84,7 +83,11 @@ describe('[Smarti Connection]', () => {
 				request.get('/client')
 					.expect(200)
 					.expect(function (res) {
-						expect(res.body[0].id, clientid);
+						for (var cl in res.body) {
+							if (res.body[cl].name == 'testclient') {
+								expect(res.body[cl].id, clientid);
+							}
+						}
 						expect(clientid).to.not.equal(undefined);
 					})
 					.end(done);
