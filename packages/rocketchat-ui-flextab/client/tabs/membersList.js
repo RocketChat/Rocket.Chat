@@ -1,5 +1,6 @@
-/* globals WebRTC */
+/* globals WebRTC popover isRtl */
 import _ from 'underscore';
+import {getActions} from './userActions';
 
 Template.membersList.helpers({
 	tAddUsers() {
@@ -30,7 +31,20 @@ Template.membersList.helpers({
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
 		let totalOnline = 0;
-		let users = roomUsers.map(function(user) {
+		let users = roomUsers;
+
+		const filter = Template.instance().filter.get();
+		let reg = null;
+		try {
+			reg = new RegExp(filter, 'i');
+		} catch (e) {
+			console.log(e);
+		}
+		if (filter && reg) {
+			users = users.filter(user => reg.test(user.username) || reg.test(user.name));
+		}
+
+		users = users.map(function(user) {
 			let utcOffset;
 			if (onlineUsers[user.username] != null) {
 				totalOnline++;
@@ -148,6 +162,22 @@ Template.membersList.helpers({
 	}});
 
 Template.membersList.events({
+	'click .js-add'() {
+		Template.parentData(0).tabBar.setTemplate('inviteUsers');
+		Template.parentData(0).tabBar.setData({
+			label: 'Add_users',
+			icon: 'user'
+		});
+
+		Template.parentData(0).tabBar.open();
+	},
+	'input .js-filter'(e, instance) {
+		instance.filter.set(e.target.value.trim());
+	},
+	'change .js-type'(e, instance) {
+		const seeAll = instance.showAllUsers.get();
+		instance.showAllUsers.set(!seeAll);
+	},
 	'click .see-all'(e, instance) {
 		const seeAll = instance.showAllUsers.get();
 		instance.showAllUsers.set(!seeAll);
@@ -155,8 +185,57 @@ Template.membersList.events({
 		if (!seeAll) {
 			return instance.usersLimit.set(100);
 		}
-	},
 
+	},
+	'click .js-action'(e, instance) {
+		e.currentTarget.parentElement.classList.add('active');
+		const room = Session.get(`roomData${ instance.data.rid }`);
+		const _actions = getActions({
+			user: this.user.user,
+			hideAdminControls: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
+			directActions: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false
+		}).map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this)));
+		const groups = [];
+		const columns = [];
+		const admin = _actions.filter(action => action.group === 'admin');
+		const others = _actions.filter(action => !action.group);
+		const channel = _actions.filter(actions => actions.group === 'channel');
+		if (others.length) {
+			groups.push({items:others});
+		}
+		if (channel.length) {
+			groups.push({items:channel});
+		}
+
+		if (admin.length) {
+			groups.push({items:admin});
+		}
+		columns[0] = {groups};
+
+		$(e.currentTarget).blur();
+		e.preventDefault();
+		const config = {
+			columns,
+			mousePosition: () => ({
+				x: e.currentTarget.getBoundingClientRect().right + 10,
+				y: e.currentTarget.getBoundingClientRect().bottom + 100
+			}),
+			customCSSProperties: () => ({
+				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
+			}),
+			data: {
+				rid: this._id,
+				username: instance.data.username,
+				instance
+			},
+			activeElement: e.currentTarget,
+			onDestroyed:() => {
+				e.currentTarget.parentElement.classList.remove('active');
+			}
+		};
+		popover.open(config);
+	},
 	'autocompleteselect #user-add-search'(event, template, doc) {
 
 		const roomData = Session.get(`roomData${ template.data.rid }`);
@@ -182,6 +261,7 @@ Template.membersList.onCreated(function() {
 	this.usersLimit = new ReactiveVar(100);
 	this.userDetail = new ReactiveVar;
 	this.showDetail = new ReactiveVar(false);
+	this.filter = new ReactiveVar('');
 
 	this.users = new ReactiveVar([]);
 	this.total = new ReactiveVar;

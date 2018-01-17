@@ -3,10 +3,11 @@
 		opacity: 0.6;
 	}
 
-	& > svg {
+	&--icon > svg {
+		margin: 0 5px;
+
 		font-size: 20px;
 		fill: currentColor;
-		margin: 0 5px;
 	}
 
 	display: flex;
