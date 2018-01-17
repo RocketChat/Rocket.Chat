@@ -36,34 +36,38 @@
 	}
 
 	&__banner {
+
+		position: absolute;
+		z-index: 1;
+		bottom: 50px;
+
+		display: flex;
+
+		width: 132px;
+		height: 32px;
+		margin: 0 -6px;
+
+		color: #ffffff;
+
+		border-radius: 3px;
 		background: #1d74f5;
-	    color: white;
-
-	    display: flex;
-	    border-radius: 3px;
-	    position: absolute;
-	    z-index: 1;
-	    bottom: 50px;
-	    width: 100%;
-	    -webkit-justify-content: center;
-	    align-items: center;
-	    margin: 0 -6px;
-
-	    width: 132px;
-	    height: 32px;
+		align-items: center;
+		-webkit-justify-content: center;
 	}
 
 	&__avatar {
+
+		position: relative;
+
 		width: 120px;
 		height: 120px;
 		margin: var(--default-padding);
-		position: relative;
 
 		border-radius: 2px;
 
-		.archived & > .avatar{
-			filter: blur(1px);
+		.archived & > .avatar {
 			opacity: 0.8;
+			filter: blur(1px);
 		}
 	}
 
@@ -116,15 +120,10 @@
 	}
 
 	&__row {
-
-		/*display: flex;*/
 		flex-direction: row;
 
 		padding: 15px 0;
 
-		&:last-child {
-			padding-bottom: 0;
-		}
 		& > .rc-switch {
 			flex: 1;
 
@@ -136,8 +135,10 @@
 		}
 
 		&--separator {
-	    border-bottom: 1px solid #D7D7D7;
-	    margin: 14px 0;
+
+			margin: 14px 0;
+
+			border-bottom: 1px solid #d7d7d7;
 		}
 	}
 
@@ -238,8 +239,10 @@
 			align-items: flex-end;
 
 			&-icon {
-				font-size: 1.25rem;
+
 				color: #444444;
+
+				font-size: 1.25rem;
 			}
 		}
 
@@ -254,13 +257,14 @@
 		}
 
 		&-value {
+
+			display: flex;
+
 			margin: 0 0.25rem;
 
 			cursor: pointer;
 
 			color: #1d73f3;
-
-			display: flex;
 			align-items: flex-end;
 		}
 	}
@@ -268,16 +272,20 @@
 
 .rc-switch-double {
 	display: flex;
+
 	width: 100%;
 
 	&__description {
 		margin: 5px 2px;
+
 		font-size: 13px;
 	}
 
 	&__label {
 		flex: 1 1 100%;
+
 		font-size: 16px;
+
 		&:first-child {
 			text-align: right;
 		}
@@ -286,14 +294,14 @@
 			text-align: left;
 		}
 
-
-			&.disabled {
-				color: #A1A1A1;
-			}
+		&.disabled {
+			color: #a1a1a1;
+		}
 	}
 
 	& .rc-switch {
 		flex: 0 0;
+
 		margin: 0 23px;
 
 		& .rc-switch__button {

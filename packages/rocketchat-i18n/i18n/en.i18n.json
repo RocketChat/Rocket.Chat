@@ -183,6 +183,7 @@
   "All_channels": "All channels",
   "All_logs": "All logs",
   "All_messages": "All messages",
+  "All_users": "All users",
   "All_added_tokens_will_be_required_by_the_user": "All added tokens will be required by the user",
   "All_users_in_the_channel_can_write_new_messages": "All users in the channel can write new messages",
   "Allow_Invalid_SelfSigned_Certs": "Allow Invalid Self-Signed Certs",

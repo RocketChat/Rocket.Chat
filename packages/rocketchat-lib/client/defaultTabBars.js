@@ -26,6 +26,16 @@ RocketChat.TabBar.addButton({
 });
 
 RocketChat.TabBar.addButton({
+	groups: ['channel', 'group'],
+	id: 'addUsers',
+	i18nTitle: 'Add_users',
+	icon: 'user',
+	template: 'inviteUsers',
+	order: 2
+});
+
+
+RocketChat.TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'uploaded-files-list',
 	i18nTitle: 'Room_uploaded_file_list',
@@ -42,4 +52,3 @@ RocketChat.TabBar.addButton({
 	template: 'keyboardShortcuts',
 	order: 4
 });
-

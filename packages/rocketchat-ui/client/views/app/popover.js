@@ -96,6 +96,9 @@ Template.popover.onRendered(function() {
 });
 
 Template.popover.onDestroyed(function() {
+	if (this.data.onDestroyed) {
+		this.data.onDestroyed();
+	}
 	$(window).off('resize', this.position);
 });
 
