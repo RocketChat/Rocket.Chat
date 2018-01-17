@@ -15,6 +15,7 @@ if (!Accounts.saml) {
 
 const MeteorLogout = Meteor.logout;
 
+
 Meteor.logout = function() {
 	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
 	if (samlService) {
