@@ -557,6 +557,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,
+			customFields: room.customFields,
 			t: room.t,
 			u: {
 				_id: user._id,
