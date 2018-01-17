@@ -77,7 +77,7 @@ Template.uploadedFilesList.events({
 
 	'click .icon-trash'() {
 		const self = this;
-		return swal({
+		modal.open({
 			title: TAPi18n.__('Are_you_sure'),
 			text: TAPi18n.__('You_will_not_be_able_to_recover_file'),
 			type: 'warning',
@@ -88,7 +88,7 @@ Template.uploadedFilesList.events({
 			closeOnConfirm: false,
 			html: false
 		}, function() {
-			swal({
+			modal.open({
 				title: TAPi18n.__('Deleted'),
 				text: TAPi18n.__('Your_file_has_been_deleted'),
 				type: 'success',
