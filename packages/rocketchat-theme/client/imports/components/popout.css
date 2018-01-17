@@ -1,12 +1,16 @@
 .rc-popout {
-	min-width: 300px;
+	min-width: 320px;
 	max-width: 600px;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
-	background: #f4f4f4;
-
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+
+	border: solid 4px var(--rc-color-primary-darkest);
+	background: var(--rc-color-primary-darkest);
+	color: var(--color-white);
+
+	transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
 	&-wrapper {
 		position: absolute;
@@ -29,6 +33,13 @@
 
 		font-size: 16px;
 	}
+	&--open {
+		& .rc-popout__header {
+			& .rc-popout__controls {
+				display: none;
+			}
+		}
+	}
 
 	&__close {
 		cursor: pointer;
@@ -46,10 +57,14 @@
 		display: flex;
 		flex-direction: row;
 
-		padding: 10px;
+		padding: 5px 10px 8px;
 
 		font-size: 21px;
 		justify-content: flex-end;
+
+		& .rc-popout__controls {
+			padding: 0;
+		}
 	}
 
 	&__content {
@@ -63,6 +78,17 @@
 		& .youtube-player {
 			height: inherit;
 			width: inherit;
+		}
+	}
+
+	&__controls {
+		display: flex;
+		flex: 10 1 auto;
+		padding: 8px 10px 5px;
+
+		& button {
+			font-size: 15px;
+			margin: 0 5px;
 		}
 	}
 
@@ -118,12 +144,17 @@
 
 		&.rc-popout__content {
 			height: 0px;
+			visibility: hidden;
 
 			& .streaming-object {
 				visibility: 'hidden';
 				height: 0px;
 			}
 		}
+	}
+
+	& svg {
+		fill: white;
 	}
 
 }

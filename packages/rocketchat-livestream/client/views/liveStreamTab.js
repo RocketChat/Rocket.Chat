@@ -6,8 +6,9 @@ function parseUrl(url) {
 	const parsedUrl = url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 	options.url = url;
 	if (parsedUrl != null) {
+		options.id = parsedUrl[6];
 		if (parsedUrl[3].includes('youtu')) {
-			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }?showinfo=0&autoplay=1`;
+			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
 			options.thumbnail = `https://img.youtube.com/vi/${ parsedUrl[6] }/0.jpg`;
 		} else if (parsedUrl[3].includes('vimeo')) {
 			options.url = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
@@ -127,7 +128,8 @@ Template.liveStreamTab.events({
 			popout.open({
 				content: 'liveStreamView',
 				data: {
-					streamingSource: Template.instance().streamingOptions.get().url
+					streamingSource: Template.instance().streamingOptions.get().url,
+					streamingOptions:  Template.instance().streamingOptions.get()
 				},
 				onCloseCallback: () => i.popoutOpen.set(false)
 			});
@@ -141,7 +143,9 @@ Template.liveStreamTab.events({
 		popout.open({
 			content: 'liveStreamView',
 			data: {
-				streamingSource: Template.instance().streamingOptions.get().url
+				streamingSource: Template.instance().streamingOptions.get().url,
+				streamingOptions:  Template.instance().streamingOptions.get()
+
 			},
 			onCloseCallback: () => i.popoutOpen.set(false)
 		});
