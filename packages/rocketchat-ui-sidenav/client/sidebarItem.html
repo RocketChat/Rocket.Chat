@@ -3,29 +3,46 @@
 		{{#if statusClass}}
 			<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 		{{/if}}
+		{{#if icon}}
+			<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
+				{{> icon block="sidebar-item__icon" icon=icon}}
+			</div>
+		{{/if}}
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
-			{{#if icon}}
-				<div class="sidebar-item__picture">
-					{{> icon block="sidebar-item__icon" icon=icon}}
+			<div class="sidebar-item__picture">
+				<div class="sidebar-item__user-thumb">
+					{{> avatar username=username roomIcon=icon}}
 				</div>
-			{{else}}
-				{{#if avatar}}
-					<div class="sidebar-item__picture">
-						<div class="sidebar-item__user-thumb">
-							{{> avatar username=username}}
+			</div>
+			<div class="sidebar-item__body">
+				<div class="sidebar-item__message">
+					<div class="sidebar-item__message-top">
+						<div class="sidebar-item__name">
+							{{name}}
+							{{#if mySelf}}
+								<span class="sidebar-item__me">({{_ "You"}})</span>
+							{{/if}}
 						</div>
+						{{#if lastMessageTs}}
+							<span class="sidebar-item__time">{{lastMessageTs}}</span>
+						{{/if}}
+					</div>
+					<div class="sidebar-item__message-bottom">
+						{{#if lastMessage}}
+							<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+						{{/if}}
+						{{#if unread}}
+							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+						{{/if}}
+					</div>
+				</div>
+
+				{{#if isRoom}}
+					<div class="sidebar-item__menu">
+						{{> icon block="sidebar-item__menu-icon" icon="menu"}}
 					</div>
 				{{/if}}
-			{{/if}}
-			<div class='sidebar-item__name {{archivedClass}}'>{{name}}</div>
-			{{#if unread}}
-				<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
-			{{/if}}
-			{{#if isRoom}}
-				<div class="sidebar-item__menu">
-					{{> icon block="sidebar-item__menu-icon" icon="menu"}}
-				</div>
-			{{/if}}
+			</div>
 		</a>
 	</li>
 </template>

@@ -44,6 +44,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('livechat.js', 'server');
 	api.addFiles('server/startup.js', 'server');
+	api.addFiles('server/visitorStatus.js', 'server');
 	api.addFiles('permissions.js', 'server');
 	api.addFiles('messageTypes.js');
 	api.addFiles('roomType.js');
@@ -66,6 +67,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
+	api.addFiles('client/collections/LivechatVisitor.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -86,7 +88,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatInstallation.html', 'client');
 	api.addFiles('client/views/app/livechatInstallation.js', 'client');
 	api.addFiles('client/views/app/livechatIntegrations.html', 'client');
-	api.addFiles('client/views/app/livechatIntegrations.js', 'client');
 	api.addFiles('client/views/app/livechatNotSubscribed.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
@@ -98,6 +99,12 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatUsers.js', 'client');
 	api.addFiles('client/views/app/livechatOfficeHours.html', 'client');
 	api.addFiles('client/views/app/livechatOfficeHours.js', 'client');
+
+	// livechat integrations
+	api.addFiles('client/views/app/integrations/livechatIntegrationWebhook.html', 'client');
+	api.addFiles('client/views/app/integrations/livechatIntegrationWebhook.js', 'client');
+	api.addFiles('client/views/app/integrations/livechatIntegrationFacebook.html', 'client');
+	api.addFiles('client/views/app/integrations/livechatIntegrationFacebook.js', 'client');
 
 	api.addFiles('client/views/app/tabbar/externalSearch.html', 'client');
 	api.addFiles('client/views/app/tabbar/externalSearch.js', 'client');
@@ -124,10 +131,12 @@ Package.onUse(function(api) {
 
 	// hooks
 	api.addFiles('server/hooks/externalMessage.js', 'server');
+	api.addFiles('server/hooks/leadCapture.js', 'server');
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
 	api.addFiles('server/hooks/RDStation.js', 'server');
 	api.addFiles('server/hooks/sendToCRM.js', 'server');
+	api.addFiles('server/hooks/sendToFacebook.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
@@ -135,9 +144,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/changeLivechatStatus.js', 'server');
 	api.addFiles('server/methods/closeByVisitor.js', 'server');
 	api.addFiles('server/methods/closeRoom.js', 'server');
+	api.addFiles('server/methods/facebook.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getAgentData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
+	api.addFiles('server/methods/getNextAgent.js', 'server');
+	api.addFiles('server/methods/loadHistory.js', 'server');
 	api.addFiles('server/methods/loginByToken.js', 'server');
 	api.addFiles('server/methods/pageVisited.js', 'server');
 	api.addFiles('server/methods/registerGuest.js', 'server');
