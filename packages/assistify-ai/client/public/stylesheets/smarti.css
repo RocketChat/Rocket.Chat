@@ -1,13 +1,86 @@
 .smarti-widget .loading-notification {
 	margin: 0 20px;
-
 	text-align: justify;
-
 	font-style: italic;
-
 	line-height: 1.4;
 }
 
-.content .external-search-content .smarti {
+.external-search-content .smarti {
 	overflow-y: auto;
 }
+
+.smarti #widgetContainer {
+	position: absolute;
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	font-size: 16px;
+	color: #3D3D3D;
+	top: 0;
+	right: 0;
+	width: 400px;
+	height: 100%;
+	border-right: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	background: #f4f4f4;
+	overflow: hidden;
+}
+
+.smarti #widgetContainer #widgetWrapper {
+	position: relative;
+	height: 100%;
+	display: flex;
+	flex-direction: column; }
+	.smarti #widgetContainer #widgetWrapper #widgetHeader {
+		position: relative; }
+		.smarti #widgetContainer #widgetWrapper #widgetHeader .widgetHeaderWrapper {
+			padding: 15px 15px; }
+		.smarti #widgetContainer #widgetWrapper #widgetHeader h4 {
+			font-size: 20px;
+			color: #3D3D3D;
+			letter-spacing: 0;
+			margin-top: -10px;
+			/*margin-bottom: 30px;*/
+		}
+		.smarti #widgetContainer #widgetWrapper #widgetHeader h4 img {
+			position: relative;
+			top: 5px;
+			height: 30px;
+			margin-right: 4px; }
+	.smarti #widgetContainer #widgetWrapper #widgetBody {
+		position: relative;
+		background: #ffffff;
+		width: 100%;
+		padding: 10px 10px 10px 10px;
+		overflow-y: auto;
+		flex: 1; }
+	.smarti #widgetContainer #widgetWrapper #widgetFooter {
+		position: absolute;
+		bottom: 0px;
+		background: #f4f4f4;
+		color: #747474;
+		opacity: 1;
+		width: 100%;
+		text-align: center;
+		border-top: 1px solid #CBCBCB; }
+		.smarti #widgetContainer #widgetWrapper #widgetFooter .help-request-actions {
+			margin: 0; }
+		.smarti #widgetContainer #widgetWrapper #widgetFooter button {
+			-o-transition: 0.2s;
+			-ms-transition: 0.2s;
+			-moz-transition: 0.2s;
+			-webkit-transition: 0.2s;
+			transition: 0.2s;
+			position: relative;
+			color: #747474;
+			text-decoration: none;
+			padding: 15px 30px 15px 30px;
+			width: calc(100% - 20px);
+			font-size: 14px;
+			margin: 10px;
+			text-transform: uppercase;
+			background: #CBCBCB;
+			border-radius: 3px;
+			display: inline-block;
+			text-align: center; }
+			.smarti #widgetContainer #widgetWrapper #widgetFooter button:hover {
+				background: #0075b4;
+				color: #ffffff; }

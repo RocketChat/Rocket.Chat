@@ -18,18 +18,14 @@ Meteor.methods({
 	 * @returns {String} - the conversation Id
 	 */
 	getConversationId(channelId) {
-
-		const clientDomain = RocketChat.settings.get('Assistify_AI_Smarti_Domain');
-		return RocketChat.RateLimiter.limitFunction(
-			SmartiProxy.propagateToSmarti, 5, 1000, {
-				userId(userId) {
-					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
-			}
-		)(verbs.get, `rocket/${ clientDomain }/${ channelId }/conversationid`);
-		// Smarti only returns the plain id (no JSON Object), therefore we do not get an response.data obeject.
-		// use body instead
-		// TODO: Smarti release 0.7.0 should return a valid JSON
+		SystemLogger.debug(`Retrieving conversation ID for channel: ${ channelId }`);
+		const m = RocketChat.models.LivechatExternalMessage.findOneById(channelId);
+		if(m) {
+			return m.conversationId;
+		} else {
+			SystemLogger.debug(`Smarti - no conversation found for channel: ${ channelId }`);
+			return null;
+		}
 	},
 
 	/**
@@ -40,14 +36,13 @@ Meteor.methods({
 	 * @returns {Object} - the analysed conversation
 	 */
 	getConversation(conversationId) {
-
 		return RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis`);
 	},
 
 	/**
@@ -61,14 +56,14 @@ Meteor.methods({
 	 * @returns {Object} - the suggestions
 	 */
 	getQueryBuilderResult(conversationId, templateIndex, creator, start) {
-
+		// TODO new api -> client-side pagination?
 		return RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }/template/${ templateIndex }/${ creator }?start=${ start }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }`);
 	}
 });
 

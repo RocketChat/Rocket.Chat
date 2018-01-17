@@ -33,9 +33,9 @@ Template.AssistifySmarti.onRendered(function() {
 	const instance = this;
 
 	/* in order to avoid duplicated scrollbars, have the outer one hidden */
-	const parentContainer = this.$(':parent').parent();
-	parentContainer.css('overflow-y', 'initial');
-	this.$('.smarti-widget').css('overflow-y', 'auto');
+	//const parentContainer = this.$(':parent').parent();
+	//parentContainer.css('overflow-y', 'initial');
+	//this.$('.smarti-widget').css('overflow-y', 'auto');
 
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
@@ -60,10 +60,10 @@ Template.AssistifySmarti.onRendered(function() {
 					type: WIDGET_POSTING_TYPE,
 					cssInputSelector: '.rc-message-box .js-input-message'
 				},
-				lang: 'de'
+				lang: localStorage.getItem('userLanguage')
 			};
 			console.debug('Initializing Smarti with options: ', JSON.stringify(smartiOptions, null, 2));
-			instance.smarti = new window.SmartiWidget(instance.find('.smarti-widget'), smartiOptions);
+			instance.smarti = new window.SmartiWidget(instance.find('.smarti #widgetContainer'), smartiOptions);
 		}
 	}
 

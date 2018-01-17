@@ -1,4 +1,38 @@
 <template name="AssistifySmarti">
+	<div class="external-search-content smarti">
+		<div id="widgetContainer">
+			<div id="widgetWrapper">
+				<div id="widgetHeader">
+					<div class="widgetHeaderWrapper">
+						<h4>
+							<img src="/packages/assistify_ai/client/public/bulb.png" alt="Bulb-icon">
+							{{_ "Knowledge_Base"}}
+						</h4>
+					</div>
+				</div>
+				<div id="widgetBody">
+					<div class="loading-notification">{{loadingNotification}}</div>
+					{{#if isLoading }}
+						{{> loading }}
+					{{/if}}
+				</div>
+				<div id="widgetFooter">
+					{{#let helpRequest=helpRequestByRoom }}
+						{{#if helpRequest}}
+							{{> HelpRequestActions helpRequest }}
+						{{/if}}
+					{{/let}}
+					{{#if isLivechat}}
+						{{> HelpRequestActions liveChatActions}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<!--
+<template name="AssistifySmarti">
 	<div class="content external-search-content smarti">
 		<div class="title">
 			<h2><span class="title-icon"><img
@@ -22,3 +56,4 @@
 		</div>
 	</div>
 </template>
+-->

@@ -33,7 +33,6 @@ export class SmartiProxy {
 	 * @returns {Object}
 	 */
 	static propagateToSmarti(method, path, body = null) {
-
 		const url = `${ SmartiProxy.smartiUrl }${ path }`;
 		const header = {
 			'X-Auth-Token': SmartiProxy.smartiAuthToken,
@@ -41,7 +40,7 @@ export class SmartiProxy {
 		};
 		try {
 			const response = HTTP.call(method, url, {data: body, headers: header});
-			if (response.statusCode === 200) {
+			if (response.statusCode === 200 || response.statusCode === 201) {
 				return response.data || response.content; //.data if it's a json-response
 			} else {
 				SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));
