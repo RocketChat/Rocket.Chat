@@ -123,10 +123,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		_id
 	});
 
-	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-		Meteor.runAsUser(_id, function() {
-			return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
-		});
+	if (user.username) {
+		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
+			Meteor.runAsUser(_id, function() {
+				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+			});
+		}
+
+		if (user.type !== 'visitor') {
+			Meteor.defer(function() {
+				return RocketChat.callbacks.run('afterCreateUser', user);
+			});
+		}
 	}
 
 	if (roles.length === 0) {
@@ -164,6 +172,12 @@ Accounts.validateLoginAttempt(function(login) {
 
 	if (!!login.user.active !== true) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
+			'function': 'Accounts.validateLoginAttempt'
+		});
+	}
+
+	if (!login.user.roles || !Array.isArray(login.user.roles)) {
+		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
 			'function': 'Accounts.validateLoginAttempt'
 		});
 	}

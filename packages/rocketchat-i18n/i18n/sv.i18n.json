@@ -91,7 +91,7 @@
   "Accounts_OAuth_Twitter_id": "Twitter Id",
   "Accounts_OAuth_Twitter_secret": "Twitter Secret",
   "Accounts_OAuth_Wordpress": "Word Login",
-  "Accounts_OAuth_Wordpress_callback_url": "Wordpress återuppringning URL",
+  "Accounts_OAuth_Wordpress_callback_url": "WordPress återuppringning URL",
   "Accounts_OAuth_Wordpress_id": "Word Id",
   "Accounts_OAuth_Wordpress_secret": "Word Secret",
   "Accounts_PasswordReset": "Nollställ lösenord",

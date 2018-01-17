@@ -4,7 +4,7 @@
 		*/
 
 		--color-darkest: #1f2329;
-		--color-dark: #2f343d; 
+		--color-dark: #2f343d;
 		--color-dark-medium: #414852;
 		--color-dark-light: #6c727a;
 		--color-gray: #9ea2a8;
@@ -50,6 +50,7 @@
 		--status-busy: var(--rc-color-error);
 		--status-invisible: var(--color-gray-medium);
 		--status-invisible-sidebar: var(--rc-color-primary-darkest);
+		--default-padding: 1.5rem;
 		--default-small-padding: 1rem;
 
 		/*
@@ -143,10 +144,8 @@
 		--sidebar-background-light-hover: var(--rc-color-primary-light);
 		--sidebar-default-padding: 24px;
 		--sidebar-small-default-padding: 16px;
-		--sidebar-header-padding: 16px;
-		--sidebar-header-small-padding: 12px;
+		--sidebar-extra-small-default-padding: 12px;
 		--sidebar-footer-height: 70px;
-		--sidebar-footer-padding: var(--sidebar-header-padding);
 		--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 		/*
@@ -176,7 +175,9 @@
 		*/
 		--sidebar-item-radius: 2px;
 		--sidebar-item-height: 32px;
+		--sidebar-item-big-height: 62px;
 		--sidebar-item-thumb-size: 20px;
+		--sidebar-item-big-thumb-size: 36px;
 
 		--sidebar-item-text-color: var(--color-gray);
 		--sidebar-item-background: inherit;
