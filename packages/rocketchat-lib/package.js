@@ -243,6 +243,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/SimpleRoomCreateDialog.html', 'client');
 	api.addFiles('client/views/SimpleRoomCreateDialog.js', 'client');
 	api.addFiles('server/methods/createRoomType.js', 'server');
+	api.addFiles('server/methods/createCustomRoom.js', 'server');
 
 	// exports
 	api.mainModule('server/lib/index.js', 'server');

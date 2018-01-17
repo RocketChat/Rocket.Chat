@@ -12,13 +12,18 @@ Meteor.methods({
 			icon,
 			header,
 			label,
-			roote: new RoomTypeRouteConfig(name, path)
+			identifier: 'test',
+			route: new RoomTypeRouteConfig({name, path})
 		});
 
 		roomTypeConfig.creationLabel = name;
 		roomTypeConfig.creationTemplate = creationTemplate;
 		roomTypeConfig.canBeCreated = () => true;
-
-		return RocketChat.roomTypes.add(roomTypeConfig);
+		roomTypeConfig.canBeDeleted = () => true;
+		var res = RocketChat.roomTypes.add(roomTypeConfig);
+		if (typeof res == 'undefined'){
+			return true;
+		}
+		else {return res}
 	}
 });
