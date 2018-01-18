@@ -23,6 +23,12 @@ Template.liveStreamView.onRendered(function() {
 				fs: 0,
 				modestbranding: 1,
 				rel: 0
+			},
+			events: {
+				'onStateChange': (e) => {
+					const playerStateChangedEvent = new CustomEvent('playerStateChanged', {detail: e.data});
+					document.querySelector('.rc-popout').dispatchEvent(playerStateChangedEvent);
+				}
 			}
 		});
 	} else {
@@ -48,6 +54,12 @@ Template.liveStreamView.events({
 				fs: 0,
 				modestbranding: 1,
 				rel: 0
+			},
+			events: {
+				'onStateChange': (e) => {
+					const playerStateChangedEvent = new CustomEvent('playerStateChanged', {detail: e.data});
+					document.querySelector('.rc-popout').dispatchEvent(playerStateChangedEvent);
+				}
 			}
 		});
 	}

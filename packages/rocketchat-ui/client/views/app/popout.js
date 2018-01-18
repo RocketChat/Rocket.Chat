@@ -15,8 +15,8 @@ this.popout = {
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
-		if (config.isAudioOnly) {
-			this.isAudioOnly = config.isAudioOnly;
+		if (config.data) {
+			this.isAudioOnly = config.data.isAudioOnly;
 		}
 	},
 	close() {
@@ -55,8 +55,8 @@ Template.popout.helpers({
 	state() {
 		return Template.instance().isMinimized.get() ? 'closed' : 'open';
 	},
-	type() {
-		return 'video'; //or 	'audio'
+	isAudioOnly() {
+		return Template.instance().isAudioOnly.get();
 	},
 	isMuted() {
 		return Template.instance().isMuted.get();
@@ -67,17 +67,18 @@ Template.popout.helpers({
 });
 
 Template.popout.onRendered(function() {
+	Template.instance().isMinimized.set(popout.isAudioOnly);
+	Template.instance().isAudioOnly.set(popout.isAudioOnly);
+
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
 });
 Template.popout.onCreated(function() {
-	this.isMinimized = new ReactiveVar(false);
+	this.isMinimized = new ReactiveVar(popout.isAudioOnly);
 	this.isAudioOnly = new ReactiveVar(popout.isAudioOnly);
 	this.isMuted = new ReactiveVar(false);
 	this.isPlaying = new ReactiveVar(true);
-
-
 	document.body.addEventListener('dragover', popout.dragover, true);
 	document.body.addEventListener('drop', popout.drop, true);
 });
@@ -86,7 +87,6 @@ Template.popout.onDestroyed(function() {
 	popout.context = null;
 	document.body.removeEventListener('dragover', popout.dragover, true);
 	document.body.removeEventListener('drop', popout.drop, true);
-
 });
 
 Template.popout.events({
@@ -136,6 +136,13 @@ Template.popout.events({
 	'click .rc-popout__controls--unmute'(e, i) {
 		window.liveStreamPlayer.unMute();
 		i.isMuted.set(false);
+	},
+	'playerStateChanged .rc-popout'(e, i) {
+		if (e.detail === window.YT.PlayerState.PLAYING) {
+			i.isPlaying.set(true);
+		} else if (e.detail === window.YT.PlayerState.PAUSED) {
+			i.isPlaying.set(false);
+		}
 	}
 });
 

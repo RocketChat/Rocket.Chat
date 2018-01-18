@@ -8,7 +8,6 @@
 .thumbnail-container {
   position: relative;
   height: 270px;
-  filter: opacity(0.75);
 
   & .--absolute-center {
     position: absolute;
@@ -16,11 +15,9 @@
     left: calc(50% - 25px);
 
     font-size: 50px;
-
-    filter: opacity(1);
-      & .--play {
-        fill: white;
-      }
+  }
+  & .--play-solid {
+    fill: var(--rc-color-primary-lightest);;
   }
 }
 .liveStreamTab__form {
@@ -28,6 +25,9 @@
 
   & .rc-button {
     width: 49%;
+  }
+  & .rc-switch {
+    padding: 10px 5px;
   }
 }
 
