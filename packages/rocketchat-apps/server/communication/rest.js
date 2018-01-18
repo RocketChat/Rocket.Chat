@@ -1,5 +1,6 @@
 export class AppsRestApi {
-	constructor(manager) {
+	constructor(orch, manager) {
+		this._orch = orch;
 		this._manager = manager;
 		this.api = new RocketChat.API.ApiClass({
 			version: 'apps',
@@ -35,6 +36,7 @@ export class AppsRestApi {
 	}
 
 	addManagementRoutes() {
+		const orchestrator = this._orch;
 		const manager = this._manager;
 		const fileHandler = this._handleFile;
 
@@ -159,6 +161,32 @@ export class AppsRestApi {
 					const languages = prl.getStorageItem().languageContent || {};
 
 					return RocketChat.API.v1.success({ languages });
+				} else {
+					return RocketChat.API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				}
+			}
+		});
+
+		this.api.addRoute(':id/logs', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s logs..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					const { offset, count } = this.getPaginationItems();
+					const { sort, fields, query } = this.parseJsonQuery();
+
+					const ourQuery = Object.assign({}, query, { appId: prl.getID() });
+					const options = {
+						sort: sort ? sort : { _updatedAt: -1 },
+						skip: offset,
+						limit: count,
+						fields
+					};
+
+					const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
+
+					return RocketChat.API.v1.success({ logs });
 				} else {
 					return RocketChat.API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}

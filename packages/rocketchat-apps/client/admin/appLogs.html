@@ -1,0 +1,39 @@
+<template name="appLogs">
+	{{#with app}}
+		<section class="page-container page-list page-settings flex-tab-main-content">
+			<header class="fixed-title">
+				{{> burger}}
+				<a href="{{pathFor "app-manage" appId=id}}" title="{{_ "Back_to_Manage_Apps"}}">
+					<i class="icon-left-open"></i>
+				</a> &nbsp;
+
+				<h2>
+					<span class="room-title">{{_ "View_the_Logs_for"}}: "{{name}}"</span>
+				</h2>
+			</header>
+			<div class="content background-transparent-dark">
+				{{#if isReady}}
+					<div class="rocket-form">
+						{{#each logs}}
+							<div class="section section-collapsed">
+								<div class="section-title">
+									<div class="section-title-text">
+										Logs for "{{method}}" ({{entries.length}}) {{totalTime}}ms
+									</div>
+									<div class="section-title-right">
+										<button class="button primary expand">
+											<span>{{_ "Expand"}}</span>
+										</button>
+									</div>
+								</div>
+								<div class="section-content">
+									Content
+								</div>
+							</div>
+						{{/each}}
+					</div>
+				{{/if}}
+			</div>
+		</section>
+	{{/with}}
+</template>
