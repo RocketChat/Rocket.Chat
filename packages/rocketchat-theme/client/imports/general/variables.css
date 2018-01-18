@@ -32,6 +32,8 @@
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
 
+	--rc-color-link-active: var(--rc-color-button-primary);
+
 
 	/*
 	* General

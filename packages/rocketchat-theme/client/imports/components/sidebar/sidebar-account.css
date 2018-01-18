@@ -150,7 +150,7 @@
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
-		padding: var(--sidebar-header-small-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-header-small-padding);
+		padding: var(--sidebar-extra-small-default-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-extra-small-default-padding);
 
 		&-thumb {
 
