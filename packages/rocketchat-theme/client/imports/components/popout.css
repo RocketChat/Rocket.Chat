@@ -1,14 +1,10 @@
 .rc-popout {
-	min-width: 320px;
+	min-width: 380px;
 	max-width: 600px;
-
-	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-
-	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	border: solid 4px var(--rc-color-primary-darkest);
 	background: var(--rc-color-primary-darkest);
-	color: var(--color-white);
+	color: var(--rc-color-primary-lightest);
 
 	transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -16,9 +12,13 @@
 		position: absolute;
 		z-index: 10;
 
-		top: calc(var(--header-min-height) + 135px);
-		left: calc(var(--sidebar-width) + 10px);
+		top: calc(var(--header-min-height) + 115px);
+		left: calc(100% - 390px - 45px);
 		display: flex;
+
+		animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+		box-shadow: 3px 3px 5px 1px rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 		align-items: center;
 		justify-content: center;
@@ -35,6 +35,7 @@
 	}
 	&--open {
 		& .rc-popout__header {
+			padding: 5px 10px 8px;
 			& .rc-popout__controls {
 				display: none;
 			}
@@ -57,7 +58,7 @@
 		display: flex;
 		flex-direction: row;
 
-		padding: 5px 10px 8px;
+		padding: 5px 10px 5px;
 
 		font-size: 21px;
 		justify-content: flex-end;
@@ -87,7 +88,7 @@
 		padding: 8px 10px 5px;
 
 		& button {
-			font-size: 15px;
+			font-size: 16px;
 			margin: 0 5px;
 		}
 	}
@@ -131,7 +132,7 @@
 		text-align: center;
 		word-break: break-word;
 
-		color: var(--color-white);
+		color: var(--rc-color-primary-lightest);
 		background: var(--rc-color-error);
 
 		line-height: 2;
@@ -154,7 +155,7 @@
 	}
 
 	& svg {
-		fill: white;
+		fill: var(--rc-color-primary-lightest);
 	}
 
 }
