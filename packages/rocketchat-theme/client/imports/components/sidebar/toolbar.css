@@ -104,7 +104,7 @@
 
 @media (width <= 400px) {
 	.toolbar {
-		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+		padding: 0 var(--sidebar-extra-small-default-padding) var(--sidebar-small-default-padding);
 	}
 }
 
