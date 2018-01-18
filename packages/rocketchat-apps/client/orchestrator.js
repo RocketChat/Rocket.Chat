@@ -74,3 +74,10 @@ FlowRouter.route('/admin/apps/:appId', {
 		BlazeLayout.render('main', { center: 'appManage' });
 	}
 });
+
+FlowRouter.route('/admin/apps/:appId/logs', {
+	name: 'app-logs',
+	action() {
+		BlazeLayout.render('main', { center: 'appLogs' });
+	}
+});

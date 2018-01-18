@@ -7,6 +7,20 @@ export class AppRealLogsStorage extends AppLogStorage {
 		this.db = model;
 	}
 
+	find() {
+		return new Promise((resolve, reject) => {
+			let docs;
+
+			try {
+				docs = this.db.find(...arguments).fetch();
+			} catch (e) {
+				return reject(e);
+			}
+
+			resolve(docs);
+		});
+	}
+
 	storeEntries(appId, logger) {
 		console.log(appId);
 		return new Promise((resolve, reject) => {
