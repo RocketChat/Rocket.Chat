@@ -26,8 +26,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 const CROWD = class CROWD {
 	constructor() {
-		const AtlassianCrowd = Npm.require('atlassian-crowd');
-
+		const AtlassianCrowd = require('atlassian-crowd');
 		let url = RocketChat.settings.get('CROWD_URL');
 		const urlLastChar = url.slice(-1);
 
