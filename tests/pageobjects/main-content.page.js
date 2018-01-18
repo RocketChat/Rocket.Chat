@@ -33,7 +33,7 @@ class MainContent extends Page {
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
-	get messageActionMenu() { return browser.element('.rc-popover__content'); }
+	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
@@ -60,7 +60,7 @@ class MainContent extends Page {
 	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
 	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
 	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
-	get emojiPickerFilter() { return browser.element('.emoji-picker .emoji-filter'); }
+	get emojiPickerFilter() { return browser.element('.emoji-picker .js-emojipicker-search'); }
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
