@@ -18,7 +18,3 @@ Package.onUse(function(api) {
 	api.addFiles('server/slackbridge.js', 'server');
 	api.addFiles('server/slackbridge_import.server.js', 'server');
 });
-
-Npm.depends({
-	'slack-client': '2.0.6'
-});

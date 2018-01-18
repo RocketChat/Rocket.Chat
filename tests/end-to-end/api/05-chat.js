@@ -51,7 +51,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+				expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 				message._id = res.body.message._id;
 			})
 			.end(done);
@@ -67,7 +67,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message._id', message._id);
+				expect(res.body).to.have.nested.property('message._id', message._id);
 			})
 			.end(done);
 	});
@@ -116,7 +116,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+				expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 			})
 			.end(done);
 	});
@@ -131,7 +131,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message._id', message._id);
+				expect(res.body).to.have.nested.property('message._id', message._id);
 			})
 			.end(done);
 	});
@@ -148,7 +148,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'This message was edited via API');
+				expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 			})
 			.end(done);
 	});

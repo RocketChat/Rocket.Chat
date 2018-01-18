@@ -5,16 +5,18 @@ import {
 	SelectionChannel,
 	SelectionUser
 } from 'meteor/rocketchat:importer';
+import {Readable} from 'stream';
+import path from 'path';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info) {
 		super(info);
 
-		this.Readable = require('stream').Readable;
+		this.Readable = Readable;
 		this.zlib = require('zlib');
-		this.tarStream = Npm.require('tar-stream');
+		this.tarStream = require('tar-stream');
 		this.extract = this.tarStream.extract();
-		this.path = require('path');
+		this.path = path;
 		this.messages = new Map();
 		this.directMessages = new Map();
 	}
