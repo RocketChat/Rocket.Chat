@@ -71,7 +71,9 @@ Package.onUse(function(api) {
 		'client/admin/appManage.html',
 		'client/admin/appManage.js',
 		'client/admin/appInstall.html',
-		'client/admin/appInstall.js'
+		'client/admin/appInstall.js',
+		'client/admin/appLogs.html',
+		'client/admin/appLogs.js'
 	], 'client');
 
 	api.addFiles('assets/stylesheets/apps.css', 'client');

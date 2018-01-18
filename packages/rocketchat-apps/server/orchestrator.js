@@ -30,7 +30,7 @@ class AppServerOrchestrator {
 		this._communicators = new Map();
 		this._communicators.set('methods', new AppMethods(this._manager));
 		this._communicators.set('notifier', new AppWebsocketNotifier());
-		this._communicators.set('restapi', new AppsRestApi(this._manager));
+		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 	}
 
 	getModel() {

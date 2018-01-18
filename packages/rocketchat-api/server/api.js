@@ -6,7 +6,6 @@ class API extends Restivus {
 		super(properties);
 		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
-		this.helperMethods = new Map();
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
@@ -120,7 +119,7 @@ class API extends Restivus {
 
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.helperMethods) {
+			if (RocketChat.API.helperMethods) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
 						endpoints[method] = {action: endpoints[method]};
@@ -128,7 +127,7 @@ class API extends Restivus {
 
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
-					endpoints[method].action = function() {
+					endpoints[method].action = function _internalRouteActionHandler() {
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
@@ -154,7 +153,7 @@ class API extends Restivus {
 						return result;
 					};
 
-					for (const [name, helperMethod] of this.helperMethods) {
+					for (const [name, helperMethod] of RocketChat.API.helperMethods) {
 						endpoints[method][name] = helperMethod;
 					}
 
@@ -371,6 +370,7 @@ const getUserAuth = function _getUserAuth() {
 };
 
 RocketChat.API = {
+	helperMethods: new Map(),
 	getUserAuth,
 	ApiClass: API
 };

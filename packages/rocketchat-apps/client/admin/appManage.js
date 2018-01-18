@@ -124,6 +124,10 @@ Template.appManage.events({
 		});
 	},
 
+	'click .logs': (e, t) => {
+		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
+	},
+
 	'click .save': (e, t) => {
 		const toSave = [];
 
