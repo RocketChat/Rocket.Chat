@@ -137,8 +137,8 @@ describe('[Smarti Connection]', () => {
 			});
 
 			it('Update access token in Rocket.Chat', function (done) {
-				console.log('authToken-o', authToken);
-				console.log('userId-o', userId);
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
 				rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Auth_Token')
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
@@ -149,9 +149,74 @@ describe('[Smarti Connection]', () => {
 					.end(done);
 			});
 
+			it('Rocket.Chat Settings: enable Knowledgebase', function (done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_Enabled')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: true
+					})
+					.expect(200)
+					.end(done);
+			});
+
+			it('Rocket.Chat Settings: activate Smarti', function (done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_Source')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: '0'
+					})
+					.expect(200)
+					.end(done);
+			});
+
+			it('Rocket.Chat Settings: set Smarti client', function (done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Domain')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: 'testclient'
+					})
+					.expect(200)
+					.end(done);
+			});
+
+			it('Rocket.Chat Settings: set Rocket.Chat Weebhook token', function (done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: 'key123'
+					})
+					.expect(200)
+					.end(done);
+			});
+
+			it('Rocket.Chat Settings: set Smarti base url', function (done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: 'http://localhost:8080/'
+					})
+					.expect(200)
+					.end(done);
+			});
+
 			it('Logout from Rocketchat api', function (done) {
-				console.log('authToken-o', authToken);
-				console.log('userId-o', userId);
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
 				rcrequest.get('/api/v1/logout')
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
