@@ -7,6 +7,11 @@ Meteor.methods({
 		check(rid, String);
 		check(msg, String);
 
+		check(agent, Match.Maybe({
+			agentId: String,
+			username: String
+		}));
+
 		const guest = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
 				name: 1,
