@@ -10,18 +10,19 @@
 						<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
 					{{/if}}
 					{{#if isMuted}}
-						<button class="rc-popout__controls--unmute"> {{> icon icon="mute-solid" }} </button>
+						<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
 					{{else}}
-						<button class="rc-popout__controls--mute"> {{> icon icon="volume-solid" }} </button>
+						<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
 					{{/if}}
 				</div>
-				<button class="contextual-bar__minimize js-minimize">
-					{{> icon classes="rc-popout__minimize" icon="angle-down"}}
-				</button>
+				{{#unless isAudioOnly}}
+					<button class="contextual-bar__minimize js-minimize">
+						{{> icon classes="rc-popout__minimize" icon="angle-down"}}
+					</button>
+				{{/unless}}
 				<button class="contextual-bar__close js-close">
 					{{> icon classes="rc-popout__close" icon="plus"}}
 				</button>
-
 			</header>
 
 			<main class="rc-popout__content rc-popout--{{ state }} ">
@@ -35,9 +36,9 @@
 						<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
 					{{/if}}
 					{{#if isMuted}}
-						<button class="rc-popout__controls--unmute"> {{> icon icon="mute-solid" }} </button>
+						<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
 					{{else}}
-						<button class="rc-popout__controls--mute"> {{> icon icon="volume-solid" }} </button>
+						<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
 					{{/if}}
 				</div>
 			</main>

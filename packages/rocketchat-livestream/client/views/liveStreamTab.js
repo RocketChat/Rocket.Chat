@@ -58,6 +58,9 @@ Template.liveStreamTab.helpers({
 	},
 	isPopoutOpen() {
 		return Template.instance().popoutOpen.get();
+	},
+	isAudioOnly() {
+		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().isAudioOnly : false;
 	}
 });
 
@@ -70,17 +73,6 @@ Template.liveStreamTab.onCreated(function() {
 		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
 		this.streamingOptions.set(room.streamingOptions);
 	});
-});
-Template.liveStreamTab.onRendered(function() {
-	// console.log('rendered');
-	// if (popout.context == null && (!!this.streamingOptions.get().url && this.streamingOptions.get().url !== '')) {
-	// 	popout.open({
-	// 		content: 'liveStreamView',
-	// 		data: {
-	// 			'streamingSource': this.streamingOptions.get().url
-	// 		}
-	// 	});
-	// }
 });
 
 Template.liveStreamTab.onDestroyed(function() {
@@ -98,7 +90,10 @@ Template.liveStreamTab.events({
 	'click .js-save'(e, i) {
 		e.preventDefault();
 
-		const streamingOptions = parseUrl(i.find('[name=streaming-options]').value);
+		const streamingOptions = {
+			...parseUrl(i.find('[name=streaming-source]').value),
+			isAudioOnly: i.find('[name=streaming-audio-only]').checked
+		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
 			if (err) {
@@ -128,8 +123,9 @@ Template.liveStreamTab.events({
 			popout.open({
 				content: 'liveStreamView',
 				data: {
-					streamingSource: Template.instance().streamingOptions.get().url,
-					streamingOptions:  Template.instance().streamingOptions.get()
+					streamingSource: i.streamingOptions.get().url,
+					isAudioOnly: i.streamingOptions.get().isAudioOnly,
+					streamingOptions:  i.streamingOptions.get()
 				},
 				onCloseCallback: () => i.popoutOpen.set(false)
 			});
@@ -143,9 +139,9 @@ Template.liveStreamTab.events({
 		popout.open({
 			content: 'liveStreamView',
 			data: {
-				streamingSource: Template.instance().streamingOptions.get().url,
-				streamingOptions:  Template.instance().streamingOptions.get()
-
+				streamingSource: i.streamingOptions.get().url,
+				isAudioOnly: i.streamingOptions.get().isAudioOnly,
+				streamingOptions:  i.streamingOptions.get()
 			},
 			onCloseCallback: () => i.popoutOpen.set(false)
 		});
@@ -158,18 +154,3 @@ RocketChat.callbacks.add('roomExit', function() {
 		popout.close();
 	}
 }, RocketChat.callbacks.priority.HIGH, 'close-docked-popout');
-
-RocketChat.callbacks.add('enter-room', function() {
-	// console.log('enter-room');
-	// const room = RocketChat.models.Rooms.findOne(Session.get('openedRoom'), { fields: { streamingOptions : 1 } });
-	// if (popout.docked && (room.streamingOptions && room.streamingOptions.url !== popout.config.data.streamingSource)) {
-	// 	if (document.querySelector('.flex-tab-bar .tab-button.active') && document.querySelector('.flex-tab-bar .tab-button.active').title === 'Livestream') {
-	// 		popout.open({
-	// 			content: 'liveStreamView',
-	// 			data: {
-	// 				'streamingSource': room.streamingOptions.url
-	// 			}
-	// 		});
-	// 	}
-	// }
-}, RocketChat.callbacks.priority.HIGH, 'reopen-popout');
