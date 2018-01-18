@@ -869,8 +869,8 @@ describe('[Administration]', () => {
 					admin.accountsHideAvatarsFalse.isVisible().should.be.true;
 				});
 				it('the hide avatars field value should be false', () => {
-					admin.accountsHideAvatarsTrue.isSelected().should.equal.false;
-					admin.accountsHideAvatarsFalse.isSelected().should.equal.true;
+					admin.accountsHideAvatarsTrue.isSelected().should.be.false;
+					admin.accountsHideAvatarsFalse.isSelected().should.be.true;
 				});
 
 				it('it should show the sidebar channel list mode field', () => {

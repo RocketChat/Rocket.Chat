@@ -31,7 +31,7 @@
 // version.  Developers can easily experiment with different versioning and
 // updating models by forking this package.
 
-var Future = Npm.require("fibers/future");
+import Future from "fibers/future";
 
 Autoupdate = {};
 
