@@ -307,10 +307,6 @@
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);
 
-		& .badge {
-			margin: 0 0 0 3px;
-		}
-
 		&__user-status {
 			left: 4px;
 		}
