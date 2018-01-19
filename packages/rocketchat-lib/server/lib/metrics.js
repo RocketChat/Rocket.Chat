@@ -1,4 +1,4 @@
-const client = require('prom-client');
+import client from 'prom-client';
 
 RocketChat.promclient = client;
 

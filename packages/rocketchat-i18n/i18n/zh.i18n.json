@@ -97,7 +97,7 @@
   "Accounts_OAuth_Twitter_id": "Twitter ID",
   "Accounts_OAuth_Twitter_secret": "Twitter Secret",
   "Accounts_OAuth_Wordpress": "WordPress 账户登录",
-  "Accounts_OAuth_Wordpress_callback_url": "Wordpress 回调地址",
+  "Accounts_OAuth_Wordpress_callback_url": "WordPress 回调地址",
   "Accounts_OAuth_Wordpress_id": "WordPress ID",
   "Accounts_OAuth_Wordpress_secret": "WordPress Secret",
   "Accounts_PasswordReset": "重置密码",

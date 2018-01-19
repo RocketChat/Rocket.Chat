@@ -49,7 +49,8 @@ Template.roomList.helpers({
 				query.tokens = { $exists: false };
 			}
 
-			if (user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread') {
+			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
+
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
@@ -97,9 +98,8 @@ Template.roomList.helpers({
 		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 
-	showCounter() {
-		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.messageCounterSidebar;
+	showRoomCounter() {
+		return RocketChat.getUserPreference(Meteor.user(), 'roomCounterSidebar');
 	}
 });
 
