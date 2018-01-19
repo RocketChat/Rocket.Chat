@@ -31,6 +31,10 @@
 			margin-right: 10px;
 			margin-bottom: 10px;
 
+			&.disabled {
+				opacity: 0.4;
+			}
+
 			cursor: pointer;
 
 			& .avatar {

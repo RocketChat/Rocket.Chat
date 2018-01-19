@@ -13,10 +13,13 @@ Package.onUse(function(api) {
 	]);
 
 	api.use('rocketchat:logger', 'server');
-	api.addFiles('server.js', 'server');
-	api.addFiles('main.js', ['client', 'server']);
-});
 
-Npm.depends({
-	'tar-stream': '1.5.2'
+	// Importer information to both server and client
+	api.addFiles('info.js');
+
+	// Server files
+	api.addFiles(['server/importer.js', 'server/adder.js'], 'server');
+
+	// Client files
+	api.addFiles('client/adder.js', 'client');
 });
