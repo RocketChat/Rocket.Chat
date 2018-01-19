@@ -4,7 +4,8 @@ export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser"
 
 cd packages/rocketchat-livechat/.app
-meteor npm install --production
+# could remove `npm_config_package-lock` when upgrade to npm 5.6 https://github.com/npm/npm/issues/17858#issuecomment-350736221
+env npm_config_package-lock=false meteor npm install --production
 meteor build --headless --directory $BUILD_DIR
 
 rm -rf $LIVECHAT_DIR
