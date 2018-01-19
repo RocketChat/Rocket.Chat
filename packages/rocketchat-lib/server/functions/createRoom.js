@@ -3,7 +3,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
-	name = s.trim(name).toLowerCase();
+	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
 
