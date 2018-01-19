@@ -1,7 +1,7 @@
 class GoogleVision {
 	constructor() {
-		this.storage = Npm.require('@google-cloud/storage');
-		this.vision = Npm.require('@google-cloud/vision');
+		this.storage = require('@google-cloud/storage');
+		this.vision = require('@google-cloud/vision');
 		this.storageClient = {};
 		this.visionClient = {};
 		this.enabled = RocketChat.settings.get('GoogleVision_Enable');

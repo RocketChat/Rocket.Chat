@@ -36,6 +36,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_AllowRealNameChange', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		'public': true
@@ -163,6 +167,245 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'code',
 			'public': true,
 			i18nLabel: 'Custom_Fields'
+		});
+	});
+
+	this.section('Accounts_Default_User_Preferences', function() {
+		this.add('Accounts_Default_User_Preferences_enableAutoAway', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Enable_Auto_Away'
+		});
+		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300000, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Idle_Time_Limit'
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationDuration', 0, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Notification_Duration'
+		});
+		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'All_messages'
+				},
+				{
+					key: 'mentions',
+					i18nLabel: 'Mentions'
+				},
+				{
+					key: 'nothing',
+					i18nLabel: 'Nothing'
+				}
+			],
+			public: true
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'All_messages'
+				},
+				{
+					key: 'mentions',
+					i18nLabel: 'Mentions'
+				},
+				{
+					key: 'nothing',
+					i18nLabel: 'Nothing'
+				}
+			],
+			'public': true
+		});
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key : 'all',
+					i18nLabel : 'All_messages'
+				},
+				{
+					key : 'mentions',
+					i18nLabel : 'Mentions'
+				},
+				{
+					key : 'nothing',
+					i18nLabel : 'Nothing'
+				}
+			],
+			'public': true
+		});
+		this.add('Accounts_Default_User_Preferences_unreadAlert', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Unread_Tray_Icon_Alert'
+		});
+		this.add('Accounts_Default_User_Preferences_useEmojis', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Use_Emojis'
+		});
+		this.add('Accounts_Default_User_Preferences_convertAsciiEmoji', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Convert_Ascii_Emojis'
+		});
+		this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Auto_Load_Images'
+		});
+		this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Save_Mobile_Bandwidth'
+		});
+		this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Collapse_Embedded_Media_By_Default'
+		});
+		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_usernames'
+		});
+		this.add('Accounts_Default_User_Preferences_hideRoles', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_roles'
+		});
+		this.add('Accounts_Default_User_Preferences_hideFlexTab', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_flextab'
+		});
+		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_Avatars'
+		});
+		this.add('Accounts_Default_User_Preferences_roomsListExhibitionMode', 'category', {
+			type: 'select',
+			values: [
+				{
+					key: 'unread',
+					i18nLabel: 'Unread_Rooms_Mode'
+				},
+				{
+					key: 'activity',
+					i18nLabel: 'Sort_by_activity'
+				},
+				{
+					key: 'category',
+					i18nLabel: 'Split_by_categories'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Sidebar_list_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_mergeChannels', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'UI_Merge_Channels_Groups'
+		});
+		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
+			type: 'select',
+			values: [
+				{
+					key: 'normal',
+					i18nLabel: 'Enter_Normal'
+				},
+				{
+					key: 'alternative',
+					i18nLabel: 'Enter_Alternative'
+				},
+				{
+					key: 'desktop',
+					i18nLabel: 'Only_On_Desktop'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Enter_Behaviour'
+		});
+		this.add('Accounts_Default_User_Preferences_viewMode', 0, {
+			type: 'select',
+			values: [
+				{
+					key: 0,
+					i18nLabel: 'Normal'
+				},
+				{
+					key: 1,
+					i18nLabel: 'Cozy'
+				},
+				{
+					key: 2,
+					i18nLabel: 'Compact'
+				}
+			],
+			'public': true,
+			i18nLabel: 'View_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
+			type: 'select',
+			values: [
+				{
+					key: 'disabled',
+					i18nLabel: 'Email_Notification_Mode_Disabled'
+				},
+				{
+					key: 'all',
+					i18nLabel: 'Email_Notification_Mode_All'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Email_Notification_Mode'
+		});
+		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Show_room_counter_on_sidebar'
+		});
+		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
+			type: 'select',
+			values: [
+				{
+					key: 'none',
+					i18nLabel: 'None'
+				},
+				{
+					key: 'door',
+					i18nLabel: 'Default'
+				}
+			],
+			'public': true,
+			i18nLabel: 'New_Room_Notification'
+		});
+		this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
+			type: 'select',
+			values: [
+				{
+					key: 'none',
+					i18nLabel: 'None'
+				},
+				{
+					key: 'chime',
+					i18nLabel: 'Default'
+				}
+			],
+			'public': true,
+			i18nLabel: 'New_Message_Notification'
+		});
+		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Notifications_Sound_Volume'
 		});
 	});
 
@@ -444,67 +687,16 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Notifications', function() {
-		this.add('Desktop_Notifications_Duration', 0, {
-			type: 'int',
-			'public': true,
-			i18nDescription: 'Desktop_Notification_Durations_Description'
-		});
-
-		this.add('Audio_Notifications_Value', 'chime', {
-			type: 'string',
-			'public': true,
-			i18nDescription: 'Audio_Notification_Value_Description'
-		});
-
-		this.add('Audio_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
-		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
-		this.add('Mobile_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
 		this.add('Notifications_Max_Room_Members', 100, {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description'
+		});
+
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -1275,7 +1467,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		return this.add('Layout_Sidenav_Footer', '<img src="assets/logo" />', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
 			type: 'code',
 			code: 'text/html',
 			'public': true,
