@@ -29,7 +29,7 @@ RocketChat.API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('rooms.addKeyToChain', { authRequired: true }, {
+RocketChat.API.v1.addRoute('e2e.addKeyToChain', { authRequired: true }, {
 	post() {
 		const RSAPubKey = this.bodyParams.RSAPubKey;
 		const RSAEPrivKey = this.bodyParams.RSAEPrivKey;
@@ -42,7 +42,7 @@ RocketChat.API.v1.addRoute('rooms.addKeyToChain', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('rooms.emptyKeychain', { authRequired: true }, {
+RocketChat.API.v1.addRoute('e2e.emptyKeychain', { authRequired: true }, {
 	post() {
 		Meteor.runAsUser(this.userId, () => {
 			RocketChat.API.v1.success(Meteor.call('emptyKeychain'));
@@ -52,7 +52,7 @@ RocketChat.API.v1.addRoute('rooms.emptyKeychain', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('rooms.updateGroupE2EKey', { authRequired: true }, {
+RocketChat.API.v1.addRoute('e2e.updateGroupE2EKey', { authRequired: true }, {
 	post() {
 		const uid = this.bodyParams.uid;
 		const rid = this.bodyParams.rid;
