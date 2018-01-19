@@ -2,7 +2,7 @@ RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
 
 	RocketChat.models.Messages.removeByUserId(userId); // Remove user messages
-	RocketChat.models.Subscriptions.findByUserId(userId).forEach((subscription) => {
+	RocketChat.models.Subscriptions.db.findByUserId(userId).forEach((subscription) => {
 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
 			if (room.t !== 'c' && room.usernames.length === 1) {

@@ -16,11 +16,6 @@ Package.registerBuildPlugin({
 	}
 });
 
-Npm.depends({
-	'ua-parser-js': '0.7.10',
-	'uglify-js': '2.7.5'
-});
-
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
