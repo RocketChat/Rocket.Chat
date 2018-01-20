@@ -1,5 +1,9 @@
 .flex-tab {
 	& .push-notifications {
+		& .input.checkbox.toggle {
+			width: 40px;
+		}
+
 		& ul {
 			& li {
 				margin-bottom: 20px;
