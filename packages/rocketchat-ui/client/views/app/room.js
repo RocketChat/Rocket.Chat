@@ -588,7 +588,11 @@ Template.room.events({
 	'click .message-actions__menu'(e, i) {
 		mountPopover(e, i, this);
 	},
-
+	'click .time a'(e) {
+		e.preventDefault();
+		const repliedMessageId = this._arguments[1].attachments[0].message_link.split('?msg=')[1];
+		FlowRouter.go(FlowRouter.current().context.pathname, null, {msg: repliedMessageId, hash: Random.id()});
+	},
 	'click .mention-link'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
@@ -700,6 +704,15 @@ Template.room.events({
 			removeClass.forEach(message => $(`.messages-box #${ message }`).removeClass('selected'));
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
+	},
+	'click .announcement'(e) {
+		modal.open({
+			title: t('Announcement'),
+			text: $(e.target).attr('aria-label'),
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close')
+		});
 	}
 });
 

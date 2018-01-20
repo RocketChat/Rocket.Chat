@@ -10,10 +10,6 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	clipboard: '1.7.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'accounts-base',
@@ -120,6 +116,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
 	api.addFiles('client/components/icon.html', 'client');
+	api.addFiles('client/components/icon.js', 'client');
 
 	api.addFiles('client/components/popupList.html', 'client');
 	api.addFiles('client/components/popupList.js', 'client');

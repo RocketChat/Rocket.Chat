@@ -1,6 +1,6 @@
 <template name="popover">
 	<div class="rc-popover rc-popover--{{popoverClass}}" data-popover="popover" style="display:block;">
-		<div class="rc-popover__content">
+		<div class="rc-popover__content {{#if isSafariIos}}rc-popover__content--safariIos{{/if}}">
 			{{#each column in columns}}
 				<div class="rc-popover__column">
 					{{#each group in column.groups}}
