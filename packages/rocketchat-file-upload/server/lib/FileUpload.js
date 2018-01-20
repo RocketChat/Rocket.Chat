@@ -4,6 +4,9 @@ import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
+import { Cookies } from 'meteor/ostrio:cookies';
+
+const cookie = new Cookies();
 
 Object.assign(FileUpload, {
 	handlers: {},
@@ -28,7 +31,16 @@ Object.assign(FileUpload, {
 				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
 			// transformWrite: FileUpload.uploadsTransformWrite
-			onValidate: FileUpload.uploadsOnValidate
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			}
 		};
 	},
 
@@ -154,6 +166,25 @@ Object.assign(FileUpload, {
 		}
 		RocketChat.models.Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
+	},
+
+	requestCanAccessFiles({ headers = {}, query = {} }) {
+		if (!RocketChat.settings.get('FileUpload_ProtectFiles')) {
+			return true;
+		}
+
+		let { rc_uid, rc_token } = query;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+			return false;
+		}
+
+		return true;
 	},
 
 	addExtensionTo(file) {

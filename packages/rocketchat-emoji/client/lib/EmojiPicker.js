@@ -56,7 +56,7 @@ RocketChat.EmojiPicker = {
 	setPosition() {
 		const sourcePos = $(this.source).offset();
 		const left = sourcePos.left;
-		const top = (sourcePos.top - this.height - 5);
+		const top = sourcePos.top - this.height - 60;
 		const cssProperties = {
 			top,
 			left
@@ -70,7 +70,7 @@ RocketChat.EmojiPicker = {
 			cssProperties.left = 0;
 		} else {
 			const windowSize = $(window).width();
-			const pickerWidth = $('.emoji-picker').width();
+			const pickerWidth = $('.emoji-picker').outerWidth();
 
 			if (left + pickerWidth > windowSize) {
 				cssProperties.left = left - pickerWidth;
