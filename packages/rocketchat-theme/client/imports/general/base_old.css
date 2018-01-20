@@ -5096,17 +5096,16 @@ body:not(.is-cordova) {
 
 .rc-old .colorpicker-swatch {
 	position: absolute;
-	top: 1px;
-	left: 1px;
+	top: 2px;
+	left: 2px;
 
 	display: block;
 	overflow: hidden;
 
-	width: 33px;
-	height: 33px;
+	width: 41px;
+	height: 41px;
 
-	border-width: 0 1px 0 0;
-	border-radius: 5px 0 0 5px;
+	border-radius: 2px;
 }
 
 .rc-old .inline-video {
