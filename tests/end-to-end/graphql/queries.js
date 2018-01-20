@@ -262,7 +262,7 @@ describe('GraphQL Tests', function() {
 
 /*
 subscription chatMessageAdded {
-  chatMessageAdded(channelId: "Y2EH9PaCy8cw2Ppvm") {
+  chatMessageAdded(channelId: "GENERAL") {
     id,
     channel {
       name

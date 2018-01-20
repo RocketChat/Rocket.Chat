@@ -23,7 +23,7 @@ graphQLServer.use('/api/graphql', (req, res, next) => {
 	if (RocketChat.settings.get('Graphql_Enabled')) {
 		next();
 	} else {
-		res.send(400, 'Graphql is not enabled in this server');
+		res.status(400).send('Graphql is not enabled in this server');
 	}
 });
 
@@ -53,24 +53,24 @@ graphQLServer.use(
 );
 
 const startSubscriptionServer = () => {
-	SubscriptionServer.create({
-		schema: executableSchema,
-		execute,
-		subscribe,
-		onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
-	},
-	{
-		port: subscriptionPort,
-		host: process.env.BIND_IP || '0.0.0.0'
-	});
+	if (RocketChat.settings.get('Graphql_Enabled')) {
+		SubscriptionServer.create({
+			schema: executableSchema,
+			execute,
+			subscribe,
+			onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
+		},
+		{
+			port: subscriptionPort,
+			host: process.env.BIND_IP || '0.0.0.0'
+		});
 
-	console.log('GraphQL Subscription server runs on port:', subscriptionPort);
+		console.log('GraphQL Subscription server runs on port:', subscriptionPort);
+	}
 };
 
 WebApp.onListening(() => {
-	if (RocketChat.settings.get('Graphql_Enabled')) {
-		startSubscriptionServer();
-	}
+	startSubscriptionServer();
 });
 
 // this binds the specified paths to the Express server running Apollo + GraphiQL
