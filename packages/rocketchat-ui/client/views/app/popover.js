@@ -183,8 +183,9 @@ Template.popover.events({
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;
+		const action = e.currentTarget.dataset.id;
 
-		if (e.currentTarget.dataset.id === 'hide') {
+		if (action === 'hide') {
 			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
 			modal.open({
@@ -214,7 +215,7 @@ Template.popover.events({
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'leave') {
+		if (action === 'leave') {
 			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Leave_Room_Warning'; break;
@@ -258,12 +259,30 @@ Template.popover.events({
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'read') {
+		if (action === 'read') {
 			Meteor.call('readMessages', rid);
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'favorite') {
+		if (action === 'unread') {
+			Meteor.call('unreadMessages', null, rid, function(error) {
+				if (error) {
+					return handleError(error);
+				}
+
+				const subscription = ChatSubscription.findOne({rid});
+				if (subscription == null) {
+					return;
+				}
+				RoomManager.close(subscription.t + subscription.name);
+
+				FlowRouter.go('home');
+			});
+
+			return false;
+		}
+
+		if (action === 'favorite') {
 			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
 				popover.close();
 				if (err) {
@@ -274,4 +293,8 @@ Template.popover.events({
 			return false;
 		}
 	}
+});
+
+Template.popover.helpers({
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
 });

@@ -75,12 +75,8 @@ Meteor.startup(function() {
 					initials = username;
 				} else {
 					color = RocketChat.getAvatarColor(username);
-					username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '');
 
-					const usernameParts = username.split('.');
-
-					initials = usernameParts.length > 1 ? _.first(usernameParts)[0] + _.last(usernameParts)[0] : username.replace(/[^A-Za-z0-9]/g, '').substr(0, 2);
-					initials = initials.toUpperCase();
+					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
 
 				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\">\n<rect height="50" width="50" fill=\"${ color }\"/>\n<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight="400" font-size="28">\n${ initials }\n</text>\n</svg>`;
