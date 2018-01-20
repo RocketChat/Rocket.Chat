@@ -1,5 +1,5 @@
 import toastr from 'toastr';
-/* globals ChatSubscription popover */
+/* globals ChatSubscription */
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -19,7 +19,7 @@ Template.pushNotificationsFlexTab.helpers({
 				disableNotifications: 1
 			}
 		});
-		return sub && sub.disableNotifications;
+		return sub ? sub.disableNotifications || false : false;
 	},
 	hideUnreadStatus() {
 		const sub = ChatSubscription.findOne({
@@ -210,13 +210,13 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		}
 	};
 
-	this.saveSetting = (field) => {
-		field = field || this.editing.get();
+	this.saveSetting = () => {
+		const field = this.editing.get();
 		let value;
 		switch (field) {
 			case 'hideUnreadStatus':
 			case 'disableNotifications':
-				value = this.$(`input[name=${ field }]`)[0].checked ? '1' : '0';
+				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
 				break;
 			default:
 				value = this.$(`input[name=${ field }]:checked`).val();
@@ -315,72 +315,6 @@ Template.pushNotificationsFlexTab.events({
 	'change input[type=checkbox]'(e, instance) {
 		e.preventDefault();
 		instance.editing.set($(e.currentTarget).attr('name'));
-		instance.saveSetting($(e.currentTarget).attr('name'));
-	},
-
-	'click .rc-user-info__config-value'(e) {
-		const config = {
-			popoverClass: 'notifications-preferences',
-			template: 'pushNotificationsPopover',
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().left,
-				y: e.currentTarget.getBoundingClientRect().bottom + 50
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-			}),
-			data: {
-				value: 'default',
-				options : [{
-					id: 'desktopNotificationsDefault',
-					name: 'desktopNotifications',
-					label: 'Default',
-					value: 'default'
-				},
-				{
-					id: 'desktopNotificationsAll_messages',
-					name: 'desktopNotifications',
-					label: 'All_messages',
-					value: 'all'
-				},
-				{
-					id: 'desktopNotificationsMentions',
-					name: 'desktopNotifications',
-					label: 'Mentions',
-					value: 'mentions'
-				},
-				{
-					id: 'desktopNotificationsNothing',
-					name: 'desktopNotifications',
-					label: 'Nothing',
-					value: 'nothing'
-				}]
-			}
-		};
-		popover.open(config);
-	}
-});
-
-
-Template.pushNotificationsPopover.onRendered(function() {
-	this.find(`[value=${ this.data.value }]`).checked = true;
-});
-
-Template.pushNotificationsPopover.helpers({
-	options() {
-		return Template.instance().data.options;
-	},
-	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
-		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
-		}
-		return notificationLabels[preference];
-	}
-});
-Template.pushNotificationsPopover.events({
-	'change input'(e, instance) {
-		instance.change && instance.change(e.target.value);
+		instance.saveSetting();
 	}
 });
