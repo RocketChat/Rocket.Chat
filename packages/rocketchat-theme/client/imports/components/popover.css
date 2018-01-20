@@ -15,7 +15,7 @@
 		transform: rotate(45deg);
 
 		&:hover {
-			color: var(--color-link-active);
+			color: var(--rc-color-link-active);
 		}
 	}
 
