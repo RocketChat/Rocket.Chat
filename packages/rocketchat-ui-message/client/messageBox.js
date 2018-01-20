@@ -266,6 +266,9 @@ Template.messageBox.helpers({
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
+	},
+	isEmojiEnable() {
+		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
 	}
 });
 

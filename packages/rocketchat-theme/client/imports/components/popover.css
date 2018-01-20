@@ -61,6 +61,8 @@
 
 		cursor: pointer;
 
+		user-select: none;
+
 		color: var(--popover-item-color);
 
 		font-size: var(--popover-item-text-size);
@@ -128,6 +130,10 @@
 			margin: 8px !important;
 
 			animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+			&--safariIos {
+				bottom: initial;
+			}
 		}
 	}
 }

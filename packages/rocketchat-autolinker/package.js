@@ -5,10 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	autolinker: '1.4.0'
-});
-
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('rocketchat:lib');
