@@ -13,8 +13,6 @@
 		right: 0;
 		left: 0;
 
-		padding: 0 1.5rem;
-
 		display: flex;
 		flex-direction: column;
 
@@ -88,8 +86,6 @@
 	&__scroll {
 		overflow-x: hidden;
 		overflow-y: auto;
-		margin: 0 -1.5rem;
-    padding: 0 1.5rem;
 
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
@@ -278,6 +274,8 @@
 	display: flex;
 
 	width: 100%;
+
+	word-break: break-all;
 
 	&__description {
 		margin: 5px 2px;
