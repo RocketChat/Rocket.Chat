@@ -1,6 +1,7 @@
 export class RocketChatTabBar {
 	constructor() {
 		this.template = new ReactiveVar();
+		this.id = new ReactiveVar();
 		this.group = new ReactiveVar();
 		this.state = new ReactiveVar();
 		this.data = new ReactiveVar();
@@ -8,6 +9,10 @@ export class RocketChatTabBar {
 
 	getTemplate() {
 		return this.template.get();
+	}
+
+	getId() {
+		return this.id.get();
 	}
 
 	setTemplate(template) {
@@ -37,6 +42,7 @@ export class RocketChatTabBar {
 	getState() {
 		return this.state.get();
 	}
+
 	open(button) {
 		this.state.set('opened');
 		Tracker.afterFlush(() => {
@@ -51,6 +57,7 @@ export class RocketChatTabBar {
 		}
 		$('.flex-tab, .contextual-bar').css('width', button.width ? `${ button.width }px` : '');
 		this.template.set(button.template);
+		this.id.set(button.id);
 	}
 
 	close() {
@@ -59,5 +66,6 @@ export class RocketChatTabBar {
 		$('.flex-tab, .contextual-bar').css('width', '');
 
 		this.template.set();
+		this.id.set();
 	}
 }
