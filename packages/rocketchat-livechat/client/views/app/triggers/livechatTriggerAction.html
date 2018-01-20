@@ -1,19 +1,19 @@
 <template name="livechatTriggerAction">
 	<div class="input-line each-action">
 		<div class="trigger-option">
-			<select name="action" class="trigger-action">
+			<select name="action" class="trigger-action rc-input__element">
 				<option value="send-message">{{_ "Send_a_message"}}</option>
 			</select>
 		</div>
 		<div class="trigger-value">
 			<div class="send-message {{hiddenValue 'send-message'}}">
-				<select name="send-message-sender">
+				<select name="send-message-sender" class="rc-input__element">
 					<option value="">{{_ "Select_an_option"}}</option>
 					<option value="queue" selected="{{senderSelected 'queue'}}" disabled="{{disableIfGuestPool}}">{{_ "Impersonate_next_agent_from_queue"}}</option>
 					<option value="custom" selected="{{senderSelected 'custom'}}">{{_ "Custom_agent"}}</option>
 				</select>
-				<input type="text" name="send-message-name" placeholder="{{_ "Name_of_agent"}}" value="{{params.name}}" class="{{showCustomName}}">
-				<textarea name="send-message-msg" placeholder="{{_ "Message"}}" rows="3">{{params.msg}}</textarea>
+				<input type="text" name="send-message-name" placeholder="{{_ "Name_of_agent"}}" value="{{params.name}}" class="{{showCustomName}} rc-input__element">
+				<textarea name="send-message-msg" placeholder="{{_ "Message"}}" rows="3" class="rc-input__element">{{params.msg}}</textarea>
 			</div>
 		</div>
 	</div>
