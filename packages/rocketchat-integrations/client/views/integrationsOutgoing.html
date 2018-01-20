@@ -25,7 +25,7 @@
 							<div class="input-line double-col">
 								<label>{{_ "Event_Trigger"}}</label>
 								<div>
-									<select name="event" class="required">
+									<select name="event" class="required rc-input__element">
 										<option value=""></option>
 										{{#each eventTypes}}
 											<option value="{{value}}" selected="{{$eq data.event value}}" dir="auto">{{_ label}}</option>
@@ -45,7 +45,7 @@
 								<div class="input-line double-col">
 									<label>{{_ "Name"}} ({{_ "optional"}})</label>
 									<div>
-										<input type="text" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
+										<input type="text" class="rc-input__element" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
 										<div class="settings-description">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
 									</div>
 								</div>
@@ -53,7 +53,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "Channel"}}</label>
 										<div>
-											<input type="text" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
+											<input type="text" class="rc-input__element" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
 											<div class="settings-description">{{_ "Channel_to_listen_on"}}</div>
 											<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
 											<div class="settings-description">{{{_ "Integrations_for_all_channels"}}}</div>
@@ -64,7 +64,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "Trigger_Words"}} ({{_ "optional"}})</label>
 										<div>
-											<input type="text" name="triggerWords" value="{{join data.triggerWords ','}}" />
+											<input type="text" class="rc-input__element" name="triggerWords" value="{{join data.triggerWords ','}}" />
 											<div class="settings-description">{{_ "When a line starts with one of these words, post to the URL(s) below"}}</div>
 											<div class="settings-description">{{_ "Separate multiple words with commas"}}</div>
 										</div>
@@ -74,7 +74,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "TargetRoom"}}</label>
 										<div>
-											<input type="text" name="targetRoom" value="{{data.targetRoom}}" placeholder="{{_ 'User_or_channel_name'}}" />
+											<input type="text" class="rc-input__element" name="targetRoom" value="{{data.targetRoom}}" placeholder="{{_ 'User_or_channel_name'}}" />
 											<div class="settings-description">{{_ "TargetRoom_Description"}}</div>
 											<div class="settings-description">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
 										</div>
@@ -83,7 +83,7 @@
 								<div class="input-line double-col">
 									<label>{{_ "URLs"}}</label>
 									<div>
-										<textarea name="urls" style="height: 100px;">{{join data.urls "\n"}}</textarea>
+										<textarea name="urls" class="rc-input__element" style="height: 100px;">{{join data.urls "\n"}}</textarea>
 										<div class="settings-description">{{_ "Enter as many URLs as you like, one per line, please"}}</div>
 									</div>
 								</div>
@@ -98,7 +98,7 @@
 								<div class="input-line double-col">
 									<label>{{_ "Post_as"}}</label>
 									<div>
-										<input type="text" name="username" value="{{data.username}}" />
+										<input type="text" class="rc-input__element" name="username" value="{{data.username}}" />
 										<div class="settings-description">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
 										<div class="settings-description">{{_ "Should_exists_a_user_with_this_username"}}</div>
 									</div>
@@ -106,14 +106,14 @@
 								<div class="input-line double-col">
 									<label>{{_ "Alias"}} ({{_ "optional"}})</label>
 									<div>
-										<input type="text" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
+										<input type="text" class="rc-input__element" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
 										<div class="settings-description">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
 									</div>
 								</div>
 								<div class="input-line double-col">
 									<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
 									<div>
-										<input type="url" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
+										<input type="url" class="rc-input__element" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
 										<div class="settings-description">{{_ "You_can_change_a_different_avatar_too"}}</div>
 										<div class="settings-description">{{_ "Should_be_a_URL_of_an_image"}}</div>
 									</div>
@@ -121,7 +121,7 @@
 								<div class="input-line double-col">
 									<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
 									<div>
-										<input type="text" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
+										<input type="text" class="rc-input__element" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
 										<div class="settings-description">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
 										<div class="settings-description">{{{_ "Example_s" ":ghost:"}}}</div>
 									</div>
@@ -129,7 +129,7 @@
 								<div class="input-line double-col">
 									<label>Token ({{_ "optional"}})</label>
 									<div>
-										<input type="text" name="token" value="{{data.token}}" />
+										<input type="text" class="rc-input__element" name="token" value="{{data.token}}" />
 									</div>
 								</div>
 								<div class="input-line double-col">
@@ -197,7 +197,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "Integration_Retry_Count"}}</label>
 										<div>
-											<input type="number" name="retryCount" value="{{data.retryCount}}" />
+											<input type="number" class="rc-input__element" name="retryCount" value="{{data.retryCount}}" />
 											<div class="settings-description">{{_ "Integration_Retry_Count_Description"}}</div>
 										</div>
 									</div>
