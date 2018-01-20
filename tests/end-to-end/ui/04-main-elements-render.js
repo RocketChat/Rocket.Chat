@@ -213,8 +213,8 @@ describe('[Main Elements Render]', function() {
 				});
 
 				it('it should show the room name', ()=> {
-					flexTab.firstSetting.waitForVisible();
-					flexTab.firstSetting.getText().should.equal('general');
+					flexTab.channelSettingName.waitForVisible();
+					flexTab.channelSettingName.getAttribute('title').should.equal('general');
 				});
 
 			});
@@ -263,15 +263,17 @@ describe('[Main Elements Render]', function() {
 
 			describe('Notifications Tab:', () => {
 				before(()=> {
+					flexTab.moreActions.click();
 					flexTab.operateFlexTab('notifications', true);
 				});
 
 				after(()=> {
+					flexTab.moreActions.click();
 					flexTab.operateFlexTab('notifications', false);
 				});
 
-				it('it should show the notifications button', () => {
-					flexTab.notificationsTab.isVisible().should.be.true;
+				it('it should not show the notifications button', () => {
+					flexTab.notificationsTab.isVisible().should.be.false;
 				});
 
 				it('it should show the notifications Tab content', () => {

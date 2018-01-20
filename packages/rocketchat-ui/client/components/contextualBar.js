@@ -9,6 +9,9 @@ Template.contextualBar.onCreated(function() {
 });
 
 Template.contextualBar.helpers({
+	id() {
+		return Template.instance().tabBar.getId();
+	},
 	template() {
 		return Template.instance().tabBar.getTemplate();
 	},
