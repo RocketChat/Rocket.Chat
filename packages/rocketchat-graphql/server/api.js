@@ -19,7 +19,7 @@ if (RocketChat.settings.get('Graphql_CORS')) {
 	graphQLServer.use(cors());
 }
 
-graphQLServer.use(RocketChat.settings.get('Graphql_Endpoint'), (req, res, next) => {
+graphQLServer.use('/api/graphql', (req, res, next) => {
 	if (RocketChat.settings.get('Graphql_Enabled')) {
 		next();
 	} else {
@@ -28,7 +28,7 @@ graphQLServer.use(RocketChat.settings.get('Graphql_Endpoint'), (req, res, next) 
 });
 
 graphQLServer.use(
-	RocketChat.settings.get('Graphql_Endpoint'),
+	'/api/graphql',
 	bodyParser.json(),
 	graphqlExpress(request => {
 		return {
@@ -47,7 +47,7 @@ graphQLServer.use(
 graphQLServer.use(
 	'/graphiql',
 	graphiqlExpress({
-		endpointURL: RocketChat.settings.get('Graphql_Endpoint'),
+		endpointURL: '/api/graphql',
 		subscriptionsEndpoint: `ws://localhost:${ subscriptionPort }`
 	})
 );
