@@ -54,22 +54,22 @@
 											<div class="setting-field">
 												{{#if $eq type 'string'}}
 													{{#if multiline}}
-														<textarea class="input-monitor" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
+														<textarea class="input-monitor rc-input__element" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
 													{{else}}
-														<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+														<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 													{{/if}}
 												{{/if}}
 
 												{{#if $eq type 'relativeUrl'}}
-													<input class="input-monitor" type="text" name="{{_id}}" value="{{relativeUrl value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
+													<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{relativeUrl value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
 												{{/if}}
 
 												{{#if $eq type 'password'}}
-													<input class="input-monitor" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 												{{/if}}
 
 												{{#if $eq type 'int'}}
-													<input class="input-monitor" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
 												{{/if}}
 
 												{{#if $eq type 'boolean'}}
@@ -78,10 +78,7 @@
 												{{/if}}
 
 												{{#if $eq type 'select'}}
-													<div class="select-arrow">
-														<i class="icon-down-open secondary-font-color"></i>
-													</div>
-													<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}}>
 														{{#each values}}
 															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
 														{{/each}}
@@ -89,10 +86,7 @@
 												{{/if}}
 
 												{{#if $eq type 'language'}}
-													<div class="select-arrow">
-														<i class="icon-down-open secondary-font-color"></i>
-													</div>
-													<select class="input-monitor" name="{{_id}}" {{isDisabled}}>
+													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}}>
 														{{#each languages}}
 														<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
 														{{/each}}
@@ -103,19 +97,16 @@
 													<div class="horizontal">
 														{{#if $eq editor 'color'}}
 															<div class="flex-grow-1">
-																<input class="input-monitor colorpicker-input" type="text" name="{{_id}}" value="{{value}}" autocomplete="off" {{isDisabled}}/>
+																<input class="input-monitor rc-input__element colorpicker-input" type="text" name="{{_id}}" value="{{value}}" autocomplete="off" {{isDisabled}}/>
 																<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
 															</div>
 														{{/if}}
 														{{#if $eq editor 'expression'}}
 															<div class="flex-grow-1">
-																<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+																<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
 															</div>
 														{{/if}}
-														<div class="color-editor">
-															<div class="select-arrow">
-																<i class="icon-down-open secondary-font-color"></i>
-															</div>
+														<div class="color-editor ">
 															<select name="color-editor">
 																{{#each allowedTypes}}
 																	<option value="{{.}}" selected="{{$eq ../editor .}}">{{_ .}}</option>
@@ -127,7 +118,7 @@
 												{{/if}}
 
 												{{#if $eq type 'font'}}
-													<input class="input-monitor" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
 												{{/if}}
 
 												{{#if $eq type 'code'}}
@@ -178,7 +169,7 @@
 
 												{{#if $eq type 'roomPick'}}
 													<div>
-														{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
+														{{> inputAutocomplete settings=autocompleteRoom id=_id name=_id class="search autocomplete rc-input__element" autocomplete="off" disabled=isDisabled.disabled}}
 														<ul class="selected-rooms">
 															{{#each selectedRooms}}
 																<li class="remove-room" data-setting={{../_id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
