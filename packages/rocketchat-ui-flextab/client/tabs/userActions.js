@@ -447,6 +447,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				return {
 					group: 'admin',
 					icon : 'user',
+					id: 'deactivate',
 					name: t('Deactivate'),
 					modifier: 'alert',
 					action: prevent(getUser, ({_id}) => Meteor.call('setUserActiveStatus', _id, false, success(() => toastr.success(t('User_has_been_deactivated')))))
@@ -455,6 +456,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'admin',
 				icon: 'user',
+				id: 'activate',
 				name: t('Activate'),
 				action: prevent(getUser, ({_id}) => Meteor.call('setUserActiveStatus', _id, true, success(() => toastr.success(t('User_has_been_activated')))))
 			};

@@ -590,20 +590,20 @@ describe('[Administration]', () => {
 					admin.generalGoogleTagIdReset.click();
 				});
 
-				it('it should show bugsnag key field', () => {
+				it.skip('it should show bugsnag key field', () => {
 					admin.generalBugsnagKey.isVisible().should.be.true;
 				});
 
-				it('it should change bugsnag key id field', () => {
+				it.skip('it should change bugsnag key id field', () => {
 					admin.generalBugsnagKey.setValue('something');
 				});
 
-				it('it should show the reset button', () => {
+				it.skip('it should show the reset button', () => {
 					admin.generalBugsnagKeyReset.waitForVisible(5000);
 					admin.generalBugsnagKeyReset.isVisible().should.be.true;
 				});
 
-				it('it should click the reset button', () => {
+				it.skip('it should click the reset button', () => {
 					admin.generalBugsnagKeyReset.click();
 				});
 			});
