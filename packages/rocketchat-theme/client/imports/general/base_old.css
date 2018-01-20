@@ -1728,6 +1728,7 @@
 	height: 40px;
 	padding: 0 20px;
 
+	cursor: pointer;
 	text-align: center;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -1739,7 +1740,13 @@
 	line-height: 40px;
 
 	& ~ .container-bars {
-		top: 95px;
+		top: 45px;
+	}
+
+	a {
+		text-decoration: underline;
+
+		color: currentColor;
 	}
 }
 
@@ -2146,7 +2153,7 @@
 .rc-old .container-bars {
 	position: absolute;
 	z-index: 2;
-	top: 4px; /* --header-height */
+	top: 5px; /* --header-height */
 	right: 10px;
 	left: 10px;
 
@@ -4534,7 +4541,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .social-login {
+.rc-old .oauth-login {
 	margin-bottom: 16px;
 	margin-left: -4px;
 	flex-wrap: wrap;
@@ -5585,7 +5592,7 @@ body:not(.is-cordova) {
 		}
 	}
 
-	.rc-old .social-login {
+	.rc-old .oauth-login {
 		margin-bottom: 6px;
 	}
 

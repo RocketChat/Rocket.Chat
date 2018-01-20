@@ -3,7 +3,7 @@
 RocketChat.Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {
-	const Capnp = Npm.require('/node_modules/capnp.js');
+	const Capnp = require('/node_modules/capnp.js');
 	const Powerbox = Capnp.importSystem('sandstorm/powerbox.capnp');
 	const Grain = Capnp.importSystem('sandstorm/grain.capnp');
 

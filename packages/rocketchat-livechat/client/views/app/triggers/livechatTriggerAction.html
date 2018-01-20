@@ -7,8 +7,13 @@
 		</div>
 		<div class="trigger-value">
 			<div class="send-message {{hiddenValue 'send-message'}}">
-				<input type="text" name="send-message-name" placeholder="{{_ "Name_of_agent"}}" value="{{params.name}}" size="15">
-				<input type="text" name="send-message-msg" placeholder="{{_ "Message"}}" value="{{params.msg}}">
+				<select name="send-message-sender">
+					<option value="">{{_ "Select_an_option"}}</option>
+					<option value="queue" selected="{{senderSelected 'queue'}}" disabled="{{disableIfGuestPool}}">{{_ "Impersonate_next_agent_from_queue"}}</option>
+					<option value="custom" selected="{{senderSelected 'custom'}}">{{_ "Custom_agent"}}</option>
+				</select>
+				<input type="text" name="send-message-name" placeholder="{{_ "Name_of_agent"}}" value="{{params.name}}" class="{{showCustomName}}">
+				<textarea name="send-message-msg" placeholder="{{_ "Message"}}" rows="3">{{params.msg}}</textarea>
 			</div>
 		</div>
 	</div>

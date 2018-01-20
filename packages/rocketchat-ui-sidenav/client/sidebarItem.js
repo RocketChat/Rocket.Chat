@@ -17,6 +17,9 @@ Template.sidebarItem.helpers({
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
+	},
+	mySelf() {
+		return this.t === 'd' && this.name === Meteor.user().username;
 	}
 });
 
@@ -106,6 +109,13 @@ Template.sidebarItem.events({
 				name: t('Mark_as_read'),
 				type: 'sidebar-item',
 				id: 'read'
+			});
+		} else {
+			items.push({
+				icon: 'flag',
+				name: t('Mark_as_unread'),
+				type: 'sidebar-item',
+				id: 'unread'
 			});
 		}
 
