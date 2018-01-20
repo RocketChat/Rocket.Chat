@@ -16,6 +16,10 @@ Package.registerBuildPlugin({
 	}
 });
 
+Npm.depends({
+	'ua-parser-js': '0.7.17'
+});
+
 Package.onUse(function(api) {
 	api.use(['webapp', 'autoupdate'], 'server');
 	api.use('ecmascript');
