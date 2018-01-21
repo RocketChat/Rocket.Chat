@@ -1,13 +1,12 @@
 <template name="adminUserInfo">
-	<div class="content">
-		<div class="user-view">
-			{{#if _id}}
-				{{> userInfo .}}
-			{{else}}
-				<div class="edit-form">
-					<div>{{_ "Please_select_an_user"}}</div>
-				</div>
-			{{/if}}
-		</div>
-	</div>
+
+
+		{{#if _id}}
+			{{> userInfo .}}
+		{{else}}
+			<div class="edit-form">
+				<div>{{_ "Please_select_an_user"}}</div>
+			</div>
+		{{/if}}
+
 </template>
