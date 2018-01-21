@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('client/flexTabBar.html', 'client');
+	api.addFiles('client/tabs/inviteUsers.html', 'client');
 	api.addFiles('client/tabs/membersList.html', 'client');
 	api.addFiles('client/tabs/messageSearch.html', 'client');
 	api.addFiles('client/tabs/uploadedFilesList.html', 'client');
@@ -26,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/userInfo.html', 'client');
 
 	api.addFiles('client/flexTabBar.js', 'client');
+	api.addFiles('client/tabs/inviteUsers.js', 'client');
 	api.addFiles('client/tabs/membersList.js', 'client');
 	api.addFiles('client/tabs/messageSearch.js', 'client');
 	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
