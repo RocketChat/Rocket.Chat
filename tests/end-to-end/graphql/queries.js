@@ -3,15 +3,71 @@
 const supertest = require('supertest');
 const request = supertest('http://localhost:3000');
 
+import {adminUsername, adminPassword } from '../../data/user.js';
+
 const user = {username: 'rocketchat.internal.admin.test', password: 'rocketchat.internal.admin.test', name: 'RocketChat Internal Admin Test', email: 'rocketchat.internal.admin.test@rocket.chat', accessToken: null};
 const channel = {};
 const message = {content: 'Test Message GraphQL', modifiedContent: 'Test Message GraphQL Modified'};
 
 const { expect } = require('chai');
 
+const credentials = {
+	['X-Auth-Token']: undefined,
+	['X-User-Id']: undefined
+};
+
+const login = {
+	user: adminUsername,
+	password: adminPassword
+};
 
 describe('GraphQL Tests', function() {
 	this.retries(0);
+
+	before((done) => {
+		request.post('/api/v1/login')
+			.send(login)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				credentials['X-Auth-Token'] = res.body.data.authToken;
+				credentials['X-User-Id'] = res.body.data.userId;
+			})
+			.end(done);
+	});
+
+	it('should be disabled by default', (done) => {
+		const query = `
+	    mutation login{
+	      loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
+	        user {
+	          username,
+						email
+	        },
+	        tokens {
+	          accessToken
+	        }
+	      }
+	    }`;
+		request.post('/api/graphql')
+			.send({
+				query
+			})
+			.expect(400)
+			.end(done);
+	});
+
+	it('should enable GraphQL', (done) => {
+		request.post('/api/v1/settings/Graphql_Enabled')
+			.set(credentials)
+			.send({'value': true})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
 
 	it('Is able to login with username and password', (done) => {
 		const query = `
@@ -26,7 +82,7 @@ describe('GraphQL Tests', function() {
           }
         }
       }`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.send({
 				query
 			})
@@ -59,7 +115,7 @@ describe('GraphQL Tests', function() {
           }
         }
       }`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.send({
 				query
 			})
@@ -89,7 +145,7 @@ describe('GraphQL Tests', function() {
           }
         }
       }`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.send({
 				query
 			})
@@ -121,7 +177,7 @@ describe('GraphQL Tests', function() {
 					}
 				}
 			}`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
 				query
@@ -162,7 +218,7 @@ describe('GraphQL Tests', function() {
 					}
 				}
       }`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
 				query
@@ -199,7 +255,7 @@ describe('GraphQL Tests', function() {
 					}
 				}
 			}`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
 				query
@@ -236,7 +292,7 @@ describe('GraphQL Tests', function() {
 					}
 				}
 			}`;
-		request.post('/graphql')
+		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
 				query
