@@ -1,11 +1,6 @@
 <template name="integrationsNew">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{pageTitle}}</span>
-			</h2>
-		</header>
+		{{> header sectionName=pageTitle}}
 		<div class="content background-transparent-dark">
 			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
 			{{#if hasPermission}}
