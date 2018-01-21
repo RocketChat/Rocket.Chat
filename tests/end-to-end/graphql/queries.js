@@ -3,9 +3,9 @@
 const supertest = require('supertest');
 const request = supertest('http://localhost:3000');
 
-import {adminUsername, adminPassword } from '../../data/user.js';
+import {adminUsername, adminPassword, adminEmail} from '../../data/user.js';
 
-const user = {username: 'rocketchat.internal.admin.test', password: 'rocketchat.internal.admin.test', name: 'RocketChat Internal Admin Test', email: 'rocketchat.internal.admin.test@rocket.chat', accessToken: null};
+const user = {username: adminUsername, password: adminPassword, email: adminEmail, accessToken: null};
 const channel = {};
 const message = {content: 'Test Message GraphQL', modifiedContent: 'Test Message GraphQL Modified'};
 
@@ -37,22 +37,7 @@ describe('GraphQL Tests', function() {
 	});
 
 	it('should be disabled by default', (done) => {
-		const query = `
-	    mutation login{
-	      loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
-	        user {
-	          username,
-						email
-	        },
-	        tokens {
-	          accessToken
-	        }
-	      }
-	    }`;
-		request.post('/api/graphql')
-			.send({
-				query
-			})
+		request.get('/api/graphql')
 			.expect(400)
 			.end(done);
 	});
@@ -189,7 +174,6 @@ describe('GraphQL Tests', function() {
 				expect(res.body).to.not.have.property('errors');
 				const me = res.body.data.me;
 				expect(me).to.have.property('username', user.username);
-				expect(me).to.have.property('name', user.name);
 				expect(me).to.have.property('email', user.email);
 				expect(me.channels).to.be.an('array');
 				expect(me.channels[0]).to.have.property('id');
@@ -314,75 +298,16 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+
+	it('should disable GraphQL', (done) => {
+		request.post('/api/v1/settings/Graphql_Enabled')
+			.set(credentials)
+			.send({'value': false})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
 });
-
-/*
-subscription chatMessageAdded {
-  chatMessageAdded(channelId: "GENERAL") {
-    id,
-    channel {
-      name
-    }
-  }
-}
-
-{
-  channels(filter: {joinedChannels: true}) {
-    name,
-    id
-  }
-}
-
-mutation newMessage {
-  sendMessage(channelId: "Y2EH9PaCy8cw2Ppvm", content: "Testing") {
-    author {
-      name
-    },
-    channel {
-      name
-    },
-    content
-  }
-}
-
-{
-  messages(channelId: "Y2EH9PaCy8cw2Ppvm") {
-    messagesArray {
-      id,
-      author {
-        name,
-        id
-      },
-      content,
-      reactions {
-        username,
-        icon
-      }
-    }
-  }
-}
-
-mutation editMessage {
-  editMessage(id: {messageId: "8yi7ZNpXo2kakcecz", channelId: "Y2EH9PaCy8cw2Ppvm"}, content: "Hi edit") {
-    author {
-      name
-    },
-    channel {
-      name
-    },
-    content
-  }
-}
-
-mutation login{
-  loginWithPassword(user: {username: "gdelavald"}, password: "gdelavald") {
-    user {
-      name
-    },
-    tokens {
-      accessToken
-    }
-  }
-}
-
-*/
