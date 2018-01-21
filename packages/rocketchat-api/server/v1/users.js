@@ -270,3 +270,64 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 		return data ? RocketChat.API.v1.success({data}) : RocketChat.API.v1.unauthorized();
 	}
 });
+
+RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
+	get() {
+		const user = this.isUserFromParams() ? RocketChat.models.Users.findOneById(this.userId) : this.getUserFromParams();
+		if (user.settings) {
+			let preferences = user.settings.preferences
+			preferences.language = user.language
+
+			return RocketChat.API.v1.success({
+				preferences: preferences
+			});
+		} else {
+			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences').toUpperCase());
+		}
+	}
+});
+
+RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			userId: String,
+			data: Match.ObjectIncluding({
+				newRoomNotification: Match.Maybe(String),
+				newMessageNotification: Match.Maybe(String),
+				useEmojis: Match.Maybe(Boolean),
+				convertAsciiEmoji: Match.Maybe(Boolean),
+				saveMobileBandwidth: Match.Maybe(Boolean),
+				collapseMediaByDefault: Match.Maybe(Boolean),
+				autoImageLoad: Match.Maybe(Boolean),
+				emailNotificationMode: Match.Maybe(String),
+				roomsListExhibitionMode: Match.Maybe(String),
+				unreadAlert: Match.Maybe(Boolean),
+				notificationsSoundVolume: Match.Maybe(Number),
+				desktopNotifications: Match.Maybe(String),
+				mobileNotifications: Match.Maybe(String),
+				enableAutoAway: Match.Maybe(Boolean),
+				highlights: Match.Maybe(Array),
+				desktopNotificationDuration: Match.Maybe(Number),
+				viewMode: Match.Maybe(Number),
+				hideUsernames: Match.Maybe(Boolean),
+				hideRoles: Match.Maybe(Boolean),
+				hideAvatars: Match.Maybe(Boolean),
+				hideFlexTab: Match.Maybe(Boolean),
+				sendOnEnter: Match.Maybe(String),
+				roomCounterSidebar: Match.Maybe(Boolean),
+				language: Match.Maybe(String)
+			})
+		});
+
+		if (this.bodyParams.data.language) {
+			const language = this.bodyParams.data.language;
+			delete this.bodyParams.data.language;
+		}
+
+		const preferences = _.extend({ _id: this.bodyParams.userId }, { preferences: this.bodyParams.data });
+
+		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
+
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: preferences }) });
+	}
+});
