@@ -23,7 +23,7 @@ body {
 	height: 100%;
 	padding: 0;
 
-	font-size: var(--text-size);
+	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -95,19 +95,34 @@ button {
 		fill: var(--rc-color-primary-dark);
 
 		&--star {
+			width: 17px;
+			height: 16px;
 			fill: none;
+		}
+
+		&--language {
+			width: 16px;
+			height: 16px;
+
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&--hubot {
+			width: 14px;
+			height: 16px;
 		}
 	}
 }
 
 .rc-icon {
-
 	overflow: hidden;
 
 	width: 1em;
 	height: 1em;
 
 	vertical-align: -0.15em;
+
 }
 
 .ps-scrollbar-y-rail {

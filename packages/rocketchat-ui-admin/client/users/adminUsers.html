@@ -1,12 +1,7 @@
 <template name="adminUsers">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title border-component-color">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Users"}}</span>
-				</h2>
-			</header>
+			{{> header sectionName="Users"}}
 			<div class="content">
 				{{#unless hasPermission 'view-user-administration'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
