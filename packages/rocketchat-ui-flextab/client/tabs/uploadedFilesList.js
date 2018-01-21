@@ -1,11 +1,72 @@
 /* globals chatMessages*/
+import moment from 'moment';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+const fixCordova = (url) => {
+	if ((url != null ? url.indexOf('data:image') : undefined) === 0) {
+		return url;
+	}
+
+	if (Meteor.isCordova && ((url != null ? url[0] : undefined) === '/')) {
+		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
+		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
+		if (url.indexOf('?') === -1) {
+			url = `${ url }?${ query }`;
+		} else {
+			url = `${ url }&${ query }`;
+		}
+	}
+
+	if ((Meteor.settings && Meteor.settings.public && Meteor.settings.sandstorm) || url.match(/^(https?:)?\/\//i)) {
+		return url;
+	} else if (navigator.userAgent.indexOf('Electron') > -1) {
+		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+	} else {
+		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+	}
+};
 
 const roomFiles = new Mongo.Collection('room_files');
 
 Template.uploadedFilesList.helpers({
+	iconType() {
+		let icon = 'file-generic';
+		let type = '';
+
+		if (this.type.match(/application\/pdf/)) {
+			icon = 'file-pdf';
+			type = 'pdf';
+		}
+		if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.type)) {
+			icon = 'file-document';
+			type = 'document';
+		}
+		if (['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(this.type)) {
+			icon = 'file-sheets';
+			type = 'sheets';
+		}
+
+		if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.type)) {
+			icon = 'file-sheets';
+			type = 'ppt';
+		}
+
+		const [, extension] = this.name.match(/.*?\.(.*)$/);
+
+		return {icon, extension, type};
+	},
+	thumb() {
+		if (/image/.test(this.type)) {
+			return fixCordova(this.url);
+		}
+	},
+	format(timestamp) {
+		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+	},
 	files() {
+		console.log(roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } }).fetch());
 		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
 	},
 
@@ -42,30 +103,7 @@ Template.uploadedFilesList.helpers({
 	url() {
 		return `/file-upload/${ this._id }/${ this.name }`;
 	},
-
-	fixCordova(url) {
-		if ((url != null ? url.indexOf('data:image') : undefined) === 0) {
-			return url;
-		}
-
-		if (Meteor.isCordova && ((url != null ? url[0] : undefined) === '/')) {
-			url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-			const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
-			if (url.indexOf('?') === -1) {
-				url = `${ url }?${ query }`;
-			} else {
-				url = `${ url }&${ query }`;
-			}
-		}
-
-		if ((Meteor.settings && Meteor.settings.public && Meteor.settings.sandstorm) || url.match(/^(https?:)?\/\//i)) {
-			return url;
-		} else if (navigator.userAgent.indexOf('Electron') > -1) {
-			return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-		} else {
-			return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-		}
-	}
+	fixCordova
 });
 
 Template.uploadedFilesList.events({

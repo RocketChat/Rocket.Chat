@@ -1,4 +1,5 @@
 /* globals popover isRtl */
+import _ from 'underscore';
 
 import {UiTextContext} from 'meteor/rocketchat:lib';
 
@@ -21,6 +22,12 @@ this.popover = {
 	}
 };
 
+Template.popover.helpers({
+	hasAction() {
+		return !!this.action;
+	}
+});
+
 Template.popover.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -31,61 +38,78 @@ Template.popover.onRendered(function() {
 			popover.close();
 		}
 	});
-
 	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
-	const position = this.data.position;
-	const customCSSProperties = this.data.customCSSProperties;
-
-	if (position) {
-		popoverContent.style.top = `${ position.top }px`;
-		popoverContent.style.left = `${ position.left }px`;
-	} else {
-		const popoverWidth = popoverContent.offsetWidth;
-		const popoverHeight = popoverContent.offsetHeight;
-		const popoverHeightHalf = popoverHeight / 2;
-		const windowWidth = window.innerWidth;
-		const windowHeight = window.innerHeight;
-		const mousePosition = this.data.mousePosition;
-
-		let top;
-		if (mousePosition.y <= popoverHeightHalf) {
-			top = 10;
-		} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
-			top = windowHeight - popoverHeight - 10;
+	const position = _.throttle(() => {
+		const position = typeof this.data.position === 'function'? this.data.position() : this.data.position;
+		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
+		if (position) {
+			popoverContent.style.top = `${ position.top }px`;
+			popoverContent.style.left = `${ position.left }px`;
 		} else {
-			top = mousePosition.y - popoverHeightHalf;
+			const popoverWidth = popoverContent.offsetWidth;
+			const popoverHeight = popoverContent.offsetHeight;
+			const popoverHeightHalf = popoverHeight / 2;
+			const windowWidth = window.innerWidth;
+			const windowHeight = window.innerHeight;
+
+			let top;
+			if (mousePosition.y <= popoverHeightHalf) {
+				top = 10;
+			} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
+				top = windowHeight - popoverHeight - 10;
+			} else {
+				top = mousePosition.y - popoverHeightHalf;
+			}
+
+			let left;
+			if (mousePosition.x + popoverWidth >= windowWidth) {
+				left = mousePosition.x - popoverWidth;
+			} else if (mousePosition.x <= popoverWidth) {
+				left = isRtl() ? mousePosition.x + 10 : 10;
+			} else if (mousePosition.x <= windowWidth / 2) {
+				left = mousePosition.x;
+			} else {
+				left = mousePosition.x - popoverWidth;
+			}
+
+			popoverContent.style.top = `${ top }px`;
+			popoverContent.style.left = `${ left }px`;
 		}
 
-		let left;
-		if (mousePosition.x + popoverWidth >= windowWidth) {
-			left = mousePosition.x - popoverWidth;
-		} else if (mousePosition.x <= popoverWidth) {
-			left = isRtl() ? mousePosition.x + 10 : 10;
-		} else if (mousePosition.x <= windowWidth / 2) {
-			left = mousePosition.x;
-		} else {
-			left = mousePosition.x - popoverWidth;
+		if (customCSSProperties) {
+			Object.keys(customCSSProperties).forEach(function(property) {
+				popoverContent.style[property] = customCSSProperties[property];
+			});
 		}
 
-		popoverContent.style.top = `${ top }px`;
-		popoverContent.style.left = `${ left }px`;
-	}
+		if (activeElement) {
+			$(activeElement).addClass('active');
+		}
 
-	if (customCSSProperties) {
-		Object.keys(customCSSProperties).forEach(function(property) {
-			popoverContent.style[property] = customCSSProperties[property];
-		});
-	}
+		popoverContent.style.opacity = 1;
+	}, 50);
+	$(window).on('resize', position);
+	position();
+	this.position = position;
+});
 
-	if (activeElement) {
-		$(activeElement).addClass('active');
+Template.popover.onDestroyed(function() {
+	if (this.data.onDestroyed) {
+		this.data.onDestroyed();
 	}
-
-	popoverContent.style.opacity = 1;
+	$(window).off('resize', this.position);
 });
 
 Template.popover.events({
+	'click .js-action'(e, instance) {
+		!this.action || this.action.call(this, e, instance.data.data);
+		popover.close();
+	},
+	'click .js-close'() {
+		popover.close();
+	},
 	'click [data-type="messagebox-action"]'(event, t) {
 		const id = event.currentTarget.dataset.id;
 		const action = RocketChat.messageBox.actions.getById(id);
