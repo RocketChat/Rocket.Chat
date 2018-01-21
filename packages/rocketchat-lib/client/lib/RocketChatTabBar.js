@@ -1,6 +1,7 @@
 export class RocketChatTabBar {
 	constructor() {
 		this.template = new ReactiveVar();
+		this.id = new ReactiveVar();
 		this.group = new ReactiveVar();
 		this.state = new ReactiveVar();
 		this.data = new ReactiveVar();
@@ -8,6 +9,10 @@ export class RocketChatTabBar {
 
 	getTemplate() {
 		return this.template.get();
+	}
+
+	getId() {
+		return this.id.get();
 	}
 
 	setTemplate(template) {
@@ -40,30 +45,27 @@ export class RocketChatTabBar {
 
 	open(button) {
 		this.state.set('opened');
-
-		if (button) {
-			if (typeof button !== 'object' || !button.id) {
-				button = RocketChat.TabBar.getButton(button);
-			}
-			if (button.width) {
-				$('.flex-tab').css('width', `${ button.width }px`);
-			} else {
-				$('.flex-tab').css('width', '');
-			}
-			this.template.set(button.template);
-		}
-
 		Tracker.afterFlush(() => {
-			$('.flex-tab').find('input[type=text]:first').focus();
-			$('.flex-tab .content').scrollTop(0);
+			$('.contextual-bar__container').scrollTop(0).find('input[type=text]:first').focus();
 		});
+
+		if (!button) {
+			return;
+		}
+		if (typeof button !== 'object' || !button.id) {
+			button = RocketChat.TabBar.getButton(button);
+		}
+		$('.flex-tab, .contextual-bar').css('width', button.width ? `${ button.width }px` : '');
+		this.template.set(button.template);
+		this.id.set(button.id);
 	}
 
 	close() {
 		this.state.set('');
 
-		$('.flex-tab').css('width', '');
+		$('.flex-tab, .contextual-bar').css('width', '');
 
 		this.template.set();
+		this.id.set();
 	}
 }

@@ -1,19 +1,14 @@
 <template name="adminEmoji">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title border-component-color">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Custom_Emoji"}}</span>
-				</h2>
-			</header>
+			{{> header sectionName="Custom_emoji"}}
 			<div class="content">
 				{{#unless hasPermission 'manage-emoji'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					<form class="search-form" role="form">
 						<div class="input-line search">
-							<input type="text" id="emoji-filter" placeholder="{{_ "Search"}}" dir="auto">
+							<input type="text" class="rc-input__element" id="emoji-filter" placeholder="{{_ "Search"}}" dir="auto">
 							<i class="icon-search secondary-font-color"></i>
 							{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
 						</div>

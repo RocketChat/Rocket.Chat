@@ -115,7 +115,7 @@ describe('[Channel]', ()=> {
 		});
 	});
 
-	describe('[Usage]', ()=> {
+	describe.skip('[Usage]', ()=> {
 		before(() => {
 			sideNav.openChannel(publicChannelName);
 		});
