@@ -279,7 +279,7 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 			preferences.language = user.language;
 
 			return RocketChat.API.v1.success({
-				preferences: preferences;
+				preferences;
 			});
 		} else {
 			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences').toUpperCase());
