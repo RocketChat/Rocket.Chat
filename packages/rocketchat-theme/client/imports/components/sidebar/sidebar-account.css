@@ -11,6 +11,7 @@
 		background-color: var(--sidebar-background-light-hover);
 	}
 }
+
 .sidebar__account {
 	display: flex;
 
@@ -18,15 +19,16 @@
 
 	padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
 
-	align-items: center;
-
 	transition: background-color 0.3s;
+
+	align-items: center;
 
 	&.active:hover {
 		cursor: pointer;
 
 		background-color: var(--sidebar-item-hover-background);
 	}
+
 	&-thumb {
 
 		flex: 0 0 var(--sidebar-account-thumb-size);

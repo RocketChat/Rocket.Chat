@@ -55,7 +55,7 @@ RocketChat.OTR.Room = class {
 
 		this.userOnlineComputation = Tracker.autorun(() => {
 			const $room = $(`#chat-window-${ this.roomId }`);
-			const $title = $('.fixed-title h2', $room);
+			const $title = $('.rc-header__title', $room);
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key\'></i>');
