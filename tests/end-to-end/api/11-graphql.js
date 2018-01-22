@@ -314,4 +314,31 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+	it('Is able to delete messages', (done) => {
+		const query = `
+			mutation deleteMessage {
+				deleteMessage(id: {messageId: "${ message.id }", channelId: "${ channel.id }"}) {
+					id,
+					author {
+						username
+					}
+				}
+			}`;
+		request.post('/api/graphql')
+			.set('Authorization', user.accessToken)
+			.send({
+				query
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('data');
+				expect(res.body).to.not.have.property('errors');
+				const data = res.body.data.deleteMessage;
+				expect(data).to.have.property('id', message.id);
+				expect(data).to.have.property('author');
+				expect(data.author).to.have.property('username', user.username);
+			})
+			.end(done);
+	});
 });

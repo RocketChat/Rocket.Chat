@@ -10,7 +10,7 @@ class MainContent extends Page {
 	get channelTitle() { return browser.element('.rc-header__name'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
@@ -87,7 +87,8 @@ class MainContent extends Page {
 	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
-		this.messageInput.setValue(text);
+		this.messageInput.clearElement();
+		this.messageInput.addValue(text);
 	}
 
 	//uploads a file in the given filepath (url).
