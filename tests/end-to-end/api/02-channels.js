@@ -388,7 +388,7 @@ describe('[Channels]', function() {
 			.set(credentials)
 			.send({
 				roomId: channel._id,
-				name: `EDITED${ apiPublicChannelName }`
+				name: `edited${ apiPublicChannelName }`
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

@@ -350,14 +350,14 @@ describe('groups', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				name: `EDITED${ apiPrivateChannelName }`
+				name: `edited${ apiPrivateChannelName }`
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('group._id');
-				expect(res.body).to.have.nested.property('group.name', `EDITED${ apiPrivateChannelName }`);
+				expect(res.body).to.have.nested.property('group.name', `edited${ apiPrivateChannelName }`);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
 			})
