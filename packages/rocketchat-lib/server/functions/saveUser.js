@@ -166,8 +166,10 @@ RocketChat.saveUser = function(userId, userData) {
 
 		if (userData.settings) {
 			updateUser.$set.settings = { preferences: {} };
-			for (var key in userData.settings.preferences) {
-				updateUser.$set.settings.preferences[key] = userData.settings.preferences[key];
+			if (userData.settings.preferences) {
+				for (let key in userData.settings.preferences) {
+					updateUser.$set.settings.preferences[key] = userData.settings.preferences[key];
+				}
 			}
 		}
 
