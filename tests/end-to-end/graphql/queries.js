@@ -36,13 +36,13 @@ describe('GraphQL Tests', function() {
 			.end(done);
 	});
 
-	it('should be disabled by default', (done) => {
+	before((done) => {
 		request.get('/api/graphql')
 			.expect(400)
 			.end(done);
 	});
 
-	it('should enable GraphQL', (done) => {
+	before((done) => {
 		request.post('/api/v1/settings/Graphql_Enabled')
 			.set(credentials)
 			.send({'value': true})
@@ -54,19 +54,31 @@ describe('GraphQL Tests', function() {
 			.end(done);
 	});
 
+	after((done) => {
+		request.post('/api/v1/settings/Graphql_Enabled')
+			.set(credentials)
+			.send({'value': false})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
 	it('Is able to login with username and password', (done) => {
 		const query = `
-      mutation login{
-        loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
-          user {
-            username,
+			mutation login{
+				loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
+					user {
+						username,
 						email
-          },
-          tokens {
-            accessToken
-          }
-        }
-      }`;
+					},
+					tokens {
+						accessToken
+					}
+				}
+			}`;
 		request.post('/api/graphql')
 			.send({
 				query
@@ -86,20 +98,21 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+
 	it('Is able to login with email and password', (done) => {
 		const query = `
-      mutation login{
-        loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
-          user {
-            username,
+			mutation login {
+				loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
+					user {
+						username,
 						email,
 						id
-          },
-          tokens {
-            accessToken
-          }
-        }
-      }`;
+					},
+					tokens {
+						accessToken
+					}
+				}
+			}`;
 		request.post('/api/graphql')
 			.send({
 				query
@@ -118,18 +131,19 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+
 	it('Fails when trying to login with wrong password', (done) => {
 		const query = `
-      mutation login{
-        loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
-          user {
-            username
-          },
-          tokens {
-            accessToken
-          }
-        }
-      }`;
+			mutation login {
+				loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
+					user {
+						username
+					},
+					tokens {
+						accessToken
+					}
+				}
+			}`;
 		request.post('/api/graphql')
 			.send({
 				query
@@ -184,8 +198,8 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to send messages to channel', (done) => {
 		const query = `
-      mutation sendMessage{
-        sendMessage(channelId: "${ channel.id }", content: "${ message.content }") {
+			mutation sendMessage{
+				sendMessage(channelId: "${ channel.id }", content: "${ message.content }") {
 					id,
 					author {
 						username,
@@ -201,7 +215,7 @@ describe('GraphQL Tests', function() {
 						icon
 					}
 				}
-      }`;
+			}`;
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
@@ -224,6 +238,7 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+
 	it('Is able to edit messages', (done) => {
 		const query = `
 			mutation editMessage {
@@ -259,6 +274,7 @@ describe('GraphQL Tests', function() {
 			})
 			.end(done);
 	});
+
 	it('Can read messages from channel', (done) => {
 		const query = `
 			{
@@ -295,18 +311,6 @@ describe('GraphQL Tests', function() {
 				expect(data.messagesArray[0]).to.have.property('author');
 				expect(data.messagesArray[0].author).to.have.property('username', user.username);
 				expect(data.messagesArray[0]).to.have.property('content', message.modifiedContent);
-			})
-			.end(done);
-	});
-
-	it('should disable GraphQL', (done) => {
-		request.post('/api/v1/settings/Graphql_Enabled')
-			.set(credentials)
-			.send({'value': false})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
 	});
