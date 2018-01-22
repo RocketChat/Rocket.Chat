@@ -3,7 +3,7 @@ import _ from 'underscore';
 import toastr from 'toastr';
 
 
-export const getActions = function({ user, directActions, hideAdminControls }) {
+export const getActions = function({ user, directActions, hideAdminControls, instance }) {
 
 	const hasPermission = RocketChat.authz.hasAllPermission;
 
@@ -19,7 +19,18 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 		}
 	};
 	const canRemoveUser = () => {
-		return RocketChat.authz.hasAllPermission('remove-user', Session.get('openedRoom'));
+		const rid = Session.get('openedRoom');
+		const room = ChatRoom.findOne(rid);
+		if (instance !== null && room.t === 'g') {
+			Meteor.call('getUsersOfRoom', rid, true, (error, users) => {
+				instance.numOfUsers.set(users.records.length);
+			});
+			if (instance.numOfUsers.get() <= 3) {
+				return false;
+			}
+		}
+
+		return RocketChat.authz.hasAllPermission('remove-user', rid);
 	};
 	const canSetModerator = () => {
 		return RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'));

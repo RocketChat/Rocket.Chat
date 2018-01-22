@@ -230,7 +230,8 @@ Template.userInfo.onCreated(function() {
 		const actions = getActions({
 			user,
 			hideAdminControls: this.data.hideAdminControls,
-			directActions: this.data.showAll
+			directActions: this.data.showAll,
+			instance: null
 		});
 		this.actions.set(actions);
 	});

@@ -193,7 +193,8 @@ Template.membersList.events({
 		const _actions = getActions({
 			user: this.user.user,
 			hideAdminControls: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			directActions: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false
+			directActions: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
+			instance: Template.instance()
 		}).map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this)));
 		const groups = [];
 		const columns = [];
@@ -269,6 +270,7 @@ Template.membersList.onCreated(function() {
 	this.loading = new ReactiveVar(true);
 
 	this.tabBar = Template.instance().tabBar;
+	this.numOfUsers = new ReactiveVar(0);
 
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
