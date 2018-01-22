@@ -2,9 +2,9 @@
 /* jshint newcap: false */
 import _ from 'underscore';
 
-const fiber = Npm.require('fibers');
-const url = Npm.require('url');
-const CAS = Npm.require('cas');
+import fiber from 'fibers';
+import url from 'url';
+import CAS from 'cas';
 
 RoutePolicy.declare('/_cas/', 'network');
 

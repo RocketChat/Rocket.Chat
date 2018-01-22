@@ -230,7 +230,7 @@ Template.createChannel.events({
 Template.createChannel.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name="name"]').focus();
+	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {

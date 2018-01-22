@@ -127,6 +127,29 @@
 
 .rc-form-group {
 	margin-bottom: var(--gap-between-elements);
+
+	&--small {
+		margin-bottom: var(--default-small-padding);
+	}
+
+	&--inline {
+		display: flex;
+		flex-direction: row;
+    align-items: flex-end;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		white-space: nowrap;
+	}
+
+	& > .rc-form-item-inline {
+		flex: 1 1 auto;
+		margin-left: 0.5rem;
+		margin-right: 0.5rem;
+
+		&--full {
+			flex: 0 0 100%;
+		}
+	}
 }
 
 .rc-form-label {
@@ -213,22 +236,9 @@
 
 	height: 100%;
 
-	&__header {
-		display: flex;
-
-		height: 77px;
-		padding: 25px;
-
-		color: var(--color-dark);
-		box-shadow: 0 0 1px 1px #e6e4e4;
-
-		font-size: 16px;
-		font-weight: 600;
-		align-items: center;
-	}
-
 	&__content {
 		overflow-y: auto;
+		flex: 1;
 
 		width: 100%;
 		padding: 25px;
@@ -236,12 +246,6 @@
 
 	&--apps .preferences-page__header {
 		justify-content: space-between;
-	}
-}
-
-@media (width < 780px) {
-	.preferences-page__header h2 {
-		margin-left: 40px;
 	}
 }
 
