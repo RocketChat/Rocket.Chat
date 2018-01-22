@@ -8,6 +8,8 @@
 	align-items: center;
 
 	&-container {
+		padding: var(--default-padding);
+
 		position: absolute;
 		top: 0;
 		right: 0;
