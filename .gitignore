@@ -6,6 +6,7 @@
 **/.meteor/local*
 **/.meteor/meteorite
 /private/certs/*
+**/**/.npm/
 *.bak
 *.iml
 *.ipr
