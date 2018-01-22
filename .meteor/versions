@@ -132,6 +132,7 @@ rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:autotranslate@0.0.1
+rocketchat:blockstack@0.0.0
 rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
