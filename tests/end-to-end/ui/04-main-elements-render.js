@@ -287,7 +287,13 @@ describe('[Main Elements Render]', function() {
 					flexTab.operateFlexTab('files', true);
 				});
 
+				after(()=> {
+					flexTab.moreActions.click();
+					flexTab.operateFlexTab('files', false);
+				});
+
 				it('it should show the files Tab content', () => {
+					flexTab.filesTabContent.waitForVisible(5000);
 					flexTab.filesTabContent.isVisible().should.be.true;
 				});
 			});
@@ -296,6 +302,11 @@ describe('[Main Elements Render]', function() {
 				before(()=> {
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('mentions', true);
+				});
+
+				after(()=> {
+					flexTab.moreActions.click();
+					flexTab.operateFlexTab('mentions', false);
 				});
 
 				it('it should show the mentions Tab content', () => {
@@ -309,6 +320,11 @@ describe('[Main Elements Render]', function() {
 					flexTab.operateFlexTab('starred', true);
 				});
 
+				after(()=> {
+					flexTab.moreActions.click();
+					flexTab.operateFlexTab('starred', false);
+				});
+
 				it('it should show the starred messages Tab content', () => {
 					flexTab.starredTabContent.isVisible().should.be.true;
 				});
@@ -318,6 +334,11 @@ describe('[Main Elements Render]', function() {
 				before(()=> {
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('pinned', true);
+				});
+
+				after(()=> {
+					flexTab.moreActions.click();
+					flexTab.operateFlexTab('pinned', false);
 				});
 
 				it('it should show the pinned messages Tab content', () => {
