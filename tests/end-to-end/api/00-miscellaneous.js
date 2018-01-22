@@ -66,7 +66,7 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
 			})
 			.end(done);
 	});
