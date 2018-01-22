@@ -6,7 +6,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_type: message.msg
+				room_type: t(message.msg)
 			};
 		}
 	});

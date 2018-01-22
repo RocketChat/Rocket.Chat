@@ -34,6 +34,10 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 
 		me.avatarUrl = RocketChat.getURL(`/avatar/${ me.username }`, { cdn: false, full: true });
 
+		const verifiedEmail = me.emails.find((email) => email.verified);
+
+		me.email = verifiedEmail ? verifiedEmail.address : undefined;
+
 		return RocketChat.API.v1.success(me);
 	}
 });

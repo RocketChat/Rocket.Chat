@@ -1,4 +1,5 @@
 /* globals popover isRtl */
+import _ from 'underscore';
 
 import {UiTextContext} from 'meteor/rocketchat:lib';
 
@@ -21,6 +22,12 @@ this.popover = {
 	}
 };
 
+Template.popover.helpers({
+	hasAction() {
+		return !!this.action;
+	}
+});
+
 Template.popover.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -31,61 +38,78 @@ Template.popover.onRendered(function() {
 			popover.close();
 		}
 	});
-
 	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
-	const position = this.data.position;
-	const customCSSProperties = this.data.customCSSProperties;
-
-	if (position) {
-		popoverContent.style.top = `${ position.top }px`;
-		popoverContent.style.left = `${ position.left }px`;
-	} else {
-		const popoverWidth = popoverContent.offsetWidth;
-		const popoverHeight = popoverContent.offsetHeight;
-		const popoverHeightHalf = popoverHeight / 2;
-		const windowWidth = window.innerWidth;
-		const windowHeight = window.innerHeight;
-		const mousePosition = this.data.mousePosition;
-
-		let top;
-		if (mousePosition.y <= popoverHeightHalf) {
-			top = 10;
-		} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
-			top = windowHeight - popoverHeight - 10;
+	const position = _.throttle(() => {
+		const position = typeof this.data.position === 'function'? this.data.position() : this.data.position;
+		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
+		if (position) {
+			popoverContent.style.top = `${ position.top }px`;
+			popoverContent.style.left = `${ position.left }px`;
 		} else {
-			top = mousePosition.y - popoverHeightHalf;
+			const popoverWidth = popoverContent.offsetWidth;
+			const popoverHeight = popoverContent.offsetHeight;
+			const popoverHeightHalf = popoverHeight / 2;
+			const windowWidth = window.innerWidth;
+			const windowHeight = window.innerHeight;
+
+			let top;
+			if (mousePosition.y <= popoverHeightHalf) {
+				top = 10;
+			} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
+				top = windowHeight - popoverHeight - 10;
+			} else {
+				top = mousePosition.y - popoverHeightHalf;
+			}
+
+			let left;
+			if (mousePosition.x + popoverWidth >= windowWidth) {
+				left = mousePosition.x - popoverWidth;
+			} else if (mousePosition.x <= popoverWidth) {
+				left = isRtl() ? mousePosition.x + 10 : 10;
+			} else if (mousePosition.x <= windowWidth / 2) {
+				left = mousePosition.x;
+			} else {
+				left = mousePosition.x - popoverWidth;
+			}
+
+			popoverContent.style.top = `${ top }px`;
+			popoverContent.style.left = `${ left }px`;
 		}
 
-		let left;
-		if (mousePosition.x + popoverWidth >= windowWidth) {
-			left = mousePosition.x - popoverWidth;
-		} else if (mousePosition.x <= popoverWidth) {
-			left = isRtl() ? mousePosition.x + 10 : 10;
-		} else if (mousePosition.x <= windowWidth / 2) {
-			left = mousePosition.x;
-		} else {
-			left = mousePosition.x - popoverWidth;
+		if (customCSSProperties) {
+			Object.keys(customCSSProperties).forEach(function(property) {
+				popoverContent.style[property] = customCSSProperties[property];
+			});
 		}
 
-		popoverContent.style.top = `${ top }px`;
-		popoverContent.style.left = `${ left }px`;
-	}
+		if (activeElement) {
+			$(activeElement).addClass('active');
+		}
 
-	if (customCSSProperties) {
-		Object.keys(customCSSProperties).forEach(function(property) {
-			popoverContent.style[property] = customCSSProperties[property];
-		});
-	}
+		popoverContent.style.opacity = 1;
+	}, 50);
+	$(window).on('resize', position);
+	position();
+	this.position = position;
+});
 
-	if (activeElement) {
-		$(activeElement).addClass('active');
+Template.popover.onDestroyed(function() {
+	if (this.data.onDestroyed) {
+		this.data.onDestroyed();
 	}
-
-	popoverContent.style.opacity = 1;
+	$(window).off('resize', this.position);
 });
 
 Template.popover.events({
+	'click .js-action'(e, instance) {
+		!this.action || this.action.call(this, e, instance.data.data);
+		popover.close();
+	},
+	'click .js-close'() {
+		popover.close();
+	},
 	'click [data-type="messagebox-action"]'(event, t) {
 		const id = event.currentTarget.dataset.id;
 		const action = RocketChat.messageBox.actions.getById(id);
@@ -106,7 +130,7 @@ Template.popover.events({
 
 		if (e.currentTarget.dataset.id === 'report-abuse') {
 			const message = t.data.data._arguments[1];
-			swal({
+			modal.open({
 				title: TAPi18n.__('Report_this_message_question_mark'),
 				text: message.msg,
 				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
@@ -123,13 +147,13 @@ Template.popover.events({
 				}
 
 				if (inputValue === '') {
-					swal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					modal.showInputError(TAPi18n.__('You_need_to_write_something'));
 					return false;
 				}
 
 				Meteor.call('reportMessage', message._id, inputValue);
 
-				swal({
+				modal.open({
 					title: TAPi18n.__('Report_sent'),
 					text: TAPi18n.__('Thank_you_exclamation_mark '),
 					type: 'success',
@@ -183,11 +207,12 @@ Template.popover.events({
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;
+		const action = e.currentTarget.dataset.id;
 
-		if (e.currentTarget.dataset.id === 'hide') {
+		if (action === 'hide') {
 			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
 
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -214,7 +239,7 @@ Template.popover.events({
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'leave') {
+		if (action === 'leave') {
 			let warnText;
 			switch (template) {
 				case 'c': warnText = 'Leave_Room_Warning'; break;
@@ -223,7 +248,7 @@ Template.popover.events({
 				case 'l': warnText = 'Hide_Livechat_Warning'; break;
 			}
 
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: warnText ? t(warnText, name) : '',
 				type: 'warning',
@@ -237,14 +262,14 @@ Template.popover.events({
 				if (isConfirm) {
 					Meteor.call('leaveRoom', rid, function(err) {
 						if (err) {
-							swal({
+							modal.open({
 								title: t('Warning'),
 								text: handleError(err, false),
 								type: 'warning',
 								html: false
 							});
 						} else {
-							swal.close();
+							modal.close();
 							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 								FlowRouter.go('home');
 							}
@@ -252,20 +277,36 @@ Template.popover.events({
 							RoomManager.close(rid);
 						}
 					});
-				} else {
-					swal.close();
 				}
 			});
 
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'read') {
+		if (action === 'read') {
 			Meteor.call('readMessages', rid);
 			return false;
 		}
 
-		if (e.currentTarget.dataset.id === 'favorite') {
+		if (action === 'unread') {
+			Meteor.call('unreadMessages', null, rid, function(error) {
+				if (error) {
+					return handleError(error);
+				}
+
+				const subscription = ChatSubscription.findOne({rid});
+				if (subscription == null) {
+					return;
+				}
+				RoomManager.close(subscription.t + subscription.name);
+
+				FlowRouter.go('home');
+			});
+
+			return false;
+		}
+
+		if (action === 'favorite') {
 			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
 				popover.close();
 				if (err) {
@@ -276,4 +317,8 @@ Template.popover.events({
 			return false;
 		}
 	}
+});
+
+Template.popover.helpers({
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
 });

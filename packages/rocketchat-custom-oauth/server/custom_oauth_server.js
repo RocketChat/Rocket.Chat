@@ -259,20 +259,12 @@ export class CustomOAuth {
 	getUsername(data) {
 		let username = '';
 
-		if (this.usernameField.indexOf('#{') > -1) {
-			username = this.usernameField.replace(/#{(.+?)}/g, function(match, field) {
-				if (!data[field]) {
-					throw new Meteor.Error('field_not_found', `Username template item "${ field }" not found in data`, data);
-				}
-				return data[field];
-			});
-		} else {
-			username = data[this.usernameField];
-			if (!username) {
-				throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
-			}
+		username = this.usernameField.split('.').reduce(function(prev, curr) {
+			return prev ? prev[curr] : undefined;
+		}, data);
+		if (!username) {
+			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
-
 		return username;
 	}
 

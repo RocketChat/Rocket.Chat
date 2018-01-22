@@ -206,7 +206,7 @@ Template.integrationsOutgoing.events({
 		t.record.set(record);
 	},
 
-	'click .button.history': () => {
+	'click .rc-button.history': () => {
 		FlowRouter.go(`/admin/integrations/outgoing/${ FlowRouter.getParam('id') }/history`);
 	},
 
@@ -221,10 +221,10 @@ Template.integrationsOutgoing.events({
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 
-	'click .submit > .delete': () => {
+	'click .rc-header__section-button > .delete': () => {
 		const params = Template.instance().data.params();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
 			type: 'warning',
@@ -239,7 +239,7 @@ Template.integrationsOutgoing.events({
 				if (err) {
 					handleError(err);
 				} else {
-					swal({
+					modal.open({
 						title: t('Deleted'),
 						text: t('Your_entry_has_been_deleted'),
 						type: 'success',
@@ -263,7 +263,7 @@ Template.integrationsOutgoing.events({
 		$('.CodeMirror')[0].CodeMirror.refresh();
 	},
 
-	'click .submit > .save': () => {
+	'click .rc-header__section-button > .save': () => {
 		const event = $('[name=event]').val().trim();
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();

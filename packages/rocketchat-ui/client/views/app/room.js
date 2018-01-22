@@ -133,18 +133,6 @@ Template.room.helpers({
 		RocketChat.Layout.isEmbedded();
 	},
 
-	favorite() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'icon-star favorite-room pending-color'; }
-		return 'icon-star-empty';
-	},
-
-	favoriteLabel() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'Unfavorite'; }
-		return 'Favorite';
-	},
-
 	subscribed() {
 		return isSubscribed(this._id);
 	},
@@ -226,40 +214,24 @@ Template.room.helpers({
 		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
-	roomName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
-	},
-
-	secondaryName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData);
-	},
-
-	roomTopic() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return roomData.topic;
-	},
-
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
 	},
+
 	messageboxData() {
 		const instance = Template.instance();
 		return {
 			_id: this._id,
 			onResize: () => {
-				instance.sendToBottomIfNecessary();
+				if (instance.sendToBottomIfNecessary) {
+					instance.sendToBottomIfNecessary();
+				}
 			}
 		};
 	},
+
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -338,7 +310,7 @@ Template.room.helpers({
 
 	viewMode() {
 		const user = Meteor.user();
-		const viewMode = user && user.settings && user.settings.preferences && user.settings.preferences.viewMode;
+		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -349,16 +321,27 @@ Template.room.helpers({
 
 	hideUsername() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideUsernames ? 'hide-usernames' : undefined;
+		return RocketChat.getUserPreference(user, 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
 		const user = Meteor.user();
-		return user && user.settings && user.settings.preferences && user.settings.preferences.hideAvatars ? 'hide-avatars' : undefined;
+		return RocketChat.getUserPreference(user, 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
 		return userCanDrop(this._id);
+	},
+
+	toolbarButtons() {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const buttons = Object.keys(toolbar.buttons).map(key => {
+			return {
+				id: key,
+				...toolbar.buttons[key]
+			};
+		});
+		return { buttons };
 	},
 
 	canPreview() {
@@ -378,16 +361,6 @@ Template.room.helpers({
 		return (RocketChat.models.Subscriptions.findOne({ rid: this._id }) != null);
 
 	},
-	toolbarButtons() {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		const buttons = Object.keys(toolbar.buttons).map(key => {
-			return {
-				id: key,
-				...toolbar.buttons[key]
-			};
-		});
-		return { buttons };
-	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
 	},
@@ -405,10 +378,6 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
-	'click .iframe-toolbar button'() {
-		fireGlobalEvent('click-toolbar-button', { id: this.id });
-	},
-
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
@@ -416,7 +385,7 @@ Template.room.events({
 	'click .messages-container-main'() {
 		const user = Meteor.user();
 
-		if ((Template.instance().tabBar.getState() === 'opened') && user && user.settings && user.settings.preferences && user.settings.preferences.hideFlexTab) {
+		if ((Template.instance().tabBar.getState() === 'opened') && RocketChat.getUserPreference(user, 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -541,7 +510,7 @@ Template.room.events({
 		Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
-	'click .flex-tab .user-image > button'(e, instance) {
+	'click .user-image > button'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -584,9 +553,51 @@ Template.room.events({
 		chatMessages[RocketChat.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-		mountPopover(e, i, this);
-	},
+		let context = $(e.target).parents('.message').data('context');
+		if (!context) {
+			context = 'message';
+		}
 
+		const [, message] = this._arguments;
+		const allItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
+			return {
+				icon: item.icon,
+				name: t(item.label),
+				type: 'message-action',
+				id: item.id,
+				modifier: item.color
+			};
+		});
+		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const groups = [{ items }];
+
+		if (deleteItem.length) {
+			groups.push({ items: deleteItem });
+		}
+
+		const config = {
+			columns: [
+				{
+					groups
+				}
+			],
+			instance: i,
+			data: this,
+			mousePosition: {
+				x: e.clientX,
+				y: e.clientY
+			},
+			activeElement: $(e.currentTarget).parents('.message')[0],
+			onRendered: () => new Clipboard('.rc-popover__item')
+		};
+
+		popover.open(config);
+	},
+	'click .time a'(e) {
+		e.preventDefault();
+		const repliedMessageId = this._arguments[1].attachments[0].message_link.split('?msg=')[1];
+		FlowRouter.go(FlowRouter.current().context.pathname, null, {msg: repliedMessageId, hash: Random.id()});
+	},
 	'click .mention-link'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
@@ -698,6 +709,15 @@ Template.room.events({
 			removeClass.forEach(message => $(`.messages-box #${ message }`).removeClass('selected'));
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
+	},
+	'click .announcement'(e) {
+		modal.open({
+			title: t('Announcement'),
+			text: $(e.target).attr('aria-label'),
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close')
+		});
 	}
 });
 
@@ -813,6 +833,8 @@ Template.room.onCreated(function() {
 			ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 		}
 	});
+
+	this.sendToBottomIfNecessary = () => {};
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
@@ -913,26 +935,36 @@ Template.room.onRendered(function() {
 
 	const rtl = $('html').hasClass('rtl');
 
-	const updateUnreadCount = _.throttle(function() {
-		let lastInvisibleMessageOnScreen;
+	const getElementFromPoint = function(topOffset = 0) {
 		const messageBoxOffset = messageBox.offset();
 
+		let element;
 		if (rtl) {
-			lastInvisibleMessageOnScreen = document.elementFromPoint((messageBoxOffset.left + messageBox.width()) - 1, messageBoxOffset.top + 1);
+			element = document.elementFromPoint((messageBoxOffset.left + messageBox.width()) - 1, messageBoxOffset.top + topOffset + 1);
 		} else {
-			lastInvisibleMessageOnScreen = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + 1);
+			element = document.elementFromPoint(messageBoxOffset.left + 1, messageBoxOffset.top + topOffset + 1);
 		}
 
-		if ((lastInvisibleMessageOnScreen != null ? lastInvisibleMessageOnScreen.id : undefined) != null) {
-			const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-			if (lastMessage != null) {
-				const subscription = ChatSubscription.findOne({ rid: template.data._id });
-				const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: (subscription != null ? subscription.ls : undefined) } }).count();
-				template.unreadCount.set(count);
-			} else {
-				template.unreadCount.set(0);
-			}
+		if (element && element.classList.contains('message')) {
+			return element;
 		}
+	};
+
+	const updateUnreadCount = _.throttle(function() {
+		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
+
+		if (lastInvisibleMessageOnScreen == null || lastInvisibleMessageOnScreen.id == null) {
+			return template.unreadCount.set(0);
+		}
+
+		const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
+		if (lastMessage == null) {
+			return template.unreadCount.set(0);
+		}
+
+		const subscription = ChatSubscription.findOne({ rid: template.data._id }, {reactive: false});
+		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
+		template.unreadCount.set(count);
 	}, 300);
 
 	readMessage.onRead(function(rid) {
