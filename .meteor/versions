@@ -7,6 +7,7 @@ accounts-oauth@1.1.15
 accounts-password@1.5.0
 accounts-twitter@1.4.0
 aldeed:simple-schema@1.5.3
+aldeed:template-extension@4.1.0
 allow-deny@1.1.0
 autoupdate@1.3.12
 babel-compiler@6.24.7
