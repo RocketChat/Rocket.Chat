@@ -217,6 +217,10 @@
 		line-height: 1.2rem;
 	}
 
+	&__me {
+		text-transform: lowercase;
+	}
+
 	&__last-message {
 		overflow: hidden;
 		flex: 1;
@@ -302,10 +306,6 @@
 @media (width <= 400px) {
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);
-
-		& .badge {
-			margin: 0 0 0 3px;
-		}
 
 		&__user-status {
 			left: 4px;

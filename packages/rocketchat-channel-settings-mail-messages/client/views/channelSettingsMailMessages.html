@@ -1,10 +1,10 @@
 <template name="channelSettingsMailMessages">
 	{{#if canSendEmail}}
-		<li>
-			<label>{{_ "Mail_Messages"}}</label>
-			<div>
-				<button type="button" class="button primary mail-messages">{{_ "Choose_messages"}}</button>
+		<label class="rc-user-info__label">
+			{{_ "Mail_Messages"}}
+			<div class="rc-user-info__description">
+				<button type="button" class="rc-button rc-button--outline rc-button--primary mail-messages">{{_ "Choose_messages"}}</button>
 			</div>
-		</li>
+		</label>
 	{{/if}}
 </template>
