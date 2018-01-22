@@ -1198,6 +1198,8 @@
   "Members_List": "Members List",
   "mention-all": "Mention All",
   "mention-all_description": "Permission to use the @all mention",
+  "mention-here": "Mention Here",
+  "mention-here_description": "Permission to use the @here mention",
   "Mentions": "Mentions",
   "Mentions_default": "Mentions (default)",
   "Mentions_only": "Mentions only",
