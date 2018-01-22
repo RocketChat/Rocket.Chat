@@ -323,7 +323,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
-			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }, language: language });
+			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }, language });
 		} else {
 			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }});
 		}
