@@ -110,6 +110,7 @@
 		"aws-sdk": "^2.172.0",
 		"babel-runtime": "^6.26.0",
 		"bcrypt": "^1.0.3",
+		"blockstack": "github:timkinnane/blockstack.js",
 		"bunyan": "^1.8.12",
 		"codemirror": "^5.32.0",
 		"core-js": "2.5.3",
