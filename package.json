@@ -65,6 +65,7 @@
 		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint packages/**/*.css",
 		"test": "node .scripts/start.js",
+		"local": "export MONGO_URL='mongodb://localhost:27017/blockparty'; meteor",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
 		"chimp-test": "chimp tests/chimp-config.js",
