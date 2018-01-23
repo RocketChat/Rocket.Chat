@@ -49,7 +49,7 @@ Template.mailMessagesInstructions.helpers({
 
 Template.mailMessagesInstructions.events({
 	'click .cancel'(e, t) {
-		return t.reset();
+		return t.reset(true);
 	},
 	'click .send'(e, t) {
 		t.$('.error').hide();
@@ -132,18 +132,16 @@ Template.mailMessagesInstructions.events({
 });
 
 Template.mailMessagesInstructions.onCreated(function() {
-	const currentData = Template.currentData();
+	resetSelection(true);
 	this.autoCompleteCollection = new Mongo.Collection(null);
 	this.selectedUsers = new ReactiveVar([]);
 	this.erroredEmails = new ReactiveVar([]);
-	this.reset = () => {
+	this.reset = (bool) => {
 		this.selectedUsers.set([]);
-		currentData.tabBar.setTemplate('channelSettings');
-		resetSelection(false);
+		resetSelection(bool);
 	};
-	return this.autorun(() => {
-		if (Session.get('channelSettingsMailMessages') !== Session.get('openedRoom')) {
-			return this.reset();
-		}
-	});
+});
+
+Template.mailMessagesInstructions.onDestroyed(function() {
+	Template.instance().reset(false);
 });
