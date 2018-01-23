@@ -8,15 +8,16 @@
 	align-items: center;
 
 	&-container {
-		padding: var(--default-padding);
-
 		position: absolute;
+
 		top: 0;
 		right: 0;
 		left: 0;
 
 		display: flex;
 		flex-direction: column;
+
+		padding: 0 var(--default-padding);
 
 		background-color: var(--color-white);
 
