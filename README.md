@@ -422,6 +422,7 @@ It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branchi
 See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
 ## Translations
+
 We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
 If you want to help, send an email to support at rocket.chat to be invited to the translation project.
 
@@ -430,6 +431,10 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community.
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
+
+## Want To Earn Rewards For Your Contributions?
+
+Contributors can now earn rewards through the new Utopian.io platform. Simply write a short post about your contribution to RocketChat/Rocket.chat here and be rewarded by the Utopian.io community. Acceptable contributions include: suggestions, sub-project contributions, development, bug-hunting, translations, graphics, analysis, visbility & marketing efforts, documentation, written & video tutorials, and lastly copyrighting.
 
 ### Contributor License Agreement
 
