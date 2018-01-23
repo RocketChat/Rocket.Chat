@@ -4455,6 +4455,10 @@ body:not(.is-cordova) {
 	& .forgot-password,
 	& .back-to-login {
 		margin-top: 12px;
+		
+		& button {
+			margin: 0 auto;
+		}
 	}
 
 	& .input-line {
