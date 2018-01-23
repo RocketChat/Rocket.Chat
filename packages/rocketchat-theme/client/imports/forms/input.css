@@ -1,4 +1,6 @@
 .rc-input {
+	position: relative;
+
 	width: 100%;
 
 	&__label {
