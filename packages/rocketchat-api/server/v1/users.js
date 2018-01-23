@@ -271,7 +271,7 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: false }, {
+RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = this.isUserFromParams() ? RocketChat.models.Users.findOneById(this.userId) : this.getUserFromParams();
 		if (user.settings) {
