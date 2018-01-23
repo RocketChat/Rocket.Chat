@@ -6,20 +6,52 @@ Package.describe({
 })
 
 Package.onUse((api) => {
-  api.use('modules')
-  api.use('ecmascript')
-  api.use('less')
-  api.use('templating', 'client')
-  api.use('aldeed:template-extension@4.1.0', 'client')
 
-  api.addAssets([
-    'assets/blockstack_mark.png'
+  api.use([
+    'modules',
+    'ecmascript',
+    'less',
+    'localstorage',
+    'url'
+  ])
+
+  api.use([
+    'http',
+    'accounts-base'
+  ], ['client', 'server'])
+
+  api.use([
+    'rocketchat:lib',
+    'routepolicy',
+    'service-configuration',
+    'webapp'
+  ], 'server')
+
+  api.use([
+    'aldeed:template-extension@4.1.0',
+    'templating',
+    'less',
+    'reload'
   ], 'client')
 
-  api.addFiles('client/stylesheets/blockstackLogin.less', 'client')
-  api.addFiles('client/views/blockstackLogin.html', 'client')
-  api.addFiles('client/views/blockstackLogin.js', 'client')
-  api.mainModule('client/index.js', 'client')
-  api.mainModule('server/index.js', 'server')
-  api.export('Blockstack')
+  api.addAssets([
+    'assets/blockstack_mark.png',
+    'assets/meteor-shower-192x192.png',
+    'assets/manifest.json'
+  ], 'client')
+
+  api.addFiles([
+    'server/main.js',
+    'server/settings.js',
+    'server/loginHandler.js',
+    'server/cors.js'
+  ], 'server')
+
+  api.addFiles([
+    'client/main.js',
+    'client/stylesheets/blockstackLogin.less',
+    'client/views/blockstackLogin.html',
+    'client/views/blockstackLogin.js'
+  ], 'client')
+
 })
