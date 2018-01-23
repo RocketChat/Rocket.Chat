@@ -1,3 +1,6 @@
+import moment from 'moment';
+import hljs from 'highlight.js';
+
 Template.appLogs.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -42,6 +45,18 @@ Template.appLogs.helpers({
 	},
 	logs() {
 		return Template.instance().logs.get();
+	},
+	formatDate(date) {
+		return moment(date).format('L LTS');
+	},
+	jsonStringify(data) {
+		if (!data) {
+			return '';
+		} else if (typeof data === 'object') {
+			return hljs.highlight('json', JSON.stringify(data, null, 2)).value;
+		} else {
+			return hljs.highlight('json', data).value;
+		}
 	}
 });
 
