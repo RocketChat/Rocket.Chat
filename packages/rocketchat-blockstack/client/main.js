@@ -1,4 +1,5 @@
 import blockstack from 'blockstack'
+// import protocolCheck from 'custom-protocol-detection-blockstack'
 import { openPopup } from './popup'
 
 // Let service config set values, but not order of params
@@ -58,7 +59,15 @@ Meteor.loginWithBlockstack = function(option={}, callback) {
   const serviceConfig = ServiceConfiguration.configurations.findOne({service: 'blockstack'})
   const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
   const authRequest = _makeAuthRequest(requestParams)
+  const httpsURI = `${serviceConfig.blockstackIDHost}auth?authRequest=${authRequest}`
+  // GO!...
   _saveDataForRedirect(privateKey, authRequest)
-  blockstack.redirectToSignInWithAuthRequest(authRequest)
   // TODO: if serviceConfig.loginStyle == popup else...
+  window.location.assign(httpsURI) // hack, just do it without protocol handler
+  // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
+  // const protocolURI = `blockstack:${authRequest}`
+  // const protocolSuccess = () => console.log('protocol handler detected')
+  // const protocolFail = () => window.location.assign(httpsURI)
+  // const protocolUnsupported = () => window.location.assign(protocolURI)
+  // protocolCheck(protocolURI, protocolFail, protocolSuccess, protocolUnsupported)
 }

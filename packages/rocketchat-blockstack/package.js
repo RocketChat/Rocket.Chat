@@ -29,6 +29,7 @@ Package.onUse((api) => {
 
   api.use([
     'aldeed:template-extension@4.1.0',
+    'kadira:flow-router',
     'templating',
     'less',
     'reload'
@@ -49,6 +50,7 @@ Package.onUse((api) => {
 
   api.addFiles([
     'client/main.js',
+    'client/routes.js',
     'client/stylesheets/blockstackLogin.less',
     'client/views/blockstackLogin.html',
     'client/views/blockstackLogin.js'

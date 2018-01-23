@@ -1,9 +1,12 @@
 RocketChat.settings.addGroup('Blockstack')
 
+Meteor.isDevelopment = (Meteor.isServer ? process.env.ROOT_URL : window.location.origin).indexOf('localhost') != -1
+
+
 // Rocket.Chat Blockstack provider config defaults, settings can override
 Accounts.blockstack.defaults = {
   enable: true,
-  host: 'http://localhost:8888/',
+  blockstackIDHost: (Meteor.isDevelopment) ? 'http://localhost:8888/' : 'https://blockstack.org/auth',
   loginStyle: 'redirect',
 	generateUsername: false,
   debug: true,

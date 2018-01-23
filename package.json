@@ -115,6 +115,7 @@
 		"bunyan": "^1.8.12",
 		"codemirror": "^5.32.0",
 		"core-js": "2.5.3",
+		"custom-protocol-detection-blockstack": "^1.1.3",
 		"emailreplyparser": "0.0.5",
 		"file-type": "^7.4.0",
 		"highlight.js": "^9.12.0",
