@@ -22,6 +22,7 @@
 	border-left: 1px solid #dfdfdf;
 	background: #f4f4f4;
 	overflow: hidden;
+	line-height: normal;
 }
 
 .smarti #widgetContainer #widgetWrapper {
@@ -60,7 +61,8 @@
 		opacity: 1;
 		width: 100%;
 		text-align: center;
-		border-top: 1px solid #CBCBCB; }
+		border-top: 1px solid #CBCBCB; 
+		transition: 0.2s; }
 		.smarti #widgetContainer #widgetWrapper #widgetFooter .help-request-actions {
 			margin: 0; }
 		.smarti #widgetContainer #widgetWrapper #widgetFooter button {
