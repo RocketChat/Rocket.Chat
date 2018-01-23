@@ -8,8 +8,6 @@
 	}
 
 	&__title {
-		color: var(--input-title-text-size);
-
 		font-size: var(--input-font-size);
 	}
 
