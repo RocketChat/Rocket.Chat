@@ -45,11 +45,17 @@ RocketChat.TabBar = new (class TabBar {
 	}
 
 	getButtons() {
-		return _.sortBy(_.toArray(this.buttons.get()), 'order');
+		const buttons = _.toArray(this.buttons.get()).filter(button => {
+			return !button.condition || button.condition();
+		});
+
+		return _.sortBy(buttons, 'order');
 	}
 
 	getButton(id) {
-		return _.findWhere(this.buttons.get(), { id });
+		const button = _.findWhere(this.buttons.get(), { id });
+
+		return !button.condition || button.condition();
 	}
 
 	addGroup(id, groups) {
