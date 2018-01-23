@@ -20,11 +20,44 @@ Meteor.methods({
 	getConversationId(channelId) {
 		SystemLogger.debug(`Retrieving conversation ID for channel: ${ channelId }`);
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(channelId);
-		if(m) {
+		if(m && m.conversationId) {
 			return m.conversationId;
 		} else {
-			SystemLogger.debug(`Smarti - no conversation found for channel: ${ channelId }`);
-			return null;
+			SystemLogger.debug(`Smarti - Trying legacy service to retrieve conversation ID...`);
+			let conversation = RocketChat.RateLimiter.limitFunction(
+				SmartiProxy.propagateToSmarti, 5, 1000, {
+					userId(userId) {
+						return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+					}
+				}
+			)(verbs.get, `legacy/rocket.chat?channel_id=${ channelId }`);
+
+			if(conversation && conversation.id) {
+				let timestamp = conversation.messages &&
+								conversation.messages[conversation.messages.length - 1] &&
+								conversation.messages[conversation.messages.length - 1].time;
+
+				if(!timestamp) timestamp = conversation.lastModified;
+
+				// Store conversation ID and latest conversation timestamp
+				RocketChat.models.LivechatExternalMessage.update(
+					{
+						_id: channelId
+					}, {
+						rid: channelId,
+						knowledgeProvider: 'smarti',
+						conversationId: conversation.id,
+						ts: timestamp
+					}, {
+						upsert: true
+					}
+				);
+
+				return conversation.id;
+			} else {
+				SystemLogger.debug(`Smarti - no conversation found for channel: ${ channelId }`);
+				return null;
+			}
 		}
 	},
 
