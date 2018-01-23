@@ -90,6 +90,9 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 
+		margin: 0 -1.5rem;
+		padding: 0 1.5rem;
+
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
 			color: #9ea2a8;
