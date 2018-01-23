@@ -81,12 +81,12 @@ Package.onUse(function(api) {
 	// Client orchestrator
 	api.addFiles('client/orchestrator.js', 'client');
 
-	// Add what this package actually does export
+	// Add what this package actually does export (needs updated to the module import style)
 	api.export('Apps');
 });
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'@rocket.chat/apps-engine': '0.3.2',
-	'@rocket.chat/apps-ts-definition': '0.7.5'
+	'@rocket.chat/apps-engine': '0.3.5',
+	'@rocket.chat/apps-ts-definition': '0.7.6'
 });
