@@ -1,6 +1,13 @@
+/* global AutoComplete Deps */
+
 import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
+
+const filterNames = (old) => {
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+};
 
 Template.mailMessagesInstructions.helpers({
 	name() {
@@ -44,6 +51,30 @@ Template.mailMessagesInstructions.helpers({
 	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
+	},
+	selectedEmails() {
+		return Template.instance().selectedEmails.get();
+	},
+	config() {
+		const filter = Template.instance().userFilter;
+		return {
+			filter: filter.get(),
+			noMatchTemplate: 'userSearchEmpty',
+			modifier(text) {
+				const f = filter.get();
+				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			}
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac): param;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
 	}
 });
 
@@ -128,16 +159,127 @@ Template.mailMessagesInstructions.events({
 		});
 		Template.instance().selectedUsers.set(users);
 		return $('#to_users').focus();
+	},
+	'click .rc-tags__tag'({target}, t) {
+		const {username} = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'click .rc-tags__tag-icon'(e, t) {
+		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'input [name="users"]'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const length = input.value.length;
+		const modified = filterNames(input.value);
+		input.value = modified;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+
+		t.userFilter.set(modified);
+	},
+	'keydown [name="emails"]'(e, t) {
+		if ([9, 188].includes(e.keyCode)) {
+			e.preventDefault();
+			const input = e.target;
+			console.log(input.value);
+			const emails = t.selectedEmails;
+			const emailsArr = emails.get();
+			emailsArr.push({text: input.value});
+			input.value = '';
+			return emails.set(emailsArr);
+		}
+
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const emails = t.selectedEmails;
+			const emailsArr = emails.get();
+			emailsArr.pop();
+			return emails.set(emailsArr);
+		}
+	},
+	'keydown [name="users"]'(e, t) {
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const users = t.selectedUsers;
+			const usersArr = users.get();
+			usersArr.pop();
+			return users.set(usersArr);
+		}
+
+		t.ac.onKeyDown(e);
+	},
+	'keyup [name="users"]'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus [name="users"]'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur [name="users"]'(e, t) {
+		t.ac.onBlur(e);
 	}
+});
+
+Template.mailMessagesInstructions.onRendered(function() {
+	const users = this.selectedUsers;
+
+	this.firstNode.querySelector('[name="users"]').focus();
+	this.ac.element = this.firstNode.querySelector('[name="users"]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+		const usersArr = users.get();
+		usersArr.push(item);
+		users.set(usersArr);
+	});
 });
 
 Template.mailMessagesInstructions.onCreated(function() {
 	resetSelection(true);
-	this.autoCompleteCollection = new Mongo.Collection(null);
+
 	this.selectedUsers = new ReactiveVar([]);
+	this.userFilter = new ReactiveVar('');
+
+	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	Deps.autorun(() => {
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+	});
+
+	this.ac = new AutoComplete(
+		{
+			selector:{
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list'
+			},
+
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					collection: 'UserAndRoom',
+					subscription: 'userAutocomplete',
+					field: 'username',
+					matchAll: true,
+					filter,
+					doNotChangeWidth: false,
+					selector(match) {
+						return { term: match };
+					},
+					sort: 'username'
+				}
+			]
+
+		});
+
+	this.ac.tmplInst = this;
+
+	this.selectedEmails = new ReactiveVar([]);
+
+	this.autoCompleteCollection = new Mongo.Collection(null);
 	this.erroredEmails = new ReactiveVar([]);
 	this.reset = (bool) => {
 		this.selectedUsers.set([]);
+		this.selectedEmails.set([]);
 		resetSelection(bool);
 	};
 });
