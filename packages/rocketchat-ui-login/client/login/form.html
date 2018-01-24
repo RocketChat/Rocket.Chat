@@ -28,12 +28,12 @@
 										<input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
+										<div class="input-error"></div>
 										</div>
 									</label>
 									{{#if hasOnePassword}}
 										<div class="one-passsword"></div>
 									{{/if}}
-									<div class="input-error"></div>
 							</div>
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
@@ -42,6 +42,7 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
 										</div>
 									</label>
 							</div>
@@ -54,9 +55,9 @@
 								<input name="name" id="name" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
 									placeholder="{{namePlaceholder}}" autofocus>
-								</div>
-							</label>
-							<div class="input-error"></div>
+								<div class="input-error"></div>
+							</div>
+						</label>
 						</div>
 						<div class="rc-input">
 							<label class="rc-input__label" for="email">
@@ -65,9 +66,9 @@
 								<input name="email" id="email" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
 									placeholder="{{_ "Email"}}" autofocus>
+									<div class="input-error"></div>
 								</div>
 							</label>
-							<div class="input-error"></div>
 						</div>
 
 							{{> customFieldsForm hideFromForm=true}}
@@ -79,6 +80,7 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
 										</div>
 									</label>
 							</div>
@@ -90,6 +92,7 @@
 										<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
 										</div>
 									</label>
 							</div>
@@ -103,9 +106,9 @@
 								<input name="email" id="email" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
 									placeholder="{{_ "Email"}}" autofocus>
+									<div class="input-error"></div>
 								</div>
 							</label>
-							<div class="input-error"></div>
 						</div>
 						{{/if}}
 					</div>
