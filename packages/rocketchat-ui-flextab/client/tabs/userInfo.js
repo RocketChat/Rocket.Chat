@@ -6,7 +6,7 @@ import moment from 'moment';
 import {getActions} from './userActions';
 
 const more = function() {
-	return Template.instance().actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
+	return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
 };
 
 
@@ -14,7 +14,7 @@ Template.userInfo.helpers({
 	moreActions: more,
 
 	actions() {
-		return Template.instance().actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
+		return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
 	},
 	customField() {
 		if (!RocketChat.authz.hasAllPermission('view-full-other-user-info')) {
@@ -210,14 +210,21 @@ Template.userInfo.events({
 Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
 	this.user = new ReactiveVar;
+	this.actions = new ReactiveVar;
 
 
 	this.autorun(() => {
-		this.actions = getActions({
-			user: this.user.get(),
+		const user = this.user.get();
+		if (!user) {
+			this.actions.set([]);
+			return;
+		}
+		const actions = getActions({
+			user,
 			hideAdminControls: this.data.hideAdminControls,
 			directActions: this.data.showAll
 		});
+		this.actions.set(actions);
 	});
 	this.editingUser = new ReactiveVar;
 	this.loadingUserInfo = new ReactiveVar(true);
