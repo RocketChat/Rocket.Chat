@@ -86,8 +86,8 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.close', (done) => {
-		request.post(api('im.close'))
+	it('/im.open', (done) => {
+		request.post(api('im.open'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
@@ -101,8 +101,8 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.open', (done) => {
-		request.post(api('im.open'))
+	it('/im.close', (done) => {
+		request.post(api('im.close'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
