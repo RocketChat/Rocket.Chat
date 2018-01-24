@@ -11,6 +11,9 @@ const more = function() {
 
 
 Template.userInfo.helpers({
+	hideHeader() {
+		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
+	},
 	moreActions: more,
 
 	actions() {
