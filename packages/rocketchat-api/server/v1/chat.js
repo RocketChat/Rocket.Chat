@@ -255,3 +255,23 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 		});
 	}
 });
+
+RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.messageId || !this.bodyParams.messageId.trim()) {
+			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
+		}
+
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		const emoji = this.bodyParams.emoji;
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.userId));
+
+		return RocketChat.API.v1.success();
+	}
+});
