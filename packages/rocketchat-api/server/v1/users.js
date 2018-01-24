@@ -275,11 +275,11 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = this.isUserFromParams() ? RocketChat.models.Users.findOneById(this.userId) : this.getUserFromParams();
 		if (user.settings) {
-			let preferences = user.settings.preferences
-			preferences.language = user.language
+			const preferences = user.settings.preferences;
+			preferences['language'] = user.language;
 
 			return RocketChat.API.v1.success({
-				preferences: preferences
+				preferences
 			});
 		} else {
 			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences').toUpperCase());
@@ -319,12 +319,14 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			})
 		});
 
+		let preferences;
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
+			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }, language });
+		} else {
+			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }});
 		}
-
-		const preferences = _.extend({ _id: this.bodyParams.userId }, { preferences: this.bodyParams.data });
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
 
