@@ -3463,10 +3463,6 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			position: absolute;
-			top: 0;
-			left: 0;
-
 			overflow-x: hidden;
 			overflow-y: auto;
 
@@ -3565,7 +3561,7 @@ body:not(.is-cordova) {
 			}
 		}
 
-		& .close-flex-tab {
+		/*& .close-flex-tab {
 			position: absolute;
 			z-index: 20;
 			top: 3px;
@@ -3591,13 +3587,15 @@ body:not(.is-cordova) {
 					font-size: 10px;
 				}
 			}
-		}
+		}*/
 	}
 
 	& .flex-tab-bar {
 		z-index: 1;
 
 		min-width: 40px;
+
+		border: 1px solid rgba(31, 35, 41, 0.08);
 
 		& .tab-button {
 			position: relative;
@@ -4455,7 +4453,7 @@ body:not(.is-cordova) {
 	& .forgot-password,
 	& .back-to-login {
 		margin-top: 12px;
-		
+
 		& button {
 			margin: 0 auto;
 		}
