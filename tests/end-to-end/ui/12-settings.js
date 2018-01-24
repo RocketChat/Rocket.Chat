@@ -488,6 +488,7 @@ describe('[Api Settings Change]', () => {
 			const userEl = admin.getUserFromList(`setting${ username }`);
 			userEl.waitForVisible(5000);
 			userEl.click();
+			flexTab.userViewTabButton.click();
 			flexTab.usersView.waitForVisible(5000);
 		});
 
@@ -521,4 +522,3 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 });
-
