@@ -1,4 +1,6 @@
 .rc-input {
+	position: relative;
+
 	width: 100%;
 
 	&__label {
@@ -6,8 +8,6 @@
 	}
 
 	&__title {
-		color: var(--input-title-text-size);
-
 		font-size: var(--input-font-size);
 	}
 
