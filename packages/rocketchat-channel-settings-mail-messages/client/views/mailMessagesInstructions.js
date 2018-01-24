@@ -4,6 +4,30 @@ import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
+/*
+	* Code from https://github.com/dleitee/valid.js
+	* Checks for email
+	* @params email
+	* @return boolean
+	*/
+const isEmail = email => {
+	const sQtext = '[^\\x0d\\x22\\x5c]';
+	const sDtext = '[^\\x0d\\x5b-\\x5d]';
+	const sAtom = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d]+';
+	const sQuotedPair = '\\x5c[\\x00-\\x7f]';
+	const sDomainLiteral = `\\x5b(${ sDtext }|${ sQuotedPair })*\\x5d`;
+	const sQuotedString = `\\x22(${ sQtext }|${ sQuotedPair })*\\x22`;
+	const sDomainRef = sAtom;
+	const sSubDomain = `(${ sDomainRef }|${ sDomainLiteral })`;
+	const sWord = `(${ sAtom }|${ sQuotedString })`;
+	const sDomain = `${ sSubDomain }(\\x2e${ sSubDomain })*`;
+	const sLocalPart = `${ sWord }(\\x2e${ sWord })*`;
+	const sAddrSpec = `${ sLocalPart }\\x40${ sDomain }`;
+	const sValidEmail = `^${ sAddrSpec }$`;
+	const reg = new RegExp(sValidEmail);
+	return reg.test(email);
+};
+
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
@@ -79,10 +103,10 @@ Template.mailMessagesInstructions.helpers({
 });
 
 Template.mailMessagesInstructions.events({
-	'click .cancel'(e, t) {
-		return t.reset(true);
+	'click .js-cancel'(e, t) {
+		t.reset(true);
 	},
-	'click .send'(e, t) {
+	'click .js-send'(e, t) {
 		t.$('.error').hide();
 		const $btn = t.$('button.send');
 		const oldBtnValue = $btn.html();
@@ -160,13 +184,21 @@ Template.mailMessagesInstructions.events({
 		Template.instance().selectedUsers.set(users);
 		return $('#to_users').focus();
 	},
-	'click .rc-tags__tag'({target}, t) {
+	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
-	'click .rc-tags__tag-icon'(e, t) {
+	'click .rc-input--usernames .rc-tags__tag-icon'(e, t) {
 		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'click .rc-input--emails .rc-tags__tag'({target}, t) {
+		const {text} = Blaze.getData(target);
+		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
+	},
+	'click .rc-input--emails .rc-tags__tag-icon'(e, t) {
+		const {text} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -182,10 +214,9 @@ Template.mailMessagesInstructions.events({
 		t.userFilter.set(modified);
 	},
 	'keydown [name="emails"]'(e, t) {
-		if ([9, 188].includes(e.keyCode)) {
+		const input = e.target;
+		if ([9, 13, 188].includes(e.keyCode) && isEmail(input.value)) {
 			e.preventDefault();
-			const input = e.target;
-			console.log(input.value);
 			const emails = t.selectedEmails;
 			const emailsArr = emails.get();
 			emailsArr.push({text: input.value});
@@ -193,7 +224,7 @@ Template.mailMessagesInstructions.events({
 			return emails.set(emailsArr);
 		}
 
-		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+		if ([8, 46].includes(e.keyCode) && input.value === '') {
 			const emails = t.selectedEmails;
 			const emailsArr = emails.get();
 			emailsArr.pop();
