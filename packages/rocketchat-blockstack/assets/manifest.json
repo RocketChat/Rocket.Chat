@@ -1,9 +1,9 @@
 {
-  "name": "Meteor Blockstack",
+  "name": "Rocket.Chat",
   "start_url": "localhost:3000",
   "description": "A simple demo of Blockstack Auth",
   "icons": [{
-    "src": "http://localhost:3000/packages/rocketchat_blockstack/assets/meteor-shower-192x192.png",
+    "src": "http://localhost:3000/packages/rocketchat_blockstack/assets/rocketchat-logo-192x192.png",
     "sizes": "192x192",
     "type": "image/png"
   }]

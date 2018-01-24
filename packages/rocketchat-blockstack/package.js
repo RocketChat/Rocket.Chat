@@ -37,13 +37,15 @@ Package.onUse((api) => {
 
   api.addAssets([
     'assets/blockstack_mark.png',
-    'assets/meteor-shower-192x192.png',
+    'assets/rocketchat-logo-192x192.png',
     'assets/manifest.json'
   ], 'client')
 
   api.addFiles([
     'server/main.js',
     'server/settings.js',
+    'server/tokenHandler.js',
+    'server/userHandler.js',
     'server/loginHandler.js',
     'server/cors.js'
   ], 'server')
