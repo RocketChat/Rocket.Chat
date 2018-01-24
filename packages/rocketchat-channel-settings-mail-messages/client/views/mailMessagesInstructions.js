@@ -1,6 +1,37 @@
+/* global AutoComplete Deps */
+
 import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
+
+/*
+	* Code from https://github.com/dleitee/valid.js
+	* Checks for email
+	* @params email
+	* @return boolean
+	*/
+const isEmail = email => {
+	const sQtext = '[^\\x0d\\x22\\x5c]';
+	const sDtext = '[^\\x0d\\x5b-\\x5d]';
+	const sAtom = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d]+';
+	const sQuotedPair = '\\x5c[\\x00-\\x7f]';
+	const sDomainLiteral = `\\x5b(${ sDtext }|${ sQuotedPair })*\\x5d`;
+	const sQuotedString = `\\x22(${ sQtext }|${ sQuotedPair })*\\x22`;
+	const sDomainRef = sAtom;
+	const sSubDomain = `(${ sDomainRef }|${ sDomainLiteral })`;
+	const sWord = `(${ sAtom }|${ sQuotedString })`;
+	const sDomain = `${ sSubDomain }(\\x2e${ sSubDomain })*`;
+	const sLocalPart = `${ sWord }(\\x2e${ sWord })*`;
+	const sAddrSpec = `${ sLocalPart }\\x40${ sDomain }`;
+	const sValidEmail = `^${ sAddrSpec }$`;
+	const reg = new RegExp(sValidEmail);
+	return reg.test(email);
+};
+
+const filterNames = (old) => {
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+};
 
 Template.mailMessagesInstructions.helpers({
 	name() {
@@ -44,14 +75,38 @@ Template.mailMessagesInstructions.helpers({
 	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
+	},
+	selectedEmails() {
+		return Template.instance().selectedEmails.get();
+	},
+	config() {
+		const filter = Template.instance().userFilter;
+		return {
+			filter: filter.get(),
+			noMatchTemplate: 'userSearchEmpty',
+			modifier(text) {
+				const f = filter.get();
+				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			}
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac): param;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
 	}
 });
 
 Template.mailMessagesInstructions.events({
-	'click .cancel'(e, t) {
-		return t.reset();
+	'click .js-cancel'(e, t) {
+		t.reset(true);
 	},
-	'click .send'(e, t) {
+	'click .js-send'(e, t) {
 		t.$('.error').hide();
 		const $btn = t.$('button.send');
 		const oldBtnValue = $btn.html();
@@ -128,22 +183,138 @@ Template.mailMessagesInstructions.events({
 		});
 		Template.instance().selectedUsers.set(users);
 		return $('#to_users').focus();
+	},
+	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
+		const {username} = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'click .rc-input--usernames .rc-tags__tag-icon'(e, t) {
+		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
+	'click .rc-input--emails .rc-tags__tag'({target}, t) {
+		const {text} = Blaze.getData(target);
+		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
+	},
+	'click .rc-input--emails .rc-tags__tag-icon'(e, t) {
+		const {text} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
+	},
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'input [name="users"]'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const length = input.value.length;
+		const modified = filterNames(input.value);
+		input.value = modified;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+
+		t.userFilter.set(modified);
+	},
+	'keydown [name="emails"]'(e, t) {
+		const input = e.target;
+		if ([9, 13, 188].includes(e.keyCode) && isEmail(input.value)) {
+			e.preventDefault();
+			const emails = t.selectedEmails;
+			const emailsArr = emails.get();
+			emailsArr.push({text: input.value});
+			input.value = '';
+			return emails.set(emailsArr);
+		}
+
+		if ([8, 46].includes(e.keyCode) && input.value === '') {
+			const emails = t.selectedEmails;
+			const emailsArr = emails.get();
+			emailsArr.pop();
+			return emails.set(emailsArr);
+		}
+	},
+	'keydown [name="users"]'(e, t) {
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const users = t.selectedUsers;
+			const usersArr = users.get();
+			usersArr.pop();
+			return users.set(usersArr);
+		}
+
+		t.ac.onKeyDown(e);
+	},
+	'keyup [name="users"]'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus [name="users"]'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur [name="users"]'(e, t) {
+		t.ac.onBlur(e);
 	}
 });
 
-Template.mailMessagesInstructions.onCreated(function() {
-	const currentData = Template.currentData();
-	this.autoCompleteCollection = new Mongo.Collection(null);
-	this.selectedUsers = new ReactiveVar([]);
-	this.erroredEmails = new ReactiveVar([]);
-	this.reset = () => {
-		this.selectedUsers.set([]);
-		currentData.tabBar.setTemplate('channelSettings');
-		resetSelection(false);
-	};
-	return this.autorun(() => {
-		if (Session.get('channelSettingsMailMessages') !== Session.get('openedRoom')) {
-			return this.reset();
-		}
+Template.mailMessagesInstructions.onRendered(function() {
+	const users = this.selectedUsers;
+
+	this.firstNode.querySelector('[name="users"]').focus();
+	this.ac.element = this.firstNode.querySelector('[name="users"]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+		const usersArr = users.get();
+		usersArr.push(item);
+		users.set(usersArr);
 	});
+});
+
+Template.mailMessagesInstructions.onCreated(function() {
+	resetSelection(true);
+
+	this.selectedUsers = new ReactiveVar([]);
+	this.userFilter = new ReactiveVar('');
+
+	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	Deps.autorun(() => {
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+	});
+
+	this.ac = new AutoComplete(
+		{
+			selector:{
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list'
+			},
+
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					collection: 'UserAndRoom',
+					subscription: 'userAutocomplete',
+					field: 'username',
+					matchAll: true,
+					filter,
+					doNotChangeWidth: false,
+					selector(match) {
+						return { term: match };
+					},
+					sort: 'username'
+				}
+			]
+
+		});
+
+	this.ac.tmplInst = this;
+
+	this.selectedEmails = new ReactiveVar([]);
+
+	this.autoCompleteCollection = new Mongo.Collection(null);
+	this.erroredEmails = new ReactiveVar([]);
+	this.reset = (bool) => {
+		this.selectedUsers.set([]);
+		this.selectedEmails.set([]);
+		resetSelection(bool);
+	};
+});
+
+Template.mailMessagesInstructions.onDestroyed(function() {
+	Template.instance().reset(false);
 });
