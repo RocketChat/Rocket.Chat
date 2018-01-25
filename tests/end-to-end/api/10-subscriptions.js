@@ -41,7 +41,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: "foobar123-somechannel"
+					rid: 'foobar123-somechannel'
 				})
 				.expect(200)
 				.expect((res) => {
@@ -54,7 +54,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: "foobar123-somegroup"
+					rid: 'foobar123-somegroup'
 				})
 				.expect(200)
 				.expect((res) => {
@@ -67,7 +67,7 @@ describe('[Subscriptions]', function() {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
-					rid: "foobar123-somedm"
+					rid: 'foobar123-somedm'
 				})
 				.expect(200)
 				.expect((res) => {
