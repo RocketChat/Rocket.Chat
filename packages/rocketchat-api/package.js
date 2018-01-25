@@ -44,4 +44,5 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/settings.js', 'server');
 	api.addFiles('server/v1/stats.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');
+	api.addFiles('server/v1/spotlight.js', 'server');
 });
