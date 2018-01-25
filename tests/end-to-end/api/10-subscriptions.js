@@ -35,4 +35,45 @@ describe('[Subscriptions]', function() {
 			})
 			.end(done);
 	});
+
+	describe('[/subscriptions.read]', () => {
+		it('should mark public channels as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: "foobar123-somechannel"
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should mark groups as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: "foobar123-somegroup"
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should mark DMs as read', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: "foobar123-somedm"
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
