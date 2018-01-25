@@ -19,7 +19,7 @@
 
 		display: flex;
 
-		height: 64px;
+		padding: 8px 0;
 
 		cursor: pointer;
 		align-items: center;
@@ -34,8 +34,8 @@
 		}
 
 		& > .avatar {
-			width: 48px;
-			height: 48px;
+			width: var(--sidebar-account-thumb-size);
+			height: var(--sidebar-account-thumb-size);
 		}
 	}
 
