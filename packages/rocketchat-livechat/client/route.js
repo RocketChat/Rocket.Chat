@@ -23,7 +23,7 @@ AccountBox.addRoute({
 	name: 'livechat-users',
 	path: '/users',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Livechat_Users',
+	i18nPageTitle: 'Users',
 	pageTemplate: 'livechatUsers'
 }, livechatManagerRoutes);
 
@@ -47,7 +47,7 @@ AccountBox.addRoute({
 	name: 'livechat-department-new',
 	path: '/departments/new',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'New_Department',
+	i18nPageTitle: 'New',
 	pageTemplate: 'livechatDepartmentForm'
 }, livechatManagerRoutes);
 
@@ -71,7 +71,7 @@ AccountBox.addRoute({
 	name: 'livechat-trigger-new',
 	path: '/triggers/new',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'New_Trigger',
+	i18nPageTitle: 'New',
 	pageTemplate: 'livechatTriggersForm'
 }, livechatManagerRoutes);
 
@@ -119,7 +119,7 @@ AccountBox.addRoute({
 	name: 'livechat-customfield-new',
 	path: '/customfields/new',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'New_Custom_Field',
+	i18nPageTitle: 'New',
 	pageTemplate: 'livechatCustomFieldForm'
 }, livechatManagerRoutes);
 
