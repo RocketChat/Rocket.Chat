@@ -89,5 +89,17 @@ describe('[Subscriptions]', function() {
 				})
 				.end(done);
 		});
+
+		it('should fail on empty params', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
 	});
 });
