@@ -39,9 +39,8 @@ RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 			rid: String
 		});
 
-		let result;
 		Meteor.runAsUser(this.userId, () =>
-			result = Meteor.call('readMessages', this.bodyParams.rid)
+			Meteor.call('readMessages', this.bodyParams.rid)
 		);
 
 		return RocketChat.API.v1.success();
