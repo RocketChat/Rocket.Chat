@@ -1,3 +1,20 @@
+<a name="0.61.0-rc.1"></a>
+# 0.61.0-rc.1 (2018-01-25)
+
+
+### Bug Fixes
+
+- [#9481](https://github.com/RocketChat/Rocket.Chat/pull/9481) Contextual bar redesign
+
+
+<details>
+<summary>Others</summary>
+
+- [#9490](https://github.com/RocketChat/Rocket.Chat/pull/9490) Update license
+</details>
+
+
+
 <a name="0.61.0-rc.0"></a>
 # 0.61.0-rc.0 (2018-01-21)
 
