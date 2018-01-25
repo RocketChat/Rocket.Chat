@@ -1,31 +1,51 @@
 <template name="mailMessagesInstructions">
 	<main class="rc-user-info__scroll">
-	<div class="rc-input rc-input--usernames">
-		<label class="rc-input__label">
-			<div class="rc-input__title">{{_ "To_users"}}</div>
-			<div class="rc-input__wrapper">
-				<div class="rc-input__icon">
-					{{> icon block="rc-input__icon-svg" icon="at"}}
-				</div>
-				<div class="rc-tags">
-					{{#each user in selectedUsers}}
-						{{> tag user}}
-					{{/each}}
-					<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+		{{#if selectedMessages}}
+			<div class="mail-messages__instructions mail-messages__instructions--selected">
+				<div class="mail-messages__instructions-wrapper">
+					{{> icon block="mail-messages__instructions-icon" icon="modal-success"}}
+					<div class="mail-messages__instructions-text">
+							<span class="mail-messages__instructions-text-selected">{{selectedMessages.length}} Messages selected</span>
+							<span>Click here to clear the selection</span>
+					</div>
 				</div>
 			</div>
-			{{#with config}}
-				{{#if autocomplete 'isShowing'}}
-					<div class="fadeInDown">
-						{{#if autocomplete 'isLoaded'}}
-							{{> popupList data=config items=items}}
-						{{/if}}
+		{{else}}
+			<div class="mail-messages__instructions">
+				<div class="mail-messages__instructions-wrapper">
+					{{> icon block="mail-messages__instructions-icon" icon="hand-pointer"}}
+					<div class="mail-messages__instructions-text">
+							Click the messages you would like to send by e-mail
 					</div>
-				{{/if}}
-			{{/with}}
-		</label>
-	</div>
-	<div class="rc-input rc-input--emails">
+				</div>
+			</div>
+		{{/if}}
+		<div class="rc-input rc-input--usernames">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "To_users"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="at"}}
+					</div>
+					<div class="rc-tags">
+						{{#each user in selectedUsers}}
+							{{> tag user}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+					</div>
+				</div>
+				{{#with config}}
+					{{#if autocomplete 'isShowing'}}
+						<div class="fadeInDown">
+							{{#if autocomplete 'isLoaded'}}
+								{{> popupList data=config items=items}}
+							{{/if}}
+						</div>
+					{{/if}}
+				{{/with}}
+			</label>
+		</div>
+		<div class="rc-input rc-input--emails">
 			<label class="rc-input__label">
 				<div class="rc-input__title">{{_ "To_additional_emails"}}</div>
 				<div class="rc-input__wrapper">
