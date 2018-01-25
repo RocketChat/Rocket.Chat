@@ -79,6 +79,9 @@ Template.mailMessagesInstructions.helpers({
 	selectedEmails() {
 		return Template.instance().selectedEmails.get();
 	},
+	selectedMessages() {
+		return Template.instance().selectedMessages.get();
+	},
 	config() {
 		const filter = Template.instance().userFilter;
 		return {
@@ -103,7 +106,7 @@ Template.mailMessagesInstructions.helpers({
 });
 
 Template.mailMessagesInstructions.events({
-	'click .js-cancel'(e, t) {
+	'click .js-cancel, click .mail-messages__instructions--selected'(e, t) {
 		t.reset(true);
 	},
 	'click .js-send'(e, t) {
@@ -263,6 +266,20 @@ Template.mailMessagesInstructions.onRendered(function() {
 		usersArr.push(item);
 		users.set(usersArr);
 	});
+
+	const selectedMessages = this.selectedMessages;
+
+	$('.messages-box .message').on('click', function() {
+		const id = this.id;
+		const timestamp = this.dataset.timestamp;
+		const messages = selectedMessages.get();
+
+		if ($(this).hasClass('selected')) {
+			selectedMessages.set(messages.filter(message => message.id !== id));
+		} else {
+			selectedMessages.set(messages.concat({id, timestamp}));
+		}
+	});
 });
 
 Template.mailMessagesInstructions.onCreated(function() {
@@ -305,12 +322,14 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.ac.tmplInst = this;
 
 	this.selectedEmails = new ReactiveVar([]);
+	this.selectedMessages = new ReactiveVar([]);
 
 	this.autoCompleteCollection = new Mongo.Collection(null);
 	this.erroredEmails = new ReactiveVar([]);
 	this.reset = (bool) => {
 		this.selectedUsers.set([]);
 		this.selectedEmails.set([]);
+		this.selectedMessages.set([]);
 		resetSelection(bool);
 	};
 });
