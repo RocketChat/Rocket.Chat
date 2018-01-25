@@ -47,19 +47,20 @@
 				</div>
 			</div>
 		{{/with}}
-
-		{{#with settings.description}}
-			<div class="rc-user-info__row">
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-						<div class="rc-input__wrapper">
-							<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
-						</div>
-					</label>
+		{{#unless isDirectMessage}}
+			{{#with settings.description}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							</div>
+						</label>
+					</div>
 				</div>
-			</div>
-		{{/with}}
+			{{/with}}
+		{{/unless}}
 
 		{{#with settings.t}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
@@ -191,7 +192,7 @@
 <template name="channelSettingsInfo">
 	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
 		{{# with settings=settings}}
-
+			{{#unless isDirectMessage}}
 				<div class="rc-user-info">
 					<div class="rc-user-info__avatar">
 						{{#if archived}}
@@ -214,24 +215,26 @@
 						{{unscape description}}
 					</div>
 				</label>
-				<label class="rc-user-info__label">
-					{{_ "Announcement"}}
-					<div class="rc-user-info__description">
-						{{unscape announcement}}
-					</div>
-				</label>
-				<label class="rc-user-info__label">
-					{{_ "Topic"}}
-					<div class="rc-user-info__description">
-						{{unscape topic}}
-					</div>
-				</label>
-				{{/with}}
-				{{#each channelSettings}}
-				<div class="rc-user-info__row">
-					{{> Template.dynamic template=template data=data}}
+			{{/unless}}
+			<label class="rc-user-info__label">
+				{{_ "Announcement"}}
+				<div class="rc-user-info__description">
+					{{unscape announcement}}
 				</div>
-				{{/each}}
+			</label>
+			<label class="rc-user-info__label">
+				{{_ "Topic"}}
+				<div class="rc-user-info__description">
+					{{unscape topic}}
+				</div>
+			</label>
+
+		{{/with}}
+		{{#each channelSettings}}
+			<div class="rc-user-info__row">
+				{{> Template.dynamic template=template data=data}}
+			</div>
+		{{/each}}
 	</main>
 
 	<div class="rc-user-info__flex rc-user-info__row">
