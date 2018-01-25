@@ -222,3 +222,55 @@
 		color: #9ea2a8;
 	}
 }
+
+.contextual-bar.mail-messages .rc-input:not(:last-child) {
+	margin-bottom: 2rem;
+}
+
+.mail-messages__instructions {
+	display: flex;
+	border-width: 1px;
+	border-color: var(--rc-color-alert-message-primary);
+	background: var(--rc-color-alert-message-primary-background);
+	border-radius: 2px;
+	color: var(--rc-color-alert-message-primary);
+	padding: 1.25rem;
+	margin-bottom: 3rem;
+
+	&--selected {
+		background: var(--rc-color-alert-message-secondary-background);
+		border-color: var(--rc-color-alert-message-secondary);
+		color: var(--rc-color-alert-message-secondary);
+
+		cursor: pointer;
+	}
+
+	&-wrapper {
+		display: flex;
+		margin: 0 -10px;
+	}
+
+	&-icon {
+		font-size: 2rem;
+		margin: 0 10px;
+
+		&--hand-pointer {
+			transform: rotate3d(0, 0, 1, -25deg);
+			margin: 0 15px;
+			fill: currentColor;
+		}
+	}
+
+	&-text {
+		font-size: 0.875rem;
+		font-weight: 600;
+		margin: 0 10px;
+		display: flex;
+		flex-direction: column;
+		line-height: 1.2rem;
+
+		&-selected {
+			font-weight: 400;
+		}
+	}
+}
