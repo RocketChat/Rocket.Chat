@@ -1,4 +1,63 @@
 <template name="mailMessagesInstructions">
+	<main class="rc-user-info__scroll">
+	<div class="rc-input rc-input--usernames">
+		<label class="rc-input__label">
+			<div class="rc-input__title">{{_ "To_users"}}</div>
+			<div class="rc-input__wrapper">
+				<div class="rc-input__icon">
+					{{> icon block="rc-input__icon-svg" icon="at"}}
+				</div>
+				<div class="rc-tags">
+					{{#each user in selectedUsers}}
+						{{> tag user}}
+					{{/each}}
+					<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+				</div>
+			</div>
+			{{#with config}}
+				{{#if autocomplete 'isShowing'}}
+					<div class="fadeInDown">
+						{{#if autocomplete 'isLoaded'}}
+							{{> popupList data=config items=items}}
+						{{/if}}
+					</div>
+				{{/if}}
+			{{/with}}
+		</label>
+	</div>
+	<div class="rc-input rc-input--emails">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "To_additional_emails"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="mail"}}
+					</div>
+					<div class="rc-tags">
+						{{#each selectedEmails}}
+							{{> tag .}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Email_Placeholder_any"}}" name="emails" autocomplete="off"/>
+					</div>
+				</div>
+			</label>
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Subject"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="edit"}}
+					</div>
+					<input type="text" class="rc-input__element" value="{{_ "Mail_Messages_Subject" roomName}}" name="subject" autocomplete="off"/>
+				</div>
+			</label>
+		</div>
+	</main>
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--outline js-cancel" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
+		<button class="rc-button rc-button--primary js-send" title="{{_ 'Send'}}">{{_ 'Send'}}</button>
+	</div>
+	{{#if false}}
 	<div class="content">
 		<div class="list-view mail-message">
 			<p>{{_ "Mail_Messages_Instructions"}}</p>
@@ -49,4 +108,5 @@
 			</p>
 		</div>
 	</div>
+	{{/if}}
 </template>
