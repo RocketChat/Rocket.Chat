@@ -1,6 +1,10 @@
 <template name="userInfo">
 	{{#unless hideHeader}}
 		<header class="contextual-bar__header">
+			<div class="contextual-bar__header-data">
+				{{> icon icon="user" block="contextual-bar__header-icon"}}
+				<h1 class="contextual-bar__header-title">{{_ "User_Info"}}</h1>
+			</div>
 			<button class="contextual-bar__header-close js-close">
 				{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
 			</button>
