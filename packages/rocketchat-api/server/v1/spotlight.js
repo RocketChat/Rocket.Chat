@@ -1,3 +1,12 @@
+/**
+	This API returns the result of a query of rooms
+	and users, using Meteor's Spotlight method.
+
+	Method: GET
+	Route: api/v1/spotlight
+	Query params:
+		- query: The term to be searched.
+ */
 RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
 	get() {
 		check(this.queryParams, {
