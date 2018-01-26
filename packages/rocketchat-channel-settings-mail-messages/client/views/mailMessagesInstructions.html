@@ -36,11 +36,9 @@
 				</div>
 				{{#with config}}
 					{{#if autocomplete 'isShowing'}}
-						<div class="fadeInDown">
-							{{#if autocomplete 'isLoaded'}}
-								{{> popupList data=config items=items}}
-							{{/if}}
-						</div>
+						{{#if autocomplete 'isLoaded'}}
+							{{> popupList data=config items=items}}
+						{{/if}}
 					{{/if}}
 				{{/with}}
 			</label>
@@ -72,6 +70,14 @@
 				</div>
 			</label>
 		</div>
+
+		{{#if errorMessage}}
+			<div class="mail-messages__instructions mail-messages__instructions--warning">
+				<div class="mail-messages__instructions-wrapper">
+					<div class="mail-messages__instructions-text">{{errorMessage}}</div>
+				</div>
+			</div>
+		{{/if}}
 	</main>
 	<div class="rc-user-info__flex rc-user-info__row">
 		<button class="rc-button rc-button--outline js-cancel" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
