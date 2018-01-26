@@ -54,6 +54,9 @@
 	}
 
 	&--primary {
+		padding-right: 10px;
+		padding-left: 10px;
+
 		color: var(--button-primary-text-color);
 		border: 0;
 		background-color: var(--button-primary-background);
