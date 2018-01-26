@@ -1,4 +1,3 @@
-import toastr from 'toastr';
 /* globals ChatSubscription popover */
 
 const notificationLabels = {
@@ -31,7 +30,7 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	audioNotificationValue() {
 		const value = Template.instance().form.audioNotificationValue.get();
-		if (value === '0' ) {
+		if (value === '0') {
 			return t('Use_account_preference');
 		}
 
@@ -207,17 +206,17 @@ Template.pushNotificationsFlexTab.events({
 
 		let options;
 
-		switch(key) {
+		switch (key) {
 			case 'audioNotificationValue':
 				const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 				const audioAssetsArray = audioAssets.map(audio => {
 					return {
-						id: `audioNotificationValue${audio.name}`,
+						id: `audioNotificationValue${ audio.name }`,
 						name: 'audioNotificationValue',
 						label: audio.name,
 						value: audio._id
-					}
-				})
+					};
+				});
 				options = [
 					{
 						id: 'audioNotificationValueNone',
@@ -244,31 +243,31 @@ Template.pushNotificationsFlexTab.events({
 				{
 					id: 'desktopNotificationDuration1s',
 					name: 'desktopNotificationDuration',
-					label: `1 ${t('seconds')}`,
+					label: `1 ${ t('seconds') }`,
 					value: 1
 				},
 				{
 					id: 'desktopNotificationDuration2s',
 					name: 'desktopNotificationDuration',
-					label: `2 ${t('seconds')}`,
+					label: `2 ${ t('seconds') }`,
 					value: 2
 				},
 				{
 					id: 'desktopNotificationDuration3s',
 					name: 'desktopNotificationDuration',
-					label: `3 ${t('seconds')}`,
+					label: `3 ${ t('seconds') }`,
 					value: 3
 				},
 				{
 					id: 'desktopNotificationDuration4s',
 					name: 'desktopNotificationDuration',
-					label: `4 ${t('seconds')}`,
+					label: `4 ${ t('seconds') }`,
 					value: 4
 				},
 				{
 					id: 'desktopNotificationDuration5s',
 					name: 'desktopNotificationDuration',
-					label: `5 ${t('seconds')}`,
+					label: `5 ${ t('seconds') }`,
 					value: 5
 				}];
 				break;
