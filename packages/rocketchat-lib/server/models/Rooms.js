@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -257,9 +260,11 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotContainingUsername(name, type, username, options) {
+	findByNameAndTypesNotContainingUsername(name, types, username, options) {
 		const query = {
-			t: type,
+			t: {
+				$in: types
+			},
 			name,
 			usernames: {
 				$ne: username
@@ -531,7 +536,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageTimestampById(_id, inc, lastMessageTimestamp) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
 
@@ -541,6 +546,22 @@ class ModelRooms extends RocketChat.models._Base {
 			},
 			$inc: {
 				msgs: inc
+			}
+		};
+
+		if (lastMessage) {
+			update.$set.lastMessage = lastMessage;
+		}
+
+		return this.update(query, update);
+	}
+
+	setLastMessageById(_id, lastMessage) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				lastMessage
 			}
 		};
 

@@ -29,6 +29,15 @@ RocketChat.deleteMessage = function(message, user) {
 		});
 	}
 
+	// update last message
+	if (RocketChat.settings.get('Store_Last_Message')) {
+		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
+		if (!room.lastMessage || room.lastMessage._id === message._id) {
+			const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid, message._id);
+			RocketChat.models.Rooms.setLastMessageById(message.rid, lastMessage);
+		}
+	}
+
 	if (showDeletedStatus) {
 		RocketChat.models.Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {

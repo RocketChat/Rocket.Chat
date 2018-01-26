@@ -1,4 +1,5 @@
 /* globals MsgTyping */
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 this.ChatMessages = class ChatMessages {
@@ -176,7 +177,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {function?} done callback
 		*/
 	send(rid, input, done = function() {}) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
@@ -245,7 +246,7 @@ this.ChatMessages = class ChatMessages {
 								ts: new Date,
 								msg: TAPi18n.__('No_such_command', { command: match[1] }),
 								u: {
-									username: 'rocketbot'
+									username: RocketChat.settings.get('InternalHubot_Username')
 								},
 								private: true
 							};
@@ -256,6 +257,9 @@ this.ChatMessages = class ChatMessages {
 				}
 
 				Meteor.call('sendMessage', msgObject);
+
+				localStorage.setItem(`messagebox_${ rid }`, '');
+
 				return done();
 			});
 
@@ -274,7 +278,7 @@ this.ChatMessages = class ChatMessages {
 
 	confirmDeleteMsg(message, done = function() {}) {
 		if (RocketChat.MessageTypes.isSystemMessage(message)) { return; }
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
 			type: 'warning',
@@ -282,10 +286,9 @@ this.ChatMessages = class ChatMessages {
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
 			html: false
 		}, () => {
-			swal({
+			modal.open({
 				title: t('Deleted'),
 				text: t('Your_entry_has_been_deleted'),
 				type: 'success',
@@ -301,9 +304,6 @@ this.ChatMessages = class ChatMessages {
 			this.$input.focus();
 			return done();
 		});
-
-		// In order to avoid issue "[Callback not called when still animating](https://github.com/t4t5/sweetalert/issues/528)"
-		return $('.sweet-alert').addClass('visible');
 	}
 
 	deleteMsg(message) {
@@ -346,7 +346,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	update(id, rid, msg, isDescription) {
-		if ((_.trim(msg) !== '') || (isDescription === true)) {
+		if ((s.trim(msg) !== '') || (isDescription === true)) {
 			Meteor.call('updateMessage', { _id: id, msg, rid });
 			this.clearEditing();
 			return this.stopTyping(rid);
@@ -354,7 +354,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	startTyping(rid, input) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			return MsgTyping.start(rid);
 		} else {
 			return MsgTyping.stop(rid);
@@ -423,7 +423,7 @@ this.ChatMessages = class ChatMessages {
 
 	keydown(rid, event) {
 		const user = Meteor.user();
-		const sendOnEnter = user && user.settings && user.settings.preferences && user.settings.preferences.sendOnEnter;
+		const sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;
