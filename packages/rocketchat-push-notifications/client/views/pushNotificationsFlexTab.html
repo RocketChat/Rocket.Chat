@@ -10,10 +10,10 @@
 				</div>
 				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications false}}">
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications false}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
 					</label>
 				</div>
 				<div class="rc-switch-double__label">
@@ -81,29 +81,33 @@
 					</div>
 					<div class="rc-user-info__config-content">
 							<div class="rc-user-info__config-name">Alerts:</div>
-							<div class="rc-user-info__config-value">
-								{{# with desktopNotifications}}
-								{{subValue 'desktopNotifications'}}
-								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+								{{# with "desktopNotifications"}}
+									<div class="rc-user-info__config-value">
+										{{subValue 'desktopNotifications'}}
+										{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+									</div>
 								{{/with}}
-							</div>
 					</div>
 					<div class="rc-user-info__config-content">
 							<div class="rc-user-info__config-name">Audio:</div>
-							<div class="rc-user-info__config-value">
-								{{audioNotificationValue}}
-								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
-							</div>
+							{{# with "audioNotifications"}}
+								<div class="rc-user-info__config-value">
+									{{audioNotificationValue}}
+									{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+								</div>
+							{{/with}}
 					</div>
 					<div class="rc-user-info__config-content">
 							<div class="rc-user-info__config-name">Notifications Duration:</div>
 							<div class="rc-user-info__config-value">
-								{{#if desktopNotificationDuration}}
-									{{_ "Duration"}} {{desktopNotificationDuration}} {{_ "seconds"}}
-								{{else}}
-									{{_ "Use_User_Preferences_or_Global_Settings"}}
-								{{/if}}
-								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+								{{# with "desktopNotificationDuration"}}
+									{{#if desktopNotificationDuration}}
+										{{_ "Duration"}} {{desktopNotificationDuration}} {{_ "seconds"}}
+									{{else}}
+										{{_ "Use_User_Preferences_or_Global_Settings"}}
+									{{/if}}
+									{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+								{{/with}}
 							</div>
 					</div>
 				</div>
@@ -116,10 +120,12 @@
 					</div>
 					<div class="rc-user-info__config-content">
 							<div class="rc-user-info__config-name">Alerts:</div>
-							<div class="rc-user-info__config-value">
-								{{defaultMobileNotification}}
-								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
-							</div>
+							{{# with "defaultMobileNotification"}}
+								<div class="rc-user-info__config-value">
+									{{defaultMobileNotification}}
+									{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+								</div>
+							{{/with}}
 					</div>
 				</div>
 			</div>
@@ -131,10 +137,12 @@
 					</div>
 					<div class="rc-user-info__config-content">
 							<div class="rc-user-info__config-name">Alerts:</div>
+							{{# with "emailNotifications"}}
 							<div class="rc-user-info__config-value">
 								{{subValue 'emailNotifications'}}
 								{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
 							</div>
+							{{/with}}
 					</div>
 				</div>
 			</div>
@@ -144,138 +152,6 @@
 		<button class="rc-button js-cancel rc-button--outline" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
 		<button class="rc-button rc-button--primary js-save" title="{{_ 'Save'}}">{{_ 'Save'}}</button>
 	</div>
-	{{#if false}}
-	<form>
-		<ul class="list clearfix">
-			{{#if $eq disableNotifications false}}
-				<li class="audio-notifications">
-					<label>{{_ "Audio"}}</label>
-					<div>
-						{{#if editing 'audioNotifications'}}
-							<label><input type="radio" name="audioNotifications" value="default" checked="{{$eq audioNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultAudioNotification}})</label>
-							<label><input type="radio" name="audioNotifications" value="all" checked="{{$eq audioNotifications 'all'}}" /> {{_ "All_messages"}}</label>
-							<label><input type="radio" name="audioNotifications" value="mentions" checked="{{$eq audioNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
-							<br />
-
-							<label>
-								<select name="audioNotificationValue" class="rc-input rc-input--small audio">
-									<option value="none" selected="{{$eq audioNotificationValue 'none'}}">{{_ "None"}}</option>
-									<option value="" selected="{{$eq audioNotificationValue subValue 'audioNotifications'}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
-									<option value="chime" selected="{{$eq audioNotificationValue 'chime'}}">Chime</option>
-									{{#each audioAssets}}
-										<option value="{{_id}}" selected="{{$eq audioNotificationValue _id}}">{{name}}</option>
-									{{/each}}
-								</select>
-							</label>
-							<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
-							<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
-						{{else}}
-							<span class="current-setting">{{subValue 'audioNotifications'}} : {{audioNotificationValue}}<i class="icon-play-circled" data-play="{{audioNotificationValue}}"></i> <i class="icon-pencil" data-edit="audioNotifications"></i></span>
-						{{/if}}
-					</div>
-				</li>
-				<li class="desktop-notifications">
-					<label>{{_ "Desktop"}}</label>
-					<div>
-						{{#if editing 'desktopNotifications'}}
-							<label><input type="radio" name="desktopNotifications" value="default" checked="{{$eq desktopNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultDesktopNotification}})</label>
-							<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
-							<label><input type="radio" name="desktopNotifications" value="mentions" checked="{{$eq desktopNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
-							<label><input type="radio" name="desktopNotifications" value="nothing" checked="{{$eq desktopNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
-							<br />
-
-							{{#if desktopNotificationDuration}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-											{{_ "Duration"}} ({{_ "seconds"}})
-										<div class="rc-input__wrapper">
-											<input type="number" class="rc-input__element" name="duration" min="0" value="{{desktopNotificationDuration}}">
-										</div>
-									</label>
-								</div>
-							{{else}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-											{{_ "Duration"}} ({{_ "seconds"}})
-										<div class="rc-input__wrapper">
-											<input type="number" class="rc-input__element" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}">
-										</div>
-									</label>
-								</div>
-							{{/if}}
-
-							<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
-							<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
-						{{else}}
-							<span class="current-setting">{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
-						{{/if}}
-					</div>
-				</li>
-				{{#unless editing 'desktopNotifications'}}
-				<li class="desktop-notifications-duration">
-					<label>{{_ "Desktop_Notifications_Duration"}}</label>
-					<div>
-						<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
-					</div>
-				</li>
-				{{/unless}}
-				<li class="mobile-notifications">
-					<label>{{_ "Mobile"}}</label>
-					<div>
-						{{#if editing 'mobilePushNotifications'}}
-							<label><input type="radio" name="mobilePushNotifications" value="default" checked="{{$eq mobilePushNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultMobileNotification}})</label>
-							<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
-							<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
-							<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
-							<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
-							<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
-						{{else}}
-							<span class="current-setting">{{subValue 'mobilePushNotifications'}} <i class="icon-pencil" data-edit="mobilePushNotifications"></i></span>
-						{{/if}}
-					</div>
-				</li>
-				<li class="email-notifications">
-					<label>{{_ "Email"}}</label>
-					<div>
-						{{#if editing 'emailNotifications'}}
-							<label><input type="radio" name="emailNotifications" value="all" checked="{{$eq emailNotifications 'all'}}" /> {{_ "All_messages"}}</label>
-							{{#if showEmailMentions}}
-								<label><input type="radio" name="emailNotifications" value="mentions" checked="{{$eq emailNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
-							{{/if}}
-							<label><input type="radio" name="emailNotifications" value="nothing" checked="{{$eq emailNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
-							<label><input type="radio" name="emailNotifications" value="default" checked="{{$eq emailNotifications 'default'}}" /> {{_ "Use_account_preference"}}</label>
-							<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
-							<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
-						{{else}}
-							<span class="current-setting">{{subValue 'emailNotifications'}} <i class="icon-pencil" data-edit="emailNotifications"></i></span>
-						{{/if}}
-					</div>
-				</li>
-				{{#unless emailVerified}}
-				<li class="email-alerts">
-					<div class="alert alert-warning pending-background pending-border">
-						{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
-					</div>
-				</li>
-				{{/unless}}
-			{{/if}}
-			<li class="unread-alerts">
-				<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
-				<div>
-					{{#if editing 'unreadAlert'}}
-						<label><input type="radio" name="unreadAlert" value="all" checked="{{$eq unreadAlert 'all'}}" /> {{_ "On"}}</label>
-						<label><input type="radio" name="unreadAlert" value="nothing" checked="{{$eq unreadAlert 'nothing'}}" /> {{_ "Off"}}</label>
-						<label><input type="radio" name="unreadAlert" value="default" checked="{{$eq unreadAlert 'default'}}" /> {{_ "Use_account_preference"}}</label>
-						<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
-						<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
-					{{else}}
-						<span class="current-setting">{{unreadAlertText}} <i class="icon-pencil" data-edit="unreadAlert"></i></span>
-					{{/if}}
-				</div>
-			</li>
-		</ul>
-	</form>
-	{{/if}}
 </template>
 
 <template name="pushNotificationsPopover">
@@ -302,3 +178,135 @@
 		<label for="desktopNotificationsNothing" class="rc-popover__item-radio-label">{{_ "Nothing"}}</label>
 	</div> -->
 </template>
+<!-- {{#if false}}
+<form>
+	<ul class="list clearfix">
+		{{#if $eq disableNotifications false}}
+			<li class="audio-notifications">
+				<label>{{_ "Audio"}}</label>
+				<div>
+					{{#if editing 'audioNotifications'}}
+						<label><input type="radio" name="audioNotifications" value="default" checked="{{$eq audioNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultAudioNotification}})</label>
+						<label><input type="radio" name="audioNotifications" value="all" checked="{{$eq audioNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+						<label><input type="radio" name="audioNotifications" value="mentions" checked="{{$eq audioNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+						<br />
+
+						<label>
+							<select name="audioNotificationValue" class="rc-input rc-input--small audio">
+								<option value="none" selected="{{$eq audioNotificationValue 'none'}}">{{_ "None"}}</option>
+								<option value="" selected="{{$eq audioNotificationValue subValue 'audioNotifications'}}">{{_ "Use_account_preference"}} ({{_ "Default"}})</option>
+								<option value="chime" selected="{{$eq audioNotificationValue 'chime'}}">Chime</option>
+								{{#each audioAssets}}
+									<option value="{{_id}}" selected="{{$eq audioNotificationValue _id}}">{{name}}</option>
+								{{/each}}
+							</select>
+						</label>
+						<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+					{{else}}
+						<span class="current-setting">{{subValue 'audioNotifications'}} : {{audioNotificationValue}}<i class="icon-play-circled" data-play="{{audioNotificationValue}}"></i> <i class="icon-pencil" data-edit="audioNotifications"></i></span>
+					{{/if}}
+				</div>
+			</li>
+			<li class="desktop-notifications">
+				<label>{{_ "Desktop"}}</label>
+				<div>
+					{{#if editing 'desktopNotifications'}}
+						<label><input type="radio" name="desktopNotifications" value="default" checked="{{$eq desktopNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultDesktopNotification}})</label>
+						<label><input type="radio" name="desktopNotifications" value="all" checked="{{$eq desktopNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+						<label><input type="radio" name="desktopNotifications" value="mentions" checked="{{$eq desktopNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+						<label><input type="radio" name="desktopNotifications" value="nothing" checked="{{$eq desktopNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+						<br />
+
+						{{#if desktopNotificationDuration}}
+							<div class="rc-input">
+								<label class="rc-input__label">
+										{{_ "Duration"}} ({{_ "seconds"}})
+									<div class="rc-input__wrapper">
+										<input type="number" class="rc-input__element" name="duration" min="0" value="{{desktopNotificationDuration}}">
+									</div>
+								</label>
+							</div>
+						{{else}}
+							<div class="rc-input">
+								<label class="rc-input__label">
+										{{_ "Duration"}} ({{_ "seconds"}})
+									<div class="rc-input__wrapper">
+										<input type="number" class="rc-input__element" name="duration" min="0" value="" placeholder="{{_ "Use_User_Preferences_or_Global_Settings"}}">
+									</div>
+								</label>
+							</div>
+						{{/if}}
+
+						<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+					{{else}}
+						<span class="current-setting">{{subValue 'desktopNotifications'}} <i class="icon-pencil" data-edit="desktopNotifications"></i></span>
+					{{/if}}
+				</div>
+			</li>
+			{{#unless editing 'desktopNotifications'}}
+			<li class="desktop-notifications-duration">
+				<label>{{_ "Desktop_Notifications_Duration"}}</label>
+				<div>
+					<span class="current-setting">{{#if desktopNotificationDuration}}{{desktopNotificationDuration}} {{_"seconds"}}{{else}}{{_ "Use_User_Preferences_or_Global_Settings"}}{{/if}}</span>
+				</div>
+			</li>
+			{{/unless}}
+			<li class="mobile-notifications">
+				<label>{{_ "Mobile"}}</label>
+				<div>
+					{{#if editing 'mobilePushNotifications'}}
+						<label><input type="radio" name="mobilePushNotifications" value="default" checked="{{$eq mobilePushNotifications 'default'}}" /> {{_ "Default"}} ({{_ defaultMobileNotification}})</label>
+						<label><input type="radio" name="mobilePushNotifications" value="all" checked="{{$eq mobilePushNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+						<label><input type="radio" name="mobilePushNotifications" value="mentions" checked="{{$eq mobilePushNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+						<label><input type="radio" name="mobilePushNotifications" value="nothing" checked="{{$eq mobilePushNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+						<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+					{{else}}
+						<span class="current-setting">{{subValue 'mobilePushNotifications'}} <i class="icon-pencil" data-edit="mobilePushNotifications"></i></span>
+					{{/if}}
+				</div>
+			</li>
+			<li class="email-notifications">
+				<label>{{_ "Email"}}</label>
+				<div>
+					{{#if editing 'emailNotifications'}}
+						<label><input type="radio" name="emailNotifications" value="all" checked="{{$eq emailNotifications 'all'}}" /> {{_ "All_messages"}}</label>
+						{{#if showEmailMentions}}
+							<label><input type="radio" name="emailNotifications" value="mentions" checked="{{$eq emailNotifications 'mentions'}}" /> {{_ "Mentions"}}</label>
+						{{/if}}
+						<label><input type="radio" name="emailNotifications" value="nothing" checked="{{$eq emailNotifications 'nothing'}}" /> {{_ "Nothing"}}</label>
+						<label><input type="radio" name="emailNotifications" value="default" checked="{{$eq emailNotifications 'default'}}" /> {{_ "Use_account_preference"}}</label>
+						<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+					{{else}}
+						<span class="current-setting">{{subValue 'emailNotifications'}} <i class="icon-pencil" data-edit="emailNotifications"></i></span>
+					{{/if}}
+				</div>
+			</li>
+			{{#unless emailVerified}}
+			<li class="email-alerts">
+				<div class="alert alert-warning pending-background pending-border">
+					{{_ "You_wont_receive_email_notifications_because_you_have_not_verified_your_email"}}
+				</div>
+			</li>
+			{{/unless}}
+		{{/if}}
+		<li class="unread-alerts">
+			<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
+			<div>
+				{{#if editing 'unreadAlert'}}
+					<label><input type="radio" name="unreadAlert" value="all" checked="{{$eq unreadAlert 'all'}}" /> {{_ "On"}}</label>
+					<label><input type="radio" name="unreadAlert" value="nothing" checked="{{$eq unreadAlert 'nothing'}}" /> {{_ "Off"}}</label>
+					<label><input type="radio" name="unreadAlert" value="default" checked="{{$eq unreadAlert 'default'}}" /> {{_ "Use_account_preference"}}</label>
+					<button type="button" class="rc-button rc-button--secondary cancel">{{_ "Cancel"}}</button>
+					<button type="button" class="rc-button rc-button--primary save">{{_ "Save"}}</button>
+				{{else}}
+					<span class="current-setting">{{unreadAlertText}} <i class="icon-pencil" data-edit="unreadAlert"></i></span>
+				{{/if}}
+			</div>
+		</li>
+	</ul>
+</form>
+{{/if}} -->
