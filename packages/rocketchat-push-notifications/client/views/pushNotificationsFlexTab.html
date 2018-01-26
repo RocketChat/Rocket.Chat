@@ -10,7 +10,7 @@
 				</div>
 				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications false}}">
+							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications true}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
@@ -72,7 +72,7 @@
 				</div>
 			</div>
 		</div>
-		{{#if $eq disableNotifications false}}
+		{{#if disableNotifications}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-user-info__config">
 					<div class="rc-user-info__config-header">
