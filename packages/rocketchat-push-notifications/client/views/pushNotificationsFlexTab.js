@@ -7,6 +7,18 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+const call = (method, ...params) => {
+	return new Promise((resolve, reject) => {
+		Meteor.call(method, ...params, (err, result)=> {
+			if (err) {
+				handleError(err);
+				return reject(err);
+			}
+			return resolve(result);
+		});
+	});
+};
+
 Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
@@ -32,7 +44,9 @@ Template.pushNotificationsFlexTab.helpers({
 		return Template.instance().form.emailNotifications.get();
 	},
 
-
+	desktopNotificationDuration() {
+		return Template.instance().form.desktopNotificationDuration.get();
+	},
 	showEmailMentions() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -102,20 +116,7 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 		return audio;
 	},
-	desktopNotificationDuration() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				desktopNotificationDuration: 1
-			}
-		});
-		if (!sub) {
-			return false;
-		}
-		// Convert to Number
-		return sub.desktopNotificationDuration - 0;
-	},
+
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	},
@@ -169,7 +170,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
-		desktopNotificationDuration = 'default'
+		desktopNotificationDuration = 1
 	} = sub;
 
 	this.original = {
@@ -178,7 +179,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		audioNotifications: new ReactiveVar(audioNotifications),
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
-		emailNotifications: new ReactiveVar(emailNotifications)
+		emailNotifications: new ReactiveVar(emailNotifications),
+		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration)
 	};
 
 	this.form = {
@@ -191,40 +193,23 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration)
 	};
 
-	this.saveSetting = (field) => {
-		field = field || this.editing.get();
-		let value;
-		switch (field) {
-			case 'hideUnreadStatus':
-			case 'disableNotifications':
-				value = this.$(`input[name=${ field }]`)[0].checked ? '1' : '0';
-				break;
-			default:
-				value = this.$(`input[name=${ field }]:checked`).val();
-				break;
-		}
-		const soundVal = $('select').val();
-		const duration = $('input[name=duration]').val();
-		if (this.validateSetting(field)) {
-			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
-				if (err) {
-					return handleError(err);
-				} else if (duration !== undefined) {
-					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
-						if (err) {
-							return handleError(err);
-						}
-					});
-				} else if (soundVal!==undefined) {
-					Meteor.call('saveAudioNotificationValue', Session.get('openedRoom'), soundVal, (err) => {
-						if (err) {
-							return handleError(err);
-						}
-					});
-				}
-				this.editing.set();
-			});
-		}
+	this.saveSetting = async() => {
+		Object.keys(this.original).forEach(async field => {
+			if (this.original[field].get() === this.form[field].get()) {
+				return;
+			}
+			const value = this.form[field].get();
+			const rid = Session.get('openedRoom');
+			switch (field) {
+				case 'desktopNotificationDuration':
+					return await call('saveDesktopNotificationDuration', rid, value);
+				case 'audioNotifications':
+					return await call('saveAudioNotificationValue', rid, value);
+				default:
+					return await call('saveNotificationSettings', field, value);
+			}
+
+		});
 	};
 });
 
@@ -236,7 +221,7 @@ Template.pushNotificationsFlexTab.events({
 		);
 	},
 
-	'click .save'(e, instance) {
+	'click .js-save'(e, instance) {
 		e.preventDefault();
 		instance.saveSetting();
 	},
@@ -284,7 +269,7 @@ Template.pushNotificationsFlexTab.events({
 
 	'change input[type=checkbox]'(e, instance) {
 		e.preventDefault();
-		instance.form[$(e.currentTarget).attr('name')].set(e.value);
+		instance.form[$(e.currentTarget).attr('name')].set(e.currentTarget.checked);
 	},
 
 	'click .rc-user-info__config-value'(e) {
