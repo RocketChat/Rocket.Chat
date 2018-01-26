@@ -21,7 +21,7 @@
 				</td>
 				{{#each role in allRoles}}
 					<td class="border-component-color">
-						<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission"
+						<input type="checkbox" name="perm[{{role._id}}][{{permission._id}}]" class="role-permission"
 							   value="1" checked="{{granted permission.roles role}}" data-role="{{role._id}}"
 							   data-permission="{{permission._id}}">
 					</td>
