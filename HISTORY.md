@@ -1,3 +1,26 @@
+<a name="0.61.0-rc.2"></a>
+# 0.61.0-rc.2 (2018-01-26)
+
+
+### New Features
+
+- [#9510](https://github.com/RocketChat/Rocket.Chat/pull/9510) Contextual bar mail messages
+
+
+### Bug Fixes
+
+- [#9506](https://github.com/RocketChat/Rocket.Chat/pull/9506) Fix livechat visitor edit
+- [#9493](https://github.com/RocketChat/Rocket.Chat/pull/9493) large names on userinfo, and admin user bug on users with no usernames
+
+
+<details>
+<summary>Others</summary>
+
+- [#9504](https://github.com/RocketChat/Rocket.Chat/pull/9504) Prevent NPM package-lock inside livechat
+</details>
+
+
+
 <a name="0.61.0-rc.1"></a>
 # 0.61.0-rc.1 (2018-01-25)
 
