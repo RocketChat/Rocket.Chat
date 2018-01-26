@@ -4393,9 +4393,7 @@ body:not(.is-cordova) {
 	padding: 20px;
 
 	border-radius: 2px;
-	box-shadow:
-		0 1px 1px 0 rgba(0, 0, 0, 0.2),
-		0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	& header {
 		padding: 18px 0 23px;
