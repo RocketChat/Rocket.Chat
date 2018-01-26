@@ -11,66 +11,28 @@ Template.pushNotificationsFlexTab.helpers({
 	audioAssets() {
 		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
 	},
+
+
 	disableNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				disableNotifications: 1
-			}
-		});
-		return sub && sub.disableNotifications;
+		return Template.instance().form.disableNotifications.get();
 	},
 	hideUnreadStatus() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				hideUnreadStatus: 1
-			}
-		});
-		return sub ? sub.hideUnreadStatus || false : false;
+		return Template.instance().form.hideUnreadStatus.get();
 	},
 	audioNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				audioNotifications: 1
-			}
-		});
-		return sub ? sub.audioNotifications || 'default' : 'default';
+		return Template.instance().form.audioNotifications.get();
 	},
 	desktopNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				desktopNotifications: 1
-			}
-		});
-		return sub ? sub.desktopNotifications || 'default' : 'default';
+		return Template.instance().form.desktopNotifications.get();
 	},
 	mobilePushNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				mobilePushNotifications: 1
-			}
-		});
-		return sub ? sub.mobilePushNotifications || 'default' : 'default';
+		return Template.instance().form.mobilePushNotifications.get();
 	},
 	emailNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				emailNotifications: 1
-			}
-		});
-		return sub ? sub.emailNotifications : '';
+		return Template.instance().form.emailNotifications.get();
 	},
+
+
 	showEmailMentions() {
 		const sub = ChatSubscription.findOne({
 			rid: Session.get('openedRoom')
@@ -188,26 +150,47 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 		return notificationLabels[preference];
 	}
+
 });
 
 Template.pushNotificationsFlexTab.onCreated(function() {
-	this.editing = new ReactiveVar();
-
-	this.validateSetting = (field) => {
-		switch (field) {
-			case 'audioNotificationValue':
-				return true;
-			case 'hideUnreadStatus':
-			case 'disableNotifications':
-				return true;
-			default:
-				const value = this.$(`input[name=${ field }]:checked`).val();
-				if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
-					toastr.error(t('Invalid_notification_setting_s', value || ''));
-					return false;
-				}
-				return true;
+	const rid = Session.get('openedRoom');
+	const sub = ChatSubscription.findOne({rid}, {
+		fields: {
+			disableNotifications: 1,
+			hideUnreadStatus: 1,
+			audioNotifications: 1,
+			desktopNotifications: 1,
+			mobilePushNotifications: 1,
+			emailNotifications: 1
 		}
+	}) || {};
+
+	const {
+		disableNotifications = false,
+		hideUnreadStatus = false,
+		audioNotifications = 'default',
+		desktopNotifications = 'default',
+		mobilePushNotifications = 'default',
+		emailNotifications = ''
+	} = sub;
+
+	this.original = {
+		disableNotifications: new ReactiveVar(disableNotifications),
+		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
+		audioNotifications: new ReactiveVar(audioNotifications),
+		desktopNotifications: new ReactiveVar(desktopNotifications),
+		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
+		emailNotifications: new ReactiveVar(emailNotifications)
+	};
+
+	this.form = {
+		disableNotifications: new ReactiveVar(disableNotifications),
+		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
+		audioNotifications: new ReactiveVar(audioNotifications),
+		desktopNotifications: new ReactiveVar(desktopNotifications),
+		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
+		emailNotifications: new ReactiveVar(emailNotifications)
 	};
 
 	this.saveSetting = (field) => {
@@ -248,22 +231,11 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 });
 
 Template.pushNotificationsFlexTab.events({
-	'keydown input[type=text]'(e, instance) {
-		if (e.keyCode === 13) {
-			e.preventDefault();
-			instance.saveSetting();
-		}
-	},
-
-	'click [data-edit]'(e, instance) {
-		e.preventDefault();
-		instance.editing.set($(e.currentTarget).data('edit'));
-		setTimeout(function() { instance.$('input.editing').focus().select(); }, 100);
-	},
-
 	'click .cancel'(e, instance) {
 		e.preventDefault();
-		instance.editing.set();
+		Object.keys(instance.original).forEach(key =>
+			instance.form[key].set(instance.original[key])
+		);
 	},
 
 	'click .save'(e, instance) {
@@ -314,11 +286,13 @@ Template.pushNotificationsFlexTab.events({
 
 	'change input[type=checkbox]'(e, instance) {
 		e.preventDefault();
-		instance.editing.set($(e.currentTarget).attr('name'));
-		instance.saveSetting($(e.currentTarget).attr('name'));
+		instance.form[$(e.currentTarget).attr('name')].set(e.value);
 	},
 
 	'click .rc-user-info__config-value'(e) {
+		const instance = Template.instance();
+		const key = this.valueOf();
+
 		const config = {
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
@@ -331,7 +305,10 @@ Template.pushNotificationsFlexTab.events({
 				left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
 			}),
 			data: {
-				value: 'default',
+				change : (value) => {
+					return instance.form[key].set(value);
+				},
+				value: instance.form[key].get(),
 				options : [{
 					id: 'desktopNotificationsDefault',
 					name: 'desktopNotifications',
@@ -362,6 +339,11 @@ Template.pushNotificationsFlexTab.events({
 	}
 });
 
+
+
+Template.pushNotificationsPopover.onCreated(function() {
+	this.change = this.data.change;
+});
 
 Template.pushNotificationsPopover.onRendered(function() {
 	this.find(`[value=${ this.data.value }]`).checked = true;
