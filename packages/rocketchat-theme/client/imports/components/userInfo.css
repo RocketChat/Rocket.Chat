@@ -253,6 +253,10 @@
 
 				font-size: 1.25rem;
 			}
+
+			& .icon-play-circled {
+				cursor: pointer;
+			}
 		}
 
 		&-name,
@@ -275,6 +279,7 @@
 
 			color: #1d73f3;
 			align-items: flex-end;
+			text-transform: capitalize;
 		}
 	}
 }
