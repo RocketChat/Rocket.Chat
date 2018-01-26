@@ -206,9 +206,9 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 				case 'desktopNotificationDuration':
 					await call('saveDesktopNotificationDuration', rid, value);
 					break;
-				case 'audioNotifications':
-					await call('saveAudioNotificationValue', rid, value);
-					break;
+				// case 'audioNotificationsSound':
+				// 	await call('saveAudioNotificationValue', rid, value);
+				// 	break;
 				default:
 					await call('saveNotificationSettings', rid, field, value);
 			}
