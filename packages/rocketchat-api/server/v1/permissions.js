@@ -1,5 +1,6 @@
 /**
-	This API returns logged user permissions.
+	This API returns all permissions that exists
+	on the server, with respective roles.
 
 	Method: GET
 	Route: api/v1/permissions
