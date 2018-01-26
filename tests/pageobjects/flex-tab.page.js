@@ -98,7 +98,6 @@ class FlexTab extends Page {
 	get emojiNewAliases() { return browser.element('#aliases'); }
 	get emojiNewImageInput() { return browser.element('#image'); }
 	get usersView() { return browser.element('.rc-user-info-action'); }
-	get userViewTabButton() { return browser.element('.tab-button-icon--user'); }
 	get usersActivate() { return browser.element('.rc-popover__item[data-id=activate]'); }
 	get usersDeactivate() { return browser.element('.rc-popover__item[data-id=deactivate]'); }
 
