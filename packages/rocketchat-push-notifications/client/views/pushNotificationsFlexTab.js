@@ -72,16 +72,9 @@ Template.pushNotificationsFlexTab.helpers({
 		return t('Use_account_preference');
 	},
 	subValue(field) {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				t: 1,
-				[field]: 1
-			}
-		});
-		if (sub) {
-			switch (sub[field]) {
+		const { form } = Template.instance();
+		if (form[field]) {
+			switch (form[field].get()) {
 				case 'all':
 					return t('All_messages');
 				case 'nothing':
@@ -123,9 +116,6 @@ Template.pushNotificationsFlexTab.helpers({
 		// Convert to Number
 		return sub.desktopNotificationDuration - 0;
 	},
-	editing(field) {
-		return Template.instance().editing.get() === field;
-	},
 	emailVerified() {
 		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
 	},
@@ -149,8 +139,13 @@ Template.pushNotificationsFlexTab.helpers({
 			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications');
 		}
 		return notificationLabels[preference];
-	}
+	},
 
+
+	disabled() {
+		const { original, form } = Template.instance();
+		return Object.keys(original).every(key => original[key].get() === form[key].get());
+	}
 });
 
 Template.pushNotificationsFlexTab.onCreated(function() {
@@ -162,7 +157,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			audioNotifications: 1,
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
-			emailNotifications: 1
+			emailNotifications: 1,
+			desktopNotificationDuration: 1
 		}
 	}) || {};
 
@@ -172,7 +168,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		audioNotifications = 'default',
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
-		emailNotifications = ''
+		emailNotifications = 'default',
+		desktopNotificationDuration = 'default'
 	} = sub;
 
 	this.original = {
@@ -190,7 +187,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		audioNotifications: new ReactiveVar(audioNotifications),
 		desktopNotifications: new ReactiveVar(desktopNotifications),
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
-		emailNotifications: new ReactiveVar(emailNotifications)
+		emailNotifications: new ReactiveVar(emailNotifications),
+		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration)
 	};
 
 	this.saveSetting = (field) => {
