@@ -488,7 +488,6 @@ describe('[Api Settings Change]', () => {
 			const userEl = admin.getUserFromList(`setting${ username }`);
 			userEl.waitForVisible(5000);
 			userEl.click();
-			flexTab.usersView.waitForVisible(5000);
 		});
 
 		it('it should show the activate user btn', () => {
