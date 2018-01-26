@@ -121,7 +121,7 @@ class API extends Restivus {
 
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.helperMethods) {
+			if (RocketChat.API.helperMethods) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
 						endpoints[method] = {action: endpoints[method]};
@@ -155,7 +155,7 @@ class API extends Restivus {
 						return result;
 					};
 
-					for (const [name, helperMethod] of this.helperMethods) {
+					for (const [name, helperMethod] of RocketChat.API.helperMethods) {
 						endpoints[method][name] = helperMethod;
 					}
 
@@ -339,7 +339,9 @@ class API extends Restivus {
 }
 
 
-RocketChat.API = {};
+RocketChat.API = {
+	helperMethods: new Map()
+};
 
 const getUserAuth = function _getUserAuth() {
 	const invalidResults = [undefined, null, false];
