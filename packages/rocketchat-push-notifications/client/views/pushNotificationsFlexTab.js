@@ -198,16 +198,21 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			if (this.original[field].get() === this.form[field].get()) {
 				return;
 			}
-			const value = this.form[field].get();
+			let value = this.form[field].get();
+
+			value = typeof value === 'boolean' ? value ? '1' : '0' : value;
 			const rid = Session.get('openedRoom');
 			switch (field) {
 				case 'desktopNotificationDuration':
-					return await call('saveDesktopNotificationDuration', rid, value);
+					await call('saveDesktopNotificationDuration', rid, value);
+					break;
 				case 'audioNotifications':
-					return await call('saveAudioNotificationValue', rid, value);
+					await call('saveAudioNotificationValue', rid, value);
+					break;
 				default:
-					return await call('saveNotificationSettings', field, value);
+					await call('saveNotificationSettings', rid, field, value);
 			}
+			this.original[field].set(this.form[field].get());
 
 		});
 	};
