@@ -120,6 +120,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
 	api.addFiles('client/components/icon.html', 'client');
+	api.addFiles('client/components/icon.js', 'client');
 
 	api.addFiles('client/components/popupList.html', 'client');
 	api.addFiles('client/components/popupList.js', 'client');
