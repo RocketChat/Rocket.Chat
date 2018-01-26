@@ -73,3 +73,5 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+.screenshots
+packages/rocketchat-google-vision/.npm/package/npm-shrinkwrap.json
