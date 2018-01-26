@@ -1,7 +1,7 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
 import { RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
-const can = {
+const common = {
 	canLeaveRoom() {
 		const { cl: canLeave, t: roomType } = Template.instance().room;
 		return roomType !== 'd' && canLeave !== false;
@@ -19,6 +19,10 @@ const can = {
 	canEditRoom() {
 		const { _id } = Template.instance().room;
 		return RocketChat.authz.hasAllPermission('edit-room', _id);
+	},
+	isDirectMessage() {
+		const { room } = Template.instance();
+		return room.t === 'd';
 	}
 };
 const call = (method, ...params) => {
@@ -350,7 +354,7 @@ Template.channelSettingsEditing.onCreated(function() {
 });
 
 Template.channelSettingsEditing.helpers({
-	...can,
+	...common,
 	value() {
 		return this.value.get();
 	},
@@ -514,7 +518,7 @@ Template.channelSettingsInfo.onCreated(function() {
 });
 
 Template.channelSettingsInfo.helpers({
-	...can,
+	...common,
 	channelName() {
 		return `@${ Template.instance().room.name }`;
 	},
