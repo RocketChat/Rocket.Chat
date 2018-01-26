@@ -72,6 +72,31 @@ class MainContent extends Page {
 	get GlobalAnnouncement() { return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div'); }
 	get GlobalAnnouncementBtn() { return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > button'); }
 
+	// Settings based permissions elements
+	get manageSettingsPerm() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(2) > div > table > tbody > tr:nth-child(44) > td:nth-child(6) > input');
+	}
+
+	get expandSBP() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-title > div.section-title-right > button');
+	}
+
+	get layoutTitelPerm() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-content.border-component-color > table > tbody > tr:nth-child(289) > td:nth-child(6) > input');
+	}
+
+	get layoutTitelSetting() {
+		return browser.element('[name="Layout_Home_Title"]');
+	}
+
+	get contentExpand() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div.section.section-collapsed > div.section-title > div.section-title-right > button');
+	}
+
+	get saveSettings() {
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > header > div.submit > button.button.primary.save');
+	}
+
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
