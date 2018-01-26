@@ -247,6 +247,10 @@
 	fill: none;
 }
 
+.tab-bugtton-icon--team {
+	font-size: 28px;
+}
+
 @media (width <= 500px) {
 	.rc-header {
 		&__visual-status {
