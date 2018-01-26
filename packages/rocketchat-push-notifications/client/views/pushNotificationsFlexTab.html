@@ -2,7 +2,7 @@
 	<main class="rc-user-info__scroll">
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{#unless disableNotifications}}disabled{{/unless}}">
+				<div class="rc-switch-double__label {{#if disableNotifications}}disabled{{/if}}">
 					{{_ "Turn_OFF"}}
 					<div class="rc-switch-double__description">
 						{{_ "Mute_all_notifications"}}
@@ -16,7 +16,7 @@
 							</span>
 					</label>
 				</div>
-				<div class="rc-switch-double__label {{#if disableNotifications}}disabled{{/if}}">
+				<div class="rc-switch-double__label {{#unless disableNotifications}}disabled{{/unless}}">
 					{{_ "Turn_ON"}}
 					<div class="rc-switch-double__description">
 						{{_ "Receive_alerts"}}
@@ -26,7 +26,7 @@
 		</div>
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{#unless hideUnreadStatus}}disabled{{/unless}}">
+				<div class="rc-switch-double__label {{#if hideUnreadStatus}}disabled{{/if}}">
 					{{_ "Hide_counter"}}
 					<div class="rc-switch-double__description">
 						{{_ "Do_not_display_unread_counter"}}
@@ -40,7 +40,7 @@
 						</span>
 					</label>
 				</div>
-				<div class="rc-switch-double__label {{#if hideUnreadStatus}}disabled{{/if}}">
+				<div class="rc-switch-double__label {{#unless hideUnreadStatus}}disabled{{/unless}}">
 					{{_ "Show_counter"}}
 					<div class="rc-switch-double__description">
 						{{_ "Display_unread_counter"}}
