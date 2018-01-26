@@ -24,6 +24,13 @@
 	--rc-color-button-primary: #1d74f5;
 	--rc-color-button-primary-light: #175cc4;
 
+	--rc-color-alert-message-primary: var(--rc-color-button-primary);
+	--rc-color-alert-message-primary-background: #f1f6ff;
+	--rc-color-alert-message-secondary: #7ca52b;
+	--rc-color-alert-message-secondary-background: #fafff1;
+	--rc-color-alert-message-warning: #d52d24;
+	--rc-color-alert-message-warning-background: #fff3f3;
+
 	--rc-color-primary: var(--color-dark);
 	--rc-color-primary-darkest: var(--color-darkest);
 	--rc-color-primary-dark: var(--color-dark-medium);
