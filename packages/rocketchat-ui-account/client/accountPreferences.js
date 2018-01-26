@@ -186,7 +186,7 @@ Template.accountPreferences.onCreated(function() {
 
 		Meteor.call('saveUserPreferences', data, function(error, results) {
 			if (results) {
-				toastr.success(t('Preferences_saved'));
+				toastr.success(t('Saved'));
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
