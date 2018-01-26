@@ -1,6 +1,4 @@
 /* global AutoComplete Deps */
-
-import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
