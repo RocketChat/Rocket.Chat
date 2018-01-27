@@ -3463,10 +3463,6 @@ body:not(.is-cordova) {
 		}
 
 		& .content {
-			position: absolute;
-			top: 0;
-			left: 0;
-
 			overflow-x: hidden;
 			overflow-y: auto;
 
@@ -3565,7 +3561,7 @@ body:not(.is-cordova) {
 			}
 		}
 
-		& .close-flex-tab {
+		/*& .close-flex-tab {
 			position: absolute;
 			z-index: 20;
 			top: 3px;
@@ -3591,13 +3587,15 @@ body:not(.is-cordova) {
 					font-size: 10px;
 				}
 			}
-		}
+		}*/
 	}
 
 	& .flex-tab-bar {
 		z-index: 1;
 
 		min-width: 40px;
+
+		border: 1px solid rgba(31, 35, 41, 0.08);
 
 		& .tab-button {
 			position: relative;
@@ -4394,10 +4392,8 @@ body:not(.is-cordova) {
 	margin: 20px auto;
 	padding: 20px;
 
-	border-radius: 4px;
-	box-shadow:
-		0 1px 1px 0 rgba(0, 0, 0, 0.2),
-		0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	border-radius: 2px;
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	& header {
 		padding: 18px 0 23px;
@@ -4455,6 +4451,10 @@ body:not(.is-cordova) {
 	& .forgot-password,
 	& .back-to-login {
 		margin-top: 12px;
+
+		& button {
+			margin: 0 auto;
+		}
 	}
 
 	& .input-line {
@@ -5633,7 +5633,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 2;
+	z-index: 1;
 	right: 0;
 	left: 0;
 

@@ -510,7 +510,7 @@ Template.room.events({
 		Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
-	'click .user-image > button'(e, instance) {
+	'click .user-image, click .rc-member-list__user'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
