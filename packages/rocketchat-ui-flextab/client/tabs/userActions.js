@@ -201,6 +201,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				return {
 					group: 'channel',
 					name:t('Remove_as_owner'),
+					icon: 'shield-check',
 					action: prevent(getUser, ({_id, username})=> {
 						const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'owner' }, { fields: { _id: 1 } });
 						if (userOwner == null) {
@@ -215,6 +216,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'channel',
 				name: t('Set_as_owner'),
+				icon: 'shield-check',
 				action: prevent(getUser, ({_id, username}) => {
 					const userOwner = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'owner' }, { fields: { _id: 1 } });
 					if (userOwner != null) {
@@ -235,6 +237,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				return {
 					group: 'channel',
 					name: t('Remove_as_leader'),
+					icon: 'shield-alt',
 					action: prevent(getUser, ({username, _id}) => {
 						const userLeader = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'leader' }, { fields: { _id: 1 } });
 						if (!userLeader) {
@@ -250,6 +253,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'channel',
 				name:t('Set_as_leader'),
+				icon: 'shield-alt',
 				action: prevent(getUser, ({_id, username}) => {
 					const userLeader = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'leader' }, { fields: { _id: 1 } });
 					if (userLeader) {
@@ -270,6 +274,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				return {
 					group: 'channel',
 					name: t('Remove_as_moderator'),
+					icon: 'shield',
 					action: prevent(getUser, ({username, _id}) => {
 						const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'moderator' }, { fields: { _id: 1 } });
 						if (userModerator == null) {
@@ -285,6 +290,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'channel',
 				name: t('Set_as_moderator'),
+				icon: 'shield',
 				action: prevent(getUser, ({_id, username}) => {
 					const userModerator = RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': _id, roles: 'moderator' }, { fields: { _id: 1 } });
 					if (userModerator != null) {
