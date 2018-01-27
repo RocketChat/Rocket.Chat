@@ -672,10 +672,6 @@
 		}
 
 		&.uploaded-files-list {
-			& a {
-				direction: ltr;
-			}
-
 			& i {
 				float: right;
 				margin-right: auto;

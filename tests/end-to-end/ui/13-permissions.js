@@ -11,7 +11,7 @@ import {checkIfUserIsValid} from '../../data/checks';
 import {checkIfUserIsAdmin} from '../../data/checks';
 import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 
-describe('[Permissions]', () => {
+describe.skip('[Permissions]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);

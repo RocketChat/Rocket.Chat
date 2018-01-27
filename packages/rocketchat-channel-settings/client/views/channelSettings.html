@@ -1,109 +1,252 @@
 <template name="channelSettings">
-	<div class="list-view channel-settings">
-		<div class="title">
-			<h2>{{_ "Room_Info"}}</h2>
+	{{#if editing}}
+		{{> channelSettingsEditing}}
+	{{else}}
+		{{> channelSettingsInfo}}
+	{{/if}}
+</template>
+<template name="channelSettingsEditing">
+	<div class="rc-user-info__scroll">
+		{{#with settings.name}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.topic}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
+
+		{{#with settings.announcement}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
+		{{#unless isDirectMessage}}
+			{{#with settings.description}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							</div>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+		{{/unless}}
+
+		{{#with settings.t}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+						{{_ "Private"}}
+						<div class="rc-switch-double__description">
+							{{_ "Just_invited_people_can_access_this_channel"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="t" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Public"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Everyone_can_access_this_channel"}}
+						</div>
+					</div>
+
+				</div>
+			</div>
+		{{/with}}
+
+		{{#with settings.ro}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Read_only"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Only_authorized_users_can_write_new_messages"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="ro" checked="{{checked}}" disabled="{{disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+						{{_ "Colaborative"}}
+						<div class="rc-switch-double__description">
+							{{_ "All_users_in_the_channel_can_write_new_messages"}}
+						</div>
+					</div>
+				</div>
+			</div>
+		{{/with}}
+
+
+		{{#with settings.reactWhenReadOnly}}
+			{{#if canView}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "React_when_read_only"}}
+						<div class="rc-switch-double__description">
+							{{_ "React_when_read_only"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+						{{_ "No_reactions"}}
+						<div class="rc-switch-double__description">
+							{{_ "No_reactions"}}
+						</div>
+					</div>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.archived}}
+			{{#if canView}}
+			<div class="rc-user-info__row">
+				<div class="rc-switch rc-switch--blue">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value '*'}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.joinCode}}
+			<div class="rc-user-info__row">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+						</div>
+					</label>
+				</div>
+			</div>
+		{{/with}}
+	</div>
+	<div class="rc-user-info__row">
+		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
+			<button class="rc-button js-cancel rc-button--outline" title="{{_ 'Cancel'}}">{{_ 'Cancel'}}</button>
+			<button class="rc-button rc-button--secondary js-reset" {{modified 'disabled'}} title="{{_ 'Reset'}}">{{_ 'Reset'}}</button>
+			<button class="rc-button rc-button--primary js-save" {{modified 'disabled'}} title="{{_ 'Save'}}">{{_ 'Save'}}</button>
 		</div>
-		<form>
-			<ul class="list clearfix">
-				{{#let room=getRoom}}
-					{{#each toArray settings}}
-
-						{{#if $value.canView room}}
-							{{#let value=(valueOf room $key)}}
-								<li class="{{$value.type}}">
-									<label>{{_ $value.label}}</label>
-									<div class="setting-block">
-										{{#if $eq $value.type 'text'}}
-											{{#if editing $key}}
-												{{#if $value.canEdit room}}
-													<input type="text" name="{{$key}}" value="{{value}}" class="content-background-color editing" />
-												{{/if}}
-											{{else}}
-												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{value}}</span>
-											{{/if}}
-										{{/if}}
-
-										{{#if $eq $value.type 'markdown'}}
-											{{#if editing $key}}
-												{{#if $value.canEdit room}}
-													<input type="text" name="{{$key}}" value="{{unscape value}}" class="content-background-color editing" />
-												{{/if}}
-											{{else}}
-												<span class='current-setting' data-edit="{{#if $value.canEdit room}}{{$key}}{{else}}false{{/if}}">{{{RocketChatMarkdown value}}}</span>
-											{{/if}}
-										{{/if}}
-
-										{{#if $eq $value.type 'select'}}
-											{{#each toArray $value.options}}
-												<div class="input radio">
-													<input type="radio" id="{{$key}}" name="{{../$key}}" value="{{$key}}" checked="{{$eq value $key}}" disabled="{{isDisabled $key room}}" />
-													<label for="{{$key}}">{{_ $value}}</label>
-												</div>
-											{{/each}}
-										{{/if}}
-
-										{{#if $eq $value.type 'boolean'}}
-											<div class="input checkbox toggle">
-												<input type="checkbox" id="{{$key}}" name="{{$key}}" value="{{value}}" checked="{{$eq value true}}" disabled="{{isDisabled $key room}}" />
-												<label for="{{$key}}"></label>
-											</div>
-											{{#if $value.canEdit room}}
-												{{#if $value.processing.get}}
-													{{> loading}}
-												{{/if}}
-											{{/if}}
-										{{/if}}
-
-										{{#unless $value.isToggle}}
-											{{#if $value.canEdit room}}
-												{{#if editing $key}}
-													<div class="buttons secondary-background-color">
-														<button type="button" class="button cancel">
-															<i class="icon-cancel"></i>
-														</button>
-														<button type="button" class="button primary save">
-															<i class="icon-ok success-color"></i>
-														</button>
-													</div>
-												{{else}}
-													{{#if $value.showHideValue room}}
-														<button type="button" class="button show">
-															<i class="{{#if showingValue $key}}icon-eye-off{{else}}icon-eye{{/if}}"></i>
-														</button>
-													{{/if}}
-													<button type="button" class="button edit">
-														<i class="icon-pencil" data-edit="{{$key}}"></i>
-													</button>
-												{{/if}}
-											{{/if}}
-										{{/unless}}
-									</div>
-								</li>
-								{{# if has $value 'message' }}
-									{{#let message=($value.message room)}}
-										{{#if message}}
-											<li>
-												<div class="alert alert-warning pending-background pending-border">
-													{{_ message}}
-												</div>
-											</li>
-										{{/if}}
-									{{/let}}
-								{{/if}}
-							{{/let}}
+		<div class="rc-user-info__flex">
+			{{#if canDeleteRoom}}
+			<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+			{{/if}}
+		</div>
+	</div>
+</template>
+<template name="channelSettingsInfo">
+	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
+		{{# with settings=settings}}
+			{{#unless isDirectMessage}}
+				<div class="rc-user-info">
+					<div class="rc-user-info__avatar">
+						{{#if archived}}
+						<div class="rc-user-info__banner">
+							{{_ "Room_archived"}}
+						</div>
 						{{/if}}
-					{{/each}}
-				{{/let}}
+						{{> avatar username=channelName}}
+					</div>
+					<h3 title="{{name}}" class="rc-user-info__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{ unscape name}}</h3>
+					{{#if password}}
+						<label class="rc-user-info__label">
+							{{_ "Room_archived"}}
+						</label>
+					{{/if}}
+				</div>
+				<label class="rc-user-info__label">
+					{{_ "Description"}}
+					<div class="rc-user-info__description">
+						{{unscape description}}
+					</div>
+				</label>
+			{{/unless}}
+			<label class="rc-user-info__label">
+				{{_ "Announcement"}}
+				<div class="rc-user-info__description">
+					{{unscape announcement}}
+				</div>
+			</label>
+			<label class="rc-user-info__label">
+				{{_ "Topic"}}
+				<div class="rc-user-info__description">
+					{{unscape topic}}
+				</div>
+			</label>
 
-				{{#each channelSettings}}
-					{{> Template.dynamic template=template data=data}}
-				{{/each}}
-			</ul>
-		</form>
-		{{#if canDeleteRoom}}
-			<nav>
-				<button class="button danger delete" title="{{_ 'Delete'}}"><i class="icon-trash"></i></button>
-			</nav>
+		{{/with}}
+		{{#each channelSettings}}
+			<div class="rc-user-info__row">
+				{{> Template.dynamic template=template data=data}}
+			</div>
+		{{/each}}
+	</main>
+
+	<div class="rc-user-info__flex rc-user-info__row">
+		{{#if canEditRoom}}
+		<button class="rc-button rc-button--icon rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
 		{{/if}}
+		<button class="rc-button rc-button--icon rc-button--outline js-hide" type="submit">{{> icon icon='eye-off'}}{{_ "Hide"}}</button>
+		{{#if canLeaveRoom}}
+		<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
+		{{/if}}
+		<!-- {{#if canDeleteRoom}}
+		<button class="rc-button rc-button-outline rc-button-cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+		{{/if}} -->
 	</div>
 </template>
