@@ -51,7 +51,7 @@ RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function
 
 	const update = {
 		$set: {
-			desktopNotificationDuration: value - 0
+			desktopNotificationDuration: parseInt(value)
 		}
 	};
 
