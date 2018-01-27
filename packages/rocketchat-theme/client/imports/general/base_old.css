@@ -4392,10 +4392,8 @@ body:not(.is-cordova) {
 	margin: 20px auto;
 	padding: 20px;
 
-	border-radius: 4px;
-	box-shadow:
-		0 1px 1px 0 rgba(0, 0, 0, 0.2),
-		0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	border-radius: 2px;
+	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	& header {
 		padding: 18px 0 23px;
@@ -5635,7 +5633,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 2;
+	z-index: 1;
 	right: 0;
 	left: 0;
 

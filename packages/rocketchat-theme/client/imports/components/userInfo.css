@@ -17,8 +17,6 @@
 		display: flex;
 		flex-direction: column;
 
-		padding: 0 var(--default-padding);
-
 		background-color: var(--color-white);
 
 		&.animated {
@@ -36,6 +34,8 @@
 		overflow-y: auto;
 
 		flex: 1 1;
+
+		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
