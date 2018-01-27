@@ -2,7 +2,7 @@
 	<main class="rc-user-info__scroll">
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{#if disableNotifications}}disabled{{/if}}">
+				<div class="rc-switch-double__label {{#if notificationIsEnabled}}disabled{{/if}}">
 					{{_ "Turn_OFF"}}
 					<div class="rc-switch-double__description">
 						{{_ "Mute_all_notifications"}}
@@ -10,13 +10,13 @@
 				</div>
 				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq disableNotifications true}}">
+							<input type="checkbox" class="rc-switch__input js-input-check" value="0" id="disableNotifications" name="disableNotifications" checked="{{$eq notificationIsEnabled true}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
 					</label>
 				</div>
-				<div class="rc-switch-double__label {{#unless disableNotifications}}disabled{{/unless}}">
+				<div class="rc-switch-double__label {{#unless notificationIsEnabled}}disabled{{/unless}}">
 					{{_ "Turn_ON"}}
 					<div class="rc-switch-double__description">
 						{{_ "Receive_alerts"}}
@@ -26,7 +26,7 @@
 		</div>
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
-				<div class="rc-switch-double__label {{#if hideUnreadStatus}}disabled{{/if}}">
+				<div class="rc-switch-double__label {{#if showUnreadStatus}}disabled{{/if}}">
 					{{_ "Hide_counter"}}
 					<div class="rc-switch-double__description">
 						{{_ "Do_not_display_unread_counter"}}
@@ -34,13 +34,13 @@
 				</div>
 				<div class="rc-switch rc-switch--blue">
 					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input js-input-check" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq hideUnreadStatus true}}">
+						<input type="checkbox" class="rc-switch__input js-input-check" id="hideUnreadStatus" name="hideUnreadStatus" value="1" checked="{{$eq showUnreadStatus true}}">
 						<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
 					</label>
 				</div>
-				<div class="rc-switch-double__label {{#unless hideUnreadStatus}}disabled{{/unless}}">
+				<div class="rc-switch-double__label {{#unless showUnreadStatus}}disabled{{/unless}}">
 					{{_ "Show_counter"}}
 					<div class="rc-switch-double__description">
 						{{_ "Display_unread_counter"}}
@@ -48,7 +48,7 @@
 				</div>
 			</div>
 		</div>
-		{{#if disableNotifications}}
+		{{#if notificationIsEnabled}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-user-info__config">
 					<div class="rc-user-info__config-header">

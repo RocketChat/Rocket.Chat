@@ -19,8 +19,14 @@ const call = (method, ...params) => {
 };
 
 Template.pushNotificationsFlexTab.helpers({
+	notificationIsEnabled() {
+		return !Template.instance().form.disableNotifications.get();
+	},
 	disableNotifications() {
 		return Template.instance().form.disableNotifications.get();
+	},
+	showUnreadStatus() {
+		return !Template.instance().form.hideUnreadStatus.get();
 	},
 	hideUnreadStatus() {
 		return Template.instance().form.hideUnreadStatus.get();
@@ -197,7 +203,9 @@ Template.pushNotificationsFlexTab.events({
 
 	'change input[type=checkbox]'(e, instance) {
 		e.preventDefault();
-		instance.form[$(e.currentTarget).attr('name')].set(e.currentTarget.checked);
+		const name = $(e.currentTarget).attr('name');
+		const checked = ['disableNotifications', 'hideUnreadStatus'].includes(name) ? !e.currentTarget.checked : e.currentTarget.checked;
+		instance.form[name].set(checked);
 	},
 
 	'click .rc-user-info__config-value'(e) {
