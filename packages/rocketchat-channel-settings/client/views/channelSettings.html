@@ -65,10 +65,10 @@
 		{{#with settings.t}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
-						{{_ "Private"}}
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Public"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
-							{{_ "Just_invited_people_can_access_this_channel"}}
+							{{_ "Everyone_can_access_this_channel"}}
 						</div>
 					</div>
 					<div class="rc-switch rc-switch--blue">
@@ -79,13 +79,13 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
-						{{_ "Public"}}{{equal default value '*'}}
+					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+						{{_ "Private"}}
 						<div class="rc-switch-double__description">
-							{{_ "Everyone_can_access_this_channel"}}
+							{{_ "Just_invited_people_can_access_this_channel"}}
 						</div>
 					</div>
-
+				
 				</div>
 			</div>
 		{{/with}}
