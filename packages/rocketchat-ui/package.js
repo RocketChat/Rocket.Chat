@@ -10,10 +10,6 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	clipboard: '1.7.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'accounts-base',
@@ -127,6 +123,12 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/selectDropdown.html', 'client');
 	api.addFiles('client/components/selectDropdown.js', 'client');
+
+	api.addFiles('client/components/header/header.html', 'client');
+	api.addFiles('client/components/header/header.js', 'client');
+
+	api.addFiles('client/components/contextualBar.html', 'client');
+	api.addFiles('client/components/contextualBar.js', 'client');
 
 	api.export('fileUpload');
 });

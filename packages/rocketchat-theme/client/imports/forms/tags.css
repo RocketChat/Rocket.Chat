@@ -3,6 +3,7 @@
 
 	width: 100%;
 	min-height: 43px;
+
 	padding: 0 1rem 0 2.25rem;
 
 	border-width: var(--tags-border-width);
@@ -44,9 +45,11 @@
 	}
 
 	&__input {
+
+		flex: 1;
+
 		margin: 0.25rem;
 		padding: 0.35rem 0.5rem;
-		flex: 1;
 
 		border: 0;
 
