@@ -23,7 +23,6 @@
 						{{#if state 'login'}}
 							<div class="rc-input">
 								<label class="rc-input__label" for="emailOrUsername">
-									<div class="rc-input__title">{{emailOrUsernamePlaceholder}}</div>
 									<div class="rc-input__wrapper">
 										<input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
@@ -37,7 +36,6 @@
 							</div>
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
-									<div class="rc-input__title">{{passwordPlaceholder}}</div>
 									<div class="rc-input__wrapper">
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
@@ -50,7 +48,6 @@
 						{{#if state 'register'}}
 						<div class="rc-input">
 							<label class="rc-input__label" for="name">
-							<div class="rc-input__title">{{namePlaceholder}}</div>
 							<div class="rc-input__wrapper">
 								<input name="name" id="name" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
@@ -61,7 +58,6 @@
 						</div>
 						<div class="rc-input">
 							<label class="rc-input__label" for="email">
-							<div class="rc-input__title">{{_ "Email"}}</div>
 							<div class="rc-input__wrapper">
 								<input name="email" id="email" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
@@ -75,7 +71,6 @@
 
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
-									<div class="rc-input__title">{{passwordPlaceholder}}</div>
 									<div class="rc-input__wrapper">
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
@@ -87,7 +82,6 @@
 							{{#if requirePasswordConfirmation}}
 							<div class="rc-input">
 								<label class="rc-input__label" for="confirm-pass">
-									<div class="rc-input__title">{{_ "Confirm_password"}}</div>
 									<div class="rc-input__wrapper">
 										<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
@@ -101,7 +95,6 @@
 						{{#if state 'forgot-password' 'email-verification'}}
 						<div class="rc-input">
 							<label class="rc-input__label" for="email">
-							<div class="rc-input__title">{{_ "Email"}}</div>
 							<div class="rc-input__wrapper">
 								<input name="email" id="email" type="text" class="rc-input__element"
 									autocapitalize="off" autocorrect="off"
