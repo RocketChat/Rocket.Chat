@@ -33,6 +33,19 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.result = (successFn, errorFn = () => {}) => {
 		return (error, result) => {
+			// fix the state where user it was enabled on admin
+			if (error && error.error) {
+				switch (error.error) {
+					case 'invalid-facebook-token':
+					case 'invalid-instance-url':
+					case 'integration-disabled':
+						return Meteor.call('livechat:facebook', { action: 'enable' }, this.result(() => {
+							this.enabled.set(true);
+							this.loadPages();
+						}, () => this.loadPages()));
+				}
+			}
+
 			if (result && result.success === false && (result.type === 'OAuthException' || typeof result.url !== 'undefined')) {
 				const oauthWindow = window.open(result.url, 'facebook-integration-oauth', 'width=600,height=400');
 
