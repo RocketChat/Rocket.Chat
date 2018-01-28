@@ -1,4 +1,4 @@
-import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
 import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
@@ -7,9 +7,9 @@ import {manageSettingsPerm, expandSBP, layoutTitelPerm, layoutTitelSetting, cont
 
 describe('[Rocket.Chat Settings based permissions]', function () {
 
-	var username = 'user';
-	var email = 'user@user.com';
-	var password = 'user';
+	// var username = 'user';
+	// var email = 'user@user.com';
+	// var password = 'user';
 	var newTitle = 'Testtitle';
 	var oldTitle = 'Home';
 

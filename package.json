@@ -69,7 +69,7 @@
     "test": "node .scripts/start.js",
     "deploy": "npm run build && pm2 startOrRestart pm2.json",
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
-    "chimp-smarti": "chimp tests/chimp-config.js --path=tests/end-to-end/ui_smarti",
+    "chimp-path": "chimp tests/chimp-config.js --path=$CHIMP_PATH",
     "chimp-test": "chimp tests/chimp-config.js",
     "postinstall": "cd packages/rocketchat-katex && npm i",
     "testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
