@@ -1,5 +1,6 @@
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass'];
 Meteor.methods({
-	saveRoomSettings(rid, setting, value) {
+	saveRoomSettings(rid, settings, value) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				'function': 'RocketChat.saveRoomName'
@@ -10,25 +11,44 @@ Meteor.methods({
 				method: 'saveRoomSettings'
 			});
 		}
-		if (!['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass'].some((s) => s === setting)) {
+
+		if (typeof settings !== 'object') {
+			settings = {
+				[settings] : value
+			};
+		}
+
+		if (!Object.keys(settings).every(key => fields.includes(key))) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings provided', {
 				method: 'saveRoomSettings'
 			});
 		}
+
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', rid)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room'
 			});
 		}
-		if (setting === 'default' && !RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
-				method: 'saveRoomSettings',
-				action: 'Viewing_room_administration'
+
+
+		const room = RocketChat.models.Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'saveRoomSettings'
 			});
 		}
-		const room = RocketChat.models.Rooms.findOneById(rid);
-		if (room != null) {
+
+		const user = Meteor.user();
+
+		Object.keys(settings).forEach(setting => {
+			const value = settings[setting];
+			if (settings === 'default' && !RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Viewing_room_administration'
+				});
+			}
 			if (setting === 'roomType' && value !== room.t && value === 'c' && !RocketChat.authz.hasPermission(this.userId, 'create-c')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 					method: 'saveRoomSettings',
@@ -41,28 +61,32 @@ Meteor.methods({
 					action: 'Change_Room_Type'
 				});
 			}
+		});
+
+		Object.keys(settings).forEach(setting => {
+			const value = settings[setting];
 			switch (setting) {
 				case 'roomName':
-					name = RocketChat.saveRoomName(rid, value, Meteor.user());
+					RocketChat.saveRoomName(rid, value, user);
 					break;
 				case 'roomTopic':
 					if (value !== room.topic) {
-						RocketChat.saveRoomTopic(rid, value, Meteor.user());
+						RocketChat.saveRoomTopic(rid, value, user);
 					}
 					break;
 				case 'roomAnnouncement':
 					if (value !== room.announcement) {
-						RocketChat.saveRoomAnnouncement(rid, value, Meteor.user());
+						RocketChat.saveRoomAnnouncement(rid, value, user);
 					}
 					break;
 				case 'roomDescription':
 					if (value !== room.description) {
-						RocketChat.saveRoomDescription(rid, value, Meteor.user());
+						RocketChat.saveRoomDescription(rid, value, user);
 					}
 					break;
 				case 'roomType':
 					if (value !== room.t) {
-						RocketChat.saveRoomType(rid, value, Meteor.user());
+						RocketChat.saveRoomType(rid, value, user);
 					}
 					break;
 				case 'tokenpass':
@@ -77,17 +101,17 @@ Meteor.methods({
 					break;
 				case 'readOnly':
 					if (value !== room.ro) {
-						RocketChat.saveRoomReadOnly(rid, value, Meteor.user());
+						RocketChat.saveRoomReadOnly(rid, value, user);
 					}
 					break;
 				case 'reactWhenReadOnly':
 					if (value !== room.reactWhenReadOnly) {
-						RocketChat.saveReactWhenReadOnly(rid, value, Meteor.user());
+						RocketChat.saveReactWhenReadOnly(rid, value, user);
 					}
 					break;
 				case 'systemMessages':
 					if (value !== room.sysMes) {
-						RocketChat.saveRoomSystemMessages(rid, value, Meteor.user());
+						RocketChat.saveRoomSystemMessages(rid, value, user);
 					}
 					break;
 				case 'joinCode':
@@ -96,7 +120,8 @@ Meteor.methods({
 				case 'default':
 					RocketChat.models.Rooms.saveDefaultById(rid, value);
 			}
-		}
+		});
+
 		return {
 			result: true,
 			rid: room._id

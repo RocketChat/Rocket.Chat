@@ -1,0 +1,52 @@
+.rc-select {
+
+	position: relative;
+
+	display: flex;
+
+	flex: 0 0 auto;
+
+	color: var(--input-text-color);
+
+	border-width: var(--input-border-width);
+	border-color: var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	background-color: transparent;
+
+	font-size: var(--input-font-size);
+	align-items: center;
+	justify-content: flex-end;
+
+	&__arrow {
+		position: absolute;
+		z-index: -1;
+
+		margin: 0 -5px;
+
+		color: var(--color-gray-light);
+
+		font-size: 20px;
+	}
+
+	&__element {
+		padding: 0.75rem 2rem 0.75rem 1rem;
+
+		text-transform: capitalize;
+
+		border: none;
+
+		appearance: none;
+
+		&::-ms-expand {
+			display: none;
+		}
+
+		.rc-select__small & {
+			padding: 0.5rem 1rem;
+		}
+	}
+}
+
+.rtl .rc-select__element {
+	padding: 0.75rem 1rem 0.75rem 2rem;
+}

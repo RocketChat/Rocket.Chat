@@ -68,7 +68,7 @@ Template.visitorForward.events({
 	},
 
 	'change #forwardUser, blur #forwardUser'(event, instance) {
-		if (event.currentTarget.value) {
+		if (event.currentTarget.value && instance.find('#forwardDepartment')) {
 			instance.find('#forwardDepartment').value = '';
 		}
 	},
