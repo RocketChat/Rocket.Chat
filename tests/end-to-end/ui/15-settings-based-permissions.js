@@ -7,11 +7,7 @@ import {manageSettingsPerm, expandSBP, layoutTitelPerm, layoutTitelSetting, cont
 
 describe('[Rocket.Chat Settings based permissions]', function () {
 
-	// var username = 'user';
-	// var email = 'user@user.com';
-	// var password = 'user';
-	var newTitle = 'Testtitle';
-	var oldTitle = 'Home';
+	const newTitle = 'Testtitle';
 
 	describe('Give User Permissions', function () {
 		before(() => {
