@@ -45,7 +45,3 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/stats.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');
 });
-
-Npm.depends({
-	busboy: '0.2.13'
-});

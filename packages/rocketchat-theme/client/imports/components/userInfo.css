@@ -1,0 +1,327 @@
+.rc-user-info {
+	z-index: 1;
+
+	display: flex;
+	flex-direction: column;
+
+	margin-bottom: var(--default-padding);
+	align-items: center;
+
+	&-container {
+		position: absolute;
+
+		top: 0;
+		right: 0;
+		left: 0;
+
+		display: flex;
+		flex-direction: column;
+
+		background-color: var(--color-white);
+
+		&.animated {
+			transition: transform 0.45s cubic-bezier(0.5, 0, 0, 1), opacity 0.125s ease-out 0.1s, -webkit-transform 0.45s cubic-bezier(0.5, 0, 0, 1);
+		}
+
+		&.animated-hidden {
+			transform: translateX(100%);
+
+			opacity: 0;
+		}
+	}
+
+	&-wrapper {
+		overflow-y: auto;
+
+		flex: 1 1;
+
+		padding: 0 var(--default-padding);
+	}
+
+	&__banner {
+
+		position: absolute;
+		z-index: 1;
+		bottom: 50px;
+
+		display: flex;
+
+		width: 132px;
+		height: 32px;
+		margin: 0 -6px;
+
+		color: #ffffff;
+
+		border-radius: 3px;
+		background: #1d74f5;
+		align-items: center;
+		-webkit-justify-content: center;
+	}
+
+	&__avatar {
+
+		position: relative;
+
+		width: 120px;
+		height: 120px;
+		margin: var(--default-padding);
+
+		border-radius: 2px;
+
+		.archived & > .avatar {
+			opacity: 0.8;
+			filter: blur(1px);
+		}
+	}
+
+	&__name {
+		text-align: center;
+		word-wrap: break-word;
+
+		font-size: 22px;
+		font-weight: 500;
+		line-height: 28px;
+	}
+
+	&__username {
+		color: var(--color-gray);
+
+		font-size: 14px;
+	}
+
+	&__scroll {
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		margin: 0 -1.5rem;
+		padding: 0 1.5rem;
+
+		&.archived .rc-user-info__name,
+		&.archived .rc-user-info__label {
+			color: #9ea2a8;
+		}
+	}
+
+	&__flex {
+		display: flex;
+
+		& > .rc-button {
+			flex: 1;
+
+			margin: 0 5px;
+
+			&:first-child {
+				margin-left: 0;
+			}
+
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+
+	&__block {
+		margin: 47px 0;
+		padding: 28px 0;
+
+		border-top: 1px solid #d7d7d7;
+		border-bottom: 1px solid #d7d7d7;
+	}
+
+	&__row {
+		flex-direction: row;
+
+		padding: 15px 0;
+
+		& > .rc-switch {
+			flex: 1;
+
+			color: #a1a1a1;
+
+			& > .rc-switch__label > .rc-switch__text {
+				flex: 1;
+			}
+		}
+
+		&--separator {
+
+			margin: 14px 0;
+
+			border-bottom: 1px solid #d7d7d7;
+		}
+	}
+
+	&__label {
+		display: block;
+
+		margin-bottom: 37px;
+
+		font-size: 15px;
+		font-weight: 400;
+	}
+
+	&__description {
+		padding: 8px 0;
+
+		color: #9ea2a8;
+	}
+
+	&-action {
+		display: flex;
+
+		margin-bottom: var(--default-padding);
+		justify-content: center;
+
+		&__item {
+			overflow: hidden;
+
+			margin: 0 8px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		&__icon {
+			font-size: 20px;
+		}
+	}
+
+	&-details {
+
+		margin-bottom: calc(var(--default-small-padding) * -1);
+		padding: var(--default-padding);
+
+		background-color: #f7f8fa;
+
+		&__item:not(:last-child) {
+			margin-bottom: var(--default-small-padding);
+		}
+
+		&__label {
+			display: inline-block;
+
+			margin-bottom: var(--default-small-padding);
+
+			color: var(--color-gray);
+
+			font-size: 10px;
+		}
+
+		&__info {
+			overflow: hidden;
+
+			text-overflow: ellipsis;
+
+			color: var(--color-dark);
+
+			font-size: 16px;
+			line-height: 18px;
+		}
+
+		&__item {
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	&__config {
+		&-header {
+			display: flex;
+			align-items: center;
+		}
+
+		&-label {
+			margin: 0 0.75rem;
+
+			font-size: 0.75rem;
+			font-weight: 600;
+		}
+
+		&-icon {
+			font-size: 1.25rem;
+		}
+
+		&-content {
+			display: flex;
+
+			margin: 0.75rem 2rem;
+			align-items: flex-end;
+
+			&-icon {
+
+				color: #444444;
+
+				font-size: 1.25rem;
+			}
+
+			& .icon-play-circled {
+				cursor: pointer;
+			}
+		}
+
+		&-name,
+		&-value {
+			font-size: 0.75rem;
+			font-weight: 600;
+		}
+
+		&-name {
+			color: #777777;
+		}
+
+		&-value {
+
+			display: flex;
+
+			margin: 0 0.25rem;
+
+			cursor: pointer;
+
+			color: #1d73f3;
+			align-items: flex-end;
+			text-transform: capitalize;
+		}
+	}
+}
+
+.rc-switch-double {
+	display: flex;
+
+	width: 100%;
+
+	word-break: break-word;
+
+	&__description {
+		margin: 5px 2px;
+
+		font-size: 13px;
+	}
+
+	&__label {
+		flex: 1 1 100%;
+
+		font-size: 16px;
+
+		&:first-child {
+			text-align: right;
+		}
+
+		&:last-child {
+			text-align: left;
+		}
+
+		&.disabled {
+			color: #a1a1a1;
+		}
+	}
+
+	& .rc-switch {
+		flex: 0 0;
+
+		margin: 0 23px;
+
+		& .rc-switch__button {
+			margin: 0;
+		}
+	}
+}
