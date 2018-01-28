@@ -39,7 +39,7 @@ export class HelpRequestApi {
 
 		return new HelpDiscussionCreatedResponse(
 			HelpRequestApi.getUrlForRoom(creationResult.room),
-			creationResult._id,
+			creationResult.room,
 			creationResult.members
 		);
 	}
@@ -152,7 +152,6 @@ export class HelpRequestApi {
 		const roomCreated = RocketChat.models.Rooms.findOne({_id: channel.rid});
 		return {
 			room: roomCreated,
-			_id: channel.rid,
 			members: roomCreated.usernames.map((user) => {
 				return {username: user};
 			})
