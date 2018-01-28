@@ -1,3 +1,5 @@
+import Busboy from 'busboy';
+
 RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
@@ -33,7 +35,6 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const Busboy = Npm.require('busboy');
 		const busboy = new Busboy({ headers: this.request.headers });
 		const files = [];
 		const fields = {};

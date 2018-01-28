@@ -90,6 +90,8 @@
 	}
 
 	& .rc-button {
+
+		min-height: 36px;
 		margin: 0 0.25rem;
 
 		color: var(--rc-color-primary-light);
@@ -104,7 +106,7 @@
 
 @media (width <= 400px) {
 	.toolbar {
-		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+		padding: 0 var(--sidebar-extra-small-default-padding) var(--sidebar-small-default-padding);
 	}
 }
 
