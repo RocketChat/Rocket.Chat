@@ -22,6 +22,7 @@ Package.onUse((api) => {
 
   api.use([
     'rocketchat:lib',
+    'meteorhacks:picker',
     'routepolicy',
     'service-configuration',
     'webapp'
@@ -36,18 +37,16 @@ Package.onUse((api) => {
   ], 'client')
 
   api.addAssets([
-    'assets/blockstack_mark.png',
-    'assets/rocketchat-logo-192x192.png',
-    'assets/manifest.json'
+    'assets/blockstack_mark.png'
   ], 'client')
 
   api.addFiles([
     'server/main.js',
+    'server/routes.js',
     'server/settings.js',
     'server/tokenHandler.js',
     'server/userHandler.js',
-    'server/loginHandler.js',
-    'server/cors.js'
+    'server/loginHandler.js'
   ], 'server')
 
   api.addFiles([

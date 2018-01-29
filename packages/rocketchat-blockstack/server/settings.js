@@ -1,21 +1,19 @@
-RocketChat.settings.addGroup('Blockstack')
-
-Meteor.isDevelopment = (Meteor.isServer ? process.env.ROOT_URL : window.location.origin).indexOf('localhost') != -1
-
-
 // Rocket.Chat Blockstack provider config defaults, settings can override
 Accounts.blockstack.defaults = {
   enable: true,
-  blockstackIDHost: (Meteor.isDevelopment) ? 'http://localhost:8888/' : 'https://blockstack.org/auth',
+  blockstackIDHost: Accounts.blockstack.authHost,
   loginStyle: 'redirect',
 	generateUsername: false,
   debug: true,
   manifestURI: Meteor.absoluteUrl(Accounts.blockstack.manifestPath),
-  redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath)
+  redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
+  authDescription: 'Rocket.Chat login',
 }
 
+// Add required settings (not all used in current version)
 Meteor.startup(() => {
   let defaults = Accounts.blockstack.defaults
+  RocketChat.settings.addGroup('Blockstack')
   RocketChat.settings.add('Blockstack_Enable', defaults.enable, {
     type: 'boolean',
     group: 'Blockstack',
@@ -26,7 +24,7 @@ Meteor.startup(() => {
     group: 'Blockstack',
     i18nLabel: 'Blockstack_Host'
   })
-  RocketChat.settings.add('Accounts_OAuth_Dolphin_login_style', defaults.loginStyle, {
+  RocketChat.settings.add('Accounts_Login_style', defaults.loginStyle, {
     type: 'select',
     group: 'Blockstack',
     i18nLabel: 'Blockstack_Login_Style',
@@ -35,6 +33,11 @@ Meteor.startup(() => {
       { key: 'popup', i18nLabel: 'Popup' }
     ]
   })
+  RocketChat.settings.add('Blockstack_Auth_Description', defaults.authDescription, {
+    type: 'string',
+    group: 'Blockstack',
+    i18nLabel: 'Blockstack_Auth_Description'
+  })
   RocketChat.settings.add('Blockstack_Generate_Username', defaults.generateUsername, {
     type: 'boolean',
     group: 'Blockstack',
@@ -42,6 +45,7 @@ Meteor.startup(() => {
   })
 })
 
+// Helper to return all Blockstack settings
 Accounts.blockstack.getSettings = () => {
   let fallbacks = Accounts.blockstack.defaults
   let settings = {
@@ -53,6 +57,7 @@ Accounts.blockstack.getSettings = () => {
   return Object.assign({}, fallbacks, settings)
 }
 
+// Add settings to auth provider configs
 ServiceConfiguration.configurations.upsert(
   { service: 'blockstack' },
   { $set: Accounts.blockstack.getSettings() }

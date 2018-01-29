@@ -84,6 +84,7 @@ meteor-base@1.2.0
 meteor-developer-oauth@1.2.0
 meteorhacks:inject-initial@1.0.4
 meteorhacks:meteorx@1.4.1
+meteorhacks:picker@1.0.3
 meteorspark:util@0.2.0
 minifier-css@1.2.16
 minifier-js@2.2.2
