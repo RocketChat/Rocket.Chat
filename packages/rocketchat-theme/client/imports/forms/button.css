@@ -15,7 +15,7 @@
 	min-height: 40px;
 	max-height: 40px;
 	margin: 0.5rem 0;
-
+	padding: 0 1.5rem;
 
 	cursor: pointer;
 	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
