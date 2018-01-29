@@ -3,8 +3,7 @@ Meteor.startup(function() {
 		this.add('IRC_Server_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
-			i18nDescription: 'IRC_Server_Enabled',
-			alert: 'IRC Server Support is a work in progress. Use on a production system is not recommended at this time.'
+			i18nDescription: 'IRC_Server_Enabled'
 		});
 
 		this.add('IRC_Server_Host', 'irc.freenode.net', {
@@ -19,31 +18,31 @@ Meteor.startup(function() {
 			i18nDescription: 'IRC_Server_Port'
 		});
 
-		this.add('IRC_Server_Id', null, {
+		this.add('IRC_Server_Id', '', {
 			type: 'string',
 			i18nLabel: 'Id',
 			i18nDescription: 'IRC_Server_Id'
 		});
 
-		this.add('IRC_Server_Send_Password', null, {
+		this.add('IRC_Server_Send_Password', '', {
 			type: 'string',
 			i18nLabel: 'Send_Password',
 			i18nDescription: 'IRC_Server_Send_Password'
 		});
 
-		this.add('IRC_Server_Receive_Password', null, {
+		this.add('IRC_Server_Receive_Password', '', {
 			type: 'string',
 			i18nLabel: 'Receive_Password',
 			i18nDescription: 'IRC_Server_Receive_Password'
 		});
 
-		this.add('IRC_Server_Name', null, {
+		this.add('IRC_Server_Name', '', {
 			type: 'string',
 			i18nLabel: 'Name',
 			i18nDescription: 'IRC_Server_Name'
 		});
 
-		this.add('IRC_Server_Description', null, {
+		this.add('IRC_Server_Description', '', {
 			type: 'string',
 			i18nLabel: 'Description',
 			i18nDescription: 'IRC_Server_Description'

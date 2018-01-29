@@ -1,53 +1,53 @@
 import net from 'net';
 import _ from 'underscore';
 
-const bind = function(f) {
-	const g = Meteor.bindEnvironment((self, ...args) => f.apply(self, args));
-	return function(...args) { return g(this, ...Array.from(args)); };
-};
+// const bind = function(f) {
+// 	const g = Meteor.bindEnvironment((self, ...args) => f.apply(self, args));
+// 	return function(...args) { return g(this, ...Array.from(args)); };
+// };
 
 class IrcServer {
 	constructor() {
-		this.connect = this.connect.bind(this);
-		this.disconnect = this.disconnect.bind(this);
-		this.onConnect = this.onConnect.bind(this);
-		this.onClose = this.onClose.bind(this);
-		this.onTimeout = this.onTimeout.bind(this);
-		this.onError = this.onError.bind(this);
-		this.cleanup = this.cleanup.bind(this);
-		this.burst = this.burst.bind(this);
-		this.sendUser = this.sendUser.bind(this);
-		this.sendRoom = this.sendRoom.bind(this);
-		this.joinRoom = this.joinRoom.bind(this);
-		this.loginUser = this.loginUser.bind(this);
-		this.leaveRoom = this.leaveRoom.bind(this);
-		this.createRoom = this.createRoom.bind(this);
-		this.logoutUser = this.logoutUser.bind(this);
-		this.sendMessage = this.sendMessage.bind(this);
-		this.logoutIrcUser = this.logoutIrcUser.bind(this);
-		this.cleanupIrcServer = this.cleanupIrcServer.bind(this);
-		this.getTime = this.getTime.bind(this);
-		this.parseMessage = this.parseMessage.bind(this);
-		this.writeCommand = this.writeCommand.bind(this);
-		this.handleMalformed = this.handleMalformed.bind(this);
-		this.onReceiveRawMessage = this.onReceiveRawMessage.bind(this);
-		this.onReceivePASS = this.onReceivePASS.bind(this);
-		this.onReceiveCAPAB = this.onReceiveCAPAB.bind(this);
-		this.onReceiveSERVER = this.onReceiveSERVER.bind(this);
-		this.onReceiveSVINFO = this.onReceiveSVINFO.bind(this);
-		this.onReceiveSID = this.onReceiveSID.bind(this);
-		this.onReceiveSJOIN = this.onReceiveSJOIN.bind(this);
-		this.onReceiveUID = this.onReceiveUID.bind(this);
-		this.onReceivePING = this.onReceivePING.bind(this);
-		this.onReceivePONG = this.onReceivePONG.bind(this);
-		this.onReceiveEOB = this.onReceiveEOB.bind(this);
-		this.onReceiveJOIN = this.onReceiveJOIN.bind(this);
-		this.onReceivePART = this.onReceivePART.bind(this);
-		this.onReceiveQUIT = this.onReceiveQUIT.bind(this);
-		this.onReceiveINVITE = this.onReceiveINVITE.bind(this);
-		this.onReceiveKICK = this.onReceiveKICK.bind(this);
-		this.onReceiveSQUIT = this.onReceiveSQUIT.bind(this);
-		this.onReceivePRIVMSG = this.onReceivePRIVMSG.bind(this);
+		// this.connect = bind(this.connect);
+		// this.disconnect = bind(this.disconnect);
+		// this.onConnect = bind(this.onConnect);
+		// this.onClose = bind(this.onClose);
+		// this.onTimeout = bind(this.onTimeout);
+		// this.onError = bind(this.onError);
+		// this.cleanup = bind(this.cleanup);
+		// this.burst = bind(this.burst);
+		// this.sendUser = bind(this.sendUser);
+		// this.sendRoom = bind(this.sendRoom);
+		// this.joinRoom = bind(this.joinRoom);
+		// this.loginUser = bind(this.loginUser);
+		// this.leaveRoom = bind(this.leaveRoom);
+		// this.createRoom = bind(this.createRoom);
+		// this.logoutUser = bind(this.logoutUser);
+		// this.sendMessage = bind(this.sendMessage);
+		// this.logoutIrcUser = bind(this.logoutIrcUser);
+		// this.cleanupIrcServer = bind(this.cleanupIrcServer);
+		// this.getTime = bind(this.getTime);
+		// this.parseMessage = bind(this.parseMessage);
+		// this.writeCommand = bind(this.writeCommand);
+		// this.handleMalformed = bind(this.handleMalformed);
+		// this.onReceiveRawMessage = bind(this.onReceiveRawMessage);
+		// this.onReceivePASS = bind(this.onReceivePASS);
+		// this.onReceiveCAPAB = bind(this.onReceiveCAPAB);
+		// this.onReceiveSERVER = bind(this.onReceiveSERVER);
+		// this.onReceiveSVINFO = bind(this.onReceiveSVINFO);
+		// this.onReceiveSID = bind(this.onReceiveSID);
+		// this.onReceiveSJOIN = bind(this.onReceiveSJOIN);
+		// this.onReceiveUID = bind(this.onReceiveUID);
+		// this.onReceivePING = bind(this.onReceivePING);
+		// this.onReceivePONG = bind(this.onReceivePONG);
+		// this.onReceiveEOB = bind(this.onReceiveEOB);
+		// this.onReceiveJOIN = bind(this.onReceiveJOIN);
+		// this.onReceivePART = bind(this.onReceivePART);
+		// this.onReceiveQUIT = bind(this.onReceiveQUIT);
+		// this.onReceiveINVITE = bind(this.onReceiveINVITE);
+		// this.onReceiveKICK = bind(this.onReceiveKICK);
+		// this.onReceiveSQUIT = bind(this.onReceiveSQUIT);
+		// this.onReceivePRIVMSG = bind(this.onReceivePRIVMSG);
 
 		this.ircPort = RocketChat.settings.get('IRC_Server_Port');
 		this.ircHost = RocketChat.settings.get('IRC_Server_Host');
@@ -56,6 +56,17 @@ class IrcServer {
 		this.receivePassword = RocketChat.settings.get('IRC_Server_Receive_Password');
 		this.serverName = RocketChat.settings.get('IRC_Server_Name');
 		this.serverDescription = RocketChat.settings.get('IRC_Server_Description');
+
+		// TODO: Remove it...
+		console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+		console.log('>>> IRC host: ', this.ircHost);
+		console.log('>>> IRC port: ', this.ircPort);
+		console.log('>>> IRC serverId: ', this.serverId);
+		console.log('>>> IRC sendPassword: ', this.sendPassword);
+		console.log('>>> IRC receivePassword: ', this.receivePassword);
+		console.log('>>> IRC serverName: ', this.serverName);
+		console.log('>>> IRC serverDescription: ', this.serverDescription);
+		console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
 
 		this.logCommands = true;
 
@@ -70,12 +81,6 @@ class IrcServer {
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
 		this.socket.setTimeout(90000);
-
-		this.onConnect = bind(this.onConnect);
-		this.onClose = bind(this.onClose);
-		this.onTimeout = bind(this.onTimeout);
-		this.onError = bind(this.onError);
-		this.onReceiveRawMessage = bind(this.onReceiveRawMessage);
 
 		this.socket.on('data', this.onReceiveRawMessage);
 		this.socket.on('close', this.onClose);
@@ -121,6 +126,7 @@ class IrcServer {
 	onClose() {
 		console.log('[irc-server] Socket closed, cleaning up state');
 		this.state = 'waitingforconnection';
+
 		return this.cleanup();
 	}
 
@@ -137,6 +143,7 @@ class IrcServer {
 	}
 
 	onError(error) {
+		console.log(error);
 		return console.log(`[irc-server] Socket error: ${ error.message }`);
 	}
 
@@ -189,6 +196,7 @@ class IrcServer {
 		}
 
 		const userIds = [];
+		// TODO It probably should to be limited by statusConnection equals 'online'
 		const subscribedUsers = RocketChat.models.Users.findUsersByUsernames(room.usernames, { fields: { _id: 1, statusConnection: 1 } }).fetch();
 
 		subscribedUsers.forEach(user => {
@@ -197,25 +205,29 @@ class IrcServer {
 			}
 		});
 
+		// TODO Maybe use getTime()?
 		const timestamp = Math.floor(room.ts.getTime() / 1000);
 		const nickSpace = 510 - 29 - room.name.length;
 		const nicksPerMessage = Math.floor(nickSpace / 20);
 
 		let index = 0;
-		const result = [];
 
-		while ((index * nicksPerMessage) < userIds.length) {
-			this.writeCommand({
-				prefix: this.serverId,
-				command: 'SJOIN',
-				parameters: [timestamp, `#${ room.name }`, '+nt'],
-				trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
-			});
+		return (() => {
+      const result = [];
 
-			result.push(index = index + 1);
-		}
+      while ((index * nicksPerMessage) < userIds.length) {
+        this.writeCommand({
+          prefix: this.serverId,
+          command: 'SJOIN',
+          parameters: [timestamp, `#${ room.name }`, '+nt'],
+          trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
+        });
 
-		return result;
+        result.push(index = index + 1);
+      }
+
+      return result;
+		})();
 	}
 
 	joinRoom(user, room) {
@@ -228,6 +240,7 @@ class IrcServer {
 		}
 
 		const userId = this.localUsersById[user._id].ircUserId;
+		// TODO Maybe use getTime()?
 		const timestamp = Math.floor(room.ts.getTime() / 1000);
 
 		return this.writeCommand({
@@ -282,11 +295,17 @@ class IrcServer {
 			return;
 		}
 
+		// TODO Attention here...
+		// if (Array.from(this.localUsersById).includes(!user._id)) {
+		// 	return;
+		// }
+
 		if (!this.localUsersById.includes(user._id)) {
 			return;
 		}
 
 		const userId = this.localUsersById[user._id].ircUserId;
+
 		delete this.localUsersById[user._id];
 		delete this.localUsersByIrcId[userId];
 
@@ -310,49 +329,51 @@ class IrcServer {
 
 		const lines = message.msg.split('\n');
 
-		const result = [];
+		return (() => {
+      const result = [];
 
-		lines.forEach(line => {
-			let messageSpace;
-			let target;
+      lines.forEach(line => {
+        let messageSpace;
+        let target;
 
-			line = line.trimRight();
+        line = line.trimRight();
 
-			if (room.t === 'd') {
-				messageSpace = 510 - 30;
+        if (room.t === 'd') {
+          messageSpace = 510 - 30;
 
-				//TODO: Change for native ES6 filter maybe?
-				const targetUsername = _.find(room.usernames, username => username !== message.u.username);
-				const targetUser = _.find(this.ircUsers, user => user.username === targetUsername);
+          //TODO: Change for native ES6 filter maybe?
+          const targetUsername = _.find(room.usernames, username => username !== message.u.username);
+          const targetUser = _.find(this.ircUsers, user => user.username === targetUsername);
 
-				target = targetUser.ircUserId;
-			} else {
-				//TODO: Should only send message if there are IRC users in the room
-				messageSpace = 510 - 22 - room.name.length;
-				target = `#${ room.name }`;
-			}
+          target = targetUser.ircUserId;
+        } else {
+          //TODO: Should only send message if there are IRC users in the room
+          messageSpace = 510 - 22 - room.name.length;
+          target = `#${ room.name }`;
+        }
 
-			let index = 0;
+        let index = 0;
 
-			result.push(() => {
-				const elementResult = [];
+        result.push((() => {
+          const elementResult = [];
 
-				while ((index * messageSpace) < line.length) {
-					this.writeCommand({
-						prefix: userId,
-						command: 'PRIVMSG',
-						parameters: [target],
-						trailer: line.substring(index * messageSpace, (index + 1) * messageSpace)
-					});
+          while ((index * messageSpace) < line.length) {
+            this.writeCommand({
+              prefix: userId,
+              command: 'PRIVMSG',
+              parameters: [target],
+              trailer: line.substring(index * messageSpace, (index + 1) * messageSpace)
+            });
 
-					elementResult.push(index = index + 1);
-				}
+            elementResult.push(index = index + 1);
+          }
 
-				return elementResult;
-			});
-		});
+          return elementResult;
+        })());
+      });
 
-		return result;
+      return result;
+		})();
 	}
 
 	logoutIrcUser(userId) {
@@ -366,6 +387,7 @@ class IrcServer {
 
 		RocketChat.models.Rooms.removeUsernameFromAll(user.username);
 
+		// TODO Attention about usage of 'delete' here...
 		return delete this.ircUsers[userId];
 	}
 
@@ -387,7 +409,6 @@ class IrcServer {
 
 	getDirectRoom(source, target) {
 		const rid = [source._id, target._id].sort().join('');
-		const now = new Date();
 
 		RocketChat.models.Rooms.upsert({_id: rid}, {
 			$set: {
@@ -396,11 +417,11 @@ class IrcServer {
 			$setOnInsert: {
 				t: 'd',
 				msgs: 0,
-				ts: now
+				ts: new Date()
 			}
 		});
 
-		RocketChat.models.Subscriptions.upsert({rid, $and: [{'u._id': target._id}]}, {
+		RocketChat.models.Subscriptions.upsert({rid, 'u._id': target._id}, {
 			$setOnInsert: {
 				name: source.username,
 				t: 'd',
@@ -438,7 +459,7 @@ class IrcServer {
 		if (command[0] === ':') {
 			split = command.indexOf(' ', currentIndex);
 
-			result.prefix = () => {
+			result.prefix = (() => {
 				if (split === -1) {
 					currentIndex = command.length;
 					return command.substring(1);
@@ -447,13 +468,13 @@ class IrcServer {
 					currentIndex = split + 1;
 					return temp;
 				}
-			};
+			})();
 		}
 
 		if (currentIndex !== command.length) {
 			split = command.indexOf(' ', currentIndex);
 
-			result.command = () => {
+			result.command = (() => {
 				if (split === -1) {
 					temp = command.substring(currentIndex);
 					currentIndex = command.length;
@@ -463,10 +484,10 @@ class IrcServer {
 					currentIndex = split + 1;
 					return temp;
 				}
-			};
+			})();
 		}
 
-		result.parameters = () => {
+		result.parameters = (() => {
 			const elementResult = [];
 
 			while (currentIndex !== command.length && command[currentIndex] !== ':') {
@@ -484,7 +505,7 @@ class IrcServer {
 			}
 
 			return elementResult;
-		};
+		})();
 
 		if (currentIndex !== command.length) {
 			result.trailer = command.substring(currentIndex + 1);
@@ -541,7 +562,7 @@ class IrcServer {
 
 			const command = this.parseMessage(line);
 
-			if (command.command != null) {
+			if (command && command.command != null) {
 				switch (this.state) {
 					case 'awaitingpass':
 						if (command.command === 'PASS') {
@@ -659,7 +680,7 @@ class IrcServer {
 	// eslint-disable-next-line no-unused-vars
 	onReceiveCAPAB(command) {
 		// TODO: Review it
-		// return this.otherServerCapabilities = command.trailer.split(' ');
+		//return this.otherServerCapabilities = command.trailer.split(' ');
 	}
 
 	onReceiveSERVER(command) {
@@ -764,36 +785,56 @@ class IrcServer {
 	}
 
 	onReceiveUID(command) {
+		console.log('IRC command.parameters (onReceiveUID): ', command.parameters);
+
 		if (command.parameters.length !== 9) {
 			this.handleMalformed(command);
 			return;
 		}
 
 		// eslint-disable-next-line no-unused-vars
-		const [nick, hopCount, nickTimestamp, umodes, username, hostname, ipAddess, userId, gecos] = command.parameters;
+		const [nick, hopCount, nickTimestamp, umodes, username, hostname, ipAddess, ircUserId, gecos] = command.parameters;
 		const connectedTo = command.prefix;
 
 		//TODO Handle nick collisions
 		//TODO Handle verification that irc and rocketchat users are the same
 		//TODO Handle modes
-		const user = Meteor.users.findOne({name: nick});
+		let user = RocketChat.models.Users.findOne({name: nick});
+
+		/**
+		 Nick TS collisions:
+		 If both users are to be collided, we must issue a KILL for the existing
+		 user to all servers.  If the new user has a UID then we must also issue a
+		 KILL for that UID back to the server sending us data causing the collision.
+
+		 If only the existing user is being collided, we must issue a KILL for the
+		 existing user to all servers except the server sending us data.  If the
+		 existing user has a UID and the server sending us data supports TS6 then
+		 we must also issue a KILL for the existing users UID to the server sending
+		 us data.
+
+		 If only the new user is being collided, we must issue a KILL for the new user
+		 back to the server sending us data if the new user has a UID.
+		 **/
 
 		if (!user) {
-			Meteor.call('registerUser', {
-				email: `${ nick }@irc.redhat.com`,
+			const userId = Meteor.call('registerUser', {
+				email: `${ nick }@${ hostname }`,
 				pass: '',
 				name: nick
 			});
 
-			Meteor.users.update({_id: user._id}, {
+			RocketChat.models.Users.update({_id: userId}, {
 				$set: {
 					username: nick,
 					ircOnly: true
 				}
 			});
+
+			user = RocketChat.models.Users.findOne({_id: userId});
 		}
 
-		Meteor.users.update({_id: user._id}, {
+		RocketChat.models.Users.update({_id: user._id}, {
 			$set: {
 				status: 'online'
 			}
@@ -801,11 +842,11 @@ class IrcServer {
 
 		user.nickTimestamp = nickTimestamp;
 		user.connectedTo = connectedTo;
-		user.ircUserId = userId;
+		user.ircUserId = ircUserId;
 
-		this.ircUsers[userId] = user;
+		this.ircUsers[ircUserId] = user;
 
-		return console.log(`[irc-server] Registered user ${ nick } with userId ${ userId }`);
+		return console.log(`[irc-server] Registered user ${ nick } with ircUserId ${ ircUserId }`);
 	}
 
 	onReceivePING(command) {
@@ -917,6 +958,28 @@ class IrcServer {
 		});
 	}
 
+	onReceiveKILL(command) {
+		const ircUserId = command.prefix;
+
+		console.log('IRC command.parameters: ', command.parameters);
+
+		const userForKill = this.ircUsers[ircUserId];
+		if (userForKill == null || userForKill._id == null) {
+			return;
+		}
+
+		const killedUser = this.localUsersByIrcId[ircUserId];
+		if (killedUser == null) {
+			return;
+		}
+
+		console.log(`[irc-server] Killing ${ killedUser.username }`);
+
+		return Meteor.runAsUser(userForKill._id, () => {
+
+		});
+	}
+
 	onReceiveSQUIT(command) {
 		let [targetServer] = command.parameters;
 
@@ -992,6 +1055,6 @@ if (!!RocketChat.settings.get('IRC_Server_Enabled') === true) {
 	RocketChat.callbacks.add('afterCreateRoom', IrcServerRoomCreator, RocketChat.callbacks.priority.LOW, 'irc-server-room-creator');
 
 	Meteor.startup(() => {
-		Meteor.setTimeout((() => ircServer.connect()), 30000);
+		Meteor.setTimeout((() => ircServer.connect()), 90000);
 	});
 }
