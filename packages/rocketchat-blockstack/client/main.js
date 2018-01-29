@@ -18,7 +18,6 @@ const redirectToSignIn = (config) => {
     scopes: ['store_write']
   }
   let params = mergeParams(defaults, config)
-  // console.log('redirect params', params)
   return blockstack.redirectToSignIn(...params)
 }
 
@@ -33,7 +32,6 @@ const _makeAuthRequest = (config) => {
   }
   // NB: omitted expiresAt: nextHour().getTime() // the time at which this request is no longer valid
   let params = mergeParams(defaults, config)
-  console.log('auth params', params)
   return blockstack.makeAuthRequest(...params)
 }
 
@@ -44,16 +42,6 @@ const _saveDataForRedirect = (privateKey, authRequest) => {
   Reload._migrate(null, {immediateMigration: true})
 }
 
-const _handleRedirectReturn = () => {
-  Accounts.callLoginMethod({
-    methodArguments: [{
-      blockstack: true,
-      authRequest: _makeAuthRequest(serviceConfig)
-    }],
-    userCallback: callback
-  })
-}
-
 Meteor.loginWithBlockstack = function(option={}, callback) {
   const privateKey = blockstack.generateAndStoreTransitKey()
   const serviceConfig = ServiceConfiguration.configurations.findOne({service: 'blockstack'})
@@ -61,7 +49,7 @@ Meteor.loginWithBlockstack = function(option={}, callback) {
   const authRequest = _makeAuthRequest(requestParams)
   const httpsURI = `${serviceConfig.blockstackIDHost}auth?authRequest=${authRequest}`
   // GO!...
-  _saveDataForRedirect(privateKey, authRequest)
+  // _saveDataForRedirect(privateKey, authRequest)
   // TODO: if serviceConfig.loginStyle == popup else...
   window.location.assign(httpsURI) // hack, just do it without protocol handler
   // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
