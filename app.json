@@ -1,20 +1,18 @@
 {
-  "name": "Rocket.Chat",
-  "description": "Have your own open-source Slack-like online chat platform.",
-  "repository": "https://github.com/RocketChat/Rocket.Chat",
+  "name": "BlockParty",
+  "description": "Community chat 💬 for Blockstack 🎉 forked Rocket.Chat 🚀",
+  "repository": "https://github.com/amazebot/blockparty",
   "logo": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat/master/public/images/logo/512x512.png?v=3",
   "keywords": ["meteor", "social", "community", "chat"],
-  "website": "https://rocket.chat",
+  "website": "https://blockparty.chat",
   "env": {
     "BUILDPACK_URL": "https://github.com/RocketChat/meteor-buildpack-horse.git",
     "HEROKU_APP_NAME": {
-      "description": "Please re-enter your App Name from the top.",
+      "description": "BlockParty",
       "required": true
     },
+    "ROOT_URL": "https://blockparty-demo.herokuapp.com/",
     "DEPLOY_PLATFORM": "heroku"
   },
-  "addons": [
-    "mongolab",
-    "logentries"
-  ]
+  "addons": []
 }
