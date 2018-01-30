@@ -6,7 +6,6 @@ Accounts.blockstack.defaults = {
   blockstackIDHost: Accounts.blockstack.authHost,
   loginStyle: 'redirect',
 	generateUsername: true,
-  debug: true,
   manifestURI: Meteor.absoluteUrl(Accounts.blockstack.manifestPath),
   redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
   authDescription: 'Rocket.Chat login',
@@ -55,8 +54,16 @@ Accounts.blockstack.getSettings = () => {
 
 // Add settings to auth provider configs
 const serviceConfig = Accounts.blockstack.getSettings()
-ServiceConfiguration.configurations.upsert(
-  { service: 'blockstack' },
-  { $set: Accounts.blockstack.getSettings() }
-)
-logger.debug('Init Blockstack auth', serviceConfig)
+if (serviceConfig.enable) {
+  ServiceConfiguration.configurations.upsert({
+    service: 'blockstack'
+  },{
+    $set: Accounts.blockstack.getSettings()
+  })
+  logger.debug('Init Blockstack auth', serviceConfig)
+} else {
+  logger.debug('Blockstack not enabled', serviceConfig)
+  ServiceConfiguration.configurations.remove({
+    service: 'blockstack'
+  })
+}
