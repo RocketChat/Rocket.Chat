@@ -205,7 +205,6 @@ class IrcServer {
 			}
 		});
 
-		// TODO Maybe use getTime()?
 		const timestamp = Math.floor(room.ts.getTime() / 1000);
 		const nickSpace = 510 - 29 - room.name.length;
 		const nicksPerMessage = Math.floor(nickSpace / 20);
@@ -213,20 +212,20 @@ class IrcServer {
 		let index = 0;
 
 		return (() => {
-      const result = [];
+			const result = [];
 
-      while ((index * nicksPerMessage) < userIds.length) {
-        this.writeCommand({
-          prefix: this.serverId,
-          command: 'SJOIN',
-          parameters: [timestamp, `#${ room.name }`, '+nt'],
-          trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
-        });
+			while ((index * nicksPerMessage) < userIds.length) {
+				this.writeCommand({
+					prefix: this.serverId,
+					command: 'SJOIN',
+					parameters: [timestamp, `#${ room.name }`, '+nt'],
+					trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
+				});
 
-        result.push(index = index + 1);
-      }
+				result.push(index = index + 1);
+			}
 
-      return result;
+			return result;
 		})();
 	}
 
@@ -240,7 +239,6 @@ class IrcServer {
 		}
 
 		const userId = this.localUsersById[user._id].ircUserId;
-		// TODO Maybe use getTime()?
 		const timestamp = Math.floor(room.ts.getTime() / 1000);
 
 		return this.writeCommand({
@@ -330,49 +328,49 @@ class IrcServer {
 		const lines = message.msg.split('\n');
 
 		return (() => {
-      const result = [];
+			const result = [];
 
-      lines.forEach(line => {
-        let messageSpace;
-        let target;
+			lines.forEach(line => {
+				let messageSpace;
+				let target;
 
-        line = line.trimRight();
+				line = line.trimRight();
 
-        if (room.t === 'd') {
-          messageSpace = 510 - 30;
+				if (room.t === 'd') {
+					messageSpace = 510 - 30;
 
-          //TODO: Change for native ES6 filter maybe?
-          const targetUsername = _.find(room.usernames, username => username !== message.u.username);
-          const targetUser = _.find(this.ircUsers, user => user.username === targetUsername);
+					//TODO: Change for native ES6 filter maybe?
+					const targetUsername = _.find(room.usernames, username => username !== message.u.username);
+					const targetUser = _.find(this.ircUsers, user => user.username === targetUsername);
 
-          target = targetUser.ircUserId;
-        } else {
-          //TODO: Should only send message if there are IRC users in the room
-          messageSpace = 510 - 22 - room.name.length;
-          target = `#${ room.name }`;
-        }
+					target = targetUser.ircUserId;
+				} else {
+					//TODO: Should only send message if there are IRC users in the room
+					messageSpace = 510 - 22 - room.name.length;
+					target = `#${ room.name }`;
+				}
 
-        let index = 0;
+				let index = 0;
 
-        result.push((() => {
-          const elementResult = [];
+				result.push((() => {
+					const elementResult = [];
 
-          while ((index * messageSpace) < line.length) {
-            this.writeCommand({
-              prefix: userId,
-              command: 'PRIVMSG',
-              parameters: [target],
-              trailer: line.substring(index * messageSpace, (index + 1) * messageSpace)
-            });
+					while ((index * messageSpace) < line.length) {
+						this.writeCommand({
+							prefix: userId,
+							command: 'PRIVMSG',
+							parameters: [target],
+							trailer: line.substring(index * messageSpace, (index + 1) * messageSpace)
+						});
 
-            elementResult.push(index = index + 1);
-          }
+						elementResult.push(index = index + 1);
+					}
 
-          return elementResult;
-        })());
-      });
+					return elementResult;
+				})());
+			});
 
-      return result;
+			return result;
 		})();
 	}
 
