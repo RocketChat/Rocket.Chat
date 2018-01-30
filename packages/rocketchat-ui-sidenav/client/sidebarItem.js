@@ -98,7 +98,7 @@ Template.sidebarItem.events({
 
 		const items = [{
 			icon: 'eye-off',
-			name: t('Hide_room'),
+			name: t('Hide'),
 			type: 'sidebar-item',
 			id: 'hide'
 		}];
@@ -132,7 +132,7 @@ Template.sidebarItem.events({
 		if (canLeave()) {
 			items.push({
 				icon: 'sign-out',
-				name: t('Leave_room'),
+				name: t('Leave'),
 				type: 'sidebar-item',
 				id: 'leave',
 				modifier: 'error'

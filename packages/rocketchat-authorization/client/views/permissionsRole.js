@@ -195,7 +195,7 @@ Template.permissionsRole.events({
 			if (error) {
 				return handleError(error);
 			}
-			toastr.success(t('Role_removed'));
+			toastr.success(t('Deleted'));
 			FlowRouter.go('admin-permissions');
 		});
 	},

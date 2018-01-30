@@ -64,7 +64,7 @@ Template.emojiInfo.events({
 					} else {
 						modal.open({
 							title: t('Deleted'),
-							text: t('Custom_Emoji_Has_Been_Deleted'),
+							text: t('Deleted'),
 							type: 'success',
 							timer: 2000,
 							showConfirmButton: false

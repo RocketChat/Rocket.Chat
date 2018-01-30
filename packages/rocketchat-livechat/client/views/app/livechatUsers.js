@@ -111,7 +111,7 @@ Template.livechatUsers.events({
 				}
 				modal.open({
 					title: t('Removed'),
-					text: t('Agent_removed'),
+					text: t('Deleted'),
 					type: 'success',
 					timer: 1000,
 					showConfirmButton: false
