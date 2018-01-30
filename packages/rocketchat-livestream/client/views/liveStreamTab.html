@@ -1,10 +1,4 @@
 <template name="liveStreamTab">
-	<div class="contextual-bar__header flex-tab__header flex-tab--livestream">
-		<div class="title contextual-bar__header-data">
-			<h2 class="contextual-bar__header-title">{{> icon block="contextual-bar__header-icon" icon="podcast"}} {{_ "Livestream_title" }}</h2>
-		</div>
-	</div>
-	<section class="contextual-bar__content flex-tab-bar">
 		{{#if hasSource}}
 			{{#if isPopoutOpen}}
 				{{#if canDock}}
@@ -13,17 +7,20 @@
 					<button type="button" class="rc-button rc-button--primary js-close button-block" title="{{_ 'Livestream_switch_to_room'}}" >{{_ "Livestream_switch_to_room"}}</button>
 				{{/if}}
 			{{else}}
-				<!-- {{> liveStreamView streamingSource=streamingSource }} -->
 				{{#if hasThumbnail}}
 					<div class="thumbnail-container" style="background: url({{thumbnailUrl}}) 100% no-repeat no-repeat;">
-							<a href="#" class="js-popout --absolute-center">
+						<a href="#" class="js-popout --absolute-center">
 							{{> icon icon="play-solid"}}
 						</a>
 					</div>
+				{{else}}
+					<a href="#" class="js-popout --absolute-center">
+						{{> icon icon="play-solid"}}
+					</a>
 				{{/if}}
 			{{/if}}
 		{{else}}
-		 {{_ "Livestream_not_found" }}
+		 <p> {{_ "Livestream_not_found" }} </p>
 		{{/if}}
 		{{#if canEdit}}
 			{{#if editing}}
@@ -39,10 +36,12 @@
 								{{_ "Livestream_enable_audio_only"}}
 							</span>
 						</label>
-						<span class="rc-switch__description">{{typeDescription}}</span>
+						<span class="rc-switch__description">{{ typeDescription }}</span>
 					</div>
-					<button type="button" class="rc-button rc-button--nude js-cancel button-block" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
-					<button type="button" class="rc-button rc-button--primary js-save button-block">{{_ "Save"}}</button>
+					<div class="rc-user-info__flex">
+						<button type="button" class="rc-button rc-button--nude js-cancel button-block" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
+						<button type="button" class="rc-button rc-button--primary js-save button-block">{{_ "Save"}}</button>
+					</div>
 				</form>
 			{{else}}
 				<div class="setting-block livestream--url">
@@ -51,6 +50,4 @@
 				</div>
 			{{/if}}
 		{{/if}}
-
-	</section>
 </template>

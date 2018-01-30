@@ -12,8 +12,8 @@
 		position: absolute;
 		z-index: 10;
 
-		top: calc(var(--header-min-height) + 115px);
-		left: calc(100% - 390px - 45px);
+		top: calc(var(--header-min-height) + 75px);
+		left: calc(100% - 395px);
 		display: flex;
 
 		animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
