@@ -11,33 +11,28 @@ const logger = new Logger('Blockstack')
 Accounts.blockstack.handleAccessToken = (loginRequest) => {
   logger.debug('Login request received', loginRequest)
 
-  check(loginRequest, Match.ObjectIncluding({
-    userData: String,
-    authResponse: String
-  }))
+  check(loginRequest, Match.ObjectIncluding({ authResponse: String }))
 
-  const { username, profile, appPrivateKey, authResponseToken } = JSON.parse(loginRequest.userData)
-  const { signature: sig1 } = decodeToken(loginRequest.authResponse)
-  const { payload, signature: sig2 } = decodeToken(authResponseToken)
-  if (!(payload && profile && appPrivateKey)) return {
+  // TODO get username and profile from `profile_url` if no userData
+  // const { username, profile } = JSON.parse(loginRequest.userData)
+  logger.debug('Login decoded', decodeToken(loginRequest.authResponse).payload)
+  const { iss, iat, exp, private_key } = decodeToken(loginRequest.authResponse).payload
+  if (!iss) return {
     type: 'blockstack',
     error: new Meteor.error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token')
   }
 
-  logger.info(`Login token processed for ${username}`)
-
   const serviceData = {
-    id: payload.iss,
-    did: `ID-${payload.iss.split(':').pop()}`,
-    accessToken: authResponseToken,
-    issuedAt: new Date(payload.iat*1000),
-    expiresAt: new Date(payload.exp*1000)
+    id: iss,
+    did: `ID-${iss.split(':').pop()}`,
+    issuedAt: new Date(iat*1000),
+    expiresAt: new Date(exp*1000)
   }
 
   logger.debug('Login data', serviceData)
 
   return {
     serviceData,
-    options: { profile }
+    options: { profile: null } // TODO: restore as { profile } when it's loaded
   }
 }

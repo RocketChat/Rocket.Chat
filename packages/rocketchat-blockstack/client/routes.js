@@ -3,15 +3,16 @@ import blockstack from 'blockstack'
 FlowRouter.route('/_blockstack/validate', {
   name: 'blockstackValidate',
   action(params, queryParams) {
+    console.log('Blockstack auth returned', params, queryParams)
     if (!Meteor.userId() && queryParams.authResponse !== undefined) {
-      const userData = localStorage.getItem('blockstack') || blockstack.loadUserData()
-      console.log('Got user data', userData)
+      // const userData = localStorage.getItem('blockstack') || blockstack.loadUserData()
+      // console.log('Got user data', userData)
       console.log('Auth response', queryParams.authResponse)
       Accounts.callLoginMethod({
         methodArguments: [{
           blockstack: true,
-          authResponse: queryParams.authResponse,
-          userData: userData
+          authResponse: queryParams.authResponse
+          // userData: userData
         }],
         userCallback () { FlowRouter.go('home') }
       })
