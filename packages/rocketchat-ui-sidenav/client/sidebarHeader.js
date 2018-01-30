@@ -182,7 +182,7 @@ Template.sidebarHeader.helpers({
 	}
 });
 
-Template.sidebarHeaderButton.events({
+Template.sidebarHeader.events({
 	'click .js-button'(e) {
 		return this.action && this.action.apply(this);
 	}
