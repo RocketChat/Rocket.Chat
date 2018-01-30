@@ -49,6 +49,7 @@ Meteor.loginWithBlockstack = function(option={}, callback) {
   const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
   const authRequest = makeAuthRequest(requestParams)
   const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
+  saveDataForRedirect(privateKey, authRequest)
   window.location.assign(httpsURI) // hack redirect without protocol handler
   /*
     // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
