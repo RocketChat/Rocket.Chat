@@ -12,7 +12,7 @@
 		position: absolute;
 		z-index: 10;
 
-		top: calc(var(--header-min-height) + 75px);
+		top: calc(var(--header-min-height) + 60px);
 		left: calc(100% - 395px);
 		display: flex;
 
