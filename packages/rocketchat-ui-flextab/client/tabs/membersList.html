@@ -3,55 +3,58 @@
 	{{#if isGroupChat}}
 	{{#with roomUsers}}
 		<div class="flex-tab__header">
-			<div class="list-view animated">
-				<div class="title">
-					<h2>{{_ "Members_List"}}</h2>
-					{{> videoButtons}}
-					{{#if canAddUser}}
-						<div class="control">
-							<div class="search-form">
-								<div class="input-line search">
-									{{> inputAutocomplete settings=autocompleteSettingsAddUser id="user-add-search" class="search content-background-color" placeholder=tAddUsers}}
-									<i class="icon-plus secondary-font-color"></i>
-								</div>
-							</div>
-						</div>
-					{{/if}}
-					<p>
-						{{#unless loading}}
-							{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}
-							<button class="see-all">{{seeAll}}</button>
-						{{/unless}}
-					</p>
-				</div>
-			</div>
-		</div>
+			<form class="search-form rc-member-list__search" role="form">
+				<div class="rc-input">
 
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+					</div>
+					<input type="text" class="rc-input__element js-filter" name="user-search" id="user-search" placeholder="Search Member" autocomplete="off" />
+
+				</div>
+				<label class="rc-select">
+					<select id="status-type" class="rc-select__element js-type" name="status-type">
+						<option value="">{{_ 'online'}}</option>
+						<option value="">{{_ 'All_users'}}</option>
+					</select>
+					{{> icon block="rc-select__arrow" icon="arrow-down" }}
+				</label>
+			</form>
+
+			{{#unless loading}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-member-list__counter">{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}</div>
+			</div>
+			{{/unless}}
+		</div>
 		<div class="flex-tab__result list-view">
-			<ul class='list clearfix lines'>
 				{{#if loading}}
 					{{> loading}}
 				{{else}}
-					{{#each users}}
-						<li class='user-image user-card-room status-{{status}}'>
-							<button data-username="{{user.username}}" tabindex="0" title="{{displayName}}">
+					<ul class='list clearfix lines'>
+						{{#each users}}
+
+							<li class='rc-member-list__user'>
+								<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>
 								{{> avatar username=user.username}}
-								<p>{{displayName}} {{utcOffset}}</p>
-								{{#if muted}}
-									<i class="icon-mute" title="{{_ "User_muted"}}"></i>
-								{{/if}}
-							</button>
-						</li>
-					{{/each}}
+								<div class="rc-member-list__username">{{displayName}} {{utcOffset}}</div>
+								{{> icon user=. block="rc-member-list__menu js-action" icon="menu" }}
+							</li>
+
+						{{/each}}
+					</ul>
 				{{/if}}
-			</ul>
 			{{#if hasMore}}
-				<button class="button show-more-users">{{_ "Show_more"}}</button>
+				<button class="rc-button rc-button--secondary show-more-users">{{_ "Show_more"}}</button>
 			{{/if}}
 		</div>
+
+		{{#if canAddUser}}
+			<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Invite_Users"}}</button>
+		{{/if}}
 		{{/with}}
 	{{/if}}
-	<div class="user-view animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
+	<div class="rc-user-info-container flex-nav animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
 		{{> userInfo (userInfoDetail)}}
 	</div>
 </template>

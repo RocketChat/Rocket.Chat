@@ -2,9 +2,10 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-const CoffeeScript = Npm.require('coffee-script');
-CoffeeScript.register();
+import 'coffeescript/register';
+
 const Hubot = Npm.require('hubot');
+
 // Start a hubot, connected to our chat room.
 // 'use strict'
 // Log messages?

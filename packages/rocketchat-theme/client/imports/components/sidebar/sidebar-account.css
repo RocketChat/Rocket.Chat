@@ -11,22 +11,24 @@
 		background-color: var(--sidebar-background-light-hover);
 	}
 }
+
 .sidebar__account {
 	display: flex;
 
-	margin: 0 0 var(--sidebar-header-small-padding);
+	margin: 0 0 var(--sidebar-extra-small-default-padding);
 
-	padding: var(--sidebar-header-small-padding) var(--sidebar-default-padding) var(--sidebar-header-small-padding);
-
-	align-items: center;
+	padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
 
 	transition: background-color 0.3s;
+
+	align-items: center;
 
 	&.active:hover {
 		cursor: pointer;
 
 		background-color: var(--sidebar-item-hover-background);
 	}
+
 	&-thumb {
 
 		flex: 0 0 var(--sidebar-account-thumb-size);
@@ -148,7 +150,7 @@
 @media (width <= 400px) {
 	.sidebar__account {
 		margin: 0 0 5px;
-		padding: var(--sidebar-header-small-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-header-small-padding);
+		padding: var(--sidebar-extra-small-default-padding) calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-extra-small-default-padding);
 
 		&-thumb {
 
