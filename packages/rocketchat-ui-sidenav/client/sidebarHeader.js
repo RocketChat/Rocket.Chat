@@ -1,4 +1,11 @@
 /* globals popover isRtl */
+
+const setStatus = status => {
+	AccountBox.setStatus(status);
+	RocketChat.callbacks.run('userStatusManuallySet', status);
+	popover.close();
+};
+
 const toolbarButtons = [
 	{
 		name: t('Search'),
@@ -57,30 +64,26 @@ const toolbarButtons = [
 									{
 										icon: 'circle',
 										name: t('Online'),
-										type: 'set-state',
-										id: 'online',
-										modifier: 'online'
+										modifier: 'online',
+										action: () => setStatus('online')
 									},
 									{
 										icon: 'circle',
 										name: t('Away'),
-										type: 'set-state',
-										id: 'away',
-										modifier: 'away'
+										modifier: 'away',
+										action: () => setStatus('away')
 									},
 									{
 										icon: 'circle',
 										name: t('Busy'),
-										type: 'set-state',
-										id: 'busy',
-										modifier: 'busy'
+										modifier: 'busy',
+										action: () => setStatus('busy')
 									},
 									{
 										icon: 'circle',
 										name: t('Invisible'),
-										type: 'set-state',
-										id: 'offline',
-										modifier: 'offline'
+										modifier: 'offline',
+										action: () => setStatus('offline')
 									}
 								]
 							},

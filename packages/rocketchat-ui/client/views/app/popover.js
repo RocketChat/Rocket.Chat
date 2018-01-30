@@ -164,11 +164,6 @@ Template.popover.events({
 			popover.close();
 		}
 	},
-	'click [data-type="set-state"]'(e) {
-		AccountBox.setStatus(e.currentTarget.dataset.id);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
-		popover.close();
-	},
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;
