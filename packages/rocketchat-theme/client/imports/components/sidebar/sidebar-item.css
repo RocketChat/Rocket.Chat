@@ -217,6 +217,10 @@
 		line-height: 1.2rem;
 	}
 
+	&__me {
+		text-transform: lowercase;
+	}
+
 	&__last-message {
 		overflow: hidden;
 		flex: 1;
@@ -229,23 +233,22 @@
 		font-size: 12px;
 		line-height: normal;
 
-		& .emojione {
+		& .emojione,
+		& .emoji {
 			width: 13px !important;
 			min-width: 13px;
 			height: 13px !important;
 			min-height: 13px;
 		}
 
-		& > p,
-		& code,
-		& pre {
-			display: inline;
-
-			white-space: unset;
-		}
-
-		& br {
-			display: none;
+		& * {
+			display: inline !important;
+			white-space: unset !important;
+			background-color: unset !important;
+			color: inherit !important;
+			font-weight: unset !important;
+			font-family: inherit !important;
+			padding: unset !important;
 		}
 
 		& a {
@@ -301,10 +304,6 @@
 @media (width <= 400px) {
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);
-
-		& .badge {
-			margin: 0 0 0 3px;
-		}
 
 		&__user-status {
 			left: 4px;

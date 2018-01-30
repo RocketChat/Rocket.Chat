@@ -1,21 +1,21 @@
 <template name="accountPreferences">
 	<section class="page-container page-home page-static">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Preferences"}}</span>
-			</h2>
-		</header>
+		{{#header sectionName="Preferences" buttons=true}}
+		<div class="rc-header__section-button" style="max-width: 649px;">
+			<button class="rc-button rc-button--primary save"><span>{{_ "Save_changes"}}</span></button>
+		</div>
+		{{/header}}
+
 		<div class="content">
-			<div class="rocket-form">
-				<fieldset>
+			<form id="preferences" autocomplete="off">
+				<fieldset class="rc-form-legend">
 					<div class="section">
 						<h1>{{_ "Localization"}}</h1>
 						<div class="section-content border-component-color">
-							<div class="input-line">
+							<div class="input-line double-col">
 								<label for="language">{{_ "Language"}}</label>
 								<div>
-									<select id="language" class="required">
+									<select id="language" class="required rc-input__element">
 										{{#each languages}}
 											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
@@ -39,9 +39,9 @@
 								<label>{{_ "Idle_Time_Limit"}}</label>
 								<div>
 									{{#if idleTimeLimit}}
-										<input type="number" name="idleTimeLimit" min="0" value="{{idleTimeLimit}}">
+										<input type="number" class="rc-input__element" name="idleTimeLimit" min="0" value="{{idleTimeLimit}}">
 									{{else}}
-										<input type="number" name="idleTimeLimit" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultIdleTimeLimit}})">
+										<input type="number" class="rc-input__element" name="idleTimeLimit" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultIdleTimeLimit}})">
 									{{/if}}
 								</div>
 							</div>
@@ -70,16 +70,16 @@
 								<label>{{_ "Notification_Duration"}}</label>
 								<div>
 									{{#if desktopNotificationDuration}}
-										<input type="number" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
+										<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="{{desktopNotificationDuration}}">
 									{{else}}
-										<input type="number" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
+										<input type="number" class="rc-input__element" name="desktopNotificationDuration" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultDesktopNotificationDuration}})">
 									{{/if}}
 								</div>
 							</div>
 							<div class="input-line double-col" id="desktopNotifications">
 								<label>{{_ "Notification_Desktop_Default_For"}}</label>
 								<div>
-									<select class="input-monitor" name="desktopNotifications">
+									<select class="input-monitor rc-input__element" name="desktopNotifications">
 										<option value="default" selected="{{selected 'desktopNotifications' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultDesktopNotification}})</option>
 										<option value="all" selected="{{selected 'desktopNotifications' 'all' 'default'}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
@@ -90,7 +90,7 @@
 							<div class="input-line double-col" id="mobileNotifications">
 								<label>{{_ "Notification_Mobile_Default_For"}}</label>
 								<div>
-									<select class="input-monitor" name="mobileNotifications">
+									<select class="input-monitor rc-input__element" name="mobileNotifications">
 										<option value="default" selected="{{selected 'mobileNotifications' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultMobileNotification}})</option>
 										<option value="all" selected="{{selected 'mobileNotifications' 'all' 'default'}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
@@ -173,7 +173,7 @@
 							<div class="input-line double-col">
 								<label for="roomsListExhibitionMode">{{_ "Sidebar_list_mode"}}</label>
 								<div>
-									<select class="input-monitor" name="roomsListExhibitionMode" id="roomsListExhibitionMode">
+									<select class="input-monitor rc-input__element" name="roomsListExhibitionMode" id="roomsListExhibitionMode">
 										<option value="unread" selected="{{selected 'roomsListExhibitionMode' 'unread'}}">{{_ "Unread_Rooms_Mode"}}</option>
 										<option value="activity" selected="{{selected 'roomsListExhibitionMode' 'activity'}}">{{_ "Sort_by_activity"}}</option>
 										<option value="category" selected="{{selected 'roomsListExhibitionMode' 'category'}}">{{_ "Split_by_categories"}}</option>
@@ -194,7 +194,7 @@
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
 								<div>
-									<select class="input-monitor" name="sendOnEnter">
+									<select class="input-monitor rc-input__element" name="sendOnEnter">
 										<option value="normal" selected="{{selected 'sendOnEnter' 'normal'}}">{{_ "Enter_Normal"}}</option>
 										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
 										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
@@ -205,7 +205,7 @@
 							<div class="input-line double-col" id="viewMode">
 								<label>{{_ "View_mode"}}</label>
 								<div>
-									<select class="input-monitor" name="viewMode">
+									<select class="input-monitor rc-input__element" name="viewMode">
 										<option value="0" selected="{{selected 'viewMode' '0'}}">{{_ "Normal"}}</option>
 										<option value="1" selected="{{selected 'viewMode' '1'}}">{{_ "Cozy"}}</option>
 										<option value="2" selected="{{selected 'viewMode' '2'}}">{{_ "Compact"}}</option>
@@ -216,12 +216,12 @@
 							<div class="input-line double-col" id="emailNotificationMode">
 								<label>{{_ "Email_Notification_Mode"}}</label>
 								<div>
-									<select class="input-monitor" name="emailNotificationMode">
+									<select class="input-monitor rc-input__element" name="emailNotificationMode">
 										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
 										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
 									</select>
+									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 								</div>
-								<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 							</div>
 						</div>
 					</div>
@@ -244,7 +244,7 @@
 								<label>{{_ "Highlights_List"}}</label>
 								<div>
 									<label>{{_ "Highlights_How_To"}}</label>
-									<textarea name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
+									<textarea class="rc-input__element" name="highlights" id="highlights" cols="30" rows="10">{{highlights}}</textarea>
 								</div>
 							</div>
 						</div>
@@ -255,7 +255,7 @@
 							<div class="input-line double-col">
 								<label>{{_ "New_Room_Notification"}}</label>
 								<div>
-									<select name="newRoomNotification" class="audio">
+									<select name="newRoomNotification" class="audio rc-input__element">
 										<option value="none" selected="{{$eq newRoomNotification 'none'}}">{{_ "None"}}</option>
 										<option value="door" selected="{{$eq newRoomNotification 'door'}}">Door ({{_ "Default"}})</option>
 										{{#each audioAssets}}
@@ -267,7 +267,7 @@
 							<div class="input-line double-col">
 								<label>{{_ "New_Message_Notification"}}</label>
 								<div>
-									<select name="newMessageNotification" class="audio">
+									<select name="newMessageNotification" class="audio rc-input__element">
 										<option value="none" selected="{{$eq newMessageNotification 'none'}}">{{_ "None"}}</option>
 										<option value="chime" selected="{{$eq newMessageNotification 'chime'}}">Chime ({{_ "Default"}})</option>
 										{{#each audioAssets}}
@@ -285,10 +285,7 @@
 						</div>
 					</div>
 				</fieldset>
-				<div class="submit">
-					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-				</div>
-			</div>
+			</form>
 		</div>
 	</section>
 </template>

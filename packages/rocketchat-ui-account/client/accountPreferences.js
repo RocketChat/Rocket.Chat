@@ -57,7 +57,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const userHighlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
-		return userHighlights ? userHighlights.join(', ') : undefined;
+		return userHighlights ? userHighlights.join('\n') : undefined;
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -209,7 +209,7 @@ Template.accountPreferences.onRendered(function() {
 });
 
 Template.accountPreferences.events({
-	'click .submit button'(e, t) {
+	'click .rc-header__section-button .save'(e, t) {
 		t.save();
 	},
 	'change input[name=useEmojis]'(e, t) {
