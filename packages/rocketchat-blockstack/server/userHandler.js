@@ -41,7 +41,6 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
   // TODO: Regquired method result format ignores `.when`
   const { token } = Accounts._generateStampedLoginToken()
   const tokenExpires = serviceData.expiresAt
-  logger.debug('User login token', token, tokenExpires) // may be too verbose?
 
   return {
     type: 'blockstack',

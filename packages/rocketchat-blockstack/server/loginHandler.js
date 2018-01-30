@@ -10,7 +10,8 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 
   // TODO: Fix #9484 and re-instate usage of accounts helper
   // const result = Accounts.updateOrCreateUserFromExternalService('blockstack', auth.serviceData, auth.options)
-  result = Accounts.blockstack.updateOrCreateUser(auth.serviceData, auth.options)
+  const result = Accounts.blockstack.updateOrCreateUser(auth.serviceData, auth.options)
+  logger.debug('User create/update result', result)
 
   // Ensure processing succeeded
   if (result === undefined || result.userId === undefined) return {
