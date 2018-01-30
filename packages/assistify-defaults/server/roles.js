@@ -176,7 +176,7 @@ const createConfigurationRole = function() {
 		'change-setting-General',
 		'change-setting-Accounts_BlockedUsernameList',
 		'change-setting-Accounts_BlockedDomainsList',
-		'change-setting-Accounts_AllowedDomainsList',
+		//'change-setting-Accounts_AllowedDomainsList', - revoke this permission - only admins shall be able to maintain it
 		'change-setting-Accounts_ManuallyApproveNewUsers',
 		'change-setting-Accounts_EmailVerification',
 		'change-setting-Accounts',
