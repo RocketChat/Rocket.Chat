@@ -1,7 +1,7 @@
 /* globals popout */
 import toastr from 'toastr';
 
-function parseUrl(url) {
+function optionsFromUrl(url) {
 	const options = {};
 	const parsedUrl = url.match(/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 	options.url = url;
@@ -87,7 +87,7 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 
 		const streamingOptions = {
-			...parseUrl(i.find('[name=streaming-source]').value),
+			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked
 		};
 
@@ -136,7 +136,7 @@ Template.liveStreamTab.events({
 		e.stopPropagation();
 
 		const streamingOptions = {
-			...parseUrl(i.find('[name=streaming-source]').value),
+			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked
 		};
 
