@@ -76,7 +76,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 			case 'user':
 				const user = this.getUserFromParams();
 				text = `${ user.name }`;
-				switch(user.status){
+				switch (user.status) {
 					case 'online':
 						backgroundColor = '#4dff4d';
 						break;
