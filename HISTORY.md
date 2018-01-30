@@ -2351,7 +2351,7 @@
 - [#6498](https://github.com/RocketChat/Rocket.Chat/pull/6498) Convert Ui-Master Package to Js
 - [#6473](https://github.com/RocketChat/Rocket.Chat/pull/6473) Convert ui-vrecord Package to JS
 - [#6494](https://github.com/RocketChat/Rocket.Chat/pull/6494) Convert Version Package to JS
-- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert Wordpress Package to js
+- [#6499](https://github.com/RocketChat/Rocket.Chat/pull/6499) Convert WordPress Package to js
 - [#6496](https://github.com/RocketChat/Rocket.Chat/pull/6496) converted getAvatarUrlFromUsername
 - [#6500](https://github.com/RocketChat/Rocket.Chat/pull/6500) converted messageAttachment coffee to js
 - [#6467](https://github.com/RocketChat/Rocket.Chat/pull/6467) converted rocketchat-mentions coffee to js

@@ -102,7 +102,7 @@
   "Accounts_OAuth_Twitter_id": "ID Twitter",
   "Accounts_OAuth_Twitter_secret": "Chiave segreta Twitter",
   "Accounts_OAuth_Wordpress": "WordPress Login",
-  "Accounts_OAuth_Wordpress_callback_url": "Wordpress URL Callback",
+  "Accounts_OAuth_Wordpress_callback_url": "WordPress URL Callback",
   "Accounts_OAuth_Wordpress_id": "ID WordPress",
   "Accounts_OAuth_Wordpress_secret": "Chiave segreta WordPress",
   "Accounts_PasswordReset": "Reimposta password",

@@ -1,17 +1,10 @@
 <template name="pageContainer">
 	<section class="page-container page-home page-static page-list content-background-color">
-		<header class="fixed-title content-background-color border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="page-title">
-					{{#if i18nPageTitle}}
-						{{_ i18nPageTitle}}
-					{{else}}
-						{{pageTitle}}
-					{{/if}}
-				</span>
-			</h2>
-		</header>
+		{{#if i18nPageTitle}}
+			{{> header sectionName=i18nPageTitle}}
+		{{else}}
+			{{> header sectionName=pageTitle}}
+		{{/if}}
 		<div class="content">
 			{{> Template.dynamic template=pageTemplate}}
 		</div>
