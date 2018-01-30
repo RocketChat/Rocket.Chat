@@ -151,7 +151,7 @@ button {
 
 	&::after {
 		position: absolute;
-		z-index: 2;
+		z-index: 1;
 		top: -6px;
 		right: 0;
 
