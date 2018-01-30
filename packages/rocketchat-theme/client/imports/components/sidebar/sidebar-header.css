@@ -71,34 +71,32 @@
 }
 
 .rc-popover--sidebar-header {
-	& [data-type="set-state"] {
-		& .rc-icon {
-			font-size: var(--sidebar-account-status-bullet-size);
+	& .rc-icon {
+		font-size: var(--sidebar-account-status-bullet-size);
+	}
+
+	& .rc-popover__item {
+		&--online {
+			& .rc-icon {
+				color: var(--status-online);
+			}
 		}
 
-		&.rc-popover__item {
-			&--online {
-				& .rc-icon {
-					color: var(--status-online);
-				}
+		&--away {
+			& .rc-icon {
+				color: var(--status-away);
 			}
+		}
 
-			&--away {
-				& .rc-icon {
-					color: var(--status-away);
-				}
+		&--busy {
+			& .rc-icon {
+				color: var(--status-busy);
 			}
+		}
 
-			&--busy {
-				& .rc-icon {
-					color: var(--status-busy);
-				}
-			}
-
-			&--offline {
-				& .rc-icon {
-					color: var(--status-invisible);
-				}
+		&--offline {
+			& .rc-icon {
+				color: var(--status-invisible);
 			}
 		}
 	}
