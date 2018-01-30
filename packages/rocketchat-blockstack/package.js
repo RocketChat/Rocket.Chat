@@ -12,19 +12,17 @@ Package.onUse((api) => {
     'ecmascript',
     'less',
     'localstorage',
-    'url'
+    'url',
+    'http',
+    'accounts-base',
+    'service-configuration'
   ])
 
   api.use([
-    'http',
-    'accounts-base'
-  ], ['client', 'server'])
-
-  api.use([
     'rocketchat:lib',
+    'rocketchat:logger',
     'meteorhacks:picker',
     'routepolicy',
-    'service-configuration',
     'webapp'
   ], 'server')
 

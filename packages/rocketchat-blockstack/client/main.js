@@ -1,5 +1,4 @@
 import blockstack from 'blockstack'
-import { openPopup } from './popup'
 
 // Let service config set values, but not order of params
 const mergeParams = (defaults, overrides) => {
@@ -45,14 +44,12 @@ const saveDataForRedirect = (privateKey, authRequest) => {
 // TODO: allow serviceConfig.loginStyle == popup
 Meteor.loginWithBlockstack = function(option={}, callback) {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
-  /*
-    const privateKey = blockstack.generateAndStoreTransitKey()
-    const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
-    const authRequest = makeAuthRequest(requestParams)
-    const httpsURI = `${serviceConfig.blockstackIDHost}auth?authRequest=${authRequest}`
-    window.location.assign(httpsURI) // hack redirect without protocol handler
-  */
-  redirectToSignIn(serviceConfig)
+  console.log('Blockstack service data', serviceConfig)
+  const privateKey = blockstack.generateAndStoreTransitKey()
+  const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
+  const authRequest = makeAuthRequest(requestParams)
+  const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
+  window.location.assign(httpsURI) // hack redirect without protocol handler
   /*
     // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
     import protocolCheck from 'custom-protocol-detection-blockstack'

@@ -1,9 +1,11 @@
+const logger = new Logger('Blockstack')
+
 // Rocket.Chat Blockstack provider config defaults, settings can override
 Accounts.blockstack.defaults = {
   enable: true,
   blockstackIDHost: Accounts.blockstack.authHost,
   loginStyle: 'redirect',
-	generateUsername: false,
+	generateUsername: true,
   debug: true,
   manifestURI: Meteor.absoluteUrl(Accounts.blockstack.manifestPath),
   redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
@@ -18,11 +20,6 @@ Meteor.startup(() => {
     type: 'boolean',
     group: 'Blockstack',
     i18nLabel: 'Blockstack_Enable'
-  })
-  RocketChat.settings.add('Blockstack_Host', defaults.host, {
-    type: 'string',
-    group: 'Blockstack',
-    i18nLabel: 'Blockstack_Host'
   })
   RocketChat.settings.add('Accounts_Login_style', defaults.loginStyle, {
     type: 'select',
@@ -50,7 +47,6 @@ Accounts.blockstack.getSettings = () => {
   let fallbacks = Accounts.blockstack.defaults
   let settings = {
     enable: RocketChat.settings.get('Blockstack_Enable'),
-    host: RocketChat.settings.get('Blockstack_Host'),
     generateUsername: RocketChat.settings.get('Blockstack_Generate_Username'),
     loginStyle: RocketChat.settings.get('Blockstack_Login_Style')
   }
@@ -58,7 +54,9 @@ Accounts.blockstack.getSettings = () => {
 }
 
 // Add settings to auth provider configs
+const serviceConfig = Accounts.blockstack.getSettings()
 ServiceConfiguration.configurations.upsert(
   { service: 'blockstack' },
   { $set: Accounts.blockstack.getSettings() }
 )
+logger.debug('Init Blockstack auth', serviceConfig)

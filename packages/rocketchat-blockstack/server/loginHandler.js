@@ -1,7 +1,9 @@
-
+const logger = new Logger('Blockstack')
 
 // Blockstack login handler, triggered by a blockstack authResponse in route
 Accounts.registerLoginHandler('blockstack', (loginRequest) => {
+  logger.debug('Processing login request', loginRequest)
+
   if (!loginRequest.blockstack || !loginRequest.authResponse) return
 
   const auth = Accounts.blockstack.handleAccessToken(loginRequest)
