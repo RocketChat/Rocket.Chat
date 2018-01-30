@@ -1,9 +1,6 @@
 <template name="sideNav">
 		<aside class="sidebar {{#if isLastMessageActive}}sidebar--big{{/if}}" role="navigation">
-			<header class="sidebar__header">
-				{{> accountBox }}
-				{{> toolbar}}
-			</header>
+			{{> sidebarHeader }}
 
 			{{#if loggedInUser}}
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">

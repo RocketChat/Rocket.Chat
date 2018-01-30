@@ -176,9 +176,9 @@
 	/*
 	* Sidebar Account
 	*/
-	--sidebar-account-thumb-size: 36px;
+	--sidebar-account-thumb-size: 23px;
 	--sidebar-small-account-thumb-size: 40px;
-	--sidebar-account-status-bullet-size: 12px;
+	--sidebar-account-status-bullet-size: 10px;
 	--sidebar-small-account-status-bullet-size: 8px;
 	--sidebar-account-status-bullet-radius: 50%;
 	--sidebar-account-username-size: 1rem;

@@ -169,41 +169,6 @@ Template.popover.events({
 		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
 		popover.close();
 	},
-	'click [data-type="open"]'(e) {
-		const data = e.currentTarget.dataset;
-
-		switch (data.id) {
-			case 'account':
-				SideNav.setFlex('accountFlex');
-				SideNav.openFlex();
-				FlowRouter.go('account');
-				break;
-			case 'logout':
-				const user = Meteor.user();
-				Meteor.logout(() => {
-					RocketChat.callbacks.run('afterLogoutCleanUp', user);
-					Meteor.call('logoutCleanUp', user);
-					FlowRouter.go('home');
-				});
-				break;
-			case 'administration':
-				SideNav.setFlex('adminFlex');
-				SideNav.openFlex();
-				FlowRouter.go('admin-info');
-				break;
-		}
-
-		if (data.href) {
-			FlowRouter.go(data.href);
-		}
-
-		if (data.sideNav) {
-			SideNav.setFlex(data.sideNav);
-			SideNav.openFlex();
-		}
-
-		popover.close();
-	},
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;

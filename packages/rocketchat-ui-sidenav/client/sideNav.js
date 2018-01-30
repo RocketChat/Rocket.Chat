@@ -45,14 +45,6 @@ Template.sideNav.events({
 		return SideNav.toggleCurrent();
 	},
 
-	'mouseenter .header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave .header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'scroll .rooms-list'() {
 		return menu.updateUnreadBars();
 	},
