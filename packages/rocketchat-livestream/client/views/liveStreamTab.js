@@ -3,17 +3,13 @@ import toastr from 'toastr';
 
 function parseUrl(url) {
 	const options = {};
-	const parsedUrl = url.match(/(http:|https:|)\/\/(clips.|player.|www.)?(twitch\.tv|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
+	const parsedUrl = url.match(/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 	options.url = url;
 	if (parsedUrl != null) {
 		options.id = parsedUrl[6];
 		if (parsedUrl[3].includes('youtu')) {
 			options.url = `https://www.youtube.com/embed/${ parsedUrl[6] }`;
 			options.thumbnail = `https://img.youtube.com/vi/${ parsedUrl[6] }/0.jpg`;
-		} else if (parsedUrl[3].includes('vimeo')) {
-			options.url = `https://player.vimeo.com/video/${ parsedUrl[6] }`;
-		} else if (parsedUrl[3].includes('twitch')) {
-			options.url = `http://player.twitch.tv/?channel=${ parsedUrl[6] }`;
 		}
 		// @TODO add support for other urls
 	}
@@ -95,14 +91,18 @@ Template.liveStreamTab.events({
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked
 		};
 
-		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
-			if (err) {
-				return handleError(err);
-			}
-			i.editing.set(false);
-			i.streamingOptions.set(streamingOptions);
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
-		});
+		if (streamingOptions.id != null) {
+			Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
+				if (err) {
+					return handleError(err);
+				}
+				i.editing.set(false);
+				i.streamingOptions.set(streamingOptions);
+				return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			});
+		} else {
+			return toastr.error(TAPi18n.__('Livestream_url_incorrect'));
+		}
 	},
 	'click .streaming-source-settings'(e, i) {
 		e.preventDefault();
@@ -131,8 +131,27 @@ Template.liveStreamTab.events({
 			});
 		}
 	},
-	'submit [name=streaming-options]'(e) {
+	'submit .liveStreamTab__form'(e, i) {
 		e.preventDefault();
+		e.stopPropagation();
+
+		const streamingOptions = {
+			...parseUrl(i.find('[name=streaming-source]').value),
+			isAudioOnly: i.find('[name=streaming-audio-only]').checked
+		};
+
+		if (streamingOptions.id != null) {
+			Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
+				if (err) {
+					return handleError(err);
+				}
+				i.editing.set(false);
+				i.streamingOptions.set(streamingOptions);
+				return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			});
+		} else {
+			return toastr.error(TAPi18n.__('Livestream_url_incorrect'));
+		}
 	},
 	'click .js-popout'(e, i) {
 		e.preventDefault();
@@ -148,9 +167,3 @@ Template.liveStreamTab.events({
 		i.popoutOpen.set(true);
 	}
 });
-
-RocketChat.callbacks.add('roomExit', function() {
-	if (popout.context != null && popout.docked) {
-		popout.close();
-	}
-}, RocketChat.callbacks.priority.HIGH, 'close-docked-popout');

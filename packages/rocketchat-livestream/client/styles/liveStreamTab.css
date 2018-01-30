@@ -1,8 +1,7 @@
-.contextual-bar__header-title {
-    padding: 5px;
-    &h2 {
-      font-size: 20px;
-    }
+.contextual-bar__content {
+  &.livestream {
+    justify-content: flex-start;
+  }
 }
 
 .thumbnail-container {
@@ -21,13 +20,8 @@
   }
 }
 .liveStreamTab__form {
-  margin: 10px auto;
-
-  & .rc-button {
-    width: 49%;
-  }
   & .rc-switch {
-    padding: 10px 5px;
+    padding: 15px 5px;
   }
 }
 
