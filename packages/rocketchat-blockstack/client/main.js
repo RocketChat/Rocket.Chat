@@ -34,7 +34,6 @@ const makeAuthRequest = (config) => {
 }
 
 // Save the auth request for when redirect returns
-// TODO: Not currently used, should do for popup
 const saveDataForRedirect = (privateKey, authRequest) => {
   Reload._onMigrate('blockstack', () => [true, {authRequest: authRequest}])
   Reload._migrate(null, {immediateMigration: true})
