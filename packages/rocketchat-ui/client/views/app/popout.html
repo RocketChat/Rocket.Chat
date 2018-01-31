@@ -3,18 +3,20 @@
 		<div class="rc-popout rc-popout--{{ state }}" data-modal="modal">
 			<header class="rc-popout__header">
 				<h1 class="rc-popout__title">{{> icon icon="podcast"}}</h1>
-				<div class="rc-popout__controls">
-					{{#if isPlaying}}
-						<button class="rc-popout__controls--pause"> {{> icon icon="pause" }} </button>
-					{{else}}
-						<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
-					{{/if}}
-					{{#if isMuted}}
-						<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
-					{{else}}
-						<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
-					{{/if}}
-				</div>
+				{{#if showVideoControls}}
+					<div class="rc-popout__controls">
+						{{#if isPlaying}}
+							<button class="rc-popout__controls--pause"> {{> icon icon="pause" }} </button>
+						{{else}}
+							<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
+						{{/if}}
+						{{#if isMuted}}
+							<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
+						{{else}}
+							<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
+						{{/if}}
+					</div>
+				{{/if}}
 				{{#unless isAudioOnly}}
 					<button class="contextual-bar__minimize js-minimize">
 						{{> icon classes="rc-popout__minimize" icon="angle-down"}}
@@ -29,18 +31,21 @@
 				{{#if content}}
 					{{> Template.dynamic template=content data=data}}
 				{{/if}}
-				<div class="rc-popout__controls">
-					{{#if isPlaying}}
-						<button class="rc-popout__controls--pause"> {{> icon icon="pause" }} </button>
-					{{else}}
-						<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
-					{{/if}}
-					{{#if isMuted}}
-						<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
-					{{else}}
-						<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
-					{{/if}}
-				</div>
+
+				{{#if showVideoControls}}
+					<div class="rc-popout__controls">
+						{{#if isPlaying}}
+							<button class="rc-popout__controls--pause"> {{> icon icon="pause" }} </button>
+						{{else}}
+							<button class="rc-popout__controls--play"> {{> icon icon="play" }} </button>
+						{{/if}}
+						{{#if isMuted}}
+							<button class="rc-popout__controls--unmute"> {{> icon icon="volume-mute" }} </button>
+						{{else}}
+							<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
+						{{/if}}
+					</div>
+				{{/if}}
 			</main>
 
 		</div>

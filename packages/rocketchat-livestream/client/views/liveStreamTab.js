@@ -125,6 +125,7 @@ Template.liveStreamTab.events({
 				data: {
 					streamingSource: i.streamingOptions.get().url,
 					isAudioOnly: i.streamingOptions.get().isAudioOnly,
+					showVideoControls: true,
 					streamingOptions:  i.streamingOptions.get()
 				},
 				onCloseCallback: () => i.popoutOpen.set(false)
@@ -160,6 +161,7 @@ Template.liveStreamTab.events({
 			data: {
 				streamingSource: i.streamingOptions.get().url,
 				isAudioOnly: i.streamingOptions.get().isAudioOnly,
+				showVideoControls: true,
 				streamingOptions:  i.streamingOptions.get()
 			},
 			onCloseCallback: () => i.popoutOpen.set(false)
