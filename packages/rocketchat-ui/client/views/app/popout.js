@@ -3,6 +3,7 @@
 this.popout = {
 	context: null,
 	isAudioOnly: false,
+	showVideoControls: true,
 	x: 0,
 	y: 0,
 	open(config = {}, fn) {
@@ -17,6 +18,7 @@ this.popout = {
 		}
 		if (config.data) {
 			this.isAudioOnly = config.data.isAudioOnly;
+			this.showVideoControls = config.data.showVideoControls;
 		}
 	},
 	close() {
@@ -32,10 +34,24 @@ this.popout = {
 			this.onCloseCallback();
 		}
 	},
+	dragstart(event) {
+		if (!event.target.classList.contains('dropzone-overlay')) {
+			const popoutElement = document.querySelector('.rc-popout-wrapper');
+			setTimeout(function() {
+				popoutElement.style.display = 'none';
+			}, 0);
+		}
+	},
 	dragover(event) {
 		const e = event.originalEvent || event;
 		e.dataTransfer.dropEffect = 'move';
 		e.preventDefault();
+	},
+	dragend(event) {
+		if (!event.target.classList.contains('dropzone-overlay')) {
+			const popoutElement = document.querySelector('.rc-popout-wrapper');
+			popoutElement.style.display = 'initial';
+		}
 	},
 	drop(event) {
 		const e = event.originalEvent || event;
@@ -63,12 +79,16 @@ Template.popout.helpers({
 	},
 	isPlaying() {
 		return Template.instance().isPlaying.get();
+	},
+	showVideoControls() {
+		return Template.instance().showVideoControls.get();
 	}
 });
 
 Template.popout.onRendered(function() {
 	Template.instance().isMinimized.set(popout.isAudioOnly);
 	Template.instance().isAudioOnly.set(popout.isAudioOnly);
+	Template.instance().showVideoControls.set(popout.showVideoControls);
 
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -77,15 +97,21 @@ Template.popout.onRendered(function() {
 Template.popout.onCreated(function() {
 	this.isMinimized = new ReactiveVar(popout.isAudioOnly);
 	this.isAudioOnly = new ReactiveVar(popout.isAudioOnly);
+	this.canOpenExternal = new ReactiveVar(popout.canOpenExternal);
+	this.showVideoControls = new ReactiveVar(popout.showVideoControls);
 	this.isMuted = new ReactiveVar(false);
 	this.isPlaying = new ReactiveVar(true);
+	document.body.addEventListener('dragstart', popout.dragstart, true);
 	document.body.addEventListener('dragover', popout.dragover, true);
+	document.body.addEventListener('dragend', popout.dragend, true);
 	document.body.addEventListener('drop', popout.drop, true);
 });
 
 Template.popout.onDestroyed(function() {
 	popout.context = null;
+	document.body.removeEventListener('dragstart', popout.dragstart, true);
 	document.body.removeEventListener('dragover', popout.dragover, true);
+	document.body.removeEventListener('dragend', popout.dragend, true);
 	document.body.removeEventListener('drop', popout.drop, true);
 });
 

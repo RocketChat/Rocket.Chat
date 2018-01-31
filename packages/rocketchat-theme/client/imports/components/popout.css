@@ -1,6 +1,6 @@
 .rc-popout {
 	min-width: 380px;
-	max-width: 600px;
+	max-width: 800px;
 
 	border: solid 4px var(--rc-color-primary-darkest);
 	background: var(--rc-color-primary-darkest);
