@@ -30,8 +30,8 @@
 							<div class="input-line double-col" id="enableAutoAway">
 								<label>{{_ "Enable_Auto_Away"}}</label>
 								<div>
-									<label><input type="radio" name="enableAutoAway" value="1" checked="{{ checked 'enableAutoAway' true }}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="enableAutoAway" value="0" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="true" checked="{{ checked 'enableAutoAway' true }}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="false" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 
@@ -101,73 +101,73 @@
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 								<div>
-									<label><input type="radio" name="unreadAlert" value="1" checked="{{checked 'unreadAlert' true}}"/> {{_ "On"}}</label>
-									<label><input type="radio" name="unreadAlert" value="0" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
+									<label><input type="radio" name="unreadAlert" value="true" checked="{{checked 'unreadAlert' true}}"/> {{_ "On"}}</label>
+									<label><input type="radio" name="unreadAlert" value="false" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>
-									<label><input type="radio" name="useEmojis" value="1" checked="{{checked 'useEmojis' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="useEmojis" value="0" checked="{{checked 'useEmojis' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="useEmojis" value="true" checked="{{checked 'useEmojis' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="useEmojis" value="false" checked="{{checked 'useEmojis' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="convertAsciiEmoji">
 								<label>{{_ "Convert_Ascii_Emojis"}}</label>
 								<div>
-									<label><input type="radio" name="convertAsciiEmoji" value="1" checked="{{checked 'convertAsciiEmoji' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="convertAsciiEmoji" value="0" checked="{{checked 'convertAsciiEmoji' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="convertAsciiEmoji" value="true" checked="{{checked 'convertAsciiEmoji' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="convertAsciiEmoji" value="false" checked="{{checked 'convertAsciiEmoji' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="autoImageLoad">
 								<label>{{_ "Auto_Load_Images"}}</label>
 								<div>
-									<label><input type="radio" name="autoImageLoad" value="1" checked="{{checked 'autoImageLoad' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="autoImageLoad" value="0" checked="{{checked 'autoImageLoad' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="autoImageLoad" value="true" checked="{{checked 'autoImageLoad' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="autoImageLoad" value="false" checked="{{checked 'autoImageLoad' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="saveMobileBandwidth">
 								<label>{{_ "Save_Mobile_Bandwidth"}}</label>
 								<div>
-									<label><input type="radio" name="saveMobileBandwidth" value="1" checked="{{checked 'saveMobileBandwidth' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="saveMobileBandwidth" value="0" checked="{{checked 'saveMobileBandwidth' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="saveMobileBandwidth" value="true" checked="{{checked 'saveMobileBandwidth' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="saveMobileBandwidth" value="false" checked="{{checked 'saveMobileBandwidth' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="collapseMediaByDefault">
 								<label>{{_ "Collapse_Embedded_Media_By_Default"}}</label>
 								<div>
-									<label><input type="radio" name="collapseMediaByDefault" value="1" checked="{{checked 'collapseMediaByDefault' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="collapseMediaByDefault" value="0" checked="{{checked 'collapseMediaByDefault' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="collapseMediaByDefault" value="true" checked="{{checked 'collapseMediaByDefault' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="collapseMediaByDefault" value="false" checked="{{checked 'collapseMediaByDefault' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="hideUsernames">
 								<label>{{_ "Hide_usernames"}}</label>
 								<div>
-									<label><input type="radio" name="hideUsernames" value="1" checked="{{checked 'hideUsernames' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="hideUsernames" value="0" checked="{{checked 'hideUsernames' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="hideUsernames" value="true" checked="{{checked 'hideUsernames' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideUsernames" value="false" checked="{{checked 'hideUsernames' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							{{#if showRoles}}
 								<div class="input-line double-col" id="hideRoles">
 									<label>{{_ "Hide_roles"}}</label>
 									<div>
-										<label><input type="radio" name="hideRoles" value="1" checked="{{checked 'hideRoles' true}}" /> {{_ "True"}}</label>
-										<label><input type="radio" name="hideRoles" value="0" checked="{{checked 'hideRoles' false}}" /> {{_ "False"}}</label>
+										<label><input type="radio" name="hideRoles" value="true" checked="{{checked 'hideRoles' true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="hideRoles" value="false" checked="{{checked 'hideRoles' false}}" /> {{_ "False"}}</label>
 									</div>
 								</div>
 							{{/if}}
 							<div class="input-line double-col" id="hideFlexTab">
 								<label>{{_ "Hide_flextab"}}</label>
 								<div>
-									<label><input type="radio" name="hideFlexTab" value="1" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="hideFlexTab" value="0" checked="{{checked 'hideFlexTab' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="true" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="false" checked="{{checked 'hideFlexTab' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="hideAvatars">
 								<label>{{_ "Hide_Avatars"}}</label>
 								<div>
-									<label><input type="radio" name="hideAvatars" value="1" checked="{{checked 'hideAvatars' true}}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="hideAvatars" value="0" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="hideAvatars" value="true" checked="{{checked 'hideAvatars' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col">
@@ -231,8 +231,8 @@
 							<div class="input-line double-col" id="roomCounterSidebar">
 								<label>{{_ "Show_room_counter_on_sidebar"}}</label>
 								<div>
-									<label><input type="radio" name="roomCounterSidebar" value="1" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="roomCounterSidebar" value="0" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="true" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="false" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 						</div>
