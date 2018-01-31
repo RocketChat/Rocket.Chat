@@ -1,54 +1,8 @@
 import net from 'net';
 import _ from 'underscore';
 
-// const bind = function(f) {
-// 	const g = Meteor.bindEnvironment((self, ...args) => f.apply(self, args));
-// 	return function(...args) { return g(this, ...Array.from(args)); };
-// };
-
 class IrcServer {
 	constructor() {
-		// this.connect = bind(this.connect);
-		// this.disconnect = bind(this.disconnect);
-		// this.onConnect = bind(this.onConnect);
-		// this.onClose = bind(this.onClose);
-		// this.onTimeout = bind(this.onTimeout);
-		// this.onError = bind(this.onError);
-		// this.cleanup = bind(this.cleanup);
-		// this.burst = bind(this.burst);
-		// this.sendUser = bind(this.sendUser);
-		// this.sendRoom = bind(this.sendRoom);
-		// this.joinRoom = bind(this.joinRoom);
-		// this.loginUser = bind(this.loginUser);
-		// this.leaveRoom = bind(this.leaveRoom);
-		// this.createRoom = bind(this.createRoom);
-		// this.logoutUser = bind(this.logoutUser);
-		// this.sendMessage = bind(this.sendMessage);
-		// this.logoutIrcUser = bind(this.logoutIrcUser);
-		// this.cleanupIrcServer = bind(this.cleanupIrcServer);
-		// this.getTime = bind(this.getTime);
-		// this.parseMessage = bind(this.parseMessage);
-		// this.writeCommand = bind(this.writeCommand);
-		// this.handleMalformed = bind(this.handleMalformed);
-		// this.onReceiveRawMessage = bind(this.onReceiveRawMessage);
-		// this.onReceivePASS = bind(this.onReceivePASS);
-		// this.onReceiveCAPAB = bind(this.onReceiveCAPAB);
-		// this.onReceiveSERVER = bind(this.onReceiveSERVER);
-		// this.onReceiveSVINFO = bind(this.onReceiveSVINFO);
-		// this.onReceiveSID = bind(this.onReceiveSID);
-		// this.onReceiveSJOIN = bind(this.onReceiveSJOIN);
-		// this.onReceiveUID = bind(this.onReceiveUID);
-		// this.onReceivePING = bind(this.onReceivePING);
-		// this.onReceivePONG = bind(this.onReceivePONG);
-		// this.onReceiveEOB = bind(this.onReceiveEOB);
-		// this.onReceiveJOIN = bind(this.onReceiveJOIN);
-		// this.onReceivePART = bind(this.onReceivePART);
-		// this.onReceiveQUIT = bind(this.onReceiveQUIT);
-		// this.onReceiveINVITE = bind(this.onReceiveINVITE);
-		// this.onReceiveKICK = bind(this.onReceiveKICK);
-		// this.onReceiveSQUIT = bind(this.onReceiveSQUIT);
-		// this.onReceivePRIVMSG = bind(this.onReceivePRIVMSG);
-
 		this.ircPort = RocketChat.settings.get('IRC_Server_Port');
 		this.ircHost = RocketChat.settings.get('IRC_Server_Host');
 		this.serverId = RocketChat.settings.get('IRC_Server_Id');
@@ -77,6 +31,7 @@ class IrcServer {
 		this.nextUid = parseInt('a00001', 36);
 
 		this.socket = new net.Socket;
+		// TODO It probably should be removed (setNoDelay)...
 		this.socket.setNoDelay();
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
@@ -211,22 +166,37 @@ class IrcServer {
 
 		let index = 0;
 
-		return (() => {
-			const result = [];
+		// return (() => {
+		// 	const result = [];
 
-			while ((index * nicksPerMessage) < userIds.length) {
-				this.writeCommand({
-					prefix: this.serverId,
-					command: 'SJOIN',
-					parameters: [timestamp, `#${ room.name }`, '+nt'],
-					trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
-				});
+		// 	while ((index * nicksPerMessage) < userIds.length) {
+		// 		this.writeCommand({
+		// 			prefix: this.serverId,
+		// 			command: 'SJOIN',
+		// 			parameters: [timestamp, `#${ room.name }`, '+nt'],
+		// 			trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
+		// 		});
 
-				result.push(index = index + 1);
-			}
+		// 		result.push(index = index + 1);
+		// 	}
 
-			return result;
-		})();
+		// 	return result;
+		// })();
+
+		const result = [];
+
+		while ((index * nicksPerMessage) < userIds.length) {
+			this.writeCommand({
+				prefix: this.serverId,
+				command: 'SJOIN',
+				parameters: [timestamp, `#${ room.name }`, '+nt'],
+				trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
+			});
+
+			result.push(index = index + 1);
+		}
+
+		return result;
 	}
 
 	joinRoom(user, room) {
@@ -259,6 +229,7 @@ class IrcServer {
 
 		this.sendUser(user);
 
+		// TODO It should be decomposed
 		return RocketChat.models.Rooms.findWithUsername(user.username, {fields: { ts: 1, name: 1, t: 1 } }).forEach(room => this.joinRoom(user, room));
 	}
 
@@ -445,7 +416,7 @@ class IrcServer {
 
 	parseMessage(command) {
 		let currentIndex = 0;
-		let temp;
+		// let temp;
 		let split;
 
 		const result = {};
@@ -457,53 +428,83 @@ class IrcServer {
 		if (command[0] === ':') {
 			split = command.indexOf(' ', currentIndex);
 
-			result.prefix = (() => {
-				if (split === -1) {
-					currentIndex = command.length;
-					return command.substring(1);
-				} else {
-					temp = command.substring(currentIndex+1, split);
-					currentIndex = split + 1;
-					return temp;
-				}
-			})();
+			// result.prefix = (() => {
+			// 	if (split === -1) {
+			// 		currentIndex = command.length;
+			// 		return command.substring(1);
+			// 	} else {
+			// 		temp = command.substring(currentIndex+1, split);
+			// 		currentIndex = split + 1;
+			// 		return temp;
+			// 	}
+			// })();
+
+			if (split === -1) {
+				currentIndex = command.length;
+				result.prefix = command.substring(1);
+			} else {
+				result.prefix = command.substring(currentIndex+1, split);
+				currentIndex = split + 1;
+			}
 		}
 
 		if (currentIndex !== command.length) {
 			split = command.indexOf(' ', currentIndex);
 
-			result.command = (() => {
-				if (split === -1) {
-					temp = command.substring(currentIndex);
-					currentIndex = command.length;
-					return temp;
-				} else {
-					temp = command.substring(currentIndex, split);
-					currentIndex = split + 1;
-					return temp;
-				}
-			})();
+			// result.command = (() => {
+			// 	if (split === -1) {
+			// 		temp = command.substring(currentIndex);
+			// 		currentIndex = command.length;
+			// 		return temp;
+			// 	} else {
+			// 		temp = command.substring(currentIndex, split);
+			// 		currentIndex = split + 1;
+			// 		return temp;
+			// 	}
+			// })();
+
+			if (split === -1) {
+				result.command = command.substring(currentIndex);
+				currentIndex = command.length;
+			} else {
+				result.command = command.substring(currentIndex, split);
+				currentIndex = split + 1;
+			}
 		}
 
-		result.parameters = (() => {
-			const elementResult = [];
+		// result.parameters = (() => {
+		// 	const elementResult = [];
 
-			while (currentIndex !== command.length && command[currentIndex] !== ':') {
-				split = command.indexOf(' ', currentIndex);
+		// 	while (currentIndex !== command.length && command[currentIndex] !== ':') {
+		// 		split = command.indexOf(' ', currentIndex);
 
-				if (split === -1) {
-					temp = command.substring(currentIndex);
-					currentIndex = command.length;
-					elementResult.push(temp);
-				} else {
-					temp = command.substring(currentIndex, split);
-					currentIndex = split + 1;
-					elementResult.push(temp);
-				}
+		// 		if (split === -1) {
+		// 			temp = command.substring(currentIndex);
+		// 			currentIndex = command.length;
+		// 			elementResult.push(temp);
+		// 		} else {
+		// 			temp = command.substring(currentIndex, split);
+		// 			currentIndex = split + 1;
+		// 			elementResult.push(temp);
+		// 		}
+		// 	}
+
+		// 	return elementResult;
+		// })();
+
+		result.parameters = [];
+
+		while (currentIndex !== command.length && command[currentIndex] !== ':') {
+			split = command.indexOf(' ', currentIndex);
+
+			if (split === -1) {
+				currentIndex = command.length;
+				result.parameters.push(command.substring(currentIndex));
+			} else {
+				currentIndex = split + 1;
+				result.parameters.push(command.substring(currentIndex, split));
 			}
-
-			return elementResult;
-		})();
+		}
 
 		if (currentIndex !== command.length) {
 			result.trailer = command.substring(currentIndex + 1);
@@ -849,7 +850,13 @@ class IrcServer {
 
 	onReceivePING(command) {
 		const source = command.trailer;
-		return this.writeCommand({prefix: this.serverId, command: 'PONG', parameters: [this.serverName], trailer: source});
+
+		return this.writeCommand({
+			prefix: this.serverId,
+			command: 'PONG',
+			parameters: [this.serverName],
+			trailer: source
+		});
 	}
 
 	onReceivePONG(command) {
@@ -974,7 +981,7 @@ class IrcServer {
 		console.log(`[irc-server] Killing ${ killedUser.username }`);
 
 		return Meteor.runAsUser(userForKill._id, () => {
-
+			// TODO Kill user
 		});
 	}
 
@@ -1053,6 +1060,6 @@ if (!!RocketChat.settings.get('IRC_Server_Enabled') === true) {
 	RocketChat.callbacks.add('afterCreateRoom', IrcServerRoomCreator, RocketChat.callbacks.priority.LOW, 'irc-server-room-creator');
 
 	Meteor.startup(() => {
-		Meteor.setTimeout((() => ircServer.connect()), 90000);
+		Meteor.setTimeout((() => ircServer.connect()), 30000);
 	});
 }
