@@ -8,7 +8,7 @@ RocketChat.Migrations.add({
 
 		if (LDAP_Url && LDAP_Url.trim() !== '') {
 			LDAP_Url = LDAP_Url.replace(/ldaps?:\/\//i, '');
-			RocketChat.models.Settings.upsert({_id: 'LDAP_Host'}, {
+			RocketChat.models.Settings.upsert({_id: 'Host'}, {
 				$set: {
 					value: LDAP_Url
 				},
@@ -39,7 +39,7 @@ RocketChat.Migrations.add({
 				}
 			});
 
-			RocketChat.models.Settings.upsert({_id: 'LDAP_Username_Field'}, {
+			RocketChat.models.Settings.upsert({_id: 'Accounts_OAuth_Custom_Username_Field'}, {
 				$set: {
 					value: ''
 				},

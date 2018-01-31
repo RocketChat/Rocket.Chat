@@ -24,7 +24,7 @@ export function getPropertyValue(obj, key) {
 
 
 export function getLdapUsername(ldapUser) {
-	const usernameField = RocketChat.settings.get('LDAP_Username_Field');
+	const usernameField = RocketChat.settings.get('Accounts_OAuth_Custom_Username_Field');
 
 	if (usernameField.indexOf('#{') > -1) {
 		return usernameField.replace(/#{(.+?)}/g, function(match, field) {
@@ -181,7 +181,7 @@ export function syncUserData(user, ldapUser) {
 		user = Meteor.users.findOne({_id: user._id});
 	}
 
-	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+	if (RocketChat.settings.get('Accounts_OAuth_Custom_Username_Field') !== '') {
 		const username = slug(getLdapUsername(ldapUser));
 		if (user && user._id && username !== user.username) {
 			logger.info('Syncing user username', user.username, '->', username);
@@ -263,7 +263,7 @@ export function addLdapUser(ldapUser, username, password) {
 }
 
 export function importNewUsers(ldap) {
-	if (RocketChat.settings.get('LDAP_Enable') !== true) {
+	if (RocketChat.settings.get('Enable') !== true) {
 		logger.error('Can\'t run LDAP Import, LDAP is disabled');
 		return;
 	}
@@ -291,7 +291,7 @@ export function importNewUsers(ldap) {
 			logger.debug('userQuery', userQuery);
 
 			let username;
-			if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+			if (RocketChat.settings.get('Accounts_OAuth_Custom_Username_Field') !== '') {
 				username = slug(getLdapUsername(ldapUser));
 			}
 
@@ -329,7 +329,7 @@ export function importNewUsers(ldap) {
 }
 
 function sync() {
-	if (RocketChat.settings.get('LDAP_Enable') !== true) {
+	if (RocketChat.settings.get('Enable') !== true) {
 		return;
 	}
 

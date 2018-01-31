@@ -17,8 +17,8 @@ export default class LDAP {
 		this.connected = false;
 
 		this.options = {
-			host: RocketChat.settings.get('LDAP_Host'),
-			port: RocketChat.settings.get('LDAP_Port'),
+			host: RocketChat.settings.get('Host'),
+			port: RocketChat.settings.get('Port'),
 			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
 			Internal_Log_Level: RocketChat.settings.get('LDAP_Internal_Log_Level'),
 			timeout: RocketChat.settings.get('LDAP_Timeout'),
@@ -27,12 +27,12 @@ export default class LDAP {
 			encryption: RocketChat.settings.get('LDAP_Encryption'),
 			ca_cert: RocketChat.settings.get('LDAP_CA_Cert'),
 			reject_unauthorized: RocketChat.settings.get('LDAP_Reject_Unauthorized') || false,
-			Authentication: RocketChat.settings.get('LDAP_Authentication'),
+			Authentication: RocketChat.settings.get('Enable'),
 			Authentication_UserDN: RocketChat.settings.get('LDAP_Authentication_UserDN'),
-			Authentication_Password: RocketChat.settings.get('LDAP_Authentication_Password'),
+			Authentication_Password: RocketChat.settings.get('Password'),
 			BaseDN: RocketChat.settings.get('LDAP_BaseDN'),
 			User_Search_Filter: RocketChat.settings.get('LDAP_User_Search_Filter'),
-			User_Search_Scope: RocketChat.settings.get('LDAP_User_Search_Scope'),
+			User_Search_Scope: RocketChat.settings.get('Scope'),
 			User_Search_Field: RocketChat.settings.get('LDAP_User_Search_Field'),
 			Search_Page_Size: RocketChat.settings.get('LDAP_Search_Page_Size'),
 			Search_Size_Limit: RocketChat.settings.get('LDAP_Search_Size_Limit'),

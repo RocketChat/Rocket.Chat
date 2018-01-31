@@ -11,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'ldap_test_connection' });
 		}
 
-		if (RocketChat.settings.get('LDAP_Enable') !== true) {
+		if (RocketChat.settings.get('Enable') !== true) {
 			throw new Meteor.Error('LDAP_disabled');
 		}
 

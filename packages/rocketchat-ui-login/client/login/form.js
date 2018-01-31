@@ -120,7 +120,7 @@ Template.loginForm.events({
 				});
 			} else {
 				let loginMethod = 'loginWithPassword';
-				if (RocketChat.settings.get('LDAP_Enable')) {
+				if (RocketChat.settings.get('Enable')) {
 					loginMethod = 'loginWithLDAP';
 				}
 				if (RocketChat.settings.get('CROWD_Enable')) {

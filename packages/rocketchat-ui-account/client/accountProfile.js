@@ -130,7 +130,7 @@ Template.accountProfile.helpers({
 		return RocketChat.settings.get('Accounts_AllowRealNameChange');
 	},
 	allowUsernameChange() {
-		return RocketChat.settings.get('Accounts_AllowUsernameChange') && RocketChat.settings.get('LDAP_Enable') !== true;
+		return RocketChat.settings.get('Accounts_AllowUsernameChange') && RocketChat.settings.get('Enable') !== true;
 	},
 	allowEmailChange() {
 		return RocketChat.settings.get('Accounts_AllowEmailChange');

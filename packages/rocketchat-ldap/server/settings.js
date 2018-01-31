@@ -1,8 +1,8 @@
 RocketChat.settings.addGroup('LDAP', function() {
-	const enableQuery = {_id: 'LDAP_Enable', value: true};
+	const enableQuery = {_id: 'Enable', value: true};
 	const enableAuthentication = [
 		enableQuery,
-		{_id: 'LDAP_Authentication', value: true}
+		{_id: 'Enable', value: true}
 	];
 	const enableTLSQuery = [
 		enableQuery,
@@ -21,10 +21,10 @@ RocketChat.settings.addGroup('LDAP', function() {
 		{_id: 'LDAP_Background_Sync', value: true}
 	];
 
-	this.add('LDAP_Enable', false, { type: 'boolean', public: true });
+	this.add('Enable', false, { type: 'boolean', public: true });
 	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
-	this.add('LDAP_Host', '', { type: 'string', enableQuery });
-	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
+	this.add('Host', '', { type: 'string', enableQuery });
+	this.add('Port', '389', { type: 'string', enableQuery });
 	this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 	this.add('LDAP_Encryption', 'plain', { type: 'select', values: [ { key: 'plain', i18nLabel: 'No_Encryption' }, { key: 'tls', i18nLabel: 'StartTLS' }, { key: 'ssl', i18nLabel: 'SSL/LDAPS' } ], enableQuery });
 	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery });
@@ -42,12 +42,12 @@ RocketChat.settings.addGroup('LDAP', function() {
 		],
 		enableQuery
 	});
-	this.add('LDAP_Test_Connection', 'ldap_test_connection', { type: 'action', actionText: 'Test_Connection' });
+	this.add('Test_Connection', 'ldap_test_connection', { type: 'action', actionText: 'Test_Connection' });
 
 	this.section('Authentication', function() {
-		this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery });
+		this.add('Enable', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication });
-		this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication });
+		this.add('Password', '', { type: 'password', enableQuery: enableAuthentication });
 	});
 
 	this.section('Timeouts', function() {
@@ -58,7 +58,7 @@ RocketChat.settings.addGroup('LDAP', function() {
 
 	this.section('User Search', function() {
 		this.add('LDAP_User_Search_Filter', '(objectclass=*)', { type: 'string', enableQuery });
-		this.add('LDAP_User_Search_Scope', 'sub', { type: 'string', enableQuery });
+		this.add('Scope', 'sub', { type: 'string', enableQuery });
 		this.add('LDAP_User_Search_Field', 'sAMAccountName', { type: 'string', enableQuery });
 		this.add('LDAP_Search_Page_Size', 250, { type: 'int', enableQuery });
 		this.add('LDAP_Search_Size_Limit', 1000, { type: 'int', enableQuery });
@@ -74,7 +74,7 @@ RocketChat.settings.addGroup('LDAP', function() {
 	});
 
 	this.section('Sync / Import', function() {
-		this.add('LDAP_Username_Field', 'sAMAccountName', { type: 'string', enableQuery });
+		this.add('Accounts_OAuth_Custom_Username_Field', 'sAMAccountName', { type: 'string', enableQuery });
 		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber', { type: 'string', enableQuery });
 		this.add('LDAP_Default_Domain', '', { type: 'string', enableQuery });
 		this.add('LDAP_Merge_Existing_Users', false, { type: 'boolean', enableQuery });

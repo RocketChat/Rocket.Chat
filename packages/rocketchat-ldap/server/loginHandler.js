@@ -34,7 +34,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	logger.info('Init LDAP login', loginRequest.username);
 
-	if (RocketChat.settings.get('LDAP_Enable') !== true) {
+	if (RocketChat.settings.get('Enable') !== true) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.ldapPass);
 	}
 
@@ -91,7 +91,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	let username;
 
-	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+	if (RocketChat.settings.get('Accounts_OAuth_Custom_Username_Field') !== '') {
 		username = slug(getLdapUsername(ldapUser));
 	} else {
 		username = slug(loginRequest.username);
@@ -138,7 +138,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	logger.info('User does not exist, creating', username);
 
-	if (RocketChat.settings.get('LDAP_Username_Field') === '') {
+	if (RocketChat.settings.get('Accounts_OAuth_Custom_Username_Field') === '') {
 		username = undefined;
 	}
 

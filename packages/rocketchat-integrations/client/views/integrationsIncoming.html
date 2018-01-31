@@ -94,14 +94,14 @@
 								<div>
 									<input type="text" class="rc-input__element" name="webhookurl" value="{{data.url}}" readonly="readonly" />
 									<div class="settings-description secondary-font-color">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "Copy_to_clipboard"}}</button></div>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>Token</label>
 								<div>
 									<input type="text" class="rc-input__element" name="completeToken" value="{{data.completeToken}}" readonly="readonly" />
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "Copy_to_clipboard"}}</button></div>
 								</div>
 							</div>
 						{{/if}}
@@ -111,7 +111,7 @@
 								<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
 								{{#if curl}}
 									<input type="text" class="rc-input__element" name="curl" value="{{curl}}" readonly="readonly" />
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "Copy_to_clipboard"}}</button></div>
 								{{/if}}
 							</div>
 						</div>

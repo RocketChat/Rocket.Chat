@@ -15,7 +15,7 @@ RocketChat.settings.addGroup('Analytics', function addSettings() {
 		this.add('PiwikAnalytics_siteId', '', {
 			type: 'string',
 			public: true,
-			i18nLabel: 'Client_ID',
+			i18nLabel: 'Accounts_OAuth_Github_id',
 			enableQuery
 		});
 		this.add('PiwikAdditionalTrackers', '', {

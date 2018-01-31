@@ -97,7 +97,7 @@ RocketChat.Migrations.add({
 
 		if (LDAP_Domain_Search_Password && LDAP_Domain_Search_Password.value) {
 			RocketChat.models.Settings.update(
-				{ _id: 'LDAP_Authentication_Password' },
+				{ _id: 'Password' },
 				{ $set: { value: LDAP_Domain_Search_Password.value } }
 			);
 		}
@@ -105,7 +105,7 @@ RocketChat.Migrations.add({
 
 		if (LDAP_Domain_Search_User && LDAP_Domain_Search_User.value && LDAP_Domain_Search_Password && LDAP_Domain_Search_Password.value) {
 			RocketChat.models.Settings.update(
-				{ _id: 'LDAP_Authentication' },
+				{ _id: 'Enable' },
 				{ $set: { value: true } }
 			);
 		}
