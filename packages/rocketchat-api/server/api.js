@@ -5,7 +5,6 @@ class API extends Restivus {
 	constructor(properties) {
 		super(properties);
 		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
-		this.helperMethods = new Map(RocketChat.API.helperMethods);
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -49,6 +48,14 @@ class API extends Restivus {
 
 			this.done();
 		};
+	}
+
+	hasHelperMethods() {
+		return RocketChat.API.helperMethods.size !== 0;
+	}
+
+	getHelperMethods() {
+		return RocketChat.API.helperMethods;
 	}
 
 	addAuthMethod(method) {
@@ -121,7 +128,7 @@ class API extends Restivus {
 
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.helperMethods) {
+			if (this.hasHelperMethods()) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
 						endpoints[method] = {action: endpoints[method]};
@@ -155,7 +162,7 @@ class API extends Restivus {
 						return result;
 					};
 
-					for (const [name, helperMethod] of this.helperMethods) {
+					for (const [name, helperMethod] of this.getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
 
