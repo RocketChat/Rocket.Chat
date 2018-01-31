@@ -241,16 +241,14 @@
 			min-height: 13px;
 		}
 
-		& > p,
-		& code,
-		& pre {
-			display: inline;
-
-			white-space: unset;
-		}
-
-		& br {
-			display: none;
+		& * {
+			display: inline !important;
+			white-space: unset !important;
+			background-color: unset !important;
+			color: inherit !important;
+			font-weight: unset !important;
+			font-family: inherit !important;
+			padding: unset !important;
 		}
 
 		& a {
