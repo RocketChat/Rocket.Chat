@@ -6,7 +6,6 @@ class API extends Restivus {
 		super(properties);
 		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
-		this.helperMethods = new Map();
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
@@ -129,7 +128,7 @@ class API extends Restivus {
 
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
-					endpoints[method].action = function() {
+					endpoints[method].action = function _internalRouteActionHandler() {
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
@@ -376,7 +375,7 @@ const getUserAuth = function _getUserAuth() {
 	};
 };
 
-const createApi = function(enableCors) {
+const createApi = function _createApi(enableCors) {
 	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
 		RocketChat.API.v1 = new API({
 			version: 'v1',
