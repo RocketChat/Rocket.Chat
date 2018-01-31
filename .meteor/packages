@@ -40,6 +40,7 @@ tracker@1.1.3
 
 rocketchat:2fa
 rocketchat:action-links
+rocketchat:accounts
 rocketchat:analytics
 rocketchat:api
 rocketchat:assets
@@ -67,6 +68,11 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 #rocketchat:google-natural-language
 rocketchat:google-vision
+rocketchat:grant
+rocketchat:grant-facebook
+rocketchat:grant-github
+rocketchat:grant-google
+rocketchat:graphql
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
