@@ -85,7 +85,7 @@
 			</ul>
 		</div>
 
-		<label for="roleSelect">{{_ "Add_Role"}}</label>
+		<label for="roleSelect">{{_ "Role"}}</label>
 		<div class="rc-form-group rc-form-group--small rc-form-group--inline">
 			{{#let roles=role}}
 			<select id="roleSelect" class="rc-input rc-form-item-inline rc-input--small" {{disabled role}}>
@@ -95,7 +95,7 @@
 				{{/each}}
 			</select>
 			{{/let}}
-			<button id="addRole" class="rc-button rc-button--primary rc-form-item-inline" {{disabled role}}>{{_ 'Add_Role'}}</button>
+			<button id="addRole" class="rc-button rc-button--primary rc-form-item-inline" {{disabled role}}>{{_ 'Add'}}</button>
 		</div>
 		{{#unless user}}
 		<div class="input-line">

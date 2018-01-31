@@ -39,7 +39,7 @@ Template.inviteUsers.helpers({
 		return Template.instance().selectedUsers.get().length === 0;
 	},
 	tAddUsers() {
-		return t('Add_users');
+		return t('Add_user');
 	},
 	autocomplete(key) {
 		const instance = Template.instance();

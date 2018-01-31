@@ -11,7 +11,7 @@ Meteor.methods({
 		date.setDate(date.getDate() - expirationDays);
 		RocketChat.models.OEmbedCache.removeAfterDate(date);
 		return {
-			message: 'cache_cleared'
+			message: 'Done'
 		};
 	}
 });

@@ -57,7 +57,7 @@ Template.avatarPrompt.events({
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
 				} else {
-					toastr.success(t('Avatar_changed_successfully'));
+					toastr.success(t('Done'));
 					RocketChat.callbacks.run('userAvatarSet', 'initials');
 				}
 			});
@@ -73,7 +73,7 @@ Template.avatarPrompt.events({
 							toastr.error(t('Avatar_url_invalid_or_error'));
 						}
 					} else {
-						toastr.success(t('Avatar_changed_successfully'));
+						toastr.success(t('Done'));
 						RocketChat.callbacks.run('userAvatarSet', 'url');
 					}
 				});
@@ -105,7 +105,7 @@ Template.avatarPrompt.events({
 
 			upload.start((error, result) => {
 				if (result) {
-					toastr.success(t('Avatar_changed_successfully'));
+					toastr.success(t('Done'));
 					RocketChat.callbacks.run('userAvatarSet', this.service);
 				}
 			});
@@ -117,7 +117,7 @@ Template.avatarPrompt.events({
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
 				} else {
-					toastr.success(t('Avatar_changed_successfully'));
+					toastr.success(t('Done'));
 					RocketChat.callbacks.run('userAvatarSet', tmpService);
 				}
 			});

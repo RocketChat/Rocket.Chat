@@ -4,7 +4,7 @@ import {getActions} from './userActions';
 
 Template.membersList.helpers({
 	tAddUsers() {
-		return t('Add_users');
+		return t('Add_user');
 	},
 
 	isGroupChat() {
@@ -165,7 +165,7 @@ Template.membersList.events({
 	'click .js-add'() {
 		Template.parentData(0).tabBar.setTemplate('inviteUsers');
 		Template.parentData(0).tabBar.setData({
-			label: 'Add_users',
+			label: 'Add_user',
 			icon: 'user'
 		});
 

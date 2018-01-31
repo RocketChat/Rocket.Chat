@@ -10,7 +10,7 @@
 			{{#unless hasPermission}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
-				<a href="{{pathFor "admin-integrations-outgoing" id=integrationId}}"><i class="icon-angle-left"></i> {{_ "Back_to_integration_detail"}}</a><br><br>
+				<a href="{{pathFor "admin-integrations-outgoing" id=integrationId}}"><i class="icon-angle-left"></i> {{_ "Back"}}</a><br><br>
 
 				<div class="rocket-form">
 					{{#each history in histories}}

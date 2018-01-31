@@ -54,7 +54,7 @@ Template.adminUsers.onCreated(function() {
 	RocketChat.TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'add-user',
-		i18nTitle: 'Add_User',
+		i18nTitle: 'Add_user',
 		icon: 'plus',
 		template: 'adminUserEdit',
 		order: 2

@@ -40,7 +40,7 @@ function getAvatarSuggestionForUser(user) {
 		});
 	}
 
-	if (user.services.gitlab && user.services.gitlab.avatar_url && RocketChat.settings.get('Accounts_OAuth_Gitlab')) {
+	if (user.services.gitlab && user.services.gitlab.avatar_url && RocketChat.settings.get('Accounts_OAuth_Github')) {
 		avatars.push({
 			service: 'gitlab',
 			url: user.services.gitlab.avatar_url

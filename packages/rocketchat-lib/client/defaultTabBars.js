@@ -28,7 +28,7 @@ RocketChat.TabBar.addButton({
 RocketChat.TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'addUsers',
-	i18nTitle: 'Add_users',
+	i18nTitle: 'Add_user',
 	icon: 'user-plus',
 	template: 'inviteUsers',
 	order: 2

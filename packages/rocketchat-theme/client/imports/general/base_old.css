@@ -2585,6 +2585,7 @@
 	& .add-user-search {
 		display: inline-block;
 		overflow: hidden;
+		text-transform: capitalize;
 
 		width: 100%;
 		height: 100%;

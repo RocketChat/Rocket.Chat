@@ -11,7 +11,7 @@ RocketChat.saveUser = function(userId, userData) {
 	}
 
 	if (!userData._id && !RocketChat.authz.hasPermission(userId, 'create-user')) {
-		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', { method: 'insertOrUpdateUser', action: 'Adding_user' });
+		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', { method: 'insertOrUpdateUser', action: 'Loading...' });
 	}
 
 	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
@@ -19,7 +19,7 @@ RocketChat.saveUser = function(userId, userData) {
 	}
 
 	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
-		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Assign_admin' });
+		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', { method: 'insertOrUpdateUser', action: 'Loading...' });
 	}
 
 	if (!userData._id && !s.trim(userData.name)) {

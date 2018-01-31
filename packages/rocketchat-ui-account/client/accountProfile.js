@@ -200,7 +200,7 @@ Template.accountProfile.onCreated(function() {
 						seconds: parseInt(err.details.timeToReset / 1000)
 					}));
 				} else {
-					toastr.success(t('Avatar_changed_successfully'));
+					toastr.success(t('Done'));
 					RocketChat.callbacks.run('userAvatarSet', avatar.service);
 				}
 			});
@@ -299,7 +299,7 @@ Template.accountProfile.events({
 					seconds: parseInt(err.details.timeToReset / 1000)
 				}));
 			} else {
-				toastr.success(t('Avatar_changed_successfully'));
+				toastr.success(t('Done'));
 				RocketChat.callbacks.run('userAvatarSet', 'initials');
 			}
 		});

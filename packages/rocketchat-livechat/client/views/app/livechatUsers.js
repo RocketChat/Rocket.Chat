@@ -157,7 +157,7 @@ Template.livechatUsers.events({
 				return handleError(error);
 			}
 
-			toastr.success(t('Agent_added'));
+			toastr.success(t('Done'));
 			e.currentTarget.reset();
 		});
 	}

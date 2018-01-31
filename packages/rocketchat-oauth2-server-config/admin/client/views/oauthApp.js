@@ -79,7 +79,7 @@ Template.oauthApp.events({
 					if (err != null) {
 						return handleError(err);
 					}
-					toastr.success(TAPi18n.__('Application_updated'));
+					toastr.success(TAPi18n.__('Done'));
 				});
 			}
 		}
@@ -87,7 +87,7 @@ Template.oauthApp.events({
 			if (err != null) {
 				return handleError(err);
 			}
-			toastr.success(TAPi18n.__('Application_added'));
+			toastr.success(TAPi18n.__('Done'));
 			FlowRouter.go('admin-oauth-app', { id: data._id });
 		});
 	}
