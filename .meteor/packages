@@ -83,6 +83,7 @@ rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
 rocketchat:livechat
+rocketchat:livestream
 rocketchat:logger
 rocketchat:login-token
 rocketchat:mailer
