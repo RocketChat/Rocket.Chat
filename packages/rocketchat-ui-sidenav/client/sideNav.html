@@ -1,5 +1,5 @@
 <template name="sideNav">
-		<aside class="sidebar {{#if isLastMessageActive}}sidebar--big{{/if}}" role="navigation">
+		<aside class="sidebar sidebar--{{sideNavViewMode}} {{#if sideNavHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
 			{{> sidebarHeader }}
 
 			{{#if loggedInUser}}
