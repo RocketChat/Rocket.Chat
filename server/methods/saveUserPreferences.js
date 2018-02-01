@@ -29,7 +29,9 @@ Meteor.methods({
 			// sidebarMergeChannels: Match.Optional(Boolean),
 			sidebarShowFavorites: Match.Optional(Boolean),
 			sidebarShowUnread: Match.Optional(Boolean),
-			sidebarSortby: Match.Optional(String)
+			sidebarSortby: Match.Optional(String),
+			sidenavViewMode: Match.Optional(String),
+			sidenavHideAvatar: Match.Optional(Boolean)
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		if (settings.mergeChannels) {

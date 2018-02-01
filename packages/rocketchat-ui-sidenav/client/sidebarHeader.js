@@ -1,10 +1,36 @@
-/* globals popover isRtl */
+/* globals popover isRtl menu */
+import toastr from 'toastr';
 
 const setStatus = status => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
 	popover.close();
 };
+
+const viewModeIcon = {
+	extended: 'th-list',
+	medium: 'list',
+	condensed: 'list-alt'
+};
+
+const extendedViewOption = () => {
+	if (RocketChat.settings.get('Store_Last_Message')) {
+		return {
+			icon: viewModeIcon.extended,
+			name: t('Extended'),
+			action: () => {
+				Meteor.call('saveUserPreferences', {sidenavViewMode: 'extended'}, function(error) {
+					if (error) {
+						return handleError(error);
+					}
+				});
+			}
+		};
+	}
+
+	return;
+};
+
 
 const toolbarButtons = [
 	{
@@ -17,7 +43,73 @@ const toolbarButtons = [
 	},
 	{
 		name: t('View_mode'),
-		icon: 'th-list'
+		icon: () => viewModeIcon[RocketChat.getUserPreference(Meteor.user(), 'sidenavViewMode')],
+		action: (e) => {
+			const hideAvatarSetting = RocketChat.getUserPreference(Meteor.user(), 'sidenavHideAvatar');
+			const config = {
+				columns: [
+					{
+						groups: [
+							{
+								items: [
+									extendedViewOption(),
+									{
+										icon: viewModeIcon.medium,
+										name: t('Medium'),
+										action: () => {
+											Meteor.call('saveUserPreferences', {sidenavViewMode: 'medium'}, function(error) {
+												if (error) {
+													return handleError(error);
+												}
+											});
+										}
+									},
+									{
+										icon: viewModeIcon.condensed,
+										name: t('Condensed'),
+										action: () => {
+											Meteor.call('saveUserPreferences', {sidenavViewMode: 'condensed'}, function(error) {
+												if (error) {
+													return handleError(error);
+												}
+											});
+										}
+									}
+								]
+							},
+							{
+								items: [
+									{
+										icon: 'user-rounded',
+										name: hideAvatarSetting ? t('Unhide_Avatar') : t('Hide_Avatar'),
+										action: () => {
+											Meteor.call('saveUserPreferences', {sidenavHideAvatar: !hideAvatarSetting}, function(error, results) {
+												if (results) {
+													toastr.success(t('Preferences_saved'));
+												}
+												if (error) {
+													return handleError(error);
+												}
+											});
+										}
+									}
+								]
+							}
+						]
+					}
+				],
+				mousePosition: () => ({
+					x: e.currentTarget.getBoundingClientRect().left,
+					y: e.currentTarget.getBoundingClientRect().bottom + 50
+				}),
+				customCSSProperties: () => ({
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+				})
+			};
+
+			popover.open(config);
+		}
 	},
 	{
 		name: t('Sort'),
@@ -51,7 +143,11 @@ const toolbarButtons = [
 	{
 		name: t('Create_A_New_Channel'),
 		icon: 'plus',
-		condition: () => !(Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead'))
+		condition: () => RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']),
+		action: () => {
+			menu.close();
+			FlowRouter.go('create-channel');
+		}
 	},
 	{
 		name: t('Options'),
