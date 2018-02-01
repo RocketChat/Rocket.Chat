@@ -39,6 +39,7 @@ export class HelpRequestApi {
 
 		return new HelpDiscussionCreatedResponse(
 			HelpRequestApi.getUrlForRoom(creationResult.room),
+			creationResult.room,
 			creationResult.members
 		);
 	}
@@ -129,7 +130,7 @@ export class HelpRequestApi {
 		let channel = {};
 		try {
 			Meteor.runAsUser(seekerUser._id, () => {
-				channel = Meteor.call('createRequest', `Assistify_${ HelpRequestApi.getNextAssistifyRoomCode() }`, '', providerUsers.map((user) => user.username), environment);
+				channel = Meteor.call('createRequest', `Assistify_${ HelpRequestApi.getNextAssistifyRoomCode() }`, '', '', providerUsers.map((user) => user.username), environment);
 				try {
 					if (message) {
 						RocketChat.sendMessage({
