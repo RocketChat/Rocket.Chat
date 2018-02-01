@@ -1,6 +1,6 @@
 Meteor.methods({
 	saveUserPreferences(settings) {
-		check(settings, Match.ObjectIncluding({
+		const keys = {
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
 			newMessageNotification: Match.Optional(String),
@@ -16,7 +16,7 @@ Meteor.methods({
 			desktopNotifications: Match.Optional(String),
 			mobileNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
-			highlights: [String],
+			highlights: Match.Optional([String]),
 			desktopNotificationDuration: Match.Optional(Number),
 			viewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
@@ -25,26 +25,39 @@ Meteor.methods({
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
 			roomCounterSidebar: Match.Optional(Boolean),
-			mergeChannels: Match.Optional(Number),
-			idleTimeLimit: Match.Optional(Number)
-		}));
-
-		if (Meteor.userId()) {
-			if (settings.language != null) {
-				RocketChat.models.Users.setLanguage(Meteor.userId(), settings.language);
-			}
-
-			if (settings.mergeChannels !== -1) {
-				settings.mergeChannels = settings.mergeChannels === '1';
-			} else {
-				delete settings.mergeChannels;
-			}
-
-			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
-
-			RocketChat.models.Users.setPreferences(Meteor.userId(), settings);
-
-			return true;
+			idleTimeLimit: Match.Optional(Number),
+			// sidebarMergeChannels: Match.Optional(Boolean),
+			sidebarShowFavorites: Match.Optional(Boolean),
+			sidebarShowUnread: Match.Optional(Boolean),
+			sidebarSortby: Match.Optional(String)
+		};
+		check(settings, Match.ObjectIncluding(keys));
+		if (settings.mergeChannels) {
+			check(settings, Match.ObjectIncluding({
+				mergeChannels: Match.OneOf(Number, Boolean)
+			}));
 		}
+		const user = Meteor.userId();
+		if (!user) {
+			return false;
+		}
+
+		if (settings.language != null) {
+			RocketChat.models.Users.setLanguage(user, settings.language);
+		}
+
+		if (settings.mergeChannels != null) {
+			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
+		}
+
+
+
+		if (settings.roomsListExhibitionMode != null) {
+			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
+		}
+
+		RocketChat.models.Users.setPreferences(user, settings);
+
+		return true;
 	}
 });

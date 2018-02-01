@@ -21,7 +21,32 @@ const toolbarButtons = [
 	},
 	{
 		name: t('Sort'),
-		icon: 'sort'
+		icon: 'sort',
+		action: (e) => {
+			const sidebarHeader = document.querySelector('.sidebar__header');
+			const sidebarHeaderPadding = parseInt(getComputedStyle(sidebarHeader)['padding-left'].replace('px', '')) * 2;
+			const sidebarHeaderMargin = parseInt(getComputedStyle(sidebarHeader)['margin-left'].replace('px', '')) * 2;
+			const options = [];
+			const config = {
+				template: 'sortlist',
+				mousePosition: () => ({
+					x: e.currentTarget.getBoundingClientRect().left,
+					y: e.currentTarget.getBoundingClientRect().bottom + 50
+				}),
+				customCSSProperties: () => ({
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+				}),
+				data: {
+					change : (value) => {
+						// return instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value);
+					},
+					// value: instance.form[key].get(),
+					options
+				}
+			};
+			popover.open(config);
+		}
 	},
 	{
 		name: t('Create_A_New_Channel'),
@@ -187,6 +212,6 @@ Template.sidebarHeader.helpers({
 
 Template.sidebarHeader.events({
 	'click .js-button'(e) {
-		return this.action && this.action.apply(this);
+		return this.action && this.action.apply(this, [e]);
 	}
 });
