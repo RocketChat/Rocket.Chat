@@ -85,6 +85,16 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Generate_Username'
 		});
+		RocketChat.settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
+			type: 'select',
+				values: [
+					{key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session'},
+					{key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat'}
+				],
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Logout_Behaviour'
+		});
 	}
 });
 
@@ -100,6 +110,7 @@ const getSamlConfigs = function(service) {
 		idpSLORedirectURL: RocketChat.settings.get(`${ service.key }_idp_slo_redirect_url`),
 		generateUsername: RocketChat.settings.get(`${ service.key }_generate_username`),
 		issuer: RocketChat.settings.get(`${ service.key }_issuer`),
+		logoutBehaviour: RocketChat.settings.get(`${ service.key }_logout_behaviour`),
 		secret: {
 			privateKey: RocketChat.settings.get(`${ service.key }_private_key`),
 			publicCert: RocketChat.settings.get(`${ service.key }_public_cert`),
