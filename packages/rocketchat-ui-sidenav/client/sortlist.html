@@ -1,0 +1,56 @@
+<template name="sortlist">
+	<div class="rc-popover__column">
+		<ul class="rc-popover__list">
+			<li class="rc-popover__item">
+				<label class="rc-popover__item">
+					<input type="checkbox" name="mergeChannels"  checked="{{checked 'mergeChannels'}}"/>
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='star' }}
+					</span>
+					<span class="rc-popover__item-text">Merge</span>
+				</label>
+			</li>
+			{{#if favorite}}
+				<li class="rc-popover__item">
+					<label class="rc-popover__item">
+						<input type="checkbox" name="sidebarShowFavorites" checked="{{checked 'sidebarShowFavorites'}}"/>
+						<span class="rc-popover__icon">
+							{{> icon block="rc-popover__icon-element" icon='star' }}
+						</span>
+						<span class="rc-popover__item-text">Favorite</span>
+					</label>
+				</li>
+			{{/if}}
+			<li class="rc-popover__item">
+				<label class="rc-popover__item">
+					<input type="checkbox" name="sidebarShowUnread" checked="{{checked 'sidebarShowUnread'}}">
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='eye-off' }}
+					</span>
+					<span class="rc-popover__item-text">Unread</span>
+				</label>
+			</li>
+		</ul>
+		<span class="rc-popover__divider"></span>
+		<ul class="rc-popover__list">
+			<li class="rc-popover__item">
+				<label class="rc-popover__item">
+					<input type="radio" name="sidebarSortby" value="alphabetical" checked="{{checked 'sidebarSortby' 'alphabetical'}}">
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='sort' }}
+					</span>
+					<span class="rc-popover__item-text">Alphabetical</span>
+				</label>
+			</li>
+			<li class="rc-popover__item">
+				<label class="rc-popover__item">
+					<input type="radio" name="sidebarSortby" value="activity" checked="{{checked 'sidebarSortby' 'activity'}}">
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='clock' }}
+					</span>
+				</label>
+				<span class="rc-popover__item-text">Activity</span>
+			</li>
+		</ul>
+	</div>
+</template>

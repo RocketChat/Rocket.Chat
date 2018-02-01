@@ -44,9 +44,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
+		// const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
 		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+		return !mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 
 	isGroupChat() {

@@ -101,6 +101,10 @@
 			}
 		}
 
+		&--bold {
+			font-weight: bold;
+		}
+
 		&--star-filled .rc-icon {
 			fill: currentColor;
 		}
