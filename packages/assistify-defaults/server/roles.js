@@ -1,4 +1,4 @@
-import {TAPi18n} from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 const CONFIGURATION_ROLE_NAME = 'config-expert';
 const MANAGER_ROLE_NAME = 'manager';
@@ -6,6 +6,10 @@ const MANAGER_ROLE_NAME = 'manager';
 
 const assignPermissions = function(role, permissions) {
 	permissions.forEach(permission => RocketChat.models.Permissions.addRole(permission, role));
+};
+
+const revokePermissions = function(role, permissions) {
+	permissions.forEach(permission => RocketChat.models.Permissions.removeRole(permission, role));
 };
 
 const createConfigurationRole = function() {
@@ -189,6 +193,10 @@ const createConfigurationRole = function() {
 			'manage-own-integrations',
 			'manage-selected-settings'
 		]));
+
+	revokePermissions(CONFIGURATION_ROLE_NAME, [
+		'change-setting-Accounts_AllowedDomainsList'
+	]);
 };
 
 const createManagerRole = function() {
