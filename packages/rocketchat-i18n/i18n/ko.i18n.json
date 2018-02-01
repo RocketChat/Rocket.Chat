@@ -190,7 +190,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Direct Message History Endpoint 활성화",
   "API_Enable_Direct_Message_History_EndPoint_Description": "소속되지 않은 다른 유저로 부터 보내진 다이렉트메시지를 보기를 허용하는 'api/v1/im.history.others' 를 활성화 합니다.",
   "API_Enable_Shields": "쉴드 활성화",
-  "API_Enable_Shields_Description": "'/api/v1/shields.svg' 에 있는 쉴드를 활성화",
+  "API_Enable_Shields_Description": "'/api/v1/shield.svg' 에 있는 쉴드를 활성화",
   "API_GitHub_Enterprise_URL": "Server URL",
   "API_GitHub_Enterprise_URL_Description": "예: http://domain.com (마지막 슬래시 제외)",
   "API_Gitlab_URL": "GitLab URL",
