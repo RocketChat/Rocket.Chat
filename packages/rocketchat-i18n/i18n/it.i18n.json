@@ -190,7 +190,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Abilita l'endpoint per lo storico dei messaggi diretti",
   "API_Enable_Direct_Message_History_EndPoint_Description": "Questo abilita `/api/v1/im.history.others` che permette di vedere i messaggi diretti inviati dagli altri utenti di cui il chiamante non è parte.",
   "API_Enable_Shields": "Abilita Shield",
-  "API_Enable_Shields_Description": "Abilita gli shield disponibili a `/api/v1/shields.svg`",
+  "API_Enable_Shields_Description": "Abilita gli shield disponibili a `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL del server",
   "API_GitHub_Enterprise_URL_Description": "Esempio: http://domain.com (escludendo lo slash finale)",
   "API_Gitlab_URL": "URL GitLab",
