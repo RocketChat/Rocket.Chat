@@ -47,16 +47,19 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 	get() {
 		const { type, channel, name, icon } = this.queryParams;
 		if (!RocketChat.settings.get('API_Enable_Shields')) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shields.svg' });
+			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shield.svg' });
 		}
+
 		const types = RocketChat.settings.get('API_Shield_Types');
 		if (type && (types !== '*' && !types.split(',').map((t) => t.trim()).includes(type))) {
-			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', { route: '/api/v1/shields.svg' });
+			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', { route: '/api/v1/shield.svg' });
 		}
+
 		const hideIcon = icon === 'false';
 		if (hideIcon && (!name || !name.trim())) {
 			return RocketChat.API.v1.failure('Name cannot be empty when icon is hidden');
 		}
+
 		let text;
 		let backgroundColor = '#4c1';
 		switch (type) {
@@ -65,17 +68,26 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 					onlineCache = RocketChat.models.Users.findUsersNotOffline().count();
 					onlineCacheDate = Date.now();
 				}
+
 				text = `${ onlineCache } ${ TAPi18n.__('Online') }`;
 				break;
 			case 'channel':
 				if (!channel) {
 					return RocketChat.API.v1.failure('Shield channel is required for type "channel"');
 				}
+
 				text = `#${ channel }`;
 				break;
 			case 'user':
 				const user = this.getUserFromParams();
-				text = `${ user.name }`;
+
+				// Respect the server's choice for using their real names or not
+				if (user.name && RocketChat.settings.get('UI_Use_Real_Name')) {
+					text = `${ user.name }`;
+				} else {
+					text = `@${ user.username }`;
+				}
+
 				switch (user.status) {
 					case 'online':
 						backgroundColor = '#1fb31f';
@@ -93,6 +105,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 			default:
 				text = TAPi18n.__('Join_Chat').toUpperCase();
 		}
+
 		const iconSize = hideIcon ? 7 : 24;
 		const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
 		const rightSize = text.length * 6 + 20;
