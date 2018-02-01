@@ -71,7 +71,7 @@
 }
 
 .rc-popover--sidebar-header {
-	& .rc-icon {
+	& .rc-popover__icon-element--circle {
 		font-size: var(--sidebar-account-status-bullet-size);
 	}
 

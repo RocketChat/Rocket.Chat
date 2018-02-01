@@ -31,8 +31,13 @@ Template.sideNav.helpers({
 		return !!Meteor.userId();
 	},
 
-	isLastMessageActive() {
-		return RocketChat.settings.get('Store_Last_Message');
+	sideNavViewMode() {
+		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidenavViewMode');
+		return viewMode ? viewMode : 'condensed';
+	},
+
+	sideNavHideAvatar() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidenavHideAvatar');
 	}
 });
 
