@@ -78,16 +78,16 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				text = `${ user.name }`;
 				switch (user.status) {
 					case 'online':
-						backgroundColor = '#4dff4d';
+						backgroundColor = '#1fb31f';
 						break;
 					case 'away':
-						backgroundColor = '#FCB316';
+						backgroundColor = '#dc9b01';
 						break;
 					case 'busy':
-						backgroundColor = '#BC2031';
+						backgroundColor = '#bc2031';
 						break;
 					case 'offline':
-						backgroundColor = '#ccc';
+						backgroundColor = '#a5a1a1';
 				}
 				break;
 			default:
