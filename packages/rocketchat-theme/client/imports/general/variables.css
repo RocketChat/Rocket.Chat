@@ -1,277 +1,325 @@
-	:root {
-		/*
-		* General Colors
-		*/
+:root {
+	/*
+	* General Colors
+	*/
 
-		--color-darkest: #1f2329;
-		--color-dark: #2f343d;
-		--color-dark-medium: #414852;
-		--color-dark-light: #6c727a;
-		--color-gray: #9ea2a8;
-		--color-gray-medium: #cbced1;
-		--color-gray-light: #e1e5e8;
-		--color-gray-lightest: #f2f3f5;
-		--color-black: #000000;
-		--color-white: #ffffff;
+	--color-darkest: #1f2329;
+	--color-dark: #2f343d;
+	--color-dark-medium: #414852;
+	--color-dark-light: #6c727a;
+	--color-gray: #9ea2a8;
+	--color-gray-medium: #cbced1;
+	--color-gray-light: #e1e5e8;
+	--color-gray-lightest: #f2f3f5;
+	--color-black: #000000;
+	--color-white: #ffffff;
 
-		--rc-color-error: #f5455c;
-		--rc-color-error-light: #e1364c;
-		--rc-color-alert: #ffd21f;
-		--rc-color-alert-light: #f6c502;
-		--rc-color-success: #2de0a5;
-		--rc-color-success-light: #25d198;
-		--rc-color-button-primary: #1d74f5;
-		--rc-color-button-primary-light: #175cc4;
+	--rc-color-error: #f5455c;
+	--rc-color-error-light: #e1364c;
+	--rc-color-alert: #ffd21f;
+	--rc-color-alert-light: #f6c502;
+	--rc-color-success: #2de0a5;
+	--rc-color-success-light: #25d198;
 
-		--rc-color-primary: var(--color-dark);
-		--rc-color-primary-darkest: var(--color-darkest);
-		--rc-color-primary-dark: var(--color-dark-medium);
-		--rc-color-primary-light: var(--color-gray);
-		--rc-color-primary-light-medium: var(--color-gray-medium);
-		--rc-color-primary-lightest: var(--color-gray-lightest);
-		--rc-color-content: var(--color-white);
+	--rc-color-button-primary: #1d74f5;
+	--rc-color-button-primary-light: #175cc4;
 
-		/*
-		* General
-		*/
-		--text-size: 0.875rem;
-		--header-min-height: 60px;
-		--toolbar-height: 55px;
-		--footer-min-height: 70px;
-		--rooms-box-width: 280px;
-		--flex-tab-width: 400px;
-		--flex-tab-webrtc-width: 400px;
-		--flex-tab-webrtc-2-width: 850px;
-		--user-image-square: 20px;
-		--border: 2px;
-		--border-radius: 2px;
-		--status-online: var(--rc-color-success);
-		--status-away: var(--rc-color-alert);
-		--status-busy: var(--rc-color-error);
-		--status-invisible: var(--color-gray-medium);
-		--status-invisible-sidebar: var(--rc-color-primary-darkest);
-		--default-padding: 1.5rem;
-		--default-small-padding: 1rem;
+	--rc-color-alert-message-primary: var(--rc-color-button-primary);
+	--rc-color-alert-message-primary-background: #f1f6ff;
+	--rc-color-alert-message-secondary: #7ca52b;
+	--rc-color-alert-message-secondary-background: #fafff1;
+	--rc-color-alert-message-warning: #d52d24;
+	--rc-color-alert-message-warning-background: #fff3f3;
 
-		/*
-		* Forms
-		*/
-		--gap-between-elements: 2.5rem;
-		--label-margin-bottom: 1rem;
+	--rc-color-primary: var(--color-dark);
+	--rc-color-primary-darkest: var(--color-darkest);
+	--rc-color-primary-dark: var(--color-dark-medium);
+	--rc-color-primary-light: var(--color-gray);
+	--rc-color-primary-light-medium: var(--color-gray-medium);
+	--rc-color-primary-lightest: var(--color-gray-lightest);
+	--rc-color-content: var(--color-white);
 
-		/*
-		* Forms - Button
-		*/
-		--button-square-size: 36px;
-		--button-padding: 0.782rem;
-		--button-padding-small: 0.5rem;
-		--button-text-size: var(--input-font-size);
-		--button-border-width: var(--border);
-		--button-border-radius: var(--border-radius);
-		--button-disabled-background: var(--color-gray-light);
-		--button-disabled-text-color: var(--color-white);
-		--button-primary-background: var(--rc-color-button-primary);
-		--button-primary-text-color: var(--color-white);
+	--rc-color-link-active: var(--rc-color-button-primary);
 
-		/*
-		* Forms - Input
-		*/
-		--input-font-size: 0.875rem;
-		--input-title-text-size: var(--input-font-size);
-		--input-title-color: #2d343d;
-		--input-text-color: var(--color-dark-medium);
-		--input-placeholder-color: var(--color-gray-medium);
-		--input-icon-color: var(--color-dark);
-		--input-border-color: var(--color-gray-light);
-		--input-border-width: var(--border);
-		--input-border-radius: var(--border-radius);
-		--input-description-text-color: var(--color-gray);
-		--input-description-text-size: var(--input-font-size);
-		--input-error-color: var(--rc-color-error);
 
-		/*
-		* Forms - popup list
-		*/
-		--popup-list-border-radius: var(--border-radius);
-		--popup-list-background: var(--color-white);
-		--popup-list-background-hover: var(--color-gray-lightest);
-		--popup-list-selected-background: var(--color-gray-lightest);
-		--popup-list-name-color: #2d343d;
-		--popup-list-name-size: 1rem;
+	/*
+	* General
+	*/
+	--text-size: 0.875rem;
+	--header-min-height: 60px;
+	--toolbar-height: 55px;
+	--footer-min-height: 70px;
+	--rooms-box-width: 280px;
+	--flex-tab-width: 400px;
+	--flex-tab-webrtc-width: 400px;
+	--flex-tab-webrtc-2-width: 850px;
+	--user-image-square: 20px;
+	--border: 2px;
+	--border-radius: 2px;
+	--status-online: var(--rc-color-success);
+	--status-away: var(--rc-color-alert);
+	--status-busy: var(--rc-color-error);
+	--status-invisible: var(--color-gray-medium);
+	--status-invisible-sidebar: var(--rc-color-primary-darkest);
+	--default-padding: 1.5rem;
+	--default-small-padding: 1rem;
+	--status-bullet-size: 12px;
+	--status-bullet-radius: 50%;
+	--account-username-weight: 700;
+	--status-name-weight: 400;
 
-		/*
-		* Forms - tags
-		*/
-		--tags-border-width: var(--border);
-		--tags-border-radius: var(--border-radius);
-		--tags-border-color: var(--color-gray-light);
-		--tags-text-color: var(--rc-color-primary);
-		--tags-background: #f2f3f5;
-		--tags-avatar-size: 20px;
 
-		/*
-		* Forms - select avatar
-		*/
-		--select-avatar-size: 48px;
-		--select-avatar-preview-size: 150px;
-		--select-avatar-upload-background: var(--color-gray-light);
-		--select-avatar-upload-color: #2d343d;
+	/*
+	* General Typography
+	*/
+	--text-default-size: 1rem;
+	--text-default-weight: 500;
+	--text-small-size: 0.875rem;
+	--text-small-weight: 500;
+	--text-heading-size: 1.375rem;
+	--text-heading-weight: 700;
+	--text-label-size: 075rem;
+	--text-label-weight: 600;
+	--text-tiny-size: 075rem;
+	--text-tiny-weight: 400;
+	--text-micro-size: 0.625rem;
+	--text-micro-weight: 700;
 
-		/*
-		* Modal
-		*/
-		--modal-wrapper-width: 650px;
-		--modal-wrapper-margin: 3rem;
-		--modal-back-button-color: var(--color-gray);
+	/*
+	* Forms
+	*/
+	--gap-between-elements: 2.5rem;
+	--label-margin-bottom: 1rem;
 
-		/*
-		* Modal - Create Channel
-		*/
-		--create-channel-gap-between-elements: 2.5rem;
-		--create-channel-title-color: var(--color-darkest);
-		--create-channel-title-text-size: 1.375rem;
-		--create-channel-description-color: var(--color-gray);
-		--create-channel-description-text-size: 0.875rem;
+	/*
+	* Forms - Button
+	*/
+	--button-square-size: 36px;
+	--button-padding: 0.782rem;
+	--button-padding-small: 0.5rem;
+	--button-text-size: var(--input-font-size);
+	--button-border-width: var(--border);
+	--button-border-radius: var(--border-radius);
+	--button-disabled-background: var(--color-gray-light);
+	--button-disabled-text-color: var(--color-white);
+	--button-primary-background: var(--rc-color-button-primary);
+	--button-primary-text-color: var(--color-white);
+	--button-cancel-color: var(--rc-color-error);
+	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-text-color: var(--color-dark-medium);
 
-		/*
-		* Sidebar
-		*/
-		--sidebar-width: 280px;
-		--sidebar-small-width: 90%;
-		--sidebar-background: var(--rc-color-primary);
-		--sidebar-background-hover: var(--rc-color-primary-dark);
-		--sidebar-background-light: var(--rc-color-primary-lightest);
-		--sidebar-background-light-hover: var(--rc-color-primary-light);
-		--sidebar-default-padding: 24px;
-		--sidebar-small-default-padding: 16px;
-		--sidebar-extra-small-default-padding: 12px;
-		--sidebar-footer-height: 70px;
-		--sidebar-small-header-padding: var(--sidebar-small-default-padding);
+	/*
+	* Forms - Input
+	*/
+	--input-font-size: 0.875rem;
+	--input-title-text-size: var(--input-font-size);
+	--input-title-color: #2d343d;
+	--input-text-color: var(--color-dark-medium);
+	--input-placeholder-color: var(--color-gray-medium);
+	--input-icon-color: var(--color-dark);
+	--input-border-color: var(--color-gray-light);
+	--input-border-width: var(--border);
+	--input-border-radius: var(--border-radius);
+	--input-description-text-color: var(--color-gray);
+	--input-description-text-size: var(--input-font-size);
+	--input-error-color: var(--rc-color-error);
 
-		/*
-		* Sidebar flex
-		*/
-		--sidebar-flex-search-background: var(--color-white);
-		--sidebar-flex-search-placeholder-color: var(--color-gray);
+	/*
+	* Forms - popup list
+	*/
+	--popup-list-border-radius: var(--border-radius);
+	--popup-list-background: var(--color-white);
+	--popup-list-background-hover: var(--color-gray-lightest);
+	--popup-list-selected-background: var(--color-gray-lightest);
+	--popup-list-name-color: #2d343d;
+	--popup-list-name-size: 1rem;
 
-		/*
-		* Sidebar Account
-		*/
-		--sidebar-account-thumb-size: 36px;
-		--sidebar-small-account-thumb-size: 40px;
-		--sidebar-account-status-bullet-size: 12px;
-		--sidebar-small-account-status-bullet-size: 8px;
-		--sidebar-account-status-bullet-radius: 50%;
-		--sidebar-account-username-size: 1rem;
-		--sidebar-account-username-weight: 700;
-		--sidebar-small-account-username-weight: 400;
-		--sidebar-account-username-color: var(--color-white);
-		--sidebar-account-username-color-darker: var(--rc-color-primary);
-		--sidebar-account-status-font-size: 0.875rem;
-		--sidebar-account-status-color: var(--color-gray);
+	/*
+	* Forms - tags
+	*/
+	--tags-border-width: var(--border);
+	--tags-border-radius: var(--border-radius);
+	--tags-border-color: var(--color-gray-light);
+	--tags-text-color: var(--rc-color-primary);
+	--tags-background: #f2f3f5;
+	--tags-avatar-size: 20px;
 
-		/*
-		* Sidebar Item
-		*/
-		--sidebar-item-radius: 2px;
-		--sidebar-item-height: 32px;
-		--sidebar-item-big-height: 62px;
-		--sidebar-item-thumb-size: 20px;
-		--sidebar-item-big-thumb-size: 36px;
+	/*
+	* Forms - select avatar
+	*/
+	--select-avatar-size: 48px;
+	--select-avatar-preview-size: 150px;
+	--select-avatar-upload-background: var(--color-gray-light);
+	--select-avatar-upload-color: #2d343d;
 
-		--sidebar-item-text-color: var(--color-gray);
-		--sidebar-item-background: inherit;
-		--sidebar-item-hover-background: var(--rc-color-primary-darkest);
+	/*
+	* Sidebar
+	*/
+	--sidebar-width: 280px;
+	--sidebar-small-width: 90%;
+	--sidebar-background: var(--rc-color-primary);
+	--sidebar-background-hover: var(--rc-color-primary-dark);
+	--sidebar-background-light: var(--rc-color-primary-lightest);
+	--sidebar-background-light-hover: var(--rc-color-primary-light);
+	--sidebar-default-padding: 24px;
+	--sidebar-small-default-padding: 16px;
+	--sidebar-extra-small-default-padding: 12px;
+	--sidebar-footer-height: 70px;
+	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
-		--sidebar-item-active-background: var(--rc-color-primary-dark);
-		--sidebar-item-active-color: var(--sidebar-item-text-color);
+	/*
+	* Sidebar flex
+	*/
+	--sidebar-flex-search-background: var(--color-white);
+	--sidebar-flex-search-placeholder-color: var(--color-gray);
 
-		--sidebar-item-unread-color: var(--color-white);
+	/*
+	* Sidebar Account
+	*/
+	--sidebar-account-thumb-size: 36px;
+	--sidebar-small-account-thumb-size: 40px;
+	--sidebar-account-status-bullet-size: 12px;
+	--sidebar-small-account-status-bullet-size: 8px;
+	--sidebar-account-status-bullet-radius: 50%;
+	--sidebar-account-username-size: 1rem;
+	--sidebar-account-username-weight: 700;
+	--sidebar-small-account-username-weight: 400;
+	--sidebar-account-username-color: var(--color-white);
+	--sidebar-account-username-color-darker: var(--color-dark);
+	--sidebar-account-status-font-size: 0.875rem;
+	--sidebar-account-status-color: var(--color-gray);
 
-		--sidebar-item-popup-background: var(--color-dark-medium);
-		--sidebar-item-user-status-size: 6px;
-		--sidebar-small-item-user-status-size: 4px;
-		--sidebar-item-user-status-radius: 50%;
-		--sidebar-item-text-size: 1rem;
+	/*
+	* Sidebar Item
+	*/
+	--sidebar-item-radius: 2px;
+	--sidebar-item-height: 32px;
+	--sidebar-item-thumb-size: 20px;
+	--sidebar-item-text-color: var(--color-gray);
+	--sidebar-item-background: inherit;
+	--sidebar-item-hover-background: var(--rc-color-primary-darkest);
+	--sidebar-item-active-background: var(--rc-color-primary-dark);
+	--sidebar-item-active-color: var(--sidebar-item-text-color);
+	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-popup-background: var(--color-dark-medium);
+	--sidebar-item-user-status-size: 6px;
+	--sidebar-small-item-user-status-size: 4px;
+	--sidebar-item-user-status-radius: 50%;
+	--sidebar-item-text-size: 1rem;
+	--sidebar-item-big-height: 62px;
+	--sidebar-item-big-thumb-size: 36px;
 
-		/*
-		* Toolbar
-		*/
-		--toolbar-placeholder-color: var(--color-gray);
+	/*
+	* Modal
+	*/
+	--modal-wrapper-width: 650px;
+	--modal-wrapper-margin: 3rem;
+	--modal-back-button-color: var(--color-gray);
 
-		/*
-		* Rooms list
-		*/
-		--rooms-list-title-color: var(--color-gray);
-		--rooms-list-title-text-size: 0.75rem;
-		--rooms-list-empty-text-color: var(--color-gray);
-		--rooms-list-empty-text-size: 0.75rem;
-		--rooms-list-padding: var(--sidebar-default-padding);
-		--rooms-list-small-padding: var(--sidebar-small-default-padding);
+	/*
+	* Modal - Create Channel
+	*/
+	--create-channel-gap-between-elements: 2.5rem;
+	--create-channel-title-color: var(--color-darkest);
+	--create-channel-title-text-size: 1.375rem;
+	--create-channel-description-color: var(--color-gray);
+	--create-channel-description-text-size: 0.875rem;
 
-		/*
-		* Chip
-		*/
-		--chip-background: #dddddd;
+	/*
+	* Toolbar
+	*/
+	--toolbar-placeholder-color: var(--color-gray);
 
-		/*
-		* Avatar
-		*/
-		--avatar-radius: var(--border-radius);
-		--avatar-initials-text-size: 22px;
-		--avatar-initials-text-weight: 700;
+	/*
+	* Rooms list
+	*/
+	--rooms-list-title-color: var(--color-gray);
+	--rooms-list-title-text-size: 0.75rem;
+	--rooms-list-empty-text-color: var(--color-gray);
+	--rooms-list-empty-text-size: 0.75rem;
+	--rooms-list-padding: var(--sidebar-default-padding);
+	--rooms-list-small-padding: var(--sidebar-small-default-padding);
 
-		/*
-		* Badge
-		*/
-		--badge-text-color: var(--color-white);
-		--badge-radius: var(--border-radius);
-		--badge-text-size: 0.75rem;
-		--badge-background: var(--rc-color-primary-dark);
-		--badge-unread-background: var(--rc-color-button-primary);
+	/*
+	* Chip
+	*/
+	--chip-background: #dddddd;
 
-		/*
-		* Flex nav
-		*/
-		--flex-nav-background: var(--color-gray-lightest);
+	/*
+	* Avatar
+	*/
+	--avatar-radius: var(--border-radius);
+	--avatar-initials-text-size: 22px;
+	--avatar-initials-text-weight: 700;
 
-		/*
-		* Popover
-		*/
-		--popover-padding: 1rem;
-		--popover-radius: var(--border-radius);
-		--popover-background: var(--color-white);
-		--popover-column-min-width: 130px;
-		--popover-column-padding: 1rem;
-		--popover-title-color: var(--color-dark);
-		--popover-title-text-size: 0.75rem;
-		--popover-item-color: var(--color-dark);
-		--popover-item-text-size: 0.875rem;
-		--popover-divider-height: 2px;
-		--popover-divider-color: var(--color-gray-light);
+	/*
+	* Badge
+	*/
+	--badge-text-color: var(--color-white);
+	--badge-radius: var(--border-radius);
+	--badge-text-size: 0.75rem;
+	--badge-background: var(--rc-color-primary-dark);
+	--badge-unread-background: var(--rc-color-button-primary);
 
-		/*
-		* Tooltip
-		*/
-		--tooltip-background: var(--color-darkest);
-		--tooltip-text-color: var(--color-white);
-		--tooltip-text-size: 0.75rem;
-		--tooltip-radius: var(--border-radius);
+	/*
+	* Message box
+	*/
+	--message-box-text-size: var(--input-font-size);
+	--message-box-placeholder-color: var(--color-gray-medium);
+	--message-box-markdown-color: var(--color-gray);
+	--message-box-markdown-hover-color: var(--color-dark);
+	--message-box-user-typing-color: var(--color-gray);
+	--message-box-user-typing-text-size: 0.75rem;
+	--message-box-user-typing-user-color: var(--color-dark);
+	--message-box-container-border-color: var(--color-gray-medium);
+	--message-box-container-border-width: var(--border);
+	--message-box-container-border-radius: var(--border-radius);
+	--message-box-editing-color: #fff5df;
+	--message-box-popover-title-text-color: var(--color-gray);
+	--message-box-popover-title-text-size: 0.75rem;
 
-		/*
-		* Message box
-		*/
-		--message-box-text-size: var(--input-font-size);
-		--message-box-placeholder-color: var(--color-gray-medium);
-		--message-box-markdown-color: var(--color-gray);
-		--message-box-markdown-hover-color: var(--color-dark);
-		--message-box-user-typing-color: var(--color-gray);
-		--message-box-user-typing-text-size: 0.75rem;
-		--message-box-user-typing-user-color: var(--color-dark);
-		--message-box-container-border-color: var(--color-gray-medium);
-		--message-box-container-border-width: var(--border);
-		--message-box-container-border-radius: var(--border-radius);
-		--message-box-editing-color: #fff5df;
-		--message-box-popover-title-text-color: var(--color-gray);
-		--message-box-popover-title-text-size: 0.75rem;
-	}
+	/*
+	* Header
+	*/
+	--header-height: 77px;
+	--header-padding: 16px;
+	--header-toggle-favorite-color: var(--color-gray-medium);
+	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
+	--header-title-username-color-darker: var(--color-dark);
+	--header-title-font-size: var(--text-default-size);
+	--header-title-font-size--subtitle: var(--text-small-size);
+	--header-title-status-color: var(--color-gray);
+	--header-title-username-weight: 400;
+	--header-title-status-name-weight: 400;
+	--header-title-status-bullet-radius: var(--status-bullet-radius);
+	--header-title-status-bullet-size: var(--status-bullet-size);
+	--header-background-color: var(--color-white);
+
+	/*
+	* Flex nav
+	*/
+	--flex-nav-background: var(--color-gray-lightest);
+
+	/*
+	* Popover
+	*/
+	--popover-padding: 1rem;
+	--popover-radius: var(--border-radius);
+	--popover-background: var(--color-white);
+	--popover-column-min-width: 130px;
+	--popover-column-padding: 1rem;
+	--popover-title-color: var(--color-dark);
+	--popover-title-text-size: 0.75rem;
+	--popover-item-color: var(--color-dark);
+	--popover-item-text-size: 0.875rem;
+	--popover-divider-height: 2px;
+	--popover-divider-color: var(--color-gray-light);
+
+	/*
+	* Tooltip
+	*/
+	--tooltip-background: var(--color-darkest);
+	--tooltip-text-color: var(--color-white);
+	--tooltip-text-size: 0.75rem;
+	--tooltip-radius: var(--border-radius);
+}
