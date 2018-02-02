@@ -25,7 +25,7 @@ diff-sequence@1.1.0
 dynamic-import@0.3.0
 ecmascript@0.10.0
 ecmascript-runtime@0.5.0
-ecmascript-runtime-client@0.6.0
+ecmascript-runtime-client@0.6.1
 ecmascript-runtime-server@0.5.0
 ejson@1.1.0
 email@1.2.3
@@ -35,7 +35,7 @@ html-tools@1.0.11
 htmljs@1.0.11
 http@1.4.0
 id-map@1.1.0
-jquery@1.11.10
+jquery@1.11.11
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 konecty:nrr@2.0.2

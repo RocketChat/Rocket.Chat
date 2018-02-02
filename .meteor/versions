@@ -36,7 +36,7 @@ dispatch:run-as-user@1.1.1
 dynamic-import@0.3.0
 ecmascript@0.10.0
 ecmascript-runtime@0.5.0
-ecmascript-runtime-client@0.6.0
+ecmascript-runtime-client@0.6.1
 ecmascript-runtime-server@0.5.0
 edgee:slingshot@0.7.1
 ejson@1.1.0
@@ -60,7 +60,7 @@ jalik:ufs-local@0.2.9
 jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
 jparker:gravatar@0.5.1
-jquery@1.11.10
+jquery@1.11.11
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 keepnox:perfect-scrollbar@0.6.8
@@ -125,6 +125,7 @@ reactive-var@1.0.11
 reload@1.2.0
 retry@1.1.0
 rocketchat:2fa@0.0.1
+rocketchat:accounts@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
@@ -153,6 +154,11 @@ rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
 rocketchat:gitlab@0.0.1
 rocketchat:google-vision@0.0.1
+rocketchat:grant@0.0.1
+rocketchat:grant-facebook@0.0.1
+rocketchat:grant-github@0.0.1
+rocketchat:grant-google@0.0.1
+rocketchat:graphql@0.0.1
 rocketchat:highlight-words@0.0.1
 rocketchat:i18n@0.0.1
 rocketchat:iframe-login@1.0.0
@@ -169,6 +175,7 @@ rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1
 rocketchat:lib@0.0.1
 rocketchat:livechat@0.0.1
+rocketchat:livestream@0.0.5
 rocketchat:logger@0.0.1
 rocketchat:login-token@1.0.0
 rocketchat:mailer@0.0.1
@@ -243,6 +250,7 @@ spacebars@1.0.15
 spacebars-compiler@1.1.3
 srp@1.0.10
 standard-minifier-js@2.3.1
+swydo:graphql@0.4.0
 tap:i18n@1.8.2
 templating@1.3.2
 templating-compiler@1.3.3
