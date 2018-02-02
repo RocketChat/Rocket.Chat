@@ -84,6 +84,8 @@ Template.sidebarItem.events({
 
 			if (!roomData) { return false; }
 
+			if (roomData.t === 'c' && !RocketChat.authz.hasAtLeastOnePermission('leave-c')) { return false; }
+
 			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
 		};
 
