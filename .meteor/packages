@@ -72,7 +72,7 @@ rocketchat:grant
 rocketchat:grant-facebook
 rocketchat:grant-github
 rocketchat:grant-google
-rocketchat:graphql
+#rocketchat:graphql
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
