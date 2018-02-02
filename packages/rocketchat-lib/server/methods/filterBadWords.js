@@ -1,4 +1,4 @@
-const Filter = Npm.require('bad-words');
+import Filter from 'bad-words';
 
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 
