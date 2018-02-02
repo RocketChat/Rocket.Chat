@@ -1,19 +1,20 @@
 <template name="adminSounds">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Custom_Sounds"}}</span>
-				</h2>
-			</header>
+			{{> header sectionName="Custom_Sounds"}}
 			<div class="content">
 				{{#requiresPermission 'manage-sounds'}}
 					<form class="search-form" role="form">
-						<div class="input-line search">
-							<input type="text" id="sound-filter" placeholder="{{_ "Search"}}" dir="auto">
-							<i class="icon-search"></i>
-							{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="sound-filter" type="text" class="rc-input__element"
+									 placeholder="{{_ "Search"}}" autofocus dir="auto">
 						</div>
 					</form>
 					<div class="results">
