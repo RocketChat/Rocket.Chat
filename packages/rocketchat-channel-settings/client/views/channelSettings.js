@@ -157,7 +157,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return room.t === 'p';
 			},
 			disabled() {
-				return room['default'] && !RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+				return room['default'] && !RocketChat.authz.hasRole(Meteor.userId(), 'admin') || room.t === 'g';
 			},
 			message() {
 				if (RocketChat.authz.hasAllPermission('edit-room', room._id) && room['default']) {
@@ -215,48 +215,69 @@ Template.channelSettingsEditing.onCreated(function() {
 		},
 		t2: {
 			type: 'boolean',
-			label: 'Private_Channel',
+			// label() {
+			// 	return ;
+			// },
 			isToggle: true,
 			processing: new ReactiveVar(false),
-			disabled(room) {
-				return room['default'] && !RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+			getValue() {
+				return room.t === 'p';
 			},
-			message(room) {
+			disabled() {
+				return room['default'] && !RocketChat.authz.hasRole(Meteor.userId(), 'admin') || room.t !== 'g';
+			},
+			message() {
 				if (RocketChat.authz.hasAllPermission('edit-room', room._id) && room['default']) {
 					if (!RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 						return 'Room_type_of_default_rooms_cant_be_changed';
 					}
 				}
 			},
-			canView(room) {
+			canView() {
 				if (!['g'].includes(room.t)) {
 					return false;
 				} else if (room.t === 'g' && !RocketChat.authz.hasAllPermission('create-g')) {
 					return false;
 				}
-				Meteor.call('cleanGroupChatHistory', { roomId: room._id });
 				return true;
 			},
-			canEdit(room) {
+			canEdit() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room['default']) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
-			save(value, room) {
+			save(value) {
 				const saveRoomSettings = () => {
-					this.processing.set(true);
 					value = value ? 'p' : 'c';
 					RocketChat.callbacks.run('roomTypeChanged', room);
-					return Meteor.call('saveRoomSettings', room._id, 'roomType', value, (err) => {
-						if (err) {
-							return handleError(err);
-						}
-						this.processing.set(false);
+					return call('saveRoomSettings', room._id, 'roomType', value).then(() => {
 						return toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 					});
 				};
 				if (room['default']) {
 					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+						return new Promise((resolve, reject)=> {
+							modal.open({
+								title: t('Room_default_change_to_private_will_be_default_no_more'),
+								type: 'warning',
+								showCancelButton: true,
+								confirmButtonColor: '#DD6B55',
+								confirmButtonText: t('Yes'),
+								cancelButtonText: t('Cancel'),
+								closeOnConfirm: true,
+								html: false
+							}, function(confirmed) {
+								if (confirmed) {
+									return resolve(saveRoomSettings());
+								}
+								return reject();
+							});
+
+						});
+					}
+					// return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'p');
+				} else {
+					return new Promise((resolve, reject)=> {
 						modal.open({
-							title: t('Room_default_change_to_private_will_be_default_no_more'),
+							title: t('Room_history_clean'),
 							type: 'warning',
 							showCancelButton: true,
 							confirmButtonColor: '#DD6B55',
@@ -266,27 +287,15 @@ Template.channelSettingsEditing.onCreated(function() {
 							html: false
 						}, function(confirmed) {
 							if (confirmed) {
-								return saveRoomSettings();
+								Meteor.call('cleanGroupChatHistory', { roomId: room._id });
+								return resolve(saveRoomSettings());
 							}
+							return reject();
 						});
-					}
-					return $('.channel-settings form [name=\'t\']').prop('checked', !!room.type === 'g');
-				} else {
-					modal.open({
-						title: t('Room_history_clean'),
-						type: 'warning',
-						showCancelButton: true,
-						confirmButtonColor: '#DD6B55',
-						confirmButtonText: t('Yes'),
-						cancelButtonText: t('Cancel'),
-						closeOnConfirm: true,
-						html: false
-					}, function(confirmed) {
-						if (confirmed) {
-							return saveRoomSettings();
-						}
+
 					});
 				}
+				return saveRoomSettings();
 			}
 		},
 		ro: {

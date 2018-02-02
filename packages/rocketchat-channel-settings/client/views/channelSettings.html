@@ -90,6 +90,34 @@
 			</div>
 		{{/with}}
 
+		{{#with settings.t2}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
+				<div class="rc-switch-double">
+					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+						{{_ "Group_Chat"}}{{equal default value '*'}}
+						<div class="rc-switch-double__description">
+							{{_ "Direct_messages_between_multiple_users"}}
+						</div>
+					</div>
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input js-input-check" name="t" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Private"}}
+						<div class="rc-switch-double__description">
+							{{_ "Just_invited_people_can_access_this_channel"}}
+						</div>
+					</div>
+
+				</div>
+			</div>
+		{{/with}}
+
 		{{#with settings.ro}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">

@@ -1527,6 +1527,7 @@
   "Private": "Private",
   "Private_Channel": "Private Channel",
   "Group_Chat": "Group chat",
+  "Direct_messages_between_multiple_users": "Direct messages between multiple users",
   "Normal_Channel": "Normal channel",
   "Group_chat_instead_of_normal_channel": "Group chat instead of normal channel",
   "Normal_channel_instead_of_group_chat": "Normal channel instead of group chat",
