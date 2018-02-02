@@ -97,6 +97,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		return true;
 	}
 
+	userDetailShowAll(/* room */) {
+		return false;
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:

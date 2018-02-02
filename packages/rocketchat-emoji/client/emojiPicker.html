@@ -1,10 +1,16 @@
 <template name="emojiPicker">
-	<div class="emoji-picker secondary-background-color">
+	<div class="emoji-picker rc-popover__content">
 		<div class="emoji-top">
-			<form class="emoji-filter input-line search search-form">
-				<input type="text" class="search content-background-color" autocomplete="off">
-				<i class="icon-search secondary-font-color"></i>
-			</form>
+			<div class="rc-input">
+				<label class="rc-input__label">
+					<div class="rc-input__wrapper">
+						<div class="rc-input__icon">
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+						</div>
+						<input name="name" type="text" class="rc-input__element js-emojipicker-search" placeholder="{{_ "Search"}}" autocomplete="off">
+					</div>
+				</label>
+			</div>
 			<div class="change-tone">
 				<a href="#change-tone"><span class="current-tone {{currentTone}}"></span></a>
 				<ul class="tone-selector secondary-background-color">
