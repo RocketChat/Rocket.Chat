@@ -5,16 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'bad-words': '1.3.1',
-	'object-path': '0.9.2',
-	'node-dogstatsd': '0.0.6',
-	'localforage': '1.5.5',
-	'lokijs': '1.4.1',
-	'bugsnag': '1.8.0',
-	'prom-client': '7.0.1'
-});
-
 Package.onUse(function(api) {
 	api.use('rate-limit');
 	api.use('webapp');
@@ -32,6 +22,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
@@ -97,6 +88,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
+	api.addFiles('server/functions/loadMessageHistory.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
@@ -165,6 +157,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
+	api.addFiles('server/methods/filterATHereTag.js', 'server');
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
