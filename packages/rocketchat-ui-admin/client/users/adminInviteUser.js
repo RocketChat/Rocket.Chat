@@ -1,7 +1,8 @@
 import toastr from 'toastr';
 Template.adminInviteUser.helpers({
-	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+	isAuthorized() {
+		return 	RocketChat.authz.hasRole(Meteor.userId(), 'admin') ||
+				RocketChat.authz.hasAtLeastOnePermission('bulk-register-user');
 	},
 	inviteEmails() {
 		return Template.instance().inviteEmails.get();
