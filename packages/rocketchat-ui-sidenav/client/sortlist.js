@@ -1,23 +1,28 @@
-/* globals menu*/
+/* globals*/
+
+const checked = function(prop, field) {
+	const user = Meteor.user();
+	if (prop === 'sidebarShowFavorites') {
+		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+	}
+	if (prop === 'mergeChannels') {
+		return RocketChat.getUserPreference(user, 'mergeChannels');
+	}
+	if (prop === 'sidebarShowUnread') {
+		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
+	}
+	if (prop === 'sidebarSortby') {
+		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity') === field;
+	}
+};
 
 Template.sortlist.helpers({
 	favorite() {
 		return RocketChat.settings.get('Favorite_Rooms');
 	},
-	checked(prop, field) {
-		const user = Meteor.user();
-		if (prop === 'sidebarShowFavorites') {
-			return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
-		}
-		if (prop === 'mergeChannels') {
-			return RocketChat.getUserPreference(user, 'mergeChannels');
-		}
-		if (prop === 'sidebarShowUnread') {
-			return RocketChat.getUserPreference(user, 'sidebarShowUnread');
-		}
-		if (prop === 'sidebarSortby') {
-			return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity') === field;
-		}
+	checked,
+	bold(...props) {
+		return checked(...props) ? 'rc-popover__item--bold' : '';
 	}
 });
 

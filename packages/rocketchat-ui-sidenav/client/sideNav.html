@@ -1,13 +1,11 @@
 <template name="sideNav">
 		<aside class="sidebar sidebar--{{sideNavViewMode}} {{#if sideNavHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
 			{{> sidebarHeader }}
-
 			{{#if loggedInUser}}
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
 					{{_ "More_unreads"}} <i class="icon-up-big"></i>
 				</div>
 				<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
-
 					{{#each roomType}}
 						{{> Template.dynamic template=template data=data }}
 					{{/each}}
