@@ -42,7 +42,6 @@ Package.onUse(function(api) {
 	// ROOM TYPES
 	api.addFiles('lib/RoomTypeConfig.js');
 	api.addFiles([
-		'lib/roomTypes/channels.js',
 		'lib/roomTypes/conversation.js',
 		'lib/roomTypes/direct.js',
 		'lib/roomTypes/favorite.js',

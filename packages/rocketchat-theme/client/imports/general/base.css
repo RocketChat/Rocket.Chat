@@ -188,3 +188,7 @@ button {
 		}
 	}
 }
+
+.hidden {
+	display: none;
+}

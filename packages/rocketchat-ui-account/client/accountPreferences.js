@@ -17,9 +17,6 @@ function checkedSelected(property, value, defaultValue=undefined) {
 }
 
 Template.accountPreferences.helpers({
-	showMergedChannels() {
-		return ['category', 'unread'].includes(Template.instance().roomsListExhibitionMode.get()) ? '' : 'disabled';
-	},
 	audioAssets() {
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
 	},
@@ -102,7 +99,6 @@ Template.accountPreferences.onCreated(function() {
 
 	settingsTemplate.child.push(this);
 
-	this.roomsListExhibitionMode = new ReactiveVar(RocketChat.getUserPreference(user, 'roomsListExhibitionMode'));
 	this.useEmojis = new ReactiveVar(RocketChat.getUserPreference(user, 'useEmojis'));
 
 	let instance = this;
@@ -138,9 +134,7 @@ Template.accountPreferences.onCreated(function() {
 		data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
-		data.mergeChannels = parseInt($('#mergeChannels').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
-		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
@@ -216,7 +210,8 @@ Template.accountPreferences.events({
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
 	},
-	'click .test-notifications'() {
+	'click .test-notifications'(e) {
+		e.preventDefault();
 		KonchatNotification.notify({
 			duration: $('input[name=desktopNotificationDuration]').val(),
 			payload: { sender: { username: 'rocket.cat' }
@@ -224,10 +219,6 @@ Template.accountPreferences.events({
 			title: TAPi18n.__('Desktop_Notification_Test'),
 			text: TAPi18n.__('This_is_a_desktop_notification')
 		});
-	},
-	'change [name=roomsListExhibitionMode]'(e, instance) {
-		const value = $(e.currentTarget).val();
-		instance.roomsListExhibitionMode.set(value);
 	},
 	'change .audio'(e) {
 		e.preventDefault();
