@@ -1,4 +1,5 @@
 .sidebar__header {
+	position: relative;
 	display: flex;
 
 	margin: 0 -10px;
@@ -67,6 +68,26 @@
 
 		font-size: 18px;
 		fill: var(--sidebar-item-text-color);
+	}
+
+	&-search {
+		position: absolute;
+		right: calc(10px + var(--sidebar-default-padding));
+		width: 200px;
+		display: none;
+
+		& .rc-input__element {
+			background-color: var(--sidebar-background);
+		}
+
+		& .rc-input__icon {
+			color: white;
+
+			&--cross {
+				right: 0;
+				left: auto;
+			}
+		}
 	}
 }
 

@@ -92,9 +92,6 @@ const getFromServer = (cb, type) => {
 const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
-	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
-	},
 	results() {
 		return Template.instance().resultsList.get();
 	},
@@ -211,10 +208,12 @@ Template.toolbar.events({
 
 	'keyup [role="search"] input'(e) {
 		if (e.which === 27) {
+			console.log('lala');
 			e.preventDefault();
 			e.stopPropagation();
 
 			toolbarSearch.clear();
+			$('.toolbar').css('display', 'none');
 		}
 	},
 
@@ -223,7 +222,9 @@ Template.toolbar.events({
 	},
 
 	'click .toolbar__icon-search--right'() {
+		console.log('lala');
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'blur [role="search"] input'() {

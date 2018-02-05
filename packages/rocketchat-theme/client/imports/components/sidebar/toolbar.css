@@ -1,5 +1,8 @@
 .toolbar {
-	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+	padding: 0 var(--sidebar-default-padding);
+	position: absolute;
+	right: 0;
+	display: none;
 
 	&__wrapper {
 
