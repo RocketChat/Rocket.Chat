@@ -90,6 +90,8 @@
 	}
 
 	& .rc-button {
+
+		min-height: 36px;
 		margin: 0 0.25rem;
 
 		color: var(--rc-color-primary-light);

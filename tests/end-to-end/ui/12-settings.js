@@ -492,6 +492,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should show the activate user btn', () => {
+			flexTab.moreActions.click();
 			flexTab.usersActivate.waitForVisible(5000);
 			flexTab.usersActivate.isVisible().should.be.true;
 		});
@@ -501,8 +502,10 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should show the deactivate btn', () => {
+			flexTab.moreActions.click();
 			flexTab.usersDeactivate.waitForVisible(5000);
 			flexTab.usersDeactivate.isVisible().should.be.true;
+			mainContent.popoverWrapper.click();
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {
@@ -518,4 +521,3 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 });
-

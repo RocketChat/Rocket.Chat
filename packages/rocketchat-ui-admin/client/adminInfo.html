@@ -1,11 +1,6 @@
 <template name="adminInfo">
 	<section class="page-container page-list">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Info"}}</span>
-			</h2>
-		</header>
+		{{> header sectionName="Info"}}
 		<div class="content">
 			{{#if $gt statistics.instanceCount 1}}
 				{{#unless statistics.oplogEnabled}}
