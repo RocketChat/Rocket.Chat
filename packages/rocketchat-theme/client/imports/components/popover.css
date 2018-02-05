@@ -93,6 +93,9 @@
 		font-size: var(--popover-item-text-size);
 		align-items: center;
 
+		transition: all 0.3s;
+		width: 100%;
+
 		&--alert {
 			color: var(--rc-color-error);
 
@@ -102,7 +105,7 @@
 		}
 
 		&--bold {
-			font-weight: bold;
+			font-weight: 900;
 		}
 
 		&--star-filled .rc-icon {

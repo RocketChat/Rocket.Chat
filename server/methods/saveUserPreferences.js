@@ -36,7 +36,7 @@ Meteor.methods({
 		check(settings, Match.ObjectIncluding(keys));
 		if (settings.mergeChannels) {
 			check(settings, Match.ObjectIncluding({
-				mergeChannels: Match.OneOf(Number, Boolean)
+				mergeChannels: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
 			}));
 		}
 		const user = Meteor.userId();
