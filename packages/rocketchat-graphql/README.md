@@ -1,0 +1,3 @@
+# rocketchat:graphql
+
+GraphQL API
