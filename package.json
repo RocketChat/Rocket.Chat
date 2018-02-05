@@ -87,6 +87,7 @@
 	},
 	"devDependencies": {
 		"autoprefixer": "^7.2.3",
+		"babel-eslint": "^8.2.1",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
 		"chimp": "^0.50.2",
