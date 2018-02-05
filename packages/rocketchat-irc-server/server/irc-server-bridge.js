@@ -47,19 +47,19 @@ class IrcServer {
 		this.state = 'waitingforconnection';
 	}
 
-	connect() {
+	connect = () => {
 		console.log(`[irc-server] Attempting connection to IRC on ${ this.ircHost }:${ this.ircPort }`);
 		this.socket.connect(this.ircPort, this.ircHost, this.onConnect);
 		return this.state = 'connecting';
 	}
 
-	disconnect() {
+	disconnect = () => {
 		this.socket.end();
 		this.state = 'waitingforconnection';
 		return this.cleanup();
 	}
 
-	onConnect() {
+	onConnect = () => {
 		this.writeCommand({
 			command: 'PASS',
 			parameters: [this.sendPassword, 'TS', 6, this.serverId]
@@ -78,14 +78,14 @@ class IrcServer {
 		return this.state = 'awaitingpass';
 	}
 
-	onClose() {
+	onClose = () => {
 		console.log('[irc-server] Socket closed, cleaning up state');
 		this.state = 'waitingforconnection';
 
 		return this.cleanup();
 	}
 
-	onTimeout() {
+	onTimeout = () => {
 		if (this.state === 'connected' || this.state === 'bursting') {
 			return this.writeCommand({
 				command: 'PING',
@@ -97,12 +97,12 @@ class IrcServer {
 		}
 	}
 
-	onError(error) {
+	onError = (error) => {
 		console.log(error);
 		return console.log(`[irc-server] Socket error: ${ error.message }`);
 	}
 
-	cleanup() {
+	cleanup = () => {
 		this.partialMessage = '';
 
 		if (this.ircServers.length > 0) {
@@ -114,7 +114,7 @@ class IrcServer {
 		return this.localUsersByIrcId = {};
 	}
 
-	burst() {
+	burst = () => {
 		const users = RocketChat.models.Users.find({statusConnection: 'online'}, { fields: { _id: 1, username: 1, status: 1, name: 1}}).fetch();
 		const rooms = RocketChat.models.Rooms.find({}, {fields: { ts: 1, name: 1, usernames: 1, t: 1 } }).fetch();
 
@@ -127,7 +127,7 @@ class IrcServer {
 		});
 	}
 
-	sendUser(user) {
+	sendUser = (user) => {
 		const counterString = this.nextUid.toString().toUpperCase();
 
 		this.nextUid = this.nextUid + 1;
@@ -145,7 +145,7 @@ class IrcServer {
 		});
 	}
 
-	sendRoom(room) {
+	sendRoom = (room) => {
 		if (room.t === 'd') {
 			return;
 		}
@@ -199,7 +199,7 @@ class IrcServer {
 		return result;
 	}
 
-	joinRoom(user, room) {
+	joinRoom = (user, room) => {
 		if (this.state !== 'connected') {
 			return;
 		}
@@ -218,7 +218,7 @@ class IrcServer {
 		});
 	}
 
-	loginUser(user) {
+	loginUser = (user) => {
 		if (this.state !== 'connected') {
 			return;
 		}
@@ -233,7 +233,7 @@ class IrcServer {
 		return RocketChat.models.Rooms.findWithUsername(user.username, {fields: { ts: 1, name: 1, t: 1 } }).forEach(room => this.joinRoom(user, room));
 	}
 
-	leaveRoom(user, room) {
+	leaveRoom = (user, room) => {
 		if (this.state !== 'connected') {
 			return;
 		}
@@ -251,7 +251,7 @@ class IrcServer {
 		});
 	}
 
-	createRoom(owner, room) {
+	createRoom = (owner, room) => {
 		if (room.t === 'd' || this.localUsersById[owner._id] === undefined) {
 			return;
 		}
@@ -259,7 +259,7 @@ class IrcServer {
 		return this.sendRoom(room);
 	}
 
-	logoutUser(user) {
+	logoutUser = (user) => {
 		if (this.state !== 'connected') {
 			return;
 		}
@@ -285,7 +285,8 @@ class IrcServer {
 		});
 	}
 
-	sendMessage(message, room) {
+	// TODO Refactoring this self function
+	sendMessage = (message, room) => {
 		if (this.state !== 'connected') {
 			return;
 		}
@@ -345,7 +346,7 @@ class IrcServer {
 		})();
 	}
 
-	logoutIrcUser(userId) {
+	logoutIrcUser = (userId) => {
 		const user = this.ircUsers[userId];
 
 		Meteor.users.update({_id: user._id}, {
@@ -360,7 +361,7 @@ class IrcServer {
 		return delete this.ircUsers[userId];
 	}
 
-	cleanupIrcServer(serverId) {
+	cleanupIrcServer = (serverId) => {
 		const disconnectedIds = [];
 		let queue = [serverId];
 
@@ -376,7 +377,7 @@ class IrcServer {
 		return _.filter(this.ircUsers, user => disconnectedIds.includes(user.connectedTo)).forEach(this.logoutIrcUser);
 	}
 
-	getDirectRoom(source, target) {
+	getDirectRoom = (source, target) => {
 		const rid = [source._id, target._id].sort().join('');
 
 		RocketChat.models.Rooms.upsert({_id: rid}, {
@@ -410,11 +411,11 @@ class IrcServer {
 		};
 	}
 
-	getTime() {
+	static getTime() {
 		return Math.floor(Date.now() / 1000);
 	}
 
-	parseMessage(command) {
+	parseMessage = (command) => {
 		let currentIndex = 0;
 		// let temp;
 		let split;
@@ -513,7 +514,7 @@ class IrcServer {
 		return result;
 	}
 
-	writeCommand(command) {
+	writeCommand = (command) => {
 		let buffer = command.prefix != null ? `:${ command.prefix } ` : '';
 		buffer += command.command;
 
@@ -532,11 +533,11 @@ class IrcServer {
 		return this.socket.write(`${ buffer }\r\n`);
 	}
 
-	handleMalformed(command) {
+	static handleMalformed(command) {
 		return console.log(`[irc-server] Received invalid command: ${ command }`);
 	}
 
-	onReceiveRawMessage(data) {
+	onReceiveRawMessage = (data) => {
 		const dataString = data.toString();
 		const lines = dataString.split('\r\n');
 
@@ -652,7 +653,7 @@ class IrcServer {
 		return this.partialMessage = newPartialMessage;
 	}
 
-	onReceivePASS(command) {
+	onReceivePASS = (command) => {
 		if (command.parameters.length !== 4) {
 			this.handleMalformed(command);
 			this.disconnect();
@@ -677,12 +678,12 @@ class IrcServer {
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	onReceiveCAPAB(command) {
+	onReceiveCAPAB = (command) => {
 		// TODO: Review it
 		//return this.otherServerCapabilities = command.trailer.split(' ');
 	}
 
-	onReceiveSERVER(command) {
+	onReceiveSERVER = (command) => {
 		if (command.parameters.length !== 2 || command.trailer == null) {
 			this.handleMalformed(command);
 			this.disconnect();
@@ -696,7 +697,7 @@ class IrcServer {
 		return this.ircServers[this.otherServerId].serverName = serverName;
 	}
 
-	onReceiveSVINFO(command) {
+	onReceiveSVINFO = (command) => {
 		if (!command.parameters || command.parameters.length !== 3 || command.trailer == null) {
 			this.handleMalformed(command);
 			this.disconnect();
@@ -729,7 +730,7 @@ class IrcServer {
 		return this.state = 'connected';
 	}
 
-	onReceiveSID(command) {
+	onReceiveSID = (command) => {
 		if (!command.parameters || command.parameters.length !== 3 || command.trailer == null || command.prefix == null) {
 			this.handleMalformed(command);
 			return;
@@ -748,7 +749,7 @@ class IrcServer {
 		return console.log(`[irc-server] New server connected: ${ serverName } via ${ this.ircServers[connectedTo].serverName }`);
 	}
 
-	onReceiveSJOIN(command) {
+	onReceiveSJOIN = (command) => {
 		if (command.parameters.length !== 3 || command.trailer == null) {
 			this.handleMalformed(command);
 			return;
@@ -783,7 +784,7 @@ class IrcServer {
 		return RocketChat.models.Rooms.addUsernamesById(room._id, _.map(users, user => user.username));
 	}
 
-	onReceiveUID(command) {
+	onReceiveUID = (command) => {
 		console.log('IRC command.parameters (onReceiveUID): ', command.parameters);
 
 		if (command.parameters.length !== 9) {
@@ -848,7 +849,7 @@ class IrcServer {
 		return console.log(`[irc-server] Registered user ${ nick } with ircUserId ${ ircUserId }`);
 	}
 
-	onReceivePING(command) {
+	onReceivePING = (command) => {
 		const source = command.trailer;
 
 		return this.writeCommand({
@@ -859,7 +860,7 @@ class IrcServer {
 		});
 	}
 
-	onReceivePONG(command) {
+	onReceivePONG = (command) => {
 		// eslint-disable-next-line no-unused-vars
 		let targetServerId;
 
@@ -872,13 +873,13 @@ class IrcServer {
 		return targetServerId = command.trailer;
 	}
 
-	onReceiveEOB(command) {
+	onReceiveEOB = (command) => {
 		const serverId = command.prefix;
 
 		return console.log(`[irc-server] Finished receiving burst from ${ this.ircServers[serverId].serverName }`);
 	}
 
-	onReceiveJOIN(command) {
+	onReceiveJOIN = (command) => {
 		const userId = command.prefix;
 
 		// eslint-disable-next-line no-unused-vars
@@ -887,14 +888,14 @@ class IrcServer {
 		return RocketChat.models.Rooms.addUsernameByName(channel.substring(1), this.ircUsers[userId].username);
 	}
 
-	onReceivePART(command) {
+	onReceivePART = (command) => {
 		const userId = command.prefix;
 		const [channel] = command.parameters;
 
 		return RocketChat.models.Rooms.removeUsernameByName(channel.substring(1), this.ircUsers[userId].username);
 	}
 
-	onReceiveQUIT(command) {
+	onReceiveQUIT = (command) => {
 		const userId = command.prefix;
 
 		// eslint-disable-next-line no-unused-vars
@@ -903,7 +904,7 @@ class IrcServer {
 		return this.logoutIrcUser(userId);
 	}
 
-	onReceiveINVITE(command) {
+	onReceiveINVITE = (command) => {
 		const invitingUserId = command.prefix;
 
 		// eslint-disable-next-line no-unused-vars
@@ -934,7 +935,7 @@ class IrcServer {
 		});
 	}
 
-	onReceiveKICK(command) {
+	onReceiveKICK = (command) => {
 		const kickingUserId = command.prefix;
 		const [channel, kickedUserId] = command.parameters;
 
@@ -963,7 +964,7 @@ class IrcServer {
 		});
 	}
 
-	onReceiveKILL(command) {
+	onReceiveKILL = (command) => {
 		const ircUserId = command.prefix;
 
 		console.log('IRC command.parameters: ', command.parameters);
@@ -985,7 +986,7 @@ class IrcServer {
 		});
 	}
 
-	onReceiveSQUIT(command) {
+	onReceiveSQUIT = (command) => {
 		let [targetServer] = command.parameters;
 
 		// eslint-disable-next-line no-unused-vars
@@ -999,7 +1000,7 @@ class IrcServer {
 		return this.cleanupIrcServer(targetServer);
 	}
 
-	onReceivePRIVMSG(command) {
+	onReceivePRIVMSG = (command) => {
 		let room;
 
 		const userId = command.prefix;
