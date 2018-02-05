@@ -170,10 +170,14 @@
 
 <template name='tag'>
 	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-image">
-			{{> avatar username=username}}
-		</span>
-		<span class="rc-tags__tag-text">{{username}}</span>
+		{{#if username}}
+			<span class="rc-tags__tag-image">
+				{{> avatar username=username}}
+			</span>
+			<span class="rc-tags__tag-text">{{username}}</span>
+		{{else}}
+			<span class="rc-tags__tag-text">{{text}}</span>
+		{{/if}}
 		{{> icon block="rc-tags__tag-icon" icon="cross"}}
 	</span>
 </template>

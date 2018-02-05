@@ -1,5 +1,6 @@
 /* global InstanceStatus, MongoInternals */
 import _ from 'underscore';
+import os from 'os';
 
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
@@ -42,7 +43,6 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp();
 	statistics.lastSeenSubscription = RocketChat.models.Subscriptions.getLastSeen();
 
-	const os = Npm.require('os');
 	statistics.os = {
 		type: os.type(),
 		platform: os.platform(),

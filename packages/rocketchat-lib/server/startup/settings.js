@@ -1467,7 +1467,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		this.add('Layout_Sidenav_Footer', '<img src="assets/logo" />', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
 			type: 'code',
 			code: 'text/html',
 			'public': true,

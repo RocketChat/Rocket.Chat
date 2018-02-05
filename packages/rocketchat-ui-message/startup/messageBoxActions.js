@@ -73,6 +73,7 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 					name: file.name
 				};
 			});
+
 			fileUpload(filesToUpload);
 			$input.remove();
 		});

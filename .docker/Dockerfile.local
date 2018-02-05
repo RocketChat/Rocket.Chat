@@ -1,24 +1,29 @@
 FROM ubuntu:16.04 as builder
 
-RUN apt update && apt install curl git bzip2 -y
+RUN apt update && apt install curl git bzip2 g++ build-essential python -y
 
-RUN set -x \
-&& curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh \
-&& export PATH="$HOME/.meteor:$PATH"
+# meteor installer doesn't work with the default tar binary
+RUN apt-get install -y bsdtar \
+    && cp $(which tar) $(which tar)~ \
+    && ln -sf $(which bsdtar) $(which tar) \
+    && curl "https://install.meteor.com/?release=1.6.0.1" \
+    | sed 's/VERBOSITY="--silent"/VERBOSITY="--progress-bar"/' \
+    | sh \
+    && mv $(which tar)~ $(which tar)
 
 COPY . /app
 
 WORKDIR /app
 
-RUN set -x \
-&& meteor npm i --unsafe-perm
-
-RUN set -x \
+RUN meteor npm i \
+&& set +e \
+&& meteor add rocketchat:lib --allow-superuser \
+&& set -e \
 && meteor build --allow-superuser --headless --directory /tmp/build
 
-FROM rocketchat/base:4
+FROM rocketchat/base:8
 
-ENV RC_VERSION 0.57.0-develop
+ENV RC_VERSION 0.61.0-0.51.0
 
 MAINTAINER buildmaster@rocket.chat
 
@@ -28,7 +33,7 @@ RUN set -x \
  && ls -l /app \
  && cd /app/bundle/programs/server \
  && npm install \
- && npm cache clear \
+ && npm cache clear --force \
  && chown -R rocketchat:rocketchat /app
 
 USER rocketchat
