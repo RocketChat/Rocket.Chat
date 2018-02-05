@@ -12,7 +12,7 @@
 	}
 }
 
-.sidebar--big {
+.sidebar--extended {
 	& > .rooms-list,
 	& .rooms-list__toolbar-search {
 		& .sidebar-item {
