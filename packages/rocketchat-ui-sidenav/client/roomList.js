@@ -19,7 +19,7 @@ Template.roomList.helpers({
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
 		}
 		const user = Meteor.user();
-		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity';
+		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true
 		};
@@ -38,7 +38,7 @@ Template.roomList.helpers({
 			return ChatSubscription.find(query, {sort});
 		}
 
-		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+		const favoritesEnabled = !!(RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites'));
 
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
@@ -49,7 +49,7 @@ Template.roomList.helpers({
 				types = ['c', 'p', 'd'];
 			}
 
-			if (this.identifier === 'channels' || this.identifier === 'unread' || this.identifier === 'tokens') {
+			if (this.identifier === 'unread' || this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
 
