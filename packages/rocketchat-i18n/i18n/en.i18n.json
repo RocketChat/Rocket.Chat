@@ -1689,6 +1689,7 @@
   "Should_exists_a_user_with_this_username": "The user must already exist.",
   "Show_agent_email": "Show agent email",
   "Show_all": "Show All",
+  "Show_Avatars": "Show Avatars",
   "Show_counter": "Show counter",
   "Show_room_counter_on_sidebar": "Show room counter on sidebar",
   "Show_more": "Show more",

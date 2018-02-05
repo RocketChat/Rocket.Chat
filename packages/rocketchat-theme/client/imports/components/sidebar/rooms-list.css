@@ -15,7 +15,7 @@
 	}
 
 	&__list:not(:last-child) {
-		margin-bottom: 32px;
+		margin-bottom: 22px;
 	}
 
 	&__type {
@@ -23,7 +23,7 @@
 
 		flex-direction: row;
 
-		padding: 0 var(--sidebar-default-padding) 0.5rem var(--sidebar-default-padding);
+		padding: 0 var(--sidebar-default-padding) 1rem var(--sidebar-default-padding);
 
 		color: var(--rooms-list-title-color);
 
