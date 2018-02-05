@@ -78,7 +78,7 @@ Meteor.methods({
 		}
 
 		if (expertise) {
-			members = getExperts(expertise);
+			members = members.concat(getExperts(expertise));
 		}
 		const roomCreateResult = RocketChat.createRoom('r', name, Meteor.user() && Meteor.user().username, members, false, {expertise});
 		if (requestTitle) {
