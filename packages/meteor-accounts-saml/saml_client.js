@@ -16,37 +16,36 @@ if (!Accounts.saml) {
 
 const MeteorLogout = Meteor.logout;
 const logoutBehaviour = {
-	TERMINATE_SAML: "SAML",
-	ONLY_RC: "Local"
-}
+	TERMINATE_SAML: 'SAML',
+	ONLY_RC: 'Local'
+};
 
-Meteor.logout = function () {
-	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
+Meteor.logout = function() {
+	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider && samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
 			if (samlService.idpSLORedirectURL) {
-				return Meteor.logoutWithSaml({ provider });
+				return Meteor.logoutWithSaml({provider});
+			} else if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
+				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 			}
-		}
-		if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
-			console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 		}
 	}
 	return MeteorLogout.apply(Meteor, arguments);
 };
 
-const openCenteredPopup = function (url, width, height) {
+const openCenteredPopup = function(url, width, height) {
 	let newwindow;
 
 	if (typeof cordova !== 'undefined' && typeof cordova.InAppBrowser !== 'undefined') {
 		newwindow = cordova.InAppBrowser.open(url, '_blank');
 		newwindow.closed = false;
 
-		const intervalId = setInterval(function () {
+		const intervalId = setInterval(function() {
 			newwindow.executeScript({
 				'code': 'document.getElementsByTagName("script")[0].textContent'
-			}, function (data) {
+			}, function(data) {
 				if (data && data.length > 0 && data[0] === 'window.close()') {
 					newwindow.close();
 					newwindow.closed = true;
@@ -54,7 +53,7 @@ const openCenteredPopup = function (url, width, height) {
 			});
 		}, 100);
 
-		newwindow.addEventListener('exit', function () {
+		newwindow.addEventListener('exit', function() {
 			clearInterval(intervalId);
 		});
 	} else {
@@ -68,8 +67,8 @@ const openCenteredPopup = function (url, width, height) {
 		// positioning the popup centered relative to the current window
 		const left = screenX + (outerWidth - width) / 2;
 		const top = screenY + (outerHeight - height) / 2;
-		const features = (`width=${width},height=${height
-			},left=${left},top=${top},scrollbars=yes`);
+		const features = (`width=${ width },height=${ height
+		},left=${ left },top=${ top },scrollbars=yes`);
 
 		newwindow = window.open(url, 'Login', features);
 		if (newwindow.focus) {
@@ -79,12 +78,12 @@ const openCenteredPopup = function (url, width, height) {
 	return newwindow;
 };
 
-Accounts.saml.initiateLogin = function (options, callback, dimensions) {
+Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 	// default dimensions that worked well for facebook and google
 	const popup = openCenteredPopup(
-		Meteor.absoluteUrl(`_saml/authorize/${options.provider}/${options.credentialToken}`), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
+		Meteor.absoluteUrl(`_saml/authorize/${ options.provider }/${ options.credentialToken }`), (dimensions && dimensions.width) || 650, (dimensions && dimensions.height) || 500);
 
-	const checkPopupOpen = setInterval(function () {
+	const checkPopupOpen = setInterval(function() {
 		let popupClosed;
 		try {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)
@@ -107,12 +106,12 @@ Accounts.saml.initiateLogin = function (options, callback, dimensions) {
 };
 
 
-Meteor.loginWithSaml = function (options, callback) {
+Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
-	const credentialToken = `id-${Random.id()}`;
+	const credentialToken = `id-${ Random.id() }`;
 	options.credentialToken = credentialToken;
 
-	Accounts.saml.initiateLogin(options, function (/*error, result*/) {
+	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
@@ -123,15 +122,15 @@ Meteor.loginWithSaml = function (options, callback) {
 	});
 };
 
-Meteor.logoutWithSaml = function (options/*, callback*/) {
+Meteor.logoutWithSaml = function(options/*, callback*/) {
 	//Accounts.saml.idpInitiatedSLO(options, callback);
-	Meteor.call('samlLogout', options.provider, function (err, result) {
+	Meteor.call('samlLogout', options.provider, function(err, result) {
 		if (err || !result) {
 			MeteorLogout.apply(Meteor);
 			return;
 		}
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
-		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${options.provider}/?redirect=${encodeURIComponent(result)}`));
+		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };
