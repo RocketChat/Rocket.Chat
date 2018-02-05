@@ -2,8 +2,8 @@
 	<div class="rc-popover__column">
 		<ul class="rc-popover__list">
 			<li class="rc-popover__item">
-				<label class="rc-popover__item">
-					<input type="checkbox" name="mergeChannels"  checked="{{checked 'mergeChannels'}}"/>
+				<label class="rc-popover__item {{bold 'mergeChannels'}}">
+					<input type="checkbox" name="mergeChannels" class="hidden" checked="{{checked 'mergeChannels'}}"/>
 					<span class="rc-popover__icon">
 						{{> icon block="rc-popover__icon-element" icon='star' }}
 					</span>
@@ -12,8 +12,8 @@
 			</li>
 			{{#if favorite}}
 				<li class="rc-popover__item">
-					<label class="rc-popover__item">
-						<input type="checkbox" name="sidebarShowFavorites" checked="{{checked 'sidebarShowFavorites'}}"/>
+					<label class="rc-popover__item {{bold 'sidebarShowFavorites'}}">
+						<input type="checkbox" name="sidebarShowFavorites" class="hidden" checked="{{checked 'sidebarShowFavorites'}}"/>
 						<span class="rc-popover__icon">
 							{{> icon block="rc-popover__icon-element" icon='star' }}
 						</span>
@@ -22,8 +22,8 @@
 				</li>
 			{{/if}}
 			<li class="rc-popover__item">
-				<label class="rc-popover__item">
-					<input type="checkbox" name="sidebarShowUnread" checked="{{checked 'sidebarShowUnread'}}">
+				<label class="rc-popover__item {{bold 'sidebarShowUnread'}}">
+					<input type="checkbox" name="sidebarShowUnread" class="hidden" checked="{{checked 'sidebarShowUnread'}}">
 					<span class="rc-popover__icon">
 						{{> icon block="rc-popover__icon-element" icon='eye-off' }}
 					</span>
@@ -34,8 +34,8 @@
 		<span class="rc-popover__divider"></span>
 		<ul class="rc-popover__list">
 			<li class="rc-popover__item">
-				<label class="rc-popover__item">
-					<input type="radio" name="sidebarSortby" value="alphabetical" checked="{{checked 'sidebarSortby' 'alphabetical'}}">
+				<label class="rc-popover__item {{bold 'sidebarSortby' 'alphabetical'}}">
+					<input type="radio" name="sidebarSortby" value="alphabetical" class="hidden" checked="{{checked 'sidebarSortby' 'alphabetical'}}">
 					<span class="rc-popover__icon">
 						{{> icon block="rc-popover__icon-element" icon='sort' }}
 					</span>
@@ -43,13 +43,13 @@
 				</label>
 			</li>
 			<li class="rc-popover__item">
-				<label class="rc-popover__item">
-					<input type="radio" name="sidebarSortby" value="activity" checked="{{checked 'sidebarSortby' 'activity'}}">
+				<label class="rc-popover__item {{bold 'sidebarSortby' 'activity'}}">
+					<input type="radio" name="sidebarSortby" value="activity" class="hidden" checked="{{checked 'sidebarSortby' 'activity'}}">
 					<span class="rc-popover__icon">
 						{{> icon block="rc-popover__icon-element" icon='clock' }}
 					</span>
+					<span class="rc-popover__item-text">Activity</span>
 				</label>
-				<span class="rc-popover__item-text">Activity</span>
 			</li>
 		</ul>
 	</div>

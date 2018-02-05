@@ -14,8 +14,8 @@
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label for="language">{{_ "Language"}}</label>
-								<div>
-									<select id="language" class="required rc-input__element">
+								<div class="rc-select">
+									<select id="language" class="required rc-select__element">
 										{{#each languages}}
 											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
@@ -170,7 +170,7 @@
 									<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
-							<div class="input-line double-col">
+							<!-- <div class="input-line double-col">
 								<label for="roomsListExhibitionMode">{{_ "Sidebar_list_mode"}}</label>
 								<div>
 									<select class="input-monitor rc-input__element" name="roomsListExhibitionMode" id="roomsListExhibitionMode">
@@ -179,8 +179,8 @@
 										<option value="category" selected="{{selected 'roomsListExhibitionMode' 'category'}}">{{_ "Split_by_categories"}}</option>
 									</select>
 								</div>
-							</div>
-							{{# with disabled=showMergedChannels}}
+							</div> -->
+							<!-- {{# with disabled=showMergedChannels}}
 							<div class="input-line double-col" id="mergeChannels" {{disabled}}>
 								<label>{{_ "UI_Merge_Channels_Groups"}}</label>
 								<div>
@@ -189,7 +189,7 @@
 									<label><input type="radio" name="mergeChannels" value="-1" checked="{{checked 'mergeChannels' 'default' 'default'}}" {{disabled}}/> {{_ "Default"}}</label>
 								</div>
 							</div>
-							{{/with}}
+							{{/with}} -->
 
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
