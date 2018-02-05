@@ -24,6 +24,7 @@ caching-compiler@1.1.9
 caching-html-compiler@1.1.2
 callback-hook@1.0.10
 cfs:http-methods@0.0.32
+chatpal:search@0.0.1
 check@1.2.5
 coffeescript@1.12.7_3
 coffeescript-compiler@1.12.7_3
