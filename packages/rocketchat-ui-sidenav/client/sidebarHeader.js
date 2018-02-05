@@ -23,9 +23,7 @@ const toolbarButtons = [
 		name: t('Sort'),
 		icon: 'sort',
 		action: (e) => {
-			const sidebarHeader = document.querySelector('.sidebar__header');
-			const sidebarHeaderPadding = parseInt(getComputedStyle(sidebarHeader)['padding-left'].replace('px', '')) * 2;
-			const sidebarHeaderMargin = parseInt(getComputedStyle(sidebarHeader)['margin-left'].replace('px', '')) * 2;
+
 			const options = [];
 			const config = {
 				template: 'sortlist',
@@ -38,9 +36,6 @@ const toolbarButtons = [
 					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
 				}),
 				data: {
-					change : (value) => {
-						// return instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value);
-					},
 					// value: instance.form[key].get(),
 					options
 				}
