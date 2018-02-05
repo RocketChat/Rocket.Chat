@@ -53,6 +53,7 @@
 
 	&__message {
 		flex-direction: column;
+
 		height: var(--sidebar-item-thumb-size-extended);
 
 		&-top,
@@ -121,15 +122,17 @@
 	}
 
 	&__icon {
-		font-size: 1rem;
-		fill: currentColor;
+
 		display: flex;
+		font-size: 1rem;
 		align-items: center;
+		fill: currentColor;
 	}
 
 	&__room-type {
-		font-size: 0.6rem;
+
 		color: currentColor;
+		font-size: 0.6rem;
 	}
 
 	&__user-thumb {
@@ -141,9 +144,9 @@
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 
-		border-radius: var(--sidebar-item-user-status-radius);
-
 		margin: 0 7px 0 3px;
+
+		border-radius: var(--sidebar-item-user-status-radius);
 
 		&--online {
 			background-color: var(--status-online);
@@ -204,7 +207,7 @@
 
 	&__name {
 		display: flex;
-		align-items: center;
+
 		overflow: hidden;
 
 		flex: 1;
@@ -217,6 +220,7 @@
 		font-size: var(--sidebar-item-text-size);
 
 		line-height: 1.2rem;
+		align-items: center;
 	}
 
 	&__me {
@@ -245,12 +249,16 @@
 
 		& * {
 			display: inline !important;
-			white-space: unset !important;
-			background-color: unset !important;
-			color: inherit !important;
-			font-weight: unset !important;
-			font-family: inherit !important;
+
 			padding: unset !important;
+
+			white-space: unset !important;
+			color: inherit !important;
+
+			background-color: unset !important;
+			font-family: inherit !important;
+
+			font-weight: unset !important;
 		}
 
 		& a {

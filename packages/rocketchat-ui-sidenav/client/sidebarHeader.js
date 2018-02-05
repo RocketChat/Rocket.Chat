@@ -1,6 +1,4 @@
 /* globals popover isRtl menu */
-import toastr from 'toastr';
-
 const setStatus = status => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
@@ -34,10 +32,12 @@ const extendedViewOption = (user) => {
 
 
 const toolbarButtons = (user) => {
-	return [
-	{
+	return [{
 		name: t('Search'),
-		icon: 'magnifier'
+		icon: 'magnifier',
+		action: () => {
+			// $('.toolbar').css('display', 'block');
+		}
 	},
 	{
 		name: t('Browse_channels'),
@@ -87,7 +87,7 @@ const toolbarButtons = (user) => {
 										icon: 'user-rounded',
 										name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
 										action: () => {
-											Meteor.call('saveUserPreferences', {sidenavHideAvatar: !hideAvatarSetting}, function(error, results) {
+											Meteor.call('saveUserPreferences', {sidenavHideAvatar: !hideAvatarSetting}, function(error) {
 												if (error) {
 													return handleError(error);
 												}
@@ -278,7 +278,7 @@ const toolbarButtons = (user) => {
 
 			popover.open(config);
 		}
-	}]
+	}];
 };
 Template.sidebarHeader.helpers({
 	myUserInfo() {
