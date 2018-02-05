@@ -13,11 +13,12 @@ const viewModeIcon = {
 	condensed: 'list-alt'
 };
 
-const extendedViewOption = () => {
+const extendedViewOption = (user) => {
 	if (RocketChat.settings.get('Store_Last_Message')) {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
+			modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
 				Meteor.call('saveUserPreferences', {sidenavViewMode: 'extended'}, function(error) {
 					if (error) {
@@ -32,7 +33,8 @@ const extendedViewOption = () => {
 };
 
 
-const toolbarButtons = [
+const toolbarButtons = (user) => {
+	return [
 	{
 		name: t('Search'),
 		icon: 'magnifier'
@@ -43,19 +45,20 @@ const toolbarButtons = [
 	},
 	{
 		name: t('View_mode'),
-		icon: () => viewModeIcon[RocketChat.getUserPreference(Meteor.user(), 'sidenavViewMode')],
+		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidenavViewMode')],
 		action: (e) => {
-			const hideAvatarSetting = RocketChat.getUserPreference(Meteor.user(), 'sidenavHideAvatar');
+			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidenavHideAvatar');
 			const config = {
 				columns: [
 					{
 						groups: [
 							{
 								items: [
-									extendedViewOption(),
+									extendedViewOption(user),
 									{
 										icon: viewModeIcon.medium,
 										name: t('Medium'),
+										modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'medium' ? 'bold' : null,
 										action: () => {
 											Meteor.call('saveUserPreferences', {sidenavViewMode: 'medium'}, function(error) {
 												if (error) {
@@ -67,6 +70,7 @@ const toolbarButtons = [
 									{
 										icon: viewModeIcon.condensed,
 										name: t('Condensed'),
+										modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'condensed' ? 'bold' : null,
 										action: () => {
 											Meteor.call('saveUserPreferences', {sidenavViewMode: 'condensed'}, function(error) {
 												if (error) {
@@ -81,12 +85,9 @@ const toolbarButtons = [
 								items: [
 									{
 										icon: 'user-rounded',
-										name: hideAvatarSetting ? t('Unhide_Avatar') : t('Hide_Avatar'),
+										name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
 										action: () => {
 											Meteor.call('saveUserPreferences', {sidenavHideAvatar: !hideAvatarSetting}, function(error, results) {
-												if (results) {
-													toastr.success(t('Preferences_saved'));
-												}
 												if (error) {
 													return handleError(error);
 												}
@@ -251,7 +252,7 @@ const toolbarButtons = [
 										type: 'open',
 										id: 'logout',
 										action: () => {
-											const user = Meteor.user();
+											// const user = Meteor.user();
 											Meteor.logout(() => {
 												RocketChat.callbacks.run('afterLogoutCleanUp', user);
 												Meteor.call('logoutCleanUp', user);
@@ -277,7 +278,8 @@ const toolbarButtons = [
 
 			popover.open(config);
 		}
-	}];
+	}]
+};
 Template.sidebarHeader.helpers({
 	myUserInfo() {
 		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
@@ -297,7 +299,7 @@ Template.sidebarHeader.helpers({
 		};
 	},
 	toolbarButtons() {
-		return toolbarButtons.filter(button => !button.condition || button.condition());
+		return toolbarButtons(Meteor.user()).filter(button => !button.condition || button.condition());
 	}
 });
 

@@ -9,6 +9,9 @@ Template.sidebarItem.helpers({
 	isRoom() {
 		return this.rid || this._id;
 	},
+	isExtendedViewMode() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidenavViewMode') === 'extended';
+	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
 	},
