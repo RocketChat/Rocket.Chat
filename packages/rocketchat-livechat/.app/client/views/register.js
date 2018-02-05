@@ -58,7 +58,7 @@ Template.register.events({
 					return instance.showError(error.reason);
 				}
 				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
-				visitor.setId(result._id);
+				visitor.setId(result.userId);
 				start();
 			});
 		}
