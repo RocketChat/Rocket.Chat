@@ -48,12 +48,9 @@
 		position: absolute;
 		z-index: 1;
 
-		bottom: var(--sidebar-footer-height);
-		left: 0;
+		left: 10px;
 
 		overflow-y: scroll;
-
-		width: 100%;
 
 		background-color: var(--sidebar-background);
 	}
@@ -66,12 +63,6 @@
 		&__type,
 		&__empty-room {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
-		}
-
-		&__toolbar-search {
-			bottom: 0;
-
-			padding: 0 var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding);
 		}
 	}
 }

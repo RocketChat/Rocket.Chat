@@ -1,22 +1,20 @@
-.sidebar-light {
-	& .sidebar-item {
-		color: var(--color-dark);
+.sidebar-light .sidebar-item {
+	color: var(--color-dark);
 
-		&:hover {
-			background-color: var(--sidebar-background-light-hover);
-		}
+	&:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
 
-		&__picture {
-			color: inherit;
-		}
+	&__picture {
+		color: inherit;
 	}
 }
 
-.sidebar--hide-avatar > .rooms-list .sidebar-item__picture {
+.sidebar--hide-avatar .sidebar-item__picture {
 	display: none;
 }
 
-.sidebar--medium > .rooms-list .sidebar-item {
+.sidebar--medium .sidebar-item {
 	height: var(--sidebar-item-height-medium);
 
 	&__picture {
@@ -32,7 +30,7 @@
 	}
 }
 
-.sidebar--extended > .rooms-list .sidebar-item {
+.sidebar--extended .sidebar-item {
 	height: var(--sidebar-item-height-extended);
 
 	&__picture {

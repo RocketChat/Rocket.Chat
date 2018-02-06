@@ -36,7 +36,9 @@ const toolbarButtons = (user) => {
 		name: t('Search'),
 		icon: 'magnifier',
 		action: () => {
-			// $('.toolbar').css('display', 'block');
+			const toolbarEl = $('.toolbar');
+			toolbarEl.css('display', 'block');
+			toolbarEl.find('.rc-input__element').focus();
 		}
 	},
 	{
@@ -45,7 +47,7 @@ const toolbarButtons = (user) => {
 	},
 	{
 		name: t('View_mode'),
-		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')],
+		icon: () => RocketChat.getUserPreference(user, 'sidebarViewMode') ? viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')] : viewModeIcon.condensed,
 		action: (e) => {
 			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
 			const config = {
