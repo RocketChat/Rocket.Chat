@@ -10,6 +10,10 @@ class ModelReadReceipts extends RocketChat.models._Base {
 			unique: 1
 		});
 	}
+
+	findByMessageId(messageId) {
+		return this.find({ messageId });
+	}
 }
 
-export default new ModelReadReceipts('message_read_receipt', true);
+export default new ModelReadReceipts('message_read_receipt');
