@@ -81,11 +81,11 @@ Meteor.startup(() => {
 
 /* Propagate settings to Chatpal */
 
-const setChatpalUrl = (smartiUrl, client) => {
+const setChatpalUrl = (smartiUrl) => {
 	RocketChat.models.Settings.update('CHATPAL_CONFIG', {
 		$set:
 			{
-				'value.baseurl': `${ smartiUrl }rocket/${ client }/search-message`,
+				'value.baseurl': smartiUrl,
 				'value.backendtype': 'onsite'
 			}
 	});
@@ -94,14 +94,7 @@ const setChatpalUrl = (smartiUrl, client) => {
 RocketChat.settings.get('Assistify_AI_Smarti_Base_URL', (id, smartiUrl) => {
 	const client = RocketChat.models.Settings.findOneNotHiddenById('Assistify_AI_Smarti_Domain');
 	if (client) {
-		setChatpalUrl(smartiUrl, client.value);
-	}
-});
-
-RocketChat.settings.get('Assistify_AI_Smarti_Domain', (id, client) => {
-	const smartiUrl = RocketChat.models.Settings.findOneNotHiddenById('Assistify_AI_Smarti_Base_URL');
-	if (smartiUrl) {
-		setChatpalUrl(smartiUrl.value, client);
+		setChatpalUrl(smartiUrl);
 	}
 });
 
