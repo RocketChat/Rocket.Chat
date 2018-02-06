@@ -3,7 +3,7 @@
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe('[Permissions]', function () {
+describe('[Permissions]', function() {
 	this.retries(0);
 
 	before(done => getCredentials(done));
