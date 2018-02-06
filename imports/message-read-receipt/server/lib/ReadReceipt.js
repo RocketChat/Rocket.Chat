@@ -34,12 +34,14 @@ export const ReadReceipt = {
 		// if firstSubscription on room didn't change
 
 		if (RocketChat.settings.get('Message_Read_Receipt_Store_Users')) {
+			const ts = new Date();
 			const receipts = RocketChat.models.Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen).map(message => {
 				return {
 					_id: Random.id(),
 					roomId,
 					userId,
-					messageId: message._id
+					messageId: message._id,
+					ts
 				};
 			});
 
@@ -51,5 +53,12 @@ export const ReadReceipt = {
 		}
 
 		RocketChat.models.Messages.setAsRead(roomId, firstSubscription.ls);
+	},
+
+	getReceipts(message) {
+		return ModelReadReceipts.findByMessageId(message._id).map(receipt => ({
+			...receipt,
+			user: RocketChat.models.Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 }})
+		}));
 	}
 };

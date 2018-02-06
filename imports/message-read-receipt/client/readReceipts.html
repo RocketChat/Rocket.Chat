@@ -1,0 +1,8 @@
+<template name="readReceipts">
+	{{#each receipts}}
+	<div class="message background-transparent-dark-hover">
+		<div class="user color-primary-font-color">{{user}}</div>
+		<span class="time color-info-font-color" title="{{dateTime}}">{{time}}</span>
+	</div>
+	{{/each}}
+</template>
