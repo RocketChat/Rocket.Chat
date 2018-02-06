@@ -31,13 +31,13 @@ Template.sideNav.helpers({
 		return !!Meteor.userId();
 	},
 
-	sideNavViewMode() {
-		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidenavViewMode');
+	sidebarViewMode() {
+		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
 		return viewMode ? viewMode : 'condensed';
 	},
 
-	sideNavHideAvatar() {
-		return RocketChat.getUserPreference(Meteor.user(), 'sidenavHideAvatar');
+	sidebarHideAvatar() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
 	}
 });
 
