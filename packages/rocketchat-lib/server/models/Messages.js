@@ -622,4 +622,30 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
 	}
+
+	setAsRead(rid, until) {
+		return this.update({
+			rid,
+			unread: true,
+			ts: { $lt: until }
+		}, {
+			$unset: {
+				unread: 1
+			}
+		}, {
+			multi: true
+		});
+	}
+
+	findUnreadMessagesByRoomAndDate(rid, after) {
+		return this.find({
+			unread: true,
+			rid,
+			ts: { $gt: after }
+		}, {
+			fields: {
+				_id: 1
+			}
+		});
+	}
 };

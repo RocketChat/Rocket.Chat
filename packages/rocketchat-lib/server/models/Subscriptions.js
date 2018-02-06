@@ -182,6 +182,19 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, { fields: { unread: 1 } });
 	}
 
+	getMinimumLastSeenByRoomId(rid) {
+		return this.db.findOne({
+			rid
+		}, {
+			sort: {
+				ls: 1
+			},
+			fields: {
+				ls: 1
+			}
+		});
+	}
+
 	// UPDATE
 	archiveByRoomId(roomId) {
 		const query =

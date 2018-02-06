@@ -31,6 +31,10 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			});
 		}
 	}
+
+	// @TODO test if setting is enabled?
+	message.unread = true;
+
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database

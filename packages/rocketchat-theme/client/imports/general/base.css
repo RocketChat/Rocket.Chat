@@ -123,6 +123,7 @@ button {
 
 	vertical-align: -0.15em;
 
+	fill: currentColor;
 }
 
 .ps-scrollbar-y-rail {
