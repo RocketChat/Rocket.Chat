@@ -18,10 +18,22 @@ Meteor.startup(function() {
 			i18nDescription: 'IRC_Server_Port'
 		});
 
-		this.add('IRC_Server_Id', '777', {
+		this.add('IRC_Server_Id', '97K', {
 			type: 'string',
 			i18nLabel: 'Id',
 			i18nDescription: 'IRC_Server_Id'
+		});
+
+		this.add('IRC_Server_Name', 'irc.example.com', {
+			type: 'string',
+			i18nLabel: 'Name',
+			i18nDescription: 'IRC_Server_Name'
+		});
+
+		this.add('IRC_Server_Description', 'Rocket.Chat IRC Server', {
+			type: 'string',
+			i18nLabel: 'Description',
+			i18nDescription: 'IRC_Server_Description'
 		});
 
 		this.add('IRC_Server_Send_Password', 'password', {
@@ -34,18 +46,6 @@ Meteor.startup(function() {
 			type: 'string',
 			i18nLabel: 'Receive_Password',
 			i18nDescription: 'IRC_Server_Receive_Password'
-		});
-
-		this.add('IRC_Server_Name', 'irc.example.com', {
-			type: 'string',
-			i18nLabel: 'Name',
-			i18nDescription: 'IRC_Server_Name'
-		});
-
-		this.add('IRC_Server_Description', 'IRC Network', {
-			type: 'string',
-			i18nLabel: 'Description',
-			i18nDescription: 'IRC_Server_Description'
 		});
 	});
 });

@@ -11,19 +11,7 @@ class IrcServer {
 		this.serverName = RocketChat.settings.get('IRC_Server_Name');
 		this.serverDescription = RocketChat.settings.get('IRC_Server_Description');
 
-		// TODO: Remove it...
-		console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-		console.log('>>> IRC host: ', this.ircHost);
-		console.log('>>> IRC port: ', this.ircPort);
-		console.log('>>> IRC serverId: ', this.serverId);
-		console.log('>>> IRC sendPassword: ', this.sendPassword);
-		console.log('>>> IRC receivePassword: ', this.receivePassword);
-		console.log('>>> IRC serverName: ', this.serverName);
-		console.log('>>> IRC serverDescription: ', this.serverDescription);
-		console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-
 		this.logCommands = true;
-
 		this.ircServers = {};
 		this.ircUsers = {};
 		this.localUsersById = {};
@@ -31,7 +19,6 @@ class IrcServer {
 		this.nextUid = parseInt('a00001', 36);
 
 		this.socket = new net.Socket;
-		// TODO It probably should be removed (setNoDelay)...
 		this.socket.setNoDelay();
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
@@ -49,25 +36,40 @@ class IrcServer {
 
 	connect = () => {
 		console.log(`[irc-server] Attempting connection to IRC on ${ this.ircHost }:${ this.ircPort }`);
+
 		this.socket.connect(this.ircPort, this.ircHost, this.onConnect);
+
 		return this.state = 'connecting';
 	}
 
 	disconnect = () => {
 		this.socket.end();
 		this.state = 'waitingforconnection';
+
 		return this.cleanup();
 	}
 
 	onConnect = () => {
+		console.log('SID: ', this.serverId);
+
 		this.writeCommand({
 			command: 'PASS',
 			parameters: [this.sendPassword, 'TS', 6, this.serverId]
 		});
 
+		// TODO Check this... TS6 docs
+		//CAPAB
+		//source: unregistered server
+		//propagation: none
+		//parameters: space separated capability list
+
+		//Sends capabilities of the server. This must include QS and ENCAP. It is also
+		//strongly recommended to include EX, CHW, IE and KNOCK, and for charybdis TS6
+		//also SAVE and EUID. For use with services, SERVICES and RSFNC are strongly
+		//recommended.
 		this.writeCommand({
 			command: 'CAPAB',
-			trailer: 'TBURST EOB ENCAP'
+			trailer: 'TBURST EOB ENCAP EX CHW IE KNOCK SAVE EUID SERVICES RSFNC'
 		});
 
 		this.writeCommand({
@@ -80,6 +82,7 @@ class IrcServer {
 
 	onClose = () => {
 		console.log('[irc-server] Socket closed, cleaning up state');
+
 		this.state = 'waitingforconnection';
 
 		return this.cleanup();
@@ -98,7 +101,6 @@ class IrcServer {
 	}
 
 	onError = (error) => {
-		console.log(error);
 		return console.log(`[irc-server] Socket error: ${ error.message }`);
 	}
 
@@ -166,23 +168,6 @@ class IrcServer {
 
 		let index = 0;
 
-		// return (() => {
-		// 	const result = [];
-
-		// 	while ((index * nicksPerMessage) < userIds.length) {
-		// 		this.writeCommand({
-		// 			prefix: this.serverId,
-		// 			command: 'SJOIN',
-		// 			parameters: [timestamp, `#${ room.name }`, '+nt'],
-		// 			trailer: userIds.slice(index * nicksPerMessage, (index + 1) * nicksPerMessage).join(' ')
-		// 		});
-
-		// 		result.push(index = index + 1);
-		// 	}
-
-		// 	return result;
-		// })();
-
 		const result = [];
 
 		while ((index * nicksPerMessage) < userIds.length) {
@@ -219,17 +204,12 @@ class IrcServer {
 	}
 
 	loginUser = (user) => {
-		if (this.state !== 'connected') {
-			return;
-		}
-
-		if (this.localUsersById[user._id] !== undefined) {
+		if (this.state !== 'connected' || this.localUsersById[user._id] !== undefined) {
 			return;
 		}
 
 		this.sendUser(user);
 
-		// TODO It should be decomposed
 		return RocketChat.models.Rooms.findWithUsername(user.username, {fields: { ts: 1, name: 1, t: 1 } }).forEach(room => this.joinRoom(user, room));
 	}
 
@@ -260,16 +240,7 @@ class IrcServer {
 	}
 
 	logoutUser = (user) => {
-		if (this.state !== 'connected') {
-			return;
-		}
-
-		// TODO Attention here...
-		// if (Array.from(this.localUsersById).includes(!user._id)) {
-		// 	return;
-		// }
-
-		if (!this.localUsersById.includes(user._id)) {
+		if (this.state !== 'connected' || !user || !user.id || !this.localUsersById.includes(user._id)) {
 			return;
 		}
 
@@ -285,7 +256,6 @@ class IrcServer {
 		});
 	}
 
-	// TODO Refactoring this self function
 	sendMessage = (message, room) => {
 		if (this.state !== 'connected') {
 			return;
@@ -299,6 +269,7 @@ class IrcServer {
 
 		const lines = message.msg.split('\n');
 
+		// TODO Refactoring this self function
 		return (() => {
 			const result = [];
 
@@ -357,7 +328,6 @@ class IrcServer {
 
 		RocketChat.models.Rooms.removeUsernameFromAll(user.username);
 
-		// TODO Attention about usage of 'delete' here...
 		return delete this.ircUsers[userId];
 	}
 
@@ -417,7 +387,6 @@ class IrcServer {
 
 	parseMessage = (command) => {
 		let currentIndex = 0;
-		// let temp;
 		let split;
 
 		const result = {};
@@ -428,17 +397,6 @@ class IrcServer {
 
 		if (command[0] === ':') {
 			split = command.indexOf(' ', currentIndex);
-
-			// result.prefix = (() => {
-			// 	if (split === -1) {
-			// 		currentIndex = command.length;
-			// 		return command.substring(1);
-			// 	} else {
-			// 		temp = command.substring(currentIndex+1, split);
-			// 		currentIndex = split + 1;
-			// 		return temp;
-			// 	}
-			// })();
 
 			if (split === -1) {
 				currentIndex = command.length;
@@ -452,18 +410,6 @@ class IrcServer {
 		if (currentIndex !== command.length) {
 			split = command.indexOf(' ', currentIndex);
 
-			// result.command = (() => {
-			// 	if (split === -1) {
-			// 		temp = command.substring(currentIndex);
-			// 		currentIndex = command.length;
-			// 		return temp;
-			// 	} else {
-			// 		temp = command.substring(currentIndex, split);
-			// 		currentIndex = split + 1;
-			// 		return temp;
-			// 	}
-			// })();
-
 			if (split === -1) {
 				result.command = command.substring(currentIndex);
 				currentIndex = command.length;
@@ -472,26 +418,6 @@ class IrcServer {
 				currentIndex = split + 1;
 			}
 		}
-
-		// result.parameters = (() => {
-		// 	const elementResult = [];
-
-		// 	while (currentIndex !== command.length && command[currentIndex] !== ':') {
-		// 		split = command.indexOf(' ', currentIndex);
-
-		// 		if (split === -1) {
-		// 			temp = command.substring(currentIndex);
-		// 			currentIndex = command.length;
-		// 			elementResult.push(temp);
-		// 		} else {
-		// 			temp = command.substring(currentIndex, split);
-		// 			currentIndex = split + 1;
-		// 			elementResult.push(temp);
-		// 		}
-		// 	}
-
-		// 	return elementResult;
-		// })();
 
 		result.parameters = [];
 
@@ -531,7 +457,7 @@ class IrcServer {
 		}
 
 		return this.socket.write(`${ buffer }\r\n`);
-	}
+	};
 
 	static handleMalformed(command) {
 		return console.log(`[irc-server] Received invalid command: ${ command }`);
@@ -651,11 +577,11 @@ class IrcServer {
 		});
 
 		return this.partialMessage = newPartialMessage;
-	}
+	};
 
 	onReceivePASS = (command) => {
 		if (command.parameters.length !== 4) {
-			this.handleMalformed(command);
+			IrcServer.handleMalformed(command);
 			this.disconnect();
 			return;
 		}
@@ -675,17 +601,17 @@ class IrcServer {
 
 		this.ircServers[this.otherServerId] = {proxiesServers: []};
 		return this.state = 'bursting';
-	}
+	};
 
 	// eslint-disable-next-line no-unused-vars
 	onReceiveCAPAB = (command) => {
-		// TODO: Review it
+		// TODO: Review it (search git history)
 		//return this.otherServerCapabilities = command.trailer.split(' ');
-	}
+	};
 
 	onReceiveSERVER = (command) => {
 		if (command.parameters.length !== 2 || command.trailer == null) {
-			this.handleMalformed(command);
+			IrcServer.handleMalformed(command);
 			this.disconnect();
 			return;
 		}
@@ -695,11 +621,11 @@ class IrcServer {
 		this.otherServerName = serverName;
 
 		return this.ircServers[this.otherServerId].serverName = serverName;
-	}
+	};
 
 	onReceiveSVINFO = (command) => {
 		if (!command.parameters || command.parameters.length !== 3 || command.trailer == null) {
-			this.handleMalformed(command);
+			IrcServer.handleMalformed(command);
 			this.disconnect();
 			return;
 		}
@@ -728,11 +654,11 @@ class IrcServer {
 		console.log('[irc-server] Finished bursting');
 
 		return this.state = 'connected';
-	}
+	};
 
 	onReceiveSID = (command) => {
 		if (!command.parameters || command.parameters.length !== 3 || command.trailer == null || command.prefix == null) {
-			this.handleMalformed(command);
+			IrcServer.handleMalformed(command);
 			return;
 		}
 
@@ -747,11 +673,11 @@ class IrcServer {
 		this.ircServers[connectedTo].proxiesServers.push(serverId);
 
 		return console.log(`[irc-server] New server connected: ${ serverName } via ${ this.ircServers[connectedTo].serverName }`);
-	}
+	};
 
 	onReceiveSJOIN = (command) => {
 		if (command.parameters.length !== 3 || command.trailer == null) {
-			this.handleMalformed(command);
+			IrcServer.handleMalformed(command);
 			return;
 		}
 
@@ -787,8 +713,8 @@ class IrcServer {
 	onReceiveUID = (command) => {
 		console.log('IRC command.parameters (onReceiveUID): ', command.parameters);
 
-		if (command.parameters.length !== 9) {
-			this.handleMalformed(command);
+		if (command && command.parameters && command.parameters.length !== 9) {
+			IrcServer.handleMalformed(command);
 			return;
 		}
 
@@ -797,7 +723,8 @@ class IrcServer {
 		const connectedTo = command.prefix;
 
 		//TODO Handle nick collisions
-		//TODO Handle verification that irc and rocketchat users are the same
+		//TODO Handle verification that irc and rocketchat users are the same (send verification code to IRC user on IRC side)
+
 		//TODO Handle modes
 		let user = RocketChat.models.Users.findOne({name: nick});
 
@@ -847,7 +774,7 @@ class IrcServer {
 		this.ircUsers[ircUserId] = user;
 
 		return console.log(`[irc-server] Registered user ${ nick } with ircUserId ${ ircUserId }`);
-	}
+	};
 
 	onReceivePING = (command) => {
 		const source = command.trailer;
@@ -858,7 +785,7 @@ class IrcServer {
 			parameters: [this.serverName],
 			trailer: source
 		});
-	}
+	};
 
 	onReceivePONG = (command) => {
 		// eslint-disable-next-line no-unused-vars
@@ -871,13 +798,13 @@ class IrcServer {
 		const [sourceServerName] = command.parameters;
 
 		return targetServerId = command.trailer;
-	}
+	};
 
 	onReceiveEOB = (command) => {
 		const serverId = command.prefix;
 
 		return console.log(`[irc-server] Finished receiving burst from ${ this.ircServers[serverId].serverName }`);
-	}
+	};
 
 	onReceiveJOIN = (command) => {
 		const userId = command.prefix;
@@ -886,14 +813,14 @@ class IrcServer {
 		const [channelTimestamp, channel] = command.parameters;
 
 		return RocketChat.models.Rooms.addUsernameByName(channel.substring(1), this.ircUsers[userId].username);
-	}
+	};
 
 	onReceivePART = (command) => {
 		const userId = command.prefix;
 		const [channel] = command.parameters;
 
 		return RocketChat.models.Rooms.removeUsernameByName(channel.substring(1), this.ircUsers[userId].username);
-	}
+	};
 
 	onReceiveQUIT = (command) => {
 		const userId = command.prefix;
@@ -902,7 +829,7 @@ class IrcServer {
 		const reason = command.trailer;
 
 		return this.logoutIrcUser(userId);
-	}
+	};
 
 	onReceiveINVITE = (command) => {
 		const invitingUserId = command.prefix;
@@ -933,7 +860,7 @@ class IrcServer {
 				username: invitedUser.username
 			});
 		});
-	}
+	};
 
 	onReceiveKICK = (command) => {
 		const kickingUserId = command.prefix;
@@ -962,7 +889,7 @@ class IrcServer {
 				username: kickedUser.username
 			});
 		});
-	}
+	};
 
 	onReceiveKILL = (command) => {
 		const ircUserId = command.prefix;
@@ -984,7 +911,7 @@ class IrcServer {
 		return Meteor.runAsUser(userForKill._id, () => {
 			// TODO Kill user
 		});
-	}
+	};
 
 	onReceiveSQUIT = (command) => {
 		let [targetServer] = command.parameters;
@@ -998,7 +925,7 @@ class IrcServer {
 
 		console.log(`[irc-server] IRC server disconnecting: ${ this.ircServers[targetServer].serverName }`);
 		return this.cleanupIrcServer(targetServer);
-	}
+	};
 
 	onReceivePRIVMSG = (command) => {
 		let room;
