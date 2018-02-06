@@ -10,7 +10,7 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 	api.use([
 		'accounts-base',
 		'mongo',

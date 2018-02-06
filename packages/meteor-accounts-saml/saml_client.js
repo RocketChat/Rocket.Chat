@@ -16,9 +16,9 @@ if (!Accounts.saml) {
 
 const MeteorLogout = Meteor.logout;
 const logoutBehaviour = {
-	TERMINATE_SAML: "SAML",
-	ONLY_RC: "Local"
-}
+	TERMINATE_SAML: 'SAML',
+	ONLY_RC: 'Local'
+};
 
 Meteor.logout = function() {
 	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
@@ -30,8 +30,8 @@ Meteor.logout = function() {
 			}
 		}
 	}
-	if(samlService.logoutBehaviour === logoutBehaviour.ONLY_RC){
-		console.info("SAML session not terminated, only the Rocket.Chat session is going to be killed")
+	if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
+		console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 	}
 	return MeteorLogout.apply(Meteor, arguments);
 };
