@@ -20,10 +20,9 @@ Meteor.methods({
 		roomTypeConfig.creationTemplate = creationTemplate;
 		roomTypeConfig.canBeCreated = () => true;
 		roomTypeConfig.canBeDeleted = () => true;
-		var res = RocketChat.roomTypes.add(roomTypeConfig);
-		if (typeof res == 'undefined'){
+		const res = RocketChat.roomTypes.add(roomTypeConfig);
+		if (typeof res === 'undefined') {
 			return true;
-		}
-		else {return res}
+		} else { return res; }
 	}
 });
