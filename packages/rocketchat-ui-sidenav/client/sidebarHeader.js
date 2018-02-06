@@ -16,9 +16,9 @@ const extendedViewOption = (user) => {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
-			modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'extended' ? 'bold' : null,
+			modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
-				Meteor.call('saveUserPreferences', {sidenavViewMode: 'extended'}, function(error) {
+				Meteor.call('saveUserPreferences', {sidebarViewMode: 'extended'}, function(error) {
 					if (error) {
 						return handleError(error);
 					}
@@ -45,9 +45,9 @@ const toolbarButtons = (user) => {
 	},
 	{
 		name: t('View_mode'),
-		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidenavViewMode')],
+		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')],
 		action: (e) => {
-			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidenavHideAvatar');
+			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
 			const config = {
 				columns: [
 					{
@@ -58,9 +58,9 @@ const toolbarButtons = (user) => {
 									{
 										icon: viewModeIcon.medium,
 										name: t('Medium'),
-										modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'medium' ? 'bold' : null,
+										modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
 										action: () => {
-											Meteor.call('saveUserPreferences', {sidenavViewMode: 'medium'}, function(error) {
+											Meteor.call('saveUserPreferences', {sidebarViewMode: 'medium'}, function(error) {
 												if (error) {
 													return handleError(error);
 												}
@@ -70,9 +70,9 @@ const toolbarButtons = (user) => {
 									{
 										icon: viewModeIcon.condensed,
 										name: t('Condensed'),
-										modifier: RocketChat.getUserPreference(user, 'sidenavViewMode') === 'condensed' ? 'bold' : null,
+										modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
 										action: () => {
-											Meteor.call('saveUserPreferences', {sidenavViewMode: 'condensed'}, function(error) {
+											Meteor.call('saveUserPreferences', {sidebarViewMode: 'condensed'}, function(error) {
 												if (error) {
 													return handleError(error);
 												}
@@ -87,7 +87,7 @@ const toolbarButtons = (user) => {
 										icon: 'user-rounded',
 										name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
 										action: () => {
-											Meteor.call('saveUserPreferences', {sidenavHideAvatar: !hideAvatarSetting}, function(error) {
+											Meteor.call('saveUserPreferences', {sidebarHideAvatar: !hideAvatarSetting}, function(error) {
 												if (error) {
 													return handleError(error);
 												}
