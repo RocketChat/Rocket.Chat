@@ -114,5 +114,10 @@
 				<span class="icon-people-plus"></span>
 			</li>
 		</ul>
+		{{#with readReceipt}}
+		<div class="read-receipt {{readByEveryone}}">
+			{{> icon icon="check" }}
+		</div>
+		{{/with}}
 	</li>
 </template>
