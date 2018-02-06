@@ -290,5 +290,8 @@ Template.messagePopup.helpers({
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
+	},
+	sidebarWidth() {
+		return `${ document.querySelector('.sidebar').offsetWidth }px`;
 	}
 });
