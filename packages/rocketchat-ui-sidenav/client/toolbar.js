@@ -208,7 +208,6 @@ Template.toolbar.events({
 
 	'keyup [role="search"] input'(e) {
 		if (e.which === 27) {
-			console.log('lala');
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -222,13 +221,13 @@ Template.toolbar.events({
 	},
 
 	'click .toolbar__icon-search--right'() {
-		console.log('lala');
 		toolbarSearch.clear();
 		$('.toolbar').css('display', 'none');
 	},
 
 	'blur [role="search"] input'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
