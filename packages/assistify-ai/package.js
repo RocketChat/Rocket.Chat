@@ -45,7 +45,6 @@ Package.onUse(function(api) {
 	//client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
 	api.addFiles('client/smartiLoader.js', 'client');
-	api.addFiles('client/chatpalAdoption.js', 'client');
 
 	//styling
 	api.addFiles('client/public/stylesheets/smarti.css', 'client');
