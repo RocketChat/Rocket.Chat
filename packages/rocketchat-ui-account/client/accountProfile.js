@@ -151,7 +151,7 @@ Template.accountProfile.onCreated(function() {
 	const user = Meteor.user();
 	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
-	self.email = new ReactiveVar(user.emails[0].address);
+	self.email = (user.emails && user.emails.length) ? new ReactiveVar(user.emails[0].address) : '';
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
