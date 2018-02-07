@@ -2,6 +2,7 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import sideNav from '../../pageobjects/side-nav.page';
+import mainContent from '../../pageobjects/main-content.page';
 import {publicChannelName, privateChannelName} from '../../data/channel.js';
 import {targetUser} from '../../data/interactions.js';
 
@@ -12,13 +13,6 @@ import {username, email, password} from '../../data/user.js';
 describe('[Channel creation]', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
-	});
-
-	beforeEach(()=>{
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
 	});
 
 	afterEach(function() {
@@ -57,6 +51,8 @@ describe('[Channel creation]', function() {
 
 	describe('direct message:', function() {
 		it('it should start a direct message with rocket.cat', function() {
+			sideNav.spotlightSearchIcon.click();
+			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(targetUser);
 			setDirectMessageCreated(true);
 		});
