@@ -7,13 +7,13 @@
 function Shrug(command, params, item) {
 	if (command === 'shrug') {
 		const msg = item;
-		
-		if (RocketChat.settings.get('Markdown_Parser') == "marked") {
+
+		if (RocketChat.settings.get('Markdown_Parser') === 'marked') {
 			msg.msg = `${ params } ¯\\\\_(ツ)_/¯`;
 		} else {
 			msg.msg = `${ params } ¯\\_(ツ)_/¯`;
 		}
-		
+
 		Meteor.call('sendMessage', msg);
 	}
 }
