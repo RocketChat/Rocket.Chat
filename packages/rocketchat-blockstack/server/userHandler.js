@@ -4,28 +4,28 @@ const logger = new Logger('Blockstack')
 // Clones Accounts.updateOrCreateUserFromExternalService with some modifications
 Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
+  logger.debug('Auth config', serviceConfig)
 
   // Look for existing Blockstack user
   let user = Meteor.users.findOne({ 'services.blockstack.id': serviceData.id })
 
   // None found, create a user
-  // TODO: reinstate profile fields when returned
   if (!user) {
     const newUser = {
-      name: null, // options.profile.name,
+      name: options.profile.name,
       active: true,
-      emails: null, // options.profile.emails,
+      emails: options.profile.emails,
       services: { blockstack: serviceData }
     }
     logger.info(`New user for Blockstack ID ${ serviceData.id }`)
     logger.debug('New user', newUser)
 
     // Set username same as in blockstack, or suggest if none
-    // if (options.profile.username) newUser.username = options.profile.username
-    // else if (serviceConfig.generateUsername === true) {
-    const username = RocketChat.generateUsernameSuggestion(newUser)
-    if (username) newUser.username = username
-    // }
+    if (options.profile.name) newUser.name = options.profile.name
+    if (options.profile.username) newUser.username = options.profile.username
+    else if (serviceConfig.generateUsername === true) {
+      newUser.username = RocketChat.generateUsernameSuggestion(newUser)
+    }
 
     // Make it real!
     const userId = Accounts.insertUserDoc({}, newUser)

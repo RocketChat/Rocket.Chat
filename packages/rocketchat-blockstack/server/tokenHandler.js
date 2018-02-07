@@ -11,10 +11,14 @@ const logger = new Logger('Blockstack')
 Accounts.blockstack.handleAccessToken = (loginRequest) => {
   logger.debug('Login request received', loginRequest)
 
-  check(loginRequest, Match.ObjectIncluding({ authResponse: String }))
+  check(loginRequest, Match.ObjectIncluding({
+    authResponse: String,
+    userData: Object
+  }))
 
-  // TODO get username and profile from `profile_url` if no userData
-  // const { username, profile } = JSON.parse(loginRequest.userData)
+  const { username, profile } = loginRequest.userData
+  profile.username = username
+  logger.debug('Profile', profile)
   logger.debug('Login decoded', decodeToken(loginRequest.authResponse).payload)
   const { iss, iat, exp, private_key } = decodeToken(loginRequest.authResponse).payload
   if (!iss) return {
@@ -33,6 +37,6 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 
   return {
     serviceData,
-    options: { profile: null } // TODO: restore as { profile } when it's loaded
+    options: { profile: profile }
   }
 }

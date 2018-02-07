@@ -37,7 +37,7 @@ Template.loginForm.helpers({
 		}
 	},
 	loginTerms() {
-		return RocketChat.settings.get('Layout_Login_Terms');
+		return `<p>${RocketChat.settings.get('Layout_Login_Terms')}</p>`;
 	},
 	registrationAllowed() {
 		const validSecretUrl = Template.instance().validSecretURL;

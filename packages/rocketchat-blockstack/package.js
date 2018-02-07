@@ -52,7 +52,9 @@ Package.onUse((api) => {
     'client/routes.js',
     'client/stylesheets/blockstackLogin.less',
     'client/views/blockstackLogin.html',
-    'client/views/blockstackLogin.js'
+    'client/views/blockstackLogin.js',
+    'client/views/noServices.html',
+    'client/views/noServices.js'
   ], 'client')
 
 })
