@@ -2,7 +2,6 @@
 /* eslint-disable func-names, prefer-arrow-callback */
 
 import sideNav from '../../pageobjects/side-nav.page';
-import mainContent from '../../pageobjects/main-content.page';
 import {publicChannelName, privateChannelName} from '../../data/channel.js';
 import {targetUser} from '../../data/interactions.js';
 
