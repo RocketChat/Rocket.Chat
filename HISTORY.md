@@ -1041,6 +1041,15 @@
 - [#8753](https://github.com/RocketChat/Rocket.Chat/pull/8753) Fix Channel settings buttons
 
 <a name="assistify-0.5.1"></a>
+## Assistify-0.5.2 (2017-12-19)
+This is a bug fix release. 
+Major fixes:
+- Allow termination of local session without termination of the SAML-session
+- Allow non-admins to invite users
+- We revoked the permission to change the allowed domains for non-tech-admins for security reasons
+
+We love automated testing - and now have a couple more integration tests. You will only love this if you don't notice it ;)
+<a name="assistify-0.5.1"></a>
 ## Assistify-0.5.1 (2017-12-19)
 This is a bug fix release. You may notice that your notification settings from a topic are now copied to a request. Hopefully, you are more happy responding to questions now.
 <a name="assistify-0.5.0"></a>

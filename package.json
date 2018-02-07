@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.61.0",
+	"version": "0.61.0-0.5.2",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -69,7 +69,8 @@
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
-		"chimp-test": "chimp tests/chimp-config.js",
+	    "chimp-path": "chimp tests/chimp-config.js --path=$CHIMP_PATH",
+	    "chimp-test": "chimp tests/chimp-config.js",
 		"postinstall": "cd packages/rocketchat-katex && npm i",
 		"testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"coverage": "nyc -r html mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",

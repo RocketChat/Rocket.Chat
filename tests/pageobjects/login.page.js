@@ -21,6 +21,8 @@ class LoginPage extends Page {
 	get confirmPasswordInvalidText() { return browser.element('[name=confirm-pass]~.input-error'); }
 	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
+	get GlobalAnnouncement() { return browser.element('body > section > div > div.global-announcement'); }
+
 	open() {
 		super.open('');
 	}
