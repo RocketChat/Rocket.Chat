@@ -60,7 +60,7 @@ Template.AssistifySmarti.onRendered(function() {
 					type: WIDGET_POSTING_TYPE,
 					cssInputSelector: '.rc-message-box .js-input-message'
 				},
-				lang: localStorage.getItem('userLanguage')
+				lang: localStorage.getItem('userLanguage').split('-')[0]
 			};
 			console.debug('Initializing Smarti with options: ', JSON.stringify(smartiOptions, null, 2));
 			instance.smarti = new window.SmartiWidget(instance.find('.smarti #widgetContainer'), smartiOptions);

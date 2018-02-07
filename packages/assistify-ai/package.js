@@ -49,7 +49,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/public/stylesheets/smarti.css', 'client');
 
 	//Assets
-	api.addAssets('client/public/bulb.png', 'client');
+	api.addAssets('client/public/assistify.png', 'client');
 	//api.addAssets('client/public/assistify-beta.png', 'client');
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
