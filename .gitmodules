@@ -1,0 +1,3 @@
+[submodule "chatpal-search"]
+	path = packages/chatpal-search
+	url = https://github.com/redlink-gmbh/chatpal-search/
