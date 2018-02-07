@@ -1,6 +1,7 @@
 /* globals SystemLogger, RocketChat */
 
 import {SmartiProxy, verbs} from '../SmartiProxy';
+const querystring = require('querystring');
 
 /** @namespace RocketChat.RateLimiter.limitFunction */
 
@@ -85,18 +86,30 @@ Meteor.methods({
 	 * @param {Number} templateIndex - the index of the template to get the results for
 	 * @param {String} creator - the creator providing the suggestions
 	 * @param {Number} start - the offset of the suggestion results (pagination)
+	 * @param {Number} rows - number of the suggestion results (pagination)
 	 *
 	 * @returns {Object} - the suggestions
 	 */
-	getQueryBuilderResult(conversationId, templateIndex, creator, start) {
-		// TODO new api -> client-side pagination?
+	getQueryBuilderResult(conversationId, templateIndex, creator, start, rows) {
 		return RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }?start=${start}&rows=${rows}`);
+	},
+
+	searchConversations(queryParams) {
+		let queryString = querystring.stringify(queryParams);
+		SystemLogger.debug("QueryString: ", queryString);
+		return RocketChat.RateLimiter.limitFunction(
+			SmartiProxy.propagateToSmarti, 5, 1000, {
+				userId(userId) {
+					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+				}
+			}
+		)(verbs.get, `conversation/search?${queryString}`);
 	}
 });
 
