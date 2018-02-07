@@ -67,7 +67,9 @@ Template.roomList.helpers({
 				];
 			}
 			query.t = {$in: types};
-			query.f = {$ne: favoritesEnabled};
+			if (favoritesEnabled) {
+				query.f = {$ne: favoritesEnabled};
+			}
 		}
 
 		if (sortBy === 'activity') {
