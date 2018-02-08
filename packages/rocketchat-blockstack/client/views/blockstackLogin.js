@@ -9,7 +9,7 @@ Template.loginForm.helpers({
   configurationLoaded: function () {
     return Accounts.loginServicesConfigured()
   },
-  passwordLoginLink: function () {
+  changeLoginLink: function () {
     if (FlowRouter.getQueryParam('login') === 'password') {
       return `<p><a href="#" id="blockstackLogin">${TAPi18n.__('Login_with_blockstack')}</a></p>`
     } else {
