@@ -5,6 +5,7 @@ services:
 branches:
   only:
   - develop
+  - end-to-end-test
   - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1
@@ -50,9 +51,11 @@ before_script:
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-- meteor npm run lint
-- meteor npm run testunit
-- meteor npm run stylelint
+- chmod +x .scripts/smarti.sh
+- .scripts/smarti.sh
+#- meteor npm run lint
+#- meteor npm run testunit
+#- meteor npm run stylelint
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
@@ -67,35 +70,35 @@ script:
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
 - travis_retry meteor npm test
-before_deploy:
-- source ".travis/setartname.sh"
-- source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
-- ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
-deploy:
-  - provider: s3
-    access_key_id: AKIAIKIA7H7D47KUHYCA
-    secret_access_key: "$ACCESSKEY"
-    bucket: download.rocket.chat
-    skip_cleanup: true
-    upload_dir: build
-    local_dir: "$ROCKET_DEPLOY_DIR"
-    on:
-      condition: "$TRAVIS_PULL_REQUEST=false"
-      all_branches: true
-  # - provider: releases
-  #   api-key: "$GITHUB_TOKEN"
-  #   file_glob: true
-  #   file: build/*
-  #   skip_cleanup: true
-  #   on:
-  #     tags: true
-
-after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
-- ".travis/snap.sh"
+#before_deploy:
+#- source ".travis/setartname.sh"
+#- source ".travis/setdeploydir.sh"
+#- ".travis/setupsig.sh"
+#- ".travis/namefiles.sh"
+#- echo ".travis/sandstorm.sh"
+#deploy:
+#  - provider: s3
+#    access_key_id: AKIAIKIA7H7D47KUHYCA
+#    secret_access_key: "$ACCESSKEY"
+#    bucket: download.rocket.chat
+#    skip_cleanup: true
+#    upload_dir: build
+#    local_dir: "$ROCKET_DEPLOY_DIR"
+#    on:
+#      condition: "$TRAVIS_PULL_REQUEST=false"
+#      all_branches: true
+#   - provider: releases
+#     api-key: "$GITHUB_TOKEN"
+#     file_glob: true
+#     file: build/*
+#     skip_cleanup: true
+#     on:
+#       tags: true
+#
+#after_deploy:
+#- ".travis/docker.sh
+#- ".travis/update-releases.sh"
+#- ".travis/snap.sh"
 env:
   global:
   - DISPLAY=:99.0
@@ -104,3 +107,8 @@ env:
   - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
   - MONGO_URL: "mongodb://localhost:27017/meteor"
   - TEST_MODE: "true"
+  - OVERWRITE_SETTING_Assistify_AI_Smarti_Domain: testclient
+  - OVERWRITE_SETTING_Assistify_AI_Source: 0
+  - OVERWRITE_SETTING_Assistify_AI_Enabled: true
+  - OVERWRITE_SETTING_Assistify_AI_RocketChat_Webhook_Token: key123
+  - OVERWRITE_SETTING_Assistify_AI_Smarti_Base_URL: http://localhost:8080/

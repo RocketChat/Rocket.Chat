@@ -213,6 +213,13 @@ class SideNav extends Page {
 		// this.channelType.waitForVisible(5000, true);
 		browser.pause(500);
 	}
+
+	logoutRocketchat() {
+		this.accountMenu.waitForVisible(5000);
+		this.accountMenu.click();
+		this.logout.waitForVisible(5000);
+		this.logout.click();
+	}
 }
 
 module.exports = new SideNav();
