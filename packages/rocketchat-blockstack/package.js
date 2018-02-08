@@ -10,7 +10,6 @@ Package.onUse((api) => {
   api.use([
     'modules',
     'ecmascript',
-    'less',
     'localstorage',
     'session',
     'url',

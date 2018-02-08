@@ -29,7 +29,8 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
   if (user) {
     logger.info(`User login with Blockstack ID ${ id }`)
     userId = user._id
-    Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
+    // Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
+    // ^ threw errors from an app name in key having '.'
   } else {
     const newUser = {
       name: profile.name,
