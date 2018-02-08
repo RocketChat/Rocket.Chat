@@ -224,7 +224,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Enable Direct Message History Endpoint",
   "API_Enable_Direct_Message_History_EndPoint_Description": "This enables the `/api/v1/im.history.others` which allows the viewing of direct messages sent by other users that the caller is not part of.",
   "API_Enable_Shields": "Enable Shields",
-  "API_Enable_Shields_Description": "Enable shields available at `/api/v1/shields.svg`",
+  "API_Enable_Shields_Description": "Enable shields available at `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "Server URL",
   "API_GitHub_Enterprise_URL_Description": "Example: http://domain.com (excluding trailing slash)",
   "API_Gitlab_URL": "GitLab URL",
