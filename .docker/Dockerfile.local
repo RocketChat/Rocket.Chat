@@ -13,13 +13,15 @@ RUN apt-get install -y bsdtar \
 
 COPY . /app
 
+# Add Chatpal which is a submodule
 WORKDIR /app
-
-RUN meteor npm i \
-&& set +e \
-&& meteor add rocketchat:lib --allow-superuser \
-&& set -e \
-&& meteor build --allow-superuser --headless --directory /tmp/build
+RUN git submodule init \
+    && git submodule update \
+    && meteor npm i \
+    && set +e \
+    && meteor add rocketchat:lib --allow-superuser \
+    && set -e \
+    && meteor build --allow-superuser --headless --directory /tmp/build
 
 FROM rocketchat/base:8
 
