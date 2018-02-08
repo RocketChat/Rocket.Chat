@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+
+import LivechatVisitors from '../../../server/models/LivechatVisitors';
+
 /**
  * @api {post} /livechat/facebook Send Facebook message
  * @apiName Facebook
@@ -53,7 +56,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 			}
 		};
 
-		let visitor = RocketChat.models.Users.getVisitorByToken(this.bodyParams.token);
+		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
 			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.profile.token).fetch();
 
