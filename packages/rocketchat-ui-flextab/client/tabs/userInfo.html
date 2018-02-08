@@ -82,6 +82,12 @@
 								<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
 							</div>
 						{{/if}}
+						{{#each customField}}
+							<div class="rc-user-info-details__item">
+								<label class="rc-user-info-details__label	">{{label}}</label>
+								<p class="rc-user-info-details__info">{{value}}</p>
+							</div>
+						{{/each}}
 						<div class="rc-user-info-details__item">
 							{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 							{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
