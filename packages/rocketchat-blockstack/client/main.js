@@ -41,9 +41,8 @@ const saveDataForRedirect = (privateKey, authRequest) => {
 
 // Send user to Blockstack with auth request
 // TODO: allow serviceConfig.loginStyle == popup
-Meteor.loginWithBlockstack = function(option={}, callback) {
+Meteor.loginWithBlockstack = (option={}, callback) => {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
-  console.log('Blockstack service data', serviceConfig)
   const privateKey = blockstack.generateAndStoreTransitKey()
   const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
   const authRequest = makeAuthRequest(requestParams)
@@ -60,3 +59,26 @@ Meteor.loginWithBlockstack = function(option={}, callback) {
     protocolCheck(protocolURI, protocolFail, protocolSuccess, protocolUnsupported)
   */
 }
+
+/*
+
+// Process logging out user from Rocket.Chat and Blockstack
+// Overrides the standard logout - may be extended in future
+const MeteorLogout = Meteor.logout
+Meteor.logout = () => {
+  const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
+  const blockstackAuth = Session.get('blockstack_auth')
+	if (serviceConfig && blockstackAuth) return Meteor.logoutWithBlockstack()
+	return MeteorLogout.apply(Meteor, arguments);
+}
+
+// Call server side logout actions and trigger Blockstack logout on success
+Meteor.logoutWithBlockstack = (options={}) => {
+	Meteor.call('blockstackLogout', options, (err, result) => {
+		if (err || !result) return MeteorLogout.apply(Meteor)
+    Session.delete('blockstack_auth')
+  	blockstack.signUserOut(window.location.href)
+	})
+}
+
+*/

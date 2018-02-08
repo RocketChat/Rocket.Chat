@@ -2,15 +2,15 @@ import blockstack from 'blockstack'
 
 // Handle a Blockstack auth response
 const blockstackLogin = (authResponse, userData = {}) => {
-  console.log('Auth response', authResponse)
-  console.log('User data', userData)
+  Session.set('blockstack_auth', authResponse)
+
   Accounts.callLoginMethod({
     methodArguments: [{
       blockstack: true,
       authResponse: authResponse,
       userData: userData
     }],
-    userCallback () {
+    userCallback (result) {
       FlowRouter.go('home')
     }
   })

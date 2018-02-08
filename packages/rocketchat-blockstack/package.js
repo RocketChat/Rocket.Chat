@@ -12,6 +12,7 @@ Package.onUse((api) => {
     'ecmascript',
     'less',
     'localstorage',
+    'session',
     'url',
     'http',
     'accounts-base',
@@ -44,7 +45,8 @@ Package.onUse((api) => {
     'server/settings.js',
     'server/tokenHandler.js',
     'server/userHandler.js',
-    'server/loginHandler.js'
+    'server/loginHandler.js',
+    'server/logoutHandler.js'
   ], 'server')
 
   api.addFiles([

@@ -8,33 +8,49 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 
   // Look for existing Blockstack user
   let user = Meteor.users.findOne({ 'services.blockstack.id': serviceData.id })
+  let userId
 
-  // None found, create a user
-  if (!user) {
+  // Extract user profile from options (userData)
+  const { profile } = options
+
+  // Fix absense of emails by adding initial empty email address
+  // Reformat array of emails into expected format if they exist
+  const emails = []
+  if (!Array.isArray(profile.emails)) {
+    emails.push({ address: '', verified: false })
+  } else {
+    emails = profile.emails.map((address) => { return {
+      address,
+      verified: true
+    }})
+  }
+
+  // Use found or create a user
+  if (user) {
+    logger.info(`User login with Blockstack ID ${ serviceData.id }`)
+    userId = user._id
+  } else {
     const newUser = {
-      name: options.profile.name,
+      name: profile.name,
       active: true,
-      emails: options.profile.emails,
+      emails: emails,
       services: { blockstack: serviceData }
     }
     logger.info(`New user for Blockstack ID ${ serviceData.id }`)
     logger.debug('New user', newUser)
 
     // Set username same as in blockstack, or suggest if none
-    if (options.profile.name) newUser.name = options.profile.name
-    if (options.profile.username) newUser.username = options.profile.username
+    if (profile.name) newUser.name = profile.name
+    if (profile.username) newUser.username = profile.username
     else if (serviceConfig.generateUsername === true) {
       newUser.username = RocketChat.generateUsernameSuggestion(newUser)
     }
 
     // Make it real!
-    const userId = Accounts.insertUserDoc({}, newUser)
+    userId = Accounts.insertUserDoc({}, newUser)
 
     // Get the created user to make a couple more mods before returning
     user = Meteor.users.findOne(userId)
-  } else {
-    logger.info(`User login with Blockstack ID ${ serviceData.id }`)
-    userId = user._id
   }
 
   // Add login token for blockstack auth session (take expiration from response)
