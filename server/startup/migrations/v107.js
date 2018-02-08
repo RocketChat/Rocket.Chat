@@ -6,5 +6,6 @@ RocketChat.Migrations.add({
 			scope: 'Users'
 		}).fetch().map((role)=>{ return role._id; });
 		RocketChat.models.Permissions.createOrUpdate('leave-c', roles);
+		RocketChat.models.Permissions.createOrUpdate('leave-d', roles);
 	}
 });
