@@ -35,6 +35,7 @@ Meteor.startup(function() {
 		{ _id: 'force-delete-message',          roles : ['admin', 'owner'] },
 		{ _id: 'join-without-join-code',        roles : ['admin', 'bot'] },
 		{ _id: 'leave-c',                       roles : ['admin', 'user', 'bot', 'anonymous'] },
+		{ _id: 'leave-p',                       roles : ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'manage-assets',                 roles : ['admin'] },
 		{ _id: 'manage-emoji',                  roles : ['admin'] },
 		{ _id: 'manage-integrations',           roles : ['admin'] },
