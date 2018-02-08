@@ -38,7 +38,7 @@ Template.userInfo.helpers({
 					_.map(el, (key, label) => {
 						const value = RocketChat.templateVarHandler(key, userCustomFields);
 						if (value) {
-							content = { label: `${label}`, value: `${value}` };
+							content = { label: `${ label }`, value: `${ value }` };
 						}
 					});
 				} else {
