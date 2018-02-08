@@ -34,9 +34,7 @@ export class SmartiAdapter {
 	 */
 	static onMessage(message) {
 
-		//TODO is this always a new one, what about update
-
-		//const user = RocketChat.models.Users.findOneById(message.u._id);
+		//TODO trigger on message update, if needed
 		const requestBodyMessage = {
 			"id" : message._id,
 			"time" : message.ts,
@@ -49,7 +47,6 @@ export class SmartiAdapter {
 		};
 
 		SystemLogger.debug("Message:", requestBodyMessage);
-		SystemLogger.debug("User:", user);
 
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
 		let analysisResult;
