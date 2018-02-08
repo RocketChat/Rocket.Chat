@@ -6,12 +6,12 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
   logger.debug('Auth config', serviceConfig)
 
-  // Look for existing Blockstack user
-  let user = Meteor.users.findOne({ 'services.blockstack.id': serviceData.id })
-  let userId
+  // Extract user data from service
+  const { id, profile } = serviceData
 
-  // Extract user profile from options (userData)
-  const { profile } = options
+  // Look for existing Blockstack user
+  let user = Meteor.users.findOne({ 'services.blockstack.id': id })
+  let userId
 
   // Fix absense of emails by adding initial empty email address
   // Reformat array of emails into expected format if they exist
@@ -27,8 +27,9 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 
   // Use found or create a user
   if (user) {
-    logger.info(`User login with Blockstack ID ${ serviceData.id }`)
+    logger.info(`User login with Blockstack ID ${ id }`)
     userId = user._id
+    Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
   } else {
     const newUser = {
       name: profile.name,
@@ -36,7 +37,7 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
       emails: emails,
       services: { blockstack: serviceData }
     }
-    logger.info(`New user for Blockstack ID ${ serviceData.id }`)
+    logger.info(`New user for Blockstack ID ${ id }`)
     logger.debug('New user', newUser)
 
     // Set username same as in blockstack, or suggest if none

@@ -30,13 +30,14 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
     id: iss,
     did: `ID-${iss.split(':').pop()}`,
     issuedAt: new Date(iat*1000),
-    expiresAt: new Date(exp*1000)
+    expiresAt: new Date(exp*1000),
+    profile: profile
   }
 
   logger.debug('Login data', serviceData)
 
   return {
     serviceData,
-    options: { profile: profile }
+    options: {}
   }
 }

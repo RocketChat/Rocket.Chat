@@ -2,8 +2,6 @@ import blockstack from 'blockstack'
 
 // Handle a Blockstack auth response
 const blockstackLogin = (authResponse, userData = {}) => {
-  Session.set('blockstack_auth', authResponse)
-
   Accounts.callLoginMethod({
     methodArguments: [{
       blockstack: true,
