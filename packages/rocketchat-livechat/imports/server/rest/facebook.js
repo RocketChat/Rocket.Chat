@@ -58,7 +58,6 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
 			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
-            
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
