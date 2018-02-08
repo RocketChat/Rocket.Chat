@@ -48,8 +48,8 @@ export class SmartiAdapter {
 			//,"private" : false
 		};
 
-		//SystemLogger.debug("Message:", requestBodyMessage);
-		//SystemLogger.debug("User:", user);
+		SystemLogger.debug("Message:", requestBodyMessage);
+		SystemLogger.debug("User:", user);
 
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
 		let analysisResult;
@@ -65,8 +65,8 @@ export class SmartiAdapter {
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
 			const supportArea = helpRequest ? helpRequest.supportArea : undefined;
 			const room = RocketChat.models.Rooms.findOneById(message.rid);
-			//SystemLogger.debug("HelpRequest:", helpRequest);
-			//SystemLogger.debug("Room:", room);
+			SystemLogger.debug("HelpRequest:", helpRequest);
+			SystemLogger.debug("Room:", room);
 
 			const requestBodyConversation = {
 				"meta" : {
