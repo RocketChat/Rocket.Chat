@@ -39,6 +39,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
 	api.addFiles('server/v1/integrations.js', 'server');
+	api.addFiles('server/v1/messages.js', 'server');
 	api.addFiles('server/v1/misc.js', 'server');
 	api.addFiles('server/v1/push.js', 'server');
 	api.addFiles('server/v1/settings.js', 'server');

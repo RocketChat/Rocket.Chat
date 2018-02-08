@@ -45,6 +45,9 @@ RocketChat.MessageTypes.registerType({
 	id: 'livechat-close',
 	system: true,
 	message: 'Conversation_closed',
+	keysToReplaceInI18nByPropertiesOfMessage: {
+		comment: 'msg'
+	},
 	data(message) {
 		return {
 			comment: message.msg
