@@ -30,14 +30,14 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
     id: iss,
     did: `ID-${iss.split(':').pop()}`,
     issuedAt: new Date(iat*1000),
-    expiresAt: new Date(exp*1000),
-    profile: profile
+    expiresAt: new Date(exp*1000)
   }
+  // profile: profile // ^ removed because it contained invalid keys for mongo
 
-  logger.debug('Login data', serviceData)
+  logger.debug('Login data', serviceData, profile)
 
   return {
     serviceData,
-    options: {}
+    options: { profile }
   }
 }

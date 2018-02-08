@@ -6,8 +6,9 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
   logger.debug('Auth config', serviceConfig)
 
-  // Extract user data from service
-  const { id, profile } = serviceData
+  // Extract user data from service / token
+  const { id } = serviceData
+  const { profile } = options
 
   // Look for existing Blockstack user
   let user = Meteor.users.findOne({ 'services.blockstack.id': id })

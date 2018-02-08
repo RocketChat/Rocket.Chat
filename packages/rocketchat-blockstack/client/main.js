@@ -3,24 +3,25 @@ import blockstack from 'blockstack'
 // Let service config set values, but not order of params
 const mergeParams = (defaults, overrides) => {
   Object.keys(defaults).forEach(function(key) {
-    if (key in overrides) defaults[key] = overrides[key]
+    if (overrides.hasOwnProperty(key)) defaults[key] = overrides[key]
   })
   return Object.values(defaults) // returns array without keys
 }
 
 // Do signin redirect, with location of manifest
-const redirectToSignIn = (config) => {
+const redirectToSignIn = (config={}) => {
   let defaults = {
     redirectURI: `${window.location.origin}/`, // location to redirect user to after sign in approval
     manifestURI: `${window.location.origin}/manifest.json`, // location of this app's manifest file
     scopes: ['store_write'] // the permissions this app is requesting
   }
   let params = mergeParams(defaults, config)
+  console.log(params)
   return blockstack.redirectToSignIn(...params)
 }
 
 // Do a custom blockstack redirect through auth services
-const makeAuthRequest = (config) => {
+const makeAuthRequest = (config={}) => {
   let defaults = {
     transitPrivateKey: blockstack.generateAndStoreTransitKey(), // hex encoded transit private key
     redirectURI: `${window.location.origin}/`, // location to redirect user to after sign in approval
@@ -43,12 +44,17 @@ const saveDataForRedirect = (privateKey, authRequest) => {
 // TODO: allow serviceConfig.loginStyle == popup
 Meteor.loginWithBlockstack = (option={}, callback) => {
   const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
-  const privateKey = blockstack.generateAndStoreTransitKey()
-  const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
-  const authRequest = makeAuthRequest(requestParams)
-  const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
-  saveDataForRedirect(privateKey, authRequest)
-  window.location.assign(httpsURI) // hack redirect without protocol handler
+  if (serviceConfig) redirectToSignIn(serviceConfig)
+  /*
+    // NB: Manual redirection prevents new tabs, but service config is not reactive
+    const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
+    const privateKey = blockstack.generateAndStoreTransitKey()
+    const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
+    const authRequest = makeAuthRequest(requestParams)
+    const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
+    saveDataForRedirect(privateKey, authRequest)
+    window.location.assign(httpsURI) // hack redirect without protocol handler
+   */
   /*
     // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
     import protocolCheck from 'custom-protocol-detection-blockstack'
