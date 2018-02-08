@@ -214,7 +214,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Povolit Endpoint přímých zpráv",
   "API_Enable_Direct_Message_History_EndPoint_Description": "Povolí endpoint `/api/v1/im.history.others` přes který lze stahovat přímé zprávy mezi všemi uživateli.",
   "API_Enable_Shields": "Povolit sdílecí ikony",
-  "API_Enable_Shields_Description": "Ikony dostupné na adrese `/api/v1/shields.svg`",
+  "API_Enable_Shields_Description": "Ikony dostupné na adrese `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "Adresa URL serveru",
   "API_GitHub_Enterprise_URL_Description": "Příklad: http://domain.com (bez lomítka na konci)",
   "API_Gitlab_URL": "GitLab URL",
