@@ -36,63 +36,63 @@ export class SmartiAdapter {
 
 		//TODO trigger on message update, if needed
 		const requestBodyMessage = {
-			"id" : message._id,
-			"time" : message.ts,
-			"origin" : "User", //user.type,
-			"content" : message.msg,
-			"user" : {
-				"id" : message.u._id
+			'id': message._id,
+			'time': message.ts,
+			'origin': 'User', //user.type,
+			'content': message.msg,
+			'user': {
+				'id': message.u._id
 			}
 			//,"private" : false
 		};
 
-		SystemLogger.debug("Message:", requestBodyMessage);
+		SystemLogger.debug('Message:', requestBodyMessage);
 
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
 		let analysisResult;
 		// conversation exists for channel?
-		if(m && m.conversationId) {
-			SystemLogger.info("Conversation found for channel");
+		if (m && m.conversationId) {
+			SystemLogger.info('Conversation found for channel');
 			// add message to conversation
 			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ m.conversationId }/message`, requestBodyMessage);
 			// request analysis results
 			analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ m.conversationId }/analysis`);
 		} else {
-			SystemLogger.info("Conversation not found for channel");
+			SystemLogger.info('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
 			const supportArea = helpRequest ? helpRequest.supportArea : undefined;
 			const room = RocketChat.models.Rooms.findOneById(message.rid);
-			SystemLogger.debug("HelpRequest:", helpRequest);
-			SystemLogger.debug("Room:", room);
+			SystemLogger.debug('HelpRequest:', helpRequest);
+			SystemLogger.debug('Room:', room);
 
 			const requestBodyConversation = {
-				"meta" : {
-					"support_area" : [supportArea],
-					"channel_id" : [message.rid]
+				'meta': {
+					'support_area': [supportArea],
+					'channel_id': [message.rid]
 				},
-				"user" : {
-					"id" : room.u._id
+				'user': {
+					'id': room.u._id
 				},
-				"messages" : [requestBodyMessage],
-				"context" : {
-					"contextType" : "rocket.chat"
+				'messages': [requestBodyMessage],
+				'context': {
+					'contextType': 'rocket.chat'
 					/*
 					"domain" : "test",
 					"environment" : {
-						
+
 					}
 					*/
 				}
 			};
 
-			SystemLogger.debug("Creating conversation:", JSON.stringify(requestBodyConversation, null, '\t'));
+			SystemLogger.debug('Creating conversation:', JSON.stringify(requestBodyConversation, null, '\t'));
 			// create conversation, send message along and request analysis
-			analysisResult = SmartiProxy.propagateToSmarti(verbs.post, `conversation?analysis=true`, requestBodyConversation);
+			analysisResult = SmartiProxy.propagateToSmarti(verbs.post, 'conversation?analysis=true', requestBodyConversation);
 			analysisResult = analysisResult ? analysisResult.analysis : null;
 		}
-		SystemLogger.debug(`analysisResult:`, JSON.stringify(analysisResult, null, '\t'));
+		SystemLogger.debug('analysisResult:', JSON.stringify(analysisResult, null, '\t'));
 
-		if(analysisResult && analysisResult.conversation) {
+		if (analysisResult && analysisResult.conversation) {
 			// update/insert channel/conversation specific timestamp
 			RocketChat.models.LivechatExternalMessage.update(
 				{
@@ -106,7 +106,7 @@ export class SmartiAdapter {
 					upsert: true
 				}
 			);
-	
+
 			RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
 		}
 	}
@@ -122,7 +122,7 @@ export class SmartiAdapter {
 		// get conversation id
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
 		if (m) {
-			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${m.conversationId}/meta.status`, "Complete");
+			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ m.conversationId }/meta.status`, 'Complete');
 		} else {
 			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
 		}

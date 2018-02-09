@@ -19,7 +19,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (!(typeof room.t !== 'undefined' && room.v && room.v.token)) {
+	if (!(typeof room.t !== 'undefined' && room.v)) {
 		return message;
 	}
 

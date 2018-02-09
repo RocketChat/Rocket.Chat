@@ -12,7 +12,7 @@
 				</div>
 				<div id="widgetBody">
 					<div class="widgetMessage">
-							<div class="loading-notification">{{loadingNotification}}</div>
+						<div class="loading-notification">{{loadingNotification}}</div>
 					</div>
 					{{#if isLoading }}
 						{{> loading }}
@@ -42,19 +42,19 @@
 					style="margin-right: 10px; margin-bottom: -3px"></span>{{_ "Knowledge_Base"}}</h2>
 		</div>
 		{{#let helpRequest=helpRequestByRoom }}
-			{{#if helpRequest}}
-				{{> HelpRequestContext helpRequest }}
-				{{> HelpRequestActions helpRequest }}
-			{{/if}}
-		{{/let}}
-		{{#if isLivechat}}
-			{{> HelpRequestActions liveChatActions}}
-		{{/if}}
+	{{#if helpRequest}}
+		{{> HelpRequestContext helpRequest }}
+		{{> HelpRequestActions helpRequest }}
+	{{/if}}
+{{/let}}
+	{{#if isLivechat}}
+		{{> HelpRequestActions liveChatActions}}
+	{{/if}}
 		<div class="smarti-widget {{loadingClass}}">
 			<div class="loading-notification">{{loadingNotification}}</div>
 			{{#if isLoading }}
-				{{> loading }}
-			{{/if}}
+	{{> loading }}
+{{/if}}
 		</div>
 	</div>
 </template>
