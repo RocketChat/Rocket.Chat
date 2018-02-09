@@ -7,10 +7,7 @@
  */
 RocketChat.API.v1.addRoute('permissions', { authRequired: true }, {
 	get() {
-		let result;
-		Meteor.runAsUser(this.userId, () =>
-			result = Meteor.call('permissions/get')
-		);
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success(result);
 	}
