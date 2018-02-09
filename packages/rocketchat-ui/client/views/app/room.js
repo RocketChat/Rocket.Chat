@@ -471,7 +471,7 @@ Template.room.events({
 		Meteor.clearTimeout(t.touchtime);
 	},
 
-	'click .upload-progress-text > button'(e) {
+	'click .upload-progress-close'(e) {
 		e.preventDefault();
 		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
