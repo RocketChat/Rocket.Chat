@@ -240,13 +240,13 @@ jobs:
             source .circleci/setdeploydir.sh
             bash .circleci/setupsig.sh
             bash .circleci/namefiles.sh
-            # echo ".circleci/sandstorm.sh"
 
             aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
             bash .circleci/update-releases.sh
             bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/sandstorm.sh
 
 workflows:
   version: 2
