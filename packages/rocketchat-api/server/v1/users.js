@@ -279,12 +279,9 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
  */
 RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 	get() {
-		let result;
 		let currentUserRoles = {};
 
-		Meteor.runAsUser(this.userId, () =>
-			result = Meteor.call('getUserRoles')
-		);
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUserRoles'));
 
 		if (Array.isArray(result) && result.length > 0) {
 			currentUserRoles = result[0];
