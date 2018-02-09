@@ -26,19 +26,19 @@ const sortUsers = function(field, direction) {
 Meteor.methods({
 	browseChannels({text='', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
-		console.log(1);
+
 		if (!['channels', 'user'].includes(type)) {
 			return;
 		}
-		console.log(2);
+
 		if (!['asc', 'desc'].includes(sortDirection)) {
 			return;
 		}
-		console.log(3);
+
 		if (!['name', 'createdAt'/*, ...type === 'channels'? ['userlenght'] : []*/].includes(sortBy)) {
 			return;
 		}
-		console.log(4);
+
 		page = page > -1 ? page : 0;
 
 		limit = limit > 0 ? limit : 10;
@@ -47,10 +47,10 @@ Meteor.methods({
 			skip: limit * page,
 			limit
 		};
-		console.log(options);
+
 		const user = Meteor.user();
 		if (type === 'channels') {
-			console.log('channels');
+
 			const sort = sortChannels(sortBy, sortDirection);
 			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
 				return;
@@ -66,7 +66,7 @@ Meteor.methods({
 				}
 			}).fetch();
 		}
-		console.log('user');
+
 		// type === user
 		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 			return;
