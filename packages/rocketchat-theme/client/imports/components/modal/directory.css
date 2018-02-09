@@ -1,0 +1,26 @@
+.rc-directory {
+
+	&-header {
+		margin: 0 -9px;
+		display: flex;
+	}
+
+
+	/* TODO: -plus and -search should be "globals" */
+
+	&-plus {
+		width: 36px;
+		min-width: 36px;
+		height: 36px;
+		min-height: 36px;
+		padding: 0;
+		margin-left: 9px;
+		margin-right: 9px;
+	}
+	&-search {
+		max-width: 230px;
+		margin-left: 9px;
+		margin-right: 9px;
+	}
+
+}

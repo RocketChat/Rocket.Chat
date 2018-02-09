@@ -20,6 +20,8 @@
 
 	font-size: var(--header-title-font-size);
 
+	justify-content: space-between;
+
 	&__content {
 		display: flex;
 
