@@ -129,6 +129,7 @@ rocketchat:accounts@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
+rocketchat:apps@1.0.0
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
@@ -198,10 +199,10 @@ rocketchat:otr@0.0.1
 rocketchat:postcss@1.0.0
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
-rocketchat:apps@1.0.0
 rocketchat:sandstorm@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
+rocketchat:slashcommands-asciiarts@0.0.1
 rocketchat:slashcommands-create@0.0.1
 rocketchat:slashcommands-help@0.0.1
 rocketchat:slashcommands-invite@0.0.1
