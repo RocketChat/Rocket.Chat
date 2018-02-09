@@ -1,0 +1,22 @@
+.read-receipts__user {
+	display: flex;
+	padding: 8px 8px;
+	align-items: center;
+}
+
+.read-receipts__name {
+	flex: 1 1 auto;
+	margin: 0 10px;
+	font-size: 16px;
+}
+
+.read-receipts__time {
+	font-size: 80%;
+}
+
+.read-receipts__user > .avatar {
+	width: 36px;
+	width: var(--sidebar-account-thumb-size);
+	height: 36px;
+	height: var(--sidebar-account-thumb-size);
+}
