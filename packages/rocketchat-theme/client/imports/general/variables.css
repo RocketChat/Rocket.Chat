@@ -296,11 +296,6 @@
 	--header-background-color: var(--color-white);
 
 	/*
-	* Tabs
-	*/
-	--tabs-padding: 1rem;
-
-	/*
 	* Flex nav
 	*/
 	--flex-nav-background: var(--color-gray-lightest);

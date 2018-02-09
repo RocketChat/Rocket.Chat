@@ -34,7 +34,7 @@ Template.appLogs.onCreated(function() {
 
 Template.appLogs.helpers({
 	isReady() {
-		if (Template.instance().ready != null) {
+		if (Template.instance().ready) {
 			return Template.instance().ready.get();
 		}
 

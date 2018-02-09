@@ -68,7 +68,7 @@ class AppServerOrchestrator {
 
 Meteor.startup(function _appServerOrchestrator() {
 	// Ensure that everything is setup
-	if (process.env.NODE_ENV !== 'development' && (process.env[AppManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[AppManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true')) {
+	if (process.env[AppManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[AppManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true') {
 		return new AppMethods();
 	}
 

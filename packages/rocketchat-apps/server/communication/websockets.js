@@ -10,11 +10,11 @@ export class AppWebsocketNotifier {
 		this.streamer.emit('app/added', appId);
 	}
 
-	rockletRemoved(appId) {
+	appRemoved(appId) {
 		this.streamer.emit('app/removed', appId);
 	}
 
-	rockletUpdated(appId) {
+	appUpdated(appId) {
 		this.streamer.emit('app/updated', appId);
 	}
 

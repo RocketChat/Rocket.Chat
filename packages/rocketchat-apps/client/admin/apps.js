@@ -7,16 +7,6 @@ Template.apps.onCreated(function() {
 		instance.apps.set(result.apps);
 		instance.ready.set(true);
 	});
-
-	// Tracker.autorun(() => {
-	// 	if (this.ready.get() === true) {
-	// 		console.log('render');
-	// 		const grid = new Masonry('.rc-discovery-wrap', {
-	// 			itemSelector: '.rc-discovery__item',
-	// 			columnWidth: 350
-	// 		});
-	// 	}
-	// });
 });
 
 Template.apps.helpers({
