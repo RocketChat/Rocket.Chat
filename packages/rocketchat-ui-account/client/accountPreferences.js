@@ -89,6 +89,9 @@ Template.accountPreferences.helpers({
 	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
+	},
+	allowNotificationsChange() {
+		return RocketChat.settings.get('Accounts_AllowEmailNotifications');
 	}
 });
 

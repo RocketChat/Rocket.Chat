@@ -167,9 +167,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (usersOfMention && usersOfMention.length > 0) {
 			usersOfMention.forEach((user) => {
+				const allowNotificationsChange = RocketChat.settings.get('Accounts_AllowEmailNotifications');
 				const emailNotificationMode = RocketChat.getUserPreference(user, 'emailNotificationMode');
 				if (usersToSendEmail[user._id] === 'default') {
-					if (emailNotificationMode === 'all') { //Mention/DM
+					if (emailNotificationMode === 'all' && allowNotificationsChange) { //Mention/DM
 						usersToSendEmail[user._id] = 'mention';
 					} else {
 						return;
@@ -177,7 +178,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				if (usersToSendEmail[user._id] === 'direct') {
-					const userEmailPreferenceIsDisabled = emailNotificationMode === 'disabled';
+					const userEmailPreferenceIsDisabled = emailNotificationMode === 'disabled' || !allowNotificationsChange;
 					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
 
 					if (directMessageEmailPreference === 'nothing') {

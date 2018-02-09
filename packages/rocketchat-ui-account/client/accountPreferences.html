@@ -214,15 +214,25 @@
 								</div>
 							</div>
 							<div class="input-line double-col" id="emailNotificationMode">
-								<label>{{_ "Email_Notification_Mode"}}</label>
+ 								<label>{{_ "Email_Notification_Mode"}}</label>
+								{{# if allowNotificationsChange}}
+ 								<div>
+ 									<select class="input-monitor rc-input__element" name="emailNotificationMode">
+ 										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+ 										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+ 									</select>
+ 									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+ 								</div>
+								{{else}}
 								<div>
-									<select class="input-monitor rc-input__element" name="emailNotificationMode">
-										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+									<select class="input-monitor rc-input__element" name="emailNotificationMode" disabled>
+										<option value="disabled" selected>{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all">{{_ "Email_Notification_Mode_All"}}</option>
 									</select>
-									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+										<div class="info">{{_ "Email_Notifications_Change_Disabled"}}</div>
 								</div>
-							</div>
+								{{/if}}
+ 							</div>
 						</div>
 					</div>
 					<div class="section">
