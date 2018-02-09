@@ -43,18 +43,19 @@ const saveDataForRedirect = (privateKey, authRequest) => {
 // Send user to Blockstack with auth request
 // TODO: allow serviceConfig.loginStyle == popup
 Meteor.loginWithBlockstack = (option={}, callback) => {
-  // const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
+const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
   // if (serviceConfig) redirectToSignIn(serviceConfig)
   // NB: Manual redirection prevents new tabs, but service config is not reactive
-  const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' })
-  if (serviceConfig) {
-    const privateKey = blockstack.generateAndStoreTransitKey()
-    const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
-    const authRequest = makeAuthRequest(requestParams)
-    const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
-    saveDataForRedirect(privateKey, authRequest)
-    window.location.assign(httpsURI) // hack redirect without protocol handler
-  }
+  // /*
+    if (serviceConfig) {
+      const privateKey = blockstack.generateAndStoreTransitKey()
+      const requestParams = Object.assign({ transitPrivateKey: privateKey }, serviceConfig)
+      const authRequest = makeAuthRequest(requestParams)
+      const httpsURI = `${serviceConfig.blockstackIDHost}?authRequest=${authRequest}`
+      saveDataForRedirect(privateKey, authRequest)
+      window.location.assign(httpsURI) // hack redirect without protocol handler
+    }
+  // */
   /*
     // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
     import protocolCheck from 'custom-protocol-detection-blockstack'

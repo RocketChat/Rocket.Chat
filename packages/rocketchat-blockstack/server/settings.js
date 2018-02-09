@@ -20,7 +20,7 @@ Meteor.startup(() => {
     group: 'Blockstack',
     i18nLabel: 'Blockstack_Enable'
   })
-  RocketChat.settings.add('Accounts_Login_style', defaults.loginStyle, {
+  RocketChat.settings.add('Blockstack_Login_style', defaults.loginStyle, {
     type: 'select',
     group: 'Blockstack',
     i18nLabel: 'Blockstack_Login_Style',
@@ -43,13 +43,11 @@ Meteor.startup(() => {
 
 // Helper to return all Blockstack settings
 Accounts.blockstack.getSettings = () => {
-  let fallbacks = Accounts.blockstack.defaults
-  let settings = {
+  return Object.assign({}, Accounts.blockstack.defaults, {
     enable: RocketChat.settings.get('Blockstack_Enable'),
     generateUsername: RocketChat.settings.get('Blockstack_Generate_Username'),
     loginStyle: RocketChat.settings.get('Blockstack_Login_Style')
-  }
-  return Object.assign({}, fallbacks, settings)
+  })
 }
 
 // Add settings to auth provider configs
