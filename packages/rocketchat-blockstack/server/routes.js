@@ -1,4 +1,4 @@
-Picker.route('/_blockstack/manifest', (params, req, res, next) => {
+Picker.route('/_blockstack/manifest', (params, req, res) => {
 	res.writeHead(200, {
 		'Content-Type': 'application/json',
 		'Access-Control-Allow-Origin': '*'
@@ -17,5 +17,4 @@ Picker.route('/_blockstack/manifest', (params, req, res, next) => {
       "type": "image/png"
     }]
 	}`);
-	next();
 });
