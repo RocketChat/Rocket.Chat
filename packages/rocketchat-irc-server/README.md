@@ -12,7 +12,8 @@ For start or stop your network do it
 docker start|stop ircd
 ```
 
-Add settings for your IRC Network on central admin at Rocket.Chat instance.
-Connect your IRC client (e.g mIRC, irssi etc) using the port 6667 and connect your Rocket.Chat instance at port 7000.
+- Add settings for your IRC Network on central admin at Rocket.Chat instance.
+
+- Connect your IRC client (e.g mIRC, irssi etc) using the port 6667 and connect your Rocket.Chat instance at port 7000.
 
 Read more in [official InspIRCd image page at Docker Hub](https://hub.docker.com/r/inspircd/inspircd-docker).
