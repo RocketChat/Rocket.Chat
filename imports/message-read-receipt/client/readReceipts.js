@@ -1,17 +1,21 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 
+import './readReceipts.css';
 import './readReceipts.html';
 
 Template.readReceipts.helpers({
 	receipts() {
 		return Template.instance().readReceipts.get();
 	},
-	user() {
-		return this.user.name || this.user.username;
+	displayName() {
+		return (RocketChat.settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
 	},
 	time() {
 		return moment(this.ts).format('L LTS');
+	},
+	isLoading() {
+		return Template.instance().loading.get();
 	}
 });
 
@@ -23,7 +27,9 @@ Template.readReceipts.onCreated(function readReceiptsOnCreated() {
 Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 	this.loading.set(true);
 	Meteor.call('getReadReceipts', { messageId: this.data.messageId }, (error, result) => {
+		if (!error) {
+			this.readReceipts.set(result);
+		}
 		this.loading.set(false);
-		this.readReceipts.set(result);
 	});
 });
