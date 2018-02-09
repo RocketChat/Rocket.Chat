@@ -45,10 +45,6 @@
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 
-/* Tabs */
-@import 'imports/components/tab.css';
-@import 'imports/components/discovery.css';
-
 /* User Info */
 @import 'imports/components/userInfo.css';
 

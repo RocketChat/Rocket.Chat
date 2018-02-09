@@ -10,9 +10,6 @@ Template.appManage.onCreated(function() {
 	this.settings = new ReactiveVar({});
 
 	const id = this.id.get();
-
-	console.log(id);
-
 	const got = { info: false, settings: false };
 
 	RocketChat.API.get(`apps/${ id }`).then((result) => {
@@ -27,6 +24,7 @@ Template.appManage.onCreated(function() {
 
 	RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
 		Object.keys(result.settings).forEach((k) => {
+			result.settings[k].i18nPlaceholder = result.settings[k].i18nPlaceholder || ' ';
 			result.settings[k].value = result.settings[k].value || result.settings[k].packageValue;
 			result.settings[k].oldValue = result.settings[k].value;
 		});
