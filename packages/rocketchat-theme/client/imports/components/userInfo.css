@@ -143,6 +143,10 @@
 			}
 		}
 
+		& .rc-switch-double__label {
+			color: #a1a1a1;
+		}
+
 		&--separator {
 
 			margin: 14px 0;
@@ -311,7 +315,7 @@
 		}
 
 		&.disabled {
-			color: #a1a1a1;
+			color: inherit;
 		}
 	}
 
