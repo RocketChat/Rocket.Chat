@@ -83,6 +83,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/createChannel.html', 'client');
 	api.addFiles('client/views/app/fullModal.html', 'client');
 	api.addFiles('client/views/app/home.html', 'client');
+	api.addFiles('client/views/app/directory.html', 'client');
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
 	api.addFiles('client/views/app/pageSettingsContainer.html', 'client');

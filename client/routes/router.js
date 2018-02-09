@@ -69,6 +69,16 @@ FlowRouter.route('/home', {
 	}
 });
 
+FlowRouter.route('/directory', {
+	name: 'directory',
+
+	action(params, queryParams) {
+
+
+		BlazeLayout.render('main', {center: 'directory'});
+	}
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
