@@ -1,7 +1,17 @@
 <template name="directory">
 	<section class="page-container page-home page-static content-background-color">
-		{{# header sectionName="Directory"}}
-			oi
+		{{# header sectionName="Directory" hideHelp=true}}
+		<div class="rc-directory-header">
+			<div class="rc-input rc-input--small rc-directory-search">
+				<label class="rc-input__label">
+					<div class="rc-input__wrapper">
+						{{> icon icon="magnifier" block="rc-input__icon" }}
+						<input type="text" class="rc-input__element rc-input__element--small" name="message-search" id="message-search" placeholder="Search Messages" autocomplete="off">
+					</div>
+				</label>
+			</div>
+			<a href="#" class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</a>
+		</div>
 		{{/header}}
 		<div class="content">
 			hey

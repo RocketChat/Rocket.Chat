@@ -44,7 +44,7 @@
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
-
+@import 'imports/components/modal/directory.css';
 /* User Info */
 @import 'imports/components/userInfo.css';
 
