@@ -2,7 +2,7 @@ import Page from './Page';
 import Global from './global';
 
 class FlexTab extends Page {
-	get moreActions() { return browser.element('.rc-room-actions__button.js-more') ; }
+	get moreActions() { return browser.element('.rc-room-actions__button.js-more'); }
 	// Channel Info Tab
 	get channelTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--info-circled'); }
 	get channelSettings() { return browser.element('.channel-settings'); }
@@ -43,9 +43,9 @@ class FlexTab extends Page {
 
 
 	// Search Tab
-	get searchTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--magnifier'); }
+	get searchTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--chatpal'); }
 	get searchTabContent() { return browser.element('.search-messages-list'); }
-	get messageSearchBar() { return browser.element('#message-search'); }
+	get messageSearchBar() { return browser.element('.chatpal-external-search-input'); }
 	get searchResult() { return browser.element('.new-day'); }
 
 	// Notifications Tab
@@ -106,7 +106,7 @@ class FlexTab extends Page {
 		return browser.element('#rocket-chat > aside > div.flex-nav > aside > div > ul:nth-child(4) > li > a > div');
 	}
 
-	getUserEl(username) { return browser.element(`.flex-tab button[title="${ username }"] > p`); }
+	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();
@@ -132,11 +132,11 @@ class FlexTab extends Page {
 	addRole(role) {
 		this.usersAddUserRoleList.waitForVisible(5000);
 		this.usersAddUserRoleList.click();
-		browser.waitForVisible(`option[value=${ role }]`, 5000);
-		browser.click(`option[value=${ role }]`);
+		browser.waitForVisible(`option[value=${role}]`, 5000);
+		browser.click(`option[value=${role}]`);
 		this.usersAddUserRoleButton.waitForVisible(5000);
 		this.usersAddUserRoleButton.click();
-		browser.waitForVisible(`.remove-role=${ role }`);
+		browser.waitForVisible(`.remove-role=${role}`);
 	}
 
 	operateFlexTab(desiredTab, desiredState) {
