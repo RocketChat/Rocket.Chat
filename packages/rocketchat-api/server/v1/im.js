@@ -51,7 +51,7 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 
 RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true }, {
 	get() {
-		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');		
+		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
 		const ruserId = this.requestParams().userId;
 		let user = this.userId;
 		let unreads = null;
@@ -61,8 +61,8 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		
-		if(ruserId) {
+
+		if (ruserId) {
 			if (!access) {
 				return RocketChat.API.v1.unauthorized();
 			}
@@ -71,18 +71,18 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		const rs = findDirectMessageRoom(this.requestParams(), { '_id': user} );
 		const room = rs.room;
 		const dm = rs.subscription;
-		
-		if(typeof dm !== 'undefined' && dm.open) {
+
+		if (typeof dm !== 'undefined' && dm.open) {
 			unreads = dm.unread;
-			userMentions = dm.userMentions; 
+			userMentions = dm.userMentions;
 			unreadsFrom = dm.ls;
 			joined = true;
 		}
-		
-		if(access || joined) {
+
+		if (access || joined) {
 			msgs = room.msgs;
 			latest = room.lm;
-			members = room.usernames.length; 
+			members = room.usernames.length;
 		}
 
 		return RocketChat.API.v1.success({

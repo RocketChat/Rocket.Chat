@@ -136,7 +136,7 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 			throw new Meteor.Error('error-room-archived', `The private group, ${ room.name }, is archived`);
 		}
 
-		if(params.userId) {
+		if (params.userId) {
 			if (!access) {
 				return RocketChat.API.v1.unauthorized();
 			}
@@ -144,17 +144,17 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 		}
 		const group = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
 
-		if(typeof group !== 'undefined' && group.open) {
+		if (typeof group !== 'undefined' && group.open) {
 			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(group.rid, group.ls, group._room.lm);
-			userMentions = group.userMentions; 
+			userMentions = group.userMentions;
 			unreadsFrom = group.ls;
 			joined = true;
 		}
 		
-		if(access || joined) {
+		if (access || joined) {
 			msgs = room.msgs;
 			latest = room.lm;
-			members = room.usernames.length; 
+			members = room.usernames.length;
 		}
 
 		return RocketChat.API.v1.success({
