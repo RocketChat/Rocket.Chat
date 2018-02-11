@@ -86,13 +86,13 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		}
 
 		return RocketChat.API.v1.success({
-			joined: joined,
-			members: members,
-			unreads: unreads,
-			unreadsFrom: unreadsFrom,
-			msgs: msgs,
-			latest: latest,
-			userMentions: userMentions
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions
 		});
 	}
 });

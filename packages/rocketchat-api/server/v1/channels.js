@@ -145,7 +145,7 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		
+
 		if (ruserId) {
 			if (!access) {
 				return RocketChat.API.v1.unauthorized();
@@ -172,13 +172,13 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			joined: joined,
-			members: members,
-			unreads: unreads,
-			unreadsFrom: unreadsFrom,
-			msgs: msgs,
-			latest: latest,
-			userMentions: userMentions
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions
 		});
 	}
 });
