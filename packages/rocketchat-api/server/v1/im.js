@@ -68,7 +68,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 			}
 			user = ruserId;
 		}
-		const rs = findDirectMessageRoom(this.requestParams(), { '_id': user } );
+		const rs = findDirectMessageRoom( this.requestParams(), { '_id': user } );
 		const room = rs.room;
 		const dm = rs.subscription;
 
