@@ -49,6 +49,54 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true }, {
+	get() {
+		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');		
+		const ruserId = this.requestParams().userId;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+		
+		if(ruserId) {
+			if (!access) {
+				return RocketChat.API.v1.unauthorized();
+			}
+			user = ruserId;
+		}
+		const rs = findDirectMessageRoom(this.requestParams(), { '_id': user} );
+		const room = rs.room;
+		const dm = rs.subscription;
+		
+		if(typeof dm !== 'undefined' && dm.open) {
+			unreads = dm.unread;
+			userMentions = dm.userMentions; 
+			unreadsFrom = dm.ls;
+			joined = true;
+		}
+		
+		if(access || joined) {
+			msgs = room.msgs;
+			latest = room.lm;
+			members = room.usernames.length; 
+		}
+
+		return RocketChat.API.v1.success({
+			joined: joined,
+			members: members,
+			unreads: unreads,
+			unreadsFrom: unreadsFrom,
+			msgs: msgs,
+			latest: latest,
+			userMentions: userMentions
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);

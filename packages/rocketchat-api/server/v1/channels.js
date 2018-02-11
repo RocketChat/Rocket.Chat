@@ -133,6 +133,56 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
+	get() {
+		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
+		const ruserId = this.requestParams().userId;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+		
+		if(ruserId) {
+			if (!access) {
+				return RocketChat.API.v1.unauthorized();
+			}
+			user = ruserId;
+		}
+		const room = findChannelByIdOrName({
+			params: this.requestParams(),
+			returnUsernames: true
+		});
+		const channel = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+
+		if(typeof channel !== 'undefined' && channel.open) {
+			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(channel.rid, channel.ls, channel._room.lm);
+			userMentions = channel.userMentions; 
+			unreadsFrom = channel.ls;
+			joined = true;
+		}
+		
+		if(access || joined) {
+			msgs = room.msgs;
+			latest = room.lm;
+			members = room.usernames.length; 
+		}
+		
+		return RocketChat.API.v1.success({
+			joined: joined,
+			members: members,
+			unreads: unreads,
+			unreadsFrom: unreadsFrom,
+			msgs: msgs,
+			latest: latest,
+			userMentions: userMentions
+		});
+	}
+});
+
 // Channel -> create
 
 function createChannelValidator(params) {
