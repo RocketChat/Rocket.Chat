@@ -3,7 +3,7 @@
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
-import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
 const topicName = 'smarti-test-topic4';
 const topicExpert = 'rocketchat.internal.admin.test';
@@ -15,7 +15,7 @@ import supertest from 'supertest';
 
 export const request = supertest.agent('http://localhost:3000');
 
-import {checkIfUserIsAdmin} from '../../data/checks';
+import { checkIfUserIsAdmin } from '../../data/checks';
 
 
 describe('[Smarti Integration]', () => {
@@ -32,6 +32,7 @@ describe('[Smarti Integration]', () => {
 				assistify.createTopic(topicName, topicExpert);
 			} catch (e) {
 				console.log(e);
+				browser.pause(1000);
 				sideNav.openChannel(topicName);
 			}
 
@@ -39,9 +40,11 @@ describe('[Smarti Integration]', () => {
 
 		describe('Open Topic', () => {
 			it('switch to GENERAL', () => {
+				browser.pause(1000);
 				sideNav.openChannel('general');
 			});
 			it('switch back to Topic', () => {
+				browser.pause(1000);
 				sideNav.openChannel(topicName);
 			});
 		});
@@ -66,6 +69,7 @@ describe('[Smarti Integration]', () => {
 				// assistify.answerRequest(request1, answer);
 			});
 			it('close request', () => {
+				assistify.clickKnowledgebase();
 				assistify.closeRequest(comment);
 
 			});
@@ -77,19 +81,23 @@ describe('[Smarti Integration]', () => {
 			});
 
 			it('knowledgebase answer visible', () => {
-				assistify.clickKnowledgebase();
 				browser.pause(1000);
-				assistify.knowledgebaseAnswer.waitForVisible(5000);
+				assistify.knowledgebasePickAnswer.waitForVisible(5000);
+				browser.pause(1000);
+				assistify.knowledgebasePickAnswer.click();
+				browser.pause(1000);
 			});
 
 			it('post knowledgebase answer', () => {
 				assistify.knowledgebasePostBtn.waitForVisible(5000);
 				assistify.knowledgebasePostBtn.click();
+				assistify.clickKnowledgebase();
+				assistify.closeRequest(comment);
 			});
 		});
 	});
 
-	describe('Cleanup', () => {
+	describe.skip('Cleanup', () => {
 		it('close new Topic', () => {
 			console.log('TopicName for cleanup', topicName);
 			assistify.closeTopic(topicName);

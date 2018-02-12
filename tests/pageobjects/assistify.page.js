@@ -40,8 +40,12 @@ class Assistify extends Page {
 		return browser.element('.external-search-content .smarti-widget .search-results');
 	}
 
+	get knowledgebasePickAnswer() {
+		return browser.element('.convMessage .middle .selectMessage');
+	}
+
 	get knowledgebasePostBtn() {
-		return browser.element('.external-search-content .smarti-widget .search-results .result-actions');
+		return browser.element('.button.button-block');
 	}
 
 	// new Topic
@@ -78,7 +82,7 @@ class Assistify extends Page {
 
 	// Knowledgebase
 	get closeTopicBtn() {
-		return browser.element('.flex-tab-container.border-component-color.opened .delete');
+		return browser.element('.rc-button.rc-button--icon.rc-button--outline.rc-button--cancel.js-leave');
 	}
 
 	get infoRoomIcon() {
