@@ -16,8 +16,8 @@ Package.onUse(function (api) {
 
   api.use([
     'ddp',
-    'mongo',
-    'underscore'
+		'mongo',
+		'ecmascript'
   ], ['client', 'server']);
 
   api.use(['http', 'random'], 'web.cordova');

@@ -33,10 +33,6 @@ Meteor.methods({
 				preferences.collapseMediaByDefault = settings.collapseMediaByDefault === '1' ? true : false;
 			}
 
-			if (settings.unreadRoomsMode) {
-				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
-			}
-
 			if (settings.autoImageLoad) {
 				preferences.autoImageLoad = settings.autoImageLoad === '1' ? true : false;
 			}
@@ -51,6 +47,8 @@ Meteor.methods({
 				delete preferences.mergeChannels;
 			}
 
+			preferences.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
+
 			if (settings.unreadAlert) {
 				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
 			}
@@ -59,11 +57,25 @@ Meteor.methods({
 				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
 			}
 
+			if (settings.audioNotifications) {
+				preferences.audioNotifications = settings.audioNotifications;
+			}
+
 			if (settings.desktopNotifications) {
 				preferences.desktopNotifications = settings.desktopNotifications;
 			}
+
 			if (settings.mobileNotifications) {
 				preferences.mobileNotifications = settings.mobileNotifications;
+			}
+			if (settings.idleTimeLimit) {
+				preferences.idleTimeLimit = settings.idleTimeLimit;
+			}
+
+			preferences.enableAutoAway = settings.enableAutoAway === '1';
+
+			if (settings.highlights) {
+				preferences.highlights = settings.highlights;
 			}
 
 			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
@@ -72,8 +84,8 @@ Meteor.methods({
 			preferences.hideRoles = settings.hideRoles === '1';
 			preferences.hideAvatars = settings.hideAvatars === '1';
 			preferences.hideFlexTab = settings.hideFlexTab === '1';
-			preferences.highlights = settings.highlights;
 			preferences.sendOnEnter = settings.sendOnEnter;
+			preferences.roomCounterSidebar = settings.roomCounterSidebar === '1';
 
 			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
 

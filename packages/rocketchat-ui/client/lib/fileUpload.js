@@ -1,5 +1,7 @@
-/* globals fileUploadHandler, Handlebars, fileUpload */
+/* globals fileUploadHandler, Handlebars, fileUpload, modal */
 /* exported fileUpload */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 function readAsDataURL(file, callback) {
 	const reader = new FileReader();
@@ -52,12 +54,12 @@ fileUpload = function(filesToUpload) {
 	function consume() {
 		const file = files.pop();
 		if ((file == null)) {
-			swal.close();
+			modal.close();
 			return;
 		}
 
-		if (!file.file.type || !RocketChat.fileUploadIsValidContentType(file.file.type)) {
-			swal({
+		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
 				type: 'error',
@@ -67,7 +69,7 @@ fileUpload = function(filesToUpload) {
 		}
 
 		if (file.file.size === 0) {
-			swal({
+			modal.open({
 				title: t('FileUpload_File_Empty'),
 				type: 'error',
 				timer: 1000
@@ -87,8 +89,12 @@ fileUpload = function(filesToUpload) {
 	</audio>
 </div>
 <div class='upload-preview-title'>
-	<input id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	<input id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
 </div>`;
 			} else if (file.type === 'video') {
 				text = `\
@@ -99,8 +105,12 @@ fileUpload = function(filesToUpload) {
 	</video>
 </div>
 <div class='upload-preview-title'>
-	<input id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	<input id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
 </div>`;
 			} else if (file.type === 'image') {
 				text = `\
@@ -108,8 +118,12 @@ fileUpload = function(filesToUpload) {
 	<div class='upload-preview-file' style='background-image: url(${ preview })'></div>
 </div>
 <div class='upload-preview-title'>
-	<input id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	<input id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
 </div>`;
 			} else {
 				const fileSize = formatBytes(file.file.size);
@@ -119,12 +133,16 @@ fileUpload = function(filesToUpload) {
 	<div>${ Handlebars._escape(file.name) } - ${ fileSize }</div>
 </div>
 <div class='upload-preview-title'>
-	<input id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	<input id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
 </div>`;
 			}
 
-			return swal({
+			return modal.open({
 				title: t('Upload_file_question'),
 				text,
 				showCancelButton: true,
@@ -132,12 +150,9 @@ fileUpload = function(filesToUpload) {
 				closeOnCancel: false,
 				confirmButtonText: t('Send'),
 				cancelButtonText: t('Cancel'),
-				html: true
+				html: true,
+				onRendered: () => $('#file-name').focus()
 			}, function(isConfirm) {
-				consume();
-				if (!isConfirm) {
-					return;
-				}
 
 				const record = {
 					name: document.getElementById('file-name').value || file.name || file.file.name,
@@ -147,6 +162,10 @@ fileUpload = function(filesToUpload) {
 					description: document.getElementById('file-description').value
 				};
 
+				consume();
+				if (!isConfirm) {
+					return;
+				}
 				const upload = fileUploadHandler('Uploads', record, file.file);
 
 				let uploading = Session.get('uploading') || [];

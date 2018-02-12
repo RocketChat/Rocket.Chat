@@ -103,16 +103,16 @@ this.SideNav = new class {
 		});
 	}
 	focusInput() {
-		const sideNavDivs = _.filter(document.querySelectorAll('aside.side-nav')[0].children, function(ele) {
-			return ele.tagName === 'DIV' && !ele.classList.contains('hidden');
+		const sideNavDivs = [...this.sideNav[0].children].filter(el => {
+			return el.tagName === 'DIV' && !el.classList.contains('hidden');
 		});
 		let highestZidx = 0;
 		let highestZidxElem;
-		_.each(sideNavDivs, (ele) => {
-			const zIndex = Number(window.getComputedStyle(ele).zIndex);
-			if (Number(zIndex) > highestZidx) {
-				highestZidx = Number(zIndex);
-				highestZidxElem = ele;
+		sideNavDivs.forEach(el => {
+			const zIndex = Number(window.getComputedStyle(el).zIndex);
+			if (zIndex > highestZidx) {
+				highestZidx = zIndex;
+				highestZidxElem = el;
 			}
 		});
 		setTimeout(() => {
@@ -150,7 +150,7 @@ this.SideNav = new class {
 	}
 
 	init() {
-		this.sideNav = $('.side-nav');
+		this.sideNav = $('.sidebar');
 		this.flexNav = this.sideNav.find('.flex-nav');
 		this.arrow = this.sideNav.children('.arrow');
 		this.setFlex('');
@@ -163,8 +163,5 @@ this.SideNav = new class {
 			});
 			return this.openQueue = [];
 		}
-	}
-	getSideNav() {
-		return this.sideNav;
 	}
 };

@@ -1,4 +1,8 @@
-/* globals RocketChatTabBar */
+import _ from 'underscore';
+import s from 'underscore.string';
+
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 Template.adminUsers.helpers({
 	isReady() {
 		const instance = Template.instance();
@@ -43,7 +47,7 @@ Template.adminUsers.onCreated(function() {
 		groups: ['admin-users'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
-		icon: 'icon-paper-plane',
+		icon: 'send',
 		template: 'adminInviteUser',
 		order: 1
 	});
@@ -51,7 +55,7 @@ Template.adminUsers.onCreated(function() {
 		groups: ['admin-users'],
 		id: 'add-user',
 		i18nTitle: 'Add_User',
-		icon: 'icon-plus',
+		icon: 'plus',
 		template: 'adminUserEdit',
 		order: 2
 	});
@@ -59,7 +63,7 @@ Template.adminUsers.onCreated(function() {
 		groups: ['admin-users'],
 		id: 'admin-user-info',
 		i18nTitle: 'User_Info',
-		icon: 'icon-user',
+		icon: 'user',
 		template: 'adminUserInfo',
 		order: 3
 	});
@@ -74,7 +78,7 @@ Template.adminUsers.onCreated(function() {
 		let query;
 
 		if (instance.filter && instance.filter.get()) {
-			filter = _.trim(instance.filter.get());
+			filter = s.trim(instance.filter.get());
 		}
 
 		if (filter) {

@@ -40,6 +40,7 @@ Meteor.startup(function() {
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] },
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] },
 		{ _id: 'mention-all',                   roles : ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                   roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'run-import',                    roles : ['admin'] },
@@ -63,7 +64,8 @@ Meteor.startup(function() {
 		{ _id: 'view-room-administration',      roles : ['admin'] },
 		{ _id: 'view-statistics',               roles : ['admin'] },
 		{ _id: 'view-user-administration',      roles : ['admin'] },
-		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] }
+		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] },
+		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] }
 	];
 
 	for (const permission of permissions) {

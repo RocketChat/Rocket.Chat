@@ -1,0 +1,280 @@
+defaults: &defaults
+  working_directory: ~/repo
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+
+    steps:
+      - checkout
+
+      # - restore_cache:
+      #     keys:
+      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+
+      # - restore_cache:
+      #     keys:
+      #       - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+
+      - run:
+          name: Install Meteor
+          command: |
+            # Restore bin from cache
+            set +e
+            METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+            METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+            set -e
+            LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+            if [ -e $LAUNCHER ]
+            then
+              echo "Cached Meteor bin found, restoring it"
+              sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+            else
+              echo "No cached Meteor bin found."
+            fi
+
+            # only install meteor if bin isn't found
+            command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+      - run:
+          name: Versions
+          command: |
+            npm --versions
+            node -v
+            meteor --version
+            meteor npm --versions
+            meteor node -v
+            git version
+
+      - run:
+          name: Meteor npm install
+          command: |
+            # rm -rf node_modules
+            # rm -f package-lock.json
+            meteor npm install
+
+      - run:
+          name: Lint
+          command: |
+            meteor npm run lint
+            meteor npm run stylelint
+
+      - run:
+          name: Unit Test
+          command: |
+            meteor npm run testunit
+
+      # - restore_cache:
+      #     keys:
+      #       - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+
+      # - restore_cache:
+      #     keys:
+      #       - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+
+      # - restore_cache:
+      #     keys:
+      #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+
+      - run:
+          name: Build Rocket.Chat
+          command: |
+            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
+            set +e
+            meteor add rocketchat:lib
+            set -e
+            meteor build --server-only --directory /tmp/build-test
+
+      - run:
+          name: Prepare build
+          command: |
+            mkdir /tmp/build/
+            cd /tmp/build-test
+            tar czf /tmp/build/Rocket.Chat.tar.gz bundle
+            cd /tmp/build-test/bundle/programs/server
+            npm install
+
+      # - save_cache:
+      #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      #     paths:
+      #       - ./node_modules
+
+      # - save_cache:
+      #     key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      #     paths:
+      #       - ./.meteor/local
+
+      # - save_cache:
+      #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/node_modules
+
+      # - save_cache:
+      #     key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+      #     paths:
+      #       - ./packages/rocketchat-livechat/app/.meteor/local
+
+      # - save_cache:
+      #     key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      #     paths:
+      #       - ~/.meteor
+
+      - persist_to_workspace:
+          root: /tmp/
+          paths:
+            - build-test
+            - build
+
+      - store_artifacts:
+          path: /tmp/build
+
+  test-with-oplog:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8-browsers
+      - image: mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_OPLOG_URL: mongodb://localhost:27017/local
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org-shell
+
+      - run:
+          name: Configure Replica Set
+          command: |
+            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+            mongo --eval 'rs.status()'
+
+      - run:
+          name: NPM install
+          command: |
+            npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - store_artifacts:
+          path: .screenshots/
+
+  test-without-oplog:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8-browsers
+      - image: circleci/mongo:3.4
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: NPM install
+          command: |
+            npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - store_artifacts:
+          path: .screenshots/
+
+  deploy:
+    <<: *defaults
+    docker:
+      - image: circleci/node:4.8
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: Install AWS cli
+          command: |
+            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3.4-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py
+            python3.4 get-pip.py --user
+            export PATH=~/.local/bin:$PATH
+            pip install awscli --upgrade --user
+
+      - run:
+          name: Publish assets
+          command: |
+            if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
+
+            export PATH=~/.local/bin:$PATH
+            export CIRCLE_TAG=${CIRCLE_TAG:=}
+
+            source .circleci/setartname.sh
+            source .circleci/setdeploydir.sh
+            bash .circleci/setupsig.sh
+            bash .circleci/namefiles.sh
+            # echo ".circleci/sandstorm.sh"
+
+            aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+
+            bash .circleci/update-releases.sh
+            bash .circleci/docker.sh
+            bash .circleci/snap.sh
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - test-with-oplog:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - test-without-oplog:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - deploy:
+          requires:
+            - test-with-oplog
+            - test-without-oplog
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+
