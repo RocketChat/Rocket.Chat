@@ -24,3 +24,26 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 		return RocketChat.API.v1.success(result);
 	}
 });
+
+/**
+	This API is suppose to mark any room as read.
+
+	Method: POST
+	Route: api/v1/subscriptions.read
+	Params:
+		- rid: The rid of the room to be marked as read.
+ */
+RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			rid: String
+		});
+
+		Meteor.runAsUser(this.userId, () =>
+			Meteor.call('readMessages', this.bodyParams.rid)
+		);
+
+		return RocketChat.API.v1.success();
+	}
+});
+
