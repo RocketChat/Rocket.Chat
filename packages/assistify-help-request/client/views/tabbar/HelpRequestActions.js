@@ -46,29 +46,33 @@ Template.HelpRequestActions.events({
 		event.preventDefault();
 		const warnText = RocketChat.roomTypes.roomTypes['r'].getUiText(UiTextContext.CLOSE_WARNING);
 
-		let swalConfig = {
+		const modalConfig = {
 			title: t('Closing_chat'),
 			text: warnText ? t(warnText) : '',
 			showCancelButton: true,
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
+			html: true,
 			roomId: instance.data.roomId
 		};
 
 		if (showClosingComment()) {
-			swalConfig = _.extend(swalConfig, {
-				type: 'input',
-				inputPlaceholder: t('Close_request_comment')
-			});
+			modalConfig.type = 'input';
+			modalConfig.inputPlaceholder = t('Close_request_comment');
 		}
+		modal.open(
+			modalConfig,
+			(inputValue) => {
+				if (inputValue === false) {
+					return;
+				}
 
-		swal(swalConfig, (inputValue) => {
-			//inputValue is false on "cancel" and has a string value of the input if confirmed.
-			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
 				Meteor.call('assistify:closeHelpRequest', this.roomId, {comment: inputValue}, function(error) {
 					if (error) {
 						return handleError(error);
 					} else {
-						swal({
+						modal.open({
 							title: t('Chat_closed'),
 							text: t('Chat_closed_successfully'),
 							type: 'success',
@@ -81,43 +85,44 @@ Template.HelpRequestActions.events({
 						);
 					}
 				});
-			}
-		});
+			});
 	},
-	'click .close-livechat'(event) {
+	'click .close-livechat'(event, instance) {
 		event.preventDefault();
-		let swalConfig = {
+		const modalConfig = {
 			title: t('Closing_chat'),
-			type: showClosingComment(),
 			showCancelButton: true,
-			closeOnConfirm: false
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: true,
+			roomId: instance.data.roomId
 		};
 
 		if (showClosingComment()) {
-			swalConfig = _.extend(swalConfig, {
-				type: 'input',
-				inputPlaceholder: t('Please_add_a_comment')
-			});
+			modalConfig.type = 'input';
+			modalConfig.inputPlaceholder = t('Close_request_comment');
 		}
+		modal.open(
+			modalConfig,
+			(inputValue) => {
+				//inputValue is false on "cancel" and has a string value of the input if confirmed.
+				if (!(typeof inputValue === 'boolean' && inputValue === false)) {
 
-		swal(swalConfig, (inputValue) => {
-			//inputValue is false on "cancel" and has a string value of the input if confirmed.
-			if (!(typeof inputValue === 'boolean' && inputValue === false)) {
-
-				Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
-					if (error) {
-						return handleError(error);
-					}
-					swal({
-						title: t('Chat_closed'),
-						text: t('Chat_closed_successfully'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false
+					Meteor.call('livechat:closeRoom', this.roomId, inputValue, function(error/*, result*/) {
+						if (error) {
+							return handleError(error);
+						}
+						modal.open({
+							title: t('Chat_closed'),
+							text: t('Chat_closed_successfully'),
+							type: 'success',
+							timer: 1000,
+							showConfirmButton: false
+						});
 					});
-				});
-			}
-		});
+				}
+			});
 	}
 });
 

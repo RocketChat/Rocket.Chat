@@ -1,4 +1,5 @@
 /* globals ChatSubscription */
+import _ from 'underscore';
 import toastr from 'toastr';
 
 Template.autoTranslateFlexTab.helpers({

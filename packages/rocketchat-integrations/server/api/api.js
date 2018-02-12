@@ -1,5 +1,8 @@
 /* globals Api Meteor Restivus logger processWebhookMessage*/
 // TODO: remove globals
+
+import _ from 'underscore';
+import s from 'underscore.string';
 import vm from 'vm';
 import moment from 'moment';
 

@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import Busboy from 'busboy';
+
 RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
@@ -192,7 +195,6 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			if (this.bodyParams.avatarUrl) {
 				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 			} else {
-				const Busboy = Npm.require('busboy');
 				const busboy = new Busboy({ headers: this.request.headers });
 
 				Meteor.wrapAsync((callback) => {

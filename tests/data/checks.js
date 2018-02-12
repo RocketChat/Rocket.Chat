@@ -49,7 +49,9 @@ export function checkIfUserIsValid(username, email, password) {
 			sideNav.logout.click();
 
 			loginPage.open();
-			loginPage.login({email, password});
+			mainContent.mainContent.waitForExist(5000);
+			loginPage.open();
+			loginPage.loginSucceded({email, password});
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
 		//if the user dont exist.
@@ -86,7 +88,7 @@ export function checkIfUserIsAdmin(username, email, password) {
 		sideNav.logout.click();
 
 		loginPage.open();
-		loginPage.login({email, password});
+		loginPage.loginSucceded({email, password});
 	} else {
 		console.log('	User already logged');
 	}

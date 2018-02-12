@@ -125,7 +125,7 @@ const markdownButtons = [
 	},
 	{
 		label: katexSyntax,
-		link: 'https://github.com/Khan/KaTeX/wiki/Function-Support-in-KaTeX',
+		link: 'https://khan.github.io/KaTeX/function-support.html',
 		condition: () => RocketChat.katex.katex_enabled()
 	}
 ];
@@ -266,6 +266,9 @@ Template.messageBox.helpers({
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
+	},
+	isEmojiEnable() {
+		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
 	}
 });
 

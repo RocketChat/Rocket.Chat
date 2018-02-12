@@ -1,7 +1,7 @@
 /**
  * Created by OliverJaegle on 01.08.2016.
  */
-// var _ = Npm.require('underscore');
+import s from 'underscore.string';
 
 _.extend(RocketChat.models.Rooms, {
 	addHelpRequestInfo(room, helpRequestId) {

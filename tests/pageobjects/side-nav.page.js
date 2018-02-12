@@ -19,53 +19,19 @@ class SideNav extends Page {
 	}
 
 	// Account box
-	get accountBoxUserName() {
-		return browser.element('.sidebar__account-username');
-	}
-
-	get accountBoxUserAvatar() {
-		return browser.element('.sidebar__account .avatar-image');
-	}
-
-	get accountMenu() {
-		return browser.element('.sidebar__account');
-	}
-
-	get popOverContent() {
-		return browser.element('.rc-popover__content');
-	}
-
-	get statusOnline() {
-		return browser.element('[data-id="online"]');
-	}
-
-	get statusAway() {
-		return browser.element('[data-id="away"]');
-	}
-
-	get statusBusy() {
-		return browser.element('[data-id="busy"]');
-	}
-
-	get statusOffline() {
-		return browser.element('[data-id="offline"]');
-	}
-
-	get account() {
-		return browser.element('[data-id="account"][data-type="open"]');
-	}
-
-	get admin() {
-		return browser.element('[data-id="administration"][data-type="open"]');
-	}
-
-	get logout() {
-		return browser.element('[data-id="logout"][data-type="open"]');
-	}
-
-	get sideNavBar() {
-		return browser.element('.sidebar');
-	}
+	getPopOverContent() { return browser.element('.rc-popover__content'); }
+	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
+	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
+	get accountMenu() { return browser.element('.sidebar__account'); }
+	get popOverContent() { return browser.element('.rc-popover__content'); }
+	get statusOnline() { return browser.element('[data-id="online"]'); }
+	get statusAway() { return browser.element('[data-id="away"]'); }
+	get statusBusy() { return browser.element('[data-id="busy"]'); }
+	get statusOffline() { return browser.element('[data-id="offline"]'); }
+	get account() { return browser.element('[data-id="account"][data-type="open"]'); }
+	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
+	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
+	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
 	get spotlightSearch() {
@@ -135,25 +101,29 @@ class SideNav extends Page {
 		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
 		browser.click(`.sidebar-item__name=${ channelName }`);
 		browser.waitForVisible('.rc-message-box__container textarea', 5000);
+		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
-			browser.waitForVisible('.fixed-title .room-title', 8000);
-			return browser.getText('.fixed-title .room-title') === channelName;
+			browser.waitForVisible('.rc-header__name', 8000);
+			return browser.getText('.rc-header__name') === channelName;
 		}, 10000);
 	}
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		browser.waitForVisible('.fixed-title .room-title', 15000);
-		const currentRoom = browser.element('.fixed-title .room-title').getText();
+		let currentRoom;
+		browser.waitForVisible('.rc-header', 15000);
+		if (browser.isVisible('.rc-header__name')) {
+			currentRoom = browser.element('.rc-header__name').getText();
+		}
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[title='${ channelName }']`, 5000);
 			browser.click(`[title='${ channelName }']`);
+			browser.waitForVisible('.rc-header__name', 8000);
 			browser.waitUntil(function() {
-				browser.waitForVisible('.fixed-title .room-title', 8000);
-				return browser.getText('.fixed-title .room-title') === channelName;
+				return browser.getText('.rc-header__name') === channelName;
 			}, 10000);
 
 		}
@@ -161,8 +131,12 @@ class SideNav extends Page {
 
 	// Gets a channel from the spotlight search
 	getChannelFromSpotlight(channelName) {
-		browser.waitForVisible('.fixed-title .room-title', 15000);
-		const currentRoom = browser.element('.fixed-title .room-title').getText();
+		let currentRoom;
+		browser.waitForVisible('.rc-header', 15000);
+		if (browser.isVisible('.rc-header__name')) {
+			currentRoom = browser.element('.rc-header__name').getText();
+		}
+		currentRoom = browser.element('.rc-header__name').getText();
 		console.log(currentRoom, channelName);
 		if (currentRoom !== channelName) {
 			this.spotlightSearch.waitForVisible(5000);

@@ -77,3 +77,28 @@ Meteor.startup(() => {
 		RocketChat.settings.get('Assistify', addAISettings) :
 		RocketChat.settings.addGroup('Assistify', addAISettings);
 });
+
+
+/* Propagate settings to Chatpal */
+
+const setChatpalUrl = (smartiUrl) => {
+	RocketChat.models.Settings.update('CHATPAL_CONFIG', {
+		$set:
+			{
+				'value.baseurl': smartiUrl,
+				'value.backendtype': 'onsite'
+			}
+	});
+};
+
+RocketChat.settings.get('Assistify_AI_Smarti_Base_URL', (id, smartiUrl) => {
+	const client = RocketChat.models.Settings.findOneNotHiddenById('Assistify_AI_Smarti_Domain');
+	if (client) {
+		setChatpalUrl(smartiUrl);
+	}
+});
+
+RocketChat.settings.get('Assistify_AI_Smarti_Auth_Token', (id, smartiAuthToken) => {
+	RocketChat.models.Settings.update('CHATPAL_CONFIG', {$set: {'value.headerstring': `X-Auth-Token: ${ smartiAuthToken }`}});
+});
+

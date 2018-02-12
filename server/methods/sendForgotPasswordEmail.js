@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	sendForgotPasswordEmail(email) {
 		check(email, String);

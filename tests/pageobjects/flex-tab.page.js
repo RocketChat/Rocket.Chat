@@ -2,9 +2,11 @@ import Page from './Page';
 import Global from './global';
 
 class FlexTab extends Page {
+	get moreActions() { return browser.element('.rc-room-actions__button.js-more'); }
 	// Channel Info Tab
 	get channelTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--info-circled'); }
 	get channelSettings() { return browser.element('.channel-settings'); }
+	get channelSettingName() { return browser.element('.channel-settings .rc-user-info__name'); }
 	get archiveBtn() { return browser.element('.clearfix:last-child .icon-pencil'); }
 	get archiveRadio() { return browser.element('.editing'); }
 	get archiveSave() { return browser.element('.save'); }
@@ -47,11 +49,11 @@ class FlexTab extends Page {
 	get searchResult() { return browser.element('.new-day'); }
 
 	// Notifications Tab
-	get notificationsTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--bell'); }
+	get notificationsTab() { return browser.element('.rc-popover__item[data-id=push-notifications]'); }
 	get notificationsSettings() { return browser.element('.push-notifications'); }
 
 	// Files Tab
-	get filesTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--clip'); }
+	get filesTab() { return browser.element('.rc-popover__item[data-id=uploaded-files-list]'); }
 	get fileItem() { return browser.element('.uploaded-files-list ul:first-child'); }
 	get filesTabContent() { return browser.element('.uploaded-files-list'); }
 	get fileDelete() { return browser.element('.uploaded-files-list ul:first-child .file-delete'); }
@@ -59,15 +61,15 @@ class FlexTab extends Page {
 	get fileName() { return browser.element('.uploaded-files-list ul:first-child .room-file-item'); }
 
 	// Mentions Tab
-	get mentionsTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--at'); }
+	get mentionsTab() { return browser.element('.rc-popover__item[data-id=mentions]'); }
 	get mentionsTabContent() { return browser.element('.mentioned-messages-list'); }
 
 	// Starred Tab
-	get starredTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--star'); }
+	get starredTab() { return browser.element('.rc-popover__item[data-id=starred-messages]'); }
 	get starredTabContent() { return browser.element('.starred-messages-list'); }
 
 	// Pinned Tab
-	get pinnedTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--pin'); }
+	get pinnedTab() { return browser.element('.rc-popover__item[data-id=pinned-messages]'); }
 	get pinnedTabContent() { return browser.element('.pinned-messages-list'); }
 
 	get firstSetting() { return browser.element('.clearfix li:nth-child(1) .current-setting'); }
@@ -79,9 +81,9 @@ class FlexTab extends Page {
 	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
 	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
-	get usersButtonCancel() { return browser.element('button.cancel'); }
-	get usersSendInvitationSend() { return browser.element('button.send'); }
-	get usersButtonSave() { return browser.element('button.save'); }
+	get usersButtonCancel() { return browser.element('.button.cancel'); }
+	get usersSendInvitationSend() { return browser.element('.button.send'); }
+	get usersButtonSave() { return browser.element('.button.save'); }
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }
@@ -95,15 +97,9 @@ class FlexTab extends Page {
 	get usersAddUserRandomPassword() { return browser.element('#randomPassword'); }
 	get emojiNewAliases() { return browser.element('#aliases'); }
 	get emojiNewImageInput() { return browser.element('#image'); }
-	get usersView() { return browser.element('.user-view'); }
-	get usersEditUser() { return browser.element('.user-view .edit-user'); }
-	get usersActivate() { return browser.element('.button.activate'); }
-	get usersDeactivate() { return browser.element('.button.deactivate'); }
-
-	// Settings based permissions elements
-	get layoutLink() {
-		return browser.element('#rocket-chat > aside > div.flex-nav > aside > div > ul:nth-child(4) > li > a > div');
-	}
+	get usersView() { return browser.element('.rc-user-info-action'); }
+	get usersActivate() { return browser.element('.rc-popover__item[data-id=activate]'); }
+	get usersDeactivate() { return browser.element('.rc-popover__item[data-id=deactivate]'); }
 
 	getUserEl(username) { return browser.element(`.flex-tab button[title="${ username }"] > p`); }
 
