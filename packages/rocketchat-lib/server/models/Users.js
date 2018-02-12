@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -18,7 +21,11 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findOneByUsername(username, options) {
-		const query =	{username};
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ username }$`, 'i');
+		}
+
+		const query = {username};
 
 		return this.findOne(query, options);
 	}
@@ -138,21 +145,16 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+
+		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: [
-						{
-							username: termRegex
-						},
-						{
-							name: termRegex
-						},
-						{
-							'emails.address': termRegex
-						}
-					]
+					$or: orStmt
 				},
 				{
 					username: { $exists: true, $nin: exceptions }
@@ -543,7 +545,17 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } });
+		const options = {
+			fields: {
+				name: 1,
+				username: 1,
+				emails: 1,
+				'settings.preferences.emailNotificationMode': 1,
+				language: 1
+			}
+		};
+
+		return this.find(query, options);
 	}
 }
 

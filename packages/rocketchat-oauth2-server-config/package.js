@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:oauth2-server');
-	api.use('less');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
@@ -26,7 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('oauth/server/oauth2-server.js', 'server');
 	api.addFiles('oauth/server/default-services.js', 'server');
 
-	api.addFiles('oauth/client/stylesheets/oauth2.less', 'client');
+	api.addFiles('oauth/client/stylesheets/oauth2.css', 'client');
 
 	// Client
 	api.addFiles('oauth/client/oauth2-client.html', 'client');

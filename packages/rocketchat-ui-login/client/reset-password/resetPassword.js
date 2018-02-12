@@ -33,7 +33,7 @@ Template.resetPassword.events({
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
 					console.log(error);
-					swal({
+					modal.open({
 						title: t('Error_changing_password'),
 						type: 'error'
 					});
@@ -44,10 +44,16 @@ Template.resetPassword.events({
 				RocketChat.Button.reset(button);
 				if (error) {
 					console.log(error);
-					swal({
-						title: t('Error_changing_password'),
-						type: 'error'
-					});
+					if (error.error === 'totp-required') {
+						toastr.success(t('Password_changed_successfully'));
+						RocketChat.callbacks.run('userPasswordReset');
+						FlowRouter.go('login');
+					} else {
+						modal.open({
+							title: t('Error_changing_password'),
+							type: 'error'
+						});
+					}
 				} else {
 					FlowRouter.go('home');
 					toastr.success(t('Password_changed_successfully'));

@@ -1,7 +1,7 @@
 @echo off
 
 SET NODE_ENV="production"
-cd packages/rocketchat-livechat/app
+cd packages/rocketchat-livechat/.app
 call meteor npm install --production
 call meteor build --headless --directory .meteor/build/
 

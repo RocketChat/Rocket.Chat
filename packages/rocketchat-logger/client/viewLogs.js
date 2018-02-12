@@ -2,9 +2,10 @@
 this.stdout = new Mongo.Collection('stdout');
 
 Meteor.startup(function() {
-	return RocketChat.AdminBox.addOption({
+	RocketChat.AdminBox.addOption({
 		href: 'admin-view-logs',
 		i18nLabel: 'View_Logs',
+		icon: 'post',
 		permissionGranted() {
 			return RocketChat.authz.hasAllPermission('view-logs');
 		}

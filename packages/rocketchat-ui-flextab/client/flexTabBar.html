@@ -1,19 +1,87 @@
 <template name="flexTabBar">
-	<div class="flex-tab-container border-component-color {{opened}}">
-		<section class="flex-tab border-component-color">
-			<div class="content">
-				<button class="close-flex-tab secondary-font-color">
-					<span class="secondary-background-color"><i class="icon-cancel"></i></span>
-				</button>
-				{{> Template.dynamic template=template data=flexData}}
-			</div>
-		</section>
-		<div class="flex-tab-bar content-background-color" role="toolbar">
-			{{#each buttons}}
-				<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
-					<button aria-label="{{title}}"><i class="{{icon}}"></i></button>
+	{{#unless embeddedVersion}}
+		<div class="flex-tab-container border-component-color {{opened}}">
+			<section class="flex-tab border-component-color content-background-color">
+				<div class="content flex-tab__content">
+					<header class="contextual-bar__header">
+						{{#with headerData}}
+							<div class="contextual-bar__header-data">
+								{{> icon block="contextual-bar__header-icon" icon=icon}}
+								<h1 class="contextual-bar__header-title">{{_ label}}</h1>
+							</div>
+						{{/with}}
+						<button class="contextual-bar__header-close js-close close-flex-tab">
+							{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+						</button>
+					</header>
+					{{> Template.dynamic template=template data=flexData}}
 				</div>
-			{{/each}}
+			</section>
+			<div class="flex-tab-bar content-background-color" role="toolbar">
+				{{#each buttons}}
+					<div class="tab-button {{active}} {{visible}} {{class}}" title="{{title}}">
+						<button aria-label="{{title}}">
+							{{> icon block="tab-button-icon" icon=icon }}
+						</button>
+					</div>
+				{{/each}}
+			</div>
 		</div>
+	{{/unless}}
+</template>
+
+<template name="RoomsActionTab">
+	<div class="rc-room-actions">
+		{{#each buttons}}
+		<div class="rc-room-actions__action tab-button {{active}} {{visible}} {{class}} js-action">
+			<button class="rc-tooltip rc-tooltip--down rc-room-actions__button" aria-label="{{title}}">
+				{{> icon block="tab-button-icon" icon=icon }}
+			</button>
+		</div>
+		{{/each}}
+		{{# with moreButtons}}
+		<div class="rc-room-actions__action {{opened}}">
+			<button class="rc-tooltip rc-tooltip--down rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+			{{> icon block="tab-button-icon" icon="menu" }}
+			</button>
+		</div>
+		{{/with}}
 	</div>
 </template>
+
+<template name="RoomsActionMore">
+	<div class="rc-popover__header">
+			<div class="rc-popover__title">
+				{{_"More actions"}}
+			</div>
+			{{> icon block="rc-popover__close js-close" icon="plus" }}
+	</div>
+	<div class="rc-popover__container rc-room-actions__more-container">
+		<!-- <div class=""> -->
+		{{#each buttons}}
+			<div class="rc-room-actions__more-action tab-button {{active}} {{visible}} {{class}} js-action" title="{{title}}">
+				<button class="rc-tooltip rc-room-actions__button">
+					{{> icon block="tab-button-icon" icon=icon }}
+				</button>
+				<span class="rc-room-actions__description">{{title}}</span>
+			</div>
+		{{/each}}
+	<!-- </div> -->
+	</div>
+</template>
+
+<!-- <template name="RoomsActionContent">
+	{{#if template}}
+	<div class="rc-room-actions__content {{opened}}">
+		<section class="flex-tab border-component-color">
+			<header class="rc-room-actions__content-header">
+					{{> icon block="rc-room-actions__content-header-icon" icon="clip"}}
+					<h1 class="rc-room-actions__content-header-title">Title</h1>
+			</header>
+			<main class="rc-room-actions__content-main">
+					{{> Template.dynamic template=template data=flexData}}
+			</main>
+		</section>
+	</div>
+	{{/if}}
+</template> -->

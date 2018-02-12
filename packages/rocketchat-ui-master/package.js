@@ -10,16 +10,12 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	clipboard: '1.6.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
 		'templating',
-		'underscore',
+		'reactive-var',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'
 	]);
@@ -31,4 +27,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/main.js', 'client');
 
 	api.addFiles('server/inject.js', 'server');
+	api.addAssets('public/icons.svg', 'server');
+	api.addAssets('public/loading.css', 'server');
 });
