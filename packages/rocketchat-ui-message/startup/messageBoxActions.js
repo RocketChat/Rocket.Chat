@@ -1,4 +1,4 @@
-/* globals fileUpload chatMessages AudioRecorder device popover */
+/* globals fileUpload chatMessages AudioRecorder device popover modal */
 
 import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
@@ -52,20 +52,17 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
 	action({event}) {
 		event.preventDefault();
-		const input = document.createElement('input');
-		input.style.display = 'none';
-		input.type = 'file';
-		input.setAttribute('multiple', 'multiple');
-		document.body.appendChild(input);
+		const $input = $(document.createElement('input'));
+		$input.css('display', 'none');
+		$input.attr({
+			id: 'fileupload-input',
+			type: 'file',
+			multiple: 'multiple'
+		});
 
-		input.click();
+		$(document.body).append($input);
 
-		// Simple hack for cordova aka codegueira
-		if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-			input.click();
-		}
-
-		input.addEventListener('change', function(e) {
+		$input.one('change', function(e) {
 			const filesToUpload = [...e.target.files].map(file => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name)
@@ -75,10 +72,17 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 					name: file.name
 				};
 			});
-			fileUpload(filesToUpload);
-		}, {once: true});
 
-		input.remove();
+			fileUpload(filesToUpload);
+			$input.remove();
+		});
+
+		$input.click();
+
+		// Simple hack for cordova aka codegueira
+		if ((typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') || navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+			$input.click();
+		}
 	}
 });
 
@@ -90,8 +94,9 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 		const position = RocketChat.Geolocation.get();
 		const latitude = position.coords.latitude;
 		const longitude = position.coords.longitude;
-		const text = `<div class="location-preview"><img style="height: 250px; width: 250px;" src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') }" /></div>`;
-		swal({
+		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
+
+		modal.open({
 			title: t('Share_Location_Title'),
 			text,
 			showCancelButton: true,

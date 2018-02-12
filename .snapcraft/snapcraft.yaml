@@ -46,11 +46,12 @@ parts:
             - build-essential
             - nodejs
     rocketchat-server:
+        build-packages:
+            - curl
         plugin: dump
-        prepare: cd programs/server; npm install; cd npm/node_modules/meteor/rocketchat_google-vision; npm install grpc
+        prepare: curl -SLf "https://releases.rocket.chat/#{RC_VERSION}/download/" -o rocket.chat.tgz; tar xvf rocket.chat.tgz --strip 1; cd programs/server; npm install; cd npm/node_modules/meteor/rocketchat_google-vision; npm install grpc@1.6.6;
         after: [node]
-        source: https://download.rocket.chat/build/rocket.chat-#{RC_VERSION}.tgz
-        source-type: tar
+        source: .
         stage-packages:
             - graphicsmagick
         stage:

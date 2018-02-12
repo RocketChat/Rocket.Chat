@@ -12,14 +12,11 @@
 </template>
 <template name="accountProfile">
 	<section class="preferences-page">
-		<header class="preferences-page__header">
-			{{> burger}}
-			<h2 style="flex: 1 1; white-space: nowrap;">{{_ "Profile"}}</h2>
-			<div class="content" style="text-align: end; max-width: 649px;  flex: 1 1 100%">
+		{{#header sectionName="Profile" buttons=true}}
+			<div class="rc-header__section-button" style="max-width: 649px;">
 				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
 			</div>
-			<div style="flex: 1 1;"></div>
-		</header>
+		{{/header}}
 		<div class="preferences-page__content">
 			<form id="profile" autocomplete="off" class="container">
 				<fieldset class="rc-form-legend">
@@ -47,9 +44,23 @@
 													</label>
 													<input type="file" name="" value="" id="upload-avatar" style="display:none;">
 												</div>
+												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"  aria-label="{{_ "Use_url_for_avatar" }}">
+													<label class="rc-select-avatar__upload-label avatar">
+														{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+													</label>
+												</div>
 												{{#each service in services}}
 													{{ > avatarService service}}
 												{{/each}}
+												<div class="rc-input">
+
+													<label class="rc-input__label">
+														<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
+														<div class="rc-input__wrapper">
+															<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+														</div>
+													</label>
+												</div>
 											</div>
 										{{else}}
 											<div class="rc-select-avatar__loading">
@@ -60,14 +71,19 @@
 							</div>
 						</div>
 						<div class="rc-form-group rc-grid">
+							{{# with canChange=allowRealNameChange}}
 							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Name"}}</div>
 									<div class="rc-input__wrapper">
-										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" >
+										<input type="text" class="rc-input__element" name="realname" id="realname" placeholder="{{_ "Name_Placeholder" }}" value="{{realname}}" {{ifThenElse canChange '' 'disabled'}}>
 									</div>
 								</label>
+								{{# unless canChange}}
+									<div class="rc-input__description">{{_ 'RealName_Change_Disabled'}}</div>
+								{{/unless}}
 							</div>
+							{{/with}}
 							{{# with canChange=allowUsernameChange}}
 							<div class="rc-input rc-w50 padded {{#if usernameInvalid}}rc-input--error{{/if}} {{#unless usernameAvaliable}}rc-input--error{{/unless}}">
 								<label class="rc-input__label">

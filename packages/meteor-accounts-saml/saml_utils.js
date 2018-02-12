@@ -1,12 +1,12 @@
 /* globals SAML:true */
 
-const zlib = Npm.require('zlib');
-const xml2js = Npm.require('xml2js');
-const xmlCrypto = Npm.require('xml-crypto');
-const crypto = Npm.require('crypto');
-const xmldom = Npm.require('xmldom');
-const querystring = Npm.require('querystring');
-const xmlbuilder = Npm.require('xmlbuilder');
+import zlib from 'zlib';
+import xml2js from 'xml2js';
+import xmlCrypto from 'xml-crypto';
+import crypto from 'crypto';
+import xmldom from 'xmldom';
+import querystring from 'querystring';
+import xmlbuilder from 'xmlbuilder';
 
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
