@@ -1,9 +1,8 @@
-import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
+import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
 import admin from '../../pageobjects/administration.page';
-import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
+import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
-import {layoutLink} from '../../pageobjects/flex-tab.page';
-import {manageSettingsPerm, expandSBP, layoutTitelPerm, layoutTitelSetting, contentExpand, saveSettings} from '../../pageobjects/main-content.page';
+import { manageSettingsPerm, expandSBP, layoutTitelPerm, layoutTitelSetting, contentExpand, saveSettings } from '../../pageobjects/main-content.page';
 
 describe('[Rocket.Chat Settings based permissions]', function () {
 
@@ -22,7 +21,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			expandSBP.click();
 		});
 
-		it('Set Permission for User to manage settings', function(done) {
+		it('Set Permission for User to manage settings', function (done) {
 			admin.rolesPermissionGrid.waitForVisible(5000);
 
 			if (manageSettingsPerm.isSelected()) {
@@ -36,7 +35,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			done()
 		});
 
-		it('Set Permission for User to change titelpage titel', function(done) {
+		it('Set Permission for User to change titelpage titel', function (done) {
 			admin.rolesPermissionGrid.waitForVisible(5000);
 			if (layoutTitelPerm.isSelected()) {
 				console.log('Value is checked:', layoutTitelPerm.isSelected());
@@ -49,15 +48,15 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			done()
 		});
 
-		after(()=> {
+		after(() => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 		});
 	});
 
-	describe('Test new User settings', function() {
+	describe('Test new User settings', function () {
 
-		before(()=> {
+		before(() => {
 			checkIfUserIsValid(username, email, password);
 			sideNav.accountMenu.waitForVisible(5000);
 			sideNav.accountMenu.click();
@@ -65,22 +64,22 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			sideNav.admin.click();
 		});
 
-		it('Change Titelpage title is allowed', function(done) {
-			layoutLink.waitForVisible(5000);
-			layoutLink.click();
+		it('Change Titelpage title is allowed', function (done) {
+			admin.layoutLink.waitForVisible(5000);
+			admin.layoutLink.click();
 			contentExpand.waitForVisible(5000);
 			contentExpand.click();
 			layoutTitelSetting.waitForVisible(5000);
 			layoutTitelSetting.setValue(newTitle);
 			browser.pause(2000);
-			console.log('New Titel value:', layoutTitelSetting.getValue() );
+			console.log('New Titel value:', layoutTitelSetting.getValue());
 			saveSettings.click();
 
 			// layoutTitelSetting.setValue('');
 			// browser.pause(2000);
 			// console.log('New Titel value:', layoutTitelSetting.getValue() );
 			// saveSettings.click();
-            //
+			//
 			// layoutTitelSetting.setValue(newTitle);
 			// browser.pause(2000);
 			// console.log('New Titel value:', layoutTitelSetting.getValue() );
@@ -89,7 +88,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 		});
 	});
 
-	describe('Cleanup', function() {
+	describe('Cleanup', function () {
 
 		before(() => {
 			sideNav.preferencesClose.waitForVisible(5000);
@@ -102,7 +101,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			sideNav.admin.click();
 		});
 
-		it('Cleanup permissions', function(done) {
+		it('Cleanup permissions', function (done) {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.accountMenu.waitForVisible(5000);
@@ -123,7 +122,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			done()
 		});
 
-		after(()=> {
+		after(() => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			sideNav.logoutRocketchat();

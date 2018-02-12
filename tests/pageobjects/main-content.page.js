@@ -74,15 +74,15 @@ class MainContent extends Page {
 
 	// Settings based permissions elements
 	get manageSettingsPerm() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(2) > div > table > tbody > tr:nth-child(44) > td:nth-child(6) > input');
+		return browser.element('[name="perm[user][manage-selected-settings]"]');
 	}
 
 	get expandSBP() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-title > div.section-title-right > button');
+		return browser.element('.button.primary.js-toggle-setting-permissions');
 	}
 
 	get layoutTitelPerm() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-content.border-component-color > table > tbody > tr:nth-child(289) > td:nth-child(6) > input');
+		return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');
 	}
 
 	get layoutTitelSetting() {
@@ -90,18 +90,18 @@ class MainContent extends Page {
 	}
 
 	get contentExpand() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div.section.section-collapsed > div.section-title > div.section-title-right > button');
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div > div.section-title > div.section-title-right > button');
 	}
 
 	get saveSettings() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > header > div.submit > button.button.primary.save');
+		return browser.element('.rc-button.rc-button--primary.save');
 	}
 
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 5000);
@@ -127,14 +127,14 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageEqualsText(text) {
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 5000);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			browser.waitForVisible('.message:last-child .attachment-text', 5000);
 			return browser.getText('.message:last-child .attachment-text') === text;
 		}, 5000);
@@ -142,7 +142,7 @@ class MainContent extends Page {
 
 	// Wait for the last message author username to equal the provided text
 	waitForLastMessageUserEqualsText(text) {
-		browser.waitUntil(function() {
+		browser.waitUntil(function () {
 			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
 			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
 		}, 5000);
