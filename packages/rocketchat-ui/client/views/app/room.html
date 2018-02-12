@@ -9,46 +9,19 @@
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{> globalAnnouncement }}
 				{{#unless embeddedVersion}}
-					<header class="fixed-title content-background-color border-component-color">
-						{{> burger}}
-						<h2>
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
-							{{/if}}
-
-							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
-
-							<span class="room-title">{{roomName}}</span>
-							{{#if secondaryName}}
-								<span class="secondary-name">@{{secondaryName}}</span>
-							{{/if}}
-							{{#if sentimentSmile}}
-								<span class="sentiment">{{sentimentSmile}}</span>
-							{{/if}}
-							{{#if isTranslated}}
-								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-							{{/if}}
-							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-						</h2>
-
-						{{#with toolbarButtons}}
-							<div class="iframe-toolbar">
-								{{#each buttons}}
-									<button class="{{id}}">
-										{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-										{{label}}
-									</button>
-								{{/each}}
+					{{# header}}
+						{{#with flexData}}
+							<div class="rc-header__block rc-header__block-action">
+								{{> RoomsActionTab}}
 							</div>
 						{{/with}}
-					</header>
-
+					{{/header}}
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement">
+							<div class="fixed-title announcement" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
 								{{{RocketChatMarkdown roomAnnouncement}}}
 							</div>
 							{{/if}}
@@ -80,18 +53,18 @@
 									{{#if error}}
 										<div class="upload-progress-text">
 											{{error}}
-											<button>
-												{{_ "close"}}
-											</button>
 										</div>
+										<button>
+											{{_ "close"}}
+										</button>
 									{{else}}
 										<div class="upload-progress-progress" style="width: {{percentage}}%;"></div>
 										<div class="upload-progress-text">
-											{{name}}... {{percentage}}%
-											<button>
-												{{_ "Cancel"}}
-											</button>
+											[{{percentage}}%] {{name}}
 										</div>
+										<button>
+											{{_ "Cancel"}}
+										</button>
 									{{/if}}
 								</div>
 							{{/each}}
@@ -158,7 +131,7 @@
 						</footer>
 					</div>
 					{{#with flexData}}
-					{{> flexTabBar}}
+						{{> contextualBar}}
 					{{/with}}
 				</div>
 			</section>

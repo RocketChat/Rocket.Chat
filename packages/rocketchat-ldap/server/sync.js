@@ -1,5 +1,6 @@
 /* globals slugify, SyncedCron */
 
+import _ from 'underscore';
 import LDAP from './ldap';
 
 const logger = new Logger('LDAPSync', {});
@@ -10,6 +11,15 @@ export function slug(text) {
 	}
 	text = slugify(text, '.');
 	return text.replace(/[^0-9a-z-_.]/g, '');
+}
+
+
+export function getPropertyValue(obj, key) {
+	try {
+		return _.reduce(key.split('.'), (acc, el) => acc[el], obj);
+	} catch (err) {
+		return undefined;
+	}
 }
 
 
@@ -87,16 +97,45 @@ export function getDataToSyncUserData(ldapUser, user) {
 					break;
 
 				default:
-					if (!_.find(whitelistedUserFields, (el) => el === userField.split('.')[0])) {
+					const [outerKey, innerKeys] = userField.split(/\.(.+)/);
+
+					if (!_.find(whitelistedUserFields, (el) => el === outerKey)) {
 						logger.debug(`user attribute not whitelisted: ${ userField }`);
 						return;
 					}
 
-					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser);
-					const userFieldValue = _.reduce(userField.split('.'), (acc, el) => acc[el], user);
+					if (outerKey === 'customFields') {
+						let customFieldsMeta;
 
-					if (tmpLdapField && userFieldValue !== tmpLdapField) {
-						userData[userField] = tmpLdapField;
+						try {
+							customFieldsMeta = JSON.parse(RocketChat.settings.get('Accounts_CustomFields'));
+						} catch (e) {
+							logger.debug('Invalid JSON for Custom Fields');
+							return;
+						}
+
+						if (!getPropertyValue(customFieldsMeta, innerKeys)) {
+							logger.debug(`user attribute does not exist: ${ userField }`);
+							return;
+						}
+					}
+
+					const tmpUserField = getPropertyValue(user, userField);
+					const tmpLdapField = RocketChat.templateVarHandler(ldapField, ldapUser);
+
+					if (tmpLdapField && tmpUserField !== tmpLdapField) {
+						// creates the object structure instead of just assigning 'tmpLdapField' to
+						// 'userData[userField]' in order to avoid the "cannot use the part (...)
+						// to traverse the element" (MongoDB) error that can happen. Do not handle
+						// arrays.
+						// TODO: Find a better solution.
+						const dKeys = userField.split('.');
+						const lastKey = _.last(dKeys);
+						_.reduce(dKeys, (obj, currKey) =>
+							(currKey === lastKey)
+								? obj[currKey] = tmpLdapField
+								: obj[currKey] = obj[currKey] || {}
+							, userData);
 						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
 			}
@@ -129,7 +168,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
 	logger.debug('user', {'email': user.email, '_id': user._id});
-	logger.debug('ldapUser', ldapUser);
+	logger.debug('ldapUser', ldapUser.object);
 
 	const userData = getDataToSyncUserData(ldapUser, user);
 	if (user && user._id && userData) {

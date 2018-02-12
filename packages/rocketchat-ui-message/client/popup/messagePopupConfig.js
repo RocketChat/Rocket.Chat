@@ -1,4 +1,6 @@
 /* globals filteredUsersMemory */
+import _ from 'underscore';
+
 filteredUsersMemory = new Mongo.Collection(null);
 
 Meteor.startup(function() {
@@ -308,6 +310,10 @@ Template.messagePopupConfig.helpers({
 				getInput: self.getInput,
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
+
+					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+						return [];
+					}
 
 					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];

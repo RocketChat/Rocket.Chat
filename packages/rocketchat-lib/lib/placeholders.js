@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.placeholders = {};
 
 RocketChat.placeholders.replace = function(str, data) {
@@ -10,8 +12,8 @@ RocketChat.placeholders.replace = function(str, data) {
 
 	if (data) {
 		str = str.replace(/\[name\]/g, data.name || '');
-		str = str.replace(/\[fname\]/g, _.strLeft(data.name, ' ') || '');
-		str = str.replace(/\[lname\]/g, _.strRightBack(data.name, ' ') || '');
+		str = str.replace(/\[fname\]/g, s.strLeft(data.name, ' ') || '');
+		str = str.replace(/\[lname\]/g, s.strRightBack(data.name, ' ') || '');
 		str = str.replace(/\[email\]/g, data.email || '');
 		str = str.replace(/\[password\]/g, data.password || '');
 		str = str.replace(/\[User\]/g, data.user || '');

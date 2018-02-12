@@ -5,12 +5,12 @@ class MainContent extends Page {
 	get mainContent() { return browser.element('.main-content'); }
 
 	// Main Content Header (Channel Title Area)
-	get emptyFavoriteStar() { return browser.element('.toggle-favorite .icon-star-empty'); }
-	get favoriteStar() { return browser.element('.toggle-favorite .favorite-room'); }
-	get channelTitle() { return browser.element('.room-title'); }
+	get emptyFavoriteStar() { return browser.element('.rc-header__toggle-favorite.empty'); }
+	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
+	get channelTitle() { return browser.element('.rc-header__name'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
@@ -33,7 +33,7 @@ class MainContent extends Page {
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
-	get messageActionMenu() { return browser.element('.rc-popover__content'); }
+	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
@@ -60,7 +60,7 @@ class MainContent extends Page {
 	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
 	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
 	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
-	get emojiPickerFilter() { return browser.element('.emoji-picker .emoji-filter'); }
+	get emojiPickerFilter() { return browser.element('.emoji-picker .js-emojipicker-search'); }
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
@@ -74,15 +74,15 @@ class MainContent extends Page {
 
 	// Settings based permissions elements
 	get manageSettingsPerm() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(2) > div > table > tbody > tr:nth-child(44) > td:nth-child(6) > input');
+		return browser.element('[name="perm[user][manage-selected-settings]"]');
 	}
 
 	get expandSBP() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-title > div.section-title-right > button');
+		return browser.element('.button.primary.js-toggle-setting-permissions');
 	}
 
 	get layoutTitelPerm() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > section > div > div:nth-child(3) > div > div.section-content.border-component-color > table > tbody > tr:nth-child(289) > td:nth-child(6) > input');
+		return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');
 	}
 
 	get layoutTitelSetting() {
@@ -90,11 +90,11 @@ class MainContent extends Page {
 	}
 
 	get contentExpand() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div.section.section-collapsed > div.section-title > div.section-title-right > button');
+		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > div > div > div > div.section-title > div.section-title-right > button');
 	}
 
 	get saveSettings() {
-		return browser.element('#rocket-chat > div.rc-old.main-content.content-background-color > section > header > div.submit > button.button.primary.save');
+		return browser.element('.rc-button.rc-button--primary.save');
 	}
 
 	// Sends a message and wait for the message to equal the text sent
@@ -116,7 +116,8 @@ class MainContent extends Page {
 	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
-		this.messageInput.setValue(text);
+		this.messageInput.clearElement();
+		this.messageInput.addValue(text);
 	}
 
 	//uploads a file in the given filepath (url).

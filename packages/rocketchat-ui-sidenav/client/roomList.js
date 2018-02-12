@@ -1,5 +1,7 @@
 /* globals RocketChat */
-import {UiTextContext} from 'meteor/rocketchat:lib';
+import _ from 'underscore';
+
+import { UiTextContext } from 'meteor/rocketchat:lib';
 
 Template.roomList.helpers({
 	rooms() {
@@ -16,25 +18,39 @@ Template.roomList.helpers({
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
 		}
 
-
 		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms');
 
 		const query = {
 			open: true
 		};
-		const sort = {'t': 1, 'name': 1};
+		const sort = { 't': 1 };
+		if (this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name')) {
+			sort.fname = 1;
+		} else {
+			sort.name = 1;
+		}
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
 		} else {
 			let types = [this.identifier];
+			const user = Meteor.user();
+
 			if (this.identifier === 'activity') {
 				types = ['c', 'p', 'd'];
 			}
-			if (this.identifier === 'channels' || this.identifier === 'unread') {
+
+			if (this.identifier === 'channels' || this.identifier === 'unread' || this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
-			const user = Meteor.user();
-			if (user && user.settings && user.settings.preferences && user.settings.preferences.roomsListExhibitionMode === 'unread') {
+
+			if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
+				query.tokens = { $exists: true };
+			} else if (this.identifier === 'c' || this.identifier === 'p') {
+				query.tokens = { $exists: false };
+			}
+
+			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
+
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
@@ -80,6 +96,10 @@ Template.roomList.helpers({
 		const instance = Template.instance();
 		const roomType = (instance.data.header || instance.data.identifier);
 		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+	},
+
+	showRoomCounter() {
+		return RocketChat.getUserPreference(Meteor.user(), 'roomCounterSidebar');
 	}
 });
 

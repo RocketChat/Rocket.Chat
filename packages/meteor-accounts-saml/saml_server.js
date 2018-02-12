@@ -1,5 +1,6 @@
 /* globals RoutePolicy, SAML */
 /* jshint newcap: false */
+import _ from 'underscore';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -11,8 +12,8 @@ if (!Accounts.saml) {
 	};
 }
 
-const fiber = Npm.require('fibers');
-const connect = Npm.require('connect');
+import fiber from 'fibers';
+import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**

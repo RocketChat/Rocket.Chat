@@ -20,7 +20,7 @@
  * Transparency variables
  */
 
-@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darkest: rgba(17, 12, 12, 0.5);
 @transparent-darker: rgba(0, 0, 0, 0.15);
 @transparent-dark: rgba(0, 0, 0, 0.05);
 @transparent-light: rgba(255, 255, 255, 0.1);
@@ -448,7 +448,7 @@ input:-webkit-autofill {
 
 .page-list,
 .page-settings {
-	a {
+	a:not(.rc-button) {
 		color: @primary-font-color;
 
 		&:hover {
@@ -567,25 +567,6 @@ input:-webkit-autofill {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-.first-unread {
-	.body {
-		&::before {
-			background: @transparent-darker;
-		}
-
-		&::after {
-			color: @primary-font-color;
-		}
-	}
-}
-
-.first-unread-opaque {
-	.body {
-		&::before {
-			background: @transparent-dark;
-		}
-	}
-}
 
 .message {
 	&.new-day::before {
@@ -681,6 +662,16 @@ input:-webkit-autofill {
 	}
 }
 
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
+	}
+}
+
 .message-popup.search-results-list {
 	background-color: lighten(@primary-background-color, 2.5%);
 
@@ -693,20 +684,6 @@ input:-webkit-autofill {
  * Flex tabs / admin fly-out panels
  */
 .flex-tab {
-	input,
-	select,
-	textarea {
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
-		}
-	}
-
-	.content,
-	.user-view,
-	.list-view {
-		background-color: @secondary-background-color;
-	}
-
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
@@ -718,10 +695,6 @@ input:-webkit-autofill {
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
-		}
-
-		.button {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 
 		.input.checkbox.toggle {

@@ -1,7 +1,8 @@
 /* globals getAvatarUrlFromUsername */
+import _ from 'underscore';
+import URL from 'url';
+import QueryString from 'querystring';
 
-const URL = Npm.require('url');
-const QueryString = Npm.require('querystring');
 const recursiveRemove = (message, deep = 1) => {
 	if (message) {
 		if ('attachments' in message && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
