@@ -91,17 +91,17 @@ Meteor.startup(function() {
 		}
 	};
 
-	const defaultIdleTimeLimit = 5;
+	const defaultIdleTimeLimit = 5; // minutes
 
 	Meteor.subscribe('userData', function() {
 		const user = Meteor.user();
 		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
 
 		if (!userHasPreferences(user)) {
-			UserPresence.awayTime = defaultIdleTimeLimit * 60000;
+			UserPresence.awayTime = defaultIdleTimeLimit * 60000; // convert to milliseconds
 			UserPresence.start();
 		} else {
-			UserPresence.awayTime = user.settings.preferences.idleTimeLimit * 60000 || defaultIdleTimeLimit * 60000;
+			UserPresence.awayTime = (user.settings.preferences.idleTimeLimit || defaultIdleTimeLimit) * 60000; // convert to milliseconds
 
 			if (user.settings.preferences.hasOwnProperty('enableAutoAway')) {
 				user.settings.preferences.enableAutoAway && UserPresence.start();
