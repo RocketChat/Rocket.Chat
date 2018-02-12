@@ -362,6 +362,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 				{
 					key: 'all',
 					i18nLabel: 'Email_Notification_Mode_All'
+				},
+				{
+					key: 'joined',
+					i18nLabel: 'Email_Notification_Mode_Joined_Rooms'
 				}
 			],
 			'public': true,

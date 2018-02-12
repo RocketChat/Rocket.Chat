@@ -35,7 +35,7 @@ function getEmailContent({ messageContent, message, user, room }) {
 	}
 
 	if (message.attachments.length > 0) {
-		const [ attachment ] = message.attachments;
+		const [attachment] = message.attachments;
 
 		let content = '';
 
@@ -169,11 +169,16 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			usersOfMention.forEach((user) => {
 				const emailNotificationMode = RocketChat.getUserPreference(user, 'emailNotificationMode');
 				if (usersToSendEmail[user._id] === 'default') {
+					/*
+					Default preferences for email notifications are a bit ... different compared to other notification preferences:
+					- "all" was meant to mean "all mentions"
+					- "joined" has the wider semantic compared to "all" since it means to be notified of all messages in rooms where the user joined
+					*/
 					if (emailNotificationMode === 'all') { //Mention/DM
 						usersToSendEmail[user._id] = 'mention';
-					} else {
-						return;
-					}
+					} else if (emailNotificationMode === 'joined') {
+						usersToSendEmail[user._id] = 'all';
+					} else { return; }
 				}
 
 				if (usersToSendEmail[user._id] === 'direct') {

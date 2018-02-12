@@ -4,11 +4,11 @@ import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
 import { manageSettingsPerm, expandSBP, layoutTitelPerm, layoutTitelSetting, contentExpand, saveSettings } from '../../pageobjects/main-content.page';
 
-describe('[Rocket.Chat Settings based permissions]', function () {
+describe('[Rocket.Chat Settings based permissions]', function() {
 
 	const newTitle = 'Testtitle';
 
-	describe('Give User Permissions', function () {
+	describe('Give User Permissions', function() {
 		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearch.waitForVisible(10000);
@@ -21,31 +21,29 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			expandSBP.click();
 		});
 
-		it('Set Permission for User to manage settings', function (done) {
+		it('Set Permission for User to manage settings', function(done) {
 			admin.rolesPermissionGrid.waitForVisible(5000);
 
 			if (manageSettingsPerm.isSelected()) {
 				console.log('Value is checked', manageSettingsPerm.isSelected());
-			}
-			else {
+			} else {
 				manageSettingsPerm.click();
 				console.log('Value was unchecked', manageSettingsPerm.isSelected());
 			}
 			expect(manageSettingsPerm.isSelected()).to.equal(true);
-			done()
+			done();
 		});
 
-		it('Set Permission for User to change titelpage titel', function (done) {
+		it('Set Permission for User to change titelpage titel', function(done) {
 			admin.rolesPermissionGrid.waitForVisible(5000);
 			if (layoutTitelPerm.isSelected()) {
 				console.log('Value is checked:', layoutTitelPerm.isSelected());
-			}
-			else {
+			} else {
 				layoutTitelPerm.click();
 				console.log('Value was unchecked, now:', layoutTitelPerm.isSelected());
 			}
 			expect(layoutTitelPerm.isSelected()).to.equal(true);
-			done()
+			done();
 		});
 
 		after(() => {
@@ -54,7 +52,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 		});
 	});
 
-	describe('Test new User settings', function () {
+	describe('Test new User settings', function() {
 
 		before(() => {
 			checkIfUserIsValid(username, email, password);
@@ -64,7 +62,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			sideNav.admin.click();
 		});
 
-		it('Change Titelpage title is allowed', function (done) {
+		it('Change Titelpage title is allowed', function(done) {
 			admin.layoutLink.waitForVisible(5000);
 			admin.layoutLink.click();
 			contentExpand.waitForVisible(5000);
@@ -84,11 +82,11 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			// browser.pause(2000);
 			// console.log('New Titel value:', layoutTitelSetting.getValue() );
 			// saveSettings.click();
-			done()
+			done();
 		});
 	});
 
-	describe('Cleanup', function () {
+	describe('Cleanup', function() {
 
 		before(() => {
 			sideNav.preferencesClose.waitForVisible(5000);
@@ -101,7 +99,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 			sideNav.admin.click();
 		});
 
-		it('Cleanup permissions', function (done) {
+		it('Cleanup permissions', function(done) {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.accountMenu.waitForVisible(5000);
@@ -119,7 +117,7 @@ describe('[Rocket.Chat Settings based permissions]', function () {
 
 			layoutTitelPerm.click();
 			expect(layoutTitelPerm.isSelected()).to.equal(false);
-			done()
+			done();
 		});
 
 		after(() => {

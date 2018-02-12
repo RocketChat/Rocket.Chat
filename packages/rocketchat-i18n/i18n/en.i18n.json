@@ -583,6 +583,7 @@
   "Email_Header_Description": "You may use the following placeholders: <br /><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Email_Notification_Mode": "Offline Email Notifications",
   "Email_Notification_Mode_All": "Every Mention/DM",
+  "Email_Notification_Mode_Joined_Rooms": "All messages in joined rooms",
   "Email_Notification_Mode_Disabled": "Disabled",
   "Email_or_username": "Email or username",
   "Email_Placeholder": "Please enter your email address...",

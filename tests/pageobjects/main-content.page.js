@@ -101,7 +101,7 @@ class MainContent extends Page {
 	sendMessage(text) {
 		this.setTextToInput(text);
 		this.sendBtn.click();
-		browser.waitUntil(function () {
+		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 5000);
@@ -127,14 +127,14 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageEqualsText(text) {
-		browser.waitUntil(function () {
+		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .body', 5000);
 			return browser.getText('.message:last-child .body') === text;
 		}, 5000);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		browser.waitUntil(function () {
+		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .attachment-text', 5000);
 			return browser.getText('.message:last-child .attachment-text') === text;
 		}, 5000);
@@ -142,7 +142,7 @@ class MainContent extends Page {
 
 	// Wait for the last message author username to equal the provided text
 	waitForLastMessageUserEqualsText(text) {
-		browser.waitUntil(function () {
+		browser.waitUntil(function() {
 			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
 			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
 		}, 5000);

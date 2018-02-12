@@ -101,7 +101,7 @@ class FlexTab extends Page {
 	get usersActivate() { return browser.element('.rc-popover__item[data-id=activate]'); }
 	get usersDeactivate() { return browser.element('.rc-popover__item[data-id=deactivate]'); }
 
-	getUserEl(username) { return browser.element(`.flex-tab button[title="${username}"] > p`); }
+	getUserEl(username) { return browser.element(`.flex-tab button[title="${ username }"] > p`); }
 
 	archiveChannel() {
 		this.archiveBtn.waitForVisible();
@@ -127,11 +127,11 @@ class FlexTab extends Page {
 	addRole(role) {
 		this.usersAddUserRoleList.waitForVisible(5000);
 		this.usersAddUserRoleList.click();
-		browser.waitForVisible(`option[value=${role}]`, 5000);
-		browser.click(`option[value=${role}]`);
+		browser.waitForVisible(`option[value=${ role }]`, 5000);
+		browser.click(`option[value=${ role }]`);
 		this.usersAddUserRoleButton.waitForVisible(5000);
 		this.usersAddUserRoleButton.click();
-		browser.waitForVisible(`.remove-role=${role}`);
+		browser.waitForVisible(`.remove-role=${ role }`);
 	}
 
 	operateFlexTab(desiredTab, desiredState) {
