@@ -15,7 +15,7 @@ Meteor.startup(function() {
 			}
 
 			FlowRouter.goToRoomById(message.rid);
-			RocketChat.MessageAction.hideDropDown();
+			// RocketChat.MessageAction.hideDropDown();
 
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
@@ -59,8 +59,11 @@ Template.messageSearch.helpers({
 
 	message() {
 		return _.extend(this, { customClass: 'search', actionContext: 'search'});
-	}
+	},
 
+	allowGlobalSearch() {
+		return RocketChat.settings.get('Message_GlobalSearch');
+	}
 });
 
 Template.messageSearch.events({

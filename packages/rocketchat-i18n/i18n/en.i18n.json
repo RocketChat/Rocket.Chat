@@ -1242,6 +1242,7 @@
   "Message_DateFormat_Description": "See also: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Moment.js</a>",
   "Message_deleting_blocked": "This message cannot be deleted anymore",
   "Message_editing": "Message editing",
+  "Message_GlobalSearch": "Global Search",
   "Message_GroupingPeriod": "Grouping Period (in seconds)",
   "Message_GroupingPeriodDescription": "Messages will be grouped with previous message if both are from the same user and the elapsed time was less than the informed time in seconds.",
   "Message_HideType_au": "Hide \"User Added\" messages",
