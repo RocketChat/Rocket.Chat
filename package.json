@@ -160,6 +160,7 @@
 		"querystring": "0.2.0",
 		"redis": "2.2.5",
 		"semver": "^5.4.1",
+		"sharp": "^0.19.0",
 		"slack-client": "2.0.6",
 		"speakeasy": "2.0.0",
 		"tar-stream": "1.5.5",

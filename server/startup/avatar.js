@@ -1,5 +1,6 @@
-/* globals FileUpload, RocketChatFile */
+/* globals FileUpload */
 import _ from 'underscore';
+import sharp from 'sharp';
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -79,16 +80,18 @@ Meteor.startup(function() {
 					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
 
-				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\">\n<rect width=\"100%\" height=\"100%\" rx=\"6\" ry=\"6\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="50">\n${ initials }\n</text>\n</svg>`;
+				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="50">\n${ initials }\n</text>\n</svg>`;
 
-				if (RocketChat.Info.GraphicsMagick.enabled || RocketChat.Info.ImageMagick.enabled) {
-					const svgBuffer = new Buffer(svg);
-					res.setHeader('Content-Type', 'image/png');
-					RocketChatFile.gm(svgBuffer).stream('png').pipe(res);
-				} else {
-					res.write(svg);
-					res.end();
+				if (['png', 'jpg', 'jpeg'].includes(req.query.format)) {
+					res.setHeader('Content-Type', `image/${ req.query.format }`);
+					sharp(new Buffer(svg))
+						.toFormat(req.query.format)
+						.pipe(res);
+					return;
 				}
+
+				res.write(svg);
+				res.end();
 				return;
 			}
 		}
