@@ -17,8 +17,7 @@ Package.registerBuildPlugin({
 });
 
 Npm.depends({
-	'ua-parser-js': '0.7.10',
-	'uglify-js': '2.7.5'
+	'ua-parser-js': '0.7.17'
 });
 
 Package.onUse(function(api) {

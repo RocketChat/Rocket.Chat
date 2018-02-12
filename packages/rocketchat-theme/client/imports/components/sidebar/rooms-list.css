@@ -3,6 +3,7 @@
 .rooms-list {
 	position: relative;
 
+	overflow-x: hidden;
 	overflow-y: scroll;
 
 	flex: 1 1 auto;
