@@ -266,13 +266,18 @@ Template.message.helpers({
 		}
 	},
 	channelName() {
-		return Session.get(`roomData${ this.rid }`).name;
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		return subscription && subscription.name;
 	},
 	roomIcon() {
-		return RocketChat.roomTypes.getIcon(Session.get(`roomData${ this.rid }`).t);
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return RocketChat.roomTypes.getIcon(room && room.t);
 	},
 	fromSearch() {
-		return (this.customClass==='search');
+		return this.customClass === 'search';
 	},
 	actionContext() {
 		return this.actionContext;
