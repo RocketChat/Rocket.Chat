@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 	if (s.trim(RocketChat.settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;

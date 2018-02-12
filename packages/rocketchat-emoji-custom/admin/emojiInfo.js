@@ -47,7 +47,7 @@ Template.emojiInfo.events({
 		const emoji = instance.emoji.get();
 		if (emoji != null) {
 			const _id = emoji._id;
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Emoji_Delete_Warning'),
 				type: 'warning',
@@ -58,14 +58,11 @@ Template.emojiInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, function() {
-				swal.disableButtons();
-
 				Meteor.call('deleteEmojiCustom', _id, (error/*, result*/) => {
 					if (error) {
-						handleError(error);
-						swal.enableButtons();
+						return handleError(error);
 					} else {
-						swal({
+						modal.open({
 							title: t('Deleted'),
 							text: t('Custom_Emoji_Has_Been_Deleted'),
 							type: 'success',

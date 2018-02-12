@@ -1,26 +1,55 @@
 <template name="customFieldsForm">
-	{{#each customFields}}
-		{{#if $eq field.type 'select'}}
-			<div class="input-line">
-				<label for="{{fieldName}}">{{_ fieldName}}</label>
-				<div>
-					<select name="{{fieldName}}" data-customfield="true">
-						{{#each field.options}}
-							<option value="{{.}}" selected="{{selectedField . ..}}">{{_ .}}</option>
-						{{/each}}
-					</select>
-					<div class="input-error"></div>
-				</div>
+{{#if customFields}}
+	<div class="rc-form-group rc-grid">
+		{{#each customFields}}
+			<div class="rc-input rc-w50 padded">
+				{{#if $eq field.type 'select'}}
+					{{# unless ../new}}
+						<div class="input-line">
+							<label for="{{fieldName}}">{{_ fieldName}}</label>
+							<div>
+								<select name="{{fieldName}}" data-customfield="true">
+									{{#each field.options}}
+										<option value="{{.}}" selected="{{selectedField . ..}}">{{_ .}}</option>
+									{{/each}}
+								</select>
+								<div class="input-error"></div>
+							</div>
+						</div>
+					{{else}}
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ fieldName}}</div>
+							<div class="rc-input__wrapper">
+								<select name="{{fieldName}}" data-customfield="true" class="rc-input__element">
+									<option></option>
+									{{#each field.options}}
+										<option value="{{.}}" selected="{{selectedField . ..}}">{{_ .}}</option>
+									{{/each}}
+								</select>
+							</div>
+						</label>
+					{{/unless}}
+				{{/if}}
+				{{#if $eq field.type 'text'}}
+					{{# unless ../new}}
+						<div class="input-line">
+							<label for="{{fieldName}}">{{_ fieldName}}</label>
+							<div>
+								<input type="text" name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{fieldValue}}" maxlength="{{field.maxLength}}" />
+								<div class="input-error"></div>
+							</div>
+						</div>
+					{{else}}
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ fieldName}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" class="rc-input__element"  name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{fieldValue}}" maxlength="{{field.maxLength}}">
+							</div>
+						</label>
+					{{/unless}}
+				{{/if}}
 			</div>
-		{{/if}}
-		{{#if $eq field.type 'text'}}
-			<div class="input-line">
-				<label for="{{fieldName}}">{{_ fieldName}}</label>
-				<div>
-					<input type="text" name="{{fieldName}}" id="{{fieldName}}" data-customfield="true" value="{{fieldValue}}" maxlength="{{field.maxLength}}" />
-					<div class="input-error"></div>
-				</div>
-			</div>
-		{{/if}}
-	{{/each}}
+		{{/each}}
+	</div>
+{{/if}}
 </template>

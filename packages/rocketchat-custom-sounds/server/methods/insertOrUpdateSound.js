@@ -1,4 +1,6 @@
 /* globals RocketChatFileCustomSoundsInstance */
+import s from 'underscore.string';
+
 Meteor.methods({
 	insertOrUpdateSound(soundData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-sounds')) {

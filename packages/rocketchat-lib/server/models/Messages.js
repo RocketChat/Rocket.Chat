@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	constructor() {
 		super('message');
@@ -84,6 +86,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findForUpdates(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			_updatedAt: {
+				$gt: timestamp
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -264,9 +279,29 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	findOneBySlackTs(slackTs) {
-		const query =	{slackTs};
+		const query = {slackTs};
 
 		return this.findOne(query);
+	}
+
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+			t: { $exists: false }
+		};
+
+		if (messageId) {
+			query._id = { $ne: messageId };
+		}
+
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+
+		return this.findOne(query, options);
 	}
 
 	cloneAndSaveAsHistoryById(_id) {

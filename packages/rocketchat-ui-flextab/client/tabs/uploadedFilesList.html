@@ -1,22 +1,27 @@
 <template name="uploadedFilesList">
-	<div class="list-view uploaded-files-list">
-		<div class="title">
-			<h2>{{_ "Room_uploaded_file_list"}}</h2>
-		</div>
-		<ul class="list clearfix lines">
+	<div class="uploaded-files-list list-view flex-tab__result js-list">
+		<ul class="attachments">
 			{{#each files}}
-				<li>
-					{{#if canDelete}}
-					<i class="icon-trash file-delete"></i>
-					{{/if}}
-					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="file-download" download="">
-						<i class="icon-download file-download"></i>
-					</a>
-					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="room-file-item file-name {{customClassForFileType}}">
-						<i class="{{getFileIcon type}}"></i>
-						<p>{{name}}</p>
-					</a>
-				</li>
+				<li class="attachments__item">
+				{{#with thumb}}
+					<div class="attachments__thumb" style="background-image:url('{{.}}');"></div>
+				{{else}}
+					{{#with iconType}}
+					<div class="attachments__thumb attachments__file--{{type}}">
+						{{>icon icon=icon}}
+						<div class="attachments__type">{{extension}}</div>
+					</div>
+					{{/with}}
+				{{/with}}
+				<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="attachments__item {{customClassForFileType}}">
+
+					<div class="attachments__content">
+						<div class="attachments__name">{{name}}</div>
+						<div class="attachments__details attachments__bold">@{{user.username}}</div>
+						<div class="attachments__details">{{format uploadedAt}}</div>
+					</div>
+			   </a>
+			 </li>
 			{{/each}}
 		</ul>
 		{{#if hasMore}}

@@ -1,4 +1,16 @@
 <template name="userInfo">
+	{{#unless hideHeader}}
+		<header class="contextual-bar__header">
+			<div class="contextual-bar__header-data">
+				{{> icon icon="user" block="contextual-bar__header-icon"}}
+				<h1 class="contextual-bar__header-title">{{_ "User_Info"}}</h1>
+			</div>
+			<button class="contextual-bar__header-close js-close">
+				{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+			</button>
+		</header>
+	{{/unless}}
+
 	{{#if isLoading}}
 		{{> loading}}
 	{{else}}
@@ -6,117 +18,86 @@
 			{{> userEdit (userToEdit)}}
 		{{else}}
 			{{#with user}}
-			<div class="about clearfix">
-				<div class="thumb">
-					{{> avatar username=username}}
-				</div>
-				<div class="info">
-					<h3 title="{{name}}"><i class="status-{{status}}"></i> {{name}}</h3>
-					<p class="secondary-font-color">@{{username}}</p>
-					<p class="secondary-font-color">
-						{{#each roleTags}}
-							<span class="role-tag" data-role="{{description}}">{{description}}</span>
+				<main class="contextual-bar__container rc-user-info-wrapper">
+					<div class="rc-user-info">
+						<div class="rc-user-info__avatar">
+							{{> avatar username=username}}
+						</div>
+						<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+						{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
+					</div>
+
+					<div class="rc-user-info-action">
+						{{#each actions}}
+							<button class="js-action rc-user-info-action__item">
+								{{> icon block="rc-user-info-action__icon" icon=icon }}
+								{{_ ./name}}
+							</button>
 						{{/each}}
-					</p>
-					{{#if utc}}<p class="secondary-font-color"><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
-					{{#if hasPermission 'view-full-other-user-info'}}
-						{{#if hasEmails}}
-							{{#each emails}} <p class="secondary-font-color"><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</p> {{/each}}
+						{{# with moreActions}}
+						<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+						{{> icon block="tab-button-icon" icon="menu" }}
+						</button>
+						{{/with}}
+					</div>
+
+					<div class="rc-user-info-details">
+						{{#if roleTags}}
+							<div class="rc-user-info-details__item">
+								<label class="rc-user-info-details__label	">Roles</label>
+								<ul class="chip-container current-user-roles">
+									{{#each roleTags}}
+									<li class="role-tag" title="{{description}}">{{description}}</li>
+									{{/each}}
+								</ul>
+							</div>
 						{{/if}}
-						{{#if hasPhone}}
-							{{#each phone}} <p class="secondary-font-color"><i class="icon-phone"></i> {{phoneNumber}}</p> {{/each}}
+						{{#if hasPermission 'view-full-other-user-info'}}
+							{{#if hasEmails}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">Email address</label>
+									{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
+								</div>
+							{{/if}}
+							{{#if hasPhone}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">Phone number</label>
+									{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
+								</div>
+							{{/if}}
+							{{#if lastLogin}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
+									<p class="rc-user-info-details__info">{{createdAt}}</p>
+								</div>
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
+									<p class="rc-user-info-details__info">{{lastLogin}}</p>
+								</div>
+							{{/if}}
 						{{/if}}
-						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</p> {{/if}}
-						{{#if lastLogin}} <p class="secondary-font-color"><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</p> {{/if}}
-						{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
-						{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
-						{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
-						{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
-						{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
-						{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
-						{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
-						{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
-					{{/if}}
-				</div>
-			</div>
+						{{#if utc}}
+							<div class="rc-user-info-details__item">
+								<label class="rc-user-info-details__label	">Timezone</label>
+								<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
+							</div>
+						{{/if}}
+						<div class="rc-user-info-details__item">
+							{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
+							{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
+							{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
+							{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
+							{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
+							{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
+							{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+						</div>
+					</div>
+				</main>
 			{{/with}}
-			<nav>
-				{{#unless isSelf user.username}}
-					{{#if user.active}}
-						{{> videoButtons}}
-					{{/if}}
-					{{#if isDirect}}
-						{{#if isBlocker}}
-							<button class='button button-block tertiary unblock-user'><span><i class='icon-block'></i> {{_ "Unblock_User"}}</span></button>
-						{{else}}
-							<button class='button button-block danger block-user'><span><i class='icon-block'></i> {{_ "Block_User"}}</span></button>
-						{{/if}}
-					{{/if}}
-
-					{{#if showAll}}
-						{{#if canDirectMessage user.username}}
-							<button class='button button-block primary pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button> {{/if}}
-						{{#if canSetOwner}}
-							{{#if isOwner}}
-								<button class="button button-block danger unset-owner"><span>{{_ "Remove_as_owner"}}</span></button>
-							{{else}}
-								<button class="button button-block tertiary set-owner"><span>{{_ "Set_as_owner"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if canSetLeader}}
-							{{#if isLeader}}
-								<button class="button button-block danger unset-leader"><span>{{_ "Remove_as_leader"}}</span></button>
-							{{else}}
-								<button class="button button-block tertiary set-leader"><span>{{_ "Set_as_leader"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if canSetModerator}}
-							{{#if isModerator}}
-								<button class="button button-block danger unset-moderator"><span>{{_ "Remove_as_moderator"}}</span></button>
-							{{else}}
-								<button class="button button-block tertiary set-moderator"><span>{{_ "Set_as_moderator"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if canMuteUser}}
-							{{#if userMuted}}
-								<button class="button button-block secondary unmute-user primary"><span>{{_ "Unmute_user"}}</span></button>
-							{{else}}
-								<button class="button button-block danger mute-user"><span>{{_ "Mute_user"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if canRemoveUser}}
-							<button class="button button-block danger remove-user"><span>{{_ "Remove_from_room"}}</span></button>
-						{{/if}}
-					{{/if}}
-
-					{{#unless hideAdminControls}}
-						{{#if hasPermission 'edit-other-user-info'}}
-						<button class='button button-block primary edit-user'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
-						{{/if}}
-						{{#if hasPermission 'assign-admin-role'}}
-							{{#if hasAdminRole}}
-							<button class='button button-block danger remove-admin'><span><i class='icon-shield'></i> {{_ "Remove_Admin"}}</span></button>
-							{{else}}
-							<button class='button button-block secondary make-admin'><span><i class='icon-shield'></i> {{_ "Make_Admin"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if hasPermission 'edit-other-user-active-status'}}
-							{{#if active}}
-							<button class='button button-block danger deactivate'><span><i class='icon-block'></i> {{_ "Deactivate"}}</span></button>
-							{{else}}
-							<button class='button button-block secondary activate'><span><i class='icon-ok-circled'></i> {{_ "Activate"}}</span></button>
-							{{/if}}
-						{{/if}}
-						{{#if hasPermission 'delete-user'}}
-						<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
-						{{/if}}
-					{{/unless}}
-				{{/unless}}
-
-				{{#if showAll}}
-					<button class='button back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
-				{{/if}}
-			</nav>
 		{{/if}}
+	{{/if}}
+	{{#if showAll}}
+				<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 	{{/if}}
 </template>

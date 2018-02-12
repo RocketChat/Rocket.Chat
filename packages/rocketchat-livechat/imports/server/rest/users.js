@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {

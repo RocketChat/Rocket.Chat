@@ -1,13 +1,17 @@
+import _ from 'underscore';
+
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
 	 *
 	 * default method where the agent with the least number
 	 * of open chats is paired with the incoming livechat
 	 */
-	'Least_Amount'(guest, message, roomInfo) {
-		const agent = RocketChat.Livechat.getNextAgent(guest.department);
+	'Least_Amount'(guest, message, roomInfo, agent) {
 		if (!agent) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			agent = RocketChat.Livechat.getNextAgent(guest.department);
+			if (!agent) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 		}
 
 		const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
@@ -24,7 +28,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status || 'online'
 			},
 			servedBy: {
 				_id: agent.agentId,
@@ -107,7 +112,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status || 'online'
 			},
 			t: 'l'
 		};
@@ -123,7 +129,8 @@ RocketChat.QueueMethods = {
 			v: {
 				_id: guest._id,
 				username: guest.username,
-				token: message.token
+				token: message.token,
+				status: guest.status
 			},
 			cl: false,
 			open: true,
@@ -133,5 +140,8 @@ RocketChat.QueueMethods = {
 		RocketChat.models.Rooms.insert(room);
 
 		return room;
+	},
+	'External'(guest, message, roomInfo) {
+		return this['Least_Amount'](guest, message, roomInfo); // eslint-disable-line
 	}
 };

@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class AutoTranslate {
 	constructor() {
 		this.languages = [];
@@ -15,6 +18,9 @@ class AutoTranslate {
 	}
 
 	tokenize(message) {
+		if (!message.tokens || !Array.isArray(message.tokens)) {
+			message.tokens = [];
+		}
 		message = this.tokenizeEmojis(message);
 		message = this.tokenizeCode(message);
 		message = this.tokenizeURLs(message);
@@ -23,9 +29,6 @@ class AutoTranslate {
 	}
 
 	tokenizeEmojis(message) {
-		if (!message.tokens || !Array.isArray(message.tokens)) {
-			message.tokens = [];
-		}
 		let count = message.tokens.length;
 		message.msg = message.msg.replace(/:[+\w\d]+:/g, function(match) {
 			const token = `<i class=notranslate>{${ count++ }}</i>`;
@@ -40,9 +43,6 @@ class AutoTranslate {
 	}
 
 	tokenizeURLs(message) {
-		if (!message.tokens || !Array.isArray(message.tokens)) {
-			message.tokens = [];
-		}
 		let count = message.tokens.length;
 
 		const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
@@ -85,14 +85,10 @@ class AutoTranslate {
 	}
 
 	tokenizeCode(message) {
-		if (!message.tokens || !Array.isArray(message.tokens)) {
-			message.tokens = [];
-		}
 		let count = message.tokens.length;
 
 		message.html = message.msg;
-		RocketChat.MarkdownCode.handle_codeblocks(message);
-		RocketChat.MarkdownCode.handle_inlinecode(message);
+		message = RocketChat.Markdown.parseMessageNotEscaped(message);
 		message.msg = message.html;
 
 		for (const tokenIndex in message.tokens) {
@@ -110,9 +106,6 @@ class AutoTranslate {
 	}
 
 	tokenizeMentions(message) {
-		if (!message.tokens || !Array.isArray(message.tokens)) {
-			message.tokens = [];
-		}
 		let count = message.tokens.length;
 
 		if (message.mentions && message.mentions.length > 0) {

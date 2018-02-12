@@ -17,8 +17,20 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
-	UserPresence.start();
+	const userHasPreferences = (user) => {
+		if (!user) {
+			return false;
+		}
+
+		const userHasSettings = user.hasOwnProperty('settings');
+
+		if (!userHasSettings) {
+			return false;
+		}
+
+		return user.settings.hasOwnProperty('preferences');
+	};
+
 	Meteor.subscribe('activeUsers');
 
 	Session.setDefault('AvatarRandom', 0);
@@ -79,8 +91,24 @@ Meteor.startup(function() {
 		}
 	};
 
+	const defaultIdleTimeLimit = 300000;
+
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
+		const user = Meteor.user();
+		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
+
+		if (!userHasPreferences(user)) {
+			UserPresence.awayTime = defaultIdleTimeLimit;
+			UserPresence.start();
+		} else {
+			UserPresence.awayTime = user.settings.preferences.idleTimeLimit || defaultIdleTimeLimit;
+
+			if (user.settings.preferences.hasOwnProperty('enableAutoAway')) {
+				user.settings.preferences.enableAutoAway && UserPresence.start();
+			} else {
+				UserPresence.start();
+			}
+		}
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);
@@ -94,8 +122,8 @@ Meteor.startup(function() {
 				return;
 			}
 
-			if (Meteor.user() && Meteor.user().status !== status) {
-				status = Meteor.user().status;
+			if (user && user.status !== status) {
+				status = user.status;
 				fireGlobalEvent('status-changed', status);
 			}
 		});
