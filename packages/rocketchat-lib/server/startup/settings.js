@@ -1467,16 +1467,17 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
+		this.add('Layout_Global_Announcement', '', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			'public': true
+		});
 		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
 			type: 'code',
 			code: 'text/html',
 			'public': true,
 			i18nDescription: 'Layout_Sidenav_Footer_description'
-		});
-		this.add('Layout_Global_Announcement', '', {
-			type: 'code',
-			multiline: true,
-			'public': true
 		});
 	});
 	this.section('Custom_Scripts', function() {
