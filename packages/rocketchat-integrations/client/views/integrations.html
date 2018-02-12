@@ -1,16 +1,13 @@
 <template name="integrations">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{pageTitle}}</span>
-			</h2>
+		{{#header sectionName=pageTitle buttons=true}}
 			{{#if hasPermission}}
-				<div class="submit">
-					<a href="{{pathFor "admin-integrations-new"}}" class="button primary new-role">{{_ "New_integration"}}</a>
-				</div>
+			<div class="rc-header__section-button">
+				<a href="{{pathFor "admin-integrations-new"}}" class="rc-button rc-button--primary">{{_ "New_integration"}}</a>
+			</div>
 			{{/if}}
-		</header>
+		{{/header}}
+
 		<div class="content background-transparent-dark">
 			{{#unless hasPermission}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>

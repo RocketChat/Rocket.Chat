@@ -24,6 +24,7 @@
     "jquery": "^3.2.1",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^1.0.3",
+    "core-js": "^2.5.3",
     "moment": "^2.20.1",
     "toastr": "^2.1.4",
     "underscore": "^1.8.3",

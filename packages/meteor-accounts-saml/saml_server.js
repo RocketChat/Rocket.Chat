@@ -12,8 +12,8 @@ if (!Accounts.saml) {
 	};
 }
 
-const fiber = Npm.require('fibers');
-const connect = Npm.require('connect');
+import fiber from 'fibers';
+import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
