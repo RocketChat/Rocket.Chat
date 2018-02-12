@@ -55,8 +55,6 @@ Meteor.startup(function() {
 					}
 				}
 
-				const colors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
-
 				if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
 					const user = RocketChat.models.Users.findOneByUsername(username, {
 						fields: {
@@ -76,18 +74,12 @@ Meteor.startup(function() {
 					color = '#000';
 					initials = username;
 				} else {
-					const position = username.length % colors.length;
+					color = RocketChat.getAvatarColor(username);
 
-					color = colors[position];
-					username = username.replace(/[^A-Za-z0-9]/g, '.').replace(/\.+/g, '.').replace(/(^\.)|(\.$)/g, '');
-
-					const usernameParts = username.split('.');
-
-					initials = usernameParts.length > 1 ? _.first(usernameParts)[0] + _.last(usernameParts)[0] : username.replace(/[^A-Za-z0-9]/g, '').substr(0, 2);
-					initials = initials.toUpperCase();
+					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
 
-				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"150\" height=\"150\">\n<rect height=\"150\" width=\"150\" fill=\"${ color }\"/>\n<text y=\"50%\" x=\"50%\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight=\"400\" font-size=\"72\">\n<tspan y=\"67%\" x=\"50%\" text-anchor=\"middle\">${ initials }</tspan>\n</text>\n</svg>`;
+				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\">\n<rect width=\"100%\" height=\"100%\" rx=\"6\" ry=\"6\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="50">\n${ initials }\n</text>\n</svg>`;
 
 				if (RocketChat.Info.GraphicsMagick.enabled || RocketChat.Info.ImageMagick.enabled) {
 					const svgBuffer = new Buffer(svg);
