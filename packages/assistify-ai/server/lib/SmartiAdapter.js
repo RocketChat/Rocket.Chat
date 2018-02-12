@@ -50,13 +50,25 @@ export class SmartiAdapter {
 
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
 		let analysisResult;
+		let conversationId;
+
 		// conversation exists for channel?
 		if (m && m.conversationId) {
+			conversationId = m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ message.rid }`);
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+			}
+		}
+
+		if (conversationId) {
 			SystemLogger.info('Conversation found for channel');
 			// add message to conversation
-			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ m.conversationId }/message`, requestBodyMessage);
+			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 			// request analysis results
-			analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ m.conversationId }/analysis`);
+			analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
 		} else {
 			SystemLogger.info('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
@@ -119,10 +131,20 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onClose(room) { //async
+		let conversationId;
 		// get conversation id
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
-		if (m) {
-			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ m.conversationId }/meta.status`, 'Complete');
+		if (m && m.conversationId) {
+			conversationId = m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ room._id }`);
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+			}
+		}
+		if (conversationId) {
+			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
 		} else {
 			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
 		}
