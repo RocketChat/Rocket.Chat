@@ -53,10 +53,6 @@ const createConfigurationRole = function() {
 		'change-setting-Katex_Dollar_Syntax',
 		'change-setting-Katex_Parenthesis_Syntax',
 		'change-setting-Katex_Enabled',
-		'change-setting-Accounts_Iframe_api_method',
-		'change-setting-Accounts_Iframe_api_url',
-		'change-setting-Accounts_iframe_url',
-		'change-setting-Accounts_iframe_enabled',
 		'change-setting-AutoLinker_Phone',
 		'change-setting-AutoLinker_Email',
 		'change-setting-AutoLinker_UrlsRegExp',
@@ -122,14 +118,12 @@ const createConfigurationRole = function() {
 		'change-setting-Message_HideType_ul',
 		'change-setting-Message_HideType_uj',
 		'change-setting-Message_QuoteChainLimit',
-		'change-setting-API_EmbedIgnoredHosts',
 		'change-setting-API_EmbedDisabledFor',
 		'change-setting-API_EmbedCacheExpirationDays',
 		'change-setting-API_Embed',
 		'change-setting-Message_GroupingPeriod',
 		'change-setting-Message_SetNameToAliasEnabled',
 		'change-setting-Message_ShowFormattingTips',
-		'change-setting-Message_MaxAllowedSize',
 		'change-setting-Message_MaxAll',
 		'change-setting-Message_KeepHistory',
 		'change-setting-Message_BadWordsFilterList',
@@ -143,6 +137,59 @@ const createConfigurationRole = function() {
 		'change-setting-Message_AllowEditing',
 		'change-setting-Message_Attachments_GroupAttach',
 		'change-setting-Message',
+		'change-setting-Notifications_Max_Room_Members',
+		'change-setting-Mobile_Notifications_Default_Alert',
+		'change-setting-Desktop_Notifications_Default_Alert',
+		'change-setting-Audio_Notifications_Default_Alert',
+		'change-setting-Audio_Notifications_Value',
+		'change-setting-Desktop_Notifications_Duration',
+		'change-setting-Unread_Count_DM',
+		'change-setting-Unread_Count',
+		'change-setting-First_Channel_After_Login',
+		'change-setting-Favorite_Rooms',
+		'change-setting-Language',
+		'change-setting-General',
+		'change-setting-Accounts',
+		'change-setting-Accounts_ManuallyApproveNewUsers',
+		'change-setting-Accounts_BlockedUsernameList',
+		'change-setting-Accounts_RegistrationForm',
+		'change-setting-Accounts_RegistrationForm_SecretURL',
+		'change-setting-Accounts_RegistrationForm_LinkReplacementText',
+		'change-setting-Accounts_Registration_AuthenticationServices_Enabled',
+		'change-setting-Accounts_Registration_AuthenticationServices_Default_Roles',
+		'change-setting-Assistify_Deactivate_request_closing_comments'
+	];
+
+	assignPermissions(CONFIGURATION_ROLE_NAME,
+		settingPermissions.concat([
+			'manage-emoji',
+			'manage-own-integrations',
+			'manage-selected-settings',
+			'manage-assets',
+			'change-setting-Accounts_ManuallyApproveNewUsers',
+			'change-setting-Accounts_RegistrationForm',
+			'change-setting-Accounts_RegistrationForm_SecretURL',
+			'change-setting-Accounts_RegistrationForm_LinkReplacementText',
+			'change-setting-Accounts_Registration_AuthenticationServices_Enabled',
+			'change-setting-Accounts_Registration_AuthenticationServices_Default_Roles',
+			'change-setting-Assistify_Deactivate_request_closing_comments'
+		]));
+
+	revokePermissions(CONFIGURATION_ROLE_NAME, [
+		'change-setting-Accounts_AllowedDomainsList',
+		'change-setting-Accounts_BlockedDomainsList',
+		'change-setting-API_EmbedIgnoredHosts',
+		'change-setting-Message_MaxAllowedSize',
+		'change-setting-Markdown_Parser',
+		'change-setting-Accounts_BlockedDomainsList',
+		'change-setting-Accounts_Iframe_api_method',
+		'change-setting-Accounts_Iframe_api_url',
+		'change-setting-Accounts_iframe_url',
+		'change-setting-Accounts_iframe_enabled',
+		'change-setting-UTF8_Names_Slugify',
+		'change-setting-UTF8_Names_Validation',
+		'change-setting-Custom_Translations',
+		'change-setting-Accounts_EmailVerification',
 		'change-setting-Verification_Email',
 		'change-setting-Verification_Email_Subject',
 		'change-setting-Verification_Customized',
@@ -162,40 +209,7 @@ const createConfigurationRole = function() {
 		'change-setting-Email_Header',
 		'change-setting-Offline_Mention_All_Email',
 		'change-setting-Offline_Mention_Email',
-		'change-setting-Email',
-		'change-setting-Custom_Translations',
-		'change-setting-Notifications_Max_Room_Members',
-		'change-setting-Mobile_Notifications_Default_Alert',
-		'change-setting-Desktop_Notifications_Default_Alert',
-		'change-setting-Audio_Notifications_Default_Alert',
-		'change-setting-Audio_Notifications_Value',
-		'change-setting-Desktop_Notifications_Duration',
-		'change-setting-UTF8_Names_Slugify',
-		'change-setting-UTF8_Names_Validation',
-		'change-setting-Unread_Count_DM',
-		'change-setting-Unread_Count',
-		'change-setting-First_Channel_After_Login',
-		'change-setting-Favorite_Rooms',
-		'change-setting-Language',
-		'change-setting-General',
-		'change-setting-Accounts_BlockedUsernameList',
-		'change-setting-Accounts_BlockedDomainsList',
-		//'change-setting-Accounts_AllowedDomainsList', - revoke this permission - only admins shall be able to maintain it
-		'change-setting-Accounts_ManuallyApproveNewUsers',
-		'change-setting-Accounts_EmailVerification',
-		'change-setting-Accounts',
-		'change-setting-Assistify_Deactivate_request_closing_comments'
-	];
-
-	assignPermissions(CONFIGURATION_ROLE_NAME,
-		settingPermissions.concat([
-			'manage-emoji',
-			'manage-own-integrations',
-			'manage-selected-settings'
-		]));
-
-	revokePermissions(CONFIGURATION_ROLE_NAME, [
-		'change-setting-Accounts_AllowedDomainsList'
+		'change-setting-Email'
 	]);
 };
 
