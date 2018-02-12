@@ -215,6 +215,10 @@ RocketChat.Livechat = {
 		const now = new Date();
 
 		const closeData = {
+			user: {
+				_id: user._id,
+				username: user.username
+			},
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000
 		};
@@ -234,6 +238,7 @@ RocketChat.Livechat = {
 		}
 
 		RocketChat.models.Rooms.closeByRoomId(room._id, closeData);
+		RocketChat.models.LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
 			t: 'livechat-close',
@@ -243,8 +248,10 @@ RocketChat.Livechat = {
 
 		RocketChat.sendMessage(user, message, room);
 
-		RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
-		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, room.servedBy);
+		if (room.servedBy) {
+			RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+		}
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.user);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);
@@ -396,7 +403,7 @@ RocketChat.Livechat = {
 
 	getLivechatRoomGuestInfo(room) {
 		const visitor = LivechatVisitors.findOneById(room.v._id);
-		const agent = RocketChat.models.Users.findOneById(room.servedBy._id);
+		const agent = RocketChat.models.Users.findOneById(room.servedBy && room.servedBy._id);
 
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
@@ -421,14 +428,21 @@ RocketChat.Livechat = {
 				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
 				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
 				customFields: visitor.livechatData
-			},
-			agent: {
+			}
+		};
+
+		if (agent) {
+			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null
+			};
+
+			if (agent.emails && agent.emails.length > 0) {
+				postData.agent.email = agent.emails[0].address;
 			}
-		};
+		}
 
 		if (room.crmData) {
 			postData.crmData = room.crmData;
@@ -439,10 +453,6 @@ RocketChat.Livechat = {
 		}
 		if (visitor.phone && visitor.phone.length > 0) {
 			postData.visitor.phone = visitor.phone;
-		}
-
-		if (agent.emails && agent.emails.length > 0) {
-			postData.agent.email = agent.emails;
 		}
 
 		return postData;

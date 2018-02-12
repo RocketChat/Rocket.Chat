@@ -1,4 +1,6 @@
 /* globals RocketChat */
+import twilio from 'twilio';
+
 class Twilio {
 	constructor() {
 		this.accountSid = RocketChat.settings.get('SMS_Twilio_Account_SID');
@@ -23,7 +25,7 @@ class Twilio {
 		};
 	}
 	send(fromNumber, toNumber, message) {
-		const client = Npm.require('twilio')(this.accountSid, this.authToken);
+		const client = twilio(this.accountSid, this.authToken);
 
 		client.messages.create({
 			to: toNumber,
