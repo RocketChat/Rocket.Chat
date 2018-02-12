@@ -14,9 +14,11 @@
 							<input type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{tSearchMessages}}" autocomplete="off" />
 						</div>
 					</label>
-					<label>
-						<input type="checkbox" id="global-search" checked>{{_ "Global_Search"}}
-					</label>
+					{{#if allowGlobalSearch}}
+						<label>
+							<input type="checkbox" id="global-search" checked>{{_ "Global_Search"}}
+						</label>
+					{{/if}}
 				</div>
 			</form>
 		</div>
