@@ -14,7 +14,7 @@ RocketChat.API.v1.addRoute('e2e.fetchKeychain', { authRequired: true }, {
 		const uid = this.queryParams.uid;
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchGroupE2EKey', uid));
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchKeychain', uid));
 
 		return RocketChat.API.v1.success(result);
 	}
