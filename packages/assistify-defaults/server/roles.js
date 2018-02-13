@@ -156,7 +156,6 @@ const createConfigurationRole = function() {
 		'change-setting-Accounts_RegistrationForm_SecretURL',
 		'change-setting-Accounts_RegistrationForm_LinkReplacementText',
 		'change-setting-Accounts_Registration_AuthenticationServices_Enabled',
-		'change-setting-Accounts_Registration_AuthenticationServices_Default_Roles',
 		'change-setting-Assistify_Deactivate_request_closing_comments'
 	];
 
