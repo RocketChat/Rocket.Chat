@@ -82,7 +82,11 @@ class Assistify extends Page {
 
 	// Knowledgebase
 	get closeTopicBtn() {
-		return browser.element('.rc-button.rc-button--icon.rc-button--outline.rc-button--cancel.js-leave');
+		return browser.element('.rc-button.rc-button--outline.rc-button--cancel.js-delete');
+	}
+
+	get editInfoBtn() {
+		return browser.element('.rc-button.rc-button--icon.rc-button--outline.js-edit');
 	}
 
 	get infoRoomIcon() {
@@ -180,6 +184,8 @@ class Assistify extends Page {
 		sideNav.openChannel(topicName);
 		flexTab.channelTab.waitForVisible(5000);
 		flexTab.channelTab.click();
+		this.editInfoBtn.waitForVisible(5000);
+		this.editInfoBtn.click();
 		this.closeTopicBtn.waitForVisible(5000);
 		this.closeTopicBtn.click();
 		global.confirmPopup();
