@@ -8,12 +8,15 @@
 
 import { RocketChatTabBar } from './RocketChatTabBar';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
-
+import {hide, leave, erase} from './ChannelActions';
 
 export {
 	RocketChatTabBar,
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
-	UiTextContext
+	UiTextContext,
+	hide,
+	leave,
+	erase
 };
