@@ -5,6 +5,7 @@ import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import { Cookies } from 'meteor/ostrio:cookies';
+import sharp from 'sharp';
 
 const cookie = new Cookies();
 
@@ -50,7 +51,6 @@ Object.assign(FileUpload, {
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
-			// transformWrite: FileUpload.avatarTransformWrite,
 			getPath(file) {
 				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
@@ -59,34 +59,43 @@ Object.assign(FileUpload, {
 		};
 	},
 
-	avatarTransformWrite(readStream, writeStream/*, fileId, file*/) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
-			return readStream.pipe(writeStream);
-		}
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
-		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(readStream).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
-	},
-
 	avatarsOnValidate(file) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
 		const future = new Future();
 
-		(file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tempFilePath, Meteor.bindEnvironment(err => {
-			if (err != null) {
-				console.error(err);
-			}
-			const size = fs.lstatSync(tempFilePath).size;
-			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-			future.return();
+		const s = sharp(tempFilePath);
+		s.rotate();
+		// Get metadata to resize the image the first time to keep "inside" the dimensions
+		// then resize again to create the canvas around
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			s.toFormat(sharp.format.jpeg)
+				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
+				.pipe(sharp()
+					.resize(height, height)
+					.background('#FFFFFF')
+					.embed()
+				)
+				// Use buffer to get the result in memory then replace the existing file
+				// There is no option to override a file using this library
+				.toBuffer()
+				.then(Meteor.bindEnvironment(outputBuffer => {
+					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment(err => {
+						if (err != null) {
+							console.error(err);
+						}
+						const size = fs.lstatSync(tempFilePath).size;
+						this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+						future.return();
+					}));
+				}));
 		}));
+
 		return future.wait();
 	},
 
