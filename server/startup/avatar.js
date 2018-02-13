@@ -39,6 +39,21 @@ Meteor.startup(function() {
 			if (file) {
 				res.setHeader('Content-Security-Policy', 'default-src \'none\'');
 
+				const reqModifiedHeader = req.headers['if-modified-since'];
+				if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
+					res.setHeader('Last-Modified', reqModifiedHeader);
+					res.writeHead(304);
+					res.end();
+					return;
+				}
+
+				res.setHeader('Cache-Control', 'public, max-age=0');
+				res.setHeader('Expires', '-1');
+				res.setHeader('Content-Disposition', 'inline');
+				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+				res.setHeader('Content-Type', file.type);
+				res.setHeader('Content-Length', file.size);
+
 				return FileUpload.get(file, req, res);
 			} else {
 				res.setHeader('Content-Type', 'image/svg+xml');
