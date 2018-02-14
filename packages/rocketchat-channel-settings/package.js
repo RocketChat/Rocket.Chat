@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 		'server/functions/saveReactWhenReadOnly.js',
 		'server/functions/saveRoomType.js',
 		'server/functions/saveRoomTopic.js',
+		'server/functions/saveRoomCustomFields.js',
 		'server/functions/saveRoomAnnouncement.js',
 		'server/functions/saveRoomName.js',
 		'server/functions/saveRoomReadOnly.js',
