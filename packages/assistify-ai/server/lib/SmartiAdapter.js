@@ -49,7 +49,6 @@ export class SmartiAdapter {
 		SystemLogger.debug('Message:', requestBodyMessage);
 
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
-		let analysisResult;
 		let conversationId;
 
 		// conversation exists for channel?
@@ -59,7 +58,8 @@ export class SmartiAdapter {
 			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
 			const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ message.rid }`);
 			if (conversation && conversation.id) {
-				conversationId = conversation.id;
+                conversationId = conversation.id;
+                this.updateMapping(message, conversationId);
 			}
 		}
 
@@ -67,8 +67,6 @@ export class SmartiAdapter {
 			SystemLogger.info('Conversation found for channel');
 			// add message to conversation
 			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
-			// request analysis results
-			analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
 		} else {
 			SystemLogger.info('Conversation not found for channel');
 			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
@@ -99,30 +97,37 @@ export class SmartiAdapter {
 
 			SystemLogger.debug('Creating conversation:', JSON.stringify(requestBodyConversation, null, '\t'));
 			// create conversation, send message along and request analysis
-			analysisResult = SmartiProxy.propagateToSmarti(verbs.post, 'conversation?analysis=true', requestBodyConversation);
-			analysisResult = analysisResult ? analysisResult.analysis : null;
+            let conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
+            if(conversation && conversation.id){
+                conversationId = conversation.id;
+                this.updateMapping(message, conversationId);
+            }
 		}
+        // request analysis results
+        let analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
 		SystemLogger.debug('analysisResult:', JSON.stringify(analysisResult, null, '\t'));
 
 		if (analysisResult && analysisResult.conversation) {
 			// update/insert channel/conversation specific timestamp
-			RocketChat.models.LivechatExternalMessage.update(
-				{
-					_id: message.rid
-				}, {
-					rid: message.rid,
-					knowledgeProvider: 'smarti',
-					conversationId: analysisResult.conversation,
-					ts: message.ts
-				}, {
-					upsert: true
-				}
-			);
-
 			RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
 		}
 	}
 
+    static updateMapping(message, conversationId){
+        RocketChat.models.LivechatExternalMessage.update(
+            {
+                _id: message.rid
+            }, {
+                rid: message.rid,
+                knowledgeProvider: 'smarti',
+                conversationId: conversationId,
+                ts: message.ts
+            }, {
+                upsert: true
+            }
+        );
+    }
+    
 	/**
 	 * Event implementation that publishes the conversation in Smarti.
 	 *
