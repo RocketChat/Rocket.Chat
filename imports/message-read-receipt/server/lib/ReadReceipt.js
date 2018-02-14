@@ -8,7 +8,7 @@ const list = {};
 const debounceByRoomId = function(fn) {
 	return function(roomId, ...args) {
 		clearTimeout(list[roomId]);
-		list[roomId] = setTimeout(() => { console.log('vai rodar'); fn.call(this, roomId, ...args); }, 2000);
+		list[roomId] = setTimeout(() => { fn.call(this, roomId, ...args); }, 2000);
 	};
 };
 
