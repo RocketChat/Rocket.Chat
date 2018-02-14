@@ -39,7 +39,7 @@
   "Accounts_EmailVerification": "การตรวจสอบอีเมล์",
   "Accounts_EmailVerification_Description": "ต้องตั้งค่า SMTP เพื่อใช้งานฟีเจอร์นี้",
   "Accounts_Enrollment_Email": "การลงทะเบียนอีเมล์",
-  "Accounts_Enrollment_Email_Default": "<h2>ยินดีต้อนรับสูง <h1>[Site_Name]</h1></h2><p>ไปที่ [Site_URL] และทดลองใช้งานโปรแกรมแชทที่ดีที่สุดที่มี ณ ปัจจุบัน</p>",
+  "Accounts_Enrollment_Email_Default": "<h2>ยินดีต้อนรับสูง <h1>[Site_Name]</h1></h2><p>ไปที่ <a href=\"[Site_URL]\">[Site_URL]</a> และทดลองใช้งานโปรแกรมแชทที่ดีที่สุดที่มี ณ ปัจจุบัน</p>",
   "Accounts_Enrollment_Email_Subject_Default": "ยินดีต้อนรับสูง [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "ลืม session เมื่อปิดหน้าต่าง",
   "Accounts_Iframe_api_method": "Api Method",
