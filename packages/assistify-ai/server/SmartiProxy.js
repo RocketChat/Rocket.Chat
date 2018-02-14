@@ -39,6 +39,7 @@ export class SmartiProxy {
 			'Content-Type': 'application/json; charset=utf-8'
 		};
 		try {
+			SystemLogger.debug('Sending request to Smarti', method, 'to', url, 'body', JSON.stringify(body));
 			const response = HTTP.call(method, url, {data: body, headers: header});
 			if (response.statusCode === 200 || response.statusCode === 201) {
 				return response.data || response.content; //.data if it's a json-response
