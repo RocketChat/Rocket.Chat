@@ -1,3 +1,19 @@
+.read-receipt {
+	display: inline-block;
+	margin: 0 6px;
+	color: #cbced1;
+	color: var(--message-box-container-border-color);
+	cursor: pointer;
+}
+
+.read-receipt.read {
+	color: inherit;
+}
+
+.message.temp .read-receipt {
+	opacity: 0.4;
+}
+
 .read-receipts__user {
 	display: flex;
 	padding: 8px 8px;
