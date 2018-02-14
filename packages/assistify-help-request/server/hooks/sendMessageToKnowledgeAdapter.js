@@ -14,8 +14,8 @@ Meteor.startup(() => {
 			return message;
 		}
 
-		//help request supplied
-		if (!(typeof room.t !== 'undefined' && (room.t === 'r' || room.t === 'e'))) {
+		// we want to propagate messages from requests and expertises
+		if (!(room.t && (room.t === 'r' || room.t === 'e'))) {
 			return message;
 		}
 
