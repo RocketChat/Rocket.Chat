@@ -77,14 +77,6 @@
 			left: 0;
 		}
 	}
-
-	&.temp .read-receipt {
-		color: #999;
-	}
-
-	& .read-receipt.read {
-		color: blue;
-	}
 }
 
 .messages-box .rc-popover__list {
