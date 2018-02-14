@@ -1,3 +1,20 @@
+<a name="0.61.1"></a>
+## 0.61.1 (2018-02-14)
+
+
+### Bug Fixes
+
+- [#9714](https://github.com/RocketChat/Rocket.Chat/pull/9714) Close Livechat conversation by visitor not working in version 0.61.0
+- [#9639](https://github.com/RocketChat/Rocket.Chat/pull/9639) Desktop notification not showing when avatar came from external storage service
+- [#9640](https://github.com/RocketChat/Rocket.Chat/pull/9640) Facebook integration in livechat not working on version 0.61.0
+- [#9067](https://github.com/RocketChat/Rocket.Chat/pull/9067) Formal pronouns and some small mistakes in German texts
+- [#9716](https://github.com/RocketChat/Rocket.Chat/pull/9716) GitLab OAuth does not work when GitLab’s URL ends with slash
+- [#9720](https://github.com/RocketChat/Rocket.Chat/pull/9720) Messages can't be quoted sometimes
+- [#9626](https://github.com/RocketChat/Rocket.Chat/pull/9626) Missing string 'There_are_no_applications' on the OAuth Apps Page
+- [#9623](https://github.com/RocketChat/Rocket.Chat/pull/9623) Weird rendering of emojis at sidebar when `last message` is activated
+
+
+
 <a name="0.61.0"></a>
 # 0.61.0 (2018-01-27)
 
