@@ -130,7 +130,6 @@
 		"emailreplyparser": "^0.0.5",
 		"file-type": "^7.4.0",
 		"filesize": "3.5.11",
-		"gm": "1.23.1",
 		"gridfs-stream": "1.1.1",
 		"he": "1.1.1",
 		"highlight.js": "^9.12.0",
