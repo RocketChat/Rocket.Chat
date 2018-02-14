@@ -167,7 +167,9 @@ RocketChat.saveUser = function(userId, userData) {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
 		}
 
-		updateUser.$set['emails.0.verified'] = !!userData.verified;
+		if (userData.verified) {
+			updateUser.$set['emails.0.verified'] = true;
+		}
 
 		Meteor.users.update({ _id: userData._id }, updateUser);
 
