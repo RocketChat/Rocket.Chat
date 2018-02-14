@@ -57,25 +57,29 @@ describe('[Smarti Connection]', () => {
 					.end(done);
 			});
 
-			it('create new client', function(done) {
+			it('delete client if exists', function(done) {
 				if (typeof clientid !== 'undefined') {
 					console.log('client was alread there', clientid);
-					done();
-				} else {
-					request.post('/client')
-						.send({
-							defaultClient: true,
-							description: '',
-							name: 'testclient'
-						})
-						.set('Accept', 'application/json')
-						.end(function(err, res) {
-							clientid = res.body.id;
-							expect(res.status).to.be.equal(201);
-							console.log('clientid', res.body.id);
-							done();
-						});
+					request.del(`/client/${ clientid }`)
+						.expect(204)
+						.end(done);
 				}
+			});
+
+			it('create new client', function(done) {
+				request.post('/client')
+					.send({
+						defaultClient: true,
+						description: '',
+						name: 'testclient'
+					})
+					.set('Accept', 'application/json')
+					.end(function(err, res) {
+						clientid = res.body.id;
+						expect(res.status).to.be.equal(201);
+						console.log('clientid', res.body.id);
+						done();
+					});
 			});
 
 			it('check if right client was picked', function(done) {

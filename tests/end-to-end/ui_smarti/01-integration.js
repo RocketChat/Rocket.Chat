@@ -11,10 +11,6 @@ const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick 
 const answer = 'Das ist die Antwort auf diese Anfrage!';
 const comment = 'Anfrage wurde erfolgreich beantwortet';
 
-import supertest from 'supertest';
-
-export const request = supertest.agent('http://localhost:3000');
-
 import { checkIfUserIsAdmin } from '../../data/checks';
 
 
