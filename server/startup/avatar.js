@@ -95,13 +95,14 @@ Meteor.startup(function() {
 					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
 
-				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1024 1024\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="640">\n${ initials }\n</text>\n</svg>`;
+				const viewSize = parseInt(req.query.size) || 200;
+				const fontSize = viewSize / 1.6;
+
+				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${ viewSize } ${ viewSize }\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="${ fontSize }">\n${ initials }\n</text>\n</svg>`;
 
 				if (['png', 'jpg', 'jpeg'].includes(req.query.format)) {
 					res.setHeader('Content-Type', `image/${ req.query.format }`);
-					const size = parseInt(req.query.size) || 200;
 					sharp(new Buffer(svg))
-						.resize(size, size)
 						.toFormat(req.query.format)
 						.pipe(res);
 					return;
