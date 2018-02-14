@@ -637,6 +637,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		});
 	}
 
+	setAsReadById(_id) {
+		return this.update({
+			_id
+		}, {
+			$unset: {
+				unread: 1
+			}
+		});
+	}
+
 	findUnreadMessagesByRoomAndDate(rid, after) {
 		return this.find({
 			unread: true,
