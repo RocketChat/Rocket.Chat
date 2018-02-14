@@ -41,11 +41,11 @@ class Assistify extends Page {
 	}
 
 	get knowledgebasePickAnswer() {
-		return browser.element('.convMessage .middle .selectMessage');
+		return browser.element('#widgetBody > div.widgetContent > div > div > div > div > div.postAction');
 	}
 
-	get knowledgebasePostBtn() {
-		return browser.element('.button.button-block');
+	get knowledgebaseContent() {
+		return browser.element('[data-link="class{merge: messagesCnt toggle=\'parent\'}"]');
 	}
 
 	// new Topic

@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 
-import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
-const topicName = 'smarti-test-topic4';
+const topicName = 'smarti-test-topic';
 const topicExpert = 'rocketchat.internal.admin.test';
 const shortTopicMessage = 'Das ist das neue Thema zu dem Anfragen erstellt werden und die Wissensbasis genutzt wird!';
 const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick über den Markt, indem Sie Produkte, Preise und Bestellbedingungen unterschiedlicher Lieferanten und Dienstleister kennen lernen. In einem allgemeinen Anfragebrief bitten Sie zum die Zusendung von Katalogen, Prospekten, Preislisten und Produktmustern. Wie kann ich dieses Wissen nutzen?';
@@ -37,15 +36,6 @@ describe('[Smarti Integration]', () => {
 
 		});
 
-		describe.skip('Open Topic', () => {
-			it('switch to GENERAL', () => {
-				sideNav.openChannel('general');
-			});
-			it('switch back to Topic', () => {
-				sideNav.openChannel(topicName);
-			});
-		});
-
 		describe('Message', () => {
 			it('it should send a message', () => {
 				assistify.clickKnowledgebase();
@@ -74,18 +64,17 @@ describe('[Smarti Integration]', () => {
 
 			it('create is successful', () => {
 				assistify.createHelpRequest(topicName, message);
+				assistify.clickKnowledgebase();
 			});
 
 			it('knowledgebase answer visible', () => {
-				assistify.knowledgebasePickAnswer.waitForVisible(5000);
-				assistify.knowledgebasePickAnswer.click();
+				assistify.clickKnowledgebase();
+				assistify.knowledgebaseContent.waitForVisible(5000);
 			});
 
 			it('post knowledgebase answer', () => {
-				assistify.knowledgebasePostBtn.waitForVisible(5000);
-				assistify.knowledgebasePostBtn.click();
-				assistify.clickKnowledgebase();
-				assistify.closeRequest(comment);
+				assistify.knowledgebasePickAnswer.waitForVisible(5000);
+				assistify.knowledgebasePickAnswer.click();
 			});
 			it('close request', () => {
 				assistify.clickKnowledgebase();
@@ -100,11 +89,4 @@ describe('[Smarti Integration]', () => {
 			assistify.closeTopic(topicName);
 		});
 	});
-
-	// describe.skip('[BREAK]', () => {
-	// 	it('BREAK', () => {
-	// 		true.should.equal(false);
-	// 	});
-	// });
-
 });
