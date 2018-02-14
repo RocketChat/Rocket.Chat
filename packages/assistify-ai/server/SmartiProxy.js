@@ -29,10 +29,11 @@ export class SmartiProxy {
 	 * @param {String} method - the HTTP method to use
 	 * @param {String} path - the path to call
 	 * @param {Object} [body=null] - the payload to pass (optional)
+	 * @param {Function} onError=null - custom error handler
 	 *
 	 * @returns {Object}
 	 */
-	static propagateToSmarti(method, path, body = null) {
+	static propagateToSmarti(method, path, body = null, onError = null) {
 		const url = `${ SmartiProxy.smartiUrl }${ path }`;
 		const header = {
 			'X-Auth-Token': SmartiProxy.smartiAuthToken,
@@ -47,6 +48,13 @@ export class SmartiProxy {
 				SystemLogger.debug('Got unexpected result from Smarti', method, 'to', url, 'response', JSON.stringify(response));
 			}
 		} catch (error) {
+			if (onError) {
+				const recoveryResult = onError(error);
+				if (recoveryResult !== undefined) {
+					return recoveryResult;
+				}
+			}
+
 			SystemLogger.error('Could not complete', method, 'to', url);
 			SystemLogger.debug(error);
 		}
