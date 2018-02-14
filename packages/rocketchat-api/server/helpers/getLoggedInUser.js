@@ -1,4 +1,4 @@
-RocketChat.API.v1.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {
+RocketChat.API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {
 	let user;
 
 	if (this.request.headers['x-auth-token'] && this.request.headers['x-user-id']) {
