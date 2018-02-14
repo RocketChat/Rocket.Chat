@@ -4,6 +4,7 @@ import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
+import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import sharp from 'sharp';
 
@@ -31,7 +32,6 @@ Object.assign(FileUpload, {
 			getPath(file) {
 				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
-			// transformWrite: FileUpload.uploadsTransformWrite
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
 				if (!FileUpload.requestCanAccessFiles(req)) {
@@ -99,31 +99,19 @@ Object.assign(FileUpload, {
 		return future.wait();
 	},
 
-	uploadsTransformWrite(readStream, writeStream, fileId, file) {
-		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
-			return readStream.pipe(writeStream);
-		}
+	resizeImagePreview(file) {
+		file = RocketChat.models.Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		let stream = undefined;
-
-		const identify = function(err, data) {
-			if (err) {
-				return stream.pipe(writeStream);
-			}
-
-			file.identify = {
-				format: data.format,
-				size: data.size
-			};
-
-			if (data.Orientation && !['', 'Unknown', 'Undefined'].includes(data.Orientation)) {
-				RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream);
-			} else {
-				stream.pipe(writeStream);
-			}
-		};
-
-		stream = RocketChatFile.gm(readStream).identify(identify).stream();
+		const transformer = sharp()
+			.resize(32, 32)
+			.max()
+			.jpeg()
+			.blur();
+		const result = transformer.toBuffer().then((out) => out.toString('base64'));
+		image.pipe(transformer);
+		return result;
 	},
 
 	uploadsOnValidate(file) {
@@ -135,33 +123,45 @@ Object.assign(FileUpload, {
 
 		const fut = new Future();
 
-		const identify = Meteor.bindEnvironment((err, data) => {
+		const s = sharp(tmpFile);
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
 				console.error(err);
 				return fut.return();
 			}
 
-			file.identify = {
-				format: data.format,
-				size: data.size
+			const identify = {
+				format: metadata.format,
+				size: {
+					width: metadata.width,
+					height: metadata.height
+				}
 			};
 
-			if ([null, undefined, '', 'Unknown', 'Undefined'].includes(data.Orientation)) {
+			if (metadata.orientation == null) {
 				return fut.return();
 			}
 
-			RocketChatFile.gm(tmpFile).autoOrient().write(tmpFile, Meteor.bindEnvironment((err) => {
-				if (err != null) {
+			s.rotate()
+				.toFile(`${ tmpFile }.tmp`)
+				.then(Meteor.bindEnvironment(() => {
+					fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+						fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+							const size = fs.lstatSync(tmpFile).size;
+							this.getCollection().direct.update({_id: file._id}, {
+								$set: {
+									size,
+									identify
+								}
+							});
+							fut.return();
+						}));
+					}));
+				})).catch((err) => {
 					console.error(err);
-				}
-
-				const size = fs.lstatSync(tmpFile).size;
-				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-				fut.return();
-			}));
-		});
-
-		RocketChatFile.gm(tmpFile).identify(identify);
+					fut.return();
+				});
+		}));
 
 		return fut.wait();
 	},
