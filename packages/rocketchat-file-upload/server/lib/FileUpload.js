@@ -6,7 +6,6 @@ import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
-import sharp from 'sharp';
 
 const cookie = new Cookies();
 
