@@ -218,7 +218,7 @@ class Katex {
 						token,
 						text: this.render_latex(latex, displayMode)
 					});
-					return token;
+					return this.render_latex(latex, displayMode);
 				};
 			}
 			msg = this.render(msg, render_func);
