@@ -20,15 +20,15 @@ Meteor.startup(() => {
 		group: 'Blockstack',
 		i18nLabel: 'Blockstack_Enable'
 	});
-	RocketChat.settings.add('Blockstack_Login_style', defaults.loginStyle, {
-		type: 'select',
-		group: 'Blockstack',
-		i18nLabel: 'Blockstack_Login_Style',
-		values: [
-			{ key: 'redirect', i18nLabel: 'Redirect' },
-			{ key: 'popup', i18nLabel: 'Popup' }
-		]
-	});
+	// RocketChat.settings.add('Blockstack_Login_style', defaults.loginStyle, {
+	// 	type: 'select',
+	// 	group: 'Blockstack',
+	// 	i18nLabel: 'Blockstack_Login_Style',
+	// 	values: [
+	// 		{ key: 'redirect', i18nLabel: 'Redirect' },
+	// 		{ key: 'popup', i18nLabel: 'Popup' }
+	// 	]
+	// });
 	RocketChat.settings.add('Blockstack_Auth_Description', defaults.authDescription, {
 		type: 'string',
 		group: 'Blockstack',
@@ -56,8 +56,8 @@ if (serviceConfig.enable) {
 	ServiceConfiguration.configurations.upsert({
 		service: 'blockstack'
 	}, {
-		$set: Accounts.blockstack.getSettings()
-	});
+			$set: Accounts.blockstack.getSettings()
+		});
 	logger.debug('Init Blockstack auth', serviceConfig);
 } else {
 	logger.debug('Blockstack not enabled', serviceConfig);

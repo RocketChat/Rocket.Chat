@@ -1,7 +1,7 @@
 [bs]:https://blockstack.org
 [rc]:https://rocket.chat
 [bp]:https://amazebot.github.io/blockparty
-[e2e]:https://github.com/Amazebot/BlockParty/tree/end-to-end-encryption
+[e2e]:https://github.com/Amazebot/BlockParty/tree/feature/end-to-end-encryption
 [master]:https://github.com/Amazebot/BlockParty/tree/master
 [readme]:https://github.com/RocketChat/Rocket.Chat/blob/master/README.md
 
@@ -13,12 +13,9 @@
 BlockParty is a fork of [Rocket.Chat](https://rocket.chat).
 The Ultimate Open Source Chat Platform - Now decentralized!
 
-There’s two release branches available*
-- [**master**][master] based off Rocket.Chat releases
-- [**end-to-end-encryption**][e2e] an experimental feature branch
-
-\*Other branches are simply part of the Rocket.Chat fork but do have
-  Blockstack integration.
+The master [**master**][master] branch is stable for production and based off
+Rocket.Chat releases. We also have features syncing with upstream features like
+[**end-to-end-encryption**][e2e].
 
 ### Why Rocket.Chat
 
@@ -41,7 +38,7 @@ virtues of Rocket.Chat as a messaging app for the decentralised community.
 
 [See the Rocket.Chat master readme][readme] for information on modifying and
 deploying. The descriptions below will only detail the variations on this fork,
-as it relates to Blockstack and decentralisation features.
+as it relates to Blockstack and decentralization features.
 
 ### Demo already!
 
@@ -92,23 +89,25 @@ Some configuration defaults have also been changed to be fit for purpose:
 - Allow Users to Delete Own Account : true
 - Resize Avatars : false (uses only URL for Blockstack asset)
 - Require Name for Signup : false
-- Require Password Confirmation : false (only Blockstack auth)
-- Password Reset : false (as above)
 - Internal Hubot > Username : block.bot
+
+The password login is available for admins or to resolve Blockstack
+authentication issues. Users can set their own password, but can only register
+via the **Sign in with Blockstack** button.
 
 ### Roadmap
 
 - Appoint community contribution and management team
 - Forked iOS and Android apps specifically for BlockParty instances
-- Full documentation and debug logging to encourage further contribution
+- Full auth documentation and debug logging to encourage further contribution
 - Repackage and publish as generic Meteor package `accounts-blockstack`
 - Publish tutorial app for Blockstack auth in Meteor
-- Use Let’s Encrypt to automatically issue SSL certificates for instances
 - Use Blockstack file upload package for assets storage (similar to S3 package)
 - Use Blockstack for Mongo storage to decentralize DB
 - How-to-fork and setup guides submitted to rocket.chat/docs
 - Secure and serve BlockParty as decentralized app
 - Support other encryption protocols like OMEMO (conversations.im/omemo) #36
+- Use Let’s Encrypt to automatically issue SSL certificates for instances
 - Bot onboarding / welcome and integration with other Blockstack services
 
 ### Minor Issues

@@ -1,49 +1,48 @@
 <template name="blockstackLogin">
-  {{#if isPasswordLogin}}
-    <form id="login-card" class="content-background-color color-primary-font-color" method='/' novalidate>
-      <div class="fields">
-        {{#if state 'login'}}
-          <div class="rc-input">
-            <label class="rc-input__label" for="emailOrUsername">
-              <div class="rc-input__wrapper">
-                <input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
-                  autocapitalize="off" autocorrect="off"
-                  placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
-                <div class="input-error"></div>
-              </div>
-            </label>
-            {{#if hasOnePassword}}
-              <div class="one-passsword"></div>
-            {{/if}}
-          </div>
-          <div class="rc-input">
-            <label class="rc-input__label" for="pass">
-              <div class="rc-input__wrapper">
-                <input name="pass" id="pass" type="password" class="rc-input__element"
-                  autocapitalize="off" autocorrect="off"
-                  placeholder="{{passwordPlaceholder}}" autofocus>
-                  <div class="input-error"></div>
-              </div>
-            </label>
-          </div>
-        {{/if}}
-      </div>
-      <div class="submit">
-        <button class='rc-button rc-button--primary login'><span>{{btnLoginSave}}</span></button>
-      </div>
-    </form>
-  {{else}}
-  <div class="single-login-block">
-    {{#if configurationLoaded}}
-      <a href="#" id="signin-button">
-        Sign In with Blockstack
-      </a>
-    {{/if}}
-  </div>
-  {{/if}}
-  <div class='login-terms'>
-    {{{changeLoginLink}}}
-    {{{loginTerms}}}
-    {{{poweredByRocketChat}}}
-  </div>
+	{{#if isPasswordLogin}}
+	<form id="login-card" class="content-background-color color-primary-font-color" method='/' novalidate>
+		<div class="fields">
+			{{#if state 'login'}}
+			<div class="rc-input">
+				<label class="rc-input__label" for="emailOrUsername">
+					<div class="rc-input__wrapper">
+						<input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element" autocapitalize="off" autocorrect="off"
+						 placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
+						<div class="input-error"></div>
+					</div>
+				</label>
+				{{#if hasOnePassword}}
+				<div class="one-passsword"></div>
+				{{/if}}
+			</div>
+			<div class="rc-input">
+				<label class="rc-input__label" for="pass">
+					<div class="rc-input__wrapper">
+						<input name="pass" id="pass" type="password" class="rc-input__element" autocapitalize="off" autocorrect="off" placeholder="{{passwordPlaceholder}}"
+						 autofocus>
+						<div class="input-error"></div>
+					</div>
+				</label>
+			</div>
+			{{/if}}
+		</div>
+		<div class="submit">
+			<button class='rc-button rc-button--primary login'>
+				<span>{{btnLoginSave}}</span>
+			</button>
+		</div>
+	</form>
+	{{else}}
+	<h3 class="brand-tagline">Open Source Community Chat for the Decentralized Internet</h3>
+	<div class="single-login-block">
+		{{#if configurationLoaded}}
+		<a href="#" id="signin-button">
+			Sign In with Blockstack
+		</a>
+		{{/if}}
+	</div>
+	{{/if}}
+	<div class='login-terms'>
+		{{{changeLoginLink}}} {{{loginTerms}}} {{{poweredByRocketChat}}}
+	</div>
 </template>

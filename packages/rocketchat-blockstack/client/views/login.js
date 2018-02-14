@@ -11,13 +11,13 @@ Template.loginForm.helpers({
 	},
 	changeLoginLink() {
 		if (FlowRouter.getQueryParam('login') === 'password') {
-			return `<p><a href="#" id="blockstackLogin">${ TAPi18n.__('Login_with_blockstack') }</a></p>`;
+			return `<p><a href="#" id="blockstackLogin">${TAPi18n.__('Login_with_blockstack')}</a></p>`;
 		} else {
-			return `<p><a href="#" id="passwordLogin">${ TAPi18n.__('Login_with_password') }</a></p>`;
+			return `<p><a href="#" id="passwordLogin">${TAPi18n.__('Login_with_password')}</a></p>`;
 		}
 	},
 	poweredByRocketChat() {
-		return `<p>${ TAPi18n.__('Powered_by_open_source') } <a href="https://rocket.chat">Rocket.Chat</a></p>`;
+		return `<p>Powered by <a href="https://rocket.chat">Rocket.Chat</a> and <a href="https://blockstack.org">Blockstack</a></p>`;
 	}
 });
 
