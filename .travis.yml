@@ -66,10 +66,10 @@ before_script:
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
-- travis_retry npm test
+- num=3 .scripts/seperateTesting.sh
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
-- travis_retry npm test
+- num=3 .scripts/seperateTesting.sh
 #before_deploy:
 #- source ".travis/setartname.sh"
 #- source ".travis/setdeploydir.sh"
@@ -107,8 +107,3 @@ env:
   - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
   - MONGO_URL: "mongodb://localhost:27017/meteor"
   - TEST_MODE: "true"
-  - OVERWRITE_SETTING_Assistify_AI_Smarti_Domain: testclient
-  - OVERWRITE_SETTING_Assistify_AI_Source: 0
-  - OVERWRITE_SETTING_Assistify_AI_Enabled: true
-  - OVERWRITE_SETTING_Assistify_AI_RocketChat_Webhook_Token: key123
-  - OVERWRITE_SETTING_Assistify_AI_Smarti_Base_URL: http://localhost:8080/
