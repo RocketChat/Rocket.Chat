@@ -1,4 +1,4 @@
-RocketChat.API.v1.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
+RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	let sort;
 	if (this.queryParams.sort) {
 		try {
