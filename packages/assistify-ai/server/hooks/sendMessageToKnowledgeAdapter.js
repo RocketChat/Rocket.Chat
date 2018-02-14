@@ -28,13 +28,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (!knowledgeAdapter) {
 		return;
 	}
-                         
-    SystemLogger.debug(`Send message ${message._id} to knowledgeAdapter (Meteor.defer()`);
-    
+
+	SystemLogger.debug(`Send message ${message._id} to knowledgeAdapter (Meteor.defer()`);
 	Meteor.defer(() => {
 		try {
-            SystemLogger.debug(`Calling onMessage(${message._id});`);
-            knowledgeAdapter.onMessage(message);
+			SystemLogger.debug(`Calling onMessage(${message._id});`);
+			knowledgeAdapter.onMessage(message);
 		} catch (e) {
 			SystemLogger.error('Error using knowledge provider ->', e);
 		}
