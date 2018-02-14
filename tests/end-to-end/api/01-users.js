@@ -2,10 +2,20 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log} from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
-import {imgURL} from '../../data/interactions.js';
-import {customFieldText, clearCustomFields, setCustomFields} from '../../data/custom-fields.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	apiEmail,
+	apiUsername,
+	targetUser,
+	log
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
+import { imgURL } from '../../data/interactions.js';
+import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -46,7 +56,7 @@ describe('[Users]', function() {
 		});
 
 		it('should create a new user with custom fields', (done) => {
-			setCustomFields({customFieldText}, (error) => {
+			setCustomFields({ customFieldText }, (error) => {
 				if (error) {
 					return done(error);
 				}
@@ -117,10 +127,12 @@ describe('[Users]', function() {
 		}
 
 		[
-			{name: 'customFieldText', value: '', reason: 'is required and missing'},
-			{name: 'customFieldText', value: '0', reason: 'length is less than minLength'},
-			{name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength'}
-		].forEach((field) => { failUserWithCustomField(field); });
+			{ name: 'customFieldText', value: '', reason: 'is required and missing' },
+			{ name: 'customFieldText', value: '0', reason: 'length is less than minLength' },
+			{ name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength' }
+		].forEach((field) => {
+			failUserWithCustomField(field);
+		});
 	});
 
 	describe('[/users.info]', () => {
@@ -210,12 +222,13 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.update]', () => {
+
 		it('should update a user\'s info by userId', (done) => {
 			request.post(api('users.update'))
 				.set(credentials)
 				.send({
 					userId: targetUser._id,
-					data :{
+					data: {
 						email: apiEmail,
 						name: `edited${ apiUsername }`,
 						username: `edited${ apiUsername }`,
@@ -232,6 +245,43 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', `edited${ apiUsername }`);
+				})
+				.end(done);
+		});
+
+		it('should update a user\'s email by userId', (done) => {
+			request.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						email: `edited${ apiEmail }`
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${ apiEmail }`);
+					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
+				})
+				.end(done);
+		});
+
+		it('should verify user\'s email by userId', (done) => {
+			request.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						verified: true
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
 				})
 				.end(done);
 		});
@@ -349,7 +399,7 @@ describe('[Users]', function() {
 					.send({ username: user.username })
 					.expect('Content-Type', 'application/json')
 					.end((err, res) => {
-						return err ? done () : request.get(api('me'))
+						return err ? done() : request.get(api('me'))
 							.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
 							.expect(200)
 							.expect((res) => {
