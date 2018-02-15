@@ -3,6 +3,9 @@
 	margin: 0 6px;
 	color: #cbced1;
 	color: var(--message-box-container-border-color);
+}
+
+.read-receipts-enabled .read-receipt {
 	cursor: pointer;
 }
 
