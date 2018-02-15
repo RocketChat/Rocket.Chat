@@ -149,6 +149,7 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:irc-server
 
 konecty:change-case
 konecty:delayed-task
