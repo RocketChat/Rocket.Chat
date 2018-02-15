@@ -38,11 +38,7 @@ RocketChat.TOTP = {
 					window: maxDelta
 				});
 
-				if (verifiedDelta === undefined) {
-					verified = false;
-				} else {
-					verified = Math.abs(verifiedDelta.delta) < maxDelta;
-				}
+				verified = verifiedDelta !== undefined;
 			} else {
 				verified = speakeasy.totp.verify({
 					secret,
