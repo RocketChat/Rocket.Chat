@@ -4,7 +4,7 @@
 * @namespace RocketChat.settings
 */
 
-/* globals ReactiveDict*/
+/* globals ReactiveDict, UserPresence*/
 
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',
@@ -28,17 +28,23 @@ RocketChat.settings.init = function() {
 		added(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			RocketChat.settings.load(record._id, record.value, initialLoad);
+			if (record._id === 'Default_away_time') {
+				UserPresence.awayTime = record.value*1000;
+			}
+			return RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		changed(record) {
 			Meteor.settings[record._id] = record.value;
 			RocketChat.settings.dict.set(record._id, record.value);
-			RocketChat.settings.load(record._id, record.value, initialLoad);
+			if (record._id === 'Default_away_time') {
+				UserPresence.awayTime = record.value*1000;
+			}
+			return RocketChat.settings.load(record._id, record.value, initialLoad);
 		},
 		removed(record) {
 			delete Meteor.settings[record._id];
 			RocketChat.settings.dict.set(record._id, null);
-			RocketChat.settings.load(record._id, null, initialLoad);
+			return RocketChat.settings.load(record._id, null, initialLoad);
 		}
 	});
 	initialLoad = false;

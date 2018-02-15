@@ -641,6 +641,10 @@ RocketChat.settings.addGroup('General', function() {
 		],
 		'public': true
 	});
+	this.add('Default_away_time', 300000, {
+		type: 'int',
+		'public': true
+	});
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		'public': true
