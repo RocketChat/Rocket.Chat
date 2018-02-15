@@ -40,7 +40,7 @@ RocketChat.TOTP = {
 
 			return verifiedDelta !== undefined;
 		}
-		
+
 		return speakeasy.totp.verify({
 			secret,
 			encoding: 'base32',
