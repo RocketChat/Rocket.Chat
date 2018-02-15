@@ -19,3 +19,5 @@ packages/rocketchat-theme/client/vendor/
 private/moment-locales/
 public/livechat/
 public/recorderWorker.js
+public/libmp3lame.js
+public/mp3Worker.js
