@@ -30,7 +30,7 @@ RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
 					{
 						file: blob,
 						type: 'audio',
-						name: `${ TAPi18n.__('Audio record') }.wav`
+						name: `${ TAPi18n.__('Audio record') }.mp3`
 					}
 				]);
 			});
