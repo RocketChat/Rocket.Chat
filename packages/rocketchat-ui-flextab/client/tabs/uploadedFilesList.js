@@ -66,7 +66,6 @@ Template.uploadedFilesList.helpers({
 		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
 	},
 	files() {
-		console.log(roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } }).fetch());
 		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
 	},
 

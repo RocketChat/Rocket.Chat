@@ -29,7 +29,7 @@ RocketChat.TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'addUsers',
 	i18nTitle: 'Add_users',
-	icon: 'user',
+	icon: 'user-plus',
 	template: 'inviteUsers',
 	order: 2
 });
