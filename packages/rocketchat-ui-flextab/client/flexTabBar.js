@@ -13,6 +13,9 @@ const commonHelpers = {
 };
 
 Template.flexTabBar.helpers({
+	headerData() {
+		return Template.instance().tabBar.getData();
+	},
 	...commonHelpers,
 	buttons() {
 		return RocketChat.TabBar.getButtons().filter(button => {
@@ -97,7 +100,7 @@ Template.flexTabBar.events({
 
 		$flexTab.attr('template', this.template);
 
-		instance.tabBar.open(this);
+		instance.tabBar.open(this.id);
 	},
 
 	'click .close-flex-tab'(event, instance) {
