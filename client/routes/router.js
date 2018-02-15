@@ -73,10 +73,11 @@ FlowRouter.route('/directory', {
 	name: 'directory',
 
 	action(params, queryParams) {
-
-
 		BlazeLayout.render('main', {center: 'directory'});
-	}
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}]
 });
 
 FlowRouter.route('/account/:group?', {
