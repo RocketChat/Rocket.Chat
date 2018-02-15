@@ -14,6 +14,7 @@ RocketChat.TOTP = {
 
 	verify({ secret, token, backupTokens, userId }) {
 		let verified;
+		let maxDelta = RocketChat.settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
 
 		// validates a backup code
 		if (token.length === 8 && backupTokens) {
@@ -29,11 +30,26 @@ RocketChat.TOTP = {
 				RocketChat.models.Users.update2FABackupCodesByUserId(userId, backupTokens);
 			}
 		} else {
-			verified = speakeasy.totp.verify({
-				secret,
-				encoding: 'base32',
-				token
-			});
+			if (maxDelta) {
+				let verifiedDelta = speakeasy.totp.verifyDelta({
+					secret,
+					encoding: 'base32',
+					token,
+					window: maxDelta
+				});
+
+				if (verifiedDelta === undefined) {
+					verified = false;
+				} else {
+					verified = Math.abs(verifiedDelta.delta) < maxDelta;
+				}
+			} else {
+				verified = speakeasy.totp.verify({
+					secret,
+					encoding: 'base32',
+					token
+				});
+			}
 		}
 
 		return verified;
