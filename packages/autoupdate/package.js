@@ -1,6 +1,6 @@
 Package.describe({
   summary: "Update the client when new client code is available",
-  version: '1.3.12'
+  version: '1.4.0'
 });
 
 Package.onUse(function (api) {
@@ -15,9 +15,9 @@ Package.onUse(function (api) {
   ], 'client');
 
   api.use([
+    'ecmascript',
     'ddp',
-		'mongo',
-		'ecmascript'
+    'mongo'
   ], ['client', 'server']);
 
   api.use(['http', 'random'], 'web.cordova');
