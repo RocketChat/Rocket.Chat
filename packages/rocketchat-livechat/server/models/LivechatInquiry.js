@@ -35,10 +35,8 @@ class LivechatInquiry extends RocketChat.models._Base {
 		}, {
 			$set: {
 				status: 'closed',
-				closedBy: {
-					_id: closeInfo.user._id,
-					username: closeInfo.user.username
-				},
+				closer: closeInfo.closer,
+				closedBy: closeInfo.closedBy,
 				closedAt: closeInfo.closedAt,
 				chatDuration: closeInfo.chatDuration
 			}
