@@ -81,7 +81,7 @@ Meteor.methods({
 					break;
 				case 'roomCustomFields':
 					if (value !== room.customFields) {
-						RocketChat.saveRoomCustomFields(rid, value, user);
+						RocketChat.saveRoomCustomFields(rid, value);
 					}
 					break;
 				case 'roomDescription':
