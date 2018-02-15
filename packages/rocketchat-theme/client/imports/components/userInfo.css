@@ -9,6 +9,7 @@
 
 	&-container {
 		position: absolute;
+
 		top: 0;
 		right: 0;
 		left: 0;
@@ -33,6 +34,8 @@
 		overflow-y: auto;
 
 		flex: 1 1;
+
+		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
@@ -72,6 +75,9 @@
 	}
 
 	&__name {
+		text-align: center;
+		word-wrap: break-word;
+
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 28px;
@@ -86,6 +92,9 @@
 	&__scroll {
 		overflow-x: hidden;
 		overflow-y: auto;
+
+		margin: 0 -1.5rem;
+		padding: 0 1.5rem;
 
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
@@ -244,6 +253,10 @@
 
 				font-size: 1.25rem;
 			}
+
+			& .icon-play-circled {
+				cursor: pointer;
+			}
 		}
 
 		&-name,
@@ -266,6 +279,7 @@
 
 			color: #1d73f3;
 			align-items: flex-end;
+			text-transform: capitalize;
 		}
 	}
 }
@@ -275,7 +289,7 @@
 
 	width: 100%;
 
-	word-break: break-all;
+	word-break: break-word;
 
 	&__description {
 		margin: 5px 2px;
