@@ -40,8 +40,12 @@ class Assistify extends Page {
 		return browser.element('.external-search-content .smarti-widget .search-results');
 	}
 
-	get knowledgebasePostBtn() {
-		return browser.element('.external-search-content .smarti-widget .search-results .result-actions');
+	get knowledgebasePickAnswer() {
+		return browser.element('#widgetBody > div.widgetContent > div > div > div > div > div.postAction');
+	}
+
+	get knowledgebaseContent() {
+		return browser.element('[data-link="class{merge: messagesCnt toggle=\'parent\'}"]');
 	}
 
 	// new Topic
@@ -78,11 +82,23 @@ class Assistify extends Page {
 
 	// Knowledgebase
 	get closeTopicBtn() {
-		return browser.element('.flex-tab-container.border-component-color.opened .delete');
+		return browser.element('.rc-button.rc-button--outline.rc-button--cancel.js-delete');
+	}
+
+	get editInfoBtn() {
+		return browser.element('.rc-button.rc-button--icon.rc-button--outline.js-edit');
 	}
 
 	get infoRoomIcon() {
 		return browser.element('.flex-tab-container.border-component-color.opened .tab-button.active');
+	}
+
+	get addKeyword() {
+		return browser.element('#tags > ul > li.add');
+	}
+
+	get keywordTextBox() {
+		return browser.element('#newTagInput');
 	}
 
 	get numberOfRequests() { return browser.element('#rocket-chat > aside > div.rooms-list > h3:nth-child(9) > span.badge'); }
@@ -103,7 +119,6 @@ class Assistify extends Page {
 		this.topicExperts.setValue(expert);
 		browser.pause(500);
 		browser.keys(Keys.TAB);
-		// browser.element('.rc-popup-list__item').click();
 		browser.pause(500);
 
 		browser.waitUntil(function() {
@@ -151,24 +166,10 @@ class Assistify extends Page {
 		this.sendMessageBtn.click();
 	}
 
-	// answerRequest(topicName, message) {
-	// 	sideNav.openChannel(topicName);
-	//
-	// 	this.sendTopicMessage(message);
-	// }
-
 	closeRequest(topicName, comment) {
-		// sideNav.openChannel(topicName);
 		this.knowledgebaseTab.click();
-
 		this.completeRequest.waitForVisible(5000);
 		this.completeRequest.click();
-
-		// this.commentClose.waitForVisible(5000);
-		// this.commentClose.setValue(comment);
-		//
-		// this.commentCloseOK.waitForVisible(5000);
-		// this.commentCloseOK.click();
 		global.confirmPopup();
 	}
 
@@ -176,6 +177,8 @@ class Assistify extends Page {
 		sideNav.openChannel(topicName);
 		flexTab.channelTab.waitForVisible(5000);
 		flexTab.channelTab.click();
+		this.editInfoBtn.waitForVisible(5000);
+		this.editInfoBtn.click();
 		this.closeTopicBtn.waitForVisible(5000);
 		this.closeTopicBtn.click();
 		global.confirmPopup();
@@ -184,6 +187,14 @@ class Assistify extends Page {
 	clickKnowledgebase() {
 		this.knowledgebaseTab.waitForVisible(5000);
 		this.knowledgebaseTab.click();
+	}
+
+	addNewKeyword(keyword) {
+		this.addKeyword.waitForVisible(5000);
+		this.addKeyword.click();
+		this.keywordTextBox.setValue(keyword);
+		browser.keys(Keys.ENTER);
+		browser.pause(1000);
 	}
 
 	logoutRocketchat() {

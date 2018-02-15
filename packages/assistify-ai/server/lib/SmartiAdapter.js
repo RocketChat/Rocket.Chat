@@ -33,23 +33,107 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onMessage(message) {
+		function updateMapping(message, conversationId) {
+			// update/insert channel/conversation specific timestamp
+			RocketChat.models.LivechatExternalMessage.update(
+				{
+					_id: message.rid
+				}, {
+					rid: message.rid,
+					knowledgeProvider: 'smarti',
+					conversationId: conversationId,
+					ts: message.ts
+				}, {
+					upsert: true
+				}
+			);
+		}
 
-		//TODO is this always a new one, what about update
-		const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
-		const supportArea = helpRequest ? helpRequest.supportArea : undefined;
-		const requestBody = {
-			// TODO: Should this really be in the responsibility of the Adapter?
-			webhook_url: SmartiAdapter.rocketWebhookUrl,
-			message_id: message._id,
-			channel_id: message.rid,
-			user_id: message.u._id,
-			// username: message.u.username,
-			text: message.msg,
-			timestamp: message.ts,
-			origin: message.origin,
-			support_area: supportArea
+
+		//TODO trigger on message update, if needed
+		const requestBodyMessage = {
+			'id': message._id,
+			'time': message.ts,
+			'origin': 'User', //user.type,
+			'content': message.msg,
+			'user': {
+				'id': message.u._id
+			}
+			//,"private" : false
 		};
-		return SmartiProxy.propagateToSmarti(verbs.post, `rocket/${ SmartiAdapter.smartiKnowledgeDomain }`, requestBody);
+
+		SystemLogger.debug('Message:', requestBodyMessage);
+
+		const m = RocketChat.models.LivechatExternalMessage.findOneById(message.rid);
+		let conversationId;
+
+		// conversation exists for channel?
+		if (m && m.conversationId) {
+			conversationId = m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
+				`legacy/rocket.chat?channel_id=${ message.rid }`, null,
+				function (error) {
+					// 404 is expected if no mapping exists
+					if (error.response.statusCode === 404) {
+						return null;
+					}
+				});
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+				updateMapping(message, conversationId);
+			}
+		}
+
+		if (conversationId) {
+			SystemLogger.debug(`Conversation ${conversationId} found for channel ${message.rid}`);
+			// add message to conversation
+			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+		} else {
+			SystemLogger.debug('Conversation not found for channel');
+			const helpRequest = RocketChat.models.HelpRequests.findOneByRoomId(message.rid);
+			const supportArea = helpRequest ? helpRequest.supportArea : undefined;
+			const room = RocketChat.models.Rooms.findOneById(message.rid);
+			SystemLogger.debug('HelpRequest:', helpRequest);
+			SystemLogger.debug('Room:', room);
+
+			const requestBodyConversation = {
+				'meta': {
+					'support_area': [supportArea],
+					'channel_id': [message.rid]
+				},
+				'user': {
+					'id': room.u._id
+				},
+				'messages': [requestBodyMessage],
+				'context': {
+					'contextType': 'rocket.chat'
+					/*
+					"domain" : "test",
+					"environment" : {
+
+					}
+					*/
+				}
+			};
+
+			SystemLogger.debug('Creating conversation:', JSON.stringify(requestBodyConversation, null, '\t'));
+			// create conversation, send message along and request analysis
+
+			const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', requestBodyConversation);
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+				updateMapping(message, conversationId);
+			}
+		}
+
+		// request analysis results
+		const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`);
+		SystemLogger.debug('analysisResult:', JSON.stringify(analysisResult, null, '\t'));
+		if (analysisResult) {
+			RocketChat.Notifications.notifyRoom(message.rid, 'newConversationResult', analysisResult);
+		}
 	}
 
 	/**
@@ -60,11 +144,20 @@ export class SmartiAdapter {
 	 * @returns {*}
 	 */
 	static onClose(room) { //async
-
+		let conversationId;
 		// get conversation id
 		const m = RocketChat.models.LivechatExternalMessage.findOneById(room._id);
-		if (m) {
-			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ m.conversationId }/publish`);
+		if (m && m.conversationId) {
+			conversationId = m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ room._id }`);
+			if (conversation && conversation.id) {
+				conversationId = conversation.id;
+			}
+		}
+		if (conversationId) {
+			SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
 		} else {
 			SystemLogger.error(`Smarti - closing room failed: No conversation id for room: ${ room._id }`);
 		}

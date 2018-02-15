@@ -2,6 +2,8 @@
 
 import {SmartiProxy, verbs} from '../SmartiProxy';
 
+const querystring = require('querystring');
+
 /** @namespace RocketChat.RateLimiter.limitFunction */
 
 /**
@@ -18,18 +20,49 @@ Meteor.methods({
 	 * @returns {String} - the conversation Id
 	 */
 	getConversationId(channelId) {
-
-		const clientDomain = RocketChat.settings.get('Assistify_AI_Smarti_Domain');
-		return RocketChat.RateLimiter.limitFunction(
-			SmartiProxy.propagateToSmarti, 5, 1000, {
-				userId(userId) {
-					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+		SystemLogger.debug(`Retrieving conversation ID for channel: ${ channelId }`);
+		const m = RocketChat.models.LivechatExternalMessage.findOneById(channelId);
+		if (m && m.conversationId) {
+			return m.conversationId;
+		} else {
+			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
+			const conversation = RocketChat.RateLimiter.limitFunction(
+				SmartiProxy.propagateToSmarti, 5, 1000, {
+					userId(userId) {
+						return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+					}
 				}
+			)(verbs.get, `legacy/rocket.chat?channel_id=${ channelId }`);
+
+			if (conversation && conversation.id) {
+				let timestamp = conversation.messages &&
+					conversation.messages[conversation.messages.length - 1] &&
+					conversation.messages[conversation.messages.length - 1].time;
+
+				if (!timestamp) {
+					timestamp = conversation.lastModified;
+				}
+
+				// Store conversation ID and latest conversation timestamp
+				RocketChat.models.LivechatExternalMessage.update(
+					{
+						_id: channelId
+					}, {
+						rid: channelId,
+						knowledgeProvider: 'smarti',
+						conversationId: conversation.id,
+						ts: timestamp
+					}, {
+						upsert: true
+					}
+				);
+
+				return conversation.id;
+			} else {
+				SystemLogger.debug(`Smarti - no conversation found for channel: ${ channelId }`);
+				return null;
 			}
-		)(verbs.get, `rocket/${ clientDomain }/${ channelId }/conversationid`);
-		// Smarti only returns the plain id (no JSON Object), therefore we do not get an response.data obeject.
-		// use body instead
-		// TODO: Smarti release 0.7.0 should return a valid JSON
+		}
 	},
 
 	/**
@@ -40,14 +73,13 @@ Meteor.methods({
 	 * @returns {Object} - the analysed conversation
 	 */
 	getConversation(conversationId) {
-
 		return RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis`);
 	},
 
 	/**
@@ -57,18 +89,30 @@ Meteor.methods({
 	 * @param {Number} templateIndex - the index of the template to get the results for
 	 * @param {String} creator - the creator providing the suggestions
 	 * @param {Number} start - the offset of the suggestion results (pagination)
+	 * @param {Number} rows - number of the suggestion results (pagination)
 	 *
 	 * @returns {Object} - the suggestions
 	 */
-	getQueryBuilderResult(conversationId, templateIndex, creator, start) {
-
+	getQueryBuilderResult(conversationId, templateIndex, creator, start, rows) {
 		return RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/${ conversationId }/template/${ templateIndex }/${ creator }?start=${ start }`);
+		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }?start=${ start }&rows=${ rows }`);
+	},
+
+	searchConversations(queryParams) {
+		const queryString = querystring.stringify(queryParams);
+		SystemLogger.debug('QueryString: ', queryString);
+		return RocketChat.RateLimiter.limitFunction(
+			SmartiProxy.propagateToSmarti, 5, 1000, {
+				userId(userId) {
+					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+				}
+			}
+		)(verbs.get, `conversation/search?${ queryString }`);
 	}
 });
 

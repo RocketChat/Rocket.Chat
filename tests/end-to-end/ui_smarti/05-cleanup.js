@@ -24,7 +24,7 @@ describe('[Smarti Cleanup]', () => {
 
 	it('delete client', function(done) {
 		request.del(`/client/${ clientid }`)
-			.expect(200)
+			.expect(204)
 			.end(done);
 	});
 

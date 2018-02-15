@@ -1,6 +1,6 @@
 /* globals RocketChat, SystemLogger */
 
-import {getKnowledgeAdapter} from '../lib/KnowledgeAdapterProvider';
+import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 
 RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 
@@ -19,7 +19,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (!(typeof room.t !== 'undefined' && room.v && room.v.token)) {
+	//we only want to forward messages from livechat-rooms
+	if (!(room && (room.t === 'l'))) {
 		return message;
 	}
 
@@ -28,8 +29,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return;
 	}
 
+	SystemLogger.debug(`Send message ${message._id} to knowledgeAdapter (Meteor.defer()`);
 	Meteor.defer(() => {
 		try {
+			SystemLogger.debug(`Calling onMessage(${message._id});`);
 			knowledgeAdapter.onMessage(message);
 		} catch (e) {
 			SystemLogger.error('Error using knowledge provider ->', e);

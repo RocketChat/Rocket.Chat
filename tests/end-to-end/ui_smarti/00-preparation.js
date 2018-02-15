@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import supertest from 'supertest';
-import {adminUsername, adminPassword} from '../../data/user.js';
+import { adminUsername, adminPassword } from '../../data/user.js';
 
 export const request = supertest.agent('http://localhost:8080');
 export const rcrequest = supertest.agent('http://localhost:3000');
@@ -57,25 +57,29 @@ describe('[Smarti Connection]', () => {
 					.end(done);
 			});
 
-			it('create new client', function(done) {
+			it('delete client if exists', function(done) {
 				if (typeof clientid !== 'undefined') {
 					console.log('client was alread there', clientid);
-					done();
-				} else {
-					request.post('/client')
-						.send({
-							defaultClient: true,
-							description: '',
-							name: 'testclient'
-						})
-						.set('Accept', 'application/json')
-						.end(function(err, res) {
-							clientid = res.body.id;
-							expect(res.status).to.be.equal(200);
-							console.log('clientid', res.body.id);
-							done();
-						});
+					request.del(`/client/${ clientid }`)
+						.expect(204)
+						.end(done);
 				}
+			});
+
+			it('create new client', function(done) {
+				request.post('/client')
+					.send({
+						defaultClient: true,
+						description: '',
+						name: 'testclient'
+					})
+					.set('Accept', 'application/json')
+					.end(function(err, res) {
+						clientid = res.body.id;
+						expect(res.status).to.be.equal(201);
+						console.log('clientid', res.body.id);
+						done();
+					});
 			});
 
 			it('check if right client was picked', function(done) {
@@ -98,7 +102,7 @@ describe('[Smarti Connection]', () => {
 				request.post(code)
 					.set('Content-Type', 'application/json')
 					.send(clientconfig)
-					.expect(200)
+					.expect(201)
 					.end(function(err, res) {
 						console.log('post config', res.body);
 						done();
@@ -314,7 +318,7 @@ describe('[Smarti Connection]', () => {
 		it('Logout from Rocketchat api', function(done) {
 			console.log('authToken-o', authToken);
 			console.log('userId-o', userId);
-			rcrequest.get('/api/v1/logout')
+			rcrequest.post('/api/v1/logout')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)

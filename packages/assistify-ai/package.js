@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'assistify:ai',
-	version: '0.1.0',
+	version: '0.2.0',
 	summary: 'Integration of artificial knowledge',
 	git: 'http://github.com/assistify/Rocket.Chat',
 	documentation: 'README.md'
@@ -51,7 +51,7 @@ Package.onUse(function(api) {
 
 	//Assets
 	api.addAssets('client/public/assistify.png', 'client');
-	api.addAssets('client/public/assistify-beta.png', 'client');
+	//api.addAssets('client/public/assistify-beta.png', 'client');
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 
