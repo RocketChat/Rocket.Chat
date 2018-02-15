@@ -15,7 +15,9 @@ Meteor.methods({
 			message.u.name = user.name;
 		}
 		message.temp = true;
-		message.unread = true;
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			message.unread = true;
+		}
 		message = RocketChat.callbacks.run('beforeSaveMessage', message);
 		RocketChat.promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);

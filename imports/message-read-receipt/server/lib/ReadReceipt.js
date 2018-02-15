@@ -14,9 +14,7 @@ const debounceByRoomId = function(fn) {
 
 const updateMessages = debounceByRoomId(Meteor.bindEnvironment((roomId) => {
 	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-	// if firstSubscription on room didn't change
 	const firstSubscription = RocketChat.models.Subscriptions.getMinimumLastSeenByRoomId(roomId);
-	// console.log('firstSubscription ->', firstSubscription);
 	RocketChat.models.Messages.setAsRead(roomId, firstSubscription.ls);
 }));
 

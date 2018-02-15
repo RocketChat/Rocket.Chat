@@ -629,6 +629,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			unread: true,
 			ts: { $lt: until }
 		}, {
+			$set: {
+				readAt: new Date()
+			},
 			$unset: {
 				unread: 1
 			}
@@ -641,6 +644,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update({
 			_id
 		}, {
+			$set: {
+				readAt: new Date()
+			},
 			$unset: {
 				unread: 1
 			}

@@ -32,8 +32,9 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 	}
 
-	// @TODO test if setting is enabled?
-	message.unread = true;
+	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		message.unread = true;
+	}
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 	if (message) {
