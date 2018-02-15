@@ -23,6 +23,8 @@
 }
 
 .emojione.big {
+	display: inline-block !important;
+
 	width: 44px;
 	height: 44px;
 }

@@ -86,6 +86,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
 	api.addFiles('client/views/app/pageSettingsContainer.html', 'client');
+	api.addFiles('client/views/app/popout.html', 'client');
+
 	api.addFiles('client/views/app/privateHistory.html', 'client');
 	api.addFiles('client/views/app/room.html', 'client');
 	api.addFiles('client/views/app/roomSearch.html', 'client');
@@ -112,6 +114,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
 	api.addFiles('client/views/app/popover.js', 'client');
+	api.addFiles('client/views/app/popout.js', 'client');
 	api.addFiles('client/views/app/modal.js', 'client');
 	api.addFiles('client/views/app/photoswipe.js', 'client');
 
