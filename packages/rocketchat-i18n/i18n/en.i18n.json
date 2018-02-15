@@ -1302,6 +1302,7 @@
   "Mute_all_notifications": "Mute all notifications",
   "mute-user": "Mute User",
   "mute-user_description": "Permission to mute other users in the same channel",
+  "Mute_Focused_Conversations": "Mute Focused Conversations",
   "Mute_someone_in_room": "Mute someone in the room",
   "Mute_user": "Mute user",
   "Muted": "Muted",
