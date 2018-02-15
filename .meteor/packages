@@ -82,7 +82,7 @@ rocketchat:importer-hipchat-enterprise
 rocketchat:importer-slack
 rocketchat:importer-slack-users
 rocketchat:integrations
-#rocketchat:internal-hubot
+rocketchat:internal-hubot
 rocketchat:irc
 rocketchat:issuelinks
 rocketchat:katex
@@ -179,7 +179,7 @@ percolate:synced-cron
 raix:handlebar-helpers
 raix:push
 raix:ui-dropped-event
-#steffo:meteor-accounts-saml
+steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
