@@ -1,12 +1,12 @@
 import _ from 'underscore';
 
 Meteor.methods({
-	setReaction(reaction, messageId, usr) {
+	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = usr ? usr : Meteor.user();
+		const user = Meteor.user();
 
 		const message = RocketChat.models.Messages.findOne({ _id: messageId });
 		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
