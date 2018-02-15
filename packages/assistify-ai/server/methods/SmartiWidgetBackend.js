@@ -7,7 +7,7 @@ const querystring = require('querystring');
 /** @namespace RocketChat.RateLimiter.limitFunction */
 
 /**
- * The SmartiWidgetBackend handles all interactions  triggered by the Smarti widget (not by Rocket.Chat hooks).
+ * The SmartiWidgetBackend handles all interactions triggered by the Smarti widget (not by Rocket.Chat hooks).
  * These 'Meteor.methods' are made available to be accessed via DDP, to be used in the Smarti widget.
  */
 Meteor.methods({
@@ -33,11 +33,11 @@ Meteor.methods({
 					}
 				}
 			)(verbs.get, `legacy/rocket.chat?channel_id=${ channelId }`, null, (error) => {
-        // 404 is expected if no mapping exists
-        if (error.response.statusCode === 404) {
-          return null;
-        }
-      });
+				// 404 is expected if no mapping exists
+				if (error.response.statusCode === 404) {
+					return null;
+				}
+			});
 
 			if (conversation && conversation.id) {
 				let timestamp = conversation.messages &&
