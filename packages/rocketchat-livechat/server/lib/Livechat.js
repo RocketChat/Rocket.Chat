@@ -215,10 +215,6 @@ RocketChat.Livechat = {
 		const now = new Date();
 
 		const closeData = {
-			user: {
-				_id: user._id,
-				username: user.username
-			},
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000
 		};
@@ -251,7 +247,7 @@ RocketChat.Livechat = {
 		if (room.servedBy) {
 			RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
 		}
-		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.user);
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);
