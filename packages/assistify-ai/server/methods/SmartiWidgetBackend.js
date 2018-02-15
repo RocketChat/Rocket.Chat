@@ -32,7 +32,12 @@ Meteor.methods({
 						return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 					}
 				}
-			)(verbs.get, `legacy/rocket.chat?channel_id=${ channelId }`);
+			)(verbs.get, `legacy/rocket.chat?channel_id=${ channelId }`, null, (error) => {
+        // 404 is expected if no mapping exists
+        if (error.response.statusCode === 404) {
+          return null;
+        }
+      });
 
 			if (conversation && conversation.id) {
 				let timestamp = conversation.messages &&
