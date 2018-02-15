@@ -270,7 +270,7 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 
 		const emoji = this.bodyParams.emoji;
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.userId));
+		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id));
 
 		return RocketChat.API.v1.success();
 	}
