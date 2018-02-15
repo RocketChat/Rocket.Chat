@@ -113,7 +113,7 @@
 		"adm-zip": "0.4.7",
 		"atlassian-crowd": "0.5.0",
 		"autolinker": "1.6.2",
-		"aws-sdk": "^2.194.0",
+		"aws-sdk": "^2.195.0",
 		"bad-words": "1.6.1",
 		"bcrypt": "^1.0.3",
 		"bson": "1.0.4",
