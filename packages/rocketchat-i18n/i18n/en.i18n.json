@@ -137,6 +137,7 @@
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",
   "Accounts_ShowFormLogin": "Show Form-Based Login",
+  "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
   "Accounts_UseDefaultBlockedDomainsList": "Use Default Blocked Domains List",
   "Accounts_UseDNSDomainCheck": "Use DNS Domain Check",
   "Accounts_UserAddedEmail_Default": "<h2>Welcome to <h1>[Site_Name]</h1></h2><p>Go to <a href=\"[Site_URL]\">[Site_URL]</a> and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
