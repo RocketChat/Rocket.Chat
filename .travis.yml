@@ -66,10 +66,10 @@ before_script:
 - mongo --eval 'rs.status()'
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
-- num=3 .scripts/seperateTesting.sh
+- retry_test=3 .scripts/seperateTesting.sh
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
-- num=3 .scripts/seperateTesting.sh
+- retry_test=3 .scripts/seperateTesting.sh
 #before_deploy:
 #- source ".travis/setartname.sh"
 #- source ".travis/setdeploydir.sh"
