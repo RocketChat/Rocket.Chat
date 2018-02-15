@@ -27,7 +27,7 @@ Meteor.methods({
 	browseChannels({text='', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'user'].includes(type)) {
+		if (!['channels', 'users'].includes(type)) {
 			return;
 		}
 
@@ -62,12 +62,13 @@ Meteor.methods({
 					description: 1,
 					name: 1,
 					ts: 1,
-					archived: 1
+					archived: 1,
+					usernames: 1
 				}
 			}).fetch();
 		}
 
-		// type === user
+		// type === users
 		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 			return;
 		}

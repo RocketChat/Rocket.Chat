@@ -14,13 +14,54 @@
 		height: 36px;
 		min-height: 36px;
 		padding: 0;
-		margin-left: 9px;
-		margin-right: 9px;
+		margin: 0 9px;
 	}
 	&-search {
 		max-width: 230px;
 		margin-left: 9px;
 		margin-right: 9px;
 	}
+}
 
+.rc-directory-header .rc-input__wrapper {
+	padding: 0;
+}
+
+.rc-directory-channel {
+	&-wrapper {
+		display: flex;
+		align-items: center;
+		margin: 0 -9px;
+	}
+
+	&-avatar {
+		width: 60px;
+		height: 60px;
+		margin: 0 9px;
+	}
+
+	&-info {
+		display: flex;
+		margin: 0 9px;
+		flex-direction: column;
+	}
+
+	&-name {
+		font-size: 1rem;
+		font-weight: 500;
+	}
+
+	&-description {
+		margin-top: 0.625rem;
+		color: var(--rc-color-primary-light);
+	}
+
+	&-createdAt {
+		text-transform: capitalize;
+	}
+}
+
+.rc-directory-content {
+	width: 100%;
+	overflow-x: auto;
 }
