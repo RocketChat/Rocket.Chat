@@ -2,11 +2,11 @@
 tmpPath=tests/end-to-end/temporary_staged_test
 rm -rf $tmpPath
 mkdir -p $tmpPath
-[ -z "$num" ] && num=1
-for file in tests/end-to-end/ui/*.js; do
+[ -z "$retry_test" ] && retry_test=1
+for file in tests/end-to-end/api/*.js; do
   
   failed=1
-  for i in `seq 1 $num`; do
+  for i in `seq 1 $retry_test`; do
     echo '-------------- '$i' try ---------------'
     set -x
     cp $file $tmpPath

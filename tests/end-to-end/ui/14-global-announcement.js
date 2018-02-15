@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import supertest from 'supertest';
 import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 import loginPage from '../../pageobjects/login.page';
@@ -22,7 +23,7 @@ describe('[Rocket.Chat Global Announcement Tests]', function() {
 			.end(function(err, res) {
 				authToken = res.body.data.authToken;
 				userId = res.body.data.userId;
-				expect(res.status).to.be.equal(200);
+				res.status.should.be.equal(200);
 				done();
 			});
 	});

@@ -166,7 +166,7 @@ class Assistify extends Page {
 		this.sendMessageBtn.click();
 	}
 
-	closeRequest(topicName, comment) {
+	closeRequest() {
 		this.knowledgebaseTab.click();
 		this.completeRequest.waitForVisible(5000);
 		this.completeRequest.click();

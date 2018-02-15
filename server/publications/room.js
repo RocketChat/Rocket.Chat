@@ -1,3 +1,4 @@
+/* globals RocketChat, SystemLogger */
 import _ from 'underscore';
 
 const fields = {

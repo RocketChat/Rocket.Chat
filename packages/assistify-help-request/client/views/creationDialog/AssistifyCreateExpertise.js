@@ -1,3 +1,4 @@
+/* globals _ */
 /* globals AutoComplete, Deps */
 import {RocketChat} from 'meteor/rocketchat:lib';
 import {FlowRouter} from 'meteor/kadira:flow-router';
