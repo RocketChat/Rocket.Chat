@@ -284,15 +284,6 @@ Template.message.helpers({
 	},
 	isSnippet() {
 		return this.actionContext === 'snippeted';
-	},
-	readReceipt() {
-		if (!RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
-			return;
-		}
-
-		return {
-			readByEveryone: !this.unread && 'read'
-		};
 	}
 });
 

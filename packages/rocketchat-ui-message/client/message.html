@@ -64,7 +64,7 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 			{{#with readReceipt}}
-			<div class="read-receipt {{readByEveryone}}">
+			<div class="read-receipt {{readByEveryone}}" aria-label="{{readTime}}">
 				{{> icon icon="check" }}
 			</div>
 			{{/with}}

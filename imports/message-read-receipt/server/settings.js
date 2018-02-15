@@ -7,6 +7,6 @@ RocketChat.settings.add('Message_Read_Receipt_Enabled', false, {
 RocketChat.settings.add('Message_Read_Receipt_Store_Users', false, {
 	group: 'Message',
 	type: 'boolean',
-	public: false,
+	public: true,
 	enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true }
 });

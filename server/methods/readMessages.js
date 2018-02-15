@@ -12,15 +12,13 @@ Meteor.methods({
 			});
 		}
 
-		const userSubscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-
 		// this prevents cache from updating object reference/pointer
-		const { ls: lastSeen } = userSubscription;
+		const userSubscription = Object.assign({}, RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, userId));
 
 		RocketChat.models.Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
 		Meteor.defer(() => {
-			ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
+			ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);
 		});
 	}
 });
