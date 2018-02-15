@@ -138,6 +138,7 @@
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",
   "Accounts_ShowFormLogin": "Show Form-Based Login",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "The Maximum Delta determines how many tokens are valid at any given time. Tokens are generated every 30 seconds, and are valid for (30 * Maximum Delta) seconds. <br/>Example: With a Maximum Delta set to 10, each token can be used up to 300 seconds before or after it's timestamp. This is useful when the client's clock is not properly synced with the server.",
   "Accounts_UseDefaultBlockedDomainsList": "Use Default Blocked Domains List",
   "Accounts_UseDNSDomainCheck": "Use DNS Domain Check",
   "Accounts_UserAddedEmail_Default": "<h2>Welcome to <h1>[Site_Name]</h1></h2><p>Go to <a href=\"[Site_URL]\">[Site_URL]</a> and try the best open source chat solution available today!</p><p>You may login using your email: [email] and password: [password]. You may be required to change it after your first login.",
