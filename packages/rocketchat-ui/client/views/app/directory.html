@@ -1,21 +1,186 @@
 <template name="directory">
-	<section class="page-container page-home page-static content-background-color">
+	<section class="rc-directory">
 		{{# header sectionName="Directory" hideHelp=true}}
 		<div class="rc-directory-header">
+		<select class="rc-input__element js-typeSelector" name="type">
+				<option value="channels">Channels</option>
+				<option value="users">Users</option>
+			</select>
 			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
 					<div class="rc-input__wrapper">
 						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small" name="message-search" id="message-search" placeholder="Search Messages" autocomplete="off">
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder="Search Messages" autocomplete="off">
 					</div>
 				</label>
 			</div>
 			<a href="#" class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</a>
 		</div>
 		{{/header}}
-		<div class="content">
-			hey
-			{{{body}}}
+		<div class="rc-directory-content">
+			<table class="rc-table">
+				<thead class="rc-table-head">
+					<tr class="rc-table-tr">
+						<td class="rc-table-td">Name</td>
+						<td class="rc-table-td">Users</td>
+						<td class="rc-table-td">Created At</td>
+					</tr>
+				</thead>
+				<tbody class="rc-table-body">
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+					{{#each searchResults}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td">
+								<div class="rc-directory-channel-wrapper">
+									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+									<div class="rc-directory-channel-info">
+										<span class="rc-directory-channel-name">{{name}}</span>
+										{{#if description}}
+											<span class="rc-directory-channel-description">{{description}}</span>
+										{{/if}}
+									</div>
+								</div>
+							</td>
+							<td class="rc-table-td">{{users}}</td>
+							<td class="rc-table-td">
+								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+							</td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
 		</div>
 	</section>
 </template>
