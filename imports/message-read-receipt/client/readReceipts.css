@@ -1,8 +1,16 @@
 .read-receipt {
-	display: inline-block;
-	margin: 0 6px;
-	color: #cbced1;
-	color: var(--message-box-container-border-color);
+	position: absolute;
+	top: 2px;
+	right: 0.5rem;
+}
+
+.read-receipt .rc-icon {
+	height: 0.8em;
+	width: 0.8em;
+}
+
+.message:hover .read-receipt, .message.active .read-receipt {
+	display: none;
 }
 
 .read-receipts-enabled .read-receipt {
@@ -10,7 +18,9 @@
 }
 
 .read-receipt.read {
-	color: inherit;
+	color: #1d74f5;
+	color: var(--rc-color-button-primary);
+	font-style: normal;
 }
 
 .message.temp .read-receipt {

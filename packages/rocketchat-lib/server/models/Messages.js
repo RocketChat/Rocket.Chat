@@ -519,6 +519,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			groupable: false
 		};
 
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
@@ -629,9 +633,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			unread: true,
 			ts: { $lt: until }
 		}, {
-			$set: {
-				readAt: new Date()
-			},
 			$unset: {
 				unread: 1
 			}
@@ -644,9 +645,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update({
 			_id
 		}, {
-			$set: {
-				readAt: new Date()
-			},
 			$unset: {
 				unread: 1
 			}
@@ -654,11 +652,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	findUnreadMessagesByRoomAndDate(rid, after) {
-		return this.find({
+		const query = {
 			unread: true,
-			rid,
-			ts: { $gt: after }
-		}, {
+			rid
+		};
+
+		if (after) {
+			query.ts = { $gt: after };
+		}
+
+		return this.find(query, {
 			fields: {
 				_id: 1
 			}
