@@ -282,7 +282,7 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 				preferences
 			});
 		} else {
-			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences').toUpperCase());
+			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		}
 	}
 });
