@@ -418,7 +418,7 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.addAll', (done) => {
+	it.skip('/channels.addAll', (done) => {
 		request.post(api('channels.addAll'))
 			.set(credentials)
 			.send({

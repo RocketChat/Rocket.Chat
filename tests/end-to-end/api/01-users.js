@@ -174,7 +174,7 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
-		it.skip('should query all users in the system by name', (done) => {
+		it('should query all users in the system by name', (done) => {
 			//filtering user list
 			request.get(api('users.list'))
 				.set(credentials)
@@ -182,8 +182,8 @@ describe('[Users]', function() {
 					name: { '$regex': 'g' }
 				})
 				.field('username', 1)
-				.sort('createdAt', -1)
-				.expect(log)
+				// .sort('createdAt', -1)
+				// .expect(log)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -200,6 +200,8 @@ describe('[Users]', function() {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
 				.attach('avatarUrl', imgURL)
+				//.field('username', apiUsername)
+				//.field('userId', targetUser._id)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {

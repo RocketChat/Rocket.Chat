@@ -395,13 +395,15 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it.skip('/groups.leave', (done) => {
-		request.post(api('groups.leave'))
+	it('/groups.setType', (done) => {
+		request.post(api('groups.setType'))
 			.set(credentials)
 			.send({
-				roomId: group._id
+				roomId: group._id,
+				type: 'c'
 			})
 			.expect('Content-Type', 'application/json')
+			.expect(log)
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
@@ -414,9 +416,26 @@ describe('groups', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				type: 'c'
+				type: 'p'
 			})
 			.expect('Content-Type', 'application/json')
+			.expect(log)
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/groups.leave', (done) => {
+		console.log(group._id);
+		request.post(api('groups.leave'))
+			.set(credentials)
+			.send({
+				roomId: group._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(log)
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
