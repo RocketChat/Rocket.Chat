@@ -1,4 +1,4 @@
-/* globals fileUpload chatMessages AudioRecorder device popover modal */
+/* globals fileUpload device modal */
 
 import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
@@ -11,40 +11,6 @@ RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
 	}
 });
-
-RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
-	id: 'audio-message',
-	icon: 'mic',
-	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
-	action({event, element}) {
-		event.preventDefault();
-		const icon = element.querySelector('.rc-icon');
-
-		if (chatMessages[RocketChat.openedRoom].recording) {
-			AudioRecorder.stop(function(blob) {
-				popover.close();
-				icon.style.color = '';
-				icon.classList.remove('pulse');
-				chatMessages[RocketChat.openedRoom].recording = false;
-				fileUpload([
-					{
-						file: blob,
-						type: 'audio',
-						name: `${ TAPi18n.__('Audio record') }.mp3`
-					}
-				]);
-			});
-			return false;
-		}
-
-		chatMessages[RocketChat.openedRoom].recording = true;
-		AudioRecorder.start(function() {
-			icon.classList.add('pulse');
-			icon.style.color = 'red';
-		});
-	}
-});
-
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
