@@ -14,173 +14,71 @@
 					</div>
 				</label>
 			</div>
-			<a href="#" class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</a>
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
 		</div>
 		{{/header}}
 		<div class="rc-directory-content">
-			<table class="rc-table">
-				<thead class="rc-table-head">
-					<tr class="rc-table-tr">
-						<td class="rc-table-td">Name</td>
-						<td class="rc-table-td">Users</td>
-						<td class="rc-table-td">Created At</td>
-					</tr>
-				</thead>
-				<tbody class="rc-table-body">
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
+			{{#if $eq searchType 'channels'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td">Users</td>
+							<td class="rc-table-td">Created At</td>
 						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each searchResults}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">{{name}}</span>
+											{{#if description}}
+												<span class="rc-directory-channel-description">{{description}}</span>
+											{{/if}}
+										</div>
 									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
+								</td>
+								<td class="rc-table-td">{{users}}</td>
+								<td class="rc-table-td">
+									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/if}}
+			{{#if $eq searchType 'users'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td">Username</td>
+							<td class="rc-table-td">Created At</td>
 						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each searchResults}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar">{{> avatar username=name}}</div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">{{name}}</span>
+										</div>
 									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-					{{#each searchResults}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td">
-								<div class="rc-directory-channel-wrapper">
-									<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-									<div class="rc-directory-channel-info">
-										<span class="rc-directory-channel-name">{{name}}</span>
-										{{#if description}}
-											<span class="rc-directory-channel-description">{{description}}</span>
-										{{/if}}
-									</div>
-								</div>
-							</td>
-							<td class="rc-table-td">{{users}}</td>
-							<td class="rc-table-td">
-								<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-							</td>
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
+								</td>
+								<td class="rc-table-td">{{username}}</td>
+								<td class="rc-table-td">
+									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/if}}
 		</div>
 	</section>
 </template>
