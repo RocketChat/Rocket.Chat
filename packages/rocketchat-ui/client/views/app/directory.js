@@ -12,15 +12,25 @@ function timeAgo(time) {
 }
 
 function directorySearch(config, cb) {
-	return Meteor.call('browseChannels', config, (err, result) => {
-		cb(result.map(room => {
-			return {
-				name: room.name,
-				users: room.usernames.length,
-				createdAt: timeAgo(room.ts),
-				description: room.description,
-				archived: room.archived
-			};
+	return Meteor.call('browseChannels', config, (err, results) => {
+		cb(results.map(result => {
+			if (config.type === 'channels') {
+				return {
+					name: result.name,
+					users: result.usernames.length,
+					createdAt: timeAgo(result.ts),
+					description: result.description,
+					archived: result.archived
+				};
+			}
+
+			if (config.type === 'users') {
+				return {
+					name: result.name,
+					username: result.username,
+					createdAt: timeAgo(result.createdAt)
+				};
+			}
 		}));
 	});
 }
@@ -28,6 +38,9 @@ function directorySearch(config, cb) {
 Template.directory.helpers({
 	searchResults() {
 		return Template.instance().results.get();
+	},
+	searchType() {
+		return Template.instance().searchType.get();
 	}
 });
 
@@ -38,8 +51,20 @@ Template.directory.events({
 	'change .js-typeSelector'(e, t) {
 		t.searchType.set(e.currentTarget.value);
 	},
-	'click .rc-table-body .rc-table-tr'() {
-		FlowRouter.go(RocketChat.roomTypes.getRouteLink('c', {name: this.name}));
+	'click .rc-table .rc-table-tr'() {
+		let searchType;
+		let routeConfig;
+		if (Template.instance().searchType.get() === 'channels') {
+			searchType = 'c';
+			routeConfig = {name: this.name};
+		} else {
+			searchType = 'd';
+			routeConfig = {name: this.username};
+		}
+		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
+	},
+	'click .rc-directory-plus'() {
+		FlowRouter.go('create-channel');
 	}
 });
 
