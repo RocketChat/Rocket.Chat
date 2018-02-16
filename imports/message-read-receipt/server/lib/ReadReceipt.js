@@ -31,7 +31,9 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(RocketChat.models.Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		if (userLastSeen) {
+			this.storeReadReceipts(RocketChat.models.Messages.findUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		}
 
 		updateMessages(roomId);
 	},
@@ -62,6 +64,10 @@ export const ReadReceipt = {
 					ts
 				};
 			});
+
+			if (receipts.length === 0) {
+				return;
+			}
 
 			try {
 				rawReadReceipts.insertMany(receipts);

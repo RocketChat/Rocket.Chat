@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 
 Template.message.helpers({
 	readReceipt() {
@@ -8,10 +7,7 @@ Template.message.helpers({
 		}
 
 		return {
-			readByEveryone: !this.unread && 'rc-tooltip read'
+			readByEveryone: (!this.unread && 'read') || 'color-component-color'
 		};
-	},
-	readTime() {
-		return moment(this.readAt).format('LLL');
 	}
 });
