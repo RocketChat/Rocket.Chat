@@ -16,7 +16,7 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 
 	// Fix absense of emails by adding initial empty email address
 	// Reformat array of emails into expected format if they exist
-	const emails = [];
+	let emails = [];
 	if (!Array.isArray(profile.emails)) {
 		emails.push({ address: '', verified: false });
 	} else {

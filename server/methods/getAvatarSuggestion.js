@@ -57,6 +57,13 @@ function getAvatarSuggestionForUser(user) {
 			});
 		}
 
+		if (service === 'blockstack' && user.services.blockstack.image && RocketChat.settings.get('Blockstack_Enable')) {
+			avatars.push({
+				service: 'blockstack',
+				url: user.services.blockstack.image
+			});
+		}
+
 		if (user.services[service]._OAuthCustom) {
 			const services = ServiceConfiguration.configurations.find({service}, {fields: {secret: 0}}).fetch();
 

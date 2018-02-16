@@ -16,6 +16,7 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 		userData: Object
 	}));
 
+	// Decode auth response for user attributes
 	const { username, profile } = loginRequest.userData;
 	profile.username = username;
 	logger.debug('Profile', profile);
@@ -28,16 +29,22 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 		};
 	}
 
+	// Collect basic auth provider details
 	const serviceData = {
 		id: iss,
 		did: `ID-${ iss.split(':').pop() }`,
 		issuedAt: new Date(iat*1000),
 		expiresAt: new Date(exp*1000)
 	};
+
+	// Add Avatar image source to use for auth service suggestions
+	if (Array.isArray(profile.image) && profile.image.length) {
+		serviceData.image = profile.image[0].contentUrl;
+	}
+
 	// profile: profile // ^ removed because it contained invalid keys for mongo
 
 	logger.debug('Login data', serviceData, profile);
-
 	return {
 		serviceData,
 		options: { profile }
