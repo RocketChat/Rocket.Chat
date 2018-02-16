@@ -1,4 +1,4 @@
-FROM assisitfy/smarti:0.6.1
+FROM assisitfy/smarti:0.7.0-BETA
 USER root
 ADD [\
     "https://repo1.maven.org/maven2/edu/stanford/nlp/stanford-corenlp/3.8.0/stanford-corenlp-3.8.0.jar", \

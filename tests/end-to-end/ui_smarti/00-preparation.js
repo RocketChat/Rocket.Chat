@@ -1,7 +1,6 @@
 /* eslint-env mocha */
-
 import supertest from 'supertest';
-import {adminUsername, adminPassword} from '../../data/user.js';
+import { adminUsername, adminPassword } from '../../data/user.js';
 
 export const request = supertest.agent('http://localhost:8080');
 export const rcrequest = supertest.agent('http://localhost:3000');
@@ -20,7 +19,7 @@ describe('[Smarti Connection]', () => {
 					.expect(200)
 					.expect('Content-Type', 'application/vnd.spring-boot.actuator.v1+json;charset=UTF-8')
 					.expect((res) => {
-						expect(res.body).to.have.property('status', 'UP');
+						res.body.should.have.property('status', 'UP');
 					})
 					.end(done);
 			});
@@ -48,7 +47,7 @@ describe('[Smarti Connection]', () => {
 					.expect(200)
 					.expect(function(res) {
 						for (const cl in res.body) {
-							if (res.body[cl].name == 'testclient') {
+							if (res.body[cl].name === 'testclient') {
 								clientid = res.body[cl].id;
 								console.log('check if client exists', clientid);
 							}
@@ -57,25 +56,31 @@ describe('[Smarti Connection]', () => {
 					.end(done);
 			});
 
-			it('create new client', function(done) {
+			it('delete client if exists', function(done) {
 				if (typeof clientid !== 'undefined') {
 					console.log('client was alread there', clientid);
-					done();
+					request.del(`/client/${ clientid }`)
+						.expect(204)
+						.end(done);
 				} else {
-					request.post('/client')
-						.send({
-							defaultClient: true,
-							description: '',
-							name: 'testclient'
-						})
-						.set('Accept', 'application/json')
-						.end(function(err, res) {
-							clientid = res.body.id;
-							expect(res.status).to.be.equal(200);
-							console.log('clientid', res.body.id);
-							done();
-						});
+					done();
 				}
+			});
+
+			it('create new client', function(done) {
+				request.post('/client')
+					.send({
+						defaultClient: true,
+						description: '',
+						name: 'testclient'
+					})
+					.set('Accept', 'application/json')
+					.end(function(err, res) {
+						clientid = res.body.id;
+						res.status.should.be.equal(201);
+						console.log('clientid', res.body.id);
+						done();
+					});
 			});
 
 			it('check if right client was picked', function(done) {
@@ -83,11 +88,11 @@ describe('[Smarti Connection]', () => {
 					.expect(200)
 					.expect(function(res) {
 						for (const cl in res.body) {
-							if (res.body[cl].name == 'testclient') {
-								expect(res.body[cl].id, clientid);
+							if (res.body[cl].name === 'testclient') {
+								res.body[cl].id.should.be.equal(clientid);
 							}
 						}
-						expect(clientid).to.not.equal(undefined);
+						clientid.should.not.equal(undefined);
 					})
 					.end(done);
 			});
@@ -98,7 +103,7 @@ describe('[Smarti Connection]', () => {
 				request.post(code)
 					.set('Content-Type', 'application/json')
 					.send(clientconfig)
-					.expect(200)
+					.expect(201)
 					.end(function(err, res) {
 						console.log('post config', res.body);
 						done();
@@ -112,7 +117,7 @@ describe('[Smarti Connection]', () => {
 					.send({})
 					.end(function(err, res) {
 						token = res.body.token;
-						expect(res.status).to.be.equal(201);
+						res.status.should.be.equal(201);
 						console.log('token', res.body.token);
 						done();
 					});
@@ -128,7 +133,7 @@ describe('[Smarti Connection]', () => {
 					.end(function(err, res) {
 						authToken = res.body.data.authToken;
 						userId = res.body.data.userId;
-						expect(res.status).to.be.equal(200);
+						res.status.should.be.equal(200);
 						console.log('authToken', authToken);
 						console.log('userId', userId);
 						done();
@@ -239,7 +244,7 @@ describe('[Smarti Connection]', () => {
 				.end(function(err, res) {
 					authToken = res.body.data.authToken;
 					userId = res.body.data.userId;
-					expect(res.status).to.be.equal(200);
+					res.status.should.be.equal(200);
 					console.log('authToken', authToken);
 					console.log('userId', userId);
 					done();
@@ -252,8 +257,8 @@ describe('[Smarti Connection]', () => {
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.status).to.be.equal(200);
-					expect(res.body.value).to.be.equal('testclient');
+					res.status.should.be.equal(200);
+					res.body.value.should.be.equal('testclient');
 					console.log('', res.body.value);
 					done();
 				});
@@ -265,8 +270,8 @@ describe('[Smarti Connection]', () => {
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.status).to.be.equal(200);
-					expect(res.body.value).to.be.equal('0');
+					res.status.should.be.equal(200);
+					res.body.value.should.be.equal('0');
 					console.log('Assistify_AI_Source', res.body.value);
 					done();
 				});
@@ -278,8 +283,8 @@ describe('[Smarti Connection]', () => {
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.status).to.be.equal(200);
-					expect(res.body.value).to.be.equal(true);
+					res.status.should.be.equal(200);
+					res.body.value.should.be.equal(true);
 					console.log('Assistify_AI_Enabled', res.body.value);
 					done();
 				});
@@ -291,8 +296,8 @@ describe('[Smarti Connection]', () => {
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.status).to.be.equal(200);
-					expect(res.body.value).to.be.equal('key123');
+					res.status.should.be.equal(200);
+					res.body.value.should.be.equal('key123');
 					console.log('Assistify_AI_RocketChat_Webhook_Token', res.body.value);
 					done();
 				});
@@ -304,8 +309,8 @@ describe('[Smarti Connection]', () => {
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.status).to.be.equal(200);
-					expect(res.body.value).to.be.equal('http://localhost:8080/');
+					res.status.should.be.equal(200);
+					res.body.value.should.be.equal('http://localhost:8080/');
 					console.log('Assistify_AI_Smarti_Base_URL', res.body.value);
 					done();
 				});
@@ -314,24 +319,11 @@ describe('[Smarti Connection]', () => {
 		it('Logout from Rocketchat api', function(done) {
 			console.log('authToken-o', authToken);
 			console.log('userId-o', userId);
-			rcrequest.get('/api/v1/logout')
+			rcrequest.post('/api/v1/logout')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
 				.end(done);
 		});
 	});
-
-	// describe.skip('[BREAK]', ()=> {
-	// 	it('BREAK', ()=> {
-	// 		true.should.equal(false);
-	// 	});
-	// });
-
 });
-
-// OVERWRITE_SETTING_Assistify_AI_Smarti_Domain: testclient
-// - OVERWRITE_SETTING_Assistify_AI_Source: 0
-// - OVERWRITE_SETTING_Assistify_AI_Enabled: true
-// - OVERWRITE_SETTING_Assistify_AI_RocketChat_Webhook_Token: key123
-// - OVERWRITE_SETTING_Assistify_AI_Smarti_Base_URL: http://localhost:8080/

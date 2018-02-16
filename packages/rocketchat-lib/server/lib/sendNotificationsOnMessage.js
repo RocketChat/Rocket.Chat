@@ -1,4 +1,5 @@
 /* globals Push */
+/*eslint complexity: ["error", 40]*/
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

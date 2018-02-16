@@ -1,19 +1,16 @@
 /* eslint-env mocha */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
-
-const topicName = 'smarti-test-topic';
-const topicExpert = 'rocketchat.internal.admin.test';
-const shortTopicMessage = 'Das ist das neue Thema zu dem Anfragen erstellt werden und die Wissensbasis genutzt wird!';
-const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick über den Markt, indem Sie Produkte, Preise und Bestellbedingungen unterschiedlicher Lieferanten und Dienstleister kennen lernen. In einem allgemeinen Anfragebrief bitten Sie zum die Zusendung von Katalogen, Prospekten, Preislisten und Produktmustern. Wie kann ich dieses Wissen nutzen?';
-const answer = 'Das ist die Antwort auf diese Anfrage!';
-
 import { checkIfUserIsAdmin } from '../../data/checks';
 
+const topicName = 'widget-test-topic';
+const question = 'Wie komme ich von Frankfurt nach Berlin?';
+const question2 = 'Dortmund soll auch gefunden werden!';
+const tag = 'Frankfurt';
+const topicExpert = adminUsername;
 
-describe('[Smarti Integration]', () => {
+describe('[Smarti Widget]', () => {
 
 	before(() => {
 		browser.pause(5000); // wait some time to make sure that all settings on both sides are actually persisted
@@ -22,20 +19,12 @@ describe('[Smarti Integration]', () => {
 	});
 
 	describe('[Topic]', () => {
-		before(() => {
+		it('Create new Topic for Testing', function() {
 			try {
 				sideNav.openChannel(topicName);
 			} catch (e) {
 				assistify.createTopic(topicName, topicExpert);
 			}
-
-		});
-
-		describe('Message', () => {
-			it('it should send a message', () => {
-				assistify.clickKnowledgebase();
-				assistify.sendTopicMessage(shortTopicMessage);
-			});
 		});
 	});
 
@@ -44,11 +33,9 @@ describe('[Smarti Integration]', () => {
 		describe('First request', () => {
 
 			it('create is successful', () => {
-				assistify.createHelpRequest(topicName, message);
+				assistify.createHelpRequest(topicName, question);
 			});
-			it.skip('answer request', () => {
-				assistify.sendTopicMessage(answer);
-			});
+
 			it('close request', () => {
 				assistify.clickKnowledgebase();
 				assistify.closeRequest();
@@ -58,19 +45,23 @@ describe('[Smarti Integration]', () => {
 		describe('Second request', () => {
 
 			it('create is successful', () => {
-				assistify.createHelpRequest(topicName, message);
+				assistify.createHelpRequest(topicName, question2);
 				assistify.clickKnowledgebase();
 			});
 
-			it('knowledgebase answer visible', () => {
+			it('knowledgebase answer is not visible', () => {
 				assistify.clickKnowledgebase();
-				assistify.knowledgebaseContent.waitForVisible(5000);
+				assistify.knowledgebaseContent.isVisible().should.equal(false);
 			});
 
-			it('post knowledgebase answer', () => {
-				assistify.knowledgebasePickAnswer.waitForVisible(5000);
-				assistify.knowledgebasePickAnswer.click();
+			it('Add missing tag', () => {
+				assistify.addNewKeyword(tag);
 			});
+
+			it('knowledgebase answer is visible now', () => {
+				assistify.knowledgebaseContent.isVisible().should.equal(true);
+			});
+
 			it('close request', () => {
 				assistify.clickKnowledgebase();
 				assistify.closeRequest();

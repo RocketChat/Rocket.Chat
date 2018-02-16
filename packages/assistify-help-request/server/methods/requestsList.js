@@ -1,3 +1,4 @@
+/* globals _ */
 Meteor.methods({
 	//adapted copy of server/methods/channelsList.js
 	requestsList(filter, channelType, limit, sort) {
