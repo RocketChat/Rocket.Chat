@@ -3,8 +3,7 @@ tmpPath=tests/end-to-end/temporary_staged_test
 rm -rf $tmpPath
 mkdir -p $tmpPath
 [ -z "$retry_test" ] && retry_test=1
-for file in tests/end-to-end/api/*.js; do
-  
+for file in tests/end-to-end/*/*.js; do
   failed=1
   for i in `seq 1 $retry_test`; do
     echo '-------------- '$i' try ---------------'
