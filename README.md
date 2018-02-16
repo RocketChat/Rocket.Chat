@@ -16,8 +16,8 @@ BlockParty is a fork of [Rocket.Chat](https://rocket.chat).
 The Ultimate Open Source Chat Platform - Now decentralized!
 
 The master [**master**][master] branch is stable for production and based off
-Rocket.Chat releases. We also have features syncing with upstream features like
-[**end-to-end-encryption**][e2e].
+Rocket.Chat releases. We intend to sync upstream features when they are stable,
+like [**end-to-end-encryption**][e2e].
 
 ### Why Rocket.Chat
 
@@ -49,10 +49,6 @@ is an example of how Rocket.Chat can be customised. When rolling your own
 instance, there’s no requirement to retain branding or terms from Rocket.Chat
 or BlockParty.
 
-The existinng [**mobile apps**](https://rocket.chat/download) can be used with
-any Rocket.Chat server, including your own instances. Just enter the server
-address on startup, e.g. `blockparty.chat`.
-
 ### Mobile Usage
 
 > NB: At this time, Blockstack auth is not functional within a Cordova app.
@@ -60,13 +56,16 @@ address on startup, e.g. `blockparty.chat`.
 >
 > Login still works fine from a mobile device browser.
 
-At present, you can only use the Rocket.Chat Cordova apps to login on mobile,
-though a branded fork of the native apps is on the roadmap.
+Rocket.Chat provides an optimised experience within mobile browsers.
 
-Download either app below and use `blockparty.chat` as your server.
+~~The existinng [**mobile apps**](https://rocket.chat/download) can be used with
+any Rocket.Chat server, including your own instances. Just enter the server
+address on startup, e.g. `blockparty.chat`.~~
 
-- [Rocket.Chat Android app from Google Play][android]
-- [Rocket.Chat Apple app from the App Store][apple]
+~~Download either app below and use `blockparty.chat` as your server.~~
+
+- ~~[Rocket.Chat Android app from Google Play][android]~~
+- ~~[Rocket.Chat Apple app from the App Store][apple]~~
 
 ___
 
@@ -105,7 +104,6 @@ Some configuration defaults have also been changed to be fit for purpose:
 - Force SSL : true
 - Allow Users to Delete Own Account : true
 - Require Name for Signup : false
-- Internal Hubot > Username : block.bot
 
 The password login is available for admins or to resolve Blockstack
 authentication issues. Users can set their own password, but can only register
@@ -119,9 +117,7 @@ via the **Sign in with Blockstack** button.
 - Repackage and publish as generic Meteor package `accounts-blockstack`
 - Publish tutorial app for Blockstack auth in Meteor
 - Use Blockstack file upload package for assets storage (similar to S3 package)
-- Use Blockstack for Mongo storage to decentralize DB
 - How-to-fork and setup guides submitted to rocket.chat/docs
-- Secure and serve BlockParty as decentralized app
 - Support other encryption protocols like OMEMO (conversations.im/omemo) #36
 - Use Let’s Encrypt to automatically issue SSL certificates for instances
 - Bot onboarding / welcome and integration with other Blockstack services
@@ -134,7 +130,7 @@ The following will be migrated into GitHub issues for further tracking...
 - Switch back to official blockstack.js dependencies when PRs resolved
 - Remove unuesd packages and settings for other auth/SSO providers
 - Prevent uploading avatars, only link from Blockstack ID
-- Fix all assumptions in code that user's will have email address
+- Fix all assumptions in code that users will have email address
 - Add scopes to settings (not currently necessary)
 - Pending login animations / button state / pause client processing etc
 - Put all dependencies into meteor package, not app root package.json
@@ -145,7 +141,7 @@ The following will be migrated into GitHub issues for further tracking...
 
 #### First User Admin
 
-Unless you've the environment vars to set a default admin password, the first
+Unless you've set the environment vars to add default admin password, the first
 user to access the site will become admin. Make sure it's you, before making
 your instance public.
 
@@ -191,7 +187,7 @@ of the app.
 Rocket.Chat required `meteor-node-stubs` package to support the `crypto` module
 in client. This is probably unnecessary if a smaller solution can be found to
 work around this issue. The optimal approach would actually be refactoring the
-Blockstack node modules as Meteor packages, thus reducing dependencies and
+Blockstack node modules as a Meteor package, thus reducing dependencies and
 build complications.
 
 #### Lil Hacks

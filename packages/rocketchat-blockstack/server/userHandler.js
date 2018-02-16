@@ -48,7 +48,8 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 		if (profile.name) {
 			newUser.name = profile.name;
 		}
-		if (profile.username) {
+
+		if (profile.username && profile.username !== '') {
 			newUser.username = profile.username;
 		} else if (serviceConfig.generateUsername === true) {
 			newUser.username = RocketChat.generateUsernameSuggestion(newUser);
