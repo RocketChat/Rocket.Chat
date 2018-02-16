@@ -1,6 +1,9 @@
 /* globals FileUpload */
 import _ from 'underscore';
 import sharp from 'sharp';
+import { Cookies } from 'meteor/ostrio:cookies';
+
+const cookie = new Cookies();
 
 Meteor.startup(function() {
 	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
@@ -11,6 +14,22 @@ Meteor.startup(function() {
 		if (_.isEmpty(params.username)) {
 			res.writeHead(403);
 			res.write('Forbidden');
+			res.end();
+			return;
+		}
+
+		const headers = req.headers || {};
+		const query = req.query || {};
+
+		let { rc_uid, rc_token } = query;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+			res.writeHead(403);
 			res.end();
 			return;
 		}
