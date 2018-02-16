@@ -8,7 +8,7 @@ Template.header.helpers({
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData) ;
+		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData);
 	},
 	buttons() {
 		return RocketChat.TabBar.getButtons();
@@ -32,7 +32,7 @@ Template.header.helpers({
 	},
 
 	isDirect() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ;
+		return RocketChat.models.Rooms.findOne(this._id).t === 'd';
 	},
 
 	roomName() {

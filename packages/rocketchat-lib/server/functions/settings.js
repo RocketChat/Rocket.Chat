@@ -1,3 +1,4 @@
+/*eslint complexity: ["error", 40]*/
 import _ from 'underscore';
 
 const blockedSettings = {};
