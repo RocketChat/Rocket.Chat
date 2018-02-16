@@ -154,6 +154,23 @@ Template.main.helpers({
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
 	},
+	require2faSetup() {
+		const user = Meteor.user();
+
+		// User is already using 2fa
+		if (user.services.totp !== undefined && user.services.totp.enabled) {
+			return false;
+		}
+
+		return user.roles.reduce((ret, role) => {
+			const roleData = RocketChat.models.Roles.findOne(role);
+			if (roleData && roleData.mandatory2fa === true) {
+				return true;
+			}
+
+			return ret;
+		}, false);
+	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
