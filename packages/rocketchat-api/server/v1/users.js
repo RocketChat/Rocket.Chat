@@ -321,7 +321,8 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
-				mergeChannels: Match.Optional(Boolean)
+				mergeChannels: Match.Optional(Boolean),
+				muteFocusedConversations: Match.Optional(Boolean)
 			})
 		});
 
