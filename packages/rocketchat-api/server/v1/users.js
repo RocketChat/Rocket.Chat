@@ -290,7 +290,7 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
-			userId: String,
+			userId: Match.Maybe(String),
 			data: Match.ObjectIncluding({
 				newRoomNotification: Match.Maybe(String),
 				newMessageNotification: Match.Maybe(String),
@@ -320,12 +320,13 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		});
 
 		let preferences;
+		let userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
-			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }, language });
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
 		} else {
-			preferences = _.extend({ _id: this.bodyParams.userId, settings: { preferences: this.bodyParams.data }});
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }});
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
