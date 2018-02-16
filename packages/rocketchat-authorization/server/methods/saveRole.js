@@ -17,7 +17,7 @@ Meteor.methods({
 			roleData.scope = 'Users';
 		}
 
-		const update = RocketChat.models.Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description);
+		const update = RocketChat.models.Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 		if (RocketChat.settings.get('UI_DisplayRoles')) {
 			RocketChat.Notifications.notifyLogged('roles-change', {
 				type: 'changed',

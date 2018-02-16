@@ -24,7 +24,7 @@ class ModelRoles extends RocketChat.models._Base {
 		});
 	}
 
-	createOrUpdate(name, scope = 'Users', description, protectedRole) {
+	createOrUpdate(name, scope = 'Users', description, protectedRole, mandatory2fa) {
 		const updateData = {};
 		updateData.name = name;
 		updateData.scope = scope;
@@ -35,6 +35,10 @@ class ModelRoles extends RocketChat.models._Base {
 
 		if (protectedRole) {
 			updateData.protected = protectedRole;
+		}
+
+		if (mandatory2fa != null) {
+			updateData.mandatory2fa = mandatory2fa;
 		}
 
 		this.upsert({ _id: name }, { $set: updateData });
