@@ -403,23 +403,6 @@ describe('groups', function() {
 				type: 'c'
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(log)
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
-	it('/groups.setType', (done) => {
-		request.post(api('groups.setType'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				type: 'p'
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(log)
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
@@ -428,14 +411,12 @@ describe('groups', function() {
 	});
 
 	it('/groups.leave', (done) => {
-		console.log(group._id);
 		request.post(api('groups.leave'))
 			.set(credentials)
 			.send({
 				roomId: group._id
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(log)
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);

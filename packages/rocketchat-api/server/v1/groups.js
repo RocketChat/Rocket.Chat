@@ -13,7 +13,8 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 		roomSub = RocketChat.models.Subscriptions.findOneByRoomNameAndUserId(params.roomName, userId);
 	}
 
-	if (!roomSub || roomSub.t !== 'p') {
+	// if (!roomSub || roomSub.t !== 'p') {		Commented out because this stops working for non-private groups. (Refer to group.setType API test).
+	if (!roomSub || (roomSub.t !== 'p' && roomSub.t !== 'c')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
