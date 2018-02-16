@@ -742,6 +742,28 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
+        post() {
+                if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+                        return RocketChat.API.v1.failure('The bodyParam "announcement" is required');
+                }
+
+                const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+                if (findResult.announcement == this.bodyParams.announcement) {
+                        return RocketChat.ApI.v1.failure('The channel topic is the same as what it would be changed to.');
+                }
+
+                Meteor.runAsUser(this.userId, () => {
+                        Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
+                });
+
+                return RocketChat.API.v1.success({
+                        announcement: this.bodyParams.announcement
+                });
+        }
+});
+
 RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
