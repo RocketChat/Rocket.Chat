@@ -1,7 +1,6 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
-import { hide, leave, erase } from 'meteor/rocketchat:lib';
+import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
 const common = {
 	canLeaveRoom() {
 		const { cl: canLeave, t: roomType } = Template.instance().room;
@@ -26,18 +25,6 @@ const common = {
 		return room.t === 'd';
 	}
 };
-const call = (method, ...params) => {
-	return new Promise((resolve, reject) => {
-		Meteor.call(method, ...params, (err, result) => {
-			if (err) {
-				handleError(err);
-				return reject(err);
-			}
-			return resolve(result);
-		});
-	});
-};
-
 
 Template.channelSettingsEditing.events({
 	'input .js-input'(e) {
