@@ -41,7 +41,7 @@ export class SmartiAdapter {
 				}, {
 					rid: message.rid,
 					knowledgeProvider: 'smarti',
-					conversationId: conversationId,
+					conversationId,
 					ts: message.ts
 				}, {
 					upsert: true
@@ -86,7 +86,7 @@ export class SmartiAdapter {
 		}
 
 		if (conversationId) {
-			SystemLogger.debug(`Conversation ${conversationId} found for channel ${message.rid}`);
+			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }`);
 			// add message to conversation
 			SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
 		} else {

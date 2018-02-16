@@ -1,4 +1,5 @@
 /* globals Gravatar */
+/*eslint complexity: ["error", 50]*/
 import _ from 'underscore';
 import s from 'underscore.string';
 

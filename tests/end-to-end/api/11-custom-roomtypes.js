@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import supertest from 'supertest';
 import {adminUsername, adminPassword} from '../../data/user.js';
 export const rcrequest = supertest.agent('http://localhost:3000');
@@ -21,7 +22,7 @@ describe('[Custom Room Types]', function() {
 			.end(function(err, res) {
 				authToken = res.body.data.authToken;
 				userId = res.body.data.userId;
-				expect(res.status).to.be.equal(200);
+				res.status.should.be.equal(200);
 				process.env.METEOR_TOKEN = authToken;
 				done();
 			});
@@ -55,10 +56,9 @@ describe('[Custom Room Types]', function() {
 				retry: 5
 			},
 
-			function(error, userInfo) {
+			function(error) {
 				if (error) {
-					console.log(`ERROR:  ${ error }`);
-					expect(0).to.equal(1);
+					throw new Error(`ERROR:  ${ error }`);
 				} else {
 					// console.log(userInfo);
 					ddpClient.call(
@@ -113,10 +113,9 @@ describe('[Custom Room Types]', function() {
 				retry: 5
 			},
 
-			function(error, userInfo) {
+			function(error) {
 				if (error) {
-					console.log(`ERROR:  ${ error }`);
-					expect(0).to.equal(1);
+					throw new Error(`ERROR:  ${ error }`);
 				} else {
 					// console.log(userInfo);
 					ddpClient.call(
@@ -175,10 +174,9 @@ describe('[Custom Room Types]', function() {
 				retry: 5
 			},
 
-			function(error, userInfo) {
+			function(error) {
 				if (error) {
-					console.log(`ERROR:  ${ error }`);
-					expect(0).to.equal(1);
+					throw new Error(`ERROR:  ${ error }`);
 				} else {
 					// console.log(userInfo);
 					ddpClient.call(
@@ -188,16 +186,16 @@ describe('[Custom Room Types]', function() {
 							// console.log('GetRooms, result: ' + result);
 							for (const i in result) {
 								// console.log(result[i]);
-								if (result[i].t == 'test' && result[i].name == 'NewTestRoom') {
+								if (result[i].t === 'test' && result[i].name === 'NewTestRoom') {
 									console.log('found test room');
-									expect(result[i]._id).to.be.equal(roomid);
+									result[i]._id.should.be.equal(roomid);
 								}
 							}
 							if (typeof err !== 'undefined') {
 								console.log('error happend: ');
 								console.log(err);
 							}
-							expect(roomid).to.not.equal(undefined);
+							roomid.should.not.equal(undefined);
 						},
 						function() { // callback which fires when server has finished
 							// console.log('GetRooms - Function was finished');  // sending any updated documents as a result of
@@ -238,10 +236,9 @@ describe('[Custom Room Types]', function() {
 				retry: 5
 			},
 
-			function(error, userInfo) {
+			function(error) {
 				if (error) {
-					console.log(`ERROR:  ${ error }`);
-					expect(0).to.equal(1);
+					throw new Error(`ERROR:  ${ error }`);
 				} else {
 					// console.log(userInfo);
 					ddpClient.call(
@@ -250,7 +247,7 @@ describe('[Custom Room Types]', function() {
 						function(err, result) { // callback which returns the method call results
 							// console.log('EraseRoom, result: ');
 							if (typeof result !== 'undefined') {
-								expect(result).to.be.equal(1);
+								result.should.be.equal(1);
 								// console.log(result);
 							}
 							if (typeof err !== 'undefined') {
@@ -297,10 +294,9 @@ describe('[Custom Room Types]', function() {
 				retry: 5
 			},
 
-			function(error, userInfo) {
+			function(error) {
 				if (error) {
-					console.log(`ERROR:  ${ error }`);
-					expect(0).to.equal(1);
+					throw new Error(`ERROR:  ${ error }`);
 				} else {
 					// console.log(userInfo);
 					ddpClient.call(
@@ -310,18 +306,20 @@ describe('[Custom Room Types]', function() {
 							// console.log('GetRooms, result: ' + result);
 							for (const i in result) {
 								// console.log(result[i]);
-								if (result[i].t == 'test' && result[i].name == 'NewTestRoom') {
+								if (result[i].t === 'test' && result[i].name === 'NewTestRoom') {
 									console.log('found test room');
-									expect(result[i]._id).to.be.equal(roomid);
+									result[i]._id.should.be.equal(roomid);
+								} else if (result[i].t !== 'd') {
+									result[i].t.should.not.equal('test');
+									result[i].name.should.not.equal('NewTestRoom');
 								}
-								expect(result[i].t).to.not.equal('test');
-								expect(result[i].name).to.not.equal('NewTestRoom');
+
 							}
 							if (typeof err !== 'undefined') {
 								console.log('error happend: ');
 								console.log(err);
 							}
-							expect(roomid).to.not.equal(undefined);
+							roomid.should.not.equal(undefined);
 						},
 						function() { // callback which fires when server has finished
 							// console.log('GetRooms - Function was finished');  // sending any updated documents as a result of

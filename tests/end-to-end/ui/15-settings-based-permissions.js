@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import { adminUsername, adminEmail, adminPassword, username, email, password } from '../../data/user.js';
 import admin from '../../pageobjects/administration.page';
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
@@ -30,7 +31,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 				manageSettingsPerm.click();
 				console.log('Value was unchecked', manageSettingsPerm.isSelected());
 			}
-			expect(manageSettingsPerm.isSelected()).to.equal(true);
+			manageSettingsPerm.isSelected().should.equal(true);
 			done();
 		});
 
@@ -42,7 +43,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 				layoutTitelPerm.click();
 				console.log('Value was unchecked, now:', layoutTitelPerm.isSelected());
 			}
-			expect(layoutTitelPerm.isSelected()).to.equal(true);
+			layoutTitelPerm.isSelected().should.equal(true);
 			done();
 		});
 
@@ -72,16 +73,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			browser.pause(2000);
 			console.log('New Titel value:', layoutTitelSetting.getValue());
 			saveSettings.click();
-
-			// layoutTitelSetting.setValue('');
-			// browser.pause(2000);
-			// console.log('New Titel value:', layoutTitelSetting.getValue() );
-			// saveSettings.click();
-			//
-			// layoutTitelSetting.setValue(newTitle);
-			// browser.pause(2000);
-			// console.log('New Titel value:', layoutTitelSetting.getValue() );
-			// saveSettings.click();
 			done();
 		});
 	});
@@ -111,12 +102,12 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			admin.rolesPermissionGrid.waitForVisible(5000);
 
 			manageSettingsPerm.click();
-			expect(manageSettingsPerm.isSelected()).to.equal(false);
+			manageSettingsPerm.isSelected().should.equal(false);
 
 			expandSBP.click();
 
 			layoutTitelPerm.click();
-			expect(layoutTitelPerm.isSelected()).to.equal(false);
+			layoutTitelPerm.isSelected().should.equal(false);
 			done();
 		});
 

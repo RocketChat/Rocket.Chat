@@ -1,3 +1,5 @@
+/* globals _ */
+
 export class ApiAiAdapter {
 	constructor(adapterProps) {
 		this.properties = adapterProps;

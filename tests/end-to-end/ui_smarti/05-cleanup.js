@@ -2,7 +2,6 @@
 
 import supertest from 'supertest';
 export const request = supertest.agent('http://localhost:8080');
-import assistify from '../../pageobjects/assistify.page';
 
 export const credentials = {
 	username: 'admin',
@@ -17,7 +16,7 @@ describe('[Smarti Cleanup]', () => {
 			.expect(200)
 			.expect(function(res) {
 				clientid = res.body[0].id;
-				expect(clientid).to.not.equal(undefined);
+				clientid.should.not.equal(undefined);
 			})
 			.end(done);
 	});
@@ -26,10 +25,5 @@ describe('[Smarti Cleanup]', () => {
 		request.del(`/client/${ clientid }`)
 			.expect(204)
 			.end(done);
-	});
-
-	it('logout of rocket.chat', function(done) {
-		assistify.logoutRocketchat();
-		done();
 	});
 });

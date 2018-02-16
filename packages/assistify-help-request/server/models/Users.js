@@ -1,3 +1,4 @@
+/* globals s */
 /**
  * Created by OliverJaegle on 01.08.2016.
  * Expose features of the users-collection which are not exposed by default

@@ -9,7 +9,6 @@ const topicExpert = 'rocketchat.internal.admin.test';
 const shortTopicMessage = 'Das ist das neue Thema zu dem Anfragen erstellt werden und die Wissensbasis genutzt wird!';
 const message = 'Mit allgemeinen Anfragen verschaffen Sie sich einen Überblick über den Markt, indem Sie Produkte, Preise und Bestellbedingungen unterschiedlicher Lieferanten und Dienstleister kennen lernen. In einem allgemeinen Anfragebrief bitten Sie zum die Zusendung von Katalogen, Prospekten, Preislisten und Produktmustern. Wie kann ich dieses Wissen nutzen?';
 const answer = 'Das ist die Antwort auf diese Anfrage!';
-const comment = 'Anfrage wurde erfolgreich beantwortet';
 
 import { checkIfUserIsAdmin } from '../../data/checks';
 
@@ -52,7 +51,7 @@ describe('[Smarti Integration]', () => {
 			});
 			it('close request', () => {
 				assistify.clickKnowledgebase();
-				assistify.closeRequest(comment);
+				assistify.closeRequest();
 
 			});
 		});
@@ -74,7 +73,7 @@ describe('[Smarti Integration]', () => {
 			});
 			it('close request', () => {
 				assistify.clickKnowledgebase();
-				assistify.closeRequest(comment);
+				assistify.closeRequest();
 			});
 		});
 	});

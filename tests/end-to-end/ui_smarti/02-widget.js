@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
@@ -33,11 +34,11 @@ describe('[Smarti Widget]', () => {
 
 			it('create is successful', () => {
 				assistify.createHelpRequest(topicName, question);
-      });
-      
+			});
+
 			it('close request', () => {
 				assistify.clickKnowledgebase();
-				assistify.closeRequest('Danke!');
+				assistify.closeRequest();
 
 			});
 		});
@@ -63,7 +64,7 @@ describe('[Smarti Widget]', () => {
 
 			it('close request', () => {
 				assistify.clickKnowledgebase();
-				assistify.closeRequest('Danke!');
+				assistify.closeRequest();
 			});
 		});
 	});
