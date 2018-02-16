@@ -26,6 +26,9 @@ Template.accountPreferences.helpers({
 	newRoomNotification() {
 		return RocketChat.getUserPreference(Meteor.user(), 'newRoomNotification');
 	},
+	muteFocusedConversations() {
+		return RocketChat.getUserPreference(Meteor.user(), 'muteFocusedConversations');
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
@@ -129,6 +132,7 @@ Template.accountPreferences.onCreated(function() {
 		data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
 		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
 		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
+		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
 		data.viewMode = parseInt($('#viewMode').find('select').val());
 		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
 		data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
@@ -228,7 +232,7 @@ Template.accountPreferences.events({
 		}
 		if (audio) {
 			const $audio = $(`audio#${ audio }`);
-			return $audio && $audio[0] && $audio.play();
+			return $audio && $audio[0] && $audio[0].play();
 		}
 	}
 });
