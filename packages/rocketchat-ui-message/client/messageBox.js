@@ -1,6 +1,8 @@
-/* globals fileUpload KonchatNotification chatMessages popover isRtl */
+/* globals fileUpload KonchatNotification chatMessages popover isRtl AudioRecorder chatMessages*/
 import toastr from 'toastr';
 import moment from 'moment';
+
+let audioMessageIntervalId;
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
@@ -269,6 +271,9 @@ Template.messageBox.helpers({
 	},
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
+	},
+	isAudioMessageAllowed() {
+		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
 	}
 });
 
@@ -452,7 +457,7 @@ Template.messageBox.events({
 				}
 			],
 			mousePosition: {
-				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 10,
+				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 40,
 				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
 			},
 			customCSSProperties: {
@@ -465,6 +470,76 @@ Template.messageBox.events({
 		};
 
 		popover.open(config);
+	},
+	'click .rc-message-box__audio-message'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+
+		if (chatMessages[RocketChat.openedRoom].recording) {
+			icon.style.color = '';
+			icon.classList.remove('pulse');
+
+			timer.innerHTML = '';
+			if (audioMessageIntervalId) {
+				clearInterval(audioMessageIntervalId);
+			}
+			timer.style.color= '';
+
+			AudioRecorder.stop(function(blob) {
+				chatMessages[RocketChat.openedRoom].recording = false;
+				fileUpload([
+					{
+						file: blob,
+						type: 'audio',
+						name: `${ TAPi18n.__('Audio record') }.mp3`
+					}
+				]);
+			});
+			return false;
+		}
+
+		chatMessages[RocketChat.openedRoom].recording = true;
+		AudioRecorder.start(function() {
+			const startTime = new Date;
+			timer.innerHTML = '00:00';
+			audioMessageIntervalId = setInterval(()=> {
+				const now = new Date;
+				const distance = now-startTime;
+				let minutes = Math.floor(distance / (1000 * 60));
+				let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+				if (minutes < 10) { minutes = `0${ minutes }`; }
+				if (seconds < 10) { seconds = `0${ seconds }`; }
+				timer.innerHTML = `${ minutes }:${ seconds }`;
+			}, 1000);
+			timer.style.color = 'red';
+			icon.classList.add('pulse');
+			icon.style.color = 'red';
+		});
+	},
+	'click .rc-message-box__timer'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+
+		icon.style.color = '';
+		icon.classList.remove('pulse');
+		timer.innerHTML = '';
+		if (audioMessageIntervalId) {
+			clearInterval(audioMessageIntervalId);
+		}
+		timer.style.color= '';
+
+		AudioRecorder.stop(function(blob) {
+			chatMessages[RocketChat.openedRoom].recording = false;
+			fileUpload([
+				{
+					file: blob,
+					type: 'audio',
+					name: `${ TAPi18n.__('Audio record') }.mp3`
+				}
+			]);
+		});
 	}
 });
 
