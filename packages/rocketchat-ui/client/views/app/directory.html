@@ -22,9 +22,9 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name</td>
 							<td class="rc-table-td">Users</td>
-							<td class="rc-table-td">Created At</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
@@ -34,7 +34,10 @@
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
 										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">{{name}}</span>
+											<span class="rc-directory-channel-name">
+												{{>icon icon="hashtag"}}
+												{{name}}
+											</span>
 											{{#if description}}
 												<span class="rc-directory-channel-description">{{description}}</span>
 											{{/if}}
@@ -54,9 +57,9 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name</td>
 							<td class="rc-table-td">Username</td>
-							<td class="rc-table-td">Created At</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
@@ -66,7 +69,10 @@
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=name}}</div>
 										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">{{name}}</span>
+											<span class="rc-directory-channel-name">
+												{{>icon icon="at"}}
+												{{name}}
+											</span>
 										</div>
 									</div>
 								</td>

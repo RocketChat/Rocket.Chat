@@ -51,7 +51,7 @@ Template.directory.events({
 	'change .js-typeSelector'(e, t) {
 		t.searchType.set(e.currentTarget.value);
 	},
-	'click .rc-table .rc-table-tr'() {
+	'click .rc-table-body .rc-table-tr'() {
 		let searchType;
 		let routeConfig;
 		if (Template.instance().searchType.get() === 'channels') {
@@ -63,6 +63,16 @@ Template.directory.events({
 		}
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
 	},
+	'click .js-sort'(e, t) {
+		const type = e.currentTarget.dataset.sort;
+		if (t.searchSortBy.get() === type) {
+			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'asc' : 'desc');
+			return;
+		}
+
+		t.searchSortBy.set(type);
+		t.sortDirection.set(null);
+	},
 	'click .rc-directory-plus'() {
 		FlowRouter.go('create-channel');
 	}
@@ -71,10 +81,19 @@ Template.directory.events({
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
 	this.searchType = new ReactiveVar('channels');
+	this.searchSortBy = new ReactiveVar();
+	this.sortDirection = new ReactiveVar()
+
 	this.results = new ReactiveVar([]);
 
 	Tracker.autorun(() => {
-		directorySearch({text: this.searchText.get(), type: this.searchType.get()}, (result) => {
+		const searchConfig = {
+			text: this.searchText.get(),
+			type: this.searchType.get(),
+			sortBy: this.searchSortBy.get(),
+			sortDirection: this.sortDirection.get()
+		}
+		directorySearch(searchConfig, (result) => {
 			this.results.set(result);
 		});
 	});
