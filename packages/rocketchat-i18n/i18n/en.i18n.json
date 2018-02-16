@@ -45,6 +45,7 @@
   "Accounts_Default_User_Preferences_audioNotifications": "Audio Notifications Default Alert",
   "Accounts_Default_User_Preferences_desktopNotifications": "Desktop Notifications Default Alert",
   "Accounts_Default_User_Preferences_mobileNotifications": "Mobile Notifications Default Alert",
+  "Accounts_Default_User_Preferences_not_available": "Failed to retrieve User Preferences because of they haven't been set up by the user yet",
   "Accounts_denyUnverifiedEmail": "Deny unverified email",
   "Accounts_EmailVerification": "Email Verification",
   "Accounts_EmailVerification_Description": "Make sure you have correct SMTP settings to use this feature",
