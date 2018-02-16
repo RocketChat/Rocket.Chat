@@ -55,9 +55,13 @@ address on startup, e.g. `blockparty.chat`.
 
 ### Mobile Usage
 
+> NB: At this time, Blockstack auth is not functional within a Cordova app.
+> Disregard the following, until this message is remvoed.
+>
+> Login still works fine from a mobile device browser.
+
 At present, you can only use the Rocket.Chat Cordova apps to login on mobile,
 though a branded fork of the native apps is on the roadmap.
-
 
 Download either app below and use `blockparty.chat` as your server.
 
