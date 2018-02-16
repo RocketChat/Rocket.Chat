@@ -1,6 +1,6 @@
 [bs]:https://blockstack.org
 [rc]:https://rocket.chat
-[bp]:https://amazebot.github.io/blockparty
+[bp]:https://amazebot.github.io/BlockParty
 [e2e]:https://github.com/Amazebot/BlockParty/tree/feature/end-to-end-encryption
 [master]:https://github.com/Amazebot/BlockParty/tree/master
 [readme]:https://github.com/RocketChat/Rocket.Chat/blob/master/README.md
