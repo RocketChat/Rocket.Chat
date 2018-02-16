@@ -1,4 +1,6 @@
 /* globals ansispan:true */
+// disable no-control-regex for correct working Esc-codes replacement
+/* eslint-disable no-control-regex */
 
 ansispan = function(str) {
 	str = str.replace(/>/g, '&gt;');
@@ -12,10 +14,10 @@ ansispan = function(str) {
 		//
 
 		str = str.replace(
-			new RegExp(`\0o33\\[${ ansi }m`, 'g'),
+			new RegExp(`\x1b\\[${ ansi }m`, 'g'),
 			span
 		).replace(
-			new RegExp(`\0o33\\[0;${ ansi }m`, 'g'),
+			new RegExp(`\x1b\\[0;${ ansi }m`, 'g'),
 			span
 		);
 	});
@@ -33,6 +35,7 @@ ansispan = function(str) {
 	str = str.replace(/\x1b\[0m/g, '</span>');
 	return str.replace(/\x1b\[39m/g, '</span>');
 };
+/* eslint-enable no-control-regex */
 
 ansispan.foregroundColors = {
 	'30': 'gray',
