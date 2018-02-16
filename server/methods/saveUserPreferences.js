@@ -30,7 +30,8 @@ Meteor.methods({
 			sidebarShowUnread: Match.Optional(Boolean),
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
-			sidebarHideAvatar: Match.Optional(Boolean)
+			sidebarHideAvatar: Match.Optional(Boolean),
+			muteFocusedConversations: Match.Optional(Boolean)
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		if (settings.mergeChannels) {
