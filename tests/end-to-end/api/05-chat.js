@@ -168,4 +168,19 @@ describe('[Chat]', function() {
 			})
 			.end(done);
 	});
+
+	it('/chat.react', (done) => {
+		request.post(api('chat.react'))
+			.set(credentials)
+			.send({
+				emoji: 'smile',
+				messageId: message._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
 });

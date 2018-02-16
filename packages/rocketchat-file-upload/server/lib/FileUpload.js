@@ -114,7 +114,7 @@ Object.assign(FileUpload, {
 	},
 
 	uploadsOnValidate(file) {
-		if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 			return;
 		}
 
