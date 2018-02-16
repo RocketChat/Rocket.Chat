@@ -153,16 +153,6 @@ const assets = {
 			width: undefined,
 			height: undefined
 		}
-	},
-	shield: {
-		label: 'shield (svg)',
-		defaultUrl: 'images/shield/shield-icon.svg',
-		constraints: {
-			type: 'image',
-			extensions: ['svg'],
-			width: undefined,
-			height: undefined
-		}
 	}
 };
 
