@@ -9,6 +9,8 @@ import supertest from 'supertest';
 describe('Outgoing Integrations', function() {
 	this.retries(0);
 
+	before(done => getCredentials(done));
+
 	it('/integrations.create', (done) => {
 		request.post(api('integrations.create'))
 			.set(credentials)

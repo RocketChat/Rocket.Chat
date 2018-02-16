@@ -66,8 +66,8 @@ Template.header.helpers({
 				return 'hashtag';
 			case 'l':
 				return 'livechat';
-			default :
-				return null;
+			default:
+				return RocketChat.roomTypes.getIcon(roomType);
 		}
 	},
 
