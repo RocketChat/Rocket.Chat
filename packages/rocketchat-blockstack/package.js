@@ -29,6 +29,7 @@ Package.onUse((api) => {
 	api.use([
 		'aldeed:template-extension@4.1.0',
 		'kadira:flow-router',
+		'mystor:device-detection',
 		'templating',
 		'less',
 		'reload'

@@ -1,6 +1,22 @@
 // Replace normal login form with Blockstack button
 Template.blockstackLogin.replaces('loginForm');
 
+// Determine where to send long events depending on client
+// on desktop (or development) we use the localhost auth, otherwise web auth
+Template.loginForm.onRendered(function() {
+	this.autorun(() => {
+		console.log('development', Meteor.isDevelopment);
+		console.log('desktop', Meteor.Device.isDesktop());
+		// if (Meteor.Device.isDesktop() || Meteor.isDevelopment) {
+		if (Meteor.Device.isDesktop()) {
+			this.blockstackIDHost = 'http://localhost:8888/auth';
+		} else {
+			this.blockstackIDHost = 'https://blockstack.org/auth';
+		}
+		console.log('blockstack', this.blockstackIDHost);
+	});
+});
+
 // Render button when services configuration complete
 Template.loginForm.helpers({
 	isPasswordLogin() {
@@ -11,13 +27,13 @@ Template.loginForm.helpers({
 	},
 	changeLoginLink() {
 		if (FlowRouter.getQueryParam('login') === 'password') {
-			return `<p><a href="#" id="blockstackLogin">${TAPi18n.__('Login_with_blockstack')}</a></p>`;
+			return `<p><a href="#" id="blockstackLogin">${ TAPi18n.__('Login_with_blockstack') }</a></p>`;
 		} else {
-			return `<p><a href="#" id="passwordLogin">${TAPi18n.__('Login_with_password')}</a></p>`;
+			return `<p><a href="#" id="passwordLogin">${ TAPi18n.__('Login_with_password') }</a></p>`;
 		}
 	},
 	poweredByRocketChat() {
-		return `<p>Powered by <a href="https://rocket.chat">Rocket.Chat</a> and <a href="https://blockstack.org">Blockstack</a></p>`;
+		return '<p>Powered by <a href="https://rocket.chat">Rocket.Chat</a> and <a href="https://blockstack.org">Blockstack</a></p>';
 	}
 });
 
@@ -27,6 +43,7 @@ Template.loginForm.events({
 		e.preventDefault();
 		t.loading.set(true);
 		const config = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
+		config.blockstackIDHost = t.blockstackIDHost;
 		console.log(config);
 		Meteor.loginWithBlockstack(config, (error) => {
 			if (error) {

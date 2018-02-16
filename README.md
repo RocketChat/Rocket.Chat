@@ -4,6 +4,8 @@
 [e2e]:https://github.com/Amazebot/BlockParty/tree/feature/end-to-end-encryption
 [master]:https://github.com/Amazebot/BlockParty/tree/master
 [readme]:https://github.com/RocketChat/Rocket.Chat/blob/master/README.md
+[android]:https://play.google.com/store/apps/details?id=com.konecty.rocket.chat
+[apple]:https://itunes.apple.com/us/app/rocket-chat/id1028869439?mt=8
 
 ### [Blockstack][bs] + [Rocket.Chat][rc] == [BlockParty][bp]
 
@@ -50,6 +52,17 @@ or BlockParty.
 The existinng [**mobile apps**](https://rocket.chat/download) can be used with
 any Rocket.Chat server, including your own instances. Just enter the server
 address on startup, e.g. `blockparty.chat`.
+
+### Mobile Usage
+
+At present, you can only use the Rocket.Chat Cordova apps to login on mobile,
+though a branded fork of the native apps is on the roadmap.
+
+
+Download either app below and use `blockparty.chat` as your server.
+
+- [Rocket.Chat Android app from Google Play][android]
+- [Rocket.Chat Apple app from the App Store][apple]
 
 ___
 

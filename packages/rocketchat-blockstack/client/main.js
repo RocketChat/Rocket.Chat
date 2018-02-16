@@ -18,7 +18,6 @@ const redirectToSignIn = (config={}) => {
 		scopes: ['store_write'] // the permissions this app is requesting
 	};
 	const params = mergeParams(defaults, config);
-	console.log(params);
 	return blockstack.redirectToSignIn(...params);
 };
 
