@@ -315,12 +315,18 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
 				roomCounterSidebar: Match.Maybe(Boolean),
-				language: Match.Maybe(String)
+				language: Match.Maybe(String),
+				sidebarShowFavorites: Match.Optional(Boolean),
+				sidebarShowUnread: Match.Optional(Boolean),
+				sidebarSortby: Match.Optional(String),
+				sidebarViewMode: Match.Optional(String),
+				sidebarHideAvatar: Match.Optional(Boolean),
+				mergeChannels: Match.Optional(Boolean)
 			})
 		});
 
 		let preferences;
-		let userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
+		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
