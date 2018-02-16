@@ -1,4 +1,4 @@
-import { UiTextContext } from 'meteor/rocketchat:lib';
+import { call, UiTextContext } from 'meteor/rocketchat:lib';
 
 export function hide(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
