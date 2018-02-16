@@ -750,10 +750,6 @@ RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 
                 const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
-                if (findResult.announcement == this.bodyParams.announcement) {
-                        return RocketChat.ApI.v1.failure('The channel topic is the same as what it would be changed to.');
-                }
-
                 Meteor.runAsUser(this.userId, () => {
                         Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
                 });
