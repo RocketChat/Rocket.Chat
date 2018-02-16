@@ -49,6 +49,8 @@ before_script:
 - sudo service mongod restart
 - mkdir /tmp/build
 - meteor --version
+- travis_retry git submodule init
+- travis_retry git submodule update
 - travis_retry meteor npm install
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
