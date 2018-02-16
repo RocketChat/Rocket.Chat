@@ -57,7 +57,9 @@ before_script:
 - meteor npm run lint
 - meteor npm run testunit
 - meteor npm run stylelint
+- set -x
 - travis_retry meteor build --headless /tmp/build
+- set +x
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
 - cd /tmp/build-test/bundle/programs/server
