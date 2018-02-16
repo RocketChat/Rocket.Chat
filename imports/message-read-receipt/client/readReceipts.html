@@ -2,6 +2,7 @@
 	{{#if isLoading}}
 		{{> loading class="loading-animation--primary"}}
 	{{else}}
+		<p>{{_ "Read_by"}}:</p>
 		<ul class="read-receipts">
 			{{#each receipts}}
 				<li class="read-receipts__user background-transparent-dark-hover">

@@ -63,12 +63,12 @@
 			{{#each attachments}}
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
-			{{#with readReceipt}}
-			<div class="read-receipt {{readByEveryone}}" aria-label="{{readTime}}">
-				{{> icon icon="check" }}
-			</div>
-			{{/with}}
 		</div>
+		{{#with readReceipt}}
+		<div class="read-receipt {{readByEveryone}}">
+			{{> icon icon="check" }}
+		</div>
+		{{/with}}
 		{{#unless system}}
 			<div class="message-actions">
 				{{#if messageActions 'message'}}
