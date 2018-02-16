@@ -973,7 +973,7 @@
   "IssueLinks_LinkTemplate": "Template for issue links",
   "IssueLinks_LinkTemplate_Description": "Template for issue links; %s will be replaced by the issue number.",
   "It_works": "It works",
-  "Idle_Time_Limit": "Idle Time Limit (Min.)",
+  "Idle_Time_Limit": "Idle Time Limit (Sec.)",
   "italics": "italics",
   "Jitsi_Chrome_Extension": "Chrome Extension Id",
   "Jitsi_Enable_Channels": "Enable in Channels",
