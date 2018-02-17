@@ -20,14 +20,9 @@ Meteor.methods({
 				email: String,
 				pass: String,
 				name: String,
-				secretURL: Match.Optional(String)
+				secretURL: Match.Optional(String),
+				reason: Match.Optional(String)
 			}));
-
-			if (manuallyApproveNewUsers) {
-				check(formData, Match.ObjectIncluding({
-					reason: String
-				}));
-			}
 		}
 
 		if (RocketChat.settings.get('Accounts_RegistrationForm') === 'Disabled') {
@@ -41,12 +36,9 @@ Meteor.methods({
 		const userData = {
 			email: s.trim(formData.email.toLowerCase()),
 			password: formData.pass,
-			name: formData.name
+			name: formData.name,
+			reason: formData.reason
 		};
-
-		if (manuallyApproveNewUsers) {
-			userData.reason = formData.reason;
-		}
 
 		// Check if user has already been imported and never logged in. If so, set password and let it through
 		const importedUser = RocketChat.models.Users.findOneByEmailAddress(s.trim(formData.email.toLowerCase()));
@@ -60,8 +52,9 @@ Meteor.methods({
 
 		RocketChat.models.Users.setName(userId, s.trim(formData.name));
 
-		if (manuallyApproveNewUsers) {
-			RocketChat.models.Users.setReason(userId, s.trim(formData.reason));
+		const reason = s.trim(formData.reason);
+		if (manuallyApproveNewUsers && reason) {
+			RocketChat.models.Users.setReason(userId, reason);
 		}
 
 		RocketChat.saveCustomFields(userId, formData);

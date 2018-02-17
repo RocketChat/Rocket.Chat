@@ -28,11 +28,11 @@
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
 										<div class="input-error"></div>
-										</div>
-									</label>
-									{{#if hasOnePassword}}
-										<div class="one-passsword"></div>
-									{{/if}}
+									</div>
+								</label>
+								{{#if hasOnePassword}}
+									<div class="one-passsword"></div>
+								{{/if}}
 							</div>
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
@@ -40,9 +40,9 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
-											<div class="input-error"></div>
-										</div>
-									</label>
+										<div class="input-error"></div>
+									</div>
+								</label>
 							</div>
 						{{/if}}
 						{{#if state 'register'}}
@@ -58,10 +58,10 @@
 						</div>
 						<div class="rc-input">
 							<label class="rc-input__label" for="email">
-							<div class="rc-input__wrapper">
-								<input name="email" id="email" type="text" class="rc-input__element"
-									autocapitalize="off" autocorrect="off"
-									placeholder="{{_ "Email"}}" autofocus>
+								<div class="rc-input__wrapper">
+									<input name="email" id="email" type="text" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{_ "Email"}}" autofocus>
 									<div class="input-error"></div>
 								</div>
 							</label>
@@ -75,9 +75,9 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
-											<div class="input-error"></div>
-										</div>
-									</label>
+										<div class="input-error"></div>
+									</div>
+								</label>
 							</div>
 							{{#if requirePasswordConfirmation}}
 							<div class="rc-input">
@@ -86,18 +86,21 @@
 										<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
-											<div class="input-error"></div>
-										</div>
-									</label>
+										<div class="input-error"></div>
+									</div>
+								</label>
 							</div>
 							{{/if}}
 							{{#if manuallyApproveNewUsers}}
-								<div class="input-line">
-									<label for="reason">{{_ "Reason_To_Join"}}</label>
-									<div>
-										<input type="text" name='reason' id="reason" />
-										<div class="input-error"></div>
-									</div>
+								<div class="rc-input">
+									<label class="rc-input__label" for="confirm-pass">
+										<div class="rc-input__wrapper">
+											<input name="reason" id="reason" type="text" class="rc-input__element"
+												autocapitalize="off" autocorrect="off"
+												placeholder="{{_ 'Reason_To_Join'}}" autofocus>
+											<div class="input-error"></div>
+										</div>
+									</label>
 								</div>
 							{{/if}}
 						{{/if}}
