@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /* global SnippetedMessages */
 Template.snippetedMessages.helpers({
 	hasMessages() {
@@ -7,7 +9,7 @@ Template.snippetedMessages.helpers({
 		return SnippetedMessages.find({ snippeted: true, rid: this.rid }, { sort: { ts: -1 } });
 	},
 	message() {
-		return _.extend(this, { customClass: 'snippeted' });
+		return _.extend(this, { customClass: 'snippeted', actionContext: 'snippeted'});
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();

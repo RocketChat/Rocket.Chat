@@ -1,0 +1,3 @@
+type Mutation {
+	leaveChannel(channelId: String!): Boolean
+}

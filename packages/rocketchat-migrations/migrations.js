@@ -1,4 +1,5 @@
 /* eslint-disable */
+import _ from 'underscore';
 import moment from 'moment';
 /*
 	Adds migration capabilities. Migrations are defined like:
@@ -239,7 +240,7 @@ Migrations._migrateTo = function(version, rerun) {
 
 	if (rerun) {
 		log.info('Rerunning version ' + version);
-		migrate('up', version);
+		migrate('up', this._findIndexByVersion(version));
 		log.info('Finished migrating.');
 		unlock();
 		return true;

@@ -1,11 +1,6 @@
 <template name="roomNotFound">
 	<section class="page-container page-list content-background-color">
-		<header class="fixed-title content-background-color border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Room_not_found"}}</span>
-			</h2>
-		</header>
+		{{> header sectionName="Room_not_found"}}
 		<div class="content room-not-found error-color">
 			<i class="icon-attention"></i>
 			<div>
@@ -17,7 +12,11 @@
 						{{{_ 'No_group_with_name_%s_was_found' name}}}
 					{{/if}}
 					{{#if $eq type 'd'}}
-						{{{_ 'No_user_with_username_%s_was_found' name}}}
+						{{#if sameUser }}
+							{{{_ 'Cannot_open_conversation_with_yourself' }}}
+						{{else}}
+							{{{_ 'No_user_with_username_%s_was_found' name}}}
+						{{/if}}
 					{{/if}}
 				{{/with}}
 			</div>

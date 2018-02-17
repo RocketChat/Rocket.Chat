@@ -19,13 +19,11 @@ describe('[Channel]', ()=> {
 			setPublicChannelCreated(true);
 			console.log('public channel not found, creating one...');
 		}
+		sideNav.openChannel('general');
 	});
 	describe('[Search]', ()=> {
 		describe('[SpotlightSearch]', () => {
 			describe('rocket.cat:', () => {
-				beforeEach(() => {
-					sideNav.getChannelFromSpotlight('rocket.cat').waitForVisible(5000);
-				});
 
 				afterEach(() => {
 					sideNav.spotlightSearch.setValue('');
@@ -117,7 +115,7 @@ describe('[Channel]', ()=> {
 		});
 	});
 
-	describe('[Usage]', ()=> {
+	describe.skip('[Usage]', ()=> {
 		before(() => {
 			sideNav.openChannel(publicChannelName);
 		});
@@ -378,20 +376,21 @@ describe('[Channel]', ()=> {
 				});
 			});
 
-			describe('channel quit and enter', () => {
+			//no channel quit at the moment
+			describe.skip('channel quit and enter', () => {
 				it('it should leave the channel', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channel.click();
 					channel.moveToObject();
 					sideNav.channelLeave.waitForVisible(5000);
 					sideNav.channelLeave.click();
-					Global.sweetAlert.waitForVisible(5000);
+					Global.modal.waitForVisible(5000);
 				});
 
-				it('it should show the sweet alert popup', () => {
-					Global.sweetAlert.waitForVisible(5000);
-					Global.sweetAlert.isVisible().should.be.true;
-					Global.sweetAlertConfirm.isVisible().should.be.true;
+				it('it should show the modal alert popup', () => {
+					Global.modal.waitForVisible(5000);
+					Global.modal.isVisible().should.be.true;
+					Global.modalConfirm.isVisible().should.be.true;
 				});
 
 				it('it should close the popup', () => {

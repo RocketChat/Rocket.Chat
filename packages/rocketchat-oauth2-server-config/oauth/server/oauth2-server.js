@@ -1,4 +1,5 @@
 /*global OAuth2Server */
+import _ from 'underscore';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',

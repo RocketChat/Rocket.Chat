@@ -1,5 +1,5 @@
+import _ from 'underscore';
 import moment from 'moment';
-import toastr from 'toastr';
 
 Meteor.methods({
 	deleteMessage(message) {
@@ -22,17 +22,14 @@ Meteor.methods({
 			return false;
 		}
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if (!(forceDelete) || (_.isNumber(blockDeleteInMinutes) && blockDeleteInMinutes !== 0)) {
-			if (message.ts) {
-				const msgTs = moment(message.ts);
-				if (msgTs) {
-					const currentTsDiff = moment().diff(msgTs, 'minutes');
-					if (currentTsDiff > blockDeleteInMinutes) {
-						toastr.error(t('error-message-deleting-blocked'));
-						return false;
-					}
-				}
+		if (!forceDelete && _.isNumber(blockDeleteInMinutes) && blockDeleteInMinutes !== 0) {
+			const msgTs = moment(message.ts);
+			const currentTsDiff = moment().diff(msgTs, 'minutes');
+			if (currentTsDiff > blockDeleteInMinutes) {
+				return false;
 			}
+
+
 		}
 
 		Tracker.nonreactive(function() {

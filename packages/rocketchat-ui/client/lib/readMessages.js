@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark
@@ -8,8 +10,8 @@
 */
 
 // Meteor.startup ->
-	// window.addEventListener 'focus', ->
-		// readMessage.refreshUnreadMark(undefined, true)
+// window.addEventListener 'focus', ->
+// readMessage.refreshUnreadMark(undefined, true)
 
 const readMessage = new class {
 	constructor() {
@@ -74,6 +76,9 @@ const readMessage = new class {
 				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
 				return;
 			}
+		// if unread mark is not visible and there is more more not loaded unread messages
+		} else if (RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() > 0) {
+			return;
 		}
 
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
@@ -120,9 +125,6 @@ const readMessage = new class {
 			return;
 		}
 
-		const $roomDom = $(room.dom);
-		$roomDom.find('.message.first-unread').addClass('first-unread-opaque');
-
 		if (!subscription.alert && (subscription.unread === 0)) {
 			room.unreadSince.set(undefined);
 			return;
@@ -132,7 +134,6 @@ const readMessage = new class {
 			return;
 		}
 
-		$roomDom.find('.message.first-unread').removeClass('first-unread').removeClass('first-unread-opaque');
 
 		let lastReadRecord = ChatMessage.findOne({
 			rid: subscription.rid,
@@ -142,7 +143,7 @@ const readMessage = new class {
 		}
 			// 'u._id':
 			// 	$ne: Meteor.userId()
-		, {
+			, {
 			sort: {
 				ts: -1
 			}
@@ -170,7 +171,7 @@ const readMessage = new class {
 					$ne: Meteor.userId()
 				}
 			}
-			, {
+				, {
 				sort: {
 					ts: 1
 				}
@@ -179,7 +180,8 @@ const readMessage = new class {
 
 			if (firstUnreadRecord != null) {
 				room.unreadFirstId = firstUnreadRecord._id;
-				return $roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+				$(room.dom).find(`.message.first-unread:not(#${ firstUnreadRecord._id })`).removeClass('first-unread');
+				$(room.dom).find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 			}
 		}
 	}

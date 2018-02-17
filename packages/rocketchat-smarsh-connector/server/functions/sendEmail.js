@@ -6,6 +6,8 @@
 //  files: ['i3nc9l3mn']
 // }
 
+import _ from 'underscore';
+
 RocketChat.smarsh.sendEmail = (data) => {
 	const attachments = [];
 

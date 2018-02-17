@@ -1,0 +1,54 @@
+.admin-integrations-new-panel {
+	& .admin-integrations-new-item {
+		display: flex;
+
+		padding: 20px 10px;
+
+		cursor: pointer;
+
+		color: #444444;
+		border-bottom: 1px solid #dddddd;
+		align-items: center;
+
+		&:hover {
+			background-color: #fafafa;
+		}
+
+		& > i {
+			color: #aaaaaa;
+
+			font-size: 2rem;
+		}
+
+		& .admin-integrations-new-item-body {
+			display: flex;
+			flex-direction: column;
+
+			padding: 0 20px;
+			flex-grow: 1;
+		}
+
+		& .admin-integrations-new-item-title {
+			font-size: 1.4rem;
+			font-weight: 500;
+			line-height: 2.1rem;
+		}
+
+		& .admin-integrations-new-item-description {
+			color: #aaaaaa;
+
+			font-size: 1rem;
+			line-height: 1.5rem;
+		}
+	}
+
+	& > a:last-child > .admin-integrations-new-item {
+		border-bottom: none;
+	}
+}
+
+.message-example {
+	& li {
+		list-style: none;
+	}
+}

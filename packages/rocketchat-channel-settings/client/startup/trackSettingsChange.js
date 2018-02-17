@@ -22,9 +22,11 @@ Meteor.startup(function() {
 		Tracker.nonreactive(() => {
 			if (msg.t === 'r') {
 				if (Session.get('openedRoom') === msg.rid) {
-					const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
-					RoomManager.close(type + FlowRouter.getParam('name'));
-					FlowRouter.go(FlowRouter.current().route.name, { name: msg.msg }, FlowRouter.current().queryParams);
+					const room = ChatRoom.findOne(msg.rid);
+					if (room.name !== FlowRouter.getParam('name')) {
+						RoomManager.close(room.t + FlowRouter.getParam('name'));
+						RocketChat.roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+					}
 				}
 			}
 		});

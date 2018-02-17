@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.listCombinedFlex.helpers({
 	channel() {
 		return Template.instance().channelsList.get();
@@ -52,15 +55,13 @@ Template.listCombinedFlex.events({
 		if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}
-	, 200),
+	}, 200),
 
 	'submit .search-form'(e) {
 		return e.preventDefault();
 	},
 
-	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val())
-	, 300),
+	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val()), 300),
 
 	'change #sort-channels'(e, instance) {
 		return instance.sortChannels.set($(e.currentTarget).val());
@@ -105,7 +106,7 @@ Template.listCombinedFlex.onCreated(function() {
 			if (_.isNumber(this.limit.get())) {
 				options.limit = this.limit.get();
 			}
-			if (_.trim(this.sortSubscriptions.get())) {
+			if (s.trim(this.sortSubscriptions.get())) {
 				switch (this.sortSubscriptions.get()) {
 					case 'name':
 						options.sort = { name: 1 };
@@ -116,7 +117,7 @@ Template.listCombinedFlex.onCreated(function() {
 				}
 			}
 			let type = {$in: ['c', 'p']};
-			if (_.trim(this.channelType.get())) {
+			if (s.trim(this.channelType.get())) {
 				switch (this.channelType.get()) {
 					case 'public':
 						type = 'c';

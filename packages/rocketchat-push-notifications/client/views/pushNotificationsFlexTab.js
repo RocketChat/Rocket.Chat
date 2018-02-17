@@ -1,140 +1,63 @@
-import toastr from 'toastr';
-/* globals ChatSubscription */
+/* globals ChatSubscription popover */
+
+const notificationLabels = {
+	all: 'All_messages',
+	mentions: 'Mentions',
+	nothing: 'Nothing'
+};
+
+const call = (method, ...params) => {
+	return new Promise((resolve, reject) => {
+		Meteor.call(method, ...params, (err, result)=> {
+			if (err) {
+				handleError(err);
+				return reject(err);
+			}
+			return resolve(result);
+		});
+	});
+};
 
 Template.pushNotificationsFlexTab.helpers({
-	audioAssets() {
-		return RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
-	},
-	audioNotification() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				audioNotification: 1
-			}
-		});
-		return sub ? sub.audioNotification || '' : '';
+	notificationIsEnabled() {
+		return !Template.instance().form.disableNotifications.get();
 	},
 	disableNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				disableNotifications: 1
-			}
-		});
-		return sub ? sub.disableNotifications || false : false;
+		return Template.instance().form.disableNotifications.get();
+	},
+	showUnreadStatus() {
+		return !Template.instance().form.hideUnreadStatus.get();
 	},
 	hideUnreadStatus() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				hideUnreadStatus: 1
-			}
-		});
-		return sub ? sub.hideUnreadStatus || false : false;
+		return Template.instance().form.hideUnreadStatus.get();
+	},
+	audioNotifications() {
+		return Template.instance().form.audioNotifications.get();
+	},
+	audioNotificationValue() {
+		const value = Template.instance().form.audioNotificationValue.get();
+		if (value === '0') {
+			return t('Use_account_preference');
+		}
+
+		return value;
 	},
 	desktopNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				desktopNotifications: 1
-			}
-		});
-		return sub ? sub.desktopNotifications : '';
+		return Template.instance().form.desktopNotifications.get();
 	},
 	mobilePushNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				mobilePushNotifications: 1
-			}
-		});
-		return sub ? sub.mobilePushNotifications : '';
+		return Template.instance().form.mobilePushNotifications.get();
 	},
 	emailNotifications() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				emailNotifications: 1
-			}
-		});
-		return sub ? sub.emailNotifications : '';
+		return Template.instance().form.emailNotifications.get();
 	},
-	showEmailMentions() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				t: 1
-			}
-		});
-		return sub && sub.t !== 'd';
-	},
-	unreadAlert() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				unreadAlert: 1
-			}
-		});
-		return sub ? sub.unreadAlert : 'default';
-	},
-	unreadAlertText() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				unreadAlert: 1
-			}
-		});
-		if (sub) {
-			switch (sub.unreadAlert) {
-				case 'all':
-					return t('On');
-				case 'nothing':
-					return t('Off');
-			}
-		}
-		return t('Use_account_preference');
-	},
-	audioValue() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				audioNotification: 1
-			}
-		});
-		const audio = sub ? sub.audioNotification || '': '';
-		if (audio === 'none') {
-			return t('None');
-		} else if (audio === '') {
-			return t('Use_account_preference');
-		} else if (audio === 'chime') {
-			return 'Chime';
-		} else {
-			const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
-			const asset = _.findWhere(audioAssets, { _id: audio });
-			return asset && asset.name;
-		}
+	desktopNotificationDuration() {
+		return Template.instance().form.desktopNotificationDuration.get();
 	},
 	subValue(field) {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				t: 1,
-				[field]: 1
-			}
-		});
-		if (sub) {
-			switch (sub[field]) {
+		const { form } = Template.instance();
+		if (form[field]) {
+			switch (form[field].get()) {
 				case 'all':
 					return t('All_messages');
 				case 'nothing':
@@ -144,140 +67,135 @@ Template.pushNotificationsFlexTab.helpers({
 				case 'mentions':
 					return t('Mentions');
 				default:
-					if (field === 'emailNotifications') {
-						return t('Use_account_preference');
-					} else {
-						return t('Mentions');
-					}
+					return t('Use_account_preference');
 			}
 		}
 	},
-	desktopNotificationDuration() {
-		const sub = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		}, {
-			fields: {
-				desktopNotificationDuration: 1
-			}
-		});
-		if (!sub) {
-			return false;
+	defaultAudioNotification() {
+		let preference = RocketChat.getUserPreference(Meteor.user(), 'audioNotifications');
+		if (preference === 'default') {
+			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications');
 		}
-		// Convert to Number
-		return sub.desktopNotificationDuration - 0;
+		return notificationLabels[preference];
 	},
-	editing(field) {
-		return Template.instance().editing.get() === field;
+	defaultDesktopNotification() {
+		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		if (preference === 'default') {
+			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+		}
+		return notificationLabels[preference];
 	},
-	emailVerified() {
-		return Meteor.user().emails && Meteor.user().emails[0] && Meteor.user().emails[0].verified;
+	defaultMobileNotification() {
+		let preference = RocketChat.getUserPreference(Meteor.user(), 'mobileNotifications');
+		if (preference === 'default') {
+			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications');
+		}
+		return notificationLabels[preference];
+	},
+	disabled() {
+		const { original, form } = Template.instance();
+		return Object.keys(original).every(key => original[key].get() === form[key].get());
 	}
 });
 
 Template.pushNotificationsFlexTab.onCreated(function() {
-	this.editing = new ReactiveVar();
-
-	this.validateSetting = (field) => {
-		switch (field) {
-			case 'audioNotification':
-			case 'hideUnreadStatus':
-			case 'disableNotifications':
-				return true;
-			default:
-				const value = this.$(`input[name=${ field }]:checked`).val();
-				if (['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
-					toastr.error(t('Invalid_notification_setting_s', value || ''));
-					return false;
-				}
-				return true;
+	const rid = Session.get('openedRoom');
+	const sub = ChatSubscription.findOne({rid}, {
+		fields: {
+			disableNotifications: 1,
+			hideUnreadStatus: 1,
+			audioNotifications: 1,
+			desktopNotifications: 1,
+			mobilePushNotifications: 1,
+			emailNotifications: 1,
+			desktopNotificationDuration: 1,
+			audioNotificationValue: 1
 		}
+	}) || {};
+
+	const {
+		disableNotifications = false,
+		hideUnreadStatus = false,
+		audioNotifications = 'default',
+		desktopNotifications = 'default',
+		mobilePushNotifications = 'default',
+		emailNotifications = 'default',
+		desktopNotificationDuration = 0,
+		audioNotificationValue = null
+	} = sub;
+
+	this.original = {
+		disableNotifications: new ReactiveVar(disableNotifications),
+		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
+		audioNotifications: new ReactiveVar(audioNotifications),
+		desktopNotifications: new ReactiveVar(desktopNotifications),
+		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
+		emailNotifications: new ReactiveVar(emailNotifications),
+		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
+		audioNotificationValue: new ReactiveVar(audioNotificationValue)
 	};
 
-	this.saveSetting = () => {
-		const field = this.editing.get();
-		let value;
-		switch (field) {
-			case 'audioNotification':
-				value = this.$(`select[name=${ field }]`).val();
-				break;
-			case 'hideUnreadStatus':
-			case 'disableNotifications':
-				value = this.$(`input[name=${ field }]:checked`).val() ? '1' : '0';
-				break;
-			default:
-				value = this.$(`input[name=${ field }]:checked`).val();
-				break;
-		}
-		const duration = $('input[name=duration]').val();
-		if (this.validateSetting(field)) {
-			Meteor.call('saveNotificationSettings', Session.get('openedRoom'), field, value, (err/*, result*/) => {
-				if (err) {
-					return handleError(err);
-				}
-				if (duration !== undefined) {
-					Meteor.call('saveDesktopNotificationDuration', Session.get('openedRoom'), duration, (err) => {
-						if (err) {
-							return handleError(err);
-						}
-						this.editing.set();
-					});
-				} else {
-					this.editing.set();
-				}
-			});
-		}
+	this.form = {
+		disableNotifications: new ReactiveVar(disableNotifications),
+		hideUnreadStatus: new ReactiveVar(hideUnreadStatus),
+		audioNotifications: new ReactiveVar(audioNotifications),
+		desktopNotifications: new ReactiveVar(desktopNotifications),
+		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
+		emailNotifications: new ReactiveVar(emailNotifications),
+		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
+		audioNotificationValue: new ReactiveVar(audioNotificationValue)
+	};
+
+	this.saveSetting = async() => {
+		Object.keys(this.original).forEach(async field => {
+			if (this.original[field].get() === this.form[field].get()) {
+				return;
+			}
+			let value = this.form[field].get();
+
+			value = typeof value === 'boolean' ? value ? '1' : '0' : value;
+			const rid = Session.get('openedRoom');
+			switch (field) {
+				case 'desktopNotificationDuration':
+					await call('saveDesktopNotificationDuration', rid, value);
+					break;
+				case 'audioNotificationValue':
+					await call('saveAudioNotificationValue', rid, value);
+					break;
+				default:
+					await call('saveNotificationSettings', rid, field, value);
+			}
+			this.original[field].set(this.form[field].get());
+
+		});
 	};
 });
 
 Template.pushNotificationsFlexTab.events({
-	'keydown input[type=text]'(e, instance) {
-		if (e.keyCode === 13) {
-			e.preventDefault();
-			instance.saveSetting();
-		}
+	'click .js-cancel'(e, instance) {
+		instance.data.tabBar.close();
 	},
 
-	'click [data-edit]'(e, instance) {
-		e.preventDefault();
-		instance.editing.set($(e.currentTarget).data('edit'));
-		setTimeout(function() { instance.$('input.editing').focus().select(); }, 100);
-	},
-
-	'click .cancel'(e, instance) {
-		e.preventDefault();
-		instance.editing.set();
-	},
-
-	'click .save'(e, instance) {
+	'click .js-save'(e, instance) {
 		e.preventDefault();
 		instance.saveSetting();
 	},
 
 	'click [data-play]'(e) {
 		e.preventDefault();
-		let audio = $(e.currentTarget).data('play');
-		if (audio && audio !== 'none') {
-			const $audio = $(`audio#${ audio }`);
-			if ($audio && $audio[0] && $audio[0].play) {
-				$audio[0].play();
-			}
-		} else {
-			audio = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.newMessageNotification || 'chime';
-			if (audio && audio !== 'none') {
-				const $audio = $(`audio#${ audio }`);
-				if ($audio && $audio[0] && $audio[0].play) {
-					$audio[0].play();
-				}
-			}
-		}
-	},
+		const user = Meteor.user();
 
-	'change select[name=audioNotification]'(e) {
-		e.preventDefault();
-		const audio = $(e.currentTarget).val();
-		if (audio && audio !== 'none') {
-			const $audio = $(`audio#${ audio }`);
+		let value = Template.instance().form.audioNotificationValue.get();
+		if (value === '0') {
+			value = RocketChat.getUserPreference(user, 'newMessageNotification');
+		}
+
+		if (value && value !== 'none') {
+			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const $audio = $(`audio#${ value }`);
+
 			if ($audio && $audio[0] && $audio[0].play) {
+				$audio[0].volume = Number((audioVolume/100).toPrecision(2));
 				$audio[0].play();
 			}
 		}
@@ -285,7 +203,156 @@ Template.pushNotificationsFlexTab.events({
 
 	'change input[type=checkbox]'(e, instance) {
 		e.preventDefault();
-		instance.editing.set($(e.currentTarget).attr('name'));
-		instance.saveSetting();
+		const name = $(e.currentTarget).attr('name');
+		const checked = ['disableNotifications', 'hideUnreadStatus'].includes(name) ? !e.currentTarget.checked : e.currentTarget.checked;
+		instance.form[name].set(checked);
+	},
+
+	'click .rc-user-info__config-value'(e) {
+		const instance = Template.instance();
+		const key = this.valueOf();
+
+		let options;
+
+		switch (key) {
+			case 'audioNotificationValue':
+				const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
+				const audioAssetsArray = audioAssets.map(audio => {
+					return {
+						id: `audioNotificationValue${ audio.name }`,
+						name: 'audioNotificationValue',
+						label: audio.name,
+						value: audio._id
+					};
+				});
+				options = [
+					{
+						id: 'audioNotificationValueNone',
+						name: 'audioNotificationValue',
+						label: 'None',
+						value: 'none'
+					},
+					{
+						id: 'audioNotificationValueDefault',
+						name: 'audioNotificationValue',
+						label: 'Default',
+						value: 0
+					},
+					...audioAssetsArray
+				];
+				break;
+			case 'desktopNotificationDuration':
+				options = [{
+					id: 'desktopNotificationDuration',
+					name: 'desktopNotificationDuration',
+					label: 'Default',
+					value: 0
+				},
+				{
+					id: 'desktopNotificationDuration1s',
+					name: 'desktopNotificationDuration',
+					label: `1 ${ t('seconds') }`,
+					value: 1
+				},
+				{
+					id: 'desktopNotificationDuration2s',
+					name: 'desktopNotificationDuration',
+					label: `2 ${ t('seconds') }`,
+					value: 2
+				},
+				{
+					id: 'desktopNotificationDuration3s',
+					name: 'desktopNotificationDuration',
+					label: `3 ${ t('seconds') }`,
+					value: 3
+				},
+				{
+					id: 'desktopNotificationDuration4s',
+					name: 'desktopNotificationDuration',
+					label: `4 ${ t('seconds') }`,
+					value: 4
+				},
+				{
+					id: 'desktopNotificationDuration5s',
+					name: 'desktopNotificationDuration',
+					label: `5 ${ t('seconds') }`,
+					value: 5
+				}];
+				break;
+			default:
+				options = [{
+					id: 'desktopNotificationsDefault',
+					name: 'desktopNotifications',
+					label: 'Default',
+					value: 'default'
+				},
+				{
+					id: 'desktopNotificationsAll_messages',
+					name: 'desktopNotifications',
+					label: 'All_messages',
+					value: 'all'
+				},
+				{
+					id: 'desktopNotificationsMentions',
+					name: 'desktopNotifications',
+					label: 'Mentions',
+					value: 'mentions'
+				},
+				{
+					id: 'desktopNotificationsNothing',
+					name: 'desktopNotifications',
+					label: 'Nothing',
+					value: 'nothing'
+				}];
+		}
+
+		const config = {
+			popoverClass: 'notifications-preferences',
+			template: 'pushNotificationsPopover',
+			mousePosition: () => ({
+				x: e.currentTarget.getBoundingClientRect().left,
+				y: e.currentTarget.getBoundingClientRect().bottom + 50
+			}),
+			customCSSProperties: () => ({
+				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+			}),
+			data: {
+				change : (value) => {
+					return instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value);
+				},
+				value: instance.form[key].get(),
+				options
+			}
+		};
+		popover.open(config);
+	}
+});
+
+
+
+Template.pushNotificationsPopover.onCreated(function() {
+	this.change = this.data.change;
+});
+
+Template.pushNotificationsPopover.onRendered(function() {
+	this.find(`[value=${ this.data.value }]`).checked = true;
+});
+
+Template.pushNotificationsPopover.helpers({
+	options() {
+		return Template.instance().data.options;
+	},
+	defaultDesktopNotification() {
+		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		if (preference === 'default') {
+			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+		}
+		return notificationLabels[preference];
+	}
+});
+Template.pushNotificationsPopover.events({
+	'change input'(e, instance) {
+		instance.change && instance.change(e.target.value);
 	}
 });

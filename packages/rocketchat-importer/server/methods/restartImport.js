@@ -1,6 +1,10 @@
-/* globals Importer*/
+import {
+	Importers,
+	ProgressStep
+} from 'meteor/rocketchat:importer';
+
 Meteor.methods({
-	restartImport(name) {
+	restartImport(key) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'restartImport' });
 		}
@@ -9,14 +13,19 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
 		}
 
-		if (Importer.Importers[name] != null) {
-			const importer = Importer.Importers[name];
-			importer.importerInstance.updateProgress(Importer.ProgressStep.CANCELLED);
-			importer.importerInstance.updateRecord({ valid: false });
-			importer.importerInstance = undefined;
-			importer.importerInstance = new importer.importer(importer.name, importer.description, importer.mimeType); // eslint-disable-line new-cap
-			return importer.importerInstance.getProgress();
-		} else {
-			throw new Meteor.Error('error-importer-not-defined', 'The importer was not defined correctly, it is missing the Import class.', { method: 'restartImport' });
+		const importer = Importers.get(key);
+
+		if (!importer) {
+			throw new Meteor.Error('error-importer-not-defined', `The importer (${ key }) has no import class defined.`, { method: 'restartImport' });
 		}
-	}});
+
+		if (importer.instance) {
+			importer.instance.updateProgress(ProgressStep.CANCELLED);
+			importer.instance.updateRecord({ valid: false });
+			importer.instance = undefined;
+		}
+
+		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+		return importer.instance.getProgress();
+	}
+});

@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -8,7 +11,7 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 
-		this.cache.ignoreUpdatedFields.push('msgs', 'lm');
+		this.cache.ignoreUpdatedFields = ['msgs', 'lm'];
 		this.cache.ensureIndex(['t', 'name'], 'unique');
 		this.cache.options = {fields: {usernames: 0}};
 	}
@@ -33,6 +36,21 @@ class ModelRooms extends RocketChat.models._Base {
 
 	findOneByName(name, options) {
 		const query = {name};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByNameAndNotId(name, rid) {
+		const query = {
+			_id: { $ne: rid },
+			name
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneByDisplayName(fname, options) {
+		const query = {fname};
 
 		return this.findOne(query, options);
 	}
@@ -238,19 +256,23 @@ class ModelRooms extends RocketChat.models._Base {
 			}
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotContainingUsername(name, type, username, options) {
+	findByNameAndTypesNotContainingUsername(name, types, username, options) {
 		const query = {
-			t: type,
+			t: {
+				$in: types
+			},
 			name,
 			usernames: {
 				$ne: username
 			}
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameStartingAndTypes(name, types, options) {
@@ -488,12 +510,13 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setNameById(_id, name) {
+	setNameById(_id, name, fname) {
 		const query = {_id};
 
 		const update = {
 			$set: {
-				name
+				name,
+				fname
 			}
 		};
 
@@ -513,7 +536,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageTimestampById(_id, inc, lastMessageTimestamp) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
 
@@ -523,6 +546,22 @@ class ModelRooms extends RocketChat.models._Base {
 			},
 			$inc: {
 				msgs: inc
+			}
+		};
+
+		if (lastMessage) {
+			update.$set.lastMessage = lastMessage;
+		}
+
+		return this.update(query, update);
+	}
+
+	setLastMessageById(_id, lastMessage) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				lastMessage
 			}
 		};
 
@@ -717,9 +756,10 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, user, usernames, extraData) {
+	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
 			name,
+			fname,
 			t: type,
 			usernames,
 			msgs: 0,

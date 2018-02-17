@@ -4,8 +4,8 @@ Meteor.startup(function() {
 			RocketChat.TabBar.addButton({
 				groups: ['channel', 'group', 'direct'],
 				id: 'snippeted-messages',
-				i18nTitle: 'Snippeted_Messages',
-				icon: 'icon-code',
+				i18nTitle: 'snippet-message',
+				icon: 'code',
 				template: 'snippetedMessages',
 				order: 20
 			});
