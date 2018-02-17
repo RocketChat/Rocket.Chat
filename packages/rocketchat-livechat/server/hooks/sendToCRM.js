@@ -50,5 +50,8 @@ RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
 
 RocketChat.callbacks.add('livechat.leadCapture', (room) => {
+	if (!RocketChat.settings.get('Livechat_webhook_on_capture')) {
+		return room;
+	}
 	return sendToCRM('LeadCapture', room, false);
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-lead-capture');

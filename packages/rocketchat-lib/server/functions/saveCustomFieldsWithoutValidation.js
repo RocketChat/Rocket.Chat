@@ -13,6 +13,9 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 		Object.keys(customFieldsMeta).forEach(key => customFields[key] = formData[key]);
 		RocketChat.models.Users.setCustomFields(userId, customFields);
 
+		// Update customFields of all Direct Messages' Rooms for userId
+		RocketChat.models.Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+
 		Object.keys(customFields).forEach((fieldName) => {
 			if (!customFieldsMeta[fieldName].modifyRecordField) {
 				return;

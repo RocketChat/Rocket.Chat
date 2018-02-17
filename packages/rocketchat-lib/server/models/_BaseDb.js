@@ -160,21 +160,7 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	updateHasPositionalOperator(update) {
-		for (const key in update) {
-			if (key.includes('.$')) {
-				return true;
-			}
-
-			const value = update[key];
-
-			if (Match.test(value, Object)) {
-				if (this.updateHasPositionalOperator(value) === true) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return Object.keys(update).some(key => key.includes('.$') || (!Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
 	}
 
 	processOplogRecord(action) {

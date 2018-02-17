@@ -25,14 +25,15 @@ Meteor.logout = function() {
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
-			if (samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
+			if (samlService.logoutBehaviour == null || samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
 				if (samlService.idpSLORedirectURL) {
 					console.info('SAML session terminated via SLO');
 					return Meteor.logoutWithSaml({ provider });
 				}
-				if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
-					console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
-				}
+			}
+
+			if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
+				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 			}
 		}
 	}
