@@ -374,9 +374,19 @@ Template.accountProfile.events({
 			cancelButtonText: t('Cancel')
 		}, (typedPassword) => {
 			if (typedPassword) {
+
+			Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
+				if (results) {
 				toastr.remove();
+				toastr.success(t('Verification_email_sent'));
 				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
 				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
+				} else if (error) {
+					handleError(error);
+				}
+				return e.currentTarget.disabled = false;
+			});
+				
 			} else {
 				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;
@@ -459,21 +469,6 @@ Template.accountProfile.events({
 				}
 			});
 		}
-	},
-	'click #resend-verification-email'(e) {
-		const user = Meteor.user();
-		e.preventDefault();
-		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
-		e.currentTarget.disabled = true;
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
-			if (results) {
-				toastr.success(t('Verification_email_sent'));
-			} else if (error) {
-				handleError(error);
-			}
-			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
-			return e.currentTarget.disabled = false;
-		});
 	},
 	'change .js-select-avatar-upload [type=file]'(event, template) {
 		const e = event.originalEvent || event;

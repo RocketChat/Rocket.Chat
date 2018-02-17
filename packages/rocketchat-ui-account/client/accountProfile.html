@@ -130,11 +130,6 @@
 								{{#unless canChange}}
 									<div class="rc-input__description">{{_ 'Email_Change_Disabled'}}</div>
 								{{/unless}}
-								{{#unless emailVerified}}
-									<div class="rc-input__error">
-										<button class="rc-button rc-button--small" id="resend-verification-email">{{_ "Resend_verification_email"}}</button>
-									</div>
-								{{/unless}}
 							</div>
 							{{/with}}
 							<div class="rc-input rc-w50 padded">
