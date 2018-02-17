@@ -172,8 +172,14 @@
 		}
 	}
 
-	&__timer{
-		width: 40px;
+	&__timer-box{
+		display: flex;
+		width: 50px;
+	}
+
+	&__timer-dot{
+		font-size: 1.5em;
+		color: #d60000;
 	}
 }
 
