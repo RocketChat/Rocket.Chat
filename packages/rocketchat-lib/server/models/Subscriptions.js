@@ -281,6 +281,22 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	setCustomFieldsDirectMessagesByUserId(userId, fields) {
+		const values = {};
+		Object.keys(fields).forEach(key => {
+			values[`customFields.${ key }`] = fields[key];
+		});
+
+		const query = {
+			'u._id': userId,
+			't': 'd'
+		};
+		const update = { $set: values };
+		const options = { 'multi': true };
+
+		return this.update(query, update, options);
+	}
+
 	setFavoriteByRoomIdAndUserId(roomId, userId, favorite) {
 		if (favorite == null) { favorite = true; }
 		const query = {
@@ -557,6 +573,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,
+			customFields: room.customFields,
 			t: room.t,
 			u: {
 				_id: user._id,
