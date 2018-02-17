@@ -92,12 +92,16 @@
 	</div>
 </template>
 <template name="messageBox__audioMessage">
+	<div class="rc-message-box__audio-recording">
+		<div class="rc-message-box__icon cross js-audio-message-cross">
+			{{> icon block="rc-input__icon-svg" icon="cross"}}
+		</div>
+		<div class="rc-message-box__timer">00:00</div>
+	</div>
 	<div class="rc-message-box__audio-message">
 		<div class="rc-message-box__icon">
 			{{> icon block="rc-input__icon-svg" icon="mic"}}
 		</div>
-	</div>
-	<div class="rc-message-box__timer">
 	</div>
 </template>
 
