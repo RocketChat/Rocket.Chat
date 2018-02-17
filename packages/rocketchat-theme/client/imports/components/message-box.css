@@ -162,7 +162,13 @@
 		position: relative;
 		z-index: -1;
 		&.active{
-			z-index: 1;
+			z-index: 2;
+		}
+	}
+
+	&__audio-message{
+		&.hidden{
+			z-index: -1;
 		}
 	}
 

@@ -478,112 +478,6 @@ Template.messageBox.events({
 		const timer = document.querySelector('.rc-message-box__timer');
 		const timer_box = document.querySelector('.rc-message-box__audio-recording');
 
-		if (chatMessages[RocketChat.openedRoom].recording) {
-			icon.style.color = '';
-			icon.classList.remove('pulse');
-			timer_box.classList.remove('active');
-
-			timer.innerHTML = '00:00';
-			if (audioMessageIntervalId) {
-				clearInterval(audioMessageIntervalId);
-			}
-
-			chatMessages[RocketChat.openedRoom].recording = false;
-			AudioRecorder.stop(function(blob) {
-				const roomId = Session.get('openedRoom');
-				const record = {
-					name: `${ TAPi18n.__('Audio record') }.mp3`,
-					size: blob.size,
-					type: 'audio/mp3',
-					rid: roomId,
-					description: ''
-				};
-				const upload = fileUploadHandler('Uploads', record, blob);
-				let uploading = Session.get('uploading') || [];
-				uploading.push({
-					id: upload.id,
-					name: upload.getFileName(),
-					percentage: 0
-				});
-				Session.set('uploading', uploading);
-				upload.onProgress = function(progress) {
-					uploading = Session.get('uploading');
-
-					const item = _.findWhere(uploading, {id: upload.id});
-					if (item != null) {
-						item.percentage = Math.round(progress * 100) || 0;
-						return Session.set('uploading', uploading);
-					}
-				};
-
-				upload.start(function(error, file, storage) {
-					if (error) {
-						let uploading = Session.get('uploading');
-						if (!Array.isArray(uploading)) {
-							uploading = [];
-						}
-
-						const item = _.findWhere(uploading, { id: upload.id });
-
-						if (_.isObject(item)) {
-							item.error = error.message;
-							item.percentage = 0;
-						} else {
-							uploading.push({
-								error: error.error,
-								percentage: 0
-							});
-						}
-
-						Session.set('uploading', uploading);
-						return;
-					}
-
-
-					if (file) {
-						Meteor.call('sendFileMessage', roomId, storage, file, () => {
-							Meteor.setTimeout(() => {
-								const uploading = Session.get('uploading');
-								if (uploading !== null) {
-									const item = _.findWhere(uploading, {
-										id: upload.id
-									});
-									return Session.set('uploading', _.without(uploading, item));
-								}
-							}, 2000);
-						});
-					}
-				});
-
-				Tracker.autorun(function(c) {
-					const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-					if (cancel) {
-						let item;
-						upload.stop();
-						c.stop();
-
-						uploading = Session.get('uploading');
-						if (uploading != null) {
-							item = _.findWhere(uploading, {id: upload.id});
-							if (item != null) {
-								item.percentage = 0;
-							}
-							Session.set('uploading', uploading);
-						}
-
-						return Meteor.setTimeout(function() {
-							uploading = Session.get('uploading');
-							if (uploading != null) {
-								item = _.findWhere(uploading, {id: upload.id});
-								return Session.set('uploading', _.without(uploading, item));
-							}
-						}, 1000);
-					}
-				});
-			});
-			return false;
-		}
-
 		chatMessages[RocketChat.openedRoom].recording = true;
 		AudioRecorder.start(function() {
 			const startTime = new Date;
@@ -597,7 +491,8 @@ Template.messageBox.events({
 				if (seconds < 10) { seconds = `0${ seconds }`; }
 				timer.innerHTML = `${ minutes }:${ seconds }`;
 			}, 1000);
-			icon.style.color = 'green';
+
+			icon.classList.add('hidden');
 			timer_box.classList.add('active');
 		});
 	},
@@ -607,9 +502,8 @@ Template.messageBox.events({
 		const timer = document.querySelector('.rc-message-box__timer');
 		const timer_box = document.querySelector('.rc-message-box__audio-recording');
 
-
-		icon.style.color = '';
 		timer_box.classList.remove('active');
+		icon.classList.remove('hidden');
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
@@ -617,6 +511,115 @@ Template.messageBox.events({
 
 		AudioRecorder.stop();
 		chatMessages[RocketChat.openedRoom].recording = false;
+	},
+	'click .js-audio-message-check'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+
+		icon.classList.remove('hidden');
+		timer_box.classList.remove('active');
+
+		timer.innerHTML = '00:00';
+		if (audioMessageIntervalId) {
+			clearInterval(audioMessageIntervalId);
+		}
+
+		chatMessages[RocketChat.openedRoom].recording = false;
+		AudioRecorder.stop(function(blob) {
+			const roomId = Session.get('openedRoom');
+			const record = {
+				name: `${ TAPi18n.__('Audio record') }.mp3`,
+				size: blob.size,
+				type: 'audio/mp3',
+				rid: roomId,
+				description: ''
+			};
+			const upload = fileUploadHandler('Uploads', record, blob);
+			let uploading = Session.get('uploading') || [];
+			uploading.push({
+				id: upload.id,
+				name: upload.getFileName(),
+				percentage: 0
+			});
+			Session.set('uploading', uploading);
+			upload.onProgress = function(progress) {
+				uploading = Session.get('uploading');
+
+				const item = _.findWhere(uploading, {id: upload.id});
+				if (item != null) {
+					item.percentage = Math.round(progress * 100) || 0;
+					return Session.set('uploading', uploading);
+				}
+			};
+
+			upload.start(function(error, file, storage) {
+				if (error) {
+					let uploading = Session.get('uploading');
+					if (!Array.isArray(uploading)) {
+						uploading = [];
+					}
+
+					const item = _.findWhere(uploading, { id: upload.id });
+
+					if (_.isObject(item)) {
+						item.error = error.message;
+						item.percentage = 0;
+					} else {
+						uploading.push({
+							error: error.error,
+							percentage: 0
+						});
+					}
+
+					Session.set('uploading', uploading);
+					return;
+				}
+
+
+				if (file) {
+					Meteor.call('sendFileMessage', roomId, storage, file, () => {
+						Meteor.setTimeout(() => {
+							const uploading = Session.get('uploading');
+							if (uploading !== null) {
+								const item = _.findWhere(uploading, {
+									id: upload.id
+								});
+								return Session.set('uploading', _.without(uploading, item));
+							}
+						}, 2000);
+					});
+				}
+			});
+
+			Tracker.autorun(function(c) {
+				const cancel = Session.get(`uploading-cancel-${ upload.id }`);
+				if (cancel) {
+					let item;
+					upload.stop();
+					c.stop();
+
+					uploading = Session.get('uploading');
+					if (uploading != null) {
+						item = _.findWhere(uploading, {id: upload.id});
+						if (item != null) {
+							item.percentage = 0;
+						}
+						Session.set('uploading', uploading);
+					}
+
+					return Meteor.setTimeout(function() {
+						uploading = Session.get('uploading');
+						if (uploading != null) {
+							item = _.findWhere(uploading, {id: upload.id});
+							return Session.set('uploading', _.without(uploading, item));
+						}
+					}, 1000);
+				}
+			});
+		});
+		return false;
 	}
 });
 
