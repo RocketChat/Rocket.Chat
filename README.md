@@ -56,16 +56,9 @@ or BlockParty.
 They also provide open source apps for devices, including Cordova apps wrapping
 the web interface and native apps on both Android and iOS.
 
-The native apps can be forked to implement Blockstack auth and branding (with
-further development). The Cordova apps would work already, but require
-collaboration with Blockstack to address issues specific to the Blockstack auth
-process within Cordova Chromium.
-
-Download either app below and use `blockparty.chat` as your server - advised for
-testing and development only at this stage.
-
-- [Rocket.Chat Android app from Google Play][android]
-- [Rocket.Chat Apple app from the App Store][apple]
+These apps can be forked to implement Blockstack auth with further development
+and some collaboration with the Blockstack team, related to their [mobile
+support roadmap](https://forum.blockstack.org/t/blockstack-mobile-plans/3621/6).
 
 ___
 
