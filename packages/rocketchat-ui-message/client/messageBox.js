@@ -1,6 +1,7 @@
 /* globals fileUpload KonchatNotification chatMessages popover isRtl AudioRecorder chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
+import _ from 'underscore';
 
 let audioMessageIntervalId;
 
@@ -475,19 +476,20 @@ Template.messageBox.events({
 		event.preventDefault();
 		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
 
 		if (chatMessages[RocketChat.openedRoom].recording) {
 			icon.style.color = '';
 			icon.classList.remove('pulse');
+			timer_box.classList.remove('active');
 
-			timer.innerHTML = '';
+			timer.innerHTML = '00:00';
 			if (audioMessageIntervalId) {
 				clearInterval(audioMessageIntervalId);
 			}
-			timer.style.color= '';
 
+			chatMessages[RocketChat.openedRoom].recording = false;
 			AudioRecorder.stop(function(blob) {
-				chatMessages[RocketChat.openedRoom].recording = false;
 				const roomId = Session.get('openedRoom');
 				const record = {
 					name: `${ TAPi18n.__('Audio record') }.mp3`,
@@ -495,7 +497,7 @@ Template.messageBox.events({
 					type: 'audio/mp3',
 					rid: roomId,
 					description: ''
-				}
+				};
 				const upload = fileUploadHandler('Uploads', record, blob);
 				let uploading = Session.get('uploading') || [];
 				uploading.push({
@@ -595,34 +597,26 @@ Template.messageBox.events({
 				if (seconds < 10) { seconds = `0${ seconds }`; }
 				timer.innerHTML = `${ minutes }:${ seconds }`;
 			}, 1000);
-			timer.style.color = 'red';
-			icon.classList.add('pulse');
-			icon.style.color = 'red';
+			icon.style.color = 'green';
+			timer_box.classList.add('active');
 		});
 	},
-	'click .rc-message-box__timer'(event) {
+	'click .js-audio-message-cross'(event) {
 		event.preventDefault();
 		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+
 
 		icon.style.color = '';
-		icon.classList.remove('pulse');
-		timer.innerHTML = '';
+		timer_box.classList.remove('active');
+		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
 		}
-		timer.style.color= '';
 
-		AudioRecorder.stop(function(blob) {
-			chatMessages[RocketChat.openedRoom].recording = false;
-			fileUpload([
-				{
-					file: blob,
-					type: 'audio',
-					name: `${ TAPi18n.__('Audio record') }.mp3`
-				}
-			]);
-		});
+		AudioRecorder.stop();
+		chatMessages[RocketChat.openedRoom].recording = false;
 	}
 });
 
