@@ -30,6 +30,19 @@ Meteor.methods({
 				RocketChat.models.Users.unsetReason(userId);
 			}
 
+			const destinations = Array.isArray(user.emails) && user.emails.map(email => `${ user.name || user.username }<${ email.address }>`);
+
+			if (destinations) {
+				const email = {
+					to: destinations,
+					from: RocketChat.settings.get('From_Email'),
+					subject: Accounts.emailTemplates.userActivated.subject({active}),
+					html: Accounts.emailTemplates.userActivated.html({active, name: user.name, username: user.username})
+				};
+
+				Meteor.defer(() => Email.send(email));
+			}
+
 			return true;
 		}
 
