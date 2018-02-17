@@ -34,10 +34,10 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
-				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', 0);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', 0);
 				group._id = res.body.group._id;
 			})
 			.end(done);
@@ -53,15 +53,15 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
-				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', 0);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', 0);
 			})
 			.end(done);
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -74,10 +74,10 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
-				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});
@@ -157,7 +157,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async (done) => {
+	it('/groups.invite', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -170,10 +170,10 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', apiPrivateChannelName);
-				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});
@@ -204,7 +204,7 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('description', 'this is a description for a channel for api tests');
+				expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
 			})
 			.end(done);
 	});
@@ -220,7 +220,7 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('topic', 'this is a topic of a channel for api tests');
+				expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
 			})
 			.end(done);
 	});
@@ -236,7 +236,7 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('purpose', 'this is a purpose of a channel for api tests');
+				expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
 			})
 			.end(done);
 	});
@@ -343,7 +343,7 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.rename', async (done) => {
+	it('/groups.rename', async(done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.rename'))
@@ -356,10 +356,10 @@ describe('groups', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('group._id');
-				expect(res.body).to.have.deep.property('group.name', `EDITED${ apiPrivateChannelName }`);
-				expect(res.body).to.have.deep.property('group.t', 'p');
-				expect(res.body).to.have.deep.property('group.msgs', roomInfo.group.msgs + 1);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', `EDITED${ apiPrivateChannelName }`);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
 			})
 			.end(done);
 	});

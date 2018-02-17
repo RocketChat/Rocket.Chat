@@ -40,12 +40,15 @@ Meteor.startup(function() {
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] },
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] },
 		{ _id: 'mention-all',                   roles : ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                   roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'run-import',                    roles : ['admin'] },
 		{ _id: 'run-migration',                 roles : ['admin'] },
 		{ _id: 'set-moderator',                 roles : ['admin', 'owner'] },
 		{ _id: 'set-owner',                     roles : ['admin', 'owner'] },
+		{ _id: 'send-many-messages',            roles : ['admin', 'bot'] },
+		{ _id: 'set-leader',                    roles : ['admin', 'owner'] },
 		{ _id: 'unarchive-room',                roles : ['admin'] },
 		{ _id: 'view-c-room',                   roles : ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'user-generate-access-token',    roles : ['admin'] },
@@ -61,7 +64,8 @@ Meteor.startup(function() {
 		{ _id: 'view-room-administration',      roles : ['admin'] },
 		{ _id: 'view-statistics',               roles : ['admin'] },
 		{ _id: 'view-user-administration',      roles : ['admin'] },
-		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] }
+		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] },
+		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] }
 	];
 
 	for (const permission of permissions) {
@@ -73,6 +77,7 @@ Meteor.startup(function() {
 	const defaultRoles = [
 		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
 		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
+		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user',      scope: 'Users',         description: '' },
 		{ name: 'bot',       scope: 'Users',         description: '' },

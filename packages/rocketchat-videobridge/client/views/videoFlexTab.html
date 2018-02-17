@@ -1,18 +1,16 @@
 <template name="videoFlexTab">
-	<div class="content">
-		{{#if openInNewWindow}}
-			<div class="list-view">
-				<div class="title">
-					<h2>{{_ "Video_Conference"}}</h2>
-				</div>
-				<p>{{_ "Opened_in_a_new_window"}}</p>
+	{{#if openInNewWindow}}
+		<div class="list-view">
+			<div class="title">
+				<h2>{{_ "Video_Conference"}}</h2>
 			</div>
-		{{else}}
-			<div class="video-chat">
-				<div class="main-video">
-					<div class="video-container"></div>
-				</div>
+			<p>{{_ "Opened_in_a_new_window"}}</p>
+		</div>
+	{{else}}
+		<div class="video-chat">
+			<div class="main-video">
+				<div class="video-container"></div>
 			</div>
-		{{/if}}
-	</div>
+		</div>
+	{{/if}}
 </template>

@@ -20,7 +20,7 @@
  * Transparency variables
  */
 
-@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darkest: rgba(17, 12, 12, 0.5);
 @transparent-darker: rgba(0, 0, 0, 0.15);
 @transparent-dark: rgba(0, 0, 0, 0.05);
 @transparent-light: rgba(255, 255, 255, 0.1);
@@ -287,8 +287,8 @@ textarea {
 	background-color: mix(contrast(@content-background-color), @content-background-color, 20%);
 }
 
-input[type="button"],
-input[type="submit"] {
+.rc-old input[type="button"],
+.rc-old input[type="submit"] {
 	color: @primary-font-color;
 	background: mix(contrast(@content-background-color), @content-background-color, 10%);
 	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
@@ -308,56 +308,56 @@ input[type="submit"] {
 	color: fade(@primary-background-contrast, 50%);
 }
 
-.flex-nav {
-	input,
-	select,
-	textarea {
-		color: @primary-background-contrast;
-		background-color: transparent;
-		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-		border-style: solid;
+// .flex-nav {
+// 	input,
+// 	select,
+// 	textarea {
+// 		color: @primary-background-contrast;
+// 		background-color: transparent;
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-style: solid;
 
-		&::placeholder {
-			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
-		}
+// 		&::placeholder {
+// 			color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 		}
 
-		&[disabled] {
-			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-		}
-	}
+// 		&[disabled] {
+// 			background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		}
+// 	}
 
-	.disabled label,
-	[disabled] label {
-		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
-	}
+// 	.disabled label,
+// 	[disabled] label {
+// 		color: mix(@primary-background-contrast, @transparent-lighter, 75%);
+// 	}
 
-	.-autocomplete-container {
-		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-	}
+// 	.-autocomplete-container {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
 
-	.-autocomplete-item.selected {
-		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
-	}
+// 	.-autocomplete-item.selected {
+// 		background-color: mix(contrast(@transparent-lighter), @transparent-lighter, 20%);
+// 	}
 
-	input[type="button"],
-	input[type="submit"] {
-		color: @primary-background-contrast;
-		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
-	}
+// 	input[type="button"],
+// 	input[type="submit"] {
+// 		color: @primary-background-contrast;
+// 		background: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 		border-color: mix(contrast(@transparent-lighter), @transparent-lighter, 10%);
+// 	}
 
-	input {
-		&:focus {
-			border-color: fade(@primary-background-contrast, 50%);
-		}
-	}
+// 	input {
+// 		&:focus {
+// 			border-color: fade(@primary-background-contrast, 50%);
+// 		}
+// 	}
 
-	.input.checkbox.toggle {
-		input:checked + label::before {
-			background-color: @primary-action-color;
-		}
-	}
-}
+// 	.input.checkbox.toggle {
+// 		input:checked + label::before {
+// 			background-color: @primary-action-color;
+// 		}
+// 	}
+// }
 
 .input-line {
 	&.setting-changed > label {
@@ -415,10 +415,10 @@ input:-webkit-autofill {
  * Misc typography variants
  */
 
-a:active,
-a:hover {
-	color: @primary-action-color;
-}
+// a:active,
+// a:hover {
+// 	color: @primary-action-color;
+// }
 
 .message,
 .flex-tab {
@@ -442,7 +442,7 @@ a:hover {
 
 .page-list,
 .page-settings {
-	a {
+	a:not(.rc-button) {
 		color: @primary-font-color;
 
 		&:hover {
@@ -475,8 +475,6 @@ a:hover {
 
 .full-page,
 .page-loading {
-	background: linear-gradient(to top, shade(@primary-background-color), @primary-background-color);
-
 	a {
 		color: @tertiary-font-color;
 	}
@@ -536,10 +534,16 @@ a:hover {
 	}
 }
 
-.popup-item {
-	&.selected {
-		color: @primary-action-contrast;
-		background-color: @primary-action-color;
+.message.editing {
+	background-color: lighten(@pending-color, 40%);
+}
+
+.rc-old {
+	& .popup-item {
+		&.selected {
+			color: @primary-action-contrast;
+			background-color: @primary-action-color;
+		}
 	}
 }
 
@@ -557,25 +561,6 @@ a:hover {
 /** ----------------------------------------------------------------------------
  * Message content
  */
-.first-unread {
-	.body {
-		&::before {
-			background: @transparent-darker;
-		}
-
-		&::after {
-			color: @primary-font-color;
-		}
-	}
-}
-
-.first-unread-opaque {
-	.body {
-		&::before {
-			background: @transparent-dark;
-		}
-	}
-}
 
 .message {
 	&.new-day::before {
@@ -627,22 +612,9 @@ a:hover {
  * Side nav
  */
 .side-nav {
-	a,
-	.info {
-		color: @tertiary-font-color;
-
-		&:hover {
-			color: @tertiary-font-color;
-		}
-	}
-
 	.arrow::before,
 	.arrow::after {
 		background-color: @tertiary-font-color;
-	}
-
-	.rooms-list {
-		background-color: lighten(@primary-background-color, 2.5%);
 	}
 
 	li.active {
@@ -666,6 +638,11 @@ a:hover {
 	}
 
 	.unread {
+		color: @success-color;
+		border: 1px solid @success-color;
+	}
+
+	.unread.unread-mention {
 		background-color: @success-color;
 		color: contrast(@success-color, #000000, #ffffff, 50%);
 	}
@@ -676,6 +653,16 @@ a:hover {
 
 	.options button {
 		.buttonColors(@tertiary-font-color, @primary-background-color);
+	}
+}
+
+.sidebar-item__last-message {
+	a:not(.mention-link) {
+		color: @link-font-color;
+
+		&:hover {
+			color: darken(@link-font-color, 10%);
+		}
 	}
 }
 
@@ -691,20 +678,6 @@ a:hover {
  * Flex tabs / admin fly-out panels
  */
 .flex-tab {
-	input,
-	select,
-	textarea {
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
-		}
-	}
-
-	.content,
-	.user-view,
-	.list-view {
-		background-color: @secondary-background-color;
-	}
-
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
@@ -716,10 +689,6 @@ a:hover {
 			.button {
 				.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 			}
-		}
-
-		.button.edit {
-			.buttonColors(lighten(@primary-font-color, 25%), @secondary-background-color);
 		}
 
 		.input.checkbox.toggle {
@@ -762,6 +731,10 @@ i.status-online {
 	color: @status-online;
 }
 
+.status-bg-online {
+	background-color: @status-online;
+}
+
 .account-box .status-online .thumb::after,
 .account-box .status.online::after,
 .popup-user-status-online,
@@ -780,6 +753,10 @@ i.status-away {
 	color: @status-away;
 }
 
+.status-bg-away {
+	background-color: @status-away;
+}
+
 .account-box .status-away .thumb::after,
 .account-box .status.away::after,
 .popup-user-status-away,
@@ -793,6 +770,10 @@ i.status-busy {
 	color: @status-busy;
 }
 
+.status-bg-busy {
+	background-color: @status-busy;
+}
+
 .account-box .status-busy .thumb::after,
 .account-box .status.busy::after,
 .popup-user-status-busy,
@@ -804,6 +785,10 @@ i.status-busy {
 
 i.status-offline {
 	color: @status-offline;
+}
+
+.status-bg-offline {
+	background-color: @status-offline;
 }
 
 .popup-user-status-offline,
@@ -910,4 +895,47 @@ label.required::after {
 	to {
 		opacity: inherit;
 	}
+}
+
+/** ----------------------------------------------------------------------------
+ * Input Range Slider
+ */
+
+.range-slider-range::-webkit-slider-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-webkit-slider-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-webkit-slider-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-range::-moz-range-thumb {
+	background-color: @primary-background-color;
+}
+
+.range-slider-range::-moz-range-thumb:hover {
+	background-color: darken(@success-color, 30%);
+}
+
+.range-slider-range:active::-moz-range-thumb {
+	background-color: darken(@success-color, 10%);
+}
+
+.range-slider-value {
+	color: lighten(@tertiary-background-color, 50%);
+	background-color: @primary-background-color;
+}
+
+.range-slider-value::after {
+	border-top-color: transparent;
+	border-right-color: @primary-background-color;
+	border-bottom-color: transparent;
+}
+
+.range-slider-range::-moz-range-track {
+	background-color: @tertiary-background-color;
 }

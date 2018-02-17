@@ -38,13 +38,13 @@ export function checkIfUserIsValid(username, email, password) {
 	} else if (sideNav.accountBoxUserName.getAttribute('data-username') !== username) {
 		//if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
-		sideNav.accountBoxUserName.waitForVisible(5000);
-		sideNav.accountBoxUserName.click();
+		sideNav.accountMenu.waitForVisible(5000);
+		sideNav.accountMenu.click();
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
 
 		loginPage.open();
-		loginPage.login({email, password});
+		loginPage.loginSucceded({email, password});
 		mainContent.mainContent.waitForExist(5000);
 	} else {
 		console.log('	User already logged');
@@ -71,13 +71,13 @@ export function checkIfUserIsAdmin(username, email, password) {
 	} else if (sideNav.accountBoxUserName.getText() !== username) {
 		//if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
-		sideNav.accountBoxUserName.waitForVisible(5000);
-		sideNav.accountBoxUserName.click();
+		sideNav.accountMenu.waitForVisible(5000);
+		sideNav.accountMenu.click();
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
 
 		loginPage.open();
-		loginPage.login({email, password});
+		loginPage.loginSucceded({email, password});
 	} else {
 		console.log('	User already logged');
 	}

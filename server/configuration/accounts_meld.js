@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
 Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceData = {} /*, options*/) {

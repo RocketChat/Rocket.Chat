@@ -1,4 +1,6 @@
 /* globals readMessage UserRoles RoomRoles*/
+import _ from 'underscore';
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
@@ -51,11 +53,12 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
-		return Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
+		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
 			if (err) {
 				return;
 			}
 			let previousHeight;
+			const {messages = []} = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
 			room.firstUnread.set(result.firstUnread);
 
@@ -64,7 +67,7 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			result.messages.forEach(item => {
+			messages.forEach(item => {
 				if (item.t !== 'command') {
 					const roles = [
 						(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
@@ -87,8 +90,8 @@ export const RoomHistoryManager = new class {
 
 			room.isLoading.set(false);
 			if (room.loaded == null) { room.loaded = 0; }
-			room.loaded += result.messages.length;
-			if (result.messages.length < limit) {
+			room.loaded += messages.length;
+			if (messages.length < limit) {
 				return room.hasMore.set(false);
 			}
 		});
@@ -169,8 +172,7 @@ export const RoomHistoryManager = new class {
 				return instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
-			return setTimeout(() => msgElement.removeClass('highlight')
-			, 500);
+			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		} else {
 			const room = this.getRoom(message.rid);
 			room.isLoading.set(true);
@@ -218,8 +220,7 @@ export const RoomHistoryManager = new class {
 						return 500;
 					});
 
-					return setTimeout(() => msgElement.removeClass('highlight')
-					, 500);
+					return setTimeout(() => msgElement.removeClass('highlight'), 500);
 				});
 				if (room.loaded == null) { room.loaded = 0; }
 				room.loaded += result.messages.length;

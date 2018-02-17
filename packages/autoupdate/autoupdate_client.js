@@ -59,6 +59,14 @@ var retry = new Retry({
 });
 var failures = 0;
 
+function after(times, func) {
+  return function() {
+    if (--times < 1) {
+      return func.apply(this, arguments);
+    }
+  };
+};
+
 Autoupdate._retrySubscription = function () {
   Meteor.subscribe("meteor_autoupdate_clientVersions", {
     onError: function (error) {
@@ -86,18 +94,30 @@ Autoupdate._retrySubscription = function () {
             // https://github.com/guard/guard-livereload/blob/master/js/livereload.js#L710
             var newCss = (doc.assets && doc.assets.allCss) || [];
             var oldLinks = [];
-            _.each(document.getElementsByTagName('link'), function (link) {
-              if (link.className === '__meteor-css__') {
-                oldLinks.push(link);
-              }
-            });
 
-            var waitUntilCssLoads = function  (link, callback) {
-              var executeCallback = _.once(callback);
+            Array.prototype.forEach.call(
+              document.getElementsByTagName('link'),
+              function (link) {
+                if (link.className === '__meteor-css__') {
+                  oldLinks.push(link);
+                }
+              }
+            );
+
+            function waitUntilCssLoads(link, callback) {
+              var called;
+              function executeCallback(...args) {
+                if (! called) {
+                  called = true;
+                  return callback(...args);
+                }
+              }
+
               link.onload = function () {
                 knownToSupportCssOnLoad = true;
                 executeCallback();
               };
+
               if (! knownToSupportCssOnLoad) {
                 var id = Meteor.setInterval(function () {
                   if (link.sheet) {
@@ -106,11 +126,11 @@ Autoupdate._retrySubscription = function () {
                   }
                 }, 50);
               }
-            };
+            }
 
-            var removeOldLinks = _.after(newCss.length, function () {
-              _.each(oldLinks, function (oldLink) {
-                oldLink.parentNode.removeChild(oldLink);
+            var removeOldLinks = after(newCss.length, function () {
+              oldLinks.forEach(function (link) {
+                link.parentNode.removeChild(link);
               });
             });
 
@@ -123,12 +143,12 @@ Autoupdate._retrySubscription = function () {
             };
 
             if (newCss.length !== 0) {
-              _.each(newCss, function (css) {
+              newCss.forEach(function (css) {
                 var newLink = document.createElement("link");
                 newLink.setAttribute("rel", "stylesheet");
                 newLink.setAttribute("type", "text/css");
                 newLink.setAttribute("class", "__meteor-css__");
-                newLink.setAttribute("href", Meteor._relativeToSiteRootUrl(css.url));
+                newLink.setAttribute("href", css.url);
                 attachStylesheetLink(newLink);
               });
             } else {

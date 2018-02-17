@@ -1,0 +1,32 @@
+.message {
+	& .actionLinks {
+		margin-top: 4px;
+		margin-bottom: 4px;
+		padding: 0;
+
+		text-align: center;
+
+		& li {
+			position: relative;
+
+			display: inline;
+
+			padding-right: 2px;
+
+			list-style: none;
+
+			cursor: pointer;
+
+			& .action-link {
+				margin: 0 2px;
+				padding: 5px;
+
+				border-radius: 7px;
+			}
+		}
+
+		& li:last-child::after {
+			content: none;
+		}
+	}
+}

@@ -1,7 +1,9 @@
 /* globals ChatOAuthApps */
 import moment from 'moment';
 
-Template.oauthApps.onCreated(() => this.subscribe('oauthApps'));
+Template.oauthApps.onCreated(function() {
+	this.subscribe('oauthApps');
+});
 
 Template.oauthApps.helpers({
 	hasPermission() {

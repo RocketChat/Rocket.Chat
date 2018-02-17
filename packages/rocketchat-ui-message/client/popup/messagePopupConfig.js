@@ -1,4 +1,6 @@
 /* globals filteredUsersMemory */
+import _ from 'underscore';
+
 filteredUsersMemory = new Mongo.Collection(null);
 
 Meteor.startup(function() {
@@ -38,11 +40,11 @@ Meteor.startup(function() {
 	});
 });
 
-const getUsersFromServer = (filter, records, cb) => {
+const getUsersFromServer = (filter, records, cb, rid) => {
 	const messageUsers = _.pluck(records, 'username');
 	return Meteor.call('spotlight', filter, messageUsers, {
 		users: true
-	}, function(err, results) {
+	}, rid, function(err, results) {
 		if (err != null) {
 			return console.error(err);
 		}
@@ -63,10 +65,13 @@ const getUsersFromServer = (filter, records, cb) => {
 	});
 };
 
-const getRoomsFromServer = (filter, records, cb) => {
+const getRoomsFromServer = (filter, records, cb, rid) => {
+	if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
+		return cb([]);
+	}
 	return Meteor.call('spotlight', filter, null, {
 		rooms: true
-	}, function(err, results) {
+	}, rid, function(err, results) {
 		if (err != null) {
 			return console.error(err);
 		}
@@ -84,6 +89,42 @@ const getRoomsFromServer = (filter, records, cb) => {
 const getUsersFromServerDelayed = _.throttle(getUsersFromServer, 500);
 
 const getRoomsFromServerDelayed = _.throttle(getRoomsFromServer, 500);
+
+const addEmojiToRecents = (emoji) => {
+	const pickerEl = $('.emoji-picker')[0];
+	if (pickerEl) {
+		const view = Blaze.getView(pickerEl);
+		if (view) {
+			Template._withTemplateInstanceFunc(view.templateInstance, () => {
+				RocketChat.EmojiPicker.addRecent(emoji.replace(/:/g, ''));
+			});
+		}
+	}
+};
+
+const emojiSort = (recents) => {
+	return (a, b) => {
+		let idA = a._id;
+		let idB = a._id;
+
+		if (recents.includes(a._id)) {
+			idA = recents.indexOf(a._id) + idA;
+		}
+		if (recents.includes(b._id)) {
+			idB = recents.indexOf(b._id) + idB;
+		}
+
+		if (idA < idB) {
+			return -1;
+		}
+
+		if (idA > idB) {
+			return 1;
+		}
+
+		return 0;
+	};
+};
 
 Template.messagePopupConfig.helpers({
 	popupUserConfig() {
@@ -120,37 +161,42 @@ Template.messagePopupConfig.helpers({
 				if (items.length < 5 && filter && filter.trim() !== '') {
 					const messageUsers = _.pluck(items, 'username');
 					const user = Meteor.user();
-					items.push(...Meteor.users.find({
-						$and: [
-							{
-								$or: [
-									{
-										username: exp
-									}, {
-										name: exp
+					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
+						const usernames = RocketChat.models.Subscriptions.find({$or :[{'name': exp}, { fname: exp}]}).fetch().map(({name}) =>name);
+						items.push(...
+							RocketChat.models.Users.find({username:{$in:usernames}}, {fields:{
+								username: 1,
+								name: 1,
+								status: 1
+							}}, {
+								limit: 5 - messageUsers.length
+							}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 }))
+						);
+					} else {
+						items.push(...Meteor.users.find({
+							$and: [
+								{
+									$or: [
+										{
+											username: exp
+										}, {
+											name: exp
+										}
+									]
+								}, {
+									username: {
+										$nin: [(user && user.username), ...messageUsers]
 									}
-								]
-							}, {
-								username: {
-									$nin: [(user && user.username), ...messageUsers]
 								}
-							}
-						]
-					}, {
-						limit: 5 - messageUsers.length
-					}).fetch().map(function(item) {
-						return {
-							_id: item.username,
-							username: item.username,
-							name: item.name,
-							status: item.status,
-							sort: 1
-						};
-					}));
+							]
+						}, {
+							limit: 5 - messageUsers.length
+						}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 })));
+					}
 				}
 				// Get users from db
 				if (items.length < 5 && filter && filter.trim() !== '') {
-					getUsersFromServerDelayed(filter, items, cb);
+					getUsersFromServerDelayed(filter, items, cb, RocketChat.openedRoom);
 				}
 				const all = {
 					_id: 'all',
@@ -207,7 +253,7 @@ Template.messagePopupConfig.helpers({
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
-					getRoomsFromServerDelayed(filter, records, cb);
+					getRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
 				}
 				return records;
 			},
@@ -239,11 +285,11 @@ Template.messagePopupConfig.helpers({
 						description: TAPi18n.__(item.description)
 					};
 				})
-				.filter(command => command._id.indexOf(filter) > -1)
-				.sort(function(a, b) {
-					return a._id > b._id;
-				})
-				.slice(0, 11);
+					.filter(command => command._id.indexOf(filter) > -1)
+					.sort(function(a, b) {
+						return a._id > b._id;
+					})
+					.slice(0, 11);
 			}
 		};
 		return config;
@@ -265,11 +311,16 @@ Template.messagePopupConfig.helpers({
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
 
-					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key] || filter.length < 2) {
+					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+						return [];
+					}
+
+					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];
 					}
 
 					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
 					return Object.keys(collection).map(key => {
 						const value = collection[key];
 						return {
@@ -277,17 +328,51 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.slice(0, 10)
-					.sort(function(a, b) {
-						if (a._id < b._id) {
-							return -1;
-						}
-						if (a._id > b._id) {
-							return 1;
-						}
-						return 0;
-					});
+						.filter(obj => regExp.test(obj._id))
+						.sort(emojiSort(recents))
+						.slice(0, 10);
+				},
+				getValue(_id) {
+					addEmojiToRecents(_id);
+					return _id;
+				}
+			};
+		}
+	},
+	popupReactionEmojiConfig() {
+		if (RocketChat.emoji != null) {
+			const self = this;
+			return {
+				title: t('Emoji'),
+				collection: RocketChat.emoji.list,
+				template: 'messagePopupEmoji',
+				trigger: '\\+',
+				prefix: '+',
+				suffix: ' ',
+				getInput: self.getInput,
+				getFilter(collection, filter) {
+					const key = `${ filter }`;
+
+					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
+						return [];
+					}
+
+					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
+					return Object.keys(collection).map(key => {
+						const value = collection[key];
+						return {
+							_id: key,
+							data: value
+						};
+					})
+						.filter(obj => regExp.test(obj._id))
+						.sort(emojiSort(recents))
+						.slice(0, 10);
+				},
+				getValue(_id) {
+					addEmojiToRecents(_id);
+					return _id;
 				}
 			};
 		}

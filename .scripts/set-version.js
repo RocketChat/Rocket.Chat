@@ -5,8 +5,7 @@ const fs = require('fs');
 const semver = require('semver');
 const inquirer = require('inquirer');
 const execSync = require('child_process').execSync;
-const git = require('simple-git')(process.cwd());
-
+const git = require('simple-git/promise')(process.cwd());
 
 let pkgJson = {};
 
@@ -23,168 +22,104 @@ const files = [
 	'./package.json',
 	'./.sandstorm/sandstorm-pkgdef.capnp',
 	'./.travis/snap.sh',
+	'./.circleci/snap.sh',
+	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
-
-class Actions {
-	static release_rc() {
-		function processVersion(version) {
-			// console.log('Updating files to version ' + version);
-
-			files.forEach(function(file) {
-				const data = fs.readFileSync(file, 'utf8');
-
-				fs.writeFileSync(file, data.replace(pkgJson.version, version), 'utf8');
-			});
-
-			execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
-
-			inquirer.prompt([{
-				type: 'confirm',
-				message: 'Commit files?',
-				name: 'commit'
-			}]).then(function(answers) {
-				if (!answers.commit) {
-					return;
-				}
-
-				git.status((error, status) => {
-					inquirer.prompt([{
-						type: 'checkbox',
-						message: 'Select files to commit?',
-						name: 'files',
-						choices: status.files.map(file => { return {name: `${ file.working_dir } ${ file.path }`, checked: true}; })
-					}]).then(function(answers) {
-						if (answers.files.length) {
-							git.add(answers.files.map(file => file.slice(2)), () => {
-								git.commit(`Bump version to ${ version }`, () => {
-									inquirer.prompt([{
-										type: 'confirm',
-										message: `Add tag ${ version }?`,
-										name: 'tag'
-									}]).then(function(answers) {
-										if (answers.tag) {
-											// TODO: Add annotated tag
-											git.addTag(version);
-											// TODO: Push
-											// Useg GitHub api to create the release with history
-										}
-									});
-								});
-							});
-						}
-					});
-				});
-			});
-		}
-
-
-		inquirer.prompt([{
-			type: 'list',
-			message: `The current version is ${ pkgJson.version }. Update to version:`,
-			name: 'version',
-			choices: [
-				semver.inc(pkgJson.version, 'prerelease', 'rc'),
-				// semver.inc(pkgJson.version, 'patch'),
-				'custom'
-			]
-		}]).then(function(answers) {
-			if (answers.version === 'custom') {
-				inquirer.prompt([{
-					name: 'version',
-					message: 'Enter your custom version:'
-				}]).then(function(answers) {
-					processVersion(answers.version);
-				});
-			} else {
-				processVersion(answers.version);
+const readFile = (file) => {
+	return new Promise((resolve, reject) => {
+		fs.readFile(file, 'utf8', (error, result) => {
+			if (error) {
+				return reject(error);
 			}
+			resolve(result);
 		});
-	}
-
-	static release_gm() {
-		function processVersion(version) {
-			// console.log('Updating files to version ' + version);
-
-			files.forEach(function(file) {
-				const data = fs.readFileSync(file, 'utf8');
-
-				fs.writeFileSync(file, data.replace(pkgJson.version, version), 'utf8');
-			});
-
-			execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
-			// TODO improve HISTORY generation for GM
-
-			inquirer.prompt([{
-				type: 'confirm',
-				message: 'Commit files?',
-				name: 'commit'
-			}]).then(function(answers) {
-				if (!answers.commit) {
-					return;
-				}
-
-				git.status((error, status) => {
-					inquirer.prompt([{
-						type: 'checkbox',
-						message: 'Select files to commit?',
-						name: 'files',
-						choices: status.files.map(file => { return {name: `${ file.working_dir } ${ file.path }`, checked: true}; })
-					}]).then(function(answers) {
-						if (answers.files.length) {
-							git.add(answers.files.map(file => file.slice(2)), () => {
-								git.commit(`Bump version to ${ version }`, () => {
-									inquirer.prompt([{
-										type: 'confirm',
-										message: `Add tag ${ version }?`,
-										name: 'tag'
-									}]).then(function(answers) {
-										if (answers.tag) {
-											// TODO: Add annotated tag
-											git.addTag(version);
-											// TODO: Push
-											// Useg GitHub api to create the release with history
-										}
-									});
-								});
-							});
-						}
-					});
-				});
-			});
-		}
-
-
-		inquirer.prompt([{
-			type: 'list',
-			message: `The current version is ${ pkgJson.version }. Update to version:`,
-			name: 'version',
-			choices: [
-				semver.inc(pkgJson.version, 'patch'),
-				'custom'
-			]
-		}]).then(function(answers) {
-			if (answers.version === 'custom') {
-				inquirer.prompt([{
-					name: 'version',
-					message: 'Enter your custom version:'
-				}]).then(function(answers) {
-					processVersion(answers.version);
-				});
-			} else {
-				processVersion(answers.version);
+	})
+}
+const writeFile = (file, data) => {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(file, data, 'utf8', (error, result) => {
+			if (error) {
+				return reject(error);
 			}
+			resolve(result);
 		});
-	}
+	})
 }
 
-git.status((err, status) => {
+let selectedVersion;
+
+git.status()
+.then(status => {
 	if (status.current === 'release-candidate') {
-		Actions.release_rc();
-	} else if (status.current === 'master') {
-		Actions.release_gm();
-	} else {
-		console.log(`No release action for branch ${ status.current }`);
+		return semver.inc(pkgJson.version, 'prerelease', 'rc');
 	}
+	if (/release-\d+\.\d+\.\d+/.test(status.current)) {
+		return semver.inc(pkgJson.version, 'patch');
+	}
+	if (status.current === 'develop-sync') {
+		return semver.inc(pkgJson.version, 'minor') + '-develop';
+	}
+	return Promise.reject(`No release action for branch ${ status.current }`);
+})
+.then(nextVersion => inquirer.prompt([{
+	type: 'list',
+	message: `The current version is ${ pkgJson.version }. Update to version:`,
+	name: 'version',
+	choices: [
+		nextVersion,
+		'custom'
+	]
+}]))
+.then(answers => {
+	if (answers.version === 'custom') {
+		return inquirer.prompt([{
+			name: 'version',
+			message: 'Enter your custom version:'
+		}]);
+	}
+	return answers;
+})
+.then(({ version }) => {
+	selectedVersion = version;
+	return Promise.all(files.map(file => {
+		return readFile(file)
+			.then(data => {
+				return writeFile(file, data.replace(pkgJson.version, version));
+			});
+	}));
+})
+.then(() => {
+	execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
+
+	return inquirer.prompt([{
+		type: 'confirm',
+		message: 'Commit files?',
+		name: 'commit'
+	}])
+})
+.then(answers => {
+	if (!answers.commit) {
+		return Promise.reject(answers);
+	}
+
+	return git.status();
+})
+.then(status => inquirer.prompt([{
+		type: 'checkbox',
+		message: 'Select files to commit?',
+		name: 'files',
+		choices: status.files.map(file => { return {name: `${ file.working_dir } ${ file.path }`, checked: true}; })
+}]))
+.then(answers => answers.files.length && git.add(answers.files.map(file => file.slice(2))))
+.then(() => git.commit(`Bump version to ${ selectedVersion }`))
+.then(() => inquirer.prompt([{
+		type: 'confirm',
+		message: `Add tag ${ selectedVersion }?`,
+		name: 'tag'
+}]))
+.then(answers => answers.tag && git.addTag(selectedVersion))
+.catch((error) => {
+	console.error(error);
 });

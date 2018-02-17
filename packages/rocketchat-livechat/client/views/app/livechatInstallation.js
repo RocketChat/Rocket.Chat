@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Template.livechatInstallation.helpers({
 	script() {
 		const siteUrl = s.rtrim(RocketChat.settings.get('Site_Url'), '/');

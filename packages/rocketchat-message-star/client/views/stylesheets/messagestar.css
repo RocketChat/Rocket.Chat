@@ -1,0 +1,21 @@
+.starred-messages-list {
+	& li.empty {
+		margin-top: 60px;
+
+		text-align: center;
+
+		color: #7f7f7f;
+	}
+
+	& .load-more {
+		text-align: center;
+		text-transform: lowercase;
+
+		font-style: italic;
+		line-height: 40px;
+
+		& .load-more-loading {
+			color: #aaaaaa;
+		}
+	}
+}

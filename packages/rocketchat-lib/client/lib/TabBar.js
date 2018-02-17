@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.TabBar = new (class TabBar {
 	constructor() {
 		this.buttons = new ReactiveVar({});
@@ -43,7 +45,11 @@ RocketChat.TabBar = new (class TabBar {
 	}
 
 	getButtons() {
-		return _.sortBy(_.toArray(this.buttons.get()), 'order');
+		const buttons = _.toArray(this.buttons.get()).filter(button => {
+			return !button.condition || button.condition();
+		});
+
+		return _.sortBy(buttons, 'order');
 	}
 
 	getButton(id) {

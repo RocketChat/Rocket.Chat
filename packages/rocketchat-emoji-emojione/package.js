@@ -8,14 +8,15 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'emojione:emojione',
+		'emojione:emojione@2.2.6',
 		'rocketchat:emoji',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('emojiPicker.js', 'client');
+	api.addFiles('emojiPicker.js');
 
-	api.addFiles('rocketchat.js', 'client');
+	api.addFiles('rocketchat.js');
 
-	api.addFiles('sprites.css', 'client');
+	api.addFiles('client/sprites.css', 'client');
+	api.addFiles('server/callbacks.js', 'server');
 });

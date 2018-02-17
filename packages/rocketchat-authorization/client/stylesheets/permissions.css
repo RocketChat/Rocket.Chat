@@ -1,0 +1,62 @@
+.permissions-manager {
+	& h2 {
+		margin-top: 1em !important;
+		margin-bottom: 1em !important;
+
+		border-bottom-width: 1px;
+
+		font-size: 16px;
+		font-weight: bold !important;
+	}
+
+	& .permission-grid {
+		& th {
+			position: relative;
+
+			padding-top: 20px;
+
+			text-align: center;
+			white-space: normal;
+		}
+
+		& td {
+			width: 10%;
+
+			text-align: center;
+		}
+
+		& .icon-edit {
+			position: absolute;
+			top: 0;
+			left: 50%;
+
+			padding-left: 2px;
+
+			transform: translateX(-50%);
+
+			font-size: 80%;
+		}
+
+		& .permission-name {
+			cursor: default;
+		}
+	}
+
+	& .empty-role {
+		padding: 0.5em !important;
+	}
+
+	& .form-role {
+		& label {
+			display: inline-block;
+
+			width: 150px;
+
+			text-align: right;
+		}
+
+		& .form-buttons {
+			padding-left: 150px;
+		}
+	}
+}

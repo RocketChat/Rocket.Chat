@@ -21,6 +21,14 @@ Template.permissions.helpers({
 		}
 	},
 
+	permissionName() {
+		return `${ this._id }`;
+	},
+
+	permissionDescription() {
+		return `${ this._id }_description`;
+	},
+
 	hasPermission() {
 		return RocketChat.authz.hasAllPermission('access-permissions');
 	}

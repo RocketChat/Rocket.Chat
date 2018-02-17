@@ -21,57 +21,75 @@
 				{{#if showFormLogin}}
 					<div class="fields">
 						{{#if state 'login'}}
-							<div class="input-line">
-								<label for="emailOrUsername">{{emailOrUsernamePlaceholder}}</label>
-								<div>
-									<input type="text" name='emailOrUsername' id="emailOrUsername" autocapitalize="off" autocorrect="off" />
+							<div class="rc-input">
+								<label class="rc-input__label" for="emailOrUsername">
+									<div class="rc-input__wrapper">
+										<input name="emailOrUsername" id="emailOrUsername" type="text" class="rc-input__element"
+											autocapitalize="off" autocorrect="off"
+											placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
+										<div class="input-error"></div>
+										</div>
+									</label>
 									{{#if hasOnePassword}}
 										<div class="one-passsword"></div>
 									{{/if}}
-									<div class="input-error"></div>
-								</div>
 							</div>
-							<div class="input-line">
-								<label for="pass">{{passwordPlaceholder}}</label>
-								<div>
-									<input type="password" name='pass' id="pass" />
-									<div class="input-error"></div>
-								</div>
+							<div class="rc-input">
+								<label class="rc-input__label" for="pass">
+									<div class="rc-input__wrapper">
+										<input name="pass" id="pass" type="password" class="rc-input__element"
+											autocapitalize="off" autocorrect="off"
+											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
+										</div>
+									</label>
 							</div>
 						{{/if}}
 						{{#if state 'register'}}
-							<div class="input-line">
-								<label for="name">{{namePlaceholder}}</label>
-								<div>
-									<input type="text" name='name' id="name" dir="auto" />
+						<div class="rc-input">
+							<label class="rc-input__label" for="name">
+							<div class="rc-input__wrapper">
+								<input name="name" id="name" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{namePlaceholder}}" autofocus>
+								<div class="input-error"></div>
+							</div>
+						</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label" for="email">
+							<div class="rc-input__wrapper">
+								<input name="email" id="email" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{_ "Email"}}" autofocus>
 									<div class="input-error"></div>
 								</div>
-							</div>
-							<div class="input-line">
-								<label for="email">{{_ "Email"}}</label>
-								<div>
-									<input type="email" name='email' id="email" />
-									<div class="input-error"></div>
-								</div>
-							</div>
+							</label>
+						</div>
 
 							{{> customFieldsForm hideFromForm=true}}
 
-							<div class="input-line">
-								<label for="pass">{{passwordPlaceholder}}</label>
-								<div>
-									<input type="password" name='pass' id="pass" />
-									<div class="input-error"></div>
-								</div>
+							<div class="rc-input">
+								<label class="rc-input__label" for="pass">
+									<div class="rc-input__wrapper">
+										<input name="pass" id="pass" type="password" class="rc-input__element"
+											autocapitalize="off" autocorrect="off"
+											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
+										</div>
+									</label>
 							</div>
 							{{#if requirePasswordConfirmation}}
-								<div class="input-line">
-									<label for="confirm-pass">{{_ "Confirm_password"}}</label>
-									<div>
-										<input type="password" name='confirm-pass' id="confirm-pass" />
-										<div class="input-error"></div>
-									</div>
-								</div>
+							<div class="rc-input">
+								<label class="rc-input__label" for="confirm-pass">
+									<div class="rc-input__wrapper">
+										<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
+											autocapitalize="off" autocorrect="off"
+											placeholder="{{passwordPlaceholder}}" autofocus>
+											<div class="input-error"></div>
+										</div>
+									</label>
+							</div>
 							{{/if}}
 							{{#if manuallyApproveNewUsers}}
 								<div class="input-line">
@@ -84,36 +102,39 @@
 							{{/if}}
 						{{/if}}
 						{{#if state 'forgot-password' 'email-verification'}}
-							<div class="input-line">
-								<label for="email">{{_ "Email"}}</label>
-								<div>
-									<input type="email" name='email' id="email" />
+						<div class="rc-input">
+							<label class="rc-input__label" for="email">
+							<div class="rc-input__wrapper">
+								<input name="email" id="email" type="text" class="rc-input__element"
+									autocapitalize="off" autocorrect="off"
+									placeholder="{{_ "Email"}}" autofocus>
 									<div class="input-error"></div>
 								</div>
-							</div>
+							</label>
+						</div>
 						{{/if}}
 					</div>
-					<div class="submit">
-						<button class='button primary login'><span>{{btnLoginSave}}</span></button>
-					</div>
-					{{#if state 'login'}}
-						{{#if registrationAllowed}}
-							<div>
-								<button type="button" class="register">{{_ 'Register'}}</button>
-							</div>
-						{{else}}
-							{{#if linkReplacementText}}
-								<div class="register-link-replacement">
-									{{{linkReplacementText}}}
+						<div class="submit">
+							<button class='rc-button rc-button--primary login'><span>{{btnLoginSave}}</span></button>
+						</div>
+						{{#if state 'login'}}
+							{{#if registrationAllowed}}
+								<div>
+									<button type="button" class="register">{{_ 'Register'}}</button>
+								</div>
+							{{else}}
+								{{#if linkReplacementText}}
+									<div class="register-link-replacement">
+										{{{linkReplacementText}}}
+									</div>
+								{{/if}}
+							{{/if}}
+							{{#if passwordResetAllowed}}
+								<div>
+									<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
 								</div>
 							{{/if}}
 						{{/if}}
-						{{#if passwordResetAllowed}}
-							<div>
-								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
-							</div>
-						{{/if}}
-					{{/if}}
 				{{/if}}
 			{{/if}}
 			{{#unless state 'login'}}

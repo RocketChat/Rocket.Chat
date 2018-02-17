@@ -1,16 +1,26 @@
 /* globals FileUpload */
 
+import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
+import http from 'http';
+import https from 'https';
 
 const get = function(file, req, res) {
 	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
-		res.setHeader('Location', fileUrl);
-		res.writeHead(302);
+		if (RocketChat.settings.get('FileUpload_S3_Proxy')) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+			request.get(fileUrl, fileRes => fileRes.pipe(res));
+		} else {
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+			res.end();
+		}
+	} else {
+		res.end();
 	}
-	res.end();
 };
 
 const AmazonS3Uploads = new FileUploadClass({
@@ -32,8 +42,10 @@ const configure = _.debounce(function() {
 	const AWSSecretAccessKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
 	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
 	const Region = RocketChat.settings.get('FileUpload_S3_Region');
+	const SignatureVersion = RocketChat.settings.get('FileUpload_S3_SignatureVersion');
+	const ForcePathStyle = RocketChat.settings.get('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	// const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
+	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
 	if (!Bucket || !AWSAccessKeyId || !AWSSecretAccessKey) {
 		return;
@@ -43,7 +55,8 @@ const configure = _.debounce(function() {
 		connection: {
 			accessKeyId: AWSAccessKeyId,
 			secretAccessKey: AWSSecretAccessKey,
-			signatureVersion: 'v4',
+			signatureVersion: SignatureVersion,
+			s3ForcePathStyle: ForcePathStyle,
 			params: {
 				Bucket,
 				ACL: Acl
@@ -52,6 +65,10 @@ const configure = _.debounce(function() {
 		},
 		URLExpiryTimeSpan
 	};
+
+	if (BucketURL) {
+		config.connection.endpoint = BucketURL;
+	}
 
 	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
 	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);

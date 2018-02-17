@@ -1,7 +1,11 @@
 /* globals __meteor_bootstrap__ */
-const CoffeeScript = Npm.require('coffee-script');
-CoffeeScript.register();
+import _ from 'underscore';
+import s from 'underscore.string';
+
+import 'coffeescript/register';
+
 const Hubot = Npm.require('hubot');
+
 // Start a hubot, connected to our chat room.
 // 'use strict'
 // Log messages?
@@ -102,7 +106,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 			if (DEBUG) { console.log(`priv ${ envelope.room }: ${ string } (${ envelope.user.id })`); }
 			return Meteor.call('sendMessage', {
 				u: {
-					username: 'rocketbot'
+					username: RocketChat.settings.get('InternalHubot_Username')
 				},
 				to: `${ envelope.user.id }`,
 				msg: string,
@@ -155,7 +159,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 		this.robot.emit('connected');
 		return this.robot.brain.mergeData({});
 	}
-		// @robot.brain.emit 'loaded'
+	// @robot.brain.emit 'loaded'
 
 	// Public: Raw method for shutting the bot down. Extend this.
 	//

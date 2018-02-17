@@ -1,0 +1,7 @@
+{
+  "#channel": "#kanal",
+  "0_Errors_Only": "0 - Samo napake",
+  "1_Errors_and_Information": "1 - Napake in informacije",
+  "@username_message": "@uporabnik <message>",
+  "__username__is_no_longer__role__defined_by__user_by_": "__username__ ni več __role__ by __user_by__"
+}
