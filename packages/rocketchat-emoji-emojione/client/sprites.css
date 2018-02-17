@@ -12,7 +12,7 @@
 	white-space: nowrap;
 	text-indent: 100%;
 
-	background-image: url("../../packages/emojione_emojione/assets/sprites/emojione.sprites.png");
+	background-image: url("/packages/emojione_emojione/assets/sprites/emojione.sprites.png");
 	background-repeat: no-repeat;
 	background-size: 4365.625% 4365.625%;
 
@@ -23,8 +23,10 @@
 }
 
 .emojione.big {
-	width: 44px !important;
-	height: 44px !important;
+	display: inline-block !important;
+
+	width: 44px;
+	height: 44px;
 }
 
 .emojione-0023-20e3 {

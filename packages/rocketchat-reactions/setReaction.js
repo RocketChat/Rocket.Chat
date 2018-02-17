@@ -1,4 +1,6 @@
 /* globals msgStream */
+import _ from 'underscore';
+
 Meteor.methods({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
@@ -34,6 +36,8 @@ Meteor.methods({
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
+
+		reaction = `:${ reaction.replace(/:/g, '') }:`;
 
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
