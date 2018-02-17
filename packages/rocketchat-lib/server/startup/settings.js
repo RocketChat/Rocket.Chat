@@ -1318,9 +1318,15 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true
 	});
 
-	return this.add('Message_HideType_mute_unmute', false, {
+	this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true
+	});
+
+	this.add('Message_GlobalSearch', false, {
+		type: 'boolean',
+		'public': true,
+		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 	});
 });
 
