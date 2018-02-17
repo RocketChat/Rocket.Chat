@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker pull assisitfy/smarti:0.7.0-BETA
+docker pull assisitfy/smarti:0.7.0-RC1
 
 #docker run -d --net=host assisitfy/smarti:0.6.1
 
