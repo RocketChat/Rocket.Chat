@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'rocketchat:markdown',
 		'rocketchat:theme',
 		'random',
-		'underscore',
 		'tracker',
 		'webapp'
 	]);
@@ -46,9 +45,7 @@ Package.onUse(function(api) {
 		'client/page/snippetPage.js',
 		'client/tabBar/tabBar.js',
 		'client/tabBar/views/snippetedMessages.html',
-		'client/tabBar/views/snippetMessage.html',
 		'client/tabBar/views/snippetedMessages.js',
-		'client/tabBar/views/snippetMessage.js',
 		'client/page/stylesheets/snippetPage.css'
 	], 'client');
 

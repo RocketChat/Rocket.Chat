@@ -1,10 +1,15 @@
 /* globals logger */
+import _ from 'underscore';
+import util from 'util';
+import url from 'url';
+import http from 'http';
+import https from 'https';
 
 class SlackBridge {
 
 	constructor() {
-		this.util = Npm.require('util');
-		this.slackClient = Npm.require('slack-client');
+		this.util = util;
+		this.slackClient = require('slack-client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
 		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
@@ -587,8 +592,7 @@ class SlackBridge {
 	**/
 	//details, slackMessage.file.url_private_download, rocketUser, rocketChannel, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), isImporting);
 	uploadFileFromSlack(details, slackFileURL, rocketUser, rocketChannel, timeStamp, isImporting) {
-		const url = Npm.require('url');
-		const requestModule = /https/i.test(slackFileURL) ? Npm.require('https') : Npm.require('http');
+		const requestModule = /https/i.test(slackFileURL) ? https : http;
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { 'Authorization': `Bearer ${ this.apiToken }` };
 		requestModule.get(parsedUrl, Meteor.bindEnvironment((stream) => {

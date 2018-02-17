@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "autolinker": {
-      "version": "1.4.0",
-      "resolved": "https://registry.npmjs.org/autolinker/-/autolinker-1.4.0.tgz",
-      "from": "autolinker@1.4.0"
-    }
-  }
-}

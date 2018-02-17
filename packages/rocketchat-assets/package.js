@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'webapp',
 		'rocketchat:file',
 		'rocketchat:lib',
@@ -16,8 +15,4 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/assets.js', 'server');
-});
-
-Npm.depends({
-	'image-size': '0.4.0'
 });
