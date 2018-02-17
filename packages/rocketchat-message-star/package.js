@@ -9,8 +9,6 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
-		'underscore',
-		'less',
 		'rocketchat:lib'
 	]);
 
@@ -23,7 +21,7 @@ Package.onUse(function(api) {
 		'client/tabBar.js',
 		'client/views/starredMessages.html',
 		'client/views/starredMessages.js',
-		'client/views/stylesheets/messagestar.less'
+		'client/views/stylesheets/messagestar.css'
 	], 'client');
 
 	api.addFiles([

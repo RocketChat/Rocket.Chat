@@ -149,7 +149,7 @@ class WebRTCTransportClass {
 }
 
 class WebRTCClass {
-  /*
+	/*
   		@param seldId {String}
   		@param room {String}
    */
@@ -307,7 +307,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			media {Object}
@@ -328,7 +328,7 @@ class WebRTCClass {
 			id: data.from,
 			media: data.media
 		},
-			...data.remoteConnections];
+		...data.remoteConnections];
 
 		remoteConnections.forEach(remoteConnection => {
 			if (remoteConnection.id !== this.selfId && (this.peerConnections[remoteConnection.id] == null)) {
@@ -342,7 +342,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -427,7 +427,7 @@ class WebRTCClass {
 		}
 		const getScreen = (audioStream) => {
 			const refresh = function() {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
 				});
@@ -437,7 +437,7 @@ class WebRTCClass {
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
 					text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
@@ -517,7 +517,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param callback {Function}
    */
 
@@ -546,7 +546,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param id {String}
    */
 
@@ -658,7 +658,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param media {Object}
   			audio {Boolean}
   			video {Boolean}
@@ -687,7 +687,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			from {String}
   			monitor {Boolean}
@@ -738,7 +738,7 @@ class WebRTCClass {
 			icon = 'phone';
 			title = `Group audio call from ${ subscription.name }`;
 		}
-		swal({
+		modal.open({
 			title: `<i class='icon-${ icon } alert-icon success-color'></i>${ title }`,
 			text: 'Do you want to accept?',
 			html: true,
@@ -762,7 +762,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			monitor {Boolean}
@@ -893,7 +893,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}
@@ -915,7 +915,7 @@ class WebRTCClass {
 	}
 
 
-  /*
+	/*
   		@param data {Object}
   			to {String}
   			from {String}

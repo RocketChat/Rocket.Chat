@@ -1,4 +1,5 @@
 import localforage from 'localforage';
+import _ from 'underscore';
 
 class CachedCollectionManager {
 	constructor() {
@@ -97,9 +98,10 @@ class CachedCollection {
 		userRelated = true,
 		useSync = true,
 		useCache = true,
-		debug = true,
+		debug = false,
 		version = 6,
-		maxCacheTime = 60*60*24*30
+		maxCacheTime = 60*60*24*30,
+		onSyncData = (/* action, record */) => {}
 	}) {
 		this.collection = collection || new Mongo.Collection(null);
 
@@ -116,6 +118,7 @@ class CachedCollection {
 		this.userRelated = userRelated;
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
+		this.onSyncData = onSyncData;
 
 		RocketChat.CachedCollectionManager.register(this);
 
@@ -206,6 +209,8 @@ class CachedCollection {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
+				this.onSyncData('changed', record);
+
 				if (record._updatedAt && record._updatedAt > this.updatedAt) {
 					this.updatedAt = record._updatedAt;
 				}
@@ -268,11 +273,15 @@ class CachedCollection {
 				if (record._deletedAt) {
 					this.collection.remove({ _id: record._id });
 
+					this.onSyncData('removed', record);
+
 					if (record._deletedAt && record._deletedAt > this.updatedAt) {
 						this.updatedAt = record._deletedAt;
 					}
 				} else {
 					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+
+					this.onSyncData('changed', record);
 
 					if (record._updatedAt && record._updatedAt > this.updatedAt) {
 						this.updatedAt = record._updatedAt;
@@ -322,6 +331,7 @@ class CachedCollection {
 			this.log('record received', t, record);
 			if (t === 'removed') {
 				this.collection.remove(record._id);
+				RoomManager.close(record.t+record.name);
 			} else {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));

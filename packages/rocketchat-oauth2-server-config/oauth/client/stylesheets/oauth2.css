@@ -1,0 +1,79 @@
+.oauth-panel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	& ul,
+	& li,
+	& ol {
+		list-style: initial;
+	}
+
+	& ul {
+		margin-left: 6px;
+		padding-left: 10px;
+	}
+
+	& form {
+		min-width: 400px;
+		padding: 40px;
+	}
+
+	& .user-info {
+		display: flex;
+		flex-direction: row;
+
+		margin-bottom: 20px;
+		padding-bottom: 20px;
+
+		border-bottom: 1px solid #eeeeee;
+		align-items: center;
+		justify-content: center;
+
+		& .thumb {
+			width: 40px;
+			height: 40px;
+			margin-right: 10px;
+		}
+
+		& .username {
+			text-align: left;
+
+			& h1 {
+				font-size: 18px;
+			}
+		}
+	}
+
+	& .integration-info {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		& .integration-permissions {
+			margin-left: 16px;
+			padding-top: 10px;
+			padding-bottom: 40px;
+		}
+	}
+
+	& .buttons {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		& .horizontal-space {
+			height: 14px;
+			margin: 0 15px;
+
+			border-right: 1px solid #dddddd;
+		}
+	}
+}

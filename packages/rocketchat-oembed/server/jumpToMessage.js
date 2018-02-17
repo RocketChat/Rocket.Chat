@@ -1,7 +1,18 @@
 /* globals getAvatarUrlFromUsername */
+import _ from 'underscore';
+import URL from 'url';
+import QueryString from 'querystring';
 
-const URL = Npm.require('url');
-const QueryString = Npm.require('querystring');
+const recursiveRemove = (message, deep = 1) => {
+	if (message) {
+		if ('attachments' in message && message.attachments !== null && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
+			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
+		} else {
+			delete(message.attachments);
+		}
+	}
+	return message;
+};
 
 RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 	if (msg && msg.urls) {
@@ -11,7 +22,7 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 				if (urlObj.query) {
 					const queryString = QueryString.parse(urlObj.query);
 					if (_.isString(queryString.msg)) { // Jump-to query param
-						const jumpToMessage = RocketChat.models.Messages.findOneById(queryString.msg);
+						const jumpToMessage = recursiveRemove(RocketChat.models.Messages.findOneById(queryString.msg));
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];
 							msg.attachments.push({

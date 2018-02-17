@@ -1,0 +1,135 @@
+.rc-input {
+	position: relative;
+
+	width: 100%;
+
+	&__label {
+		cursor: pointer;
+	}
+
+	&__title {
+		font-size: var(--input-font-size);
+	}
+
+	&__wrapper {
+		position: relative;
+
+		padding: 0.5rem 0;
+
+		color: var(--input-icon-color);
+	}
+
+	&__icon {
+		position: absolute;
+		top: 0;
+		left: 1rem;
+
+		display: flex;
+
+		width: 20px;
+		height: 100%;
+
+		cursor: default;
+		align-items: center;
+		justify-content: center;
+
+		& + .rc-input__element {
+			padding: 0.75rem 1rem 0.75rem 2.75rem;
+		}
+
+		& + .rc-input__element--small {
+			padding: 0.5rem 1rem 0.5rem 2.75rem;
+		}
+
+		&--right {
+			right: 1rem;
+			left: auto;
+		}
+	}
+
+	&__element {
+		width: 100%;
+		padding: 0.75rem 1rem;
+
+		color: var(--input-text-color);
+
+		border-width: var(--input-border-width);
+		border-color: var(--input-border-color);
+		border-radius: var(--input-border-radius);
+		background-color: transparent;
+
+		font-size: var(--input-font-size);
+
+		&--small {
+			padding: 0.5rem 1rem;
+		}
+
+		&::placeholder {
+			color: var(--input-placeholder-color);
+		}
+	}
+
+	&__description {
+		margin-bottom: 0.25rem;
+
+		color: var(--input-description-text-color);
+
+		font-size: var(--input-description-text-size);
+	}
+
+	&__error {
+		display: flex;
+
+		color: var(--input-error-color);
+		align-items: center;
+
+		&-icon {
+			width: 20px;
+
+			&--warning {
+				width: 20px;
+				height: 20px;
+				stroke: currentColor;
+			}
+		}
+
+		&-message {
+			margin-left: 0.5rem;
+		}
+	}
+
+	&--small {
+		& .rc-input__element {
+			padding: 8px;
+		}
+	}
+
+	&--error {
+		& .rc-input {
+			&__element {
+				border-color: var(--input-error-color);
+			}
+		}
+	}
+}
+
+select.rc-input {
+	padding: 0.782rem;
+	margin: 0.5rem 0;
+	appearance: none;
+
+	width: 100%;
+
+	color: var(--input-text-color);
+
+	border-width: var(--input-border-width);
+	border-color: var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	background-color: transparent;
+
+	font-size: var(--input-font-size);
+
+	&--small {
+		padding: 0.5rem 1rem;
+	}
+}

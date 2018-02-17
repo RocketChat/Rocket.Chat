@@ -1,4 +1,5 @@
-/* globals renderEmoji renderMessageBody*/
+/* globals renderEmoji renderMessageBody */
+import _ from 'underscore';
 import moment from 'moment';
 
 Template.message.helpers({
@@ -12,8 +13,7 @@ Template.message.helpers({
 	},
 	roleTags() {
 		const user = Meteor.user();
-		// test user -> settings -> preferences -> hideRoles
-		if (!RocketChat.settings.get('UI_DisplayRoles') || ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user)) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
 			return [];
 		}
 
@@ -193,20 +193,23 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
-		if (!(this.urls && this.urls.length > 0 && Template.oembedBaseWidget != null && RocketChat.settings.get('API_Embed'))) {
+		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
+		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
 			return false;
 		}
-		if (!(RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+
+		// check if oembed is disabled for message's sender
+		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user().username;
+		const userUsername = Meteor.user() && Meteor.user().username;
 		return Object.keys(this.reactions||{}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
-			let usernames = reaction.usernames.slice(0, 15).map(username => username === userUsername ? t('You').toLowerCase() : `@${ userUsername }`).join(', ');
+			let usernames = reaction.usernames.slice(0, 15).map(username => username === userUsername ? t('You').toLowerCase() : `@${ username }`).join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
 					length: total - 15
@@ -261,8 +264,43 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	channelName() {
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		return subscription && subscription.name;
+	},
+	roomIcon() {
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return RocketChat.roomTypes.getIcon(room && room.t);
+	},
+	fromSearch() {
+		return this.customClass === 'search';
+	},
+	actionContext() {
+		return this.actionContext;
+	},
+	messageActions(group) {
+		let messageGroup = group;
+		let context = this.actionContext;
+
+		if (!group) {
+			messageGroup = 'message';
+		}
+
+		if (!context) {
+			context = 'message';
+		}
+
+		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
+	},
+	isSnippet() {
+		return this.actionContext === 'snippeted';
 	}
 });
+
 
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
@@ -285,7 +323,6 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-				// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
@@ -347,12 +384,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
-			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
-				const newMessage = templateInstance.find('.new-message');
-				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };

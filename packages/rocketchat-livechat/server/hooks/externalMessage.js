@@ -1,4 +1,5 @@
 /* globals HTTP, SystemLogger */
+import _ from 'underscore';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';

@@ -1,32 +1,27 @@
 <template name="accountBox">
-	<div class="account-box" aria-label="{{_ "Account"}}" role="region">
+	<div class="sidebar__account {{#unless isAnonymous}}active{{/unless}}" aria-label="{{_ "Account"}}" role="region">
 		{{#with myUserInfo}}
-			<div class="info status-{{status}} primary-background-color">
-				{{#if username}}
-					<div class="thumb" data-status='{{visualStatus}}'>
-						{{> avatar username=username}}
-					</div>
-					<div class="data">
-						<h4 data-username="{{username}}">{{fname}}</h4>
-					</div>
-				{{/if}}
-			</div>
-			<nav class="options primary-background-color animated-hidden">
-				<div class="wrapper">
-					<button data-status="online" class="status online"><span>{{_ "Online"}}</span></button>
-					<button data-status="away" class="status away"><span>{{_ "Away" context="male"}}</span></button>
-					<button data-status="busy" class="status busy"><span>{{_ "Busy" context="male"}}</span></button>
-					<button data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></button>
-					<button id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></button>
-					{{#each registeredMenus}}
-						<button class="account-box-item"><i class="{{icon}}"></i><span>{{name}}</span></button>
-					{{/each}}
-					{{#if showAdminOption }}
-						<button id="admin" class='account-link'><i class="icon-wrench"></i><span>{{_ "Administration"}}</span></button>
-					{{/if}}
-					<button id="logout"><i class="icon-logout"></i><span>{{_ "Logout"}}</span></button>
+			{{#if username}}
+				<div class="sidebar__account-thumb" data-status='{{visualStatus}}'>
+					{{> avatar username=username}}
 				</div>
-			</nav>
+				<div class="sidebar__account-data">
+					{{#if fname}}
+						<h3 class="sidebar__account-username" data-username="{{username}}">{{fname}}</h3>
+					{{else}}
+						<h3 class="sidebar__account-username" data-username="{{username}}">@{{username}}</h3>
+					{{/if}}
+					<div class="sidebar__account-status">
+						<div class="sidebar__account-status-bullet sidebar__account-status-bullet--{{bullet}}" title="{{visualStatus}}"></div>
+						<div class="sidebar__account-visual-status">{{visualStatus}}</div>
+					</div>
+				</div>
+				{{#unless isAnonymous}}
+					<label class="sidebar__account-label">
+						{{> icon block="sidebar__account-menu" icon="menu"}}
+					</label>
+				{{/unless}}
+			{{/if}}
 		{{/with}}
 	</div>
 </template>

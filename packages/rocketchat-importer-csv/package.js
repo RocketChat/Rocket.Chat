@@ -11,11 +11,15 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:importer'
 	]);
-	api.use('rocketchat:logger', 'server');
-	api.addFiles('server.js', 'server');
-	api.addFiles('main.js', ['client', 'server']);
-});
 
-Npm.depends({
-	'csv-parse': '1.1.7'
+	api.use('rocketchat:logger', 'server');
+
+	// Importer information to both server and client
+	api.addFiles('info.js');
+
+	// Server files
+	api.addFiles(['server/importer.js', 'server/adder.js'], 'server');
+
+	// Client files
+	api.addFiles('client/adder.js', 'client');
 });

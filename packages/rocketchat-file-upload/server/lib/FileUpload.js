@@ -4,6 +4,10 @@ import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
+import sharp from 'sharp';
+import { Cookies } from 'meteor/ostrio:cookies';
+
+const cookie = new Cookies();
 
 Object.assign(FileUpload, {
 	handlers: {},
@@ -27,8 +31,16 @@ Object.assign(FileUpload, {
 			getPath(file) {
 				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
-			// transformWrite: FileUpload.uploadsTransformWrite
-			onValidate: FileUpload.uploadsOnValidate
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			}
 		};
 	},
 
@@ -38,7 +50,6 @@ Object.assign(FileUpload, {
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
-			// transformWrite: FileUpload.avatarTransformWrite,
 			getPath(file) {
 				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
@@ -47,69 +58,63 @@ Object.assign(FileUpload, {
 		};
 	},
 
-	avatarTransformWrite(readStream, writeStream/*, fileId, file*/) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
-			return readStream.pipe(writeStream);
-		}
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
-		return RocketChatFile.gm(readStream).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
-	},
-
 	avatarsOnValidate(file) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
-		const tmpFile = UploadFS.getTempFilePath(file._id);
-
-		const fut = new Future();
+		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
 		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
+		const future = new Future();
 
-		RocketChatFile.gm(tmpFile).background('#ffffff').resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tmpFile, Meteor.bindEnvironment((err) => {
-			if (err != null) {
-				console.error(err);
-			}
-
-			const size = fs.lstatSync(tmpFile).size;
-			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-			fut.return();
+		const s = sharp(tempFilePath);
+		s.rotate();
+		// Get metadata to resize the image the first time to keep "inside" the dimensions
+		// then resize again to create the canvas around
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			s.toFormat(sharp.format.jpeg)
+				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
+				.pipe(sharp()
+					.resize(height, height)
+					.background('#FFFFFF')
+					.embed()
+				)
+				// Use buffer to get the result in memory then replace the existing file
+				// There is no option to override a file using this library
+				.toBuffer()
+				.then(Meteor.bindEnvironment(outputBuffer => {
+					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment(err => {
+						if (err != null) {
+							console.error(err);
+						}
+						const size = fs.lstatSync(tempFilePath).size;
+						this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+						future.return();
+					}));
+				}));
 		}));
 
-		return fut.wait();
+		return future.wait();
 	},
 
-	uploadsTransformWrite(readStream, writeStream, fileId, file) {
-		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
-			return readStream.pipe(writeStream);
-		}
+	resizeImagePreview(file) {
+		file = RocketChat.models.Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		let stream = undefined;
-
-		const identify = function(err, data) {
-			if (err) {
-				return stream.pipe(writeStream);
-			}
-
-			file.identify = {
-				format: data.format,
-				size: data.size
-			};
-
-			if (data.Orientation && !['', 'Unknown', 'Undefined'].includes(data.Orientation)) {
-				RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream);
-			} else {
-				stream.pipe(writeStream);
-			}
-		};
-
-		stream = RocketChatFile.gm(readStream).identify(identify).stream();
+		const transformer = sharp()
+			.resize(32, 32)
+			.max()
+			.jpeg()
+			.blur();
+		const result = transformer.toBuffer().then((out) => out.toString('base64'));
+		image.pipe(transformer);
+		return result;
 	},
 
 	uploadsOnValidate(file) {
-		if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 			return;
 		}
 
@@ -117,33 +122,45 @@ Object.assign(FileUpload, {
 
 		const fut = new Future();
 
-		const identify = Meteor.bindEnvironment((err, data) => {
+		const s = sharp(tmpFile);
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
 				console.error(err);
 				return fut.return();
 			}
 
-			file.identify = {
-				format: data.format,
-				size: data.size
+			const identify = {
+				format: metadata.format,
+				size: {
+					width: metadata.width,
+					height: metadata.height
+				}
 			};
 
-			if ([null, undefined, '', 'Unknown', 'Undefined'].includes(data.Orientation)) {
+			if (metadata.orientation == null) {
 				return fut.return();
 			}
 
-			RocketChatFile.gm(tmpFile).autoOrient().write(tmpFile, Meteor.bindEnvironment((err) => {
-				if (err != null) {
+			s.rotate()
+				.toFile(`${ tmpFile }.tmp`)
+				.then(Meteor.bindEnvironment(() => {
+					fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+						fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+							const size = fs.lstatSync(tmpFile).size;
+							this.getCollection().direct.update({_id: file._id}, {
+								$set: {
+									size,
+									identify
+								}
+							});
+							fut.return();
+						}));
+					}));
+				})).catch((err) => {
 					console.error(err);
-				}
-
-				const size = fs.lstatSync(tmpFile).size;
-				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-				fut.return();
-			}));
-		});
-
-		RocketChatFile.gm(tmpFile).identify(identify);
+					fut.return();
+				});
+		}));
 
 		return fut.wait();
 	},
@@ -157,6 +174,25 @@ Object.assign(FileUpload, {
 		}
 		RocketChat.models.Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
+	},
+
+	requestCanAccessFiles({ headers = {}, query = {} }) {
+		if (!RocketChat.settings.get('FileUpload_ProtectFiles')) {
+			return true;
+		}
+
+		let { rc_uid, rc_token } = query;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+			return false;
+		}
+
+		return true;
 	},
 
 	addExtensionTo(file) {
@@ -183,18 +219,16 @@ Object.assign(FileUpload, {
 		if (this.handlers[handlerName] == null) {
 			console.error(`Upload handler "${ handlerName }" does not exists`);
 		}
-
 		return this.handlers[handlerName];
 	},
 
 	get(file, req, res, next) {
-		if (file.store && this.handlers && this.handlers[file.store] && this.handlers[file.store].get) {
-			this.handlers[file.store].get(file, req, res, next);
-		} else {
-			res.writeHead(404);
-			res.end();
-			return;
+		const store = this.getStoreByName(file.store);
+		if (store && store.get) {
+			return store.get(file, req, res, next);
 		}
+		res.writeHead(404);
+		res.end();
 	}
 });
 
@@ -266,6 +300,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
+		fileData.size = parseInt(fileData.size) || 0;
+
+		// Check if the fileData matches store filter
+		const filter = this.store.getFilter();
+		if (filter && filter.check) {
+			filter.check(fileData);
+		}
+
 		const fileId = this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);

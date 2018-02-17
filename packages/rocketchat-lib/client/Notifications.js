@@ -79,8 +79,8 @@ RocketChat.Notifications = new class {
 	unRoom(room, eventName, callback) {
 		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
 	}
-	unUser(callback) {
-		return this.streamUser.removeListener(Meteor.userId(), callback);
+	unUser(eventName, callback) {
+		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
 
 };

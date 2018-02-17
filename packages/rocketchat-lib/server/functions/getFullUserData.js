@@ -1,4 +1,7 @@
 /* globals RocketChat */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 RocketChat.getFullUserData = function({userId, filter, limit}) {
 	let fields = {
 		name: 1,

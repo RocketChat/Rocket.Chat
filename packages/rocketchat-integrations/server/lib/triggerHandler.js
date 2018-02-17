@@ -1,9 +1,12 @@
 /* global logger, processWebhookMessage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
+import vm from 'vm';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
-		this.vm = Npm.require('vm');
+		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
@@ -130,7 +133,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (typeof httpResult !== 'undefined') {
-			history.httpResult = httpResult;
+			history.httpResult = JSON.stringify(httpResult, null, 2);
 		}
 
 		if (typeof error !== 'undefined') {
@@ -165,8 +168,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		let tmpRoom;
-		if (nameOrId || trigger.targetRoom) {
-			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || trigger.targetRoom, errorOnEmpty: false }) || room;
+		if (nameOrId || trigger.targetRoom || message.channel) {
+			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
 		} else {
 			tmpRoom = room;
 		}

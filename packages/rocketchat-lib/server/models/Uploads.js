@@ -1,6 +1,14 @@
+/* globals InstanceStatus */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 	constructor() {
 		super('uploads');
+
+		this.model.before.insert((userId, doc) => {
+			doc.instanceId = InstanceStatus.id();
+		});
 
 		this.tryEnsureIndex({ 'rid': 1 });
 		this.tryEnsureIndex({ 'uploadedAt': 1 });
