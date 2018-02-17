@@ -293,6 +293,7 @@ describe('[Main Elements Render]', function() {
 				});
 
 				it('it should show the files Tab content', () => {
+					flexTab.filesTabContent.waitForVisible(5000);
 					flexTab.filesTabContent.isVisible().should.be.true;
 				});
 			});
