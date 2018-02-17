@@ -270,3 +270,24 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 		return data ? RocketChat.API.v1.success({data}) : RocketChat.API.v1.unauthorized();
 	}
 });
+
+/**
+	This API returns the logged user roles.
+
+	Method: GET
+	Route: api/v1/user.roles
+ */
+RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
+	get() {
+		let currentUserRoles = {};
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUserRoles'));
+
+		if (Array.isArray(result) && result.length > 0) {
+			currentUserRoles = result[0];
+		}
+
+		return RocketChat.API.v1.success(currentUserRoles);
+	}
+});
+
