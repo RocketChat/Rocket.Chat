@@ -17,6 +17,10 @@ Meteor.methods({
 				preferences.newMessageNotification = settings.newMessageNotification;
 			}
 
+			if (settings.muteFocusedConversations) {
+				preferences.muteFocusedConversations = settings.muteFocusedConversations === '1' ? true : false;
+			}
+
 			if (settings.useEmojis) {
 				preferences.useEmojis = settings.useEmojis === '1' ? true : false;
 			}
