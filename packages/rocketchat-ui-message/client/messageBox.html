@@ -22,7 +22,7 @@
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
 				<label class="rc-message-box__container">
-					<div class="rc-message-box__icon emoji-picker-icon">
+					<div class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnable}}emoji-picker-icon--disabled{{/unless}}">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</div>
 					<textarea autofocus name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>

@@ -33,12 +33,12 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('user.username', apiUsername);
-					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
-					expect(res.body).to.have.deep.property('user.active', true);
-					expect(res.body).to.have.deep.property('user.name', apiUsername);
+					expect(res.body).to.have.nested.property('user.username', apiUsername);
+					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', apiUsername);
 
-					expect(res.body).to.not.have.deep.property('user.customFields');
+					expect(res.body).to.not.have.nested.property('user.customFields');
 
 					targetUser._id = res.body.user._id;
 				})
@@ -72,11 +72,11 @@ describe('[Users]', function() {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.deep.property('user.username', username);
-						expect(res.body).to.have.deep.property('user.emails[0].address', email);
-						expect(res.body).to.have.deep.property('user.active', true);
-						expect(res.body).to.have.deep.property('user.name', username);
-						expect(res.body).to.have.deep.property('user.customFields.customFieldText', 'success');
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
 					})
 					.end(done);
 			});
@@ -134,10 +134,10 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('user.username', apiUsername);
-					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
-					expect(res.body).to.have.deep.property('user.active', true);
-					expect(res.body).to.have.deep.property('user.name', apiUsername);
+					expect(res.body).to.have.nested.property('user.username', apiUsername);
+					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', apiUsername);
 				})
 				.end(done);
 		});
@@ -154,7 +154,7 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('presence', 'offline');
+					expect(res.body).to.have.nested.property('presence', 'offline');
 				})
 				.end(done);
 		});
@@ -228,10 +228,10 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.deep.property('user.username', `edited${ apiUsername }`);
-					expect(res.body).to.have.deep.property('user.emails[0].address', apiEmail);
-					expect(res.body).to.have.deep.property('user.active', true);
-					expect(res.body).to.have.deep.property('user.name', `edited${ apiUsername }`);
+					expect(res.body).to.have.nested.property('user.username', `edited${ apiUsername }`);
+					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', `edited${ apiUsername }`);
 				})
 				.end(done);
 		});
@@ -285,8 +285,8 @@ describe('[Users]', function() {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.deep.property('data.userId', user._id);
-						expect(res.body).to.have.deep.property('data.authToken');
+						expect(res.body).to.have.nested.property('data.userId', user._id);
+						expect(res.body).to.have.nested.property('data.authToken');
 					})
 					.end(done);
 			});
@@ -303,8 +303,8 @@ describe('[Users]', function() {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.deep.property('data.userId', user._id);
-						expect(res.body).to.have.deep.property('data.authToken');
+						expect(res.body).to.have.nested.property('data.userId', user._id);
+						expect(res.body).to.have.nested.property('data.authToken');
 					})
 					.end(done);
 			});
@@ -358,6 +358,23 @@ describe('[Users]', function() {
 							.end(done);
 					});
 			});
+		});
+	});
+
+	describe('[/user.roles]', () => {
+
+		it('should return id and name of user, and an array of roles', (done) => {
+			request.get(api('user.roles'))
+				.set(credentials)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('username');
+					expect(res.body).to.have.property('roles').and.to.be.a('array');
+					expect(res.body).to.have.property('_id');
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
 		});
 	});
 });

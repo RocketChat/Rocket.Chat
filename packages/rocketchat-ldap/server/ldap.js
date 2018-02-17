@@ -349,11 +349,19 @@ export default class LDAP {
 	}
 
 	extractLdapEntryData(entry) {
-		const values = entry.raw;
-		Object.keys(values).forEach((key) => {
-			const value = values[key];
-			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && value instanceof Buffer) {
-				values[key] = value.toString('binary');
+		const values = {
+			_raw: entry.raw
+		};
+
+		Object.keys(values._raw).forEach((key) => {
+			const value = values._raw[key];
+
+			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key)) {
+				if (value instanceof Buffer) {
+					values[key] = value.toString();
+				} else {
+					values[key] = value;
+				}
 			}
 		});
 
@@ -362,6 +370,17 @@ export default class LDAP {
 
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
+
+		const processPage = ({entries, title, end, next}) => {
+			logger.search.info(title);
+			// Force LDAP idle to wait the record processing
+			this.client._updateIdle(true);
+			page(null, entries, {end, next: () => {
+				// Reset idle timer
+				this.client._updateIdle();
+				next && next();
+			}});
+		};
 
 		this.client.search(BaseDN, options, (error, res) => {
 			if (error) {
@@ -384,33 +403,42 @@ export default class LDAP {
 				entries.push(this.extractLdapEntryData(entry));
 
 				if (entries.length >= internalPageSize) {
-					logger.search.info('Internal Page');
-					this.client._updateIdle(true);
-					page(null, entries, {end: false, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-					}});
+					processPage({
+						entries,
+						title: 'Internal Page',
+						end: false
+					});
 					entries = [];
 				}
 			});
 
 			res.on('page', (result, next) => {
 				if (!next) {
-					logger.search.debug('Final Page');
 					this.client._updateIdle(true);
-					page(null, entries, {end: true, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-					}});
+					processPage({
+						entries,
+						title: 'Final Page',
+						end: true
+					});
 				} else if (entries.length) {
 					logger.search.info('Page');
-					// Force LDAP idle to wait the record processing
-					this.client._updateIdle(true);
-					page(null, entries, {end: !next, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-						next();
-					}});
+					processPage({
+						entries,
+						title: 'Page',
+						end: false,
+						next
+					});
+					entries = [];
+				}
+			});
+
+			res.on('end', () => {
+				if (entries.length) {
+					processPage({
+						entries,
+						title: 'Final Page',
+						end: true
+					});
 					entries = [];
 				}
 			});
