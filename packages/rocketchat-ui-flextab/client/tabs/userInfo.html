@@ -75,6 +75,12 @@
 									<p class="rc-user-info-details__info">{{lastLogin}}</p>
 								</div>
 							{{/if}}
+							{{#if shouldDisplayReason}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">{{_ "Reason_To_Join"}}</label>
+									<p class="rc-user-info-details__info">{{user.reason}}</p>
+								</div>
+							{{/if}}
 						{{/if}}
 						{{#if utc}}
 							<div class="rc-user-info-details__item">
@@ -91,7 +97,6 @@
 							{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
 							{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
 							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
-							{{#if shouldDisplayReason}} <p class="secondary-font-color">{{_ "Reason_To_Join"}}: {{user.reason}}</p> {{/if}}
 						</div>
 					</div>
 				</main>

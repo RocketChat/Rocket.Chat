@@ -520,7 +520,7 @@ class ModelUsers extends RocketChat.models._Base {
 	unsetReason(_id) {
 		const update = {
 			$unset: {
-				'reason' : true
+				reason: true
 			}
 		};
 

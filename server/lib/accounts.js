@@ -69,15 +69,12 @@ Accounts.emailTemplates.notifyAdmin.subject = function() {
 };
 
 Accounts.emailTemplates.notifyAdmin.html = function(options = {}) {
-
-	let html;
-
-	html = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Default');
-
 	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-	html = RocketChat.placeholders.replace(html, {
+	const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
+
+	const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
 		name: options.name,
 		email: options.email,
 		reason: options.reason
@@ -123,24 +120,23 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-		let email = {};
 
-		RocketChat.models.Roles.findUsersInRole('admin').forEach(function(adminUser) {
-			if (adminUser.emails && adminUser.emails[0] && adminUser.emails[0].address) {
-				destinations.push(`${ adminUser.name }<${ adminUser.emails[0].address }>`);
+		RocketChat.models.Roles.findUsersInRole('admin').forEach(adminUser => {
+			if (Array.isArray(adminUser.emails)) {
+				adminUser.emails.forEach(address => {
+					destinations.push(`${ adminUser.name }<${ address }>`);
+				});
 			}
 		});
 
-		email = {
+		const email = {
 			to: destinations,
 			from: RocketChat.settings.get('From_Email'),
 			subject: Accounts.emailTemplates.notifyAdmin.subject(),
 			html: Accounts.emailTemplates.notifyAdmin.html(options)
 		};
 
-		Meteor.defer(() => {
-			Email.send(email);
-		});
+		Meteor.defer(() => Email.send(email));
 	}
 
 	return user;
