@@ -24,6 +24,11 @@ class IframeLogin {
 			this.iframeUrl = RocketChat.settings.get('Accounts_iframe_url');
 			this.apiUrl = RocketChat.settings.get('Accounts_Iframe_api_url');
 			this.apiMethod = RocketChat.settings.get('Accounts_Iframe_api_method');
+			this.documentDomain = RocketChat.settings.get('Accounts_iframe_document_domain');
+
+			if (this.documentDomain) {
+				window.document.domain = this.documentDomain;
+			}
 
 			if (this.enabled === false) {
 				return c.stop();

@@ -57,6 +57,7 @@
   "Accounts_Iframe_api_url": "API URL",
   "Accounts_iframe_enabled": "Enabled",
   "Accounts_iframe_url": "Iframe URL",
+  "Accounts_iframe_document_domain":"Document Domain",
   "Accounts_LoginExpiration": "Login Expiration in Days",
   "Accounts_ManuallyApproveNewUsers": "Manually Approve New Users",
   "Accounts_OAuth_Custom_Authorize_Path": "Authorize Path",
