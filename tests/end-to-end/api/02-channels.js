@@ -543,7 +543,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = {'field2':'value2','field3':'value3','field4':'value4'};
+			const customFields = {'field2':'value2', 'field3':'value3', 'field4':'value4'};
 
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
