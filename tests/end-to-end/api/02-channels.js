@@ -435,6 +435,189 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+
+	describe('/channels.setCustomFields:', () => {
+		let cfchannel;
+		it('create channel with customFields', (done) => {
+			const customFields = {'field0':'value0'};
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.cf.${ Date.now() }`,
+					customFields
+				})
+				.end((err, res) => {
+					cfchannel = res.body.channel;
+					done();
+				});
+		});
+		it('get customFields using channels.info', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: cfchannel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.customFields.field0', 'value0');
+				})
+				.end(done);
+		});
+		it('change customFields', async(done) => {
+			const customFields = {'field9':'value9'};
+			request.post(api('channels.setCustomFields'))
+				.set(credentials)
+				.send({
+					roomId: cfchannel._id,
+					customFields
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
+					expect(res.body).to.have.not.nested.property('channel.customFields.field0', 'value0');
+				})
+				.end(done);
+		});
+		it('get customFields using channels.info', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: cfchannel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
+				})
+				.end(done);
+		});
+		it('delete channels with customFields', (done) => {
+			request.post(api('channels.delete'))
+				.set(credentials)
+				.send({
+					roomName: cfchannel.name
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('create channel without customFields', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.cf.${ Date.now() }`
+				})
+				.end((err, res) => {
+					cfchannel = res.body.channel;
+					done();
+				});
+		});
+		it('set customFields with one nested field', async(done) => {
+			const customFields = {'field1':'value1'};
+			request.post(api('channels.setCustomFields'))
+				.set(credentials)
+				.send({
+					roomId: cfchannel._id,
+					customFields
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.customFields.field1', 'value1');
+				})
+				.end(done);
+		});
+		it('set customFields with multiple nested fields', async(done) => {
+			const customFields = {'field2':'value2','field3':'value3','field4':'value4'};
+
+			request.post(api('channels.setCustomFields'))
+				.set(credentials)
+				.send({
+					roomName: cfchannel.name,
+					customFields
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.customFields.field2', 'value2');
+					expect(res.body).to.have.nested.property('channel.customFields.field3', 'value3');
+					expect(res.body).to.have.nested.property('channel.customFields.field4', 'value4');
+					expect(res.body).to.have.not.nested.property('channel.customFields.field1', 'value1');
+				})
+				.end(done);
+		});
+		it('set customFields to empty object', async(done) => {
+			const customFields = {};
+
+			request.post(api('channels.setCustomFields'))
+				.set(credentials)
+				.send({
+					roomName: cfchannel.name,
+					customFields
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.not.nested.property('channel.customFields.field2', 'value2');
+					expect(res.body).to.have.not.nested.property('channel.customFields.field3', 'value3');
+					expect(res.body).to.have.not.nested.property('channel.customFields.field4', 'value4');
+				})
+				.end(done);
+		});
+		it('set customFields as a string -> should return 400', async(done) => {
+			const customFields = '';
+
+			request.post(api('channels.setCustomFields'))
+				.set(credentials)
+				.send({
+					roomName: cfchannel.name,
+					customFields
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('delete channel with empty customFields', (done) => {
+			request.post(api('channels.delete'))
+				.set(credentials)
+				.send({
+					roomName: cfchannel.name
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
 	it('/channels.setJoinCode', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
