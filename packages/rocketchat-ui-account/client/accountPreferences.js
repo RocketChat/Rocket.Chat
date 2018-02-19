@@ -49,6 +49,9 @@ Template.accountPreferences.helpers({
 		}
 		return result;
 	},
+	ifThenElse(condition, val, not = '') {
+		return condition ? val : not;
+	},
 	checked(property, value, defaultValue=undefined) {
 		return checkedSelected(property, value, defaultValue);
 	},
