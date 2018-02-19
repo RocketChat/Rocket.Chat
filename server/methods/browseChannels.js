@@ -35,7 +35,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt'/*, ...type === 'channels'? ['userlenght'] : []*/].includes(sortBy)) {
+		if (!['name', 'createdAt', ...type === 'channels'? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
 			return;
 		}
 
