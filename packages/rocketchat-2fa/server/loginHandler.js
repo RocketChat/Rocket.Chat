@@ -10,7 +10,8 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 	if (login.type === 'resume') return;
 
 	if (login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-    const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google'];
+    const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google', 'gitlab', 'wordpress', 'github_enterprise', 'dolphin', 'drupal', 'tokenpass'];
+    //missing: linkedin, proxy
 
     if (totpEnabledProviders.indexOf(login.type) >= 0) {
 			const { totp } = login.methodArguments[0];
@@ -29,8 +30,6 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			if (verified !== true) {
 				throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
 			}
-		} else {
-			console.log(login.type + ' TOTP is not implemented');
 		}
 	}
 });

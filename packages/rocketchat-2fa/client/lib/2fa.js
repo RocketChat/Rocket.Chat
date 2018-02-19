@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import s from 'underscore.string';
 
 this.reportError = function(error, callback) {
   if (callback) {
@@ -48,7 +49,7 @@ this.overrideLoginMethod = function(loginMethod, loginArgs, cb, loginMethodTOTP)
   }]));
 };
 
-this.createOAuthTotpLoginMethod = function(credentialProvider, ) {
+this.createOAuthTotpLoginMethod = function(credentialProvider) {
   return function(options, code, callback) {
     // support a callback without options
     if (!callback && typeof options === "function") {
@@ -61,4 +62,27 @@ this.createOAuthTotpLoginMethod = function(credentialProvider, ) {
     const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
     provider.requestCredential(options, credentialRequestCompleteCallback);
   };
+};
+
+const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
+CustomOAuth.prototype.configureLogin = function() {
+  const loginWithService = `loginWith${ s.capitalize(this.name) }`;
+
+  oldConfigureLogin.apply(this, arguments);
+
+  const oldMethod = Meteor[loginWithService];
+  const newMethod = (options, code, callback) => {
+    // support a callback without options
+    if (!callback && typeof options === 'function') {
+      callback = options;
+      options = null;
+    }
+
+    const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
+    this.requestCredential(options, credentialRequestCompleteCallback);
+  };
+
+  Meteor[loginWithService] = function(options, cb) {
+    overrideLoginMethod(oldMethod, [options], cb, newMethod)
+  }
 };
