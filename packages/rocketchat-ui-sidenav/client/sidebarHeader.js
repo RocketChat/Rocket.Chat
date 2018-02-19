@@ -254,7 +254,6 @@ const toolbarButtons = (user) => {
 										type: 'open',
 										id: 'logout',
 										action: () => {
-											// const user = Meteor.user();
 											Meteor.logout(() => {
 												RocketChat.callbacks.run('afterLogoutCleanUp', user);
 												Meteor.call('logoutCleanUp', user);
