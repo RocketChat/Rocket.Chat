@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import { getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('[Chat]', function() {
@@ -185,5 +185,4 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 	});
-	
 });
