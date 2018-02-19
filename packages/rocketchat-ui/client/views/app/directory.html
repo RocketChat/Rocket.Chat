@@ -2,7 +2,7 @@
 	<section class="rc-directory">
 		{{# header sectionName="Directory" hideHelp=true}}
 		<div class="rc-directory-header">
-		<select class="rc-input__element js-typeSelector" name="type">
+		<select class="rc-input__element rc-directory-selector js-typeSelector" name="type">
 				<option value="channels">Channels</option>
 				<option value="users">Users</option>
 			</select>
@@ -22,9 +22,9 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name</td>
-							<td class="rc-table-td">Users</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Created At</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="usernames">Users {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
@@ -57,9 +57,9 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name</td>
-							<td class="rc-table-td">Username</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Created At</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="username">Username {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">

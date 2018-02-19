@@ -4,8 +4,11 @@
 	width: 100%;
 
 	&-head {
-		font-weight: 600;
 		color: var(--rc-color-primary-light);
+
+		& .rc-icon {
+			fill: var(--rc-color-primary-light);
+		}
 	}
 
 	&-body .rc-table-tr {
@@ -25,23 +28,27 @@
 		vertical-align: middle;
 
 		&:first-child {
-			padding-left: 1.875rem;
+			padding-left: 1rem;
 		}
 
 		&:last-child {
-			padding-right: 1.875rem;
+			padding-right: 1rem;
+		}
+
+		&--bold {
+			font-weight: 600;
 		}
 	}
 }
 
 .rtl .rc-table-td {
 	&:first-child {
-		padding-right: 1.875rem;
+		padding-right: 1rem;
 		padding-left: 0;
 	}
 
 	&:last-child {
 		padding-right: 0;
-		padding-left: 1.875rem;
+		padding-left: 1rem;
 	}
 }
