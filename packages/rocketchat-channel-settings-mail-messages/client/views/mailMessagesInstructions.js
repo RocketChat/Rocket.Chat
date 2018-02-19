@@ -1,6 +1,4 @@
 /* global AutoComplete Deps */
-
-import _ from 'underscore';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
@@ -79,6 +77,9 @@ Template.mailMessagesInstructions.helpers({
 	selectedEmails() {
 		return Template.instance().selectedEmails.get();
 	},
+	selectedMessages() {
+		return Template.instance().selectedMessages.get();
+	},
 	config() {
 		const filter = Template.instance().userFilter;
 		return {
@@ -99,90 +100,62 @@ Template.mailMessagesInstructions.helpers({
 	},
 	items() {
 		return Template.instance().ac.filteredList();
+	},
+	errorMessage() {
+		return Template.instance().errorMessage.get();
 	}
 });
 
 Template.mailMessagesInstructions.events({
-	'click .js-cancel'(e, t) {
+	'click .js-cancel, click .mail-messages__instructions--selected'(e, t) {
 		t.reset(true);
 	},
-	'click .js-send'(e, t) {
-		t.$('.error').hide();
-		const $btn = t.$('button.send');
-		const oldBtnValue = $btn.html();
-		$btn.html(TAPi18n.__('Sending'));
-		const selectedMessages = $('.messages-box .message.selected');
-		let error = false;
-		if (selectedMessages.length === 0) {
-			t.$('.error-select').show();
-			error = true;
+	'click .js-send'(e, instance) {
+		const selectedUsers = instance.selectedUsers;
+		const selectedEmails = instance.selectedEmails;
+		const $emailsInput = instance.$('[name="emails"]');
+		const selectedMessages = instance.selectedMessages;
+		const subject = instance.$('[name="subject"]').val();
+
+		if (!selectedUsers.get().length && !selectedEmails.get().length && $emailsInput.val().trim() === '') {
+			instance.errorMessage.set(t('Mail_Message_Missing_to'));
+			return false;
 		}
-		if (t.$('input[name=to_emails]').val().trim()) {
-			const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
-			const emails = t.$('input[name=to_emails]').val().trim().split(',');
-			const erroredEmails = [];
-			emails.forEach((email) => {
-				if (!rfcMailPatternWithName.test(email.trim())) {
-					erroredEmails.push(email.trim());
-				}
-			});
-			t.erroredEmails.set(erroredEmails);
-			if (erroredEmails.length > 0) {
-				t.$('.error-invalid-emails').show();
-				error = true;
+
+		if ($emailsInput.val() !== '') {
+			if (isEmail($emailsInput.val())) {
+				const emailsArr = selectedEmails.get();
+				emailsArr.push({text: $emailsInput.val()});
+				$('[name="emails"]').val('');
+				selectedEmails.set(emailsArr);
+			} else {
+				instance.errorMessage.set(t('Mail_Message_Invalid_emails', $emailsInput.val()));
+				return false;
 			}
-		} else if (!t.selectedUsers.get().length) {
-			t.$('.error-missing-to').show();
-			error = true;
 		}
-		if (error) {
-			return $btn.html(oldBtnValue);
+
+		if (!selectedMessages.get().length) {
+			instance.errorMessage.set(t('Mail_Message_No_messages_selected_select_all'));
+			return false;
 		}
+
 		const data = {
 			rid: Session.get('openedRoom'),
-			to_users: t.selectedUsers.get(),
-			to_emails: t.$('input[name=to_emails]').val().trim(),
-			subject: t.$('input[name=subject]').val().trim(),
-			messages: selectedMessages.map(function(i, message) {
-				return message.id;
-			}).toArray(),
+			to_users: selectedUsers.get().map(user => user.username),
+			to_emails: selectedEmails.get().map(email => email.text).toString(),
+			subject,
+			messages: selectedMessages.get(),
 			language: localStorage.getItem('userLanguage')
 		};
-		return Meteor.call('mailMessages', data, function(err, result) {
-			$btn.html(oldBtnValue);
+
+		Meteor.call('mailMessages', data, function(err, result) {
 			if (err != null) {
 				return handleError(err);
 			}
 			console.log(result);
-			toastr.success(TAPi18n.__('Your_email_has_been_queued_for_sending'));
-			return t.reset();
+			toastr.success(t('Your_email_has_been_queued_for_sending'));
+			instance.reset(true);
 		});
-	},
-	'click .select-all'(e, t) {
-		t.$('.error-select').hide();
-		const view = Blaze.getView($('.messages-box')[0]);
-		if (view != null) {
-			if (typeof view.templateInstance === 'function') {
-				const chat = ChatMessage.find({
-					rid: Session.get('openedRoom')
-				});
-				view.templateInstance().selectedMessages = _.pluck(chat && chat.fetch(), '_id');
-			}
-		}
-		return $('.messages-box .message').addClass('selected');
-	},
-	'autocompleteselect #to_users'(event, instance, doc) {
-		instance.selectedUsers.set(instance.selectedUsers.get().concat(doc.username));
-		event.currentTarget.value = '';
-		return event.currentTarget.focus();
-	},
-	'click .remove-to-user'() {
-		let users = Template.instance().selectedUsers.get();
-		users = _.reject(Template.instance().selectedUsers.get(), (_id) => {
-			return _id === this.valueOf();
-		});
-		Template.instance().selectedUsers.set(users);
-		return $('#to_users').focus();
 	},
 	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
 		const {username} = Blaze.getData(target);
@@ -263,11 +236,27 @@ Template.mailMessagesInstructions.onRendered(function() {
 		usersArr.push(item);
 		users.set(usersArr);
 	});
+
+	const selectedMessages = this.selectedMessages;
+
+	$('.messages-box .message').on('click', function() {
+		const id = this.id;
+		const messages = selectedMessages.get();
+
+		if ($(this).hasClass('selected')) {
+			selectedMessages.set(messages.filter(message => message !== id));
+		} else {
+			selectedMessages.set(messages.concat(id));
+		}
+	});
 });
 
 Template.mailMessagesInstructions.onCreated(function() {
 	resetSelection(true);
 
+	this.selectedEmails = new ReactiveVar([]);
+	this.selectedMessages = new ReactiveVar([]);
+	this.errorMessage = new ReactiveVar('');
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
@@ -301,16 +290,13 @@ Template.mailMessagesInstructions.onCreated(function() {
 			]
 
 		});
-
 	this.ac.tmplInst = this;
 
-	this.selectedEmails = new ReactiveVar([]);
-
-	this.autoCompleteCollection = new Mongo.Collection(null);
-	this.erroredEmails = new ReactiveVar([]);
 	this.reset = (bool) => {
 		this.selectedUsers.set([]);
 		this.selectedEmails.set([]);
+		this.selectedMessages.set([]);
+		this.errorMessage.set('');
 		resetSelection(bool);
 	};
 });
