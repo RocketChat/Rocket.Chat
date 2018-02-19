@@ -7,13 +7,15 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 RocketChat.callbacks.add('onValidateLogin', (login) => {
-	if (login.type === 'resume') return;
+	if (login.type === 'resume') {
+		return;
+	}
 
 	if (login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-    const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google', 'gitlab', 'wordpress', 'github_enterprise', 'dolphin', 'drupal', 'tokenpass'];
-    //missing: linkedin, proxy
+		const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google', 'gitlab', 'wordpress', 'github_enterprise', 'dolphin', 'drupal', 'tokenpass', 'linkedin'];
+		//missing: proxy
 
-    if (totpEnabledProviders.indexOf(login.type) >= 0) {
+		if (totpEnabledProviders.indexOf(login.type) >= 0) {
 			const { totp } = login.methodArguments[0];
 
 			if (!totp || !totp.code) {

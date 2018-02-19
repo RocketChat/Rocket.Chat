@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:custom-oauth',
+		'pauli:accounts-linkedin',
 		'sha',
 		'random'
 	]);
