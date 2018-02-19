@@ -9,26 +9,18 @@ Template.appLogs.onCreated(function() {
 	this.logs = new ReactiveVar([]);
 
 	const id = this.id.get();
-	const got = { info: false, logs: false };
 
-	RocketChat.API.get(`apps/${ id }`).then((result) => {
-		instance.app.set(result.app);
+	Promise.all([
+		RocketChat.API.get(`apps/${ id }`),
+		RocketChat.API.get(`apps/${ id }/logs`),
+	]).then((results) => {
 
-		got.info = true;
-		if (got.info && got.logs) {
-			this.ready.set(true);
-		}
-	});
+		instance.app.set(results[0].app);
+		instance.logs.set(results[1].logs);
 
-	RocketChat.API.get(`apps/${ id }/logs`).then((result) => {
-		console.log('logs result:', result);
-
-		instance.logs.set(result.logs);
-
-		got.logs = true;
-		if (got.info && got.logs) {
-			this.ready.set(true);
-		}
+		this.ready.set(true);
+	}).catch(() => {
+		//TODO: error handling
 	});
 });
 
