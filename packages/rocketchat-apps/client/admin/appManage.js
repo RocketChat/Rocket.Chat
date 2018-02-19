@@ -13,7 +13,7 @@ Template.appManage.onCreated(function() {
 
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/settings`),
+		RocketChat.API.get(`apps/${ id }/settings`)
 	]).then((results) => {
 		instance.app.set(results[0].app);
 
