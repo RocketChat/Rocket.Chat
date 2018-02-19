@@ -580,7 +580,7 @@
   "Email_Footer_Description": "You may use the following placeholders: <br /><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Email_from": "From",
   "Email_Header_Description": "You may use the following placeholders: <br /><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
-  "Email_Notifications_Change_Disabled": "Your Rocket.Chat administrator has disabled email Notifications",
+  "Email_Notifications_Change_Disabled": "Your Rocket.Chat administrator has disabled email notifications",
   "Email_Notification_Mode": "Offline Email Notifications",
   "Email_Notification_Mode_All": "Every Mention/DM",
   "Email_Notification_Mode_Disabled": "Disabled",
