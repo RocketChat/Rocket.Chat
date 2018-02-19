@@ -16,9 +16,13 @@ Package.onUse(function(api) {
 		'random'
 	]);
 
+	api.addFiles('client/lib/2fa.js', 'client');
+
 	api.addFiles('client/accountSecurity.html', 'client');
 	api.addFiles('client/accountSecurity.js', 'client');
 	api.addFiles('client/TOTPPassword.js', 'client');
+	api.addFiles('client/TOTPOAuth.js', 'client');
+	api.addFiles('client/TOTPGoogle.js', 'client');
 
 	api.addFiles('server/lib/totp.js', 'server');
 

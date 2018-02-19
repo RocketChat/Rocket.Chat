@@ -7,22 +7,30 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 RocketChat.callbacks.add('onValidateLogin', (login) => {
-	if (login.type === 'password' && login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-		const { totp } = login.methodArguments[0];
+	if (login.type === 'resume') return;
 
-		if (!totp || !totp.code) {
-			throw new Meteor.Error('totp-required', 'TOTP Required');
-		}
+	if (login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
+    const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google'];
 
-		const verified = RocketChat.TOTP.verify({
-			secret: login.user.services.totp.secret,
-			token: totp.code,
-			userId: login.user._id,
-			backupTokens: login.user.services.totp.hashedBackup
-		});
+    if (totpEnabledProviders.indexOf(login.type) >= 0) {
+			const { totp } = login.methodArguments[0];
 
-		if (verified !== true) {
-			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
+			if (!totp || !totp.code) {
+				throw new Meteor.Error('totp-required', 'TOTP Required');
+			}
+
+			const verified = RocketChat.TOTP.verify({
+				secret: login.user.services.totp.secret,
+				token: totp.code,
+				userId: login.user._id,
+				backupTokens: login.user.services.totp.hashedBackup
+			});
+
+			if (verified !== true) {
+				throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
+			}
+		} else {
+			console.log(login.type + ' TOTP is not implemented');
 		}
 	}
 });
