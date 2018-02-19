@@ -143,6 +143,21 @@
 			color: red;
 		}
 
+		&.loading {
+			cursor: pointer;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.mic {
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
 	}
 
 	&__action-menu {
@@ -158,10 +173,11 @@
 	}
 
 	&__audio-recording {
-		display: flex;
+		display: none;
 		position: relative;
 		z-index: -1;
 		&.active{
+			display: flex;
 			z-index: 2;
 		}
 	}
