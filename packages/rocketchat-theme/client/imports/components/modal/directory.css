@@ -1,7 +1,6 @@
 .rc-directory {
 
 	&-header {
-		margin: 0 -9px;
 		display: flex;
 	}
 
@@ -14,12 +13,15 @@
 		height: 36px;
 		min-height: 36px;
 		padding: 0;
-		margin: 0 9px;
 	}
 	&-search {
 		max-width: 230px;
-		margin-left: 9px;
-		margin-right: 9px;
+	}
+
+	&-selector,
+	&-search,
+	&-plus {
+		margin: 0 0.5rem;
 	}
 }
 
@@ -64,4 +66,22 @@
 .rc-directory-content {
 	width: 100%;
 	overflow-x: auto;
+
+	.js-sort {
+		cursor: pointer;
+	}
+}
+
+@media (width <= 500px) {
+	.rc-directory-content .rc-table-head {
+		display: none;
+	}
+
+	.rc-directory {
+		&-selector,
+		&-search,
+		&-plus {
+			padding: 0 0.3rem;
+		}
+	}
 }

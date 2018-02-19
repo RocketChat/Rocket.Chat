@@ -64,14 +64,19 @@ Template.directory.events({
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
 	},
 	'click .js-sort'(e, t) {
-		const type = e.currentTarget.dataset.sort;
+		const el = e.currentTarget;
+		const type = el.dataset.sort;
+
+		$('.js-sort').removeClass('rc-table-td--bold');
+		$(el).addClass('rc-table-td--bold');
+
 		if (t.searchSortBy.get() === type) {
-			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'asc' : 'desc');
+			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'desc' : 'asc');
 			return;
 		}
 
 		t.searchSortBy.set(type);
-		t.sortDirection.set(null);
+		t.sortDirection.set('asc');
 	},
 	'click .rc-directory-plus'() {
 		FlowRouter.go('create-channel');
@@ -81,8 +86,8 @@ Template.directory.events({
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
 	this.searchType = new ReactiveVar('channels');
-	this.searchSortBy = new ReactiveVar();
-	this.sortDirection = new ReactiveVar()
+	this.searchSortBy = new ReactiveVar('name');
+	this.sortDirection = new ReactiveVar('asc');
 
 	this.results = new ReactiveVar([]);
 
