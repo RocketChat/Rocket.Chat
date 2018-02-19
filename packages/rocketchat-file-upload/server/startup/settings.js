@@ -112,6 +112,13 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			},
 			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description'
 		});
+		this.add('FileUpload_S3_Proxy', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			}
+		});
 	});
 
 	this.section('Google Cloud Storage', function() {
@@ -135,6 +142,13 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			type: 'string',
 			multiline: true,
 			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+		this.add('FileUpload_GoogleStorage_Proxy', false, {
+			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'GoogleCloudStorage'
