@@ -10,32 +10,23 @@ Template.appManage.onCreated(function() {
 	this.settings = new ReactiveVar({});
 
 	const id = this.id.get();
-	const got = { info: false, settings: false };
 
-	RocketChat.API.get(`apps/${ id }`).then((result) => {
-		instance.app.set(result.app);
-		console.log(result.app);
+	Promise.all([
+		RocketChat.API.get(`apps/${ id }`),
+		RocketChat.API.get(`apps/${ id }/settings`),
+	]).then((results) => {
+		instance.app.set(results[0].app);
 
-		got.info = true;
-		if (got.info && got.settings) {
-			this.ready.set(true);
-		}
-	});
-
-	RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
-		Object.keys(result.settings).forEach((k) => {
-			result.settings[k].i18nPlaceholder = result.settings[k].i18nPlaceholder || ' ';
-			result.settings[k].value = result.settings[k].value || result.settings[k].packageValue;
-			result.settings[k].oldValue = result.settings[k].value;
+		Object.keys(results[1].settings).forEach((k) => {
+			results[1].settings[k].i18nPlaceholder = results[1].settings[k].i18nPlaceholder || ' ';
+			results[1].settings[k].value = results[1].settings[k].value || results[1].settings[k].packageValue;
+			results[1].settings[k].oldValue = results[1].settings[k].value;
 		});
 
-		instance.settings.set(result.settings);
-		console.log(instance.settings.get());
-
-		got.settings = true;
-		if (got.info && got.settings) {
-			this.ready.set(true);
-		}
+		instance.settings.set(results[1].settings);
+		this.ready.set(true);
+	}).catch(() => {
+		//TODO: error handling
 	});
 });
 
