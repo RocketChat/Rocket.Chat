@@ -1,7 +1,7 @@
 /* globals popover isRtl */
 import _ from 'underscore';
 
-import {UiTextContext} from 'meteor/rocketchat:lib';
+import { hide, leave } from 'meteor/rocketchat:lib';
 
 this.popover = {
 	renderedPopover: null,
@@ -41,7 +41,7 @@ Template.popover.onRendered(function() {
 	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-		const position = typeof this.data.position === 'function'? this.data.position() : this.data.position;
+		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
 		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
 		if (position) {
@@ -114,7 +114,7 @@ Template.popover.events({
 		const id = event.currentTarget.dataset.id;
 		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
-			action[0].action({rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event});
+			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
 			if (id !== 'audio-message') {
 				popover.close();
 			}
@@ -170,77 +170,11 @@ Template.popover.events({
 		const action = e.currentTarget.dataset.id;
 
 		if (action === 'hide') {
-			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
-
-			modal.open({
-				title: t('Are_you_sure'),
-				text: warnText ? t(warnText, name) : '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_hide_it'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: true,
-				html: false
-			}, function() {
-				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-					FlowRouter.go('home');
-				}
-
-				Meteor.call('hideRoom', rid, function(err) {
-					if (err) {
-						handleError(err);
-					} else if (rid === Session.get('openedRoom')) {
-						Session.delete('openedRoom');
-					}
-				});
-			});
-
-			return false;
+			hide(template, rid, name);
 		}
 
 		if (action === 'leave') {
-			let warnText;
-			switch (template) {
-				case 'c': warnText = 'Leave_Room_Warning'; break;
-				case 'p': warnText = 'Leave_Group_Warning'; break;
-				case 'd': warnText = 'Leave_Private_Warning'; break;
-				case 'l': warnText = 'Hide_Livechat_Warning'; break;
-			}
-
-			modal.open({
-				title: t('Are_you_sure'),
-				text: warnText ? t(warnText, name) : '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_leave_it'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: false,
-				html: false
-			}, function(isConfirm) {
-				if (isConfirm) {
-					Meteor.call('leaveRoom', rid, function(err) {
-						if (err) {
-							modal.open({
-								title: t('Warning'),
-								text: handleError(err, false),
-								type: 'warning',
-								html: false
-							});
-						} else {
-							modal.close();
-							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-								FlowRouter.go('home');
-							}
-
-							RoomManager.close(rid);
-						}
-					});
-				}
-			});
-
-			return false;
+			leave(template, rid, name);
 		}
 
 		if (action === 'read') {
@@ -254,7 +188,7 @@ Template.popover.events({
 					return handleError(error);
 				}
 
-				const subscription = ChatSubscription.findOne({rid});
+				const subscription = ChatSubscription.findOne({ rid });
 				if (subscription == null) {
 					return;
 				}
