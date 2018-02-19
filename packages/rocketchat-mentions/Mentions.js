@@ -31,7 +31,7 @@ export default class {
 		return new RegExp(`@(${ this.pattern })`, 'gm');
 	}
 	get channelMentionRegex() {
-		return new RegExp(`^#(${ this.pattern })| #(${ this.pattern })`, 'gm');
+		return new RegExp(`^#(${ this.pattern })| #(${ this.pattern })|^<p>#(${ this.pattern })`, 'gm');
 	}
 	replaceUsers(str, message, me) {
 		return str.replace(this.userMentionRegex, (match, username) => {
@@ -50,8 +50,8 @@ export default class {
 	}
 	replaceChannels(str, message) {
 		//since apostrophe escaped contains # we need to unescape it
-		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, n1, n2) => {
-			const name = n1 || n2;
+		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, n1, n2, n3) => {
+			const name = n1 || n2 || n3;
 			if (message.temp == null && _.findWhere(message.channels, {name}) == null) {
 				return match;
 			}
