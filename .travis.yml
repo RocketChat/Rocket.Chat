@@ -69,9 +69,9 @@ before_script:
 - mongo meteor --eval 'db.getCollectionNames()'
 script:
 - npm test
-- mongo meteor --eval 'db.dropDatabase()'
-- unset MONGO_OPLOG_URL
-- npm test
+# - mongo meteor --eval 'db.dropDatabase()'
+# - unset MONGO_OPLOG_URL
+# - npm test
 #before_deploy:
 #- source ".travis/setartname.sh"
 #- source ".travis/setdeploydir.sh"
