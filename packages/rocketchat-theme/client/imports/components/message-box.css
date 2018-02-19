@@ -180,6 +180,7 @@
 	&__timer-dot{
 		font-size: 1.5em;
 		color: #d60000;
+		line-height: 0.8em;
 	}
 }
 
