@@ -265,6 +265,20 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	channelName() {
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		return subscription && subscription.name;
+	},
+	roomIcon() {
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return RocketChat.roomTypes.getIcon(room && room.t);
+	},
+	fromSearch() {
+		return this.customClass === 'search';
+	},
 	actionContext() {
 		return this.actionContext;
 	},
