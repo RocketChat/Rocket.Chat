@@ -5,7 +5,6 @@ import { UiTextContext } from 'meteor/rocketchat:lib';
 
 Template.roomList.helpers({
 	rooms() {
-
 		/*
 			modes:
 				sortby activity/alphabetical
@@ -13,7 +12,6 @@ Template.roomList.helpers({
 				show favorites
 				show unread
 		*/
-
 
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});

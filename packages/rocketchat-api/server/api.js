@@ -229,20 +229,15 @@ class API extends Restivus {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
 
-				console.log('args ->', args);
-
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {}
 					}
 				});
 
-				console.log('invocation ->', invocation);
-
 				let auth;
 				try {
 					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
-					console.log('UTH ->', auth);
 				} catch (error) {
 					let e = error;
 					if (error.reason === 'User not found') {
