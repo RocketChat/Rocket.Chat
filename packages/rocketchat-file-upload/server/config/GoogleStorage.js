@@ -3,7 +3,8 @@
 import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server.js';
-
+import http from 'http';
+import https from 'https';
 
 const get = function(file, req, res) {
 	this.store.getRedirectURL(file, (err, fileUrl) => {
@@ -12,10 +13,17 @@ const get = function(file, req, res) {
 		}
 
 		if (fileUrl) {
-			res.setHeader('Location', fileUrl);
-			res.writeHead(302);
+			if (RocketChat.settings.get('FileUpload_GoogleStorage_Proxy')) {
+				const request = /^https:/.test(fileUrl) ? https : http;
+				request.get(fileUrl, fileRes => fileRes.pipe(res));
+			} else {
+				res.setHeader('Location', fileUrl);
+				res.writeHead(302);
+				res.end();
+			}
+		} else {
+			res.end();
 		}
-		res.end();
 	});
 };
 
