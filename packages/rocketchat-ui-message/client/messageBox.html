@@ -105,8 +105,11 @@
 		</div>
 	</div>
 	<div class="rc-message-box__audio-message">
-		<div class="rc-message-box__icon">
+		<div class="rc-message-box__icon mic active js-audio-message-record">
 			{{> icon block="rc-input__icon-svg" icon="mic"}}
+		</div>
+		<div class="rc-message-box__icon loading js-audio-message-loading">
+			<img class="rc-input__icon-svg" src="/images/loading.svg">
 		</div>
 	</div>
 </template>

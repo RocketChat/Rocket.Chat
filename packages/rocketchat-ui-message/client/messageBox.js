@@ -472,7 +472,7 @@ Template.messageBox.events({
 
 		popover.open(config);
 	},
-	'click .rc-message-box__audio-message'(event) {
+	'click .js-audio-message-record'(event) {
 		event.preventDefault();
 		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
@@ -517,9 +517,13 @@ Template.messageBox.events({
 		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
 		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const loader = document.querySelector('.js-audio-message-loading');
+		const mic = document.querySelector('.js-audio-message-record');
 
 		icon.classList.remove('hidden');
 		timer_box.classList.remove('active');
+		mic.classList.remove('active');
+		loader.classList.add('active');
 
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
@@ -528,6 +532,9 @@ Template.messageBox.events({
 
 		chatMessages[RocketChat.openedRoom].recording = false;
 		AudioRecorder.stop(function(blob) {
+
+			loader.classList.remove('active');
+			mic.classList.add('active');
 			const roomId = Session.get('openedRoom');
 			const record = {
 				name: `${ TAPi18n.__('Audio record') }.mp3`,
