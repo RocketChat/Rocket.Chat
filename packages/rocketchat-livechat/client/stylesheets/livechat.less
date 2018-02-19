@@ -688,3 +688,37 @@
 		vertical-align: middle;
 	}
 }
+
+
+.livechat-section {
+	.sidebar-item__user-status {
+		top: auto;
+		position: absolute;
+		bottom: -1px;
+		left: 37px;
+		z-index: 2;
+		border: 2px solid #2f343d;
+		border: 2px solid var(--sidebar-background);
+		width: 10px;
+		height: 10px;
+	}
+
+	.sidebar-item {
+		transition: all 0.3s;
+		&:hover {
+			.sidebar-item__user-status {
+				border: 2px solid #1f2329;
+				border: 2px solid var(--sidebar-item-hover-background);
+			}
+		}
+	}
+}
+
+.sidebar--big {
+	.livechat-section {
+		.sidebar-item__user-status {
+			bottom: 6px;
+			left: 53px;
+		}
+	}
+}
