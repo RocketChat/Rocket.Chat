@@ -12,7 +12,7 @@ Template.appLogs.onCreated(function() {
 
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/logs`),
+		RocketChat.API.get(`apps/${ id }/logs`)
 	]).then((results) => {
 
 		instance.app.set(results[0].app);
