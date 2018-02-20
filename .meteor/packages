@@ -110,6 +110,7 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:apps
 rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
@@ -149,12 +150,12 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:nrr
 
 konecty:change-case
 konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
-konecty:nrr
 konecty:user-presence
 
 deepwell:bootstrap-datepicker2
