@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import _ from 'underscore';
 function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
@@ -13,7 +13,7 @@ function timeAgo(time) {
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, results) => {
-		cb(results.map(result => {
+		cb(results && results.length && results.map(result => {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
@@ -46,9 +46,15 @@ Template.directory.helpers({
 
 Template.directory.events({
 	'input .js-search'(e, t) {
+		t.end.set(false);
+		t.sortDirection.set('asc');
+		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
 	},
 	'change .js-typeSelector'(e, t) {
+		t.end.set(false);
+		t.sortDirection.set('asc');
+		t.page.set(0);
 		t.searchType.set(e.currentTarget.value);
 	},
 	'click .rc-table-body .rc-table-tr'() {
@@ -63,12 +69,24 @@ Template.directory.events({
 		}
 		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
 	},
+	'scroll .rc-directory-content'({currentTarget}, instance) {
+		if (instance.loading || instance.end.get()) {
+			return;
+		}
+		if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+			return instance.page.set(instance.page.get() + 1);
+		}
+	},
 	'click .js-sort'(e, t) {
+
 		const el = e.currentTarget;
 		const type = el.dataset.sort;
 
 		$('.js-sort').removeClass('rc-table-td--bold');
 		$(el).addClass('rc-table-td--bold');
+
+		t.end.set(false);
+		t.page.set(0);
 
 		if (t.searchSortBy.get() === type) {
 			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'desc' : 'asc');
@@ -88,6 +106,8 @@ Template.directory.onCreated(function() {
 	this.searchType = new ReactiveVar('channels');
 	this.searchSortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
+	this.page = new ReactiveVar(0);
+	this.end = new ReactiveVar(false);
 
 	this.results = new ReactiveVar([]);
 
@@ -96,10 +116,22 @@ Template.directory.onCreated(function() {
 			text: this.searchText.get(),
 			type: this.searchType.get(),
 			sortBy: this.searchSortBy.get(),
-			sortDirection: this.sortDirection.get()
+			sortDirection: this.sortDirection.get(),
+			page: this.page.get()
+		};
+		if (this.end.get() || this.loading) {
+			return;
 		}
+		this.loading = true;
 		directorySearch(searchConfig, (result) => {
-			this.results.set(result);
+			this.loading = false;
+			if (!result) {
+				this.end.set(true);
+			}
+			if (this.page.get() > 0) {
+				return this.results.set([...this.results.get(), ...result]);
+			}
+			return this.results.set(result);
 		});
 	});
 });
