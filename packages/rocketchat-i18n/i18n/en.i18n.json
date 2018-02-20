@@ -801,7 +801,7 @@
   "GoogleVision_Type_Properties": "Properties (Color) Detection",
   "GoogleVision_Type_SafeSearch": "SafeSearch Detection",
   "GoogleVision_Type_Similar": "Search Similar Images",
-  "Group_by_Type": "Group by Type",
+  "Group_by_categories": "Group by categories",
   "Group_mentions_only": "Group mentions only",
   "Guest_Pool": "Guest Pool",
   "Hash": "Hash",
