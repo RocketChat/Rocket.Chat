@@ -1,3 +1,15 @@
+<a name="0.61.2"></a>
+## 0.61.2 (2018-02-20)
+
+
+### Bug Fixes
+
+- [#9776](https://github.com/RocketChat/Rocket.Chat/pull/9776) Emoji rendering on last message
+- [#9772](https://github.com/RocketChat/Rocket.Chat/pull/9772) Livechat conversation not receiving messages when start without form
+- [#9750](https://github.com/RocketChat/Rocket.Chat/pull/9750) Livechat issues on external queue and lead capture
+
+
+
 <a name="0.61.1"></a>
 ## 0.61.1 (2018-02-14)
 
