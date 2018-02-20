@@ -5,6 +5,8 @@ Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
+	this.hasError = new ReactiveVar(false);
+	this.theError = new ReactiveVar('');
 	this.processingEnabled = new ReactiveVar(false);
 	this.app = new ReactiveVar({});
 	this.settings = new ReactiveVar({});
@@ -25,21 +27,36 @@ Template.appManage.onCreated(function() {
 
 		instance.settings.set(results[1].settings);
 		this.ready.set(true);
-	}).catch(() => {
-		//TODO: error handling
+	}).catch((e) => {
+		instance.hasError.set(true);
+		instance.theError.set(e.message);
 	});
 });
 
 Template.appManage.helpers({
 	isReady() {
-		if (Template.instance().ready != null) {
+		if (Template.instance().ready) {
 			return Template.instance().ready.get();
 		}
 
 		return false;
 	},
+	hasError() {
+		if (Template.instance().hasError) {
+			return Template.instance().hasError.get();
+		}
+
+		return false;
+	},
+	theError() {
+		if (Template.instance().theError) {
+			return Template.instance().theError.get();
+		}
+
+		return '';
+	},
 	isProcessingEnabled() {
-		if (Template.instance().processingEnabled != null) {
+		if (Template.instance().processingEnabled) {
 			return Template.instance().processingEnabled.get();
 		}
 

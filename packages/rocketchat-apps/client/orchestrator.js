@@ -6,12 +6,7 @@ class AppClientOrchestrator {
 
 		this._addAdminMenuOption();
 
-		const loadLangs = setInterval(() => {
-			if (Meteor.user()) {
-				clearInterval(loadLangs);
-				this._loadLanguages();
-			}
-		}, 50);
+		Meteor.defer(() => this._loadLanguages());
 	}
 
 	getWsListener() {
@@ -29,11 +24,7 @@ class AppClientOrchestrator {
 	}
 
 	_loadLanguages() {
-		if (!Meteor.user()) {
-			return;
-		}
-
-		RocketChat.API.get('apps?languagesOnly=true').then((info) => {
+		RocketChat.API.get('apps/languages').then((info) => {
 			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages));
 		});
 	}
