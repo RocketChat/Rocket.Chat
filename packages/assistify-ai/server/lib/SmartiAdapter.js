@@ -150,7 +150,13 @@ export class SmartiAdapter {
 			conversationId = m.conversationId;
 		} else {
 			SystemLogger.debug('Smarti - Trying legacy service to retrieve conversation ID...');
-			const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ room._id }`);
+			const conversation = SmartiProxy.propagateToSmarti(verbs.get,
+				`legacy/rocket.chat?channel_id=${ room._id }`, null, (error) => {
+					// 404 is expected if no mapping exists
+					if (error.response.statusCode === 404) {
+						return null;
+					}
+				});
 			if (conversation && conversation.id) {
 				conversationId = conversation.id;
 			}
