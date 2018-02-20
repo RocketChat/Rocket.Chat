@@ -54,7 +54,18 @@
 		}
 	}
 
+	&__line {
+		display: block;
+
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
 	&__content {
+		overflow: hidden;
+
 		flex: 1;
 
 		margin: 0 24px;
