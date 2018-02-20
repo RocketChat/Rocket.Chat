@@ -1,5 +1,5 @@
 //Convenience method, almost need to turn it into a middleware of sorts
-RocketChat.API.v1.helperMethods.set('getUserFromParams', function _getUserFromParams() {
+RocketChat.API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
 	const doesntExist = { _doesntExist: true };
 	let user;
 	const params = this.requestParams();
