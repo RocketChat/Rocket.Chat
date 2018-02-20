@@ -1,5 +1,5 @@
 import moment from 'moment';
-import _ from 'underscore';
+
 function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);

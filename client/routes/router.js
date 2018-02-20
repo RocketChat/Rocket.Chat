@@ -72,7 +72,7 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory', {
 	name: 'directory',
 
-	action(params, queryParams) {
+	action() {
 		BlazeLayout.render('main', {center: 'directory'});
 	},
 	triggersExit: [function() {
