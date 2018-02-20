@@ -69,7 +69,6 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:nrr@2.0.2
 konecty:user-presence@2.0.1
 launch-screen@1.1.1
 less@2.7.12
@@ -191,6 +190,7 @@ rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:monitoring@2.30.2_3
+rocketchat:nrr@1.0.0
 rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1

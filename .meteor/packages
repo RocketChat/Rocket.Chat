@@ -149,12 +149,12 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:nrr
 
 konecty:change-case
 konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
-konecty:nrr
 konecty:user-presence
 
 deepwell:bootstrap-datepicker2
