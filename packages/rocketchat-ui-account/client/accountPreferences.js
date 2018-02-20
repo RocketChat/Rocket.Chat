@@ -203,6 +203,18 @@ Template.accountPreferences.onCreated(function() {
 			}
 		});
 	};
+
+	this.downloadMyData = function() {
+		Meteor.call('downloadMyData', {}, function(error, results) {
+			if (results) {
+
+			}
+
+			if (error) {
+				return handleError(error);
+			}
+		});
+	};
 });
 
 Template.accountPreferences.onRendered(function() {
@@ -221,6 +233,9 @@ Template.accountPreferences.events({
 	},
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
+	},
+	'click .download-my-data'(e, t) {
+		t.downloadMyData();
 	},
 	'click .test-notifications'() {
 		KonchatNotification.notify({
