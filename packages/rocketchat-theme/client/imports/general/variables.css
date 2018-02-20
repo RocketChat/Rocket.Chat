@@ -322,4 +322,14 @@
 	--tooltip-text-color: var(--color-white);
 	--tooltip-text-size: 0.75rem;
 	--tooltip-radius: var(--border-radius);
+
+	/*
+	* alert
+	*/
+	--alerts-padding: var(--sidebar-default-padding);
+	--alerts-padding-vertical: 10px;
+	--alerts-padding-vertical-large: 20px;
+	--alerts-background: #1d73f5;
+	--alerts-color: var(--color-white);
+
 }

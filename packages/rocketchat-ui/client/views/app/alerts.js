@@ -10,7 +10,6 @@ this.alerts = {
 		this.renderedAlert = Blaze.renderWithData(Template.alerts, config, document.body, document.body.querySelector('#rocket-chat'));
 	},
 	close() {
-
 		if (this.timer) {
 			clearTimeout(this.timer);
 			delete this.timer;
@@ -30,7 +29,10 @@ this.alerts = {
 
 Template.alerts.helpers({
 	hasAction() {
-		return !!this.action;
+		return Template.instance().data.action? 'rc-alerts--has-action': '';
+	},
+	modifiers() {
+		return (Template.instance().data.modifiers || []).map(mod => `rc-alerts--${ mod }`).join(' ');
 	}
 });
 

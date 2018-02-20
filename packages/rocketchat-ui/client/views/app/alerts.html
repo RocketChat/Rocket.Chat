@@ -1,11 +1,16 @@
 <template name="alerts">
-	<div class="rc-alerts rc-alerts--{{popoverClass}}" data-popover="popover">
-		<div class="rc-alerts__content js-action">
+	<div class="rc-alerts {{modifiers}} {{customclass}}" data-popover="popover">
+		{{# if bigIcon}}
+			<div class="rc-alerts__big-icon {{hasAction}} js-action">
+				{{> icon icon=bigIcon }}
+			</div>
+		{{/if}}
+		<div class="rc-alerts__content {{hasAction}} js-action">
 			{{#if template}}
-			{{> Template.dynamic template=template data=data}}
+				{{> Template.dynamic template=template data=data}}
 			{{else}}
-			{{text}}
-			{{{html}}}
+				{{text}}
+				{{{html}}}
 			{{/if}}
 
 		</div>
