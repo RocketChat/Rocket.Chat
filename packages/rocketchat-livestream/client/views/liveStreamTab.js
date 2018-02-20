@@ -167,5 +167,16 @@ Template.liveStreamTab.events({
 			onCloseCallback: () => i.popoutOpen.set(false)
 		});
 		i.popoutOpen.set(true);
+	},
+	'click .js-broadcast'(e) {
+		e.preventDefault();
+		console.log('call broadcast stuff');
+		Meteor.call('listYoutubeActivities', function(err, result) {
+			if (err) {
+				return handleError(err);
+			}
+			console.log('list youtube activities');
+			console.log(result);
+		});
 	}
 });

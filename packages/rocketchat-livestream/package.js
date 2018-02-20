@@ -23,6 +23,11 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/models/Rooms.js',
 		'server/functions/saveStreamingOptions.js',
+		'server/functions/listYoutubeActivities.js',
 		'server/settings.js'
 	], 'server');
+
+	Npm.depends({
+		'googleapis': '25.0.0'
+	});
 });
