@@ -1,3 +1,16 @@
+<a name="assistify-0.6.9"></a>
+## Assistify-0.6.0
+
+This release brings not only the very latest Rocket.Chat version, but
+*a completely revamped Smarti-widget*.
+We heavily tuned not only the look, but also the search features. You have not seen it yet? Create a new request (from the create dialog), ask a question and see the implicitly found knowledge.
+
+You may not have know:
+
+- You can customize the sources that are being searched. Got an own wiki-space? Great, let us know!
+- You can add terms you know should be searched for yourself - and thus refine the search results
+- You can easily share the ansers found: Select the circle on the search result and post it with only one single click
+
 <a name="0.61.1"></a>
 ## 0.61.1 (2018-02-14)
 
