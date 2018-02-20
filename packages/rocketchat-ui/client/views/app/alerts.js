@@ -1,8 +1,3 @@
-/* globals alerts isRtl */
-import _ from 'underscore';
-
-import { hide, leave } from 'meteor/rocketchat:lib';
-
 this.alerts = {
 	renderedAlert: null,
 	open(config) {
