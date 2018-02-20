@@ -449,8 +449,13 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
-		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', this.userId).fetch(), '_room');
+		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, {
+			t: 'c',
+			'u._id': this.userId
+		});
+
+		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
