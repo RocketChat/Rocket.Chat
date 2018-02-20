@@ -122,7 +122,7 @@ Template.messages.events({
 					return console.log(error.reason);
 				}
 
-				visitor.setId(result._id);
+				visitor.setId(result.userId);
 				LivechatVideoCall.request();
 			});
 		} else {
