@@ -155,6 +155,11 @@ Template.userInfo.helpers({
 		const roomRoles = RoomRoles.findOne({'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+	},
+
+	shouldDisplayReason() {
+		const user = Template.instance().user.get();
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
 /* globals isRtl popover */

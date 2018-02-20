@@ -16,7 +16,7 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
 import {targetUser, imgURL} from '../../data/interactions.js';
 
-import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
+import {adminUsername, adminEmail, adminPassword, username, email, password, reason} from '../../data/user.js';
 
 function api(path) {
 	return prefix + path;
@@ -454,6 +454,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('register the user', () => {
+			browser.refresh();
 			loginPage.registerButton.waitForVisible(5000);
 			loginPage.registerButton.click();
 			loginPage.nameField.waitForVisible(5000);
@@ -461,6 +462,8 @@ describe('[Api Settings Change]', () => {
 			loginPage.emailField.setValue(`setting${ email }`);
 			loginPage.passwordField.setValue(password);
 			loginPage.confirmPasswordField.setValue(password);
+			loginPage.reasonField.waitForVisible(5000);
+			loginPage.reasonField.setValue(reason);
 
 			loginPage.submit();
 
