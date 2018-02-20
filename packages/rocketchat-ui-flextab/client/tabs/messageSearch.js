@@ -111,7 +111,15 @@ Template.messageSearch.onCreated(function() {
 
 	return this.search = (globalSearch = false) => {
 		this.ready.set(false);
-		const value = this.$('#message-search').val();
+		let value = this.$('#message-search').val();
+		const regexBeginTest = RegExp('^\\/');
+		if (!regexBeginTest.test(value)) {
+			const regexTest = RegExp('^\\/.+(\\/[g|i|m|u|y]*$)');
+			if (!regexTest.test(value)) {
+				value = `/${ value }/`;
+			}
+		}
+		console.log(value);
 		return Tracker.nonreactive(() => {
 			return Meteor.call('messageSearch', value, (globalSearch) ? undefined: Session.get('openedRoom'), this.limit.get(), (error, result) => {
 				this.currentSearchTerm.set(value);
