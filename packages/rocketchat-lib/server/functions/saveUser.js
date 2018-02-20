@@ -165,12 +165,7 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		if (userData.settings) {
-			updateUser.$set.settings = { preferences: {} };
-			for (const key in userData.settings.preferences) {
-				if (userData.settings.preferences[key]) {
-					updateUser.$set.settings.preferences[key] = userData.settings.preferences[key];
-				}
-			}
+			updateUser.$set.settings = { preferences: userData.settings.preferences };
 		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
