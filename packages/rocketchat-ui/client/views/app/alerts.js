@@ -10,7 +10,7 @@ this.alerts = {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
 
-		this.renderedAlert = Blaze.renderWithData(Template.alerts, config, document.body, document.body.querySelector('#rocket-chat'));
+		this.renderedAlert = Blaze.renderWithData(Template.alerts, config, document.body, document.body.querySelector('#alert-anchor'));
 	},
 	close() {
 		if (this.timer) {
