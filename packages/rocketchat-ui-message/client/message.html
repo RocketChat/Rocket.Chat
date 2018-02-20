@@ -50,6 +50,11 @@
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 		</span>
+		{{#if fromSearch}}
+			<span class="user color-info-font-color">
+				{{>icon icon=roomIcon}}{{channelName}}
+			</span>
+		{{/if}}
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
