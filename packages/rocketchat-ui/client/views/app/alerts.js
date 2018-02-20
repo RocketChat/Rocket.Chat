@@ -7,9 +7,19 @@ this.alerts = {
 	renderedAlert: null,
 	open(config) {
 		this.close();
+
+		if (config.timer) {
+			this.timer = setTimeout(() => this.close(), config.timer);
+		}
+
 		this.renderedAlert = Blaze.renderWithData(Template.alerts, config, document.body, document.body.querySelector('#rocket-chat'));
 	},
 	close() {
+
+		if (this.timer) {
+			clearTimeout(this.timer);
+			delete this.timer;
+		}
 		if (!this.renderedAlert) {
 			return false;
 		}
@@ -43,7 +53,10 @@ Template.alerts.onDestroyed(function() {
 
 Template.alerts.events({
 	'click .js-action'(e, instance) {
-		!this.action || this.action.call(this, e, instance.data.data);
+		if (!this.action) {
+			return;
+		}
+		this.action.call(this, e, instance.data.data);
 		alerts.close();
 	},
 	'click .js-close'() {
