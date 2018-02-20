@@ -46,6 +46,7 @@
 		display: flex;
 		margin: 0 9px;
 		flex-direction: column;
+		width: 100%;
 	}
 
 	&-name {
@@ -56,6 +57,9 @@
 	&-description {
 		margin-top: 0.625rem;
 		color: var(--rc-color-primary-light);
+		overflow: hidden;
+    text-overflow: ellipsis;
+		max-width: 200px;
 	}
 
 	&-createdAt {
@@ -67,7 +71,7 @@
 	width: 100%;
 	overflow-x: auto;
 
-	.js-sort {
+	& .js-sort {
 		cursor: pointer;
 	}
 }

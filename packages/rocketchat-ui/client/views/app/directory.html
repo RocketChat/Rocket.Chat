@@ -30,7 +30,7 @@
 					<tbody class="rc-table-body">
 						{{#each searchResults}}
 							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td">
+								<td class="rc-table-td rc-table-td--name">
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
 										<div class="rc-directory-channel-info">
@@ -44,8 +44,8 @@
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td">{{users}}</td>
-								<td class="rc-table-td">
+								<td class="rc-table-td rc-table-td--users">{{users}}</td>
+								<td class="rc-table-td rc-table-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
 							</tr>
@@ -65,7 +65,7 @@
 					<tbody class="rc-table-body">
 						{{#each searchResults}}
 							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td">
+								<td class="rc-table-td rc-table-td--name">
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=name}}</div>
 										<div class="rc-directory-channel-info">
@@ -76,8 +76,8 @@
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td">{{username}}</td>
-								<td class="rc-table-td">
+								<td class="rc-table-td rc-table-td--username">{{username}}</td>
+								<td class="rc-table-td rc-table-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
 							</tr>
