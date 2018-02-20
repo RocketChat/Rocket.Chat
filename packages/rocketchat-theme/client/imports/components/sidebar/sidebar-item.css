@@ -142,7 +142,7 @@
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 
-		margin: 0 7px 0 3px;
+		margin: 0 7px 0 7px;
 
 		border-radius: var(--sidebar-item-user-status-radius);
 
@@ -209,8 +209,6 @@
 		overflow: hidden;
 
 		flex: 1;
-
-		margin: 0 3px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
