@@ -212,7 +212,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Activa la consulta de l'historial de missatges directes",
   "API_Enable_Direct_Message_History_EndPoint_Description": "Això activa el `/api/v1/im.history.others` que permet veure missatges directes enviats per altres usuaris tot i no formar-ne part.",
   "API_Enable_Shields": "Activa escuts",
-  "API_Enable_Shields_Description": "Activa els escuts disponibles a `/api/v1/shields.svg`",
+  "API_Enable_Shields_Description": "Activa els escuts disponibles a `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL del servidor",
   "API_GitHub_Enterprise_URL_Description": "Exemple: http://domain.com (sense la barra final)",
   "API_Gitlab_URL": "URL de GitLab",

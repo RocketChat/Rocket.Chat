@@ -212,7 +212,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Включить конечную точку истории сообщений",
   "API_Enable_Direct_Message_History_EndPoint_Description": "Эта настройка включает `/api/v1/im.history.others`. Это разрешает просмотр сообщений из личных диалогов, в которых не участвует вызывающий.",
   "API_Enable_Shields": "Включить щиты",
-  "API_Enable_Shields_Description": "Включить щиты, доступные в `/api/v1/shields.svg`",
+  "API_Enable_Shields_Description": "Включить щиты, доступные в `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL-адрес сервера",
   "API_GitHub_Enterprise_URL_Description": "Пример: http://domain.com (без завершающего слеша)",
   "API_Gitlab_URL": "GitLab URL",
