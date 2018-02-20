@@ -1,5 +1,5 @@
 .sidebar {
-	position: relative;
+
 	z-index: 2;
 
 	display: flex;
@@ -69,6 +69,10 @@
 }
 
 @media (width < 780px) {
+	.sidebar {
+		position: absolute;
+	}
+
 	.sidebar:not(.sidebar-light) {
 		user-select: none;
 		transform: translate3d(calc(var(--sidebar-width) * -1), 0, 0);
