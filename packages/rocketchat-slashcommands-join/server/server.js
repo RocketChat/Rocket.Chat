@@ -34,4 +34,7 @@ RocketChat.slashCommands.add('join', function Join(command, params, item) {
 		});
 	}
 	Meteor.call('joinRoom', room._id);
+}, {
+	description: 'Join_the_given_channel',
+	params: '#channel'
 });
