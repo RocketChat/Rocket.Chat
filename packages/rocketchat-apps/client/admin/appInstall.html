@@ -1,0 +1,35 @@
+<template name="appInstall">
+	<section class="preferences-page">
+		<header class="preferences-page__header">
+			{{> burger}}
+			<a href="{{pathFor "apps"}}" title="{{_ "Back_to_Manage_Apps"}}">
+				<i class="icon-left-open"></i>
+			</a> &nbsp;
+
+			<h2>{{_ "App_Installation"}}</h2>
+		</header>
+		<div class="preferences-page__content">
+			{{#if isInstalling}}
+				{{> loading}}
+			{{else}}
+				<div class="rc-form-group rc-grid">
+					<div class="rc-input rc-w50 padded">
+						<div class="rc-select-avatar__list-item rc-tooltip js-select-app-upload" aria-label="{{_ "Upload_file" }}">
+							<label class="rc-select-avatar__upload-label app" for="upload-app">
+								{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+							</label>
+							<input type="file" name="" value="" id="upload-app" style="display:none;">
+						</div>
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "App_Url_to_Install_From"}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" class="rc-input__element" name="appPackageUrl" id="appPackage" placeholder="https://rocket.chat/apps/package.zip" value="{{appUrl}}" >
+							</div>
+						</label>
+						<button class="rc-button install">{{ _ "Install" }}</button>
+					</div>
+				</div>
+			{{/if}}
+		</div>
+	</section>
+</template>
