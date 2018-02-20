@@ -79,7 +79,7 @@ Meteor.startup(function() {
 					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
 
-				const svg = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" pointer-events=\"none\" width=\"50\" height=\"50\">\n<rect height="50" width="50" fill=\"${ color }\"/>\n<text text-anchor=\"middle\" y=\"50%\" x=\"50%\" dy=\"0.36em\" pointer-events=\"auto\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-weight="400" font-size="28">\n${ initials }\n</text>\n</svg>`;
+				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 80 80\">\n<rect width=\"100%\" height=\"100%\" rx=\"6\" ry=\"6\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="50">\n${ initials }\n</text>\n</svg>`;
 
 				res.write(svg);
 				res.end();

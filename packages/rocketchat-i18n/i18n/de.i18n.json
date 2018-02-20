@@ -215,7 +215,7 @@
   "API_Enable_Direct_Message_History_EndPoint": "Endpunkt für den Verlauf von Direktnachrichten",
   "API_Enable_Direct_Message_History_EndPoint_Description": "Aktiviere `/api/v1/im.history.others`. Hierüber ist es möglich, Direktnachrichten einzusehen, an denen der Benutzer nicht beteiligt ist.",
   "API_Enable_Shields": "Aktiviere Shields",
-  "API_Enable_Shields_Description": "Mache Shields über `/api/v1/shields.svg` abrufbar",
+  "API_Enable_Shields_Description": "Mache Shields über `/api/v1/shield.svg` abrufbar",
   "API_GitHub_Enterprise_URL": "Server-URL",
   "API_GitHub_Enterprise_URL_Description": "Beispiel: http://domain.com (ohne Schrägstrich am Ende)",
   "API_Gitlab_URL": "GitLab-URL",
