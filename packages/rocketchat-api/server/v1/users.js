@@ -273,7 +273,7 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
-		const user = this.userId;
+		const user = RocketChat.models.Users.findOneById(this.userId);
 		if (user.settings) {
 			const preferences = user.settings.preferences;
 			preferences['language'] = user.language;
