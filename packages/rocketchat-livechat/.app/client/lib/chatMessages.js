@@ -153,7 +153,7 @@ this.ChatMessages = class ChatMessages {
 					return showError(error.reason);
 				}
 
-				visitor.setId(result._id);
+				visitor.setId(result.userId);
 				sendMessage();
 			});
 		} else {
