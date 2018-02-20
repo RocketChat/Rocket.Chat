@@ -4,6 +4,8 @@ this.alerts = {
 	open(config) {
 		this.close();
 
+		config.closable = typeof(config.closable) === typeof(true) ? config.closable : true;
+
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
