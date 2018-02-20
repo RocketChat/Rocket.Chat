@@ -1225,6 +1225,7 @@
   "Mentions": "Mentions",
   "Mentions_default": "Mentions (default)",
   "Mentions_only": "Mentions only",
+  "Merge_Channels": "Merge Channels",
   "Message": "Message",
   "Message_AllowBadWordsFilter": "Allow Message bad words filtering",
   "Message_AllowDeleting": "Allow Message Deleting",

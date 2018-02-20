@@ -142,6 +142,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
+			$('.toolbar').css('display', 'none');
 			event.preventDefault();
 			event.stopPropagation();
 			return;
