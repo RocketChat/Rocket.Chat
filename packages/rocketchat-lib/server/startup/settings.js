@@ -176,7 +176,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enable_Auto_Away'
 		});
-		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300000, {
+		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300, {
 			type: 'int',
 			'public': true,
 			i18nLabel: 'Idle_Time_Limit'
