@@ -5,6 +5,8 @@ Template.appLogs.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
+	this.hasError = new ReactiveVar(false);
+	this.theError = new ReactiveVar('');
 	this.app = new ReactiveVar({});
 	this.logs = new ReactiveVar([]);
 
@@ -19,8 +21,9 @@ Template.appLogs.onCreated(function() {
 		instance.logs.set(results[1].logs);
 
 		this.ready.set(true);
-	}).catch(() => {
-		//TODO: error handling
+	}).catch((e) => {
+		instance.hasError.set(true);
+		instance.theError.set(e.message);
 	});
 });
 
@@ -31,6 +34,20 @@ Template.appLogs.helpers({
 		}
 
 		return false;
+	},
+	hasError() {
+		if (Template.instance().hasError) {
+			return Template.instance().hasError.get();
+		}
+
+		return false;
+	},
+	theError() {
+		if (Template.instance().theError) {
+			return Template.instance().theError.get();
+		}
+
+		return '';
 	},
 	app() {
 		return Template.instance().app.get();
