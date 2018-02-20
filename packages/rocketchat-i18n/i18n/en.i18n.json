@@ -1088,8 +1088,6 @@
   "Livechat_Take_Confirm": "Do you want to take this client?",
   "Livechat_title": "Livechat Title",
   "Livechat_title_color": "Livechat Title Background Color",
-<<<<<<< HEAD
-=======
   "Livechat_Users": "Livechat Users",
   "Livestream_close": "Close Livestream",
   "Livestream_not_found": "Livestream not available",
@@ -1099,7 +1097,6 @@
   "Livestream_source_changed_succesfully": "Livestream source changed successfully",
   "Livestream_switch_to_room": "Switch to current room's livestream",
   "Livestream_enable_audio_only": "Enable only audio mode",
->>>>>>> develop
   "Load_more": "Load more",
   "Loading...": "Loading...",
   "Loading_more_from_history": "Loading more from history",
