@@ -123,7 +123,7 @@ Template.toolbar.helpers({
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '[role="search"] input',
+			input: '.toolbar__search .rc-input__element',
 			cleanOnEnter: true,
 			closeOnEsc: true,
 			blurOnSelectItem: true,

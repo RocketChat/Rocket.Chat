@@ -42,8 +42,9 @@ const toolbarButtons = (user) => {
 		}
 	},
 	{
-		name: t('Browse_channels'),
-		icon: 'globe'
+		name: t('Directory'),
+		icon: 'globe',
+		condition: () => false
 	},
 	{
 		name: t('View_mode'),
@@ -118,7 +119,6 @@ const toolbarButtons = (user) => {
 		name: t('Sort'),
 		icon: 'sort',
 		action: (e) => {
-
 			const options = [];
 			const config = {
 				template: 'sortlist',
