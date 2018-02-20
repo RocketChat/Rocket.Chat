@@ -1,0 +1,25 @@
+.rc-alerts {
+	flex-grow: 0;
+	animation-name: dropdown-show;
+  animation-duration: 4s;
+	padding: 10px var(--header-padding);
+	background: #1D73F5;
+	color: #fff;
+	text-align: center;
+	z-index: 10;
+    position: relative;
+		font-size: 20px;
+		display: flex;
+		&__icon {
+			color: inherit;
+			cursor: pointer;
+			flex-grow: 0;
+
+			&--close {
+				transform: rotate(45deg);
+			}
+		}
+		&__content {
+			flex: 1;
+		}
+}
