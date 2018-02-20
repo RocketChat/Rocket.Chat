@@ -401,6 +401,7 @@ describe('[Users]', function() {
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
+					expect(res.body.preferences).to.be.eql(preferences.data);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
