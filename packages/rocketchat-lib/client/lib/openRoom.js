@@ -67,6 +67,10 @@ function openRoom(type, name) {
 			Session.set('openedRoom', room._id);
 			RocketChat.openedRoom = room._id;
 
+			if (user.settings && user.settings.preferences.saveLastVisitedRoom) {
+				Meteor.call('setLastVisitedRoom', room._id);
+			}
+
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
 			Session.set('editRoomTitle', false);

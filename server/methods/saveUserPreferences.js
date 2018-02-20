@@ -33,6 +33,10 @@ Meteor.methods({
 				preferences.saveMobileBandwidth = settings.saveMobileBandwidth === '1' ? true : false;
 			}
 
+			if (settings.saveLastVisitedRoom) {
+				preferences.saveLastVisitedRoom = settings.saveLastVisitedRoom === '1' ? true : false;
+			}
+
 			if (settings.collapseMediaByDefault) {
 				preferences.collapseMediaByDefault = settings.collapseMediaByDefault === '1' ? true : false;
 			}
