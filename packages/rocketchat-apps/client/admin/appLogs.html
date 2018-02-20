@@ -7,9 +7,16 @@
 					<i class="icon-left-open"></i>
 				</a> &nbsp;
 
-				<h2>
-					<span class="room-title">{{_ "View_the_Logs_for"}}: "{{name}}"</span>
-				</h2>
+				{{#if isReady}}
+					<h2>
+						<span class="room-title">{{_ "View_the_Logs_for"}}: "{{name}}"</span>
+					</h2>
+				{{/if}}
+				{{#if hasError}}
+					<h2>
+						<span class="room-title">{{ theError }}</span>
+					</h2>
+				{{/if}}
 			</header>
 			<div class="content background-transparent-dark">
 				{{#if isReady}}
@@ -49,6 +56,13 @@
 							</div>
 						{{/each}}
 					</div>
+				{{else if hasError}}
+					<div class="apps-error error-color">
+						<i class="icon-attention"></i>
+						<p>Sadly, an error has occured while loading this page.</p>
+					</div>
+				{{else}}
+					{{> loading}}
 				{{/if}}
 			</div>
 		</section>

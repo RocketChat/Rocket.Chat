@@ -8,14 +8,21 @@
 					<i class="icon-left-open"></i>
 				</a> &nbsp;
 
-				<h2>
-					<span class="room-title">{{_ "Manage_the_App"}}: "{{name}}"</span>
-				</h2>
+				{{#if isReady}}
+					<h2>
+						<span class="room-title">{{_ "Manage_the_App"}}: "{{name}}"</span>
+					</h2>
 
-				<div class="submit">
-					<button class="button logs">{{_ "Logs"}}</button>
-					<button class="button danger uninstall">{{_ "Uninstall"}}</button>
-				</div>
+					<div class="submit">
+						<button class="button logs">{{_ "Logs"}}</button>
+						<button class="button danger uninstall">{{_ "Uninstall"}}</button>
+					</div>
+				{{/if}}
+				{{#if hasError}}
+					<h2>
+						<span class="room-title">{{ theError }}</span>
+					</h2>
+				{{/if}}
 			</header>
 			<div class="content background-transparent-dark">
 				{{#requiresPermission 'manage-apps'}}
@@ -238,6 +245,11 @@
 									{{/each}}
 								</div>
 							</div>
+						</div>
+					{{else if hasError}}
+						<div class="apps-error error-color">
+							<i class="icon-attention"></i>
+							<p>Sadly, an error has occured while loading this page.</p>
 						</div>
 					{{else}}
 						{{> loading}}

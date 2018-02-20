@@ -43,18 +43,11 @@ export class AppsRestApi {
 		this.api.addRoute('', { authRequired: true }, {
 			get() {
 				const apps = manager.get().map(prl => {
-					if (this.queryParams.languagesOnly) {
-						return {
-							id: prl.getID(),
-							languages: prl.getStorageItem().languageContent
-						};
-					} else {
-						const info = prl.getInfo();
-						info.languages = prl.getStorageItem().languageContent;
-						info.status = prl.getStatus();
+					const info = prl.getInfo();
+					info.languages = prl.getStorageItem().languageContent;
+					info.status = prl.getStatus();
 
-						return info;
-					}
+					return info;
 				});
 
 				return RocketChat.API.v1.success({ apps });
@@ -89,6 +82,19 @@ export class AppsRestApi {
 				info.status = item.getStatus();
 
 				return RocketChat.API.v1.success({ app: info });
+			}
+		});
+
+		this.api.addRoute('languages', { authRequired: false }, {
+			get() {
+				const apps = manager.get().map(prl => {
+					return {
+						id: prl.getID(),
+						languages: prl.getStorageItem().languageContent
+					};
+				});
+
+				return RocketChat.API.v1.success({ apps });
 			}
 		});
 
