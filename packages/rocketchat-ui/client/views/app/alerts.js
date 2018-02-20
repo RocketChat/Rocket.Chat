@@ -57,7 +57,6 @@ Template.alerts.events({
 			return;
 		}
 		this.action.call(this, e, instance.data.data);
-		alerts.close();
 	},
 	'click .js-close'() {
 		alerts.close();

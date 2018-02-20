@@ -20,6 +20,14 @@
 	align-items: center;
 	flex-grow: 0;
 
+	&--danger {
+		background: var(--rc-color-error);
+	}
+
+	&--alert {
+		background: var(--rc-color-alert);
+	}
+
 	&--large > &__content {
 		flex-direction: column;
 
