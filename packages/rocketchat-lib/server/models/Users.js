@@ -507,6 +507,26 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	setReason(_id, reason) {
+		const update = {
+			$set: {
+				reason
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetReason(_id) {
+		const update = {
+			$unset: {
+				reason: true
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
