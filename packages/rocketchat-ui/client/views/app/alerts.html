@@ -1,54 +1,29 @@
 <template name="alerts">
 	<div class="rc-alerts {{modifiers}} {{customclass}}" data-popover="popover">
-		{{# if bigIcon}}
-			<div class="rc-alerts__big-icon {{hasAction}} js-action">
-				{{> icon icon=bigIcon }}
+		{{#if icon}}
+			<div class="rc-alerts__big-icon rc-alerts__icon {{hasAction}} js-action">
+				{{> icon icon=icon }}
 			</div>
 		{{/if}}
 		<div class="rc-alerts__content {{hasAction}} js-action">
 			{{#if template}}
 				{{> Template.dynamic template=template data=data}}
 			{{else}}
-				{{text}}
+				{{#if title}}
+					<div class="rc-alerts__title">
+						{{title}}
+					</div>
+				{{/if}}
+				<div class="rc-alerts__line">
+					{{text}}
+				</div>
 				{{{html}}}
 			{{/if}}
-
 		</div>
-		{{#unless hideClose}}
-		<div class="rc-alerts__icon js-close">
-			{{> icon block="rc-alerts__icon rc-alerts__icon--close" icon='plus'}}
-		</div>
-		{{/unless}}
+		{{#if closable}}
+			<div class="rc-alerts__icon js-close">
+				{{> icon block="rc-alerts__icon rc-alerts__icon--close" icon='plus'}}
+			</div>
+		{{/if}}
 	</div>
 </template>
-
-<!-- <div class="rc-alerts__content {{#if isSafariIos}}rc-alerts__content--safariIos{{/if}}">
-{{#if template}}
-{{> Template.dynamic template=template data=data}}
-{{else}}
-{{#each column in columns}}
-<div class="rc-alerts__column">
-{{#each group in column.groups}}
-{{#if group.title}}
-<h3 class="rc-alerts__title">{{group.title}}</h3>
-{{/if}}
-<ul class="rc-alerts__list">
-{{#each item in group.items}}
-{{# with item}}
-<li class="rc-alerts__item {{#if item.modifier}}rc-alerts__item--{{item.modifier}}{{/if}}{{#if hasAction}} js-action{{/if}}" data-type={{item.type}} data-id={{item.id.toLowerCase}} data-href={{item.href}} data-sidenav={{item.sideNav}}>
-{{#if item.icon}}
-<span class="rc-alerts__icon">
-{{> icon block="rc-alerts__icon-element" icon=item.icon }}
-</span>
-{{/if}}
-<span class="rc-alerts__item-text">{{item.name}}</span>
-</li>
-{{/with}}
-{{/each}}
-</ul>
-<span class="rc-alerts__divider"></span>
-{{/each}}
-</div>
-{{/each}}
-{{/if}}
-</div> -->
