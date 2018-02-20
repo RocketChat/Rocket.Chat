@@ -1,3 +1,4 @@
+/* globals alerts */
 this.alerts = {
 	renderedAlert: null,
 	open(config) {
