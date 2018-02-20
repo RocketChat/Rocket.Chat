@@ -139,6 +139,7 @@
 		"ip-range-check": "0.0.2",
 		"jquery": "^3.2.1",
 		"jschardet": "1.6.0",
+		"lamejs": "^1.2.0",
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "1.5.1",
