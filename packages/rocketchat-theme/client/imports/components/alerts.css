@@ -1,25 +1,36 @@
 .rc-alerts {
-	flex-grow: 0;
-	animation-name: dropdown-show;
-  animation-duration: 4s;
-	padding: 10px var(--header-padding);
-	background: #1D73F5;
-	color: #fff;
-	text-align: center;
-	z-index: 10;
-    position: relative;
-		font-size: 20px;
-		display: flex;
-		&__icon {
-			color: inherit;
-			cursor: pointer;
-			flex-grow: 0;
+	position: relative;
 
-			&--close {
-				transform: rotate(45deg);
-			}
+	z-index: 10;
+
+	display: flex;
+
+	padding: 10px var(--header-padding);
+
+	animation-name: dropdown-show;
+	animation-duration: 0.3s;
+
+	text-align: center;
+
+	color: #ffffff;
+
+	background: #1d73f5;
+
+	font-size: 20px;
+	flex-grow: 0;
+
+	&__icon {
+		cursor: pointer;
+
+		color: inherit;
+		flex-grow: 0;
+
+		&--close {
+			transform: rotate(45deg);
 		}
-		&__content {
-			flex: 1;
-		}
+	}
+
+	&__content {
+		flex: 1;
+	}
 }
