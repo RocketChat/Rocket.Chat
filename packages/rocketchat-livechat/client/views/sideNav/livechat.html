@@ -15,8 +15,6 @@
 				<ul class="rooms-list__list inquiries">
 					{{#each room in inquiries}}
 						{{> chatRoomItem room }}
-					{{else}}
-						<p class="rooms-list__empty-room">{{_ "No_livechats" }}</p>
 					{{/each}}
 				</ul>
 			{{/if}}
@@ -32,8 +30,6 @@
 			{{/if}}
 			{{#each room in rooms}}
 				{{> chatRoomItem room }}
-			{{else}}
-				<p class="rooms-list__empty-room">{{_ "No_livechats" }}</p>
 			{{/each}}
 		</ul>
 	</div>
