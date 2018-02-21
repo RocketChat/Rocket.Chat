@@ -532,6 +532,26 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
+	addBannerById(_id, banner) {
+		const update = {
+			$set: {
+				[`banners.${ banner.id }`]: banner
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	removeBannerById(_id, banner) {
+		const update = {
+			$unset: {
+				[`banners.${ banner.id }`]: true
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
