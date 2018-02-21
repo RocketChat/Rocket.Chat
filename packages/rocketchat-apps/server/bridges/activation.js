@@ -3,33 +3,27 @@ export class AppActivationBridge {
 		this.orch = orch;
 	}
 
-	appEnabled(app) {
-		console.log(`The App ${ app.getName() } (${ app.getID() }) has been enabled.`);
+	appAdded(app) {
+		console.log(`The ${ app.getName() } App (${ app.getID() }) has been added.`);
+
+		this.orch.getNotifier().appAdded(app.getID());
 	}
 
-	appDisabled(app) {
-		console.log(`The App ${ app.getName() } (${ app.getID() }) has been disabled.`);
-	}
+	appUpdated(app) {
+		console.log(`The ${ app.getName() } App (${ app.getID() }) has been updated.`);
 
-	appLoaded(app, enabled) {
-		console.log(`The App ${ app.getName() } (${ app.getID() }) has been loaded and enabled? ${ enabled }`);
-
-		if (enabled) {
-			this.orch.getNotifier().appAdded(app.getID());
-		}
-	}
-
-	appUpdated(app, enabled) {
-		console.log(`The App ${ app.getName() } (${ app.getID() }) has been updated and enabled? ${ enabled }`);
-
-		if (enabled) {
-			this.orch.getNotifier().appUpdated(app.getID());
-		}
+		this.orch.getNotifier().appUpdated(app.getID());
 	}
 
 	appRemoved(app) {
-		console.log(`The App ${ app.getName() } (${ app.getID() }) has been removed.`);
+		console.log(`The ${ app.getName() } App (${ app.getID() }) has been removed.`);
 
 		this.orch.getNotifier().appRemoved(app.getID());
+	}
+
+	appStatusChanged(app, status) {
+		console.log(`The ${ app.getName() } App (${ app.getID() }) status has changed: ${ status }`);
+
+		this.orch.getNotifier().appStatusUpdated(app.getID(), status);
 	}
 }

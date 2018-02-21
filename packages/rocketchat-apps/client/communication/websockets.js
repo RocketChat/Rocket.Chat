@@ -8,9 +8,11 @@ export class AppWebsocketReceiver {
 		this.streamer.on('command/disabled', this.onCommandDisabled.bind(this));
 		this.streamer.on('command/updated', this.onCommandUpdated.bind(this));
 		this.streamer.on('command/removed', this.onCommandDisabled.bind(this));
+		console.log('apps websocket listener');
 	}
 
 	onAppAdded(appId) {
+		console.log('app added');
 		RocketChat.API.get(`apps/${ appId }/languages`).then((result) => {
 			this.orch.parseAndLoadLanguages(result.languages);
 		});
