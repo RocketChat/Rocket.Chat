@@ -2860,7 +2860,6 @@
 
 		&::before {
 			position: absolute;
-			z-index: 1;
 			top: -30px;
 			left: calc(50% - 70px);
 
@@ -2881,6 +2880,7 @@
 		&::after {
 			position: absolute;
 			top: -20px;
+			z-index: -1;
 			left: 0;
 
 			display: block;
@@ -5493,9 +5493,6 @@ body:not(.is-cordova) {
 
 @media (width <= 780px) {
 	.rc-old.main-content {
-		z-index: 1;
-		left: 0;
-
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		will-change: transform;
 	}

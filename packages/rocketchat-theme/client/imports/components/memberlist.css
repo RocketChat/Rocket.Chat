@@ -52,18 +52,12 @@
 	}
 
 	&__status {
-		width: 6px;
+		display: inline-block;
 		width: var(--sidebar-item-user-status-size);
-		height: 6px;
 		height: var(--sidebar-item-user-status-size);
-		margin: 0 10px;
+		margin: 0 7px 0 3px;
 
-		-webkit-transform: translateY(-50%);
-		transform: translateY(-50%);
-
-		border-radius: 50%;
 		border-radius: var(--sidebar-item-user-status-radius);
-		background: var(--status-invisible);
 
 		&--online {
 			background-color: var(--status-online);
@@ -83,10 +77,12 @@
 	}
 
 	&__username {
+		display: flex;
 		flex: 1 1 auto;
 
-		margin: 0 10px;
+		margin: 0 8px;
 
 		font-size: 16px;
+		align-items: center;
 	}
 }
