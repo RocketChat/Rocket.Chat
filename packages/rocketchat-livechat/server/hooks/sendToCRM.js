@@ -5,8 +5,15 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	postData.messages = [];
 
-	if (includeMessages) {
-		RocketChat.models.Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).forEach((message) => {
+	let messages;
+	if (typeof includeMessages === 'boolean' && includeMessages) {
+		messages = RocketChat.models.Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
+	} else if (includeMessages instanceof Array) {
+		messages = includeMessages;
+	}
+
+	if (messages) {
+		messages.forEach((message) => {
 			if (message.t) {
 				return;
 			}
@@ -48,6 +55,36 @@ RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 
 	return sendToCRM('LivechatEdit', room);
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
+
+RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+	// skips this callback if the message was edited
+	if (message.editedAt) {
+		return message;
+	}
+
+	// only call webhook if it is a livechat room
+	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+		return message;
+	}
+
+	// if the message has a token, it was sent from the visitor
+	// if not, it was sent from the agent
+	if (message.token) {
+		if (!RocketChat.settings.get('Livechat_webhook_on_visitor_message')) {
+			return message;
+		}
+	} else if (!RocketChat.settings.get('Livechat_webhook_on_agent_message')) {
+		return message;
+	}
+
+	// if the message has a type means it is a special message (like the closing comment), so skips
+	if (message.t) {
+		return message;
+	}
+
+	sendToCRM('Message', room, [message]);
+	return message;
+}, RocketChat.callbacks.priority.MEDIUM, 'sendMessageToFacebook');
 
 RocketChat.callbacks.add('livechat.leadCapture', (room) => {
 	return sendToCRM('LeadCapture', room, false);
