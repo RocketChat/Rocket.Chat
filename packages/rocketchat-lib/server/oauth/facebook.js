@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { OAuth } from 'meteor/oauth';
 const crypto = Npm.require('crypto');
 const whitelisted = [
 	'id',
@@ -19,7 +20,7 @@ const getIdentity = function(accessToken, fields, secret) {
 	hmac.update(accessToken);
 
 	try {
-		return HTTP.get(`${FB_URL}/${FB_API_VERSION}/me`, {
+		return HTTP.get(`${ FB_URL }/${ FB_API_VERSION }/me`, {
 			params: {
 				access_token: accessToken,
 				appsecret_proof: hmac.digest('hex'),
@@ -27,8 +28,8 @@ const getIdentity = function(accessToken, fields, secret) {
 			}
 		}).data;
 	} catch (err) {
-		throw _.extend(new Error('Failed to fetch identity from Facebook. ' + err.message),
-			{ response: err.response });
+		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ err.message }`),
+			{response: err.response});
 	}
 };
 
