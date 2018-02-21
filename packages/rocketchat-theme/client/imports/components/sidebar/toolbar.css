@@ -1,5 +1,8 @@
 .toolbar {
-	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+	padding: 0 var(--sidebar-default-padding);
+	position: absolute;
+	right: 0;
+	display: none;
 
 	&__wrapper {
 
@@ -69,6 +72,7 @@
 
 		&__icon {
 			left: 0.5rem;
+			fill: var(--rc-color-primary-light);
 
 			&--right {
 				right: 0.5rem;
