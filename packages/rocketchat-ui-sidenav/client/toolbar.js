@@ -1,3 +1,4 @@
+
 /* global menu */
 import _ from 'underscore';
 

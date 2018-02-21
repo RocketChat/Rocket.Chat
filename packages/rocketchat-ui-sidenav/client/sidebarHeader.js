@@ -44,7 +44,10 @@ const toolbarButtons = (user) => {
 	{
 		name: t('Directory'),
 		icon: 'globe',
-		condition: () => false
+		action: () => {
+			menu.close();
+			FlowRouter.go('directory');
+		}
 	},
 	{
 		name: t('View_mode'),
