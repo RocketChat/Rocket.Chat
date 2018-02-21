@@ -12,9 +12,9 @@ import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.general.waitForVisible(5000);
-		sideNav.general.click();
+		// sideNav.spotlightSearch.waitForVisible(10000);
+		// sideNav.general.waitForVisible(5000);
+		// sideNav.general.click();
 	});
 
 	after(() => {
@@ -24,7 +24,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountMenu.click();
+			sideNav.sidebarUserMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
