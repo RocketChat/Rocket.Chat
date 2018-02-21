@@ -17,6 +17,10 @@ html {
 body {
 	position: relative;
 
+	display: flex;
+
+	flex-direction: column;
+
 	overflow: visible;
 
 	width: 100%;
@@ -72,7 +76,8 @@ button {
 #rocket-chat {
 	display: flex;
 
-	height: 100%;
+	flex: 1;
+
 	align-items: stretch;
 
 	&.animated-hidden {
@@ -116,12 +121,14 @@ button {
 }
 
 .rc-icon {
+
 	overflow: hidden;
 
 	width: 1.25em;
 	height: 1em;
 
 	vertical-align: -0.15em;
+	fill: currentColor;
 
 	fill: currentColor;
 }
