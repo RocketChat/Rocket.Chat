@@ -259,6 +259,7 @@ function messageActionsTest() {
 describe('[Message]', () => {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
+		sideNav.spotlightSearchIcon.click();
 		sideNav.spotlightSearch.waitForVisible(10000);
 		sideNav.searchChannel('general');
 	});
@@ -266,6 +267,7 @@ describe('[Message]', () => {
 
 	describe('[GENERAL Channel]', () => {
 		before(()=>{
+			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
 			currentTest = 'general';
