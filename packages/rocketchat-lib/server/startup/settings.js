@@ -1176,10 +1176,16 @@ RocketChat.settings.addGroup('Message', function() {
 			'public': true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription'
 		});
+	});
+	this.section('Message_Audio', function() {
 		this.add('Message_AudioRecorderEnabled', true, {
 			type: 'boolean',
 			'public': true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription'
+		});
+		this.add('Message_Audio_bitRate', 32, {
+			type: 'int',
+			'public': true
 		});
 	});
 	this.add('Message_AllowEditing', true, {
