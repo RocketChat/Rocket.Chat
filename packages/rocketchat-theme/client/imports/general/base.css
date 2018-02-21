@@ -124,12 +124,13 @@ button {
 
 	overflow: hidden;
 
-	width: 1em;
+	width: 1.25em;
 	height: 1em;
 
 	vertical-align: -0.15em;
 	fill: currentColor;
 
+	fill: currentColor;
 }
 
 .ps-scrollbar-y-rail {
@@ -194,4 +195,8 @@ button {
 			top: -26px;
 		}
 	}
+}
+
+.hidden {
+	display: none;
 }

@@ -176,9 +176,9 @@
 	/*
 	* Sidebar Account
 	*/
-	--sidebar-account-thumb-size: 36px;
+	--sidebar-account-thumb-size: 23px;
 	--sidebar-small-account-thumb-size: 40px;
-	--sidebar-account-status-bullet-size: 12px;
+	--sidebar-account-status-bullet-size: 10px;
 	--sidebar-small-account-status-bullet-size: 8px;
 	--sidebar-account-status-bullet-radius: 50%;
 	--sidebar-account-username-size: 1rem;
@@ -193,8 +193,12 @@
 	* Sidebar Item
 	*/
 	--sidebar-item-radius: 2px;
-	--sidebar-item-height: 32px;
-	--sidebar-item-thumb-size: 20px;
+	--sidebar-item-height: 24px;
+	--sidebar-item-height-medium: 34px;
+	--sidebar-item-height-extended: 52px;
+	--sidebar-item-thumb-size: 18px;
+	--sidebar-item-thumb-size-medium: 27px;
+	--sidebar-item-thumb-size-extended: 36px;
 	--sidebar-item-text-color: var(--color-gray);
 	--sidebar-item-background: inherit;
 	--sidebar-item-hover-background: var(--rc-color-primary-darkest);
@@ -203,11 +207,8 @@
 	--sidebar-item-unread-color: var(--color-white);
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
-	--sidebar-small-item-user-status-size: 4px;
 	--sidebar-item-user-status-radius: 50%;
-	--sidebar-item-text-size: 1rem;
-	--sidebar-item-big-height: 62px;
-	--sidebar-item-big-thumb-size: 36px;
+	--sidebar-item-text-size: 0.875rem;
 
 	/*
 	* Modal
