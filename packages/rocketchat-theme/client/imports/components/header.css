@@ -196,7 +196,7 @@
 		cursor: pointer;
 		transition: all 0.3s;
 
-		font-size: 24px;
+		font-size: 18px;
 		align-items: center;
 
 		&.active,

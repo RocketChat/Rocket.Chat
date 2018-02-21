@@ -107,6 +107,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			}
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
+			'public': true,
 			type: 'boolean'
 		});
 		this.add('Accounts_AllowedDomainsList', '', {
