@@ -85,7 +85,6 @@ button {
 	max-height: 100%;
 	height: 1px;
 
-
 	&.animated-hidden {
 		visibility: hidden;
 
