@@ -12,20 +12,23 @@ class SideNav extends Page {
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
 	get accountMenu() { return browser.element('.sidebar__account'); }
+	get sidebarHeader() { return browser.element('.sidebar__header'); }
+	get sidebarUserMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
-	get statusOnline() { return browser.element('[data-id="online"]'); }
-	get statusAway() { return browser.element('[data-id="away"]'); }
-	get statusBusy() { return browser.element('[data-id="busy"]'); }
-	get statusOffline() { return browser.element('[data-id="offline"]'); }
+	get statusOnline() { return browser.element('.rc-popover__item--online'); }
+	get statusAway() { return browser.element('.rc-popover__item--away'); }
+	get statusBusy() { return browser.element('.rc-popover__item--busy'); }
+	get statusOffline() { return browser.element('.rc-popover__item--offline'); }
 	get account() { return browser.element('[data-id="account"][data-type="open"]'); }
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
 	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
+	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
-	get newChannelBtn() { return browser.element('.toolbar .toolbar__search-create-channel'); }
+	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--plus'); }
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 
 	// Rooms List
