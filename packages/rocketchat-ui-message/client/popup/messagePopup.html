@@ -1,7 +1,7 @@
 <template name="messagePopup">
 	{{#if isOpen}}
 		{{#if sidebar}}
-			<ul class="rooms-list__list rooms-list__toolbar-search" style="top: {{sidebarHeaderHeight}}">
+			<ul class="rooms-list__list rooms-list__toolbar-search" style="top: {{sidebarHeaderHeight}}; height: calc(100vh - {{sidebarHeaderHeight}}); width: {{sidebarWidth}}">
 				{{#each data}}
 						{{> Template.dynamic template=../template data=toolbarData }}
 				{{/each}}

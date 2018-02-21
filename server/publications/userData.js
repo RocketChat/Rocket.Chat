@@ -27,7 +27,8 @@ Meteor.publish('userData', function() {
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,
 			'services.totp.enabled': 1,
-			statusLivechat: 1
+			statusLivechat: 1,
+			banners: 1
 		}
 	});
 });
