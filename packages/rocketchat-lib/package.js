@@ -126,6 +126,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Subscriptions.js', 'server');
 	api.addFiles('server/models/Uploads.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
+	api.addFiles('server/models/ExportOperations.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/google.js', 'server');

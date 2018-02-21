@@ -197,7 +197,19 @@ Template.accountPreferences.onCreated(function() {
 	};
 
 	this.downloadMyData = function() {
-		Meteor.call('downloadMyData', {}, function(error, results) {
+		Meteor.call('requestDataDownload', {}, function(error, results) {
+			if (results) {
+
+			}
+
+			if (error) {
+				return handleError(error);
+			}
+		});
+	};
+
+	this.processDataDownload = function() {
+		Meteor.call('processDataDownloads', {}, function(error, results) {
 			if (results) {
 
 			}
@@ -228,6 +240,9 @@ Template.accountPreferences.events({
 	},
 	'click .download-my-data'(e, t) {
 		t.downloadMyData();
+	},
+	'click .process-data-download'(e, t) {
+		t.processDataDownload();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();

@@ -34,45 +34,42 @@ const loadUserSubscriptions = function(exportOperation) {
 			targetFile: fileName
 		});
 	});
+
+	exportOperation.status = 'exporting';
 };
 
 const continueExportingRoom = function(exportOperation, exportOpRoomData) {
+	createDir(exportOperation.exportPath);
 	const filePath = path.join(exportOperation.exportPath, exportOpRoomData.targetFile);
 
-	if (exportOpRoomData.status == 'pending') {
+	if (exportOpRoomData.status === 'pending') {
 		exportOpRoomData.status = 'exporting';
-		startFile(filePath, '[');
+		startFile(filePath, '');
 	}
 
-	const limit = 20;
-	let skip = exportOpRoomData.exportedCount;
+	const limit = 50;
+	const skip = exportOpRoomData.exportedCount;
 
 	const cursor = RocketChat.models.Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
 	const count = cursor.count();
 
-	if (count <= exportOpRoomData.exportedCount) {
-		writeToFile(filePath, ']');
-		exportOpRoomData.status = 'completed';
-		return;
-	}
-
 	cursor.forEach((msg) => {
 		const attachments = [];
-		const needsComma = exportOpRoomData.exportedCount > 0;
 
 		if (msg.attachments) {
 			msg.attachments.forEach((attachment) => {
 				attachments.push({
 					type : attachment.type,
 					title : attachment.title,
-					url : attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url,
+					url : attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url
 				});
 			});
 		}
 
 		const messageObject = {
 			msg: msg.msg,
-			username: msg.u.username
+			username: msg.u.username,
+			ts: msg.ts
 		};
 
 		if (attachments && attachments.length > 0) {
@@ -85,19 +82,30 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 			messageObject.name = msg.u.name;
 		}
 
-		let messageString = JSON.stringify(messageObject);
-		if (needsComma) {
-			messageString = `,\n${ messageString }`;
-		}
+		const messageString = JSON.stringify(messageObject);
 
-		writeToFile(filePath, messageString);
+		writeToFile(filePath, `${ messageString }\n`);
 		exportOpRoomData.exportedCount++;
 	});
 
+	if (count <= exportOpRoomData.exportedCount) {
+		exportOpRoomData.status = 'completed';
+		return true;
+	}
+
+	return false;
+};
+
+const isOperationFinished = function(exportOperation) {
+	const incomplete = exportOperation.roomList.some((exportOpRoomData) => {
+		return exportOpRoomData.status !== 'completed';
+	});
+
+	return !incomplete;
 };
 
 const continueExportOperation = function(exportOperation) {
-	if (exportOperation.status == 'completed') {
+	if (exportOperation.status === 'completed') {
 		return true;
 	}
 
@@ -107,7 +115,7 @@ const continueExportOperation = function(exportOperation) {
 
 	let nextRoom = false;
 	exportOperation.roomList.some((exportOpRoomData) => {
-		if (exportOpRoomData.status == 'completed') {
+		if (exportOpRoomData.status === 'completed') {
 			return false;
 		}
 
@@ -117,30 +125,22 @@ const continueExportOperation = function(exportOperation) {
 
 	if (nextRoom) {
 		continueExportingRoom(exportOperation, nextRoom);
-		return false;
 	}
 
-	exportOperation.status = 'completed';
-	return true;
+	if (isOperationFinished(exportOperation)) {
+		exportOperation.status = 'completed';
+		return true;
+	}
+
+	return false;
 };
 
 Meteor.methods({
-	downloadMyData() {
-		const currentUserData = Meteor.user();
-
-		const folderName = path.join('/tmp/', currentUserData._id);
-		const exportOperation = {
-			userId : currentUserData._id,
-			roomList: null,
-			status: 'pending',
-			exportPath: folderName
-		};
-
-		while (exportOperation.status != 'completed') {
-			if (continueExportOperation(exportOperation)) {
-				break;
-			}
-		}
+	processDataDownloads() {
+		const cursor = RocketChat.models.ExportOperations.findAllPending({limit: 1});
+		cursor.forEach((exportOperation) => {
+			continueExportOperation(exportOperation);
+			RocketChat.models.ExportOperations.updateOperation(exportOperation);
+		});
 	}
-
 });
