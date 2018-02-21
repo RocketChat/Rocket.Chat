@@ -14,12 +14,13 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 
 ### Server Setup Information:
 
-* Version of Rocket.Chat Server:
-* Operating System:
-* Deployment Method(snap/docker/tar/etc):
+* Version of Rocket.Chat Server: 
+* Operating System: 
+* Deployment Method(snap/docker/tar/etc): 
 * Number of Running Instances: 
-* DB Replicaset Oplog:
-* Node Version:
+* DB Replicaset Oplog: 
+* Node Version: 
+* mongoDB Version:
 
 ### Steps to Reproduce:
 
