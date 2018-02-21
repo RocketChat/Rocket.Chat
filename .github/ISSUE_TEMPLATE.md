@@ -20,7 +20,7 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 * Number of Running Instances: 
 * DB Replicaset Oplog: 
 * Node Version: 
-* mongoDB Version:
+* mongoDB Version: 
 
 ### Steps to Reproduce:
 
