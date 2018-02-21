@@ -1,12 +1,12 @@
 (function(window){
 
   var WORKER_PATH = 'mp3-realtime-worker.js';
-  //var encoderWorker = new Worker('mp3Worker.js');
 
   var Recorder = function(source, cfg){
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
     var numChannels = config.numChannels || 1;
+    var bitRate = RocketChat.settings.get('Message_Audio_bitRate');
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
                  this.context.createJavaScriptNode).call(this.context,
@@ -17,7 +17,8 @@
       command: 'init',
       config: {
         sampleRate: this.context.sampleRate,
-        numChannels: numChannels
+        numChannels: numChannels,
+	bitRate: bitRate
       }
     });
 
