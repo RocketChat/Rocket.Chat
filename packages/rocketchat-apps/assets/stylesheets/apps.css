@@ -1,0 +1,20 @@
+input.app-author-name {
+	width: auto !important;
+	display: inline-block !important;
+}
+
+div.app-enable-loading .loading-animation {
+	justify-content: left;
+	margin-left: 50px;
+}
+
+div.apps-error {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: calc(100% - 60px);
+	padding: 25px 40px;
+	width: 100%;
+	font-size: 45px;
+}

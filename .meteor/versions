@@ -128,6 +128,7 @@ rocketchat:accounts@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
+rocketchat:apps@1.0.0
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1

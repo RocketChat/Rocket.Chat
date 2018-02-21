@@ -110,6 +110,7 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:apps
 rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
