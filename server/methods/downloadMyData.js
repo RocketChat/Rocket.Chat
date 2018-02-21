@@ -18,8 +18,8 @@ const createDir = function(folderName) {
 const loadUserSubscriptions = function(exportOperation) {
 	exportOperation.roomList = [];
 
-	const subscriptions = RocketChat.models.Subscriptions.findByUserId(exportOperation.userId).fetch();
-	subscriptions.forEach((subscription) => {
+	const cursor = RocketChat.models.Subscriptions.findByUserId(exportOperation.userId);
+	cursor.forEach((subscription) => {
 		const roomId = subscription._room._id;
 		const roomData = subscription._room;
 		const roomName = roomData.name ? roomData.name : roomId;
@@ -47,14 +47,16 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	const limit = 20;
 	let skip = exportOpRoomData.exportedCount;
 
-	const messages = RocketChat.models.Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip }).fetch();
-	if (messages.length === 0) {
+	const cursor = RocketChat.models.Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
+	const count = cursor.count();
+
+	if (count <= exportOpRoomData.exportedCount) {
 		writeToFile(filePath, ']');
 		exportOpRoomData.status = 'completed';
 		return;
 	}
 
-	messages.forEach((msg) => {
+	cursor.forEach((msg) => {
 		const attachments = [];
 		const needsComma = exportOpRoomData.exportedCount > 0;
 
@@ -104,13 +106,13 @@ const continueExportOperation = function(exportOperation) {
 	}
 
 	let nextRoom = false;
-	exportOperation.roomList.forEach((exportOpRoomData) => {
+	exportOperation.roomList.some((exportOpRoomData) => {
 		if (exportOpRoomData.status == 'completed') {
-			return;
+			return false;
 		}
 
 		nextRoom = exportOpRoomData;
-		return false;
+		return true;
 	});
 
 	if (nextRoom) {
@@ -135,7 +137,9 @@ Meteor.methods({
 		};
 
 		while (exportOperation.status != 'completed') {
-			continueExportOperation(exportOperation);
+			if (continueExportOperation(exportOperation)) {
+				break;
+			}
 		}
 	}
 
