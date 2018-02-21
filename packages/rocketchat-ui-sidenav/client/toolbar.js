@@ -1,3 +1,4 @@
+
 /* global menu */
 import _ from 'underscore';
 
@@ -35,6 +36,61 @@ const toolbarSearch = {
 };
 
 this.toolbarSearch = toolbarSearch;
+
+const getFromServer = (cb, type) => {
+	isLoading.set(true);
+	const currentFilter = filterText;
+
+	Meteor.call('spotlight', currentFilter, usernamesFromClient, type, (err, results) => {
+		if (currentFilter !== filterText) {
+			return;
+		}
+
+		isLoading.set(false);
+
+		if (err) {
+			console.log(err);
+			return false;
+		}
+
+		const resultsFromServer = [];
+		const usersLength = results.users.length;
+		const roomsLength = results.rooms.length;
+
+		if (usersLength) {
+			for (let i = 0; i < usersLength; i++) {
+				resultsFromServer.push({
+					_id: results.users[i]._id,
+					t: 'd',
+					name: results.users[i].username,
+					fname: results.users[i].name
+				});
+			}
+		}
+
+		if (roomsLength) {
+			for (let i = 0; i < roomsLength; i++) {
+				const alreadyOnClient = resultsFromClient.find(item => item._id === results.rooms[i]._id);
+				if (alreadyOnClient) {
+					continue;
+				}
+
+				resultsFromServer.push({
+					_id: results.rooms[i]._id,
+					t: results.rooms[i].t,
+					name: results.rooms[i].name,
+					lastMessage: results.rooms[i].lastMessage
+				});
+			}
+		}
+
+		if (resultsFromServer.length) {
+			cb(resultsFromClient.concat(resultsFromServer));
+		}
+	});
+};
+
+const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
 	canCreate() {
@@ -114,7 +170,7 @@ Template.toolbar.helpers({
 					{ fname: searchQuery }
 				];
 
-				resultsFromClient = collection.find(query, {sort: {unread: -1, ls: -1}}).fetch();
+				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
 				const user = Meteor.user();
@@ -129,6 +185,11 @@ Template.toolbar.helpers({
 				}
 
 				cb(resultsFromClient);
+
+				// Use `filter` here to get results for `#` or `@` filter only
+				if (resultsFromClient.length < 20) {
+					getFromServerDebounced(cb, type);
+				}
 			},
 
 			getValue(_id, collection, records) {
