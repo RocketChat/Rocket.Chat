@@ -93,6 +93,7 @@
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
 		"AgentUsers"                  : false,
+		"Apps"                        : false,
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
