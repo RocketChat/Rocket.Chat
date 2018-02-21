@@ -40,11 +40,12 @@
 @import 'imports/components/messages.css';
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
+@import 'imports/components/table.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
-
+@import 'imports/components/modal/directory.css';
 /* User Info */
 @import 'imports/components/userInfo.css';
 
