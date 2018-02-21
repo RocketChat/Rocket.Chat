@@ -33,7 +33,8 @@ RocketChat.registerAccessTokenService('twitter', function(options) {
 		appSecret: String,
 		appId: String,
 		accessTokenSecret: String,
-		expiresIn: Match.Integer
+		expiresIn: Match.Integer,
+		identity: Match.Maybe(Object)
 	}));
 
 	const identity = options.identity || getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);

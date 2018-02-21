@@ -37,7 +37,8 @@ RocketChat.registerAccessTokenService('facebook', function(options) {
 	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		secret: String,
-		expiresIn: Match.Integer
+		expiresIn: Match.Integer,
+		identity: Match.Maybe(Object)
 	}));
 
 	const identity = options.identity || getIdentity(options.accessToken, whitelisted, options.secret);
