@@ -76,9 +76,6 @@ Template.sidebarItem.onCreated(function() {
 });
 
 Template.sidebarItem.events({
-	'click [data-id], click .sidebar-item__link'() {
-		return menu.close();
-	},
 	'click .sidebar-item__menu'(e) {
 		e.preventDefault();
 
