@@ -49,6 +49,7 @@ Template.alerts.onDestroyed(function() {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
 	}
+	this.data.onClose && this.data.onClose();
 });
 
 Template.alerts.events({

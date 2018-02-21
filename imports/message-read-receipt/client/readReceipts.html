@@ -1,0 +1,16 @@
+<template name="readReceipts">
+	{{#if isLoading}}
+		{{> loading class="loading-animation--primary"}}
+	{{else}}
+		<p>{{_ "Read_by"}}:</p>
+		<ul class="read-receipts">
+			{{#each receipts}}
+				<li class="read-receipts__user background-transparent-dark-hover">
+					{{> avatar username=user.username}}
+					<div class="read-receipts__name color-primary-font-color">{{displayName}}</div>
+					<span class="read-receipts__time color-info-font-color" title="{{dateTime}}">{{time}}</span>
+				</li>
+			{{/each}}
+		</ul>
+	{{/if}}
+</template>
