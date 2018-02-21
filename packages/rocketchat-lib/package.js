@@ -130,6 +130,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
+	api.addFiles('server/oauth/twitter.js', 'server');
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
