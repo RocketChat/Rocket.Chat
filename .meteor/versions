@@ -128,6 +128,7 @@ rocketchat:accounts@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
+rocketchat:apps@1.0.0
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
@@ -235,6 +236,7 @@ rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:ui-vrecord@0.0.1
 rocketchat:version@1.0.0
+rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
