@@ -55,17 +55,25 @@ Meteor.methods({
 							attachments.push({
 								type : attachment.type,
 								title : attachment.title,
-								url : attachment.image_url || attachment.audio_url
+								url : attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url,
 							});
 						});
 					}
 
 					const messageObject = {
 						msg: msg.msg,
-						username: msg.u.username,
-						name: msg.u.name || '',
-						attachments
+						username: msg.u.username
 					};
+
+					if (attachments && attachments.length > 0) {
+						messageObject.attachments = attachments;
+					}
+					if (msg.t) {
+						messageObject.type = msg.t;
+					}
+					if (msg.u.name) {
+						messageObject.name = msg.u.name;
+					}
 
 					let messageString = JSON.stringify(messageObject);
 					if (needsComma) {
