@@ -2,7 +2,7 @@
 this.alerts = {
 	renderedAlert: null,
 	open(config) {
-		this.close();
+		this.close(false);
 
 		config.closable = typeof(config.closable) === typeof(true) ? config.closable : true;
 
@@ -12,7 +12,7 @@ this.alerts = {
 
 		this.renderedAlert = Blaze.renderWithData(Template.alerts, config, document.body, document.body.querySelector('#alert-anchor'));
 	},
-	close() {
+	close(dismiss = true) {
 		if (this.timer) {
 			clearTimeout(this.timer);
 			delete this.timer;
@@ -27,6 +27,8 @@ this.alerts = {
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
+
+		dismiss && this.renderedAlert.dataVar.curValue.onClose && this.renderedAlert.dataVar.curValue.onClose();
 	}
 };
 
@@ -49,7 +51,6 @@ Template.alerts.onDestroyed(function() {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
 	}
-	this.data.onClose && this.data.onClose();
 });
 
 Template.alerts.events({
