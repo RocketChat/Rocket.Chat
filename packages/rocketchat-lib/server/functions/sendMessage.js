@@ -31,6 +31,11 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			});
 		}
 	}
+
+	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		message.unread = true;
+	}
+
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
