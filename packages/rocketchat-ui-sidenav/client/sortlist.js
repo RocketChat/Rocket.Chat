@@ -1,7 +1,7 @@
 /* globals*/
 
 const checked = function(prop, field) {
-	const user = Meteor.user();
+	const user = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
 		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
 	}

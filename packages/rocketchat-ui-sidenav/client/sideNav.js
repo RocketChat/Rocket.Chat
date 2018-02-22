@@ -32,7 +32,7 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
-		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
+		const viewMode = RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode ? viewMode : 'condensed';
 	},
 
@@ -62,7 +62,7 @@ Template.sideNav.events({
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-
+	// GAZZO router line 27;
 	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
 	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
 	if (room !== undefined && room._id !== '') {

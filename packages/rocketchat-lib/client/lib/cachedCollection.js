@@ -86,6 +86,13 @@ class CachedCollectionManager {
 
 RocketChat.CachedCollectionManager = new CachedCollectionManager;
 
+const debug = false;
+
+const nullLog = function() {};
+
+const log =	function(...args) {
+	console.log(`CachedCollection ${ this.name } =>`, ...args);
+};
 
 class CachedCollection {
 	constructor({
@@ -98,7 +105,6 @@ class CachedCollection {
 		userRelated = true,
 		useSync = true,
 		useCache = true,
-		debug = false,
 		version = 6,
 		maxCacheTime = 60*60*24*30,
 		onSyncData = (/* action, record */) => {}
@@ -119,7 +125,7 @@ class CachedCollection {
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 		this.onSyncData = onSyncData;
-
+		this.log = debug ? log : nullLog;
 		RocketChat.CachedCollectionManager.register(this);
 
 		if (userRelated === true) {
@@ -134,12 +140,6 @@ class CachedCollection {
 
 		if (this.useCache === false) {
 			return this.clearCache();
-		}
-	}
-
-	log(...args) {
-		if (this.debug === true) {
-			console.log(`CachedCollection ${ this.name } =>`, ...args);
 		}
 	}
 
@@ -184,6 +184,7 @@ class CachedCollection {
 			if (data && data.records && data.records.length > 0) {
 				this.log(`${ data.records.length } records loaded from cache`);
 				data.records.forEach((record) => {
+					RocketChat.callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
 					record.__cache__ = true;
 					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
@@ -207,6 +208,7 @@ class CachedCollection {
 			this.log(`${ data.length } records loaded from server`);
 			data.forEach((record) => {
 				delete record.$loki;
+				RocketChat.callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 				this.onSyncData('changed', record);
@@ -269,7 +271,7 @@ class CachedCollection {
 
 			for (const record of changes) {
 				delete record.$loki;
-
+				RocketChat.callbacks.run(`cachedCollection-sync-${ this.name }`, record, record._deletedAt? 'removed' : 'changed');
 				if (record._deletedAt) {
 					this.collection.remove({ _id: record._id });
 
@@ -329,6 +331,7 @@ class CachedCollection {
 	setupListener(eventType, eventName) {
 		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
+			RocketChat.callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
 				this.collection.remove(record._id);
 				RoomManager.close(record.t+record.name);

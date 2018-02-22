@@ -190,7 +190,7 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		const user = Meteor.user();
+		const user = Meteor.userId();
 		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
