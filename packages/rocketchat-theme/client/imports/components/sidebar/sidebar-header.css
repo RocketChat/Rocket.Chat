@@ -1,0 +1,124 @@
+.sidebar__header {
+	position: relative;
+	display: flex;
+
+	margin: 0 -10px;
+	padding: var(--sidebar-default-padding);
+	align-items: center;
+
+	&-thumb {
+		position: relative;
+
+		flex: 0 0 var(--sidebar-account-thumb-size);
+
+		width: var(--sidebar-account-thumb-size);
+		height: var(--sidebar-account-thumb-size);
+		margin: 0 10px;
+	}
+
+	&-status-bullet {
+		position: absolute;
+
+		right: -2px;
+		bottom: -1px;
+
+		display: block;
+
+		width: var(--sidebar-account-status-bullet-size);
+		height: var(--sidebar-account-status-bullet-size);
+
+		border-width: 2px;
+
+		border-style: solid;
+		border-color: var(--sidebar-background);
+
+		border-radius: var(--sidebar-account-status-bullet-radius);
+
+		&--online {
+			background-color: var(--status-online);
+		}
+
+		&--away {
+			background-color: var(--status-away);
+		}
+
+		&--busy {
+			background-color: var(--status-busy);
+		}
+
+		&--invisible {
+			background-color: var(--status-invisible);
+		}
+
+		&--offline {
+			background-color: var(--status-invisible);
+		}
+	}
+}
+
+.sidebar__toolbar {
+	display: flex;
+	flex: 1 1 100%;
+
+	margin: 0 10px;
+	justify-content: space-between;
+
+	&-button {
+		color: var(--sidebar-item-text-color);
+
+		font-size: 18px;
+		fill: var(--sidebar-item-text-color);
+	}
+
+	&-search {
+		position: absolute;
+		right: calc(10px + var(--sidebar-default-padding));
+		width: 200px;
+		display: none;
+
+		& .rc-input__element {
+			background-color: var(--sidebar-background);
+		}
+
+		& .rc-input__icon {
+			color: white;
+
+			&--cross {
+				right: 0;
+				left: auto;
+			}
+		}
+	}
+}
+
+.rc-popover--sidebar-header {
+	& .rc-popover__icon-element--circle {
+		font-size: var(--sidebar-account-status-bullet-size);
+	}
+
+	& .rc-popover__item {
+		&--online {
+			& .rc-icon {
+				color: var(--status-online);
+			}
+		}
+
+		&--away {
+			& .rc-icon {
+				color: var(--status-away);
+			}
+		}
+
+		&--busy {
+			& .rc-icon {
+				color: var(--status-busy);
+			}
+		}
+
+		&--offline {
+			& .rc-icon {
+				color: var(--status-invisible);
+			}
+		}
+	}
+}
