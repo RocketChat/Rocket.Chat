@@ -1,4 +1,4 @@
-/* globals popover isRtl menu */
+/* globals popover menu */
 const setStatus = status => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
@@ -153,10 +153,10 @@ const toolbarButtons = (user) => {
 	{
 		name: t('Options'),
 		icon: 'menu',
-		condition: () => !(user == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')),
-		action: () => {
+		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]),
+		action: (e) => {
 			let adminOption;
-			if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]) || (RocketChat.AdminBox.getOptions().length > 0)) {
+			if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ])) {
 				adminOption = {
 					icon: 'customize',
 					name: t('Administration'),
@@ -171,10 +171,87 @@ const toolbarButtons = (user) => {
 				};
 			}
 
-			const sidebarHeader = document.querySelector('.sidebar__header');
-			const sidebarHeaderPadding = parseInt(getComputedStyle(sidebarHeader)['padding-left'].replace('px', '')) * 2;
-			const sidebarHeaderMargin = parseInt(getComputedStyle(sidebarHeader)['margin-left'].replace('px', '')) * 2;
+			const config = {
+				popoverClass: 'sidebar-header',
+				columns: [
+					{
+						groups: [
+							{
+								items: AccountBox.getItems().map(item => {
+									let action;
 
+									if (item.href) {
+										action = () => {
+											FlowRouter.go(item.href);
+											popover.close();
+										};
+									}
+
+									if (item.sideNav) {
+										action = () => {
+											SideNav.setFlex(item.sideNav);
+											SideNav.openFlex();
+											popover.close();
+										};
+									}
+
+									return {
+										icon: item.icon,
+										name: t(item.name),
+										type: 'open',
+										id: item.name,
+										href: item.href,
+										sideNav: item.sideNav,
+										action
+									};
+								}).concat([adminOption])
+							}
+						]
+					}
+				],
+				mousePosition: () => ({
+					x: e.currentTarget.getBoundingClientRect().left,
+					y: e.currentTarget.getBoundingClientRect().bottom + 50
+				}),
+				customCSSProperties: () => ({
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+				})
+			};
+
+			popover.open(config);
+		}
+	}];
+};
+Template.sidebarHeader.helpers({
+	myUserInfo() {
+		const id = Meteor.userId();
+
+		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return {
+				username: 'anonymous',
+				status: 'online'
+			};
+		}
+		return id && Meteor.users.findOne(id, {fields: {
+			username: 1, status: 1
+		}});
+	},
+	toolbarButtons() {
+		return toolbarButtons(Meteor.userId()).filter(button => !button.condition || button.condition());
+	}
+});
+
+Template.sidebarHeader.events({
+	'click .js-button'(e) {
+		if (document.activeElement === e.currentTarget) {
+			e.currentTarget.blur();
+		}
+		return this.action && this.action.apply(this, [e]);
+	},
+	'click .sidebar__header .avatar'(e) {
+		if (!(Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead'))) {
+			const user = Meteor.user();
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
@@ -210,35 +287,7 @@ const toolbarButtons = (user) => {
 								]
 							},
 							{
-								items: AccountBox.getItems().map(item => {
-									let action;
-
-									if (item.href) {
-										action = () => {
-											FlowRouter.go(item.href);
-											popover.close();
-										};
-									}
-
-									if (item.sideNav) {
-										action = () => {
-											SideNav.setFlex(item.sideNav);
-											SideNav.openFlex();
-											popover.close();
-										};
-									}
-
-									return {
-										icon: item.icon,
-										name: t(item.name),
-										type: 'open',
-										id: item.name,
-										href: item.href,
-										sideNav: item.sideNav,
-										action
-									};
-								}).concat([
-									adminOption,
+								items: [
 									{
 										icon: 'user',
 										name: t('My_Account'),
@@ -265,49 +314,22 @@ const toolbarButtons = (user) => {
 											});
 										}
 									}
-								])
+								]
 							}
 						]
 					}
 				],
-				position: {
-					top: sidebarHeader.offsetHeight
-				},
-				customCSSProperties: {
-					width: `${ sidebarHeader.offsetWidth - sidebarHeaderPadding + sidebarHeaderMargin }px`,
-					left: isRtl() ? 'auto' : getComputedStyle(sidebarHeader)['padding-left'],
-					right: isRtl() ? getComputedStyle(sidebarHeader)['padding-left'] : 'auto'
-				}
+				mousePosition: () => ({
+					x: e.currentTarget.getBoundingClientRect().left,
+					y: e.currentTarget.getBoundingClientRect().bottom + 50
+				}),
+				customCSSProperties: () => ({
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+				})
 			};
 
 			popover.open(config);
 		}
-	}];
-};
-Template.sidebarHeader.helpers({
-	myUserInfo() {
-		const id = Meteor.userId();
-
-		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
-			return {
-				username: 'anonymous',
-				status: 'online'
-			};
-		}
-		return id && Meteor.users.findOne(id, {fields: {
-			username: 1, status: 1
-		}});
-	},
-	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter(button => !button.condition || button.condition());
-	}
-});
-
-Template.sidebarHeader.events({
-	'click .js-button'(e) {
-		if (document.activeElement === e.currentTarget) {
-			e.currentTarget.blur();
-		}
-		return this.action && this.action.apply(this, [e]);
 	}
 });

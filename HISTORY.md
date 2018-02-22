@@ -1,3 +1,26 @@
+<a name="0.62.0-rc.1"></a>
+# 0.62.0-rc.1 (2018-02-22)
+
+
+### Bug Fixes
+
+- [#9802](https://github.com/RocketChat/Rocket.Chat/pull/9802) Not receiving sound notifications in rooms created by new LiveChats
+
+
+<details>
+<summary>Others</summary>
+
+- [#9811](https://github.com/RocketChat/Rocket.Chat/pull/9811) Dependencies update
+- [#9797](https://github.com/RocketChat/Rocket.Chat/pull/9797) Develop fix sync from master
+- [#9821](https://github.com/RocketChat/Rocket.Chat/pull/9821) Fix: Custom fields not showing on user info panel
+- [#9843](https://github.com/RocketChat/Rocket.Chat/pull/9843) Regression: Avatar now open account related options
+- [#9837](https://github.com/RocketChat/Rocket.Chat/pull/9837) Regression: Open search using ctrl/cmd + p and ctrl/cmd + k
+- [#9804](https://github.com/RocketChat/Rocket.Chat/pull/9804) Regression: Page was not respecting the window height on Firefox
+- [#9839](https://github.com/RocketChat/Rocket.Chat/pull/9839) Regression: Search bar is now full width
+</details>
+
+
+
 <a name="0.62.0-rc.0"></a>
 # 0.62.0-rc.0 (2018-02-21)
 
