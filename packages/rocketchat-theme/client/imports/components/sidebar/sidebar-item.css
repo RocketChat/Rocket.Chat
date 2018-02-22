@@ -8,6 +8,10 @@
 	&__picture {
 		color: inherit;
 	}
+
+	&__message {
+		margin: 0;
+	}
 }
 
 .sidebar--hide-avatar .sidebar-item__picture {
