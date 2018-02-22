@@ -2,7 +2,6 @@
 import _ from 'underscore';
 
 import { UiTextContext } from 'meteor/rocketchat:lib';
-const counter = 0;
 Template.roomList.helpers({
 	rooms() {
 		/*
@@ -104,7 +103,6 @@ Template.roomList.helpers({
 });
 
 RocketChat.Notifications['onUser']('rooms-changed', (t, room) => {
-	console.log('record received', t, room);
 	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt};
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
 });

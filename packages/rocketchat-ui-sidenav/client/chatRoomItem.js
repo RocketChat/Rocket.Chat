@@ -1,7 +1,5 @@
 Template.chatRoomItem.helpers({
 	roomData() {
-		console.time(this.rid);
-		const hasFocus = document.hasFocus();
 		let {name} = this;
 		if (this.fname) {
 			const realNameForDirectMessages = this.t === 'd' && RocketChat.settings.get('UI_Use_Real_Name');
@@ -34,16 +32,15 @@ Template.chatRoomItem.helpers({
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name,
 			unread,
-			// active,
+			active,
 			archivedClass,
-			status: this.t === 'd' || this.t == 'l'
+			status: this.t === 'd' || this.t === 'l'
 		};
 
 		if (!this.lastMessage && RocketChat.settings.get('Store_Last_Message')) {
 			const room = RocketChat.models.Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
 			roomData.lastMessage = room && room.lastMessage || { msg: t('No_messages_yet') };
 		}
-		console.timeEnd(this.rid);
 		return roomData;
 	}
 });
