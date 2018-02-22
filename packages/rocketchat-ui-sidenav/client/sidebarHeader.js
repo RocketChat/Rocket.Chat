@@ -1,4 +1,4 @@
-/* globals popover isRtl menu */
+/* globals popover menu */
 const setStatus = status => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
