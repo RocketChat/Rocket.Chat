@@ -245,12 +245,18 @@
 	}
 }
 
-.tab-button-icon--star {
-	fill: none;
+
+.tab-button-icon {
+	fill: currentColor;
+
+	&--star {
+		fill: none;
+	}
 }
 
-.tab-bugtton-icon--team {
-	font-size: 28px;
+.tab-button-icon--team {
+	font-size: 26px;
+	margin-top: -1px;
 }
 
 @media (width <= 500px) {
