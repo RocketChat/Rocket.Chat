@@ -128,8 +128,9 @@
 	}
 
 	&__room-type {
-
+		display: flex;
 		color: currentColor;
+
 		font-size: 0.6rem;
 	}
 
