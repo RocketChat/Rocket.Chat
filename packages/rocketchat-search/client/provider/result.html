@@ -1,0 +1,17 @@
+<template name="DefaultSearchResultTemplate">
+	{{#if result.messages}}
+		<div class="results">
+			{{#each message in result.messages}}
+				<div class="result">
+					<span>{{message.rid}}</span>
+					<h3>{{message.msg}}</h3>
+				</div>
+			{{/each}}
+		</div>
+
+		<button class="more">more</button>
+	{{else}}
+		No result
+	{{/if}}
+
+</template>

@@ -1,0 +1,15 @@
+<template name="RocketSearch">
+	<div>
+		<div class="rocket-searchbox">
+			<input type="text" placeholder='Suchbegriff eingeben'>
+			<!-- TODO autocomplete -->
+		</div>
+		<div class="rocket-searchresult">
+			{{#if loading}}
+				Loading
+			{{else}}
+				{{> UI.dynamic template=resultTemplate data=result}}
+			{{/if}}
+		</div>
+	</div>
+</template>

@@ -21,6 +21,7 @@ caching-compiler@1.1.11
 caching-html-compiler@1.1.2
 callback-hook@1.1.0
 cfs:http-methods@0.0.32
+chatpal:search@0.0.1
 check@1.3.0
 coffeescript@1.0.17
 dandv:caret-position@2.1.1
@@ -199,6 +200,7 @@ rocketchat:postcss@1.0.0
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:sandstorm@0.0.1
+rocketchat:search@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
