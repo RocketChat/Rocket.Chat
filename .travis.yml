@@ -5,7 +5,7 @@ services:
 branches:
   only:
   - develop
-  - end-to-end-test
+  - master
   - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
 git:
   depth: 1
