@@ -61,6 +61,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		let msgs = null;
 		let latest = null;
 		let members = null;
+		let lm = null;
 
 		if (ruserId) {
 			if (!access) {
@@ -71,17 +72,20 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		const rs = findDirectMessageRoom(this.requestParams(), {'_id': user});
 		const room = rs.room;
 		const dm = rs.subscription;
+		lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof dm !== 'undefined' && dm.open) {
-			unreads = dm.unread;
+			if (dm.ls) {
+				unreads = dm.unread;
+				unreadsFrom = dm.ls;
+			}
 			userMentions = dm.userMentions;
-			unreadsFrom = dm.ls;
 			joined = true;
 		}
 
 		if (access || joined) {
 			msgs = room.msgs;
-			latest = room.lm;
+			latest = lm;
 			members = room.usernames.length;
 		}
 
