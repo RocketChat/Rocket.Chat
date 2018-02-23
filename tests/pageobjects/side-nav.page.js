@@ -13,7 +13,8 @@ class SideNav extends Page {
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
 	get accountMenu() { return browser.element('.sidebar__account'); }
 	get sidebarHeader() { return browser.element('.sidebar__header'); }
-	get sidebarUserMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
+	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
+	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
 	get statusOnline() { return browser.element('.rc-popover__item--online'); }
 	get statusAway() { return browser.element('.rc-popover__item--away'); }
