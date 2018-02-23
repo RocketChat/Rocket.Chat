@@ -336,7 +336,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 						type: 'warning',
 						showCancelButton: true,
 						confirmButtonColor: '#DD6B55',
-						confirmButtonText: t('Yes_mute_user'),
+						confirmButtonText: t('Yes'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: false,
 						html: false
@@ -370,7 +370,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',
-					confirmButtonText: t('Yes_remove_user'),
+					confirmButtonText: t('Yes'),
 					cancelButtonText: t('Cancel'),
 					closeOnConfirm: false,
 					html: false
@@ -408,7 +408,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',
-					confirmButtonText: t('Yes_delete_it'),
+					confirmButtonText: t('Yes'),
 					cancelButtonText: t('Cancel'),
 					closeOnConfirm: false,
 					html: false

@@ -9,7 +9,7 @@ export function hide(type, rid, name) {
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Yes_hide_it'),
+		confirmButtonText: t('Yes'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
 		html: false
@@ -39,7 +39,7 @@ export function leave(type, rid, name) {
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Yes_leave_it'),
+		confirmButtonText: t('Yes'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false
@@ -75,7 +75,7 @@ export function erase(rid) {
 		type: 'warning',
 		showCancelButton: true,
 		confirmButtonColor: '#DD6B55',
-		confirmButtonText: t('Yes_delete_it'),
+		confirmButtonText: t('Yes'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false

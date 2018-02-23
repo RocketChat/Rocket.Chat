@@ -120,7 +120,7 @@ Template.uploadedFilesList.events({
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
-			confirmButtonText: TAPi18n.__('Yes_delete_it'),
+			confirmButtonText: TAPi18n.__('Yes'),
 			cancelButtonText: TAPi18n.__('Cancel'),
 			closeOnConfirm: false,
 			html: false

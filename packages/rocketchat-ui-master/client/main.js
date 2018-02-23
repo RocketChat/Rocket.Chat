@@ -22,7 +22,7 @@ Template.body.onRendered(function() {
 			modal.open({
 				title: t('Clear_all_unreads_question'),
 				type: 'warning',
-				confirmButtonText: t('Yes_clear_all'),
+				confirmButtonText: t('Yes'),
 				showCancelButton: true,
 				cancelButtonText: t('Cancel'),
 				confirmButtonColor: '#DD6B55'

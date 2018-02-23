@@ -263,7 +263,7 @@ Template.channelSettingsEditing.onCreated(function() {
 						type: 'warning',
 						showCancelButton: true,
 						confirmButtonColor: '#DD6B55',
-						confirmButtonText: value ? t('Yes_archive_it') : t('Yes_unarchive_it'),
+						confirmButtonText: value ? t('Yes') : t('Yes'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: false,
 						html: false

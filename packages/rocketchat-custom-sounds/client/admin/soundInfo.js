@@ -45,7 +45,7 @@ Template.soundInfo.events({
 				type: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_delete_it'),
+				confirmButtonText: t('Yes'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
 				html: false
