@@ -1,10 +1,11 @@
 import { AppMethods} from './methods';
 import { AppsRestApi } from './rest';
-import { AppWebsocketNotifier, AppWebsocketListener } from './websockets';
+import { AppEvents, AppServerNotifier, AppServerListener } from './websockets';
 
 export {
 	AppMethods,
 	AppsRestApi,
-	AppWebsocketNotifier,
-	AppWebsocketListener
+	AppEvents,
+	AppServerNotifier,
+	AppServerListener
 };
