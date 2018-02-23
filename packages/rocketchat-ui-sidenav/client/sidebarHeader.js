@@ -143,7 +143,7 @@ const toolbarButtons = (user) => {
 	},
 	{
 		name: t('Create_A_New_Channel'),
-		icon: 'edit-roudend',
+		icon: 'edit-rounded',
 		condition: () => RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']),
 		action: () => {
 			menu.close();
