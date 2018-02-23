@@ -431,6 +431,76 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'boolean'
 		});
 	});
+
+	this.section('Password_Policy', function() {
+		this.add('Accounts_Password_Policy_Enabled', false, {
+			type: 'boolean'
+		});
+
+		this.add('Accounts_Password_Policy_MinLength', 7, {
+			type: 'int',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_MaxLength', -1, {
+			type: 'int',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
+			type: 'int',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Accounts_Password_Policy_Enabled',
+				value: true
+			}
+		});
+	});
 });
 
 RocketChat.settings.addGroup('OAuth', function() {

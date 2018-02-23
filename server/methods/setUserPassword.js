@@ -18,6 +18,8 @@ Meteor.methods({
 			});
 		}
 
+		RocketChat.validatePasswordPolicy(password);
+
 		Accounts.setPassword(userId, password, {
 			logout: false
 		});
