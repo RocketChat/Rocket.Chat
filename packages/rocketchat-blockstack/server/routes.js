@@ -16,5 +16,5 @@ Picker.route('/_blockstack/manifest', (params, req, res) => {
       "sizes": "192x192",
       "type": "image/png"
     }]
-	}`);
+  }`);
 });

@@ -5,15 +5,12 @@ Template.blockstackLogin.replaces('loginForm');
 // on desktop (or development) we use the localhost auth, otherwise web auth
 Template.loginForm.onRendered(function() {
 	this.autorun(() => {
-		console.log('development', Meteor.isDevelopment);
-		console.log('desktop', Meteor.Device.isDesktop());
 		// if (Meteor.Device.isDesktop() || Meteor.isDevelopment) {
 		if (Meteor.Device.isDesktop()) {
 			this.blockstackIDHost = 'http://localhost:8888/auth';
 		} else {
 			this.blockstackIDHost = 'https://blockstack.org/auth';
 		}
-		console.log('blockstack', this.blockstackIDHost);
 	});
 });
 
@@ -44,7 +41,6 @@ Template.loginForm.events({
 		t.loading.set(true);
 		const config = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
 		config.blockstackIDHost = t.blockstackIDHost;
-		console.log(config);
 		Meteor.loginWithBlockstack(config, (error) => {
 			if (error) {
 				Session.set('errorMessage', error.reason || 'Unknown error');

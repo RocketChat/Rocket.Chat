@@ -27,7 +27,9 @@ FlowRouter.route('/_blockstack/validate', {
 				});
 			}
 		} else if (Meteor.userId()) {
-			throw new Meteor.Error('Blockstack: Auth request while already logged in.');
+			// throw new Meteor.Error('Blockstack: Auth request while already logged in.');
+			console.log('Blockstack Auth requested when already logged in. Reloading.');
+			FlowRouter.go('home');
 		} else if (queryParams.authResponse === undefined) {
 			throw new Meteor.Error('Blockstack: Auth request without response param.');
 		}

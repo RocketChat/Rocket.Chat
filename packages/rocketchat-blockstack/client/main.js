@@ -44,11 +44,12 @@ Meteor.loginWithBlockstack = (options={}, callback) => {
 			redirectURI: String,
 			manifestURI: String
 		}));
-		const privateKey = blockstack.generateAndStoreTransitKey();
-		const requestParams = Object.assign({ transitPrivateKey: privateKey }, options);
-		const authRequest = makeAuthRequest(requestParams);
-		const httpsURI = `${ options.blockstackIDHost }?authRequest=${ authRequest }`;
-		window.location.assign(httpsURI); // hack redirect without protocol handler
+		redirectToSignIn(options); // let blockstack handle redirect
+		// const privateKey = blockstack.generateAndStoreTransitKey();
+		// const requestParams = Object.assign({ transitPrivateKey: privateKey }, options);
+		// const authRequest = makeAuthRequest(requestParams);
+		// const httpsURI = `${ options.blockstackIDHost }?authRequest=${ authRequest }`;
+		// window.location.assign(httpsURI); // hack redirect without protocol handler
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
