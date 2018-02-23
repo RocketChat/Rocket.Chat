@@ -381,6 +381,27 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.couters', (done) => {
+		request.get(api('channels.couters'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('joined', true);
+				expect(res.body).to.have.property('members');
+				expect(res.body).to.have.property('unreads');
+				expect(res.body).to.have.property('unreadsFrom');
+				expect(res.body).to.have.property('msgs');
+				expect(res.body).to.have.property('latest');
+				expect(res.body).to.have.property('userMentions');
+			})
+			.end(done);
+	});
+
 	it('/channels.rename', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
