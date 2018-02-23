@@ -2,7 +2,7 @@
 	<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
 </template>
 <template name="sidebarItem">
-	<li class="sidebar-item{{#if or unread alert }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{rid}}">
+	<li class="sidebar-item{{#if or unread alert }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
 			<div class="sidebar-item__picture">
 				{{#if darken}}
