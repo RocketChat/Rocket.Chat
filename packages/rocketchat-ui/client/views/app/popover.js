@@ -84,6 +84,13 @@ Template.popover.onRendered(function() {
 			});
 		}
 
+		const realTop = Number(popoverContent.style.top.replace('px', ''));
+		if (realTop + popoverContent.offsetHeight > window.innerHeight) {
+			popoverContent.style.overflow = 'scroll';
+			popoverContent.style.bottom = 0;
+			popoverContent.className = 'rc-popover__content rc-popover__content-scroll';
+		}
+
 		if (activeElement) {
 			$(activeElement).addClass('active');
 		}
