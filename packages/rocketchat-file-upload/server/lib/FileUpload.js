@@ -1,6 +1,7 @@
 /* globals UploadFS */
 
 import fs from 'fs';
+import path from 'path';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
@@ -229,16 +230,32 @@ Object.assign(FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	copy(file, targetFolder) {
+		const store = this.getStoreByName(file.store);
+		const targetFile = path.join(targetFolder, `${ file._id }-${ file.name }`);
+
+		const out = fs.createWriteStream(targetFile);
+
+		file = FileUpload.addExtensionTo(file);
+
+		if (store.copy) {
+			store.copy(file, out);
+			return true;
+		}
+
+		return false;
 	}
 });
 
-
 export class FileUploadClass {
-	constructor({ name, model, store, get, insert, getStore }) {
+	constructor({ name, model, store, get, insert, getStore, copy }) {
 		this.name = name;
 		this.model = model || this.getModelFromName();
 		this._store = store || UploadFS.getStore(name);
 		this.get = get;
+		this.copy = copy;
 
 		if (insert) {
 			this.insert = insert;

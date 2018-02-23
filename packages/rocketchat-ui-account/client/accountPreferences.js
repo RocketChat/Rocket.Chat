@@ -87,6 +87,9 @@ Template.accountPreferences.helpers({
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
 	},
+	userDataDownloadEnabled() {
+		return RocketChat.settings.get('UserData_EnableDownload') !== false;
+	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
 	}
@@ -199,7 +202,7 @@ Template.accountPreferences.onCreated(function() {
 	this.downloadMyData = function() {
 		Meteor.call('requestDataDownload', {}, function(error, results) {
 			if (results) {
-
+				return true;
 			}
 
 			if (error) {
@@ -211,7 +214,7 @@ Template.accountPreferences.onCreated(function() {
 	this.processDataDownload = function() {
 		Meteor.call('processDataDownloads', {}, function(error, results) {
 			if (results) {
-
+				return true;
 			}
 
 			if (error) {

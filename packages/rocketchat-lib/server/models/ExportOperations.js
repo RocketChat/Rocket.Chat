@@ -34,7 +34,8 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 		const update = {
 			$set: {
 				roomList: data.roomList,
-				status: data.status
+				status: data.status,
+				fileList: data.fileList
 			}
 		};
 

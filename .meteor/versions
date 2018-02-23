@@ -235,6 +235,7 @@ rocketchat:ui-master@0.1.0
 rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:ui-vrecord@0.0.1
+rocketchat:user-data-download@1.0.0
 rocketchat:version@1.0.0
 rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0

@@ -28,6 +28,22 @@ const FileSystemUploads = new FileUploadClass({
 			res.end();
 			return;
 		}
+	},
+
+	copy(file, out) {
+		const filePath = this.store.getFilePath(file._id, file);
+		try {
+			const stat = Meteor.wrapAsync(fs.stat)(filePath);
+
+			if (stat && stat.isFile()) {
+				file = FileUpload.addExtensionTo(file);
+
+				this.store.getReadStream(file._id, file).pipe(out);
+			}
+		} catch (e) {
+			out.end();
+			return;
+		}
 	}
 });
 

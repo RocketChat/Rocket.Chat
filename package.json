@@ -111,6 +111,7 @@
 		"@google-cloud/storage": "^1.6.0",
 		"@google-cloud/vision": "^0.15.2",
 		"adm-zip": "^0.4.7",
+		"archiver": "^2.1.1",
 		"atlassian-crowd": "^0.5.0",
 		"autolinker": "^1.6.2",
 		"aws-sdk": "^2.195.0",

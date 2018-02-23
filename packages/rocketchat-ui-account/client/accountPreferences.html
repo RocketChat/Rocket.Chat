@@ -291,16 +291,19 @@
 							</div>
 						</div>
 					</div>
-					<div class="section">
-						<h1>{{_ "My Data"}}</h1>
-						<div class="section-content border-component-color">
-							<div class="input-line">
-								<label><button class="button download-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Download_My_Data"}}</span></button></label>
-								<label><button class="button process-data-download"><i class="icon-gear secondary-font-color"></i> <span>{{_ "Process_Data_Download"}}</span></button></label>
+
+					{{#if userDataDownloadEnabled}}
+						<div class="section">
+							<h1>{{_ "My Data"}}</h1>
+							<div class="section-content border-component-color">
+								<div class="input-line">
+									<label><button class="button download-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Download_My_Data"}}</span></button></label>
+									<label><button class="button process-data-download"><i class="icon-gear secondary-font-color"></i> <span>{{_ "Process_Data_Download"}}</span></button></label>
+								</div>
+								
 							</div>
-							
 						</div>
-					</div>
+					{{/if}}
 				</fieldset>
 			</form>
 		</div>

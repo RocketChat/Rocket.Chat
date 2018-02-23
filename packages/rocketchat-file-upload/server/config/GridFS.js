@@ -62,7 +62,6 @@ const getByteRange = function(header) {
 	return null;
 };
 
-
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
 const readFromGridFS = function(storeName, fileId, file, req, res) {
 	const store = UploadFS.getStore(storeName);
@@ -123,6 +122,18 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 	}
 };
 
+const copyFromGridFS = function(storeName, fileId, file, out) {
+	const store = UploadFS.getStore(storeName);
+	const rs = store.getReadStream(fileId, file);
+
+	[rs, out].forEach(stream => stream.on('error', function(err) {
+		store.onReadError.call(store, err, fileId, file);
+		out.end();
+	}));
+
+	rs.pipe(out);
+};
+
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
 	collectionName: 'rocketchat_uploads'
 });
@@ -147,6 +158,10 @@ new FileUploadClass({
 		res.setHeader('Content-Length', file.size);
 
 		return readFromGridFS(file.store, file._id, file, req, res);
+	},
+
+	copy(file, out) {
+		copyFromGridFS(file.store, file._id, file, out);
 	}
 });
 
