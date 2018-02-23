@@ -75,7 +75,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof dm !== 'undefined' && dm.open) {
-			if (dm.ls) {
+			if (dm.ls && room.msgs) {
 				unreads = dm.unread;
 				unreadsFrom = dm.ls;
 			}
