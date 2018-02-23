@@ -1,3 +1,22 @@
+<a name="0.62.0-rc.2"></a>
+# 0.62.0-rc.2 (2018-02-23)
+
+
+### Bug Fixes
+
+- [#9858](https://github.com/RocketChat/Rocket.Chat/pull/9858) Silence the update check error message
+
+
+<details>
+<summary>Others</summary>
+
+- [#9851](https://github.com/RocketChat/Rocket.Chat/pull/9851) Regression: Change create channel icon
+- [#9845](https://github.com/RocketChat/Rocket.Chat/pull/9845) Regression: Fix admin/user settings item text
+- [#9852](https://github.com/RocketChat/Rocket.Chat/pull/9852) Regression: Fix channel icons on safari
+</details>
+
+
+
 <a name="0.62.0-rc.1"></a>
 # 0.62.0-rc.1 (2018-02-22)
 
