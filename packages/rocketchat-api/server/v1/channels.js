@@ -145,6 +145,7 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		let msgs = null;
 		let latest = null;
 		let members = null;
+		let lm = null;
 
 		if (ruserId) {
 			if (!access) {
@@ -157,17 +158,20 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 			returnUsernames: true
 		});
 		const channel = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		lm = channel._room.lm ? channel._room.lm : channel._room._updatedAt;
 
 		if (typeof channel !== 'undefined' && channel.open) {
-			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(channel.rid, channel.ls, channel._room.lm);
+			if (channel.ls) {
+				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(channel.rid, channel.ls, lm);
+				unreadsFrom = channel.ls;
+			}
 			userMentions = channel.userMentions;
-			unreadsFrom = channel.ls;
 			joined = true;
 		}
 
 		if (access || joined) {
 			msgs = room.msgs;
-			latest = room.lm;
+			latest = lm;
 			members = room.usernames.length;
 		}
 

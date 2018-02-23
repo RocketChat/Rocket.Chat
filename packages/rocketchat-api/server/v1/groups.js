@@ -120,6 +120,7 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 		let msgs = null;
 		let latest = null;
 		let members = null;
+		let lm = null;
 
 		if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
@@ -146,17 +147,20 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 			user = params.userId;
 		}
 		const group = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		lm = group._room.lm ? group._room.lm : group._room._updatedAt;
 
 		if (typeof group !== 'undefined' && group.open) {
-			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(group.rid, group.ls, group._room.lm);
+			if (group.ls) {
+				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(group.rid, group.ls, lm);
+				unreadsFrom = group.ls;
+			}
 			userMentions = group.userMentions;
-			unreadsFrom = group.ls;
 			joined = true;
 		}
 
 		if (access || joined) {
 			msgs = room.msgs;
-			latest = room.lm;
+			latest = lm;
 			members = room.usernames.length;
 		}
 

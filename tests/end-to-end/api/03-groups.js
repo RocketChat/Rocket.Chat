@@ -343,8 +343,8 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.couters', (done) => {
-		request.get(api('groups.couters'))
+	it('/groups.counters', (done) => {
+		request.get(api('groups.counters'))
 			.set(credentials)
 			.query({
 				roomId: group._id

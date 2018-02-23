@@ -381,8 +381,8 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.couters', (done) => {
-		request.get(api('channels.couters'))
+	it('/channels.counters', (done) => {
+		request.get(api('channels.counters'))
 			.set(credentials)
 			.query({
 				roomId: channel._id
