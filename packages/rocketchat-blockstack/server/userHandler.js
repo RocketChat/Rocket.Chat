@@ -41,25 +41,25 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 			emails,
 			services: { blockstack: serviceData }
 		};
-		logger.info(`New user for Blockstack ID ${ id }`);
-		logger.debug('New user', newUser);
 
 		// Set username same as in blockstack, or suggest if none
 		if (profile.name) {
 			newUser.name = profile.name;
 		}
 
+		// Take profile username if exists, or generate one if enabled
 		if (profile.username && profile.username !== '') {
 			newUser.username = profile.username;
 		} else if (serviceConfig.generateUsername === true) {
 			newUser.username = RocketChat.generateUsernameSuggestion(newUser);
 		}
+		// If no username at this point it will suggest one from the name
 
-		// Make it real!
+		// Create and get created user to make a couple more mods before returning
+		logger.info(`Creating user for Blockstack ID ${ id }`);
 		userId = Accounts.insertUserDoc({}, newUser);
-
-		// Get the created user to make a couple more mods before returning
 		user = Meteor.users.findOne(userId);
+		logger.debug('New user ${ userId }', newUser);
 	}
 
 	// Add login token for blockstack auth session (take expiration from response)

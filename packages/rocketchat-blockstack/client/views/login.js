@@ -1,3 +1,6 @@
+import { Accounts } from 'meteor/accounts-base';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 // Replace normal login form with Blockstack button
 Template.blockstackLogin.replaces('loginForm');
 

@@ -4,7 +4,7 @@ const logger = new Logger('Blockstack');
 Accounts.blockstack.defaults = {
 	enable: true,
 	loginStyle: 'redirect',
-	generateUsername: true,
+	generateUsername: false,
 	manifestURI: Meteor.absoluteUrl(Accounts.blockstack.manifestPath),
 	redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
 	authDescription: 'Rocket.Chat login'

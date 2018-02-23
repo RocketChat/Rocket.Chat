@@ -19,7 +19,7 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 	// Decode auth response for user attributes
 	const { username, profile } = loginRequest.userData;
 	profile.username = username;
-	logger.debug('Profile', profile);
+	logger.debug('User data', loginRequest.userData);
 	logger.debug('Login decoded', decodeToken(loginRequest.authResponse).payload);
 	const { iss, iat, exp } = decodeToken(loginRequest.authResponse).payload;
 	if (!iss) {
@@ -32,7 +32,7 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 	// Collect basic auth provider details
 	const serviceData = {
 		id: iss,
-		did: `ID-${ iss.split(':').pop() }`,
+		did: `${ iss.split(':').pop() }`,
 		issuedAt: new Date(iat*1000),
 		expiresAt: new Date(exp*1000)
 	};
