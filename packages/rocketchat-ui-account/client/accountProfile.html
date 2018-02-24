@@ -19,12 +19,7 @@
 		{{/header}}
 		<div class="preferences-page__content">
 			<form id="profile" autocomplete="off" class="container">
-				<fieldset class="rc-form-legend">
-					<legend style="margin-bottom: 2.5rem;">
-						<h2>{{_ "Profile_details"}}</h2>
-						<p><strong>Blockstack</strong> users, this application currently requires an email for many core processes, so you'll need to enter one below to save your profile.</p>
-						<p>By also setting a password, you can use the password login as a fallback to resolve potential issues preventing Blockstack authentication.</p>
-					</legend>
+				<fieldset class="rc-form-legend">				
 					<div>
 						<div class="rc-form-group">
 							<label class="rc-form-label">{{_ "Profile_picture"}}</label>
@@ -113,9 +108,13 @@
 							</div>
 							{{/with}}
 						</div>
+						<legend>
+							<p>Blockstack users, this application <em>currently</em> requires an email for many core processes.</p>
+							<p>Your Blockstack ID has been used as a placeholder address at blockstack.email; this is a holding domain with no ability to accept or process email, for your security.</p>
+						</legend>
 						<div class="rc-form-group rc-grid">
 							{{#with canChange=allowEmailChange}}
-							<div class="rc-input rc-w50 padded {{#if emailInvalid}}rc-input--error{{/if}}">
+							<div class="rc-input padded {{#if emailInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Email"}}</div>
 									<div class="rc-input__wrapper">
@@ -141,6 +140,11 @@
 								{{/unless}}
 							</div>
 							{{/with}}
+						</div>
+						<legend>
+							<p>A password is not required for Blockstack sign in but you can set one to use password login as a fallback to resolve potential issues preventing Blockstack authentication.</p>
+						</legend>
+						<div class="rc-form-group rc-grid">
 							<div class="rc-input rc-w50 padded">
 								{{#with canChange=allowPasswordChange}}
 									<label class="rc-input__label">
