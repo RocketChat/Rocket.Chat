@@ -9,5 +9,10 @@ RocketChat.saveRoomCustomFields = function(rid, roomCustomFields) {
 			'function': 'RocketChat.saveRoomCustomFields'
 		});
 	}
-	return RocketChat.models.Rooms.setCustomFieldsById(rid, roomCustomFields);
+	const ret = RocketChat.models.Rooms.setCustomFieldsById(rid, roomCustomFields);
+
+	// Update customFields of any user's Subscription related with this rid
+	RocketChat.models.Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
+
+	return ret;
 };

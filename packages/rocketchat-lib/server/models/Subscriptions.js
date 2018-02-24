@@ -491,6 +491,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update) && this.update(query2, update2);
 	}
 
+	updateCustomFieldsByRoomId(rid, cfields) {
+		const query = {rid};
+		const customFields = cfields || {}
+		const update = {
+			$set: {
+				customFields
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateTypeByRoomId(roomId, type) {
 		const query =
 			{rid: roomId};
