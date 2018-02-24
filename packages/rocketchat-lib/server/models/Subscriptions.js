@@ -493,7 +493,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 	updateCustomFieldsByRoomId(rid, cfields) {
 		const query = {rid};
-		const customFields = cfields || {}
+		const customFields = cfields || {};
 		const update = {
 			$set: {
 				customFields
