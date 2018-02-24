@@ -4,6 +4,13 @@ import _ from 'underscore';
 currentTracker = undefined;
 
 function openRoom(type, name) {
+	const tmproom = RocketChat.roomTypes.findRoom(type, name, Meteor.user());
+	console.log (tmproom);
+	if (tmproom) {
+		Meteor.call('setCurrentRoom', tmproom._id, (error, result) => { });
+	} else {
+		Meteor.call('setCurrentRoom', null, (error, result) => { });
+	}
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
@@ -75,6 +82,7 @@ function openRoom(type, name) {
 			// KonchatNotification.removeRoomNotification(params._id)
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({rid: room._id});
+			console.log (sub);
 			if (sub && sub.open === false) {
 				Meteor.call('openRoom', room._id, function(err) {
 					if (err) {

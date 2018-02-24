@@ -359,6 +359,17 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
+	setCurrentRoom(_id, curRoom) {
+		const update = {
+			$set: {
+				curRoom
+			}
+		};
+
+		console.log (update);
+		return this.update(_id, update);
+	}
+
 	setUserActive(_id, active) {
 		if (active == null) { active = true; }
 		const update = {
@@ -436,15 +447,10 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	setPreferences(_id, preferences) {
-		const settings = Object.assign(
-			{},
-			...Object.keys(preferences).map(key => {
-				return {[`settings.preferences.${ key }`]: preferences[key]};
-			})
-		);
-
 		const update = {
-			$set: settings
+			$set: {
+				'settings.preferences': preferences
+			}
 		};
 
 		return this.update(_id, update);
@@ -508,46 +514,6 @@ class ModelUsers extends RocketChat.models._Base {
 		if (_.isEmpty(update)) {
 			return true;
 		}
-
-		return this.update({ _id }, update);
-	}
-
-	setReason(_id, reason) {
-		const update = {
-			$set: {
-				reason
-			}
-		};
-
-		return this.update(_id, update);
-	}
-
-	unsetReason(_id) {
-		const update = {
-			$unset: {
-				reason: true
-			}
-		};
-
-		return this.update(_id, update);
-	}
-
-	addBannerById(_id, banner) {
-		const update = {
-			$set: {
-				[`banners.${ banner.id }`]: banner
-			}
-		};
-
-		return this.update({ _id }, update);
-	}
-
-	removeBannerById(_id, banner) {
-		const update = {
-			$unset: {
-				[`banners.${ banner.id }`]: true
-			}
-		};
 
 		return this.update({ _id }, update);
 	}
