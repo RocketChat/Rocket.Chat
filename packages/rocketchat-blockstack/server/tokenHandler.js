@@ -42,7 +42,8 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 		serviceData.image = profile.image[0].contentUrl;
 	}
 
-	// profile: profile // ^ removed because it contained invalid keys for mongo
+	// Store the full Blcokstack profile object in service data
+	// profile: profile // disabled because it contained invalid keys for mongo
 
 	logger.debug('Login data', serviceData, profile);
 	return {

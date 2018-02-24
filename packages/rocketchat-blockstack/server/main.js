@@ -11,4 +11,4 @@ Accounts.blockstack.redirectPath = '_blockstack/validate';
 Meteor.isDevelopment = (process.env.ROOT_URL.indexOf('localhost') !== -1);
 
 // Disable requirement for user emails to be unique (allowing empty email hack)
-RocketChat.models.Users.tryDropIndex({ 'emails.address': 1 });
+// RocketChat.models.Users.tryDropIndex({ 'emails.address': 1 }); // didn't work

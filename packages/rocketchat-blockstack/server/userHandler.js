@@ -7,26 +7,12 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 	logger.debug('Auth config', serviceConfig);
 
 	// Extract user data from service / token
-	const { id } = serviceData;
+	const { id, did } = serviceData;
 	const { profile } = options;
 
 	// Look for existing Blockstack user
 	let user = Meteor.users.findOne({ 'services.blockstack.id': id });
 	let userId;
-
-	// Fix absense of emails by adding initial empty email address
-	// Reformat array of emails into expected format if they exist
-	let emails = [];
-	if (!Array.isArray(profile.emails)) {
-		emails.push({ address: '', verified: false });
-	} else {
-		emails = profile.emails.map((address) => {
-			return {
-				address,
-				verified: true
-			};
-		});
-	}
 
 	// Use found or create a user
 	if (user) {
@@ -35,6 +21,20 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 		// Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
 		// ^ threw errors from an app name in key having '.'
 	} else {
+		let emails = [];
+		if (!Array.isArray(profile.emails)) {
+			// Fix absense of emails by adding placeholder address using decentralised
+			// ID at blockstack.email - a holding domain only, no MX record, does not
+			// process email, may be used in future to provide decentralised email via
+			// gaia, encrypting mail for DID user only. @TODO: document this approach.
+			emails.push({ address: `${ did }@blockstack.email`, verified: false });
+		} else {
+			// Reformat array of emails into expected format if they exist
+			emails = profile.emails.map((address) => {
+				return { address, verified: true };
+			});
+		}
+
 		const newUser = {
 			name: profile.name,
 			active: true,

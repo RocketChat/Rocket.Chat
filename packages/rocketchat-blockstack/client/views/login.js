@@ -4,15 +4,22 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 // Replace normal login form with Blockstack button
 Template.blockstackLogin.replaces('loginForm');
 
+// On template creation, get the service configs ready for login
+Template.loginForm.onCreated(function() {
+	this.blockstackConfig = ServiceConfiguration.configurations.findOne({
+		service: 'blockstack'
+	});
+});
+
 // Determine where to send long events depending on client
 // on desktop (or development) we use the localhost auth, otherwise web auth
 Template.loginForm.onRendered(function() {
 	this.autorun(() => {
 		// if (Meteor.Device.isDesktop() || Meteor.isDevelopment) {
 		if (Meteor.Device.isDesktop()) {
-			this.blockstackIDHost = 'http://localhost:8888/auth';
+			this.blockstackConfig.blockstackIDHost = 'http://localhost:8888/auth';
 		} else {
-			this.blockstackIDHost = 'https://blockstack.org/auth';
+			this.blockstackConfig.blockstackIDHost = 'https://blockstack.org/auth';
 		}
 	});
 });
@@ -42,9 +49,7 @@ Template.loginForm.events({
 	'click #signin-button'(e, t) {
 		e.preventDefault();
 		t.loading.set(true);
-		const config = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
-		config.blockstackIDHost = t.blockstackIDHost;
-		Meteor.loginWithBlockstack(config, (error) => {
+		Meteor.loginWithBlockstack(t.blockstackConfig, (error) => {
 			if (error) {
 				Session.set('errorMessage', error.reason || 'Unknown error');
 				return t.state.set('login');

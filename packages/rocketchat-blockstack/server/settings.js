@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 const logger = new Logger('Blockstack');
 
 // Rocket.Chat Blockstack provider config defaults, settings can override
@@ -49,18 +51,20 @@ Accounts.blockstack.getSettings = () => {
 	});
 };
 
-// Add settings to auth provider configs
-const serviceConfig = Accounts.blockstack.getSettings();
-if (serviceConfig.enable) {
-	ServiceConfiguration.configurations.upsert({
-		service: 'blockstack'
-	}, {
-		$set: Accounts.blockstack.getSettings()
-	});
-	logger.debug('Init Blockstack auth', serviceConfig);
-} else {
-	logger.debug('Blockstack not enabled', serviceConfig);
-	ServiceConfiguration.configurations.remove({
-		service: 'blockstack'
-	});
-}
+// Add settings to auth provider configs on startup
+Meteor.startup(() => {
+	const serviceConfig = Accounts.blockstack.getSettings();
+	if (serviceConfig.enable) {
+		ServiceConfiguration.configurations.upsert({
+			service: 'blockstack'
+		}, {
+			$set: Accounts.blockstack.getSettings()
+		});
+		logger.debug('Init Blockstack auth', serviceConfig);
+	} else {
+		logger.debug('Blockstack not enabled', serviceConfig);
+		ServiceConfiguration.configurations.remove({
+			service: 'blockstack'
+		});
+	}
+});
