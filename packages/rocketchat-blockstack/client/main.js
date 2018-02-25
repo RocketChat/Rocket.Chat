@@ -53,7 +53,7 @@ Meteor.loginWithBlockstack = (options={}, callback) => {
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
-	// redirectToSignIn(options) // let blockstack handle redirect
+	// redirectToSignIn(options) // let blockstack handle redirect with protocal detection
 	/*
     // NB: using smarter protocol detection gets routed to new tab by Rocket.Chat :(
     import protocolCheck from 'custom-protocol-detection-blockstack'

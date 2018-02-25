@@ -4,33 +4,27 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 // Replace normal login form with Blockstack button
 Template.blockstackLogin.replaces('loginForm');
 
-// On template creation, get the service configs ready for login
-Template.loginForm.onCreated(function() {
-	this.blockstackConfig = ServiceConfiguration.configurations.findOne({
-		service: 'blockstack'
-	});
-});
-
-// Determine where to send long events depending on client
-// on desktop (or development) we use the localhost auth, otherwise web auth
-Template.loginForm.onRendered(function() {
-	this.autorun(() => {
-		// if (Meteor.Device.isDesktop() || Meteor.isDevelopment) {
-		if (Meteor.Device.isDesktop()) {
-			this.blockstackConfig.blockstackIDHost = 'http://localhost:8888/auth';
-		} else {
-			this.blockstackConfig.blockstackIDHost = 'https://blockstack.org/auth';
-		}
-	});
-});
-
-// Render button when services configuration complete
 Template.loginForm.helpers({
+	// Render button when services configuration complete and determine the host
+	// for auth request depending on client. On desktop we us localhost auth,
+	// otherwise web auth - @NB: Host is ignored unless using `makeAuthRequest`
+	configurationLoaded() {
+		if (Accounts.loginServicesConfigured()) {
+			const config = ServiceConfiguration.configurations.findOne({
+				service: 'blockstack'
+			});
+			Template.currentData().blockstack = config;
+			Template.currentData().blockstack.blockstackIDHost = (Meteor.Device.isDesktop())
+				? 'http://localhost:8888/auth'
+				: 'https://blockstack.org/auth';
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// Login method can be changed to toggle password form or Blockstack signin
 	isPasswordLogin() {
 		return (FlowRouter.getQueryParam('login') === 'password');
-	},
-	configurationLoaded() {
-		return Accounts.loginServicesConfigured();
 	},
 	changeLoginLink() {
 		if (FlowRouter.getQueryParam('login') === 'password') {
@@ -49,12 +43,14 @@ Template.loginForm.events({
 	'click #signin-button'(e, t) {
 		e.preventDefault();
 		t.loading.set(true);
-		Meteor.loginWithBlockstack(t.blockstackConfig, (error) => {
+		const config = Template.currentData().blockstack;
+		const handler = (error) => {
 			if (error) {
 				Session.set('errorMessage', error.reason || 'Unknown error');
 				return t.state.set('login');
 			}
-		});
+		};
+		Meteor.loginWithBlockstack(config, handler);
 	},
 	'click #passwordLogin'(e) {
 		e.preventDefault();
