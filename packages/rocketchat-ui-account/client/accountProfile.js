@@ -252,19 +252,28 @@ Template.accountProfile.onCreated(function() {
 		if (Object.keys(data).length + Object.keys(customFields).length === 0) {
 			return cb && cb();
 		}
-		Meteor.call('saveUserProfile', data, customFields, function(error, results) {
-			cb && cb();
+		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
 			if (results) {
-				toastr.remove();
-				toastr.success(t('Profile_saved_successfully'));
-				modal.close();
-				instance.clearForm();
-				self.password.set();
-			}
-			if (error) {
-				toastr.remove();
+				toastr.success(t('Verification_email_sent'));
+				Meteor.call('saveUserProfile', data, customFields, function(error, results) {
+					cb && cb();
+					if (results) {
+						toastr.remove();
+						toastr.success(t('Profile_saved_successfully'));
+						modal.close();
+						instance.clearForm();
+						self.password.set();
+					}
+					if (error) {
+						toastr.remove();
+						handleError(error);
+					}
+				});
+			} else if (error) {
 				handleError(error);
 			}
+			cb.currentTarget.innerHTML = cb.currentTarget.innerHTML.replace(' ...', '');
+			return cb.currentTarget.disabled = false;
 		});
 	};
 });
@@ -381,16 +390,6 @@ Template.accountProfile.events({
 				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;
 			}
-		});
-		//making changes here
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
-			if (results) {
-				toastr.success(t('Verification_email_sent'));
-			} else if (error) {
-				handleError(error);
-			}
-			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
-			return e.currentTarget.disabled = false;
 		});
 	},
 	'click .js-logout'(e) {
