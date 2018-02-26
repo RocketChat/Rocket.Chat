@@ -195,6 +195,8 @@ const makeZipFile = function(exportOperation) {
 	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
 	const output = fs.createWriteStream(targetFile);
 
+	exportOperation.generatedFile = targetFile;
+
 	const archive = archiver('zip');
 
 	output.on('close', () => {

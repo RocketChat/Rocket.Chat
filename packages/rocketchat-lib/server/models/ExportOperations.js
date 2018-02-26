@@ -49,7 +49,8 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 			$set: {
 				roomList: data.roomList,
 				status: data.status,
-				fileList: data.fileList
+				fileList: data.fileList,
+				generatedFile: data.generatedFile
 			}
 		};
 

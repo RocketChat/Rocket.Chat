@@ -35,7 +35,8 @@ Meteor.methods({
 			status: 'pending',
 			exportPath: folderName,
 			assetsPath: assetsFolder,
-			fileList: []
+			fileList: [],
+			generatedFile: null
 		};
 
 		RocketChat.models.ExportOperations.create(exportOperation);
