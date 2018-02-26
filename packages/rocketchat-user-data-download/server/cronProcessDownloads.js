@@ -1,4 +1,5 @@
 /* globals SyncedCron */
+
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
@@ -191,6 +192,33 @@ const isOperationFinished = function(exportOperation) {
 	return !incomplete && !anyDownloadPending;
 };
 
+const sendEmail = function(userId) {
+	const userData = RocketChat.models.Users.findOneById(userId);
+
+	if (userData && userData.emails && userData.emails[0] && userData.emails[0].address) {
+		const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
+		const fromAddress = RocketChat.settings.get('From_Email');
+		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
+		const download_link = `${ __meteor_runtime_config__.ROOT_URL }${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/user-data-download/${ userId }`;
+		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
+
+		const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
+
+		if (rfcMailPatternWithName.test(emailAddress)) {
+			Meteor.defer(function() {
+				return Email.send({
+					to: emailAddress,
+					from: fromAddress,
+					subject,
+					html: body
+				});
+			});
+
+			return console.log(`Sending email to ${ emailAddress }`);
+		}
+	}
+};
+
 const makeZipFile = function(exportOperation) {
 	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
 	const output = fs.createWriteStream(targetFile);
@@ -229,15 +257,15 @@ const continueExportOperation = function(exportOperation) {
 		exportOperation.fileList.forEach((attachmentData) => {
 			copyFile(exportOperation, attachmentData);
 		});
+
+		if (isOperationFinished(exportOperation)) {
+			makeZipFile(exportOperation);
+			exportOperation.status = 'completed';
+			return true;
+		}
 	} catch (e) {
 		console.error(e);
 		return false;
-	}
-
-	if (isOperationFinished(exportOperation)) {
-		makeZipFile(exportOperation);
-		exportOperation.status = 'completed';
-		return true;
 	}
 
 	return false;
@@ -246,8 +274,16 @@ const continueExportOperation = function(exportOperation) {
 function processDataDownloads() {
 	const cursor = RocketChat.models.ExportOperations.findAllPending({limit: 1});
 	cursor.forEach((exportOperation) => {
+		if (exportOperation.status === 'completed') {
+			return;
+		}
+
 		continueExportOperation(exportOperation);
 		RocketChat.models.ExportOperations.updateOperation(exportOperation);
+
+		if (exportOperation.status === 'completed') {
+			sendEmail(exportOperation.userId);
+		}
 	});
 }
 
