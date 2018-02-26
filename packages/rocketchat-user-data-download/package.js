@@ -13,4 +13,5 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/startup/settings.js', 'server');
+	api.addFiles('server/cronProcessDownloads.js', 'server');
 });

@@ -10,8 +10,23 @@ if (RocketChat.settings.get('UserData_FileSystemPath') != null) {
 Meteor.methods({
 	requestDataDownload() {
 		const currentUserData = Meteor.user();
+		const userId = currentUserData._id;
 
-		const folderName = path.join(tempFolder, currentUserData._id);
+		const lastOperation = RocketChat.models.ExportOperations.findLastOperationByUser(userId);
+
+		if (lastOperation) {
+			const yesterday = new Date();
+			yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+
+			if (lastOperation.createdAt > yesterday) {
+				return {
+					requested: false,
+					exportOperation: lastOperation
+				};
+			}
+		}
+
+		const folderName = path.join(tempFolder, userId);
 		const assetsFolder = path.join(folderName, 'assets');
 
 		const exportOperation = {
@@ -24,5 +39,10 @@ Meteor.methods({
 		};
 
 		RocketChat.models.ExportOperations.create(exportOperation);
+
+		return {
+			requested: true,
+			exportOperation
+		};
 	}
 });

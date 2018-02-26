@@ -1,3 +1,4 @@
+/* globals SyncedCron */
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
@@ -7,6 +8,11 @@ if (RocketChat.settings.get('UserData_FileSystemZipPath') != null) {
 	if (RocketChat.settings.get('UserData_FileSystemZipPath').trim() !== '') {
 		zipFolder = RocketChat.settings.get('UserData_FileSystemZipPath');
 	}
+}
+
+let processingFrequency = 15;
+if (RocketChat.settings.get('UserData_ProcessingFrequency') > 0) {
+	processingFrequency = RocketChat.settings.get('UserData_ProcessingFrequency');
 }
 
 const startFile = function(fileName, content) {
@@ -147,7 +153,11 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 		startFile(filePath, '');
 	}
 
-	const limit = 100;
+	let limit = 100;
+	if (RocketChat.settings.get('UserData_MessageLimitPerRequest') > 0) {
+		limit = RocketChat.settings.get('UserData_MessageLimitPerRequest');
+	}
+
 	const skip = exportOpRoomData.exportedCount;
 
 	const cursor = RocketChat.models.Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
@@ -231,12 +241,22 @@ const continueExportOperation = function(exportOperation) {
 	return false;
 };
 
-Meteor.methods({
-	processDataDownloads() {
-		const cursor = RocketChat.models.ExportOperations.findAllPending({limit: 1});
-		cursor.forEach((exportOperation) => {
-			continueExportOperation(exportOperation);
-			RocketChat.models.ExportOperations.updateOperation(exportOperation);
+function processDataDownloads() {
+	const cursor = RocketChat.models.ExportOperations.findAllPending({limit: 1});
+	cursor.forEach((exportOperation) => {
+		continueExportOperation(exportOperation);
+		RocketChat.models.ExportOperations.updateOperation(exportOperation);
+	});
+}
+
+Meteor.startup(function() {
+	Meteor.defer(function() {
+		processDataDownloads();
+
+		SyncedCron.add({
+			name: 'Generate download files for user data',
+			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+			job: processDataDownloads
 		});
-	}
+	});
 });

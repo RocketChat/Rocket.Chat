@@ -35,4 +35,18 @@ RocketChat.settings.addGroup('UserDataDownload', function() {
 		},
 		i18nLabel: 'UserData_FileSystemZipPath'
 	});
+
+	this.add('UserData_ProcessingFrequency', 15, {
+		type: 'int',
+		public: true,
+		i18nLabel: 'UserData_ProcessingFrequency'
+	});
+
+	this.add('UserData_MessageLimitPerRequest', 100, {
+		type: 'int',
+		public: true,
+		i18nLabel: 'UserData_MessageLimitPerRequest'
+	});
+
+
 });

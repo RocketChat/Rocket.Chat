@@ -202,18 +202,39 @@ Template.accountPreferences.onCreated(function() {
 	this.downloadMyData = function() {
 		Meteor.call('requestDataDownload', {}, function(error, results) {
 			if (results) {
-				return true;
-			}
+				if (results.requested) {
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_Requested_Text'),
+						type: 'success'
+					});
 
-			if (error) {
-				return handleError(error);
-			}
-		});
-	};
+					return true;
+				}
 
-	this.processDataDownload = function() {
-		Meteor.call('processDataDownloads', {}, function(error, results) {
-			if (results) {
+				if (results.exportOperation) {
+					if (results.exportOperation.status === 'completed') {
+						modal.open({
+							title: t('UserDataDownload_Requested'),
+							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							type: 'success'
+						});
+
+						return true;
+					}
+
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_RequestExisted_Text'),
+						type: 'success'
+					});
+					return true;
+				}
+
+				modal.open({
+					title: t('UserDataDownload_Requested'),
+					type: 'success'
+				});
 				return true;
 			}
 
@@ -242,10 +263,8 @@ Template.accountPreferences.events({
 		KonchatNotification.getDesktopPermission();
 	},
 	'click .download-my-data'(e, t) {
+		e.preventDefault();
 		t.downloadMyData();
-	},
-	'click .process-data-download'(e, t) {
-		t.processDataDownload();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();

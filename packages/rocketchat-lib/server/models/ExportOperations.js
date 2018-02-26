@@ -15,10 +15,24 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 		return this.find(query);
 	}
 
-	findPendingByUser(userId) {
-		const query = {userId};
+	findLastOperationByUser(userId, options = {}) {
+		const query = {
+			userId
+		};
 
-		return this.find(query);
+		options.sort = {'createdAt' : -1};
+		return this.findOne(query, options);
+	}
+
+	findPendingByUser(userId, options) {
+		const query = {
+			userId,
+			status: {
+				$in: ['pending', 'exporting']
+			}
+		};
+
+		return this.find(query, options);
 	}
 
 	findAllPending(options) {
