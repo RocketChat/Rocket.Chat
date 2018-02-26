@@ -57,8 +57,7 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
-
+			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
