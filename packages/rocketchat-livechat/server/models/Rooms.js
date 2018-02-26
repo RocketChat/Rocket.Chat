@@ -70,18 +70,18 @@ RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
 };
 
 RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
-    const options = {};
+	const options = {};
 
-    if (fields) {
-        options.fields = fields;
-    }
+	if (fields) {
+		options.fields = fields;
+	}
 
-    const query = {
-        t: 'l',
-        _id
-    };
+	const query = {
+		t: 'l',
+		_id
+	};
 
-    return this.findOne(query, options);
+	return this.findOne(query, options);
 };
 
 /**
