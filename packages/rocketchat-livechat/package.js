@@ -11,8 +11,8 @@ Package.registerBuildPlugin({
 		'plugin/build-livechat.js'
 	],
 	npmDependencies: {
-		'shelljs': '0.5.1',
-		'uglify-js': '2.7.5'
+		'shelljs': '0.8.1',
+		'uglify-js': '2.8.29'
 	}
 });
 
