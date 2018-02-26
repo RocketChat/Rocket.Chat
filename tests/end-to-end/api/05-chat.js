@@ -2,8 +2,17 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	message,
+	log,
+	apiPrivateChannelName
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('[Chat]', function() {
@@ -182,5 +191,36 @@ describe('[Chat]', function() {
 				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
+	});
+
+	describe('[/chat.getMessageReadReceipts]', () => {
+		describe('when execute successfully', () => {
+			it('should return the statusCode 200 and \'receipts\' property and should be equal an array', (done) => {
+				request.get(api(`chat.getMessageReadReceipts?messageId=${ message._id }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('receipts').and.to.be.an('array');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error', (done) => {
+				request.get(api('chat.getMessageReadReceipts'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).not.have.property('receipts');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
 	});
 });
