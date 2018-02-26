@@ -6,7 +6,6 @@ Template.apps.onCreated(function() {
 	this.apps = new ReactiveVar([]);
 
 	RocketChat.API.get('apps').then((result) => {
-		console.log(result.apps);
 		instance.apps.set(result.apps);
 		instance.ready.set(true);
 	});
