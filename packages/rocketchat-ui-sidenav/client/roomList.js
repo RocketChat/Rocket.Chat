@@ -87,8 +87,8 @@ Template.roomList.helpers({
 			return _.sortBy(list.map((sub, i) => {
 				const lm = rooms[i]._updatedAt;
 				return {
-					lm: lm && lm.toISOString(),
-					...sub
+					...sub,
+					lm: lm && lm.toISOString()
 				};
 			}), 'lm').reverse();
 		}
