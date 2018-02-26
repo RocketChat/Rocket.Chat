@@ -1,0 +1,105 @@
+.rc-alerts {
+	position: relative;
+
+	z-index: 10;
+
+	display: flex;
+
+	padding: var(--alerts-padding-vertical) var(--alerts-padding);
+
+	animation-name: dropdown-show;
+	animation-duration: 0.3s;
+
+	text-align: center;
+
+	color: var(--alerts-color);
+
+	background: var(--alerts-background);
+
+	font-size: var(--alerts-font-size);
+	align-items: center;
+	flex-grow: 0;
+
+	&--danger {
+		background: var(--rc-color-error);
+	}
+
+	&--alert {
+		background: var(--rc-color-alert);
+	}
+
+	&--large > &__content {
+		flex-direction: column;
+
+		text-align: start;
+	}
+
+	&--has-action {
+		cursor: pointer;
+	}
+
+	&__icon {
+		cursor: pointer;
+
+		color: inherit;
+
+		flex-grow: 0;
+
+		&--close {
+			transform: rotate(45deg);
+		}
+	}
+
+	&__title {
+		font-weight: bold;
+	}
+
+	&__title,
+	&__line {
+		display: block;
+
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		flex-grow: 0;
+	}
+
+	&__content > &__title + &__line {
+		margin: 0 var(--alerts-padding-vertical);
+	}
+
+	&--large > &__content > &__title + &__line {
+		margin: 0;
+	}
+
+	&--large > &__icon {
+		font-size: 30px;
+	}
+
+	&--large > &__big-icon {
+		width: 40px;
+		height: 40px;
+
+		font-size: 40px;
+	}
+
+	&--large {
+		padding: var(--alerts-padding-vertical-large) var(--alerts-padding);
+		justify-content: start;
+	}
+
+	&__content {
+		display: flex;
+		overflow: hidden;
+
+		flex-direction: row;
+
+		flex: 1;
+
+		margin: 0 var(--alerts-padding-vertical);
+
+		justify-content: center;
+	}
+}

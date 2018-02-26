@@ -1,3 +1,4 @@
+
 /* global menu */
 import _ from 'underscore';
 
@@ -29,6 +30,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
+		$('.toolbar').css('display', 'block');
 		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
 	}
@@ -92,9 +94,6 @@ const getFromServer = (cb, type) => {
 const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
-	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
-	},
 	results() {
 		return Template.instance().resultsList.get();
 	},
@@ -126,7 +125,7 @@ Template.toolbar.helpers({
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '[role="search"] input',
+			input: '.toolbar__search .rc-input__element',
 			cleanOnEnter: true,
 			closeOnEsc: true,
 			blurOnSelectItem: true,
@@ -215,6 +214,7 @@ Template.toolbar.events({
 			e.stopPropagation();
 
 			toolbarSearch.clear();
+			$('.toolbar').css('display', 'none');
 		}
 	},
 
@@ -224,10 +224,12 @@ Template.toolbar.events({
 
 	'click .toolbar__icon-search--right'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'blur [role="search"] input'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
