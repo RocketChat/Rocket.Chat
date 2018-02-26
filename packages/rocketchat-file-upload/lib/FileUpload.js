@@ -60,6 +60,6 @@ RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = 2097152; // the default value
+		maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });
