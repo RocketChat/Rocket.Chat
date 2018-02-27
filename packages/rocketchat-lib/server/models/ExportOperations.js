@@ -28,7 +28,7 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 		const query = {
 			userId,
 			status: {
-				$in: ['pending', 'exporting']
+				$nin: ['completed']
 			}
 		};
 
@@ -37,7 +37,7 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 
 	findAllPending(options) {
 		const query = {
-			status: { $in: ['pending', 'exporting'] }
+			status: { $nin: ['completed'] }
 		};
 
 		return this.find(query, options);

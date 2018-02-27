@@ -17,6 +17,10 @@ new UploadFS.Store({
 	})
 });
 
+// new UploadFS.Store({
+// 	collection: RocketChat.models.UserDataFiles.model,
+// 	name: 'UserDataFiles'
+// });
 
 fileUploadHandler = (directive, meta, file) => {
 	const store = UploadFS.getStore(directive);

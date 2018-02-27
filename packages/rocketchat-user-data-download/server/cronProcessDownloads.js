@@ -185,36 +185,44 @@ const isOperationFinished = function(exportOperation) {
 		return exportOpRoomData.status !== 'completed';
 	});
 
+	return !incomplete;
+};
+
+const isDownloadFinished = function(exportOperation) {
 	const anyDownloadPending = exportOperation.fileList.some((fileData) => {
 		return !fileData.copied;
 	});
 
-	return !incomplete && !anyDownloadPending;
+	return !anyDownloadPending;
 };
 
 const sendEmail = function(userId) {
-	const userData = RocketChat.models.Users.findOneById(userId);
+	const lastFile = RocketChat.models.UserDataFiles.findLastFileByUser(userId);
+	if (lastFile) {
+		const userData = RocketChat.models.Users.findOneById(userId);
 
-	if (userData && userData.emails && userData.emails[0] && userData.emails[0].address) {
-		const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
-		const fromAddress = RocketChat.settings.get('From_Email');
-		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const download_link = `${ __meteor_runtime_config__.ROOT_URL }${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/user-data-download/${ userId }`;
-		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
+		if (userData && userData.emails && userData.emails[0] && userData.emails[0].address) {
+			const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
+			const fromAddress = RocketChat.settings.get('From_Email');
+			const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 
-		const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
+			const download_link = lastFile.url;
+			const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
 
-		if (rfcMailPatternWithName.test(emailAddress)) {
-			Meteor.defer(function() {
-				return Email.send({
-					to: emailAddress,
-					from: fromAddress,
-					subject,
-					html: body
+			const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
+
+			if (rfcMailPatternWithName.test(emailAddress)) {
+				Meteor.defer(function() {
+					return Email.send({
+						to: emailAddress,
+						from: fromAddress,
+						subject,
+						html: body
+					});
 				});
-			});
 
-			return console.log(`Sending email to ${ emailAddress }`);
+				return console.log(`Sending email to ${ emailAddress }`);
+			}
 		}
 	}
 };
@@ -239,9 +247,43 @@ const makeZipFile = function(exportOperation) {
 	archive.finalize();
 };
 
+const uploadZipFile = function(exportOperation, callback) {
+	const userDataStore = FileUpload.getStore('UserDataFiles');
+	const filePath = exportOperation.generatedFile;
+
+	const stat = Meteor.wrapAsync(fs.stat)(filePath);
+	const stream = fs.createReadStream(filePath);	
+
+	const contentType = 'application/zip';
+	const size = stat.size;
+
+	const userId = exportOperation.userId;
+	const user = RocketChat.models.Users.findOneById(userId);
+	const userDisplayName = user ? user.name : userId;
+	const utcDate = new Date().toISOString().split('T')[0];
+
+	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }.zip`);
+
+	const details = {
+		userId: userId,
+		type: contentType,
+		size,
+		name: newFileName
+	};
+
+	userDataStore.insert(details, stream, (err) => {
+		if (err) {
+			logError({err});
+			resolve();
+		} else {
+			callback();
+		}
+	});
+};
+
 const continueExportOperation = function(exportOperation) {
 	if (exportOperation.status === 'completed') {
-		return true;
+		return;
 	}
 
 	if (!exportOperation.roomList) {
@@ -250,25 +292,44 @@ const continueExportOperation = function(exportOperation) {
 
 	try {
 		//Run every room on every request, to avoid missing new messages on the rooms that finished first.
-		exportOperation.roomList.forEach((exportOpRoomData) => {
-			continueExportingRoom(exportOperation, exportOpRoomData);
-		});
+		if (exportOperation.status == 'exporting') {
+			exportOperation.roomList.forEach((exportOpRoomData) => {
+				continueExportingRoom(exportOperation, exportOpRoomData);
+			});
+			
+			if (isOperationFinished(exportOperation)) {
+				exportOperation.status = 'downloading';
+				return;
+			}
+		}
 
-		exportOperation.fileList.forEach((attachmentData) => {
-			copyFile(exportOperation, attachmentData);
-		});
+		if (exportOperation.status == 'downloading') {
+			exportOperation.fileList.forEach((attachmentData) => {
+				copyFile(exportOperation, attachmentData);
+			});
+			
+			if (isDownloadFinished(exportOperation)) {
+				exportOperation.status = 'compressing';
+				return;
+			}
+		}
 
-		if (isOperationFinished(exportOperation)) {
+		if (exportOperation.status == 'compressing') {
 			makeZipFile(exportOperation);
-			exportOperation.status = 'completed';
-			return true;
+			exportOperation.status = 'uploading';
+			return;
+		}
+
+		if (exportOperation.status == 'uploading') {
+			uploadZipFile(exportOperation, () => {
+				exportOperation.status = 'completed';
+				RocketChat.models.ExportOperations.updateOperation(exportOperation);
+			});
+			return;
 		}
 	} catch (e) {
 		console.error(e);
-		return false;
 	}
-
-	return false;
 };
 
 function processDataDownloads() {

@@ -138,6 +138,10 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
 	collectionName: 'rocketchat_uploads'
 });
 
+FileUpload.configureUploadsStore('GridFS', 'GridFS:UserDataFiles', {
+	collectionName: 'rocketchat_userDataFiles'
+});
+
 // DEPRECATED: backwards compatibility (remove)
 UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
 
@@ -148,6 +152,25 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 
 new FileUploadClass({
 	name: 'GridFS:Uploads',
+
+	get(file, req, res) {
+		file = FileUpload.addExtensionTo(file);
+
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Length', file.size);
+
+		return readFromGridFS(file.store, file._id, file, req, res);
+	},
+
+	copy(file, out) {
+		copyFromGridFS(file.store, file._id, file, out);
+	}
+});
+
+new FileUploadClass({
+	name: 'GridFS:UserDataFiles',
 
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);

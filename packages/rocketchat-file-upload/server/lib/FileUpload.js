@@ -59,6 +59,25 @@ Object.assign(FileUpload, {
 		};
 	},
 
+	defaultUserDataFiles() {
+		return {
+			collection: RocketChat.models.UserDataFiles.model,
+			getPath(file) {
+				return `${ RocketChat.settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+			},
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			}
+		};
+	},
+
 	avatarsOnValidate(file) {
 		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return;
