@@ -57,8 +57,7 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
-
+			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
@@ -87,8 +86,8 @@ Template.roomList.helpers({
 			return _.sortBy(list.map((sub, i) => {
 				const lm = rooms[i]._updatedAt;
 				return {
-					lm: lm && lm.toISOString(),
-					...sub
+					...sub,
+					lm: lm && lm.toISOString()
 				};
 			}), 'lm').reverse();
 		}
@@ -126,20 +125,3 @@ Template.roomList.helpers({
 	}
 });
 
-// Template.roomList.onRendered(function() {
-// 	$(this.firstNode.parentElement).perfectScrollbar();
-// });
-
-Template.roomList.events({
-	'click .more'(e, t) {
-		if (t.data.identifier === 'p') {
-			SideNav.setFlex('listPrivateGroupsFlex');
-		} else if (t.data.isCombined) {
-			SideNav.setFlex('listCombinedFlex');
-		} else {
-			SideNav.setFlex('listChannelsFlex');
-		}
-
-		return SideNav.openFlex();
-	}
-});
