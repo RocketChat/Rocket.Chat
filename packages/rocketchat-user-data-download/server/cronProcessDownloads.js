@@ -252,7 +252,7 @@ const uploadZipFile = function(exportOperation, callback) {
 	const filePath = exportOperation.generatedFile;
 
 	const stat = Meteor.wrapAsync(fs.stat)(filePath);
-	const stream = fs.createReadStream(filePath);	
+	const stream = fs.createReadStream(filePath);
 
 	const contentType = 'application/zip';
 	const size = stat.size;
@@ -265,7 +265,7 @@ const uploadZipFile = function(exportOperation, callback) {
 	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }.zip`);
 
 	const details = {
-		userId: userId,
+		userId,
 		type: contentType,
 		size,
 		name: newFileName
@@ -273,8 +273,7 @@ const uploadZipFile = function(exportOperation, callback) {
 
 	userDataStore.insert(details, stream, (err) => {
 		if (err) {
-			logError({err});
-			resolve();
+			throw new Meteor.Error('invalid-file', 'Invalid Zip File', { method: 'cronProcessDownloads.uploadZipFile' });
 		} else {
 			callback();
 		}
@@ -292,35 +291,35 @@ const continueExportOperation = function(exportOperation) {
 
 	try {
 		//Run every room on every request, to avoid missing new messages on the rooms that finished first.
-		if (exportOperation.status == 'exporting') {
+		if (exportOperation.status === 'exporting') {
 			exportOperation.roomList.forEach((exportOpRoomData) => {
 				continueExportingRoom(exportOperation, exportOpRoomData);
 			});
-			
+
 			if (isOperationFinished(exportOperation)) {
 				exportOperation.status = 'downloading';
 				return;
 			}
 		}
 
-		if (exportOperation.status == 'downloading') {
+		if (exportOperation.status === 'downloading') {
 			exportOperation.fileList.forEach((attachmentData) => {
 				copyFile(exportOperation, attachmentData);
 			});
-			
+
 			if (isDownloadFinished(exportOperation)) {
 				exportOperation.status = 'compressing';
 				return;
 			}
 		}
 
-		if (exportOperation.status == 'compressing') {
+		if (exportOperation.status === 'compressing') {
 			makeZipFile(exportOperation);
 			exportOperation.status = 'uploading';
 			return;
 		}
 
-		if (exportOperation.status == 'uploading') {
+		if (exportOperation.status === 'uploading') {
 			uploadZipFile(exportOperation, () => {
 				exportOperation.status = 'completed';
 				RocketChat.models.ExportOperations.updateOperation(exportOperation);
