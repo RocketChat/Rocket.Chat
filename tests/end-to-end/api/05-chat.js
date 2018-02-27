@@ -32,7 +32,7 @@ describe('[Chat]', function() {
 					author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
 					title: 'Attachment Example',
 					title_link: 'https://youtube.com',
-					title_link_download: 'https://rocket.chat/download',
+					title_link_download: true,
 					image_url: 'http://res.guggy.com/logo_128.png',
 					audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 					video_url: 'http://www.w3schools.com/tags/movie.mp4',
