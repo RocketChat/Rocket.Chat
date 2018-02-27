@@ -144,6 +144,12 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 		};
 
 		const validateBodyParams = (bodyParams) => {
+			const hasAtLeastOneOfRequiredParams = Boolean(bodyParams.roomId) || Boolean(bodyParams.channel);
+
+			if (!hasAtLeastOneOfRequiredParams) {
+				throw new Error('At least one, \'roomId\' or \'channel\' should be provided');
+			}
+
 			check(bodyParams, Match.ObjectIncluding({
 				roomId: Match.Maybe(String),
 				channel: Match.Maybe(String),
