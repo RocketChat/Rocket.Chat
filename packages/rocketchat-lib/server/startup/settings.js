@@ -687,7 +687,7 @@ RocketChat.settings.addGroup('General', function() {
 		i18nDescription: 'Store_Last_Message_Sent_per_Room'
 	});
 	this.section('UTF8', function() {
-		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
+		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.&#;]+', {
 			type: 'string',
 			'public': true,
 			i18nDescription: 'UTF8_Names_Validation_Description'

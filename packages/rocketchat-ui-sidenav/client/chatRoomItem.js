@@ -23,6 +23,8 @@ Template.chatRoomItem.helpers({
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
+		// Unicode decoding in room name
+		name = jQuery.trim(jQuery.parseHTML(this.name)[0].data);
 
 		const roomData = {
 			...this,

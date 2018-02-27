@@ -62,6 +62,11 @@ Template.userInfo.helpers({
 		return user && user.username;
 	},
 
+	decodedUsername() {
+		const user = Template.instance().user.get();
+		return user && jQuery.trim(jQuery.parseHTML(user.username)[0].data);
+	},
+
 	email() {
 		const user = Template.instance().user.get();
 		return user && user.emails && user.emails[0] && user.emails[0].address;

@@ -66,7 +66,7 @@ Template.message.helpers({
 		if (!this.u) {
 			return '';
 		}
-		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
+		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || jQuery.trim(jQuery.parseHTML(this.u.username)[0].data);
 	},
 	showUsername() {
 		return this.alias || RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name;

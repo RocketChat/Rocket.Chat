@@ -158,7 +158,7 @@ Template.membersList.helpers({
 			return this.user.name;
 		}
 
-		return this.user.username;
+		return jQuery.trim(jQuery.parseHTML(this.user.username)[0].data);
 	}});
 
 Template.membersList.events({

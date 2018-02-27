@@ -24,7 +24,7 @@
 							{{> avatar username=username}}
 						</div>
 						<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
-						{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
+						{{#if username}}<p class="rc-user-info__username">@{{decodedUsername}}</p>{{/if}}
 					</div>
 
 					<div class="rc-user-info-action">

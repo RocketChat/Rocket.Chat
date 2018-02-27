@@ -34,7 +34,7 @@ export default class {
 		return new RegExp(`^#(${ this.pattern })| #(${ this.pattern })`, 'gm');
 	}
 	replaceUsers(str, message, me) {
-		return str.replace(this.userMentionRegex, (match, username) => {
+		return str.replace(/&amp;/g, '&').replace(this.userMentionRegex, (match, username) => {
 			if (['all', 'here'].includes(username)) {
 				return `<a class="mention-link mention-link-me mention-link-all background-attention-color">${ match }</a>`;
 			}
@@ -44,8 +44,8 @@ export default class {
 				return match;
 			}
 			const name = this.useRealName && mentionObj && mentionObj.name;
-
-			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
+			username = username.replace(/&/g, '&amp;');
+			return `<a class="mention-link ${ username === me.replace(/&/g, '&amp;') ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
 		});
 	}
 	replaceChannels(str, message) {
