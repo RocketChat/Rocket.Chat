@@ -14,8 +14,8 @@
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label for="language">{{_ "Language"}}</label>
-								<div class="rc-select">
-									<select id="language" class="required rc-select__element">
+								<div>
+									<select id="language" class="required rc-input__element">
 										{{#each languages}}
 											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
