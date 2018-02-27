@@ -29,7 +29,7 @@ class SideNav extends Page {
 	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
-	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--plus'); }
+	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 
 	// Rooms List
