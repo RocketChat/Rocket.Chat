@@ -1,0 +1,117 @@
+node('Build') {
+  stage('Checkout') {
+    BRANCH=${GIT_BRANCH#*/}
+    git fetch
+    git checkout ${BRANCH}
+    git pull origin ${BRANCH}
+  }
+
+  stage('Preparation'){
+    if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
+    .scripts/start-xvfb.sh
+    export PATH="$HOME/.meteor:$PATH"
+    meteor --version
+    if [[ $TRAVIS_TAG ]]; then meteor reset; fi
+    
+  }
+
+  stage('Mongo') {
+    echo "replication:" | sudo tee -a /etc/mongod.conf
+    echo "  replSetName: \"rs0\"" | sudo tee -a /etc/mongod.conf
+    sudo service mongod restart
+    mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+  }
+
+  stage('Check-linting') {
+    meteor npm run lint
+    meteor npm run testunit
+    meteor npm run stylelint
+  }
+
+  stage('Build-Rocket.Chat') {
+    mkdir /tmp/build
+    git submodule init
+    git submodule update
+    meteor npm install
+    meteor build --headless /tmp/build
+    mkdir /tmp/build-test
+    tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
+    cd /tmp/build-test/bundle/programs/server
+    npm install
+    mongo --eval 'rs.status()'
+    mongo meteor --eval 'db.getCollectionNames()'
+  }
+
+  stage('Smarti') {
+    chmod +x .scripts/smarti.sh
+    .scripts/smarti.sh
+  }
+
+  stage('Testing') {
+    parallel(
+      stage('API-Tests'){
+        stage('Start-MongoDB'){
+          export MONGO_URL: "mongodb://localhost:27017/rocketchat_api"
+          MONGO_OPLOG_URL: "mongodb://localhost:27017/local0"
+        }
+        stage('Start-Rocket.Chat'){
+          PORT=3000 node /tmp/build-test/bundle/main.js
+        }
+        stage('Run-Chimp-Tests'){
+          TEST_PATH=api npm test
+        }
+      }
+      stage('Rocket.Chat-UI-Tests') {
+        stage('Start-MongoDB'){
+          export MONGO_URL: "mongodb://localhost:27017/rocketchat_ui"
+          MONGO_OPLOG_URL: "mongodb://localhost:27017/local1"
+        }
+        stage('Start-Rocket.Chat'){
+          PORT=3001 node /tmp/build-test/bundle/main.js
+        }
+        stage('Run-Chimp-Tests'){
+          TEST_PATH=ui npm test
+        }
+      }
+      stage('Assistify-Tests'){
+        stage('Start-MongoDB'){
+          export MONGO_URL: "mongodb://localhost:27017/rocketchat_ui_smarti"
+          MONGO_OPLOG_URL: "mongodb://localhost:27017/local2"
+        }
+        stage('Start-Rocket.Chat'){
+          PORT=3002 node /tmp/build-test/bundle/main.js
+        }
+        stage('Run-Chimp-Tests'){
+          TEST_PATH=ui_smarti npm test
+        }
+      }
+    )
+  }
+
+  stage('Approval') {
+    input "Deploy to prod?"
+  }
+}
+node('Deployment') {
+  stage('Deploy'){
+    mv ../${JOB_NAME}.tar.gz ${BUILD_FILE}
+
+    aws s3 cp ${BUILD_FILE} s3://${AWS_PATH}/rocketchat/ --region eu-central-1 --acl bucket-owner-full-control
+
+    if [ ${BRANCH} = master ]
+      then
+          export TARGET_ENVIRONMENT=production
+            
+            # publish a new "latest"-file in order to make new clients be created with it
+            aws s3 cp ${BUILD_FILE} s3://${AWS_PATH}/rocketchat/rocket-chat-latest.tar.tgz --region eu-central-1 --acl bucket-owner-full-control
+    else
+      if [[ ${BRANCH} == develop ]] || [[ $BRANCH == "release/"* ]]
+          then
+            export TARGET_ENVIRONMENT=test
+        else
+            export TARGET_ENVIRONMENT=undefined
+      fi
+    fi
+    aws s3api put-object-tagging --bucket ${AWS_PATH} --key rocketchat/${BUILD_FILE} --tagging "{ \"TagSet\": [ { \"Key\": \"environment\", \"Value\": \"${TARGET_ENVIRONMENT}\" }, { \"Key\": \"nodejs_version\", \"Value\": \"${NODEJS_VERSION}\" }, { \"Key\": \"nodejs_checksum\", \"Value\": \"${NODEJS_CHECKSUM}\" }, { \"Key\": \"assets\", \"Value\": \"${ASSETS_URL}\" } ] }"
+  }
+}
