@@ -1,3 +1,27 @@
+<a name="0.62.0-rc.3"></a>
+# 0.62.0-rc.3 (2018-02-27)
+
+
+### Bug Fixes
+
+- [#9850](https://github.com/RocketChat/Rocket.Chat/pull/9850) Importers no longer working due to the FileUpload changes
+- [#9888](https://github.com/RocketChat/Rocket.Chat/pull/9888) Misplaced "Save Changes" button in user account panel
+- [#9877](https://github.com/RocketChat/Rocket.Chat/pull/9877) Not Translated Phrases
+- [#9884](https://github.com/RocketChat/Rocket.Chat/pull/9884) Parsing messages with multiple markdown matches ignore some tokens
+- [#9879](https://github.com/RocketChat/Rocket.Chat/pull/9879) Snap build was failing
+
+
+<details>
+<summary>Others</summary>
+
+- [#9902](https://github.com/RocketChat/Rocket.Chat/pull/9902) Fix Apps not working on multi-instance deployments
+- [#9905](https://github.com/RocketChat/Rocket.Chat/pull/9905) Regression: Improve sidebar filter
+- [#9889](https://github.com/RocketChat/Rocket.Chat/pull/9889) Regression: Overlapping header in user profile panel
+- [#9897](https://github.com/RocketChat/Rocket.Chat/pull/9897) Regression: sort on room's list not working correctly
+</details>
+
+
+
 <a name="0.62.0-rc.2"></a>
 # 0.62.0-rc.2 (2018-02-23)
 
