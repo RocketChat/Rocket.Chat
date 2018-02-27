@@ -31,7 +31,7 @@ Template.livechat.helpers({
 
 		return ChatSubscription.find(query, { sort: {
 			't': 1,
-			'name': 1
+			'fname': 1
 		}});
 	},
 

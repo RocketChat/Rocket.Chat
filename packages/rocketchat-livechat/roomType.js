@@ -5,17 +5,17 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
-			path: '/live/:code(\\d+)'
+			path: '/live/:id'
 		});
 	}
 
 	action(params) {
-		openRoom('l', params.code);
+		openRoom('l', params.id);
 	}
 
 	link(sub) {
 		return {
-			code: sub.code
+			id: sub.rid
 		};
 	}
 }
@@ -36,7 +36,7 @@ class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
-		return ChatRoom.findOne({code: parseInt(identifier)});
+		return ChatRoom.findOne({_id: identifier});
 	}
 
 	roomName(roomData) {
