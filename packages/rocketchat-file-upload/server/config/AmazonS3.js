@@ -23,15 +23,35 @@ const get = function(file, req, res) {
 	}
 };
 
+const copy = function(file, out) {
+	const fileUrl = this.store.getRedirectURL(file);
+
+	if (fileUrl) {
+		const request = /^https:/.test(fileUrl) ? https : http;
+		request.get(fileUrl, fileRes => fileRes.pipe(out));
+	} else {
+		out.end();
+	}
+};
+
 const AmazonS3Uploads = new FileUploadClass({
 	name: 'AmazonS3:Uploads',
-	get
+	get,
+	copy
 	// store setted bellow
 });
 
 const AmazonS3Avatars = new FileUploadClass({
 	name: 'AmazonS3:Avatars',
-	get
+	get,
+	copy
+	// store setted bellow
+});
+
+const AmazonS3UserDataFiles = new FileUploadClass({
+	name: 'AmazonS3:UserDataFiles',
+	get,
+	copy
 	// store setted bellow
 });
 
@@ -72,6 +92,7 @@ const configure = _.debounce(function() {
 
 	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
 	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);
+	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
 }, 500);
 
 RocketChat.settings.get(/^FileUpload_S3_/, configure);
