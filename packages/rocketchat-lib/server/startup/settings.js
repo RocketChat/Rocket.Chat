@@ -1340,7 +1340,7 @@ RocketChat.settings.addGroup('Message', function() {
 		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 	});
 
-	this.add('Message_ErasureType', 'Keep', {
+	this.add('Message_ErasureType', 'Delete', {
 		type: 'select',
 		'public': true,
 		values: [
