@@ -1339,6 +1339,23 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true,
 		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 	});
+
+	this.add('Message_ErasureType', 'Keep', {
+		type: 'select',
+		'public': true,
+		values: [
+			{
+				key: 'Keep',
+				i18nLabel: 'Message_ErasureType_Keep'
+			}, {
+				key: 'Delete',
+				i18nLabel: 'Message_ErasureType_Delete'
+			}, {
+				key: 'Unlink',
+				i18nLabel: 'Message_ErasureType_Unlink'
+			}
+		]
+	});
 });
 
 RocketChat.settings.addGroup('Meta', function() {

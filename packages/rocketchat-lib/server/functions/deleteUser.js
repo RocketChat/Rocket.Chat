@@ -1,7 +1,18 @@
 RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
+	const messageErasureType = RocketChat.settings.get('Message_ErasureType');
 
-	RocketChat.models.Messages.removeByUserId(userId); // Remove user messages
+	switch (messageErasureType) {
+		case 'Delete' :
+			RocketChat.models.Messages.removeByUserId(userId);
+			break;
+		case 'Unlink' :
+			const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
+			RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username);
+			break;
+	}
+
+
 	RocketChat.models.Subscriptions.db.findByUserId(userId).forEach((subscription) => {
 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 		if (room) {
