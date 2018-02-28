@@ -12,40 +12,33 @@ import {username, email, password} from '../../data/user.js';
 describe('[Main Elements Render]', function() {
 	before(()=>{
 		checkIfUserIsValid(username, email, password);
+		sideNav.sidebarHeader.waitForVisible(10000);
+		sideNav.spotlightSearchIcon.click();
 		sideNav.spotlightSearch.waitForVisible(10000);
 		sideNav.searchChannel('general');
 	});
 
 	describe('[Side Nav Bar]', () => {
 		describe('render:', () => {
-			it('it should show the logged username', () => {
-				sideNav.accountBoxUserName.isVisible().should.be.true;
-			});
-
-			it('it should show the logged user avatar', () => {
-				sideNav.accountBoxUserAvatar.isVisible().should.be.true;
+			before(() => {
+				sideNav.sidebarHeader.waitForVisible(10000);
 			});
 
 			it('it should show the new channel button', () => {
-				sideNav.newChannelBtn.waitForVisible(20000);
 				sideNav.newChannelBtn.isVisible().should.be.true;
-			});
-
-			it('it should show the plus icon', () => {
-				sideNav.newChannelIcon.isVisible().should.be.true;
 			});
 
 			it('it should show "general" channel', () => {
 				sideNav.general.isVisible().should.be.true;
 			});
-
-			it('it should show spotlight search bar', () => {
-				sideNav.spotlightSearch.isVisible().should.be.true;
-			});
 		});
 
 		describe('spotlight search render:', () => {
+			after(() => {
+				mainContent.messageInput.click();
+			});
 			it('it should show spotlight search bar', () => {
+				sideNav.spotlightSearchIcon.click();
 				sideNav.spotlightSearch.isVisible().should.be.true;
 			});
 
@@ -86,7 +79,7 @@ describe('[Main Elements Render]', function() {
 	describe('[User Options]', () => {
 		describe('render:', () => {
 			before(() => {
-				sideNav.accountMenu.click();
+				sideNav.sidebarUserMenu.click();
 				sideNav.getPopOverContent().waitForVisible(10000);
 			});
 
@@ -293,6 +286,7 @@ describe('[Main Elements Render]', function() {
 				});
 
 				it('it should show the files Tab content', () => {
+					flexTab.filesTabContent.waitForVisible(5000);
 					flexTab.filesTabContent.isVisible().should.be.true;
 				});
 			});

@@ -12,9 +12,9 @@ import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
 describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.general.waitForVisible(5000);
-		sideNav.general.click();
+		// sideNav.spotlightSearch.waitForVisible(10000);
+		// sideNav.general.waitForVisible(5000);
+		// sideNav.general.click();
 	});
 
 	after(() => {
@@ -22,9 +22,9 @@ describe('[Administration]', () => {
 		sideNav.preferencesClose.click();
 	});
 
-	describe('[Admin View]', () => {
+	describe.only('[Admin View]', () => {
 		before(() => {
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
@@ -55,21 +55,21 @@ describe('[Administration]', () => {
 				admin.infoCommitTable.isVisible().should.be.true;
 			});
 
-			it('the first title should be Runtime_Environment', () => {
+			it('the first title should be Runtime Environment', () => {
 				admin.infoRuntimeTableTitle.moveToObject();
-				admin.infoRuntimeTableTitle.getText().should.equal('Runtime_Environment');
+				admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
 			});
 
-			it('it should show the Runtime_Environment table', () => {
+			it('it should show the Runtime Environment table', () => {
 				admin.infoRuntimeTable.isVisible().should.be.true;
 			});
 
-			it('the first title should be Build_Environment', () => {
+			it('the first title should be Build Environment', () => {
 				admin.infoBuildTableTitle.moveToObject();
-				admin.infoBuildTableTitle.getText().should.equal('Build_Environment');
+				admin.infoBuildTableTitle.getText().should.equal('Build Environment');
 			});
 
-			it('it should show the Build_Environment table', () => {
+			it('it should show the Build Environment table', () => {
 				admin.infoBuildTable.isVisible().should.be.true;
 			});
 		});
