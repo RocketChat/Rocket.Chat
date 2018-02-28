@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
@@ -42,7 +43,6 @@ Package.onUse(function(api) {
 	// ROOM TYPES
 	api.addFiles('lib/RoomTypeConfig.js');
 	api.addFiles([
-		'lib/roomTypes/channels.js',
 		'lib/roomTypes/conversation.js',
 		'lib/roomTypes/direct.js',
 		'lib/roomTypes/favorite.js',
@@ -196,6 +196,7 @@ Package.onUse(function(api) {
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RestApiClient.js', 'client');
@@ -206,6 +207,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
+
+	// CLIENT LIB STARTUP
+	api.addFiles('client/lib/startup/commands.js', 'client');
 
 	// CLIENT METHODS
 	api.addFiles('client/methods/sendMessage.js', 'client');
