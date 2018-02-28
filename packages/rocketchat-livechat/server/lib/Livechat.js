@@ -313,6 +313,42 @@ RocketChat.Livechat = {
 
 	savePageHistory(token, pageInfo) {
 		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
+
+			RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
+
+				const users = Meteor.users.find({
+					username: {
+						$in: room.usernames
+					}
+				});
+
+				if (users.count() === 0) {
+					//return;
+				}
+
+				users.forEach(function(user) {
+
+					RocketChat.Notifications.notifyUser(user._id, 'message', {
+						_id: Random.id(),
+						rid: room._id,
+						ts: new Date,
+						msg: TAPi18n.__(pageInfo.title, {}, user.language)
+					});
+
+					/*
+					RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+						_id: Random.id(),
+						rid: room._id,
+						ts: new Date,
+						msg: TAPi18n.__('Visitor Navigation', {
+							postProcess: 'sprintf',
+							sprintf: [user.username]
+						}, currentUser.language)
+					})
+					;*/
+				});
+			});
+
 			return RocketChat.models.LivechatPageVisited.saveByToken(token, pageInfo);
 		}
 
