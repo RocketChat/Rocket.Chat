@@ -136,7 +136,7 @@
 		}
 
 		& .rc-input__icon-svg--plus {
-			transition: transform 0.2s linear;
+			transition: transform 0.1s linear;
 		}
 	}
 
@@ -144,7 +144,7 @@
 		position: relative;
 
 		&.active .rc-input__icon-svg--plus {
-			transform: rotate(135deg);
+			transform: rotate(45deg);
 		}
 	}
 
