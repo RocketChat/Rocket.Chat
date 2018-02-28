@@ -171,7 +171,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "registry.connect.redhat.com/rocketchat/rocketchat",
+                "dockerImageRepository": "${ROCKETCHAT_IMAGE}",
                 "tags": [
                     {
                         "name": "latest",
@@ -261,7 +261,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
+                                "image": "${ROCKETCHAT_IMAGE}:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
@@ -451,6 +451,13 @@
             "generate": "expression",
             "from": "[a-zA-Z0-9]{16}",
             "required": true
+        },
+        {
+            "name": "ROCKETCHAT_IMAGE",
+            "displayName": "RocketChat Image",
+            "description": "The RocketChat image to use for this deployment",
+            "required": true,
+            "value": "rocketchat/rocket.chat"
         },
         {
             "name": "VOLUME_CAPACITY",
