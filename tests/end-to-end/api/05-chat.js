@@ -2,8 +2,17 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	message,
+	log,
+	apiPrivateChannelName
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('[Chat]', function() {
@@ -174,6 +183,66 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.sendMessage', () => {
+
+		it('should throw an error when the required param \'rid\' is not sent', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png'
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The \'rid\' param, must be provided');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 12,
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: 'https://youtube.com',
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: ''
+						}]
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
 		it('should send a message successfully', (done) => {
 			message._id = `id-${ Date.now() }`;
 			request.post(api('chat.sendMessage'))
@@ -198,7 +267,7 @@ describe('[Chat]', function() {
 							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
 							title: 'Attachment Example',
 							title_link: 'https://youtube.com',
-							title_link_download: 'https://rocket.chat/download',
+							title_link_download: true,
 							image_url: 'http://res.guggy.com/logo_128.png',
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',

@@ -1,4 +1,6 @@
 /* global processWebhookMessage */
+import { validateMessageObject } from './chat.helper';
+
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
@@ -106,67 +108,8 @@ RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		const validateBodyAttachments = (attachments) => {
-
-			const validateAttachmentsFields = (attachmentFields) => {
-				check(attachmentFields, Match.ObjectIncluding({
-					short: Match.Maybe(Boolean),
-					title: String,
-					value: String
-				}));
-			};
-
-			const validateAttachment = (attachment) => {
-				check(attachment, Match.ObjectIncluding({
-					color: Match.Maybe(String),
-					text: Match.Maybe(String),
-					ts: Match.Maybe(String),
-					thumb_url: Match.Maybe(String),
-					message_link: Match.Maybe(String),
-					collapsed: Match.Maybe(Boolean),
-					author_name: Match.Maybe(String),
-					author_link: Match.Maybe(String),
-					author_icon: Match.Maybe(String),
-					title: Match.Maybe(String),
-					title_link: Match.Maybe(String),
-					title_link_download: Match.Maybe(Boolean),
-					image_url: Match.Maybe(String),
-					audio_url: Match.Maybe(String),
-					video_url: Match.Maybe(String)
-				}));
-
-				if (attachment.fields.length) {
-					attachment.fields.map(validateAttachmentsFields);
-				}
-			};
-
-			attachments.map(validateAttachment);
-		};
-
-		const validateBodyParams = (bodyParams) => {
-			const hasAtLeastOneOfRequiredParams = Boolean(bodyParams.roomId) || Boolean(bodyParams.channel);
-
-			if (!hasAtLeastOneOfRequiredParams) {
-				throw new Error('At least one, \'roomId\' or \'channel\' should be provided');
-			}
-
-			check(bodyParams, Match.ObjectIncluding({
-				roomId: Match.Maybe(String),
-				channel: Match.Maybe(String),
-				text: Match.Maybe(String),
-				alias: Match.Maybe(String),
-				emoji: Match.Maybe(String),
-				avatar: Match.Maybe(String),
-				attachments: Match.Maybe(Array)
-			}));
-
-			if (Array.isArray(bodyParams.attachments) && bodyParams.attachments.length) {
-				validateBodyAttachments(bodyParams.attachments);
-			}
-		};
-
 		try {
-			validateBodyParams(this.bodyParams);
+			validateMessageObject({ message: this.bodyParams, method: 'postMessage' });
 		} catch (error) {
 			return RocketChat.API.v1.failure({
 				error: error.message
@@ -219,6 +162,14 @@ RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.message) {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
+		}
+
+		try {
+			validateMessageObject({ message: this.bodyParams.message, method: 'sendMessage' });
+		} catch (error) {
+			return RocketChat.API.v1.failure({
+				error: error.message
+			});
 		}
 
 		let message;
