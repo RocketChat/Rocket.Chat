@@ -151,7 +151,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "registry.connect.redhat.com/rocketchat/rocketchat",
+                "dockerImageRepository": "${ROCKETCHAT_IMAGE}",
                 "tags": [
                     {
                         "name": "latest",
@@ -241,7 +241,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
+                                "image": "${ROCKETCHAT_IMAGE}:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
@@ -423,6 +423,13 @@
             "description": "Name of the MongoDB database accessed.",
             "value": "rocketchatdb",
             "required": true
+        },
+        {
+            "name": "ROCKETCHAT_IMAGE",
+            "displayName": "RocketChat Image",
+            "description": "The RocketChat image to use for this deployment",
+            "required": true,
+            "value": "rocketchat/rocket.chat"
         },
         {
             "name": "MONGODB_ADMIN_PASSWORD",
