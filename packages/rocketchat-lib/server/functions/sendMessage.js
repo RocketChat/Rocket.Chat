@@ -20,8 +20,9 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			room.usernames = [];
 		}
 	}
+
 	if (message.parseUrls !== false) {
-		const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+		const urls = message.msg.match(/[^```]([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?[^```]/g);
 
 		if (urls) {
 			message.urls = urls.map(function(url) {
