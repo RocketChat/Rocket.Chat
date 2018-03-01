@@ -88,7 +88,7 @@ Template.roomList.helpers({
 
 
 			return _.sortBy(list.map(sub => {
-				const lm = rooms[sub.rid]._updatedAt;
+				const lm = rooms[sub.rid] && rooms[sub.rid]._updatedAt;
 				return {
 					...sub,
 					lm: lm && lm.toISOString()
