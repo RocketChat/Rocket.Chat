@@ -58,6 +58,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
+			case RoomSettingsEnum.JOIN_CODE:
+				return false;
 			case RoomSettingsEnum.BROADCAST:
 				return room.broadcast;
 			case RoomSettingsEnum.READ_ONLY:
