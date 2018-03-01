@@ -80,11 +80,15 @@ Template.roomList.helpers({
 					_id: 1
 				},
 				fields: {_updatedAt: 1}
-			}).fetch();
+			}).fetch().reduce((result, room) =>{
+				result[room._id] = room;
+				return result;
+			}, {});
 
 
-			return _.sortBy(list.map((sub, i) => {
-				const lm = rooms[i]._updatedAt;
+
+			return _.sortBy(list.map(sub => {
+				const lm = rooms[sub.rid]._updatedAt;
 				return {
 					...sub,
 					lm: lm && lm.toISOString()
@@ -124,4 +128,3 @@ Template.roomList.helpers({
 		return RocketChat.getUserPreference(Meteor.user(), 'roomCounterSidebar');
 	}
 });
-
