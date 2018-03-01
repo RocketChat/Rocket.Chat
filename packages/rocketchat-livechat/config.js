@@ -44,7 +44,7 @@ Meteor.startup(function() {
 		section: 'Offline',
 		i18nLabel: 'Color'
 	});
-	RocketChat.settings.add('Livechat_offline_message', 'We are not online right now. Please leave us a message:', {
+	RocketChat.settings.add('Livechat_offline_message', '', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
@@ -209,7 +209,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Transcript_Enabled'
 	});
 
-	RocketChat.settings.add('Livechat_transcript_message', 'Would you like a copy of this chat emailed?', {
+	RocketChat.settings.add('Livechat_transcript_message', '', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
