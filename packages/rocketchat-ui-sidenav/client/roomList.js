@@ -1,6 +1,4 @@
 /* globals RocketChat */
-import _ from 'underscore';
-
 import { UiTextContext } from 'meteor/rocketchat:lib';
 Template.roomList.helpers({
 	rooms() {
@@ -106,7 +104,7 @@ RocketChat.Notifications['onUser']('rooms-changed', (t, room) => {
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
 });
 
-const mergeSubRoom = (record, t) => {
+const mergeSubRoom = (record/*, t*/) => {
 	const room = Tracker.nonreactive(() => RocketChat.models.Rooms.findOne({ _id: record.rid }));
 	if (!room) {
 		return record;
