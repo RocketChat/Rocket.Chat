@@ -1,5 +1,5 @@
 /* globals openRoom */
-import {RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
+import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -63,16 +63,14 @@ export class PublicRoomType extends RoomTypeConfig {
 		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
 	}
 
-	allowRoomSettingChange() {
-		return true;
-	}
-
 	enableMembersListProfile() {
 		return true;
 	}
 
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
+			case RoomSettingsEnum.BROADCAST:
+				return room.broadcast;
 			case RoomSettingsEnum.READ_ONLY:
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
