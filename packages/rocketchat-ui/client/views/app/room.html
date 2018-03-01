@@ -112,9 +112,7 @@
 											</li>
 										{{/if}}
 									{{/if}}
-									{{#each messagesHistory}}
-										{{#nrr nrrargs 'message' .}}{{/nrr}}
-									{{/each}}
+									{{#each messagesHistory}}{{#nrr nrrargs 'message' .}}{{/nrr}}{{/each}}
 									{{#if hasMoreNext}}
 										<li class="load-more">
 											{{#if isLoading}}

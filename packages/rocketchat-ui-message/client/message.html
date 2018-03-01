@@ -108,6 +108,11 @@
 				</li>
 			{{/each}}
 		</ul>
+		{{# if broadcast}}
+			{{#with u}}
+				<button type="button" class="rc-button rc-button--outline rc-button--primary rc-button-broadcast js-reply-broadcast" name="button">{{> icon block="rc-button-broadcast__icon" icon="reply"}} {{_'Reply'}} </button>
+			{{/with}}
+		{{/if}}
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>

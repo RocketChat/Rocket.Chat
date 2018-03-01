@@ -31,8 +31,15 @@ Meteor.methods({
 			});
 		}
 
-
 		const room = RocketChat.models.Rooms.findOneById(rid);
+
+		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room'
+			});
+		}
+
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'saveRoomSettings'

@@ -8,6 +8,7 @@
 	z-index: 2;
 
 	display: flex;
+	flex: 0 0 auto;
 
 	margin: 0 -0.5rem;
 

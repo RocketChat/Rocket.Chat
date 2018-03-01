@@ -219,10 +219,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
+				return !room.broadcast && ocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-readonly', room._id);
+				return !room.broadcast && RocketChat.authz.hasAllPermission('set-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));
@@ -234,10 +234,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY) && room.ro;
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY) && room.ro && !room.broadcast;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
+				return !room.broadcast && RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'reactWhenReadOnly', value).then(() => {
@@ -284,6 +284,21 @@ Template.channelSettingsEditing.onCreated(function() {
 						return reject();
 					});
 				});
+			}
+		},
+		broadcast: {
+			type: 'boolean',
+			label: 'Broadcast_channel',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return room.broadcast;
+			},
+			canEdit() {
+				return false;
+			},
+			save(value) {
+				return Promise.resolve();
 			}
 		},
 		joinCode: {
@@ -448,6 +463,9 @@ Template.channelSettingsInfo.helpers({
 	},
 	description() {
 		return Template.instance().room.description;
+	},
+	broadcast() {
+		return Template.instance().room.broadcast;
 	},
 	announcement() {
 		return Template.instance().room.announcement;

@@ -133,6 +133,15 @@
 			border-radius: 50%;
 		}
 	}
+
+	&-broadcast {
+		margin: 10px 0;
+		padding: 0 1rem;
+
+		&__icon {
+			margin: 0 5px;
+		}
+	}
 }
 
 @media (width < 780px) {

@@ -378,6 +378,10 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
+	'click .js-reply-broadcast'(e, i) {
+		const message = this._arguments[1];
+		RocketChat.roomTypes.openRouteLink('d', {name: this._arguments[1].u.username}, {...FlowRouter.current().queryParams, reply: message._id});
+	},
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},

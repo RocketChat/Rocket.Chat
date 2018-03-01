@@ -22,3 +22,12 @@
 		 <span class="rc-popup-list__item-name">{{{modifier item.username}}}</span>
 	</li>
 </template>
+
+<template name="popupList_item_channel">
+	 <li class="rc-popup-list__item">
+		 <span class="rc-popup-list__item-image">
+			 {{>avatar username=item.name}}
+		 </span>
+		 <span class="rc-popup-list__item-name">{{{modifier item.name}}}</span>
+	</li>
+</template>

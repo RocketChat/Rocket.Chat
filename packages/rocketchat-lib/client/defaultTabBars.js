@@ -22,7 +22,26 @@ RocketChat.TabBar.addButton({
 	i18nTitle: 'Members_List',
 	icon: 'team',
 	template: 'membersList',
-	order: 2
+	order: 2,
+	condition() {
+		const rid = Session.get('openedRoom');
+		const room = RocketChat.models.Rooms.findOne({
+			_id: rid
+		});
+
+		if (!room || !room.broadcast) {
+			return true;
+		}
+		const subscription = RocketChat.models.Subscriptions.findOne({
+			rid
+		}, {
+			fields: {
+				roles: 1
+			}
+		});
+		const user = Meteor.user();
+		return [...user.roles, ...(subscription.roles||[])].some(role => ['admin', 'moderator', 'owner'].includes(role));
+	}
 });
 
 RocketChat.TabBar.addButton({

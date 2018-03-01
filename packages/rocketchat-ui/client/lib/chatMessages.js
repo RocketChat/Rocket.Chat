@@ -2,6 +2,9 @@
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+
+const reply = id => id && `[ ](${ RocketChat.MessageAction.getPermaLink(id) }) `;
+
 this.ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
@@ -385,7 +388,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	restoreText(rid) {
-		const text = localStorage.getItem(`messagebox_${ rid }`);
+		const text = reply(FlowRouter.getQueryParam('reply')) || localStorage.getItem(`messagebox_${ rid }`);
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}

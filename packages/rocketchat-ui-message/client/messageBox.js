@@ -476,8 +476,6 @@ Template.messageBox.onRendered(function() {
 	}).on('autogrow', () => {
 		this.data && this.data.onResize && this.data.onResize();
 	}).focus()[0];
-
-	chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 });
 
 Template.messageBox.onCreated(function() {
@@ -511,6 +509,7 @@ Meteor.startup(function() {
 		setTimeout(()=> {
 			if (chatMessages[RocketChat.openedRoom].input) {
 				chatMessages[RocketChat.openedRoom].input.focus();
+				chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 			}
 		}, 200);
 	});
