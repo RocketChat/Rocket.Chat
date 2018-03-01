@@ -32,15 +32,8 @@ RocketChat.TabBar.addButton({
 		if (!room || !room.broadcast) {
 			return true;
 		}
-		const subscription = RocketChat.models.Subscriptions.findOne({
-			rid
-		}, {
-			fields: {
-				roles: 1
-			}
-		});
-		const user = Meteor.user();
-		return [...user.roles, ...(subscription.roles||[])].some(role => ['admin', 'moderator', 'owner'].includes(role));
+
+		return RocketChat.authz.hasRole(Meteor.userId(), ['admin', 'moderator', 'owner'], rid);
 	}
 });
 
