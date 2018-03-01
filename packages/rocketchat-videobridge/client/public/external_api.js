@@ -138,6 +138,7 @@ function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, conf
     this.frame.width = "100%";
     this.frame.height = "100%";
     this.frame.setAttribute("allowFullScreen", "true");
+    this.frame.setAttribute("allow", "microphone; camera");
     this.frame = this.iframeHolder.appendChild(this.frame);
     this.postis = Postis({
         window: this.frame.contentWindow,

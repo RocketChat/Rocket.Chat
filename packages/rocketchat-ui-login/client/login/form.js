@@ -1,4 +1,6 @@
 /*globals OnePassword, device, setLanguage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 Template.loginForm.helpers({
@@ -58,6 +60,9 @@ Template.loginForm.helpers({
 	},
 	hasOnePassword() {
 		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
+	},
+	manuallyApproveNewUsers() {
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 	}
 });
 
@@ -249,6 +254,9 @@ Template.loginForm.onCreated(function() {
 			}
 			if (RocketChat.settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj['pass']) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
+			}
+			if (RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && !formObj['reason']) {
+				validationObj['reason'] = t('Invalid_reason');
 			}
 			validateCustomFields(formObj, validationObj);
 		}

@@ -6,7 +6,6 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile'],
 		action() {
 			const message = this._arguments[1];
-			RocketChat.MessageAction.hideDropDown();
 			return Meteor.call('unreadMessages', message, function(error) {
 				if (error) {
 					return handleError(error);

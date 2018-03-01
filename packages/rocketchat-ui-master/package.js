@@ -10,16 +10,11 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	clipboard: '1.6.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'reactive-var',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial'

@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.validateCustomFields = function(fields) {
 	// Special Case:
 	// If an admin didn't set any custom fields there's nothing to validate against so consider any customFields valid

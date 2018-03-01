@@ -1,0 +1,70 @@
+<template name="appLogs">
+	{{#with app}}
+		<section class="page-container page-list page-settings flex-tab-main-content">
+			<header class="fixed-title">
+				{{> burger}}
+				<a href="{{pathFor "app-manage" appId=id}}" title="{{_ "Back_to_Manage_Apps"}}">
+					<i class="icon-left-open"></i>
+				</a> &nbsp;
+
+				{{#if isReady}}
+					<h2>
+						<span class="room-title">{{_ "View_the_Logs_for"}}: "{{name}}"</span>
+					</h2>
+				{{/if}}
+				{{#if hasError}}
+					<h2>
+						<span class="room-title">{{ theError }}</span>
+					</h2>
+				{{/if}}
+			</header>
+			<div class="content background-transparent-dark">
+				{{#if isReady}}
+					<div class="rocket-form">
+						{{#each log in logs}}
+							<div class="section section-collapsed">
+								<div class="section-title">
+									<div class="section-title-text">
+										{{formatDate log._createdAt}}: "{{log.method}}" ({{log.totalTime}}ms)
+									</div>
+									<div class="section-title-right">
+										<button class="button primary expand">
+											<span>{{_ "Expand"}}</span>
+										</button>
+									</div>
+								</div>
+								<div class="section-content">
+									<h4>General Information</h4>
+									<ul>
+										<li>Method: {{ log.method }}</li>
+										<li>Start Time: {{ log.startTime }}</li>
+										<li>End Time: {{ log.endTime }}</li>
+										<li>Total Time: {{ log.totalTime }}ms</li>
+										<li>Log Entries: {{ log.entries.length }}</li>
+									</ul>
+
+									<h4>Log Entries</h4>
+									<ul>
+										{{#each entry in log.entries}}
+											<li>Timestamp: {{ entry.timestamp }}</li>
+											<li>Severity: {{ entry.severity }}</li>
+											<li>Caller: {{ entry.caller }}</li>
+											<li>Arguments: <pre><code class="code-colors hljs json">{{{ jsonStringify entry.args }}}</code></pre></li>
+										{{/each}}
+									</ul>
+								</div>
+							</div>
+						{{/each}}
+					</div>
+				{{else if hasError}}
+					<div class="apps-error error-color">
+						<i class="icon-attention"></i>
+						<p>Sadly, an error has occured while loading this page.</p>
+					</div>
+				{{else}}
+					{{> loading}}
+				{{/if}}
+			</div>
+		</section>
+	{{/with}}
+</template>

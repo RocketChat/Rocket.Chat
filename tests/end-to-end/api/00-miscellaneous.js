@@ -3,7 +3,7 @@
 /* eslint no-unused-vars: 0 */
 
 import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail} from '../../data/user.js';
+import {adminEmail, adminUsername, adminPassword} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -29,6 +29,32 @@ describe('miscellaneous', function() {
 		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
 	});
 
+	it('/login (wrapper username)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					username: adminUsername
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
+	});
+
+	it('/login (wrapper email)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					email: adminEmail
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
+	});
+
 	it('/me', (done) => {
 		request.get(api('me'))
 			.set(credentials)
@@ -40,7 +66,7 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
 			})
 			.end(done);
 	});

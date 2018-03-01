@@ -8,7 +8,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('mongo');
-	api.use('underscore');
 	api.use('ecmascript');
 	api.use('babel-compiler');
 	api.use('rocketchat:lib');
