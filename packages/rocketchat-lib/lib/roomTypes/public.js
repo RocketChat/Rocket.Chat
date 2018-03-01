@@ -71,6 +71,17 @@ export class PublicRoomType extends RoomTypeConfig {
 		return true;
 	}
 
+	allowRoomSettingChange(room, setting) {
+		switch (setting) {
+			case RoomSettingsEnum.READ_ONLY:
+				return !room.broadcast;
+			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+				return !room.broadcast && room.ro;
+			default:
+				return true;
+		}
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:

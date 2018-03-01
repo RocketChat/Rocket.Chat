@@ -219,7 +219,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return !room.broadcast && ocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
 				return !room.broadcast && RocketChat.authz.hasAllPermission('set-readonly', room._id);
@@ -234,7 +234,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY) && room.ro && !room.broadcast;
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY);
 			},
 			canEdit() {
 				return !room.broadcast && RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
@@ -297,7 +297,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			canEdit() {
 				return false;
 			},
-			save(value) {
+			save() {
 				return Promise.resolve();
 			}
 		},
