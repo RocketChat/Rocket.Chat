@@ -23,6 +23,9 @@ Template.sidebarItem.helpers({
 	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
+	},
+	isLivechatQueue() {
+		return this.pathSection === 'livechat-queue';
 	}
 });
 

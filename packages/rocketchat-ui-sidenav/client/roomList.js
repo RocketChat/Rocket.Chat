@@ -56,8 +56,7 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
-
+			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
@@ -120,17 +119,3 @@ const mergeSubRoom = (record, t) => {
 RocketChat.callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
 RocketChat.callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
 RocketChat.callbacks.add('cachedCollection-loadFromServer-subscriptions', mergeSubRoom);
-
-Template.roomList.events({
-	'click .more'(e, t) {
-		if (t.data.identifier === 'p') {
-			SideNav.setFlex('listPrivateGroupsFlex');
-		} else if (t.data.isCombined) {
-			SideNav.setFlex('listCombinedFlex');
-		} else {
-			SideNav.setFlex('listChannelsFlex');
-		}
-
-		return SideNav.openFlex();
-	}
-});
