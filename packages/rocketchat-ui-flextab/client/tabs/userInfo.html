@@ -17,99 +17,103 @@
 		{{#if editingUser}}
 			{{> userEdit (userToEdit)}}
 		{{else}}
-			{{#with user}}
-				<main class="contextual-bar__container rc-user-info-wrapper">
-					<div class="rc-user-info">
-						<div class="rc-user-info__avatar">
-							{{> avatar username=username}}
-						</div>
-						<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
-						{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
-					</div>
+			<main class="contextual-bar__content flex-tab">
+				{{#with user}}
+					<main class="rc-user-info__scroll">
+							<div class="rc-user-info">
+									<div class="rc-user-info__avatar">
+										{{> avatar username=username}}
+									</div>
+									<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+									{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
+								</div>
 
-					<div class="rc-user-info-action">
-						{{#each actions}}
-							<button class="js-action rc-user-info-action__item">
-								{{> icon block="rc-user-info-action__icon" icon=icon }}
-								{{_ ./name}}
-							</button>
-						{{/each}}
-						{{# with moreActions}}
-						<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
-						{{> icon block="tab-button-icon" icon="menu" }}
-						</button>
-						{{/with}}
-					</div>
-
-					<div class="rc-user-info-details">
-						{{#if roleTags}}
-							<div class="rc-user-info-details__item">
-								<label class="rc-user-info-details__label	">Roles</label>
-								<ul class="chip-container current-user-roles">
-									{{#each roleTags}}
-									<li class="role-tag" title="{{description}}">{{description}}</li>
+								<div class="rc-user-info-action">
+									{{#each actions}}
+										<button class="js-action rc-user-info-action__item">
+											{{> icon block="rc-user-info-action__icon" icon=icon }}
+											{{_ ./name}}
+										</button>
 									{{/each}}
-								</ul>
-							</div>
-						{{/if}}
-						{{#if hasPermission 'view-full-other-user-info'}}
-							{{#if hasEmails}}
-								<div class="rc-user-info-details__item">
-									<label class="rc-user-info-details__label	">Email address</label>
-									{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
+									{{# with moreActions}}
+									<button class="rc-tooltip rc-room-actions__button js-more" aria-label="{{_ 'More'}}">
+									{{> icon block="tab-button-icon" icon="menu" }}
+									</button>
+									{{/with}}
 								</div>
-							{{/if}}
-							{{#if hasPhone}}
-								<div class="rc-user-info-details__item">
-									<label class="rc-user-info-details__label	">Phone number</label>
-									{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
+
+								<div class="rc-user-info-details">
+									{{#if roleTags}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label	">Roles</label>
+											<ul class="chip-container current-user-roles">
+												{{#each roleTags}}
+												<li class="role-tag" title="{{description}}">{{description}}</li>
+												{{/each}}
+											</ul>
+										</div>
+									{{/if}}
+									{{#if hasPermission 'view-full-other-user-info'}}
+										{{#if hasEmails}}
+											<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label	">Email address</label>
+												{{#each emails}} <a href="mailto:{{address}}" class="rc-user-info-details__info">{{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</a> {{/each}}
+											</div>
+										{{/if}}
+										{{#if hasPhone}}
+											<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label	">Phone number</label>
+												{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
+											</div>
+										{{/if}}
+										{{#if createdAt}}
+											<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
+												<p class="rc-user-info-details__info">{{createdAt}}</p>
+											</div>
+											<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
+												<p class="rc-user-info-details__info">{{lastLogin}}</p>
+											</div>
+										{{/if}}
+										{{#if shouldDisplayReason}}
+											<div class="rc-user-info-details__item">
+												<label class="rc-user-info-details__label	">{{_ "Reason_To_Join"}}</label>
+												<p class="rc-user-info-details__info">{{user.reason}}</p>
+											</div>
+										{{/if}}
+									{{/if}}
+									{{#if utc}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label">Timezone</label>
+											<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
+										</div>
+									{{/if}}
+									{{#each customField}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label">{{label}}</label>
+											<p class="rc-user-info-details__info">{{value}}</p>
+										</div>
+									{{/each}}
+									<div class="rc-user-info-details__item">
+										{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
+										{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
+										{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
+										{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
+										{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
+										{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
+										{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
+										{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
+									</div>
 								</div>
-							{{/if}}
-							{{#if createdAt}}
-								<div class="rc-user-info-details__item">
-									<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
-									<p class="rc-user-info-details__info">{{createdAt}}</p>
-								</div>
-								<div class="rc-user-info-details__item">
-									<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
-									<p class="rc-user-info-details__info">{{lastLogin}}</p>
-								</div>
-							{{/if}}
-							{{#if shouldDisplayReason}}
-								<div class="rc-user-info-details__item">
-									<label class="rc-user-info-details__label	">{{_ "Reason_To_Join"}}</label>
-									<p class="rc-user-info-details__info">{{user.reason}}</p>
-								</div>
-							{{/if}}
-						{{/if}}
-						{{#if utc}}
-							<div class="rc-user-info-details__item">
-								<label class="rc-user-info-details__label">Timezone</label>
-								<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
-							</div>
-						{{/if}}
-						{{#each customField}}
-							<div class="rc-user-info-details__item">
-								<label class="rc-user-info-details__label">{{label}}</label>
-								<p class="rc-user-info-details__info">{{value}}</p>
-							</div>
-						{{/each}}
-						<div class="rc-user-info-details__item">
-							{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
-							{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
-							{{#if services.gitlab.id}} <p class="secondary-font-color"><i class="icon-gitlab"></i>{{services.gitlab.username}}</p> {{/if}}
-							{{#if services.google.id}} <p class="secondary-font-color"><i class="icon-gplus"></i><a href="https://plus.google.com/{{services.google.id}}" target="_blank">{{services.google.name}}</a></p> {{/if}}
-							{{#if services.linkedin.id}} <p class="secondary-font-color"><i class="icon-linkedin"></i><a href="{{services.linkedin.publicProfileUrl}}" target="_blank">{{linkedinUsername}}</a></p> {{/if}}
-							{{#if servicesMeteor.id}} <p class="secondary-font-color"><i class="icon-meteor"></i>{{servicesMeteor.username}}</p> {{/if}}
-							{{#if services.twitter.id}} <p class="secondary-font-color"><i class="icon-twitter"></i><a href="https://twitter.com/{{services.twitter.screenName}}" target="_blank">{{services.twitter.screenName}}</a></p> {{/if}}
-							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
-						</div>
+					</main>
+				{{/with}}
+				{{#if showAll}}
+					<div class="rc-user-info__flex rc-user-info__row">
+							<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 					</div>
-				</main>
-			{{/with}}
+				{{/if}}
+			</main>
 		{{/if}}
-	{{/if}}
-	{{#if showAll}}
-				<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 	{{/if}}
 </template>
