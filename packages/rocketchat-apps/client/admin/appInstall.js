@@ -24,7 +24,6 @@ Template.appInstall.onCreated(function() {
 
 	// Allow passing in a url as a query param to show installation of
 	if (FlowRouter.getQueryParam('url')) {
-		console.log('Url:', FlowRouter.getQueryParam('url'));
 		instance.appUrl.set(FlowRouter.getQueryParam('url'));
 		FlowRouter.setQueryParams({ url: null });
 	}
@@ -36,11 +35,8 @@ Template.appInstall.events({
 
 		// Handle url installations
 		if (url) {
-			console.log('Installing via url.');
 			t.isInstalling.set(true);
 			RocketChat.API.post('apps', { url }).then((result) => {
-				console.log('result', result);
-
 				FlowRouter.go(`/admin/apps/${ result.app.id }`);
 			}).catch((err) => {
 				console.warn('err', err);
