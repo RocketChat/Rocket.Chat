@@ -71,6 +71,7 @@ Template.roomList.helpers({
 
 		if (sortBy === 'activity') {
 			const list = ChatSubscription.find(query).fetch();
+			RocketChat.models.Rooms.find();
 			const rooms = RocketChat.models.Rooms._collection._docs._map;
 
 			return _.sortBy(list.map(sub => {
