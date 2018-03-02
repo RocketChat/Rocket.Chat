@@ -70,28 +70,14 @@ Template.roomList.helpers({
 		}
 
 		if (sortBy === 'activity') {
-			const list = ChatSubscription.find(query, {sort: {rid : 1}}).fetch();
-			const ids = list.map(sub => sub.rid);
-			const rooms = RocketChat.models.Rooms.find({
-				_id: { $in : ids}
-			},
-			{
-				sort : {
-					_id: 1
-				},
-				fields: {_updatedAt: 1}
-			}).fetch().reduce((result, room) =>{
-				result[room._id] = room;
-				return result;
-			}, {});
-
-
+			const list = ChatSubscription.find(query).fetch();
+			const rooms = RocketChat.models.Rooms._collection._docs._map;
 
 			return _.sortBy(list.map(sub => {
 				const lm = rooms[sub.rid] && rooms[sub.rid]._updatedAt;
 				return {
 					...sub,
-					lm: lm && lm.toISOString()
+					lm: lm && lm.toISOString && lm.toISOString()
 				};
 			}), 'lm').reverse();
 		}
