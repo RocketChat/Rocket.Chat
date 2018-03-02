@@ -15,11 +15,6 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles([
-		'client/admin/admin.html',
-		'client/admin/admin.js',
-		'client/admin/provider.html',
-		'client/admin/provider.js',
-		'client/admin/route.js',
 		'client/search/search.html',
 		'client/search/search.js',
 		'client/provider/result.html',

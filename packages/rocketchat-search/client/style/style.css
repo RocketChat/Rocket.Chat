@@ -1,33 +1,18 @@
-.rocket-searchbox input {
-	width: 100%;
-	padding: 10px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
+.rocket-default-search-settings {
+	margin-bottom: 10px;
 }
 
-.rocket-searchresult {
-	margin-top: 20px;
+.rocket-default-search-results .loading-animation {
+	margin-top: 10px;
 }
 
-.rocket-searchresult .result {
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	padding: 10px;
-	margin-bottom:10px;
+.rocket-default-search-results .load-more {
+	margin-top: 10px;
+	text-align: center;
+	position: relative;
 }
 
-#search-admin h2 {
-	font-size: 20px;
-	padding: 20px;
-	border-bottom: 1px solid #ddd;
-	margin-bottom: 20px;
+.rocket-default-search-results .load-more button {
+	cursor: pointer;
+	text-decoration: underline;
 }
-
-#search-admin .rocket-form {
-	padding: 0 20px;
-}
-
-#search-admin h3 {
-	margin: 20px 0 10px 0;
-}
-

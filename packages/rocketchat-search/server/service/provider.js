@@ -1,34 +1,95 @@
 /* globals SystemLogger */
+import _ from 'underscore';
+
+class Setting {
+	constructor(basekey, key, type, defaultValue, options = {}) {
+		this._basekey = basekey;
+		this.key = key;
+		this.type = type;
+		this.defaultValue = defaultValue;
+		this.options = options;
+		this._value = undefined;
+	}
+
+	get value() {
+		return this._value;
+	}
+
+	get id() {
+		return `Search.${ this._basekey }.${ this.key }`;
+	}
+
+	load() {
+		this._value = RocketChat.settings.get(this.id) || this.defaultValue;
+	}
+
+}
+
+class Settings {
+	constructor(basekey) {
+		this.basekey = basekey;
+		this.settings = {};
+	}
+
+	add(key, type, defaultValue, options) {
+		this.settings[key] = new Setting(this.basekey, key, type, defaultValue, options);
+	}
+
+	list() {
+		return _.values(this.settings);
+	}
+
+	map() {
+		return this.settings;
+	}
+
+	get(key) {
+		if (!this.settings[key]) { throw new Error('Setting is not set'); }
+		return this.settings[key].value;
+	}
+
+	load() {
+		_.each(this.settings, (setting) => {
+			setting.load();
+		});
+	}
+}
+
 export default class SearchProvider {
 
-	constructor() {
-		SystemLogger && SystemLogger.info(`create search provider ${ this.constructor.name }`);
-		this.configuration = {};
+	constructor(key) {
+		SystemLogger && SystemLogger.info(`create search provider ${ key }`);
+		this._key = key;
+		this._settings = new Settings(key);
 	}
 
 	/*--- basic params ---*/
-	get id() {
-		throw new Error('SearchProvider superclass has no id defined and should not be initiated');
+	get key() {
+		return this._key;
 	}
 
-	get name() {
+	get i18nLabel() {
 		return undefined;
 	}
 
-	get description() {
+	get i18nDescription() {
 		return undefined;
+	}
+
+	get settings() {
+		return this._settings.list();
+	}
+
+	get settingsAsMap() {
+		return this._settings.map();
 	}
 
 	/*--- templates ---*/
 	get resultTemplate() {
-		throw new Error('Result template has to be defined');
+		return 'DefaultSearchResultTemplate';
 	}
 
 	get suggestionItemTemplate() {
-		return undefined;
-	}
-
-	get adminTemplate() {
 		return undefined;
 	}
 
@@ -51,9 +112,9 @@ export default class SearchProvider {
 	}
 
 	/*--- livecycle ---*/
-	init(configuration) {
-		if (configuration) { this.configuration = configuration; }
-		return this;
+	run(callback) {
+		this._settings.load();
+		this.start(callback);
 	}
 
 	start(callback) {

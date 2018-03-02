@@ -1,15 +1,29 @@
 <template name="RocketSearch">
-	<div>
-		<div class="rocket-searchbox">
-			<input type="text" placeholder='Suchbegriff eingeben'>
-			<!-- TODO autocomplete -->
+	<div class="rocket-search-tab">
+		<div class="control rocket-search-input">
+			<form class="search-form" role="form">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+							</div>
+							<input value="{{text}}" type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" />
+						</div>
+					</label>
+				</div>
+			</form>
 		</div>
-		<div class="rocket-searchresult">
-			{{#if loading}}
-				Loading
-			{{else}}
-				{{> UI.dynamic template=resultTemplate data=result}}
-			{{/if}}
-		</div>
+
+		{{#unless error}}
+			<div class="rocket-search-result">
+				{{> Template.dynamic template=template data=scope}}
+			</div>
+		{{else}}
+			<div class="rocket-search-error">
+				{{error.msg}}
+			</div>
+		{{/unless}}
 	</div>
+
 </template>

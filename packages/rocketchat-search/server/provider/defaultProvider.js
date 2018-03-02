@@ -4,41 +4,32 @@ import SearchProvider from '../service/provider';
 class DefaultProvider extends SearchProvider {
 
 	constructor() {
-		super();
-		this.configuration = {
-			searchAll:true
-		};
+		super('defaultProvider');
+		this._settings.add('GlobalSearchEnabled', 'boolean', false, {
+			i18nDescription:'If_search_returns_result_from_all_accessible_rooms'
+		});
+		this._settings.add('PageSize', 'int', 10);
 	}
 
-	get id() {
-		return searchProviderService.DEFAULT_ID;
-	}
-
-	get name() {
+	get i18nLabel() {
 		return 'Default provider';
 	}
 
-	get description() {
+	get i18nDescription() {
 		return 'The default provider uses mongodb for search';
 	}
 
-	get resultTemplate() {
-		return 'DefaultSearchResultTemplate';
-	}
+	search(text, context, payload = {}, callback) {
 
-	get adminTemplate() {
-		return 'SearchDefaultProviderAdmin';
-	}
+		const _rid = payload.searchAll ? undefined : context.rid;
 
-	search(text, rid, payload, callback) {
+		const _limit = payload.limit || this._settings.get('PageSize');
 
-		if (!payload) {
-			payload = {limit:1};
-		}
-
-		rid = payload.searchAll || this.configuration.searchAll ? rid : undefined;
-
-		Meteor.call('messageSearch', text, rid, payload.limit, callback);
+		Meteor.call('messageSearch', text, _rid, _limit, (err, result)=>{
+			Meteor.setTimeout(()=>{
+				callback(err, result);
+			}, 2000);
+		});
 	}
 }
 

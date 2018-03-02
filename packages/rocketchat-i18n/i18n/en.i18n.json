@@ -2177,5 +2177,9 @@
   "your_message": "your message",
   "your_message_optional": "your message (optional)",
   "Your_password_is_wrong": "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
+  "Chatpal_HTTP_Headers": "Http Headers",
+  "Chatpal_HTTP_Headers_Description": "List of HTTP Headers, one header per line. Format: name:value",
+  "Chatpal_API_Key": "API Key",
+  "Chatpal_API_Key_Description": "You don't yet have an <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal-key\">Get one!</a>"
 }

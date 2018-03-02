@@ -137,7 +137,7 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, limit));
+		Meteor.runAsUser(this.userId, () => result = (Meteor.call('messageSearch', searchText, roomId, limit) || {}).docs);
 
 		return RocketChat.API.v1.success({
 			messages: result.messages

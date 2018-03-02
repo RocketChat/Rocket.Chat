@@ -1,17 +1,42 @@
 <template name="DefaultSearchResultTemplate">
-	{{#if result.messages}}
-		<div class="results">
-			{{#each message in result.messages}}
-				<div class="result">
-					<span>{{message.rid}}</span>
-					<h3>{{message.msg}}</h3>
-				</div>
-			{{/each}}
+	<div class="rocket-default-search-settings">
+		<div>
+			{{#if globalSearchEnabled}}
+				<label>
+					<input type="checkbox" id="global-search">{{_ "Global_Search"}}
+				</label>
+			{{/if}}
 		</div>
-
-		<button class="more">more</button>
-	{{else}}
-		No result
-	{{/if}}
-
+	</div>
+	<div class="rocket-default-search-results">
+		{{#unless result}}
+			<div class="rocket-default-search-hints">
+				<p>{{_ "You_can_search_using_RegExp_eg"}} <code class="code-colors inline">/^text$/i</code></p>
+			</div>
+		{{else}}
+			{{#if result.messages}}
+				<div class="js-list">
+					<ul class="list clearfix">
+						{{#each message in result.messages.docs}}
+							{{#nrr nrrargs 'message' message}}{{/nrr}}
+						{{/each}}
+					</ul>
+					{{#if $not searching}}
+						{{#if hasMore}}
+						<div class="load-more">
+							<button>{{_ 'Load_more'}}</button>
+						</div>
+						{{/if}}
+					{{/if}}
+				</div>
+			{{else}}
+				<h2>{{_ "No_results_found"}}</h2>
+			{{/if}}
+		{{/unless}}
+			<div class="load-more">
+				{{#if searching}}
+					{{> loading}}
+				{{/if}}
+			</div>
+	</div>
 </template>

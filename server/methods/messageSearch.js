@@ -8,9 +8,9 @@ Meteor.methods({
 
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
-			messages: [],
-			users: [],
-			channels: []
+			messages: {
+				docs:[]
+			}
 		};
 
 		const currentUserId = Meteor.userId();
@@ -25,7 +25,7 @@ Meteor.methods({
 			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
 				return result;
 			}
-		} else if (RocketChat.settings.get('Message_GlobalSearch') !== true) {
+		} else if (RocketChat.settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
 			return result;
 		}
 
@@ -226,7 +226,7 @@ Meteor.methods({
 				};
 			}
 
-			result.messages = RocketChat.models.Messages.find(query, options).fetch();
+			result.messages.docs = RocketChat.models.Messages.find(query, options).fetch();
 		}
 
 		return result;

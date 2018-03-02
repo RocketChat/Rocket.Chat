@@ -19,8 +19,7 @@ Package.onUse(function(api) {
 	], 'server');
 
 	api.addFiles([
-		'client/admin.html',
-		'client/admin.js',
+		'client/style.css',
 		'client/result.html',
 		'client/result.js'
 	], 'client');
