@@ -10,14 +10,14 @@ const getAccessToken = (cb) => {
 	});
 
 	console.log(url);
-	clientAuth.getToken('4/AABpItSMNRCHhufOL7fhH9j23b4f_mO9cRo62BSTtSHQGHLCPKJ5x3jG_2vWyItVNX3iXK8vIIWCkWUxOEEnn0Y#', (err, tokens) => {
+	clientAuth.getToken('4/AAB557E2T6uXKyyL-33xSOJSJYVIlqideioO_PH6RyCqMdUArU4xcFEm-w-drT5ICqjOBIZ2sb2W4U93elgDIUI#', (err, tokens) => {
 		console.log('getting token', err, tokens);
 		if (err) {
 			return cb(err);
 		}
 		// set tokens to the client
 		// TODO: tokens should be set by OAuth2 client.
-		console.log(tokens);
+		// console.log(tokens);
 		clientAuth.setCredentials(tokens);
 		cb(clientAuth);
 	});
