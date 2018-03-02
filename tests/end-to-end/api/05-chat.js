@@ -35,7 +35,7 @@ describe('[Chat]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'At least one, \'roomId\' or \'channel\' should be provided');
+					expect(res.body).to.have.property('error', '[invalid-channel]');
 				})
 				.end(done);
 		});

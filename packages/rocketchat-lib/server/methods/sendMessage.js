@@ -10,6 +10,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!message.rid) {
+			throw new Error('The \'rid\' param, must be provided');
+		}
+
 		if (message.ts) {
 			const tsDiff = Math.abs(moment(message.ts).diff());
 			if (tsDiff > 60000) {
@@ -54,7 +58,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if ((room.muted||[]).includes(user.username)) {
+		if ((room.muted || []).includes(user.username)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,

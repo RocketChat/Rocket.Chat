@@ -1,5 +1,4 @@
 /* global processWebhookMessage */
-import { validateMessageObject } from './chat.helper';
 
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -108,14 +107,6 @@ RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
-		try {
-			validateMessageObject({ message: this.bodyParams, method: 'postMessage' });
-		} catch (error) {
-			return RocketChat.API.v1.failure({
-				error: error.message
-			});
-		}
-
 		const messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
 
 		if (!messageReturn) {
@@ -162,14 +153,6 @@ RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.message) {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
-		}
-
-		try {
-			validateMessageObject({ message: this.bodyParams.message, method: 'sendMessage' });
-		} catch (error) {
-			return RocketChat.API.v1.failure({
-				error: error.message
-			});
 		}
 
 		let message;
