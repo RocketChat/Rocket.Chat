@@ -158,7 +158,7 @@ export class AppsRestApi {
 			}
 		});
 
-		this.api.addRoute(':id/languages', { authRequired: true }, {
+		this.api.addRoute(':id/languages', { authRequired: false }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s languages..`);
 				const prl = manager.getOneById(this.urlParams.id);
