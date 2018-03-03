@@ -58,7 +58,7 @@ Template.loginForm.helpers({
 	passwordPlaceholder() {
 		return RocketChat.settings.get('Accounts_PasswordPlaceholder') || t('Password');
 	},
-	confirmPasswordPlaceholder(){
+	confirmPasswordPlaceholder() {
 		return RocketChat.settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm Password');
 	},
 	hasOnePassword() {
