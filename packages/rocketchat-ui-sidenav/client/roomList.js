@@ -70,24 +70,15 @@ Template.roomList.helpers({
 		}
 
 		if (sortBy === 'activity') {
-			const list = ChatSubscription.find(query, {sort: {rid : 1}}).fetch();
-			const ids = list.map(sub => sub.rid);
-			const rooms = RocketChat.models.Rooms.find({
-				_id: { $in : ids}
-			},
-			{
-				sort : {
-					_id: 1
-				},
-				fields: {_updatedAt: 1}
-			}).fetch();
+			const list = ChatSubscription.find(query).fetch();
+			RocketChat.models.Rooms.find();
+			const rooms = RocketChat.models.Rooms._collection._docs._map;
 
-
-			return _.sortBy(list.map((sub, i) => {
-				const lm = rooms[i]._updatedAt;
+			return _.sortBy(list.map(sub => {
+				const lm = rooms[sub.rid] && rooms[sub.rid]._updatedAt;
 				return {
 					...sub,
-					lm: lm && lm.toISOString()
+					lm: lm && lm.toISOString && lm.toISOString()
 				};
 			}), 'lm').reverse();
 		}
@@ -124,4 +115,3 @@ Template.roomList.helpers({
 		return RocketChat.getUserPreference(Meteor.user(), 'roomCounterSidebar');
 	}
 });
-
