@@ -58,6 +58,9 @@ Template.loginForm.helpers({
 	passwordPlaceholder() {
 		return RocketChat.settings.get('Accounts_PasswordPlaceholder') || t('Password');
 	},
+	confirmPasswordPlaceholder(){
+		return RocketChat.settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm Password');
+	},
 	hasOnePassword() {
 		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
 	},
