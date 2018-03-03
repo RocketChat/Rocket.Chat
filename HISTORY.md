@@ -1,3 +1,16 @@
+<a name="0.62.1"></a>
+## 0.62.1 (2018-03-03)
+
+
+### Bug Fixes
+
+- [#9986](https://github.com/RocketChat/Rocket.Chat/pull/9986) Delete user without username was removing direct rooms of all users
+- [#9960](https://github.com/RocketChat/Rocket.Chat/pull/9960) Empty sidenav when sorting by activity and there is a subscription without room
+- [#9988](https://github.com/RocketChat/Rocket.Chat/pull/9988) New channel page on medium size screens
+- [#9982](https://github.com/RocketChat/Rocket.Chat/pull/9982) Two factor authentication modal was not showing
+
+
+
 <a name="0.62.0"></a>
 # 0.62.0 (2018-02-28)
 
