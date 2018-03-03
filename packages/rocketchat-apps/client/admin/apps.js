@@ -1,3 +1,5 @@
+import { AppEvents } from '../communication';
+
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
@@ -7,6 +9,39 @@ Template.apps.onCreated(function() {
 		instance.apps.set(result.apps);
 		instance.ready.set(true);
 	});
+
+	instance.onAppAdded = function _appOnAppAdded(appId) {
+		RocketChat.API.get(`apps/${ appId }`).then((result) => {
+			const apps = instance.apps.get();
+			apps.push(result.app);
+			instance.apps.set(apps);
+		});
+	};
+
+	instance.onAppRemoved = function _appOnAppRemoved(appId) {
+		const apps = instance.apps.get();
+
+		let index = -1;
+		apps.find((item, i) => {
+			if (item.id === appId) {
+				index = i;
+				return true;
+			}
+		});
+
+		apps.splice(index, 1);
+		instance.apps.set(apps);
+	};
+
+	window.Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	window.Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+});
+
+Template.apps.onDestroyed(function() {
+	const instance = this;
+
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
 Template.apps.helpers({

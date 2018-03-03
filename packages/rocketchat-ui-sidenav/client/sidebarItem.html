@@ -1,19 +1,21 @@
 <template name="sidebarItem">
 	<li class="sidebar-item {{#if or unread alert }}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
-			<div class="sidebar-item__picture">
-				{{#if darken}}
-					{{#if icon}}
-						<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
-							{{> icon block="sidebar-item__icon" icon=icon}}
+			{{#unless isLivechatQueue}}
+				<div class="sidebar-item__picture">
+					{{#if darken}}
+						{{#if icon}}
+							<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
+								{{> icon block="sidebar-item__icon" icon=icon}}
+							</div>
+						{{/if}}
+					{{else}}
+						<div class="sidebar-item__user-thumb">
+							{{> avatar username=username roomIcon=icon}}
 						</div>
 					{{/if}}
-				{{else}}
-					<div class="sidebar-item__user-thumb">
-						{{> avatar username=username roomIcon=icon}}
-					</div>
-				{{/if}}
-			</div>
+				</div>
+			{{/unless}}
 			<div class="sidebar-item__body">
 				<div class="sidebar-item__message">
 					<div class="sidebar-item__message-top">
