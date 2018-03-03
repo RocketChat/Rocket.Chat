@@ -74,6 +74,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 		'public': true,
 		i18nLabel: 'Placeholder_for_password_login_field'
 	});
+	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
+		type: 'string',
+		'public': true,
+		i18nLabel: 'Placeholder_for_password_login_field'
+	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
