@@ -1,6 +1,7 @@
+import fs from 'fs';
 import path from 'path';
 
-let tempFolder = '~/userData';
+let tempFolder = '/tmp/userData';
 if (RocketChat.settings.get('UserData_FileSystemPath') != null) {
 	if (RocketChat.settings.get('UserData_FileSystemPath').trim() !== '') {
 		tempFolder = RocketChat.settings.get('UserData_FileSystemPath');
@@ -8,11 +9,11 @@ if (RocketChat.settings.get('UserData_FileSystemPath') != null) {
 }
 
 Meteor.methods({
-	requestDataDownload() {
+	requestDataDownload({fullExport = false}) {
 		const currentUserData = Meteor.user();
 		const userId = currentUserData._id;
 
-		const lastOperation = RocketChat.models.ExportOperations.findLastOperationByUser(userId);
+		const lastOperation = RocketChat.models.ExportOperations.findLastOperationByUser(userId, fullExport);
 
 		if (lastOperation) {
 			const yesterday = new Date();
@@ -26,8 +27,20 @@ Meteor.methods({
 			}
 		}
 
-		const folderName = path.join(tempFolder, userId);
+		const subFolderName = fullExport ? 'full' : 'partial';
+		const baseFolder = path.join(tempFolder, userId);
+		if (!fs.existsSync(baseFolder)) {
+			fs.mkdirSync(baseFolder);
+		}
+
+		const folderName = path.join(baseFolder, subFolderName);
+		if (!fs.existsSync(folderName)) {
+			fs.mkdirSync(folderName);
+		}
 		const assetsFolder = path.join(folderName, 'assets');
+		if (!fs.existsSync(assetsFolder)) {
+			fs.mkdirSync(assetsFolder);
+		}
 
 		const exportOperation = {
 			userId : currentUserData._id,
@@ -36,7 +49,8 @@ Meteor.methods({
 			exportPath: folderName,
 			assetsPath: assetsFolder,
 			fileList: [],
-			generatedFile: null
+			generatedFile: null,
+			fullExport
 		};
 
 		RocketChat.models.ExportOperations.create(exportOperation);

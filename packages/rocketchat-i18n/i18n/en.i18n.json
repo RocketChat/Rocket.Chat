@@ -712,6 +712,7 @@
   "Example_s": "Example: <code class=\"inline\">%s</code>",
   "Exclude_Botnames": "Exclude Bots",
   "Exclude_Botnames_Description": "Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.",
+  "Export_My_Data" : "Export My Data",
   "External_Service": "External Service",
   "External_Queue_Service_URL": "External Queue Service URL",
   "Facebook_Page": "Facebook Page",

@@ -1,7 +1,6 @@
 /* globals UploadFS */
 
 import fs from 'fs';
-import path from 'path';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
@@ -251,10 +250,8 @@ Object.assign(FileUpload, {
 		res.end();
 	},
 
-	copy(file, targetFolder) {
+	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
-		const targetFile = path.join(targetFolder, `${ file._id }-${ file.name }`);
-
 		const out = fs.createWriteStream(targetFile);
 
 		file = FileUpload.addExtensionTo(file);
