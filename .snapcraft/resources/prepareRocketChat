@@ -1,0 +1,17 @@
+#!/bin/bash
+
+curl -SLf "https://releases.rocket.chat/#{RC_VERSION}/download/" -o rocket.chat.tgz
+
+tar xvf rocket.chat.tgz --strip 1
+
+cd programs/server
+
+npm install
+
+if [[ $(uname -m) == "x86_64" ]]
+then
+  cp -r npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-unknown
+fi
+
+# sharp needs execution stack removed - https://forum.snapcraft.io/t/snap-and-executable-stacks/1812
+execstack --clear-execstack npm/node_modules/sharp/vendor/lib/librsvg-2.so.2.42.0

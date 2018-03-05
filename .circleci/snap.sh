@@ -18,6 +18,7 @@ git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/r
 # Rarely will change, but just incase we copy it all
 cp -r resources buildinfo launchpad/
 sed s/#{RC_VERSION}/$RC_VERSION/ snapcraft.yaml > launchpad/snapcraft.yaml
+sed s/#{RC_VERSION}/$RC_VERSION/ resources/prepareRocketChat > launchpad/resources/prepareRocketChat
 
 cd launchpad
 git add resources snapcraft.yaml buildinfo
