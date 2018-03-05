@@ -89,7 +89,13 @@ const MarkdownMessage = (message) => {
 	return message;
 };
 
+const filterMarkdown = (message) => {
+	message = Markdown.filterMarkdownFromMessage(message);
+	return message;
+};
+
 callbacks.add('renderMessage', MarkdownMessage, callbacks.priority.HIGH, 'markdown');
+callbacks.add('renderNotification', filterMarkdown, RocketChat.callbacks.priority.HIGH, 'markdown');
 
 if (Meteor.isClient) {
 	Blaze.registerHelper('RocketChatMarkdown', (text) => Markdown.parse(text));

@@ -22,7 +22,8 @@ export function parseMessageTextPerUser(messageText, message, receiver) {
 		return TAPi18n.__('Encrypted_message', { lng });
 	}
 
-	return messageText;
+	// perform processing required before sending message as notification such as markdown filtering
+	return RocketChat.callbacks.run('renderNotification', messageText);
 }
 
 /**
