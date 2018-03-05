@@ -33,7 +33,7 @@ function findPrivateGroupByIdOrNameForAdmin({ params, checkedArchived = true }) 
 	if (params.roomId) {
 		room._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomId);
 	} else if (params.roomName) {
-		roomS._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomName);
+		room._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomName);
 	}
 
 	if (!room._room || room._room.t !== 'p') {
