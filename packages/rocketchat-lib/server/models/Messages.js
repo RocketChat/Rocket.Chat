@@ -500,15 +500,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	unlinkUserId(userId, newUserId, newUsername) {
+	unlinkUserId(userId, newUserId, newUsername, newNameAlias) {
 		const query = {
 			'u._id': userId
 		};
 
 		const update = {
 			$set: {
+				'alias': newNameAlias,
 				'u._id': newUserId,
-				'u.username' : newUsername
+				'u.username' : newUsername,
+				'u.name' : undefined
 			}
 		};
 
