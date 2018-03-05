@@ -34,8 +34,6 @@
 		overflow-y: auto;
 
 		flex: 1 1;
-
-		padding: 0 var(--default-padding);
 	}
 
 	&__banner {

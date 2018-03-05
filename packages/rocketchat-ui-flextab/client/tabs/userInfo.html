@@ -18,7 +18,7 @@
 			{{> userEdit (userToEdit)}}
 		{{else}}
 			{{#with user}}
-				<main class="contextual-bar__container rc-user-info-wrapper">
+				<main class="contextual-bar__content rc-user-info-wrapper">
 					<div class="rc-user-info">
 						<div class="rc-user-info__avatar">
 							{{> avatar username=username}}
@@ -105,11 +105,11 @@
 							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 						</div>
 					</div>
+					{{#if ../showAll}}
+						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
+					{{/if}}
 				</main>
 			{{/with}}
 		{{/if}}
-	{{/if}}
-	{{#if showAll}}
-				<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 	{{/if}}
 </template>
