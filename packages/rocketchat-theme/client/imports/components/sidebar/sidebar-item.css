@@ -44,10 +44,6 @@
 		height: var(--sidebar-item-thumb-size-extended);
 	}
 
-	&__icon {
-		margin: 0 auto;
-	}
-
 	&__user-thumb {
 		width: var(--sidebar-item-thumb-size-extended);
 		height: var(--sidebar-item-thumb-size-extended);

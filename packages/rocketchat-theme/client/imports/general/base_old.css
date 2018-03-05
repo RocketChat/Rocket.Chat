@@ -4558,8 +4558,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old.full-page {
-	z-index: 101;
-
 	display: flex;
 
 	width: 100%;
