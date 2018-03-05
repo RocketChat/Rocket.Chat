@@ -24,6 +24,29 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 	return roomSub;
 }
 
+function findPrivateGroupByIdOrNameForAdmin({ params, checkedArchived = true }) {
+	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
+		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+	}
+
+	let room = {};
+	if (params.roomId) {
+		room._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomId);
+	} else if (params.roomName) {
+		roomS._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomName);
+	}
+
+	if (!room._room || room._room.t !== 'p') {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+	}
+
+	if (checkedArchived && room._room.archived) {
+		throw new Meteor.Error('error-room-archived', `The private group, ${ room.name }, is archived`);
+	}
+
+	return room;
+}
+
 RocketChat.API.v1.addRoute('groups.addAll', { authRequired: true }, {
 	post() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
@@ -373,7 +396,11 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const findResult = RocketChat.authz.hasPermission(this.userId, 'view-room-administration')
+			? findPrivateGroupByIdOrNameForAdmin({ params: this.requestParams() })
+			: findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId })
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
