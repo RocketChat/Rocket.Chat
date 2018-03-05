@@ -6,6 +6,7 @@ import s from 'underscore.string';
 
 import './client.mocks.js';
 import { original } from '../lib/parser/original/original';
+import {filtered} from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
@@ -232,13 +233,130 @@ const nested = {
 
 const defaultObjectTest = (result, object, objectKey) => assert.equal(result.html, object[objectKey]);
 
-const testObject = (object, parser = original, test = defaultObjectTest) => {
+/*
+* Markdown Filters
+*/
+const boldFiltered = {
+	'*Hello*': 'Hello',
+	'**Hello**': 'Hello',
+	'**Hello': 'Hello',
+	'*Hello**': 'Hello',
+	'He*llo': 'He*llo',
+	'*Hello': '*Hello',
+	'Hello*': 'Hello*',
+	'***Hello***': '***Hello***',
+	'***Hello**': '***Hello**',
+	'*Hello* there': 'Hello there',
+	'**Hello** there': 'Hello there',
+	'Hi, *Hello*': 'Hi, Hello',
+	'Hi, **Hello**': 'Hi, Hello',
+	'Hi, *Hello* how are you?': 'Hi, Hello how are you?',
+	'Hi, **Hello** how are you?': 'Hi, Hello how are you?'
+};
+
+const italicFiltered = {
+	'_Hello_': 'Hello',
+	'__Hello__': 'Hello',
+	'__Hello': 'Hello',
+	'_Hello__': 'Hello',
+	'He_llo': 'He_llo',
+	'_Hello': '_Hello',
+	'Hello_': 'Hello_',
+	'___Hello___': '___Hello___',
+	'___Hello__': '___Hello__',
+	'_Hello_ there': 'Hello there',
+	'__Hello__ there': 'Hello there',
+	'Hi, _Hello_': 'Hi, Hello',
+	'Hi, __Hello__': 'Hi, Hello',
+	'Hi, _Hello_ how are you?': 'Hi, Hello how are you?',
+	'Hi, __Hello__ how are you?': 'Hi, Hello how are you?'
+};
+
+const strikeFiltered = {
+	'~Hello~': 'Hello',
+	'~~Hello~~': 'Hello',
+	'~~Hello': 'Hello',
+	'~Hello~~': 'Hello',
+	'He~llo': 'He~llo',
+	'~Hello': '~Hello',
+	'Hello~': 'Hello~',
+	'~~~Hello~~~': '~~~Hello~~~',
+	'~~~Hello~~': '~~~Hello~~',
+	'~Hello~ there': 'Hello there',
+	'~~Hello~~ there': 'Hello there',
+	'Hi, ~Hello~': 'Hi, Hello',
+	'Hi, ~~Hello~~': 'Hi, Hello',
+	'Hi, ~Hello~ how are you?': 'Hi, Hello how are you?',
+	'Hi, ~~Hello~~ how are you?': 'Hi, Hello how are you?'
+};
+
+const headingFiltered = {
+	'# Hello': 'Hello',
+	'## Hello': 'Hello',
+	'### Hello': 'Hello',
+	'#### Hello': 'Hello',
+	'#Hello': '#Hello',
+	'##Hello': '##Hello',
+	'###Hello': '###Hello',
+	'####Hello': '####Hello',
+	'He#llo': 'He#llo',
+	'# Hello there': 'Hello there',
+	'Hi, # Hello': 'Hi, Hello',
+	'Hi, # Hello there': 'Hi, Hello there'
+};
+
+const quoteFiltered = {
+	'&gt;Hello': 'Hello',
+	'&gt; Hello': ' Hello',
+	'&lt;Hello': '&lt;Hello',
+	' &gt;Hello': ' &gt;Hello',
+	'Hello &gt; there': 'Hello &gt; there',
+	'>Hello': '>Hello',
+	'> Hello': '> Hello'
+};
+
+const linkFiltered = {
+	'[Text](http://link)': 'Text',
+	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': 'Open Site For Rocket.Chat',
+	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': ' Open Site For Rocket.Chat',
+	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site'
+};
+
+const inlinecodeFiltered = {
+	'`code`': 'code',
+	'`code` begin': 'code begin',
+	'End `code`': 'End code',
+	'Middle `code` middle': 'Middle code middle',
+	'`code`begin': 'codebegin',
+	'End`code`': 'Endcode',
+	'Middle`code`middle': 'Middlecodemiddle'
+};
+
+const blockcodeFiltered = {
+	'```code```': 'code',
+	'```code': 'code',
+	'code```': 'code',
+	'Here ```code``` lies': 'Here code lies',
+	'Here```code```lies': 'Herecodelies'
+};
+
+const defaultObjectTest = (result, object, objectKey) => {
+	if (result.html) {
+		return assert.equal(result.html, object[objectKey]);
+	}
+	return assert.equal(result, object[objectKey]);
+};
+
+const testObject = (object, parser, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = {
-				html: s.escapeHTML(objectKey),
-			};
-			const result = Markdown.mountTokensBack(parser(message));
+			const result = (parser === original) ? parser({html: objectKey}) : parser(object[objectKey]);
+			if (parser === original) {
+				result.tokens.forEach((token) => {
+					result.html = result.html.replace(token.token, token.text);
+				});
+			}
+
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -246,32 +364,66 @@ const testObject = (object, parser = original, test = defaultObjectTest) => {
 	});
 };
 
+const testObject = (object, parser = original, test = defaultObjectTest) => {
+	Object.keys(object).forEach((objectKey) => {
+		describe(objectKey, () => {
+			const message = (parser === original) ? {html: s.escapeHTML(objectKey)} : object[objectKey];
+			const result = (parser === original) ? Markdown.mountTokensBack(parder(message)) : parser(message);
+
+			it(`should be equal to ${ object[objectKey] }`, () => {
+				test(result, object, objectKey);
+			});
+		});
+	});
+};
+
+
 describe('Original', function() {
-	describe('Bold', () => testObject(bold));
+	describe('Bold', () => testObject(bold, original));
 
-	describe('Italic', () => testObject(italic));
+	describe('Italic', () => testObject(italic, original));
 
-	describe('Strike', () => testObject(strike));
+	describe('Strike', () => testObject(strike, original));
 
 	describe('Headers', () => {
-		describe('Level 1', () => testObject(headersLevel1));
+		describe('Level 1', () => testObject(headersLevel1, original));
 
-		describe('Level 2', () => testObject(headersLevel2));
+		describe('Level 2', () => testObject(headersLevel2, original));
 
-		describe('Level 3', () => testObject(headersLevel3));
+		describe('Level 3', () => testObject(headersLevel3, original));
 
-		describe('Level 4', () => testObject(headersLevel4));
+		describe('Level 4', () => testObject(headersLevel4, original));
 	});
 
-	describe('Quote', () => testObject(quote));
+	describe('Quote', () => testObject(quote, original));
 
-	describe('Link', () => testObject(link));
+	describe('Link', () => testObject(link, original));
 
-	describe('Inline Code', () => testObject(inlinecode));
+	describe('Inline Code', () => testObject(inlinecode, original));
+
+	describe('Code', () => testObject(code, original));
+});
+
+describe('Filtered', function() {
+	describe('BoldFilter', () => testObject(boldFiltered, filtered));
+
+	describe('Italic', () => testObject(italicFiltered, filtered));
+
+	describe('StrikeFilter', () => testObject(strikeFiltered, filtered));
+
+	describe('HeadingFilter', () => testObject(headingFiltered, filtered));
+
+	describe('QuoteFilter', () => testObject(quoteFiltered, filtered));
+
+	describe('LinkFilter', () => testObject(linkFiltered, filtered));
+
+	describe('inlinecodeFilter', () => testObject(inlinecodeFiltered, filtered));
 
 	describe('Code', () => testObject(code));
 
 	describe('Nested', () => testObject(nested));
+
+	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
 
 // describe.only('Marked', function() {
