@@ -29,7 +29,7 @@ function findPrivateGroupByIdOrNameForAdmin({ params, checkedArchived = true }) 
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	let room = {};
+	const room = {};
 	if (params.roomId) {
 		room._room = RocketChat.models.Rooms.findOneByIdOrName(params.roomId);
 	} else if (params.roomName) {
@@ -399,7 +399,7 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 
 		const findResult = RocketChat.authz.hasPermission(this.userId, 'view-room-administration')
 			? findPrivateGroupByIdOrNameForAdmin({ params: this.requestParams() })
-			: findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId })
+			: findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
