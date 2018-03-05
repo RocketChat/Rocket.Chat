@@ -9,6 +9,9 @@ Template.sidebarItem.helpers({
 	isRoom() {
 		return this.rid || this._id;
 	},
+	isExtendedViewMode() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode') === 'extended';
+	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
 	},
@@ -17,6 +20,12 @@ Template.sidebarItem.helpers({
 	},
 	colorStyle() {
 		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
+	},
+	mySelf() {
+		return this.t === 'd' && this.name === Meteor.user().username;
+	},
+	isLivechatQueue() {
+		return this.pathSection === 'livechat-queue';
 	}
 });
 
@@ -52,7 +61,7 @@ Template.sidebarItem.onCreated(function() {
 		if (currentData.lastMessage) {
 			if (currentData.lastMessage._id) {
 				const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-				const renderedMessage = renderMessageBody(currentData.lastMessage);
+				const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 				const sender = Meteor.userId() === currentData.lastMessage.u._id ? t('You') : otherUser;
 
 				if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
@@ -106,6 +115,13 @@ Template.sidebarItem.events({
 				name: t('Mark_as_read'),
 				type: 'sidebar-item',
 				id: 'read'
+			});
+		} else {
+			items.push({
+				icon: 'flag',
+				name: t('Mark_as_unread'),
+				type: 'sidebar-item',
+				id: 'unread'
 			});
 		}
 

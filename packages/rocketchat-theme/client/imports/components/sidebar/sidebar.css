@@ -1,5 +1,7 @@
 .sidebar {
+
 	position: relative;
+
 	z-index: 2;
 
 	display: flex;
@@ -49,7 +51,7 @@
 	&__footer {
 		width: auto;
 		height: var(--sidebar-footer-height);
-		padding: calc(var(--sidebar-footer-padding) / 2) var(--sidebar-footer-padding);
+		padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
 
 		text-align: center;
 
@@ -69,6 +71,10 @@
 }
 
 @media (width < 780px) {
+	.sidebar {
+		position: absolute;
+	}
+
 	.sidebar:not(.sidebar-light) {
 		user-select: none;
 		transform: translate3d(calc(var(--sidebar-width) * -1), 0, 0);
