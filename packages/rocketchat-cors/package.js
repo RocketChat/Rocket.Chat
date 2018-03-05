@@ -8,7 +8,8 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'webapp'
+		'webapp',
+		'mongo'
 	]);
 
 	api.addFiles('cors.js', 'server');
