@@ -1,21 +1,21 @@
 RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId);
-	const messageErasureType = RocketChat.settings.get('Message_ErasureType');
-
-	switch (messageErasureType) {
-		case 'Delete' :
-			RocketChat.models.Messages.removeByUserId(userId);
-			break;
-		case 'Unlink' :
-			const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
-			RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username);
-			break;
-	}
-
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
-		RocketChat.models.Messages.removeByUserId(userId); // Remove user messages
+		const messageErasureType = RocketChat.settings.get('Message_ErasureType');
+
+		switch (messageErasureType) {
+			case 'Delete' :
+				RocketChat.models.Messages.removeByUserId(userId);
+				break;
+			case 'Unlink' :
+				const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
+				const nameAlias = TAPi18n.__('Removed_User');
+				RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				break;
+		}
+
 		RocketChat.models.Subscriptions.db.findByUserId(userId).forEach((subscription) => {
 			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 			if (room) {
