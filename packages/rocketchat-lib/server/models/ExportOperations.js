@@ -15,9 +15,10 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 		return this.find(query);
 	}
 
-	findLastOperationByUser(userId, options = {}) {
+	findLastOperationByUser(userId, fullExport = false, options = {}) {
 		const query = {
-			userId
+			userId,
+			fullExport
 		};
 
 		options.sort = {'createdAt' : -1};

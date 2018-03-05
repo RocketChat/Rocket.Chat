@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 
-let zipFolder = '~/zipFiles';
+let zipFolder = '/tmp/zipFiles';
 if (RocketChat.settings.get('UserData_FileSystemZipPath') != null) {
 	if (RocketChat.settings.get('UserData_FileSystemZipPath').trim() !== '') {
 		zipFolder = RocketChat.settings.get('UserData_FileSystemZipPath');
@@ -33,24 +33,43 @@ const createDir = function(folderName) {
 const loadUserSubscriptions = function(exportOperation) {
 	exportOperation.roomList = [];
 
-	const cursor = RocketChat.models.Subscriptions.findByUserId(exportOperation.userId);
+	const exportUserId = exportOperation.userId;
+	const cursor = RocketChat.models.Subscriptions.findByUserId(exportUserId);
 	cursor.forEach((subscription) => {
-		const roomId = subscription._room._id;
+		const roomId = subscription.rid;
 		const roomData = subscription._room;
-		const roomName = roomData.name ? roomData.name : roomId;
+		let roomName = roomData.name ? roomData.name : roomId;
+		let userId = null;
 
-		const fileName = `${ roomName }.json`;
+		if (subscription.t === 'd') {
+			userId = roomId.replace(exportUserId, '');
+			const userData = RocketChat.models.Users.findOneById(userId);
+
+			if (userData) {
+				roomName = userData.name;
+			}
+		}
+
+		const fileName = exportOperation.fullExport ? roomId : roomName;
+		const fileType = exportOperation.fullExport ? 'json' : 'html';
+		const targetFile = `${ fileName }.${ fileType }`;
 
 		exportOperation.roomList.push({
 			roomId,
 			roomName,
+			userId,
 			exportedCount: 0,
 			status: 'pending',
-			targetFile: fileName
+			targetFile,
+			type: subscription.t
 		});
 	});
 
-	exportOperation.status = 'exporting';
+	if (exportOperation.fullExport) {
+		exportOperation.status = 'exporting-rooms';
+	} else {
+		exportOperation.status = 'exporting';
+	}
 };
 
 const getAttachmentData = function(attachment) {
@@ -67,21 +86,47 @@ const getAttachmentData = function(attachment) {
 		video_size: attachment.video_size,
 		video_type: attachment.video_type,
 		audio_size: attachment.audio_size,
-		audio_type: attachment.audio_type
+		audio_type: attachment.audio_type,
+		url: null,
+		remote: false,
+		fileId: null,
+		fileName: null
 	};
+
+	const url = attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url || attachment.message_link;
+	if (url) {
+		attachmentData.url = url;
+
+		const urlMatch = /\:\/\//.exec(url);
+		if (urlMatch && urlMatch.length > 0) {
+			attachmentData.remote = true;
+		} else {
+			const match = /^\/([^\/]+)\/([^\/]+)\/(.*)/.exec(url);
+
+			if (match && match[2]) {
+				const file = RocketChat.models.Uploads.findOneById(match[2]);
+
+				if (file) {
+					attachmentData.fileId = file._id;
+					attachmentData.fileName = file.name;
+				}
+			}
+		}
+	}
 
 	return attachmentData;
 };
 
 const addToFileList = function(exportOperation, attachment) {
-	const url = attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url || attachment.message_link;
-	if (!url) {
-		return;
-	}
+	const targetFile = path.join(exportOperation.assetsPath, `${ attachment.fileId }-${ attachment.fileName }`);
 
 	const attachmentData = {
-		url,
-		copied: false
+		url: attachment.url,
+		copied: false,
+		remote: attachment.remote,
+		fileId: attachment.fileId,
+		fileName: attachment.fileName,
+		targetFile
 	};
 
 	exportOperation.fileList.push(attachmentData);
@@ -95,7 +140,7 @@ const getMessageData = function(msg, exportOperation) {
 			const attachmentData = getAttachmentData(attachment);
 
 			attachments.push(attachmentData);
-			addToFileList(exportOperation, attachment);
+			addToFileList(exportOperation, attachmentData);
 		});
 	}
 
@@ -119,26 +164,16 @@ const getMessageData = function(msg, exportOperation) {
 };
 
 const copyFile = function(exportOperation, attachmentData) {
-	if (attachmentData.copied) {
-		return;
-	}
-
-	//If it is an URL, just mark as downloaded
-	const urlMatch = /\:\/\//.exec(attachmentData.url);
-	if (urlMatch && urlMatch.length > 0) {
+	if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {
 		attachmentData.copied = true;
 		return;
 	}
 
-	const match = /^\/([^\/]+)\/([^\/]+)\/(.*)/.exec(attachmentData.url);
+	const file = RocketChat.models.Uploads.findOneById(attachmentData.fileId);
 
-	if (match && match[2]) {
-		const file = RocketChat.models.Uploads.findOneById(match[2]);
-
-		if (file) {
-			if (FileUpload.copy(file, exportOperation.assetsPath)) {
-				attachmentData.copied = true;
-			}
+	if (file) {
+		if (FileUpload.copy(file, attachmentData.targetFile)) {
+			attachmentData.copied = true;
 		}
 	}
 };
@@ -152,6 +187,9 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	if (exportOpRoomData.status === 'pending') {
 		exportOpRoomData.status = 'exporting';
 		startFile(filePath, '');
+		if (!exportOperation.fullExport) {
+			writeToFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
+		}
 	}
 
 	let limit = 100;
@@ -166,9 +204,62 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 
 	cursor.forEach((msg) => {
 		const messageObject = getMessageData(msg, exportOperation);
-		const messageString = JSON.stringify(messageObject);
 
-		writeToFile(filePath, `${ messageString }\n`);
+		if (exportOperation.fullExport) {
+			const messageString = JSON.stringify(messageObject);
+			writeToFile(filePath, `${ messageString }\n`);
+		} else {
+			const messageType = msg.t;
+			const userName = msg.u.username || msg.u.name;
+			const timestamp = msg.ts ? new Date(msg.ts).toUTCString() : '';
+			let message = msg.msg;
+
+			switch (messageType) {
+				case 'uj':
+					message = TAPi18n.__('User_joined_channel');
+					break;
+				case 'ul':
+					message = TAPi18n.__('User_left');
+					break;
+				case 'au':
+					message = TAPi18n.__('User_added_by', {user_added : msg.msg, user_by : msg.u.username });
+					break;
+				case 'r':
+					message = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: msg.u.username });
+					break;
+				case 'ru':
+					message = TAPi18n.__('User_removed_by', {user_removed : msg.msg, user_by : msg.u.username });
+					break;
+				case 'wm':
+					message = TAPi18n.__('Welcome', {user: msg.u.username });
+					break;
+				case 'livechat-close':
+					message = TAPi18n.__('Conversation_finished');
+					break;
+			}
+
+			if (message !== msg.msg) {
+				message = `<i>${ message }</i>`;
+			}
+
+			writeToFile(filePath, `<p><strong>${ userName }</strong> (${ timestamp }):<br/>`);
+			writeToFile(filePath, message);
+
+			if (messageObject.attachments && messageObject.attachments.length > 0) {
+				messageObject.attachments.forEach((attachment) => {
+					if (attachment.type === 'file') {
+						const description = attachment.description || attachment.title || TAPi18n.__('Message_Attachments');
+
+						const assetUrl = `./assets/${ attachment.fileId }-${ attachment.fileName }`;
+						const link = `<br/><a href="${ assetUrl }">${ description }</a>`;
+						writeToFile(filePath, link);
+					}
+				});
+			}
+
+			writeToFile(filePath, '</p>');
+		}
+
 		exportOpRoomData.exportedCount++;
 	});
 
@@ -180,7 +271,7 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	return false;
 };
 
-const isOperationFinished = function(exportOperation) {
+const isExportComplete = function(exportOperation) {
 	const incomplete = exportOperation.roomList.some((exportOpRoomData) => {
 		return exportOpRoomData.status !== 'completed';
 	});
@@ -190,7 +281,7 @@ const isOperationFinished = function(exportOperation) {
 
 const isDownloadFinished = function(exportOperation) {
 	const anyDownloadPending = exportOperation.fileList.some((fileData) => {
-		return !fileData.copied;
+		return !fileData.copied && !fileData.remote;
 	});
 
 	return !anyDownloadPending;
@@ -280,6 +371,26 @@ const uploadZipFile = function(exportOperation, callback) {
 	});
 };
 
+const generateChannelsFile = function(exportOperation) {
+	if (exportOperation.fullExport) {
+		const fileName = path.join(exportOperation.exportPath, 'channels.json');
+		startFile(fileName, '');
+
+		exportOperation.roomList.forEach((roomData) => {
+			const newRoomData = {
+				roomId: roomData.roomId,
+				roomName: roomData.roomName,
+				type: roomData.type
+			};
+
+			const messageString = JSON.stringify(newRoomData);
+			writeToFile(fileName, `${ messageString }\n`);
+		});
+	}
+
+	exportOperation.status = 'exporting';
+};
+
 const continueExportOperation = function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
@@ -290,13 +401,18 @@ const continueExportOperation = function(exportOperation) {
 	}
 
 	try {
+
+		if (exportOperation.status === 'exporting-rooms') {
+			generateChannelsFile(exportOperation);
+		}
+
 		//Run every room on every request, to avoid missing new messages on the rooms that finished first.
 		if (exportOperation.status === 'exporting') {
 			exportOperation.roomList.forEach((exportOpRoomData) => {
 				continueExportingRoom(exportOperation, exportOpRoomData);
 			});
 
-			if (isOperationFinished(exportOperation)) {
+			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
 				return;
 			}

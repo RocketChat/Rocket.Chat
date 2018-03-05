@@ -199,8 +199,8 @@ Template.accountPreferences.onCreated(function() {
 		});
 	};
 
-	this.downloadMyData = function() {
-		Meteor.call('requestDataDownload', {}, function(error, results) {
+	this.downloadMyData = function(fullExport = false) {
+		Meteor.call('requestDataDownload', {fullExport}, function(error, results) {
 			if (results) {
 				if (results.requested) {
 					modal.open({
@@ -243,6 +243,10 @@ Template.accountPreferences.onCreated(function() {
 			}
 		});
 	};
+
+	this.exportMyData = function() {
+		this.downloadMyData(true);
+	};
 });
 
 Template.accountPreferences.onRendered(function() {
@@ -265,6 +269,10 @@ Template.accountPreferences.events({
 	'click .download-my-data'(e, t) {
 		e.preventDefault();
 		t.downloadMyData();
+	},
+	'click .export-my-data'(e, t) {
+		e.preventDefault();
+		t.exportMyData();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();
