@@ -8,44 +8,13 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-					<header class="fixed-title content-background-color border-component-color">
-						{{> burger}}
-						<h2>
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
-							{{/if}}
-
-							{{#if tokenAccessChannel}}
-								<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
-							{{/if}}
-
-							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
-
-							<span class="room-title">{{roomName}}</span>
-							{{#if secondaryName}}
-								<span class="secondary-name">@{{secondaryName}}</span>
-							{{/if}}
-							{{#if sentimentSmile}}
-								<span class="sentiment">{{sentimentSmile}}</span>
-							{{/if}}
-							{{#if isTranslated}}
-								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-							{{/if}}
-							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-						</h2>
-
-						{{#with toolbarButtons}}
-							<div class="iframe-toolbar">
-								{{#each buttons}}
-									<button class="{{id}}">
-										{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-										{{label}}
-									</button>
-								{{/each}}
+					{{# header}}
+						{{#with flexData}}
+							<div class="rc-header__block rc-header__block-action">
+								{{> RoomsActionTab}}
 							</div>
 						{{/with}}
-					</header>
-
+					{{/header}}
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
@@ -84,7 +53,7 @@
 										<div class="upload-progress-text">
 											{{error}}
 										</div>
-										<button>
+										<button class="upload-progress-close">
 											{{_ "close"}}
 										</button>
 									{{else}}
@@ -161,7 +130,7 @@
 						</footer>
 					</div>
 					{{#with flexData}}
-					{{> flexTabBar}}
+						{{> contextualBar}}
 					{{/with}}
 				</div>
 			</section>

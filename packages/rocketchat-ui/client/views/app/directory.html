@@ -1,0 +1,90 @@
+<template name="directory">
+	<section class="rc-directory">
+		{{# header sectionName="Directory" hideHelp=true}}
+		<div class="rc-directory-header">
+		<select class="rc-input__element rc-directory-selector js-typeSelector" name="type">
+				<option value="channels">Channels</option>
+				<option value="users">Users</option>
+			</select>
+			<div class="rc-input rc-input--small rc-directory-search">
+				<label class="rc-input__label">
+					<div class="rc-input__wrapper">
+						{{> icon icon="magnifier" block="rc-input__icon" }}
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder="Search Messages" autocomplete="off">
+					</div>
+				</label>
+			</div>
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
+		</div>
+		{{/header}}
+		<div class="rc-directory-content">
+			{{#if $eq searchType 'channels'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="usernames">Users {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
+						</tr>
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each searchResults}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">
+												{{>icon icon="hashtag"}}
+												{{name}}
+											</span>
+											{{#if description}}
+												<span class="rc-directory-channel-description">{{description}}</span>
+											{{/if}}
+										</div>
+									</div>
+								</td>
+								<td class="rc-table-td rc-table-td--users">{{users}}</td>
+								<td class="rc-table-td rc-table-td--createdAt">
+									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/if}}
+			{{#if $eq searchType 'users'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="username">Username {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
+						</tr>
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each searchResults}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar">{{> avatar username=name}}</div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">
+												{{>icon icon="at"}}
+												{{name}}
+											</span>
+										</div>
+									</div>
+								</td>
+								<td class="rc-table-td rc-table-td--username">{{username}}</td>
+								<td class="rc-table-td rc-table-td--createdAt">
+									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/if}}
+		</div>
+	</section>
+</template>

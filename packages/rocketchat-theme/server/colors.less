@@ -20,7 +20,7 @@
  * Transparency variables
  */
 
-@transparent-darkest: rgba(0, 0, 0, 0.5);
+@transparent-darkest: rgba(17, 12, 12, 0.5);
 @transparent-darker: rgba(0, 0, 0, 0.15);
 @transparent-dark: rgba(0, 0, 0, 0.05);
 @transparent-light: rgba(255, 255, 255, 0.1);
@@ -93,6 +93,10 @@
 
 .background-component-color {
 	background-color: @component-color;
+}
+
+.color-component-color {
+	color: @component-color;
 }
 
 .success-color {
@@ -442,7 +446,7 @@ input:-webkit-autofill {
 
 .page-list,
 .page-settings {
-	a {
+	a:not(.rc-button) {
 		color: @primary-font-color;
 
 		&:hover {
@@ -678,20 +682,6 @@ input:-webkit-autofill {
  * Flex tabs / admin fly-out panels
  */
 .flex-tab {
-	input,
-	select,
-	textarea {
-		&:focus {
-			border-color: lighten(@secondary-background-contrast, 30%);
-		}
-	}
-
-	.content,
-	.user-view,
-	.list-view {
-		background-color: @secondary-background-color;
-	}
-
 	.message {
 		&.new-day::before {
 			background-color: @secondary-background-color;
@@ -896,9 +886,13 @@ label.required::after {
 
 .main-content,
 .flex-tab {
-	.loading-animation > div {
+	.loading-animation > .bounce {
 		background-color: @primary-font-color;
 	}
+}
+
+.loading-animation.loading-animation--primary > .bounce {
+	background-color: @primary-font-color;
 }
 
 @keyframes blink {
