@@ -130,6 +130,10 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/selectDropdown.html', 'client');
 	api.addFiles('client/components/selectDropdown.js', 'client');
+	api.addFiles('client/components/inputText.html', 'client');
+	api.addFiles('client/components/inputText.js', 'client');
+	api.addFiles('client/components/button.html', 'client');
+	api.addFiles('client/components/button.js', 'client');
 
 	api.addFiles('client/components/header/header.html', 'client');
 	api.addFiles('client/components/header/header.js', 'client');

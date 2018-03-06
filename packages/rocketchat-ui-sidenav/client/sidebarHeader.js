@@ -280,6 +280,39 @@ Template.sidebarHeader.events({
 								items: userStatus
 							},
 							{
+								title: t('Custom Status'),
+								items: [
+									{
+										input: true,
+										inputTitle: '',
+										inputName: 'customMessage',
+										select: true,
+										selectTitle: '',
+										selectName: 'statusType',
+										selectOptions: [
+											{
+												value: 'online',
+												title: t('Online')
+											},
+											{
+												value: 'away',
+												title: t('Away')
+											},
+											{
+												value: 'busy',
+												title: t('Busy')
+											},
+											{
+												value: 'offline',
+												title: t('Invisible')
+											}
+										],
+										buttonTitle: t('Update'),
+										buttonName: 'updateCustomMessage'
+									}
+								]
+							},
+							{
 								items: [
 									{
 										icon: 'user',
