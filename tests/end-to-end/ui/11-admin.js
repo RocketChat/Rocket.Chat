@@ -22,7 +22,7 @@ describe('[Administration]', () => {
 		sideNav.preferencesClose.click();
 	});
 
-	describe.only('[Admin View]', () => {
+	describe('[Admin View]', () => {
 		before(() => {
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
