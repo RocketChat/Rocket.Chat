@@ -76,7 +76,6 @@ Template.userEdit.events({
 
 
 Template.userEdit.onCreated(function() {
-	let userData;
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 
@@ -94,7 +93,7 @@ Template.userEdit.onCreated(function() {
 	};
 
 	this.getUserData = () => {
-		userData = { _id: (this.user != null ? this.user._id : undefined) };
+		const userData = { _id: (this.user != null ? this.user._id : undefined) };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.email = s.trim(this.$('#email').val());
@@ -116,7 +115,7 @@ Template.userEdit.onCreated(function() {
 	};
 
 	this.validate = () => {
-		userData = this.getUserData();
+		const userData = this.getUserData();
 
 		const errors = [];
 		if (!userData.name) {
@@ -140,38 +139,31 @@ Template.userEdit.onCreated(function() {
 		return errors.length === 0;
 	};
 
-	return this.save = form => {
-		if (this.validate()) {
-			userData = this.getUserData();
+	this.save = form => {
+		if (!this.validate()) {
+			return;
+		}
+		const userData = this.getUserData();
 
-			if (this.user != null) {
-				for (const key in userData) {
-					if (key) {
-						const value = userData[key];
-						if (!['_id'].includes(key)) {
-							if (value === this.user[key]) {
-								delete userData[key];
-							}
+		if (this.user != null) {
+			for (const key in userData) {
+				if (key) {
+					const value = userData[key];
+					if (!['_id'].includes(key)) {
+						if (value === this.user[key]) {
+							delete userData[key];
 						}
 					}
 				}
 			}
-
-			return Meteor.call('insertOrUpdateUser', userData, (error, result) => {
-				if (result) {
-					if (userData._id) {
-						toastr.success(t('User_updated_successfully'));
-					} else {
-						toastr.success(t('User_added_successfully'));
-					}
-
-					this.cancel(form, userData.username);
-				}
-
-				if (error) {
-					return handleError(error);
-				}
-			});
 		}
+
+		Meteor.call('insertOrUpdateUser', userData, (error) => {
+			if (error) {
+				return handleError(error);
+			}
+			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
+			this.cancel(form, userData.username);
+		});
 	};
 });

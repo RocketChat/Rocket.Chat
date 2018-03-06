@@ -64,7 +64,7 @@ const getByteRange = function(header) {
 
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
+const readFromGridFS = function(storeName, fileId, file, req, res) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
@@ -82,7 +82,7 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 	const accept = req.headers['accept-encoding'] || '';
 
 	// Transform stream
-	store.transformRead(rs, ws, fileId, file, req, headers);
+	store.transformRead(rs, ws, fileId, file, req);
 	const range = getByteRange(req.headers.range);
 	let out_of_range = false;
 	if (range) {
@@ -91,34 +91,34 @@ const readFromGridFS = function(storeName, fileId, file, headers, req, res) {
 
 	// Compress data using gzip
 	if (accept.match(/\bgzip\b/) && range === null) {
-		headers['Content-Encoding'] = 'gzip';
-		delete headers['Content-Length'];
-		res.writeHead(200, headers);
+		res.setHeader('Content-Encoding', 'gzip');
+		res.removeHeader('Content-Length');
+		res.writeHead(200);
 		ws.pipe(zlib.createGzip()).pipe(res);
 	} else if (accept.match(/\bdeflate\b/) && range === null) {
 		// Compress data using deflate
-		headers['Content-Encoding'] = 'deflate';
-		delete headers['Content-Length'];
-		res.writeHead(200, headers);
+		res.setHeader('Content-Encoding', 'deflate');
+		res.removeHeader('Content-Length');
+		res.writeHead(200);
 		ws.pipe(zlib.createDeflate()).pipe(res);
 	} else if (range && out_of_range) {
 		// out of range request, return 416
-		delete headers['Content-Length'];
-		delete headers['Content-Type'];
-		delete headers['Content-Disposition'];
-		delete headers['Last-Modified'];
-		headers['Content-Range'] = `bytes */${ file.size }`;
-		res.writeHead(416, headers);
+		res.removeHeader('Content-Length');
+		res.removeHeader('Content-Type');
+		res.removeHeader('Content-Disposition');
+		res.removeHeader('Last-Modified');
+		res.setHeader('Content-Range', `bytes */${ file.size }`);
+		res.writeHead(416);
 		res.end();
 	} else if (range) {
-		headers['Content-Range'] = `bytes ${ range.start }-${ range.stop }/${ file.size }`;
-		delete headers['Content-Length'];
-		headers['Content-Length'] = range.stop - range.start + 1;
-		res.writeHead(206, headers);
+		res.setHeader('Content-Range', `bytes ${ range.start }-${ range.stop }/${ file.size }`);
+		res.removeHeader('Content-Length');
+		res.setHeader('Content-Length', range.stop - range.start + 1);
+		res.writeHead(206);
 		logger.debug('File upload extracting range');
 		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
 	} else {
-		res.writeHead(200, headers);
+		res.writeHead(200);
 		ws.pipe(res);
 	}
 };
@@ -140,13 +140,13 @@ new FileUploadClass({
 
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
-		const headers = {
-			'Content-Disposition': `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`,
-			'Last-Modified': file.uploadedAt.toUTCString(),
-			'Content-Type': file.type,
-			'Content-Length': file.size
-		};
-		return readFromGridFS(file.store, file._id, file, headers, req, res);
+
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Length', file.size);
+
+		return readFromGridFS(file.store, file._id, file, req, res);
 	}
 });
 
@@ -154,22 +154,8 @@ new FileUploadClass({
 	name: 'GridFS:Avatars',
 
 	get(file, req, res) {
-		const reqModifiedHeader = req.headers['if-modified-since'];
-		if (reqModifiedHeader && reqModifiedHeader === (file.uploadedAt && file.uploadedAt.toUTCString())) {
-			res.setHeader('Last-Modified', reqModifiedHeader);
-			res.writeHead(304);
-			res.end();
-			return;
-		}
 		file = FileUpload.addExtensionTo(file);
-		const headers = {
-			'Cache-Control': 'public, max-age=0',
-			'Expires': '-1',
-			'Content-Disposition': 'inline',
-			'Last-Modified': file.uploadedAt.toUTCString(),
-			'Content-Type': file.type,
-			'Content-Length': file.size
-		};
-		return readFromGridFS(file.store, file._id, file, headers, req, res);
+
+		return readFromGridFS(file.store, file._id, file, req, res);
 	}
 });

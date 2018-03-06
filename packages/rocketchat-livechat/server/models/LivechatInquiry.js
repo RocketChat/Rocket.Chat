@@ -27,6 +27,23 @@ class LivechatInquiry extends RocketChat.models._Base {
 	}
 
 	/*
+	 * mark the inquiry as closed
+	 */
+	closeByRoomId(roomId, closeInfo) {
+		return this.update({
+			rid: roomId
+		}, {
+			$set: {
+				status: 'closed',
+				closer: closeInfo.closer,
+				closedBy: closeInfo.closedBy,
+				closedAt: closeInfo.closedAt,
+				chatDuration: closeInfo.chatDuration
+			}
+		});
+	}
+
+	/*
 	 * mark inquiry as open
 	 */
 	openInquiry(inquiryId) {

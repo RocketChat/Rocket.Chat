@@ -62,8 +62,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
-		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		return !mergeChannels && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	}
 
 	getUserStatus(roomId) {
@@ -95,6 +95,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	enableMembersListProfile() {
 		return true;
+	}
+
+	userDetailShowAll(/* room */) {
+		return false;
 	}
 
 	getUiText(context) {

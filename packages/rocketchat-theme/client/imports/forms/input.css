@@ -1,4 +1,6 @@
 .rc-input {
+	position: relative;
+
 	width: 100%;
 
 	&__label {
@@ -6,8 +8,6 @@
 	}
 
 	&__title {
-		color: var(--input-title-text-size);
-
 		font-size: var(--input-font-size);
 	}
 
@@ -98,11 +98,41 @@
 		}
 	}
 
+	&--small {
+		font-size: 14px;
+
+		& .rc-input__element {
+			padding-top: 8px;
+			padding-bottom: 8px;
+		}
+	}
+
 	&--error {
 		& .rc-input {
 			&__element {
 				border-color: var(--input-error-color);
 			}
 		}
+	}
+}
+
+select.rc-input {
+	padding: 0.782rem;
+	margin: 0.5rem 0;
+	appearance: none;
+
+	width: 100%;
+
+	color: var(--input-text-color);
+
+	border-width: var(--input-border-width);
+	border-color: var(--input-border-color);
+	border-radius: var(--input-border-radius);
+	background-color: transparent;
+
+	font-size: var(--input-font-size);
+
+	&--small {
+		padding: 0.5rem 1rem;
 	}
 }

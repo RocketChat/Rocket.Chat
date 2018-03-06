@@ -116,7 +116,7 @@ this.ChatMessages = class ChatMessages {
 			const currentAgent = !visitor.roomSubscribed && Livechat.agent;
 			if (currentAgent) {
 				agent = {
-					_id: currentAgent._id,
+					agentId: currentAgent._id,
 					username: currentAgent.username
 				};
 			}
@@ -153,7 +153,7 @@ this.ChatMessages = class ChatMessages {
 					return showError(error.reason);
 				}
 
-				visitor.setId(result._id);
+				visitor.setId(result.userId);
 				sendMessage();
 			});
 		} else {

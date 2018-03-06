@@ -12,14 +12,11 @@
 </template>
 <template name="accountProfile">
 	<section class="preferences-page">
-		<header class="preferences-page__header">
-			{{> burger}}
-			<h2 style="flex: 1 1; white-space: nowrap;">{{_ "Profile"}}</h2>
-			<div class="content" style="text-align: end; max-width: 649px;  flex: 1 1 100%">
+		{{#header sectionName="Profile" buttons=true}}
+			<div class="rc-header__section-button">
 				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
 			</div>
-			<div style="flex: 1 1;"></div>
-		</header>
+		{{/header}}
 		<div class="preferences-page__content">
 			<form id="profile" autocomplete="off" class="container">
 				<fieldset class="rc-form-legend">
