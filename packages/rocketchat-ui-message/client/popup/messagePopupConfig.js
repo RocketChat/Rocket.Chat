@@ -318,6 +318,7 @@ Template.messagePopupConfig.helpers({
 				getInput: self.getInput,
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
+
 					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
 						return [];
 					}
@@ -325,9 +326,6 @@ Template.messagePopupConfig.helpers({
 					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];
 					}
-
-
-
 
 					const colorBlind = new RegExp('_tone[1-5]:*$');
 					const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
