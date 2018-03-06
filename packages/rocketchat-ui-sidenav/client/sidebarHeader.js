@@ -1,6 +1,6 @@
 /* globals popover menu */
-const setStatus = status => {
-	AccountBox.setStatus(status);
+const setStatus = (status, statusText) => {
+	AccountBox.setStatus(status, statusText);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
 	popover.close();
 };
@@ -259,12 +259,14 @@ Template.sidebarHeader.events({
 
 			const userStatus = Object.keys(RocketChat.userStatus.list).map((key) => {
 				const status = RocketChat.userStatus.list[key];
+				const customName = status.localizeName ? null : status.name;
+				const name = status.localizeName ? t(status.name) : status.name;
 
 				return {
 					icon: 'circle',
-					name: status.localizeName ? t(status.name) : status.name,
+					name,
 					modifier: status.statusType,
-					action: () => setStatus(status.statusType)
+					action: () => setStatus(status.statusType, customName)
 				};
 			});
 

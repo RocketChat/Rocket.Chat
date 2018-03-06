@@ -8,7 +8,8 @@ Meteor.publish('activeUsers', function() {
 			username: 1,
 			name: 1,
 			status: 1,
-			utcOffset: 1
+			utcOffset: 1,
+			statusText: 1
 		}
 	});
 });

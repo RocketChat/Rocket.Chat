@@ -137,5 +137,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.html', 'client');
 	api.addFiles('client/components/contextualBar.js', 'client');
 
+	api.addFiles('server/methods/setUserStatus.js', 'server');
+
 	api.export('fileUpload');
 });

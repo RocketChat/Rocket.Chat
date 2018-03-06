@@ -8,7 +8,6 @@ const commands = {
 		FlowRouter.go(data.path, null, FlowRouter.current().queryParams);
 	},
 
-
 	'set-user-status'(data) {
 		AccountBox.setStatus(data.status);
 	},

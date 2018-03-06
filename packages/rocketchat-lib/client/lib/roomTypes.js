@@ -26,6 +26,13 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	getUserStatus(roomType, roomId) {
 		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(roomId);
 	}
+	getUserStatusText(roomType, roomId) {
+		if (this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatusText === 'function') {
+			return this.roomTypes[roomType].getUserStatusText(roomId);
+		}
+
+		return this.getUserStatus(roomType, roomId);
+	}
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}

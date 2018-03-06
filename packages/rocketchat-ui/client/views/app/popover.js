@@ -165,8 +165,8 @@ Template.popover.events({
 		}
 	},
 	'click [data-type="set-state"]'(e) {
-		AccountBox.setStatus(e.currentTarget.dataset.statusType);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.statusType);
+		AccountBox.setStatus(e.currentTarget.dataset.statusType, e.currentTarget.dataset.statusName);
+		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.id);
 		popover.close();
 	},
 	'click [data-type="open"]'(e) {

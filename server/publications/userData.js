@@ -9,6 +9,7 @@ Meteor.publish('userData', function() {
 			username: 1,
 			status: 1,
 			statusDefault: 1,
+			statusText: 1,
 			statusConnection: 1,
 			avatarOrigin: 1,
 			utcOffset: 1,

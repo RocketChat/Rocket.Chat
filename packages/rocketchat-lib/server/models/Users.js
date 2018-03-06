@@ -257,6 +257,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	updateStatusText(_id, statusText) {
+		const update = {
+			$set: {
+				statusText
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	updateLastLoginById(_id) {
 		const update = {
 			$set: {

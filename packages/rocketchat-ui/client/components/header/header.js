@@ -83,6 +83,11 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
 	},
 
+	userStatusText() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return RocketChat.roomTypes.getUserStatusText(roomData.t, this._id) || this.userStatus();
+	},
+
 	showToggleFavorite() {
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
 	},
