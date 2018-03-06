@@ -901,14 +901,6 @@ describe('[Administration]', () => {
 					admin.accountsSendOnEnter.getValue().should.equal('normal');
 				});
 
-				it('it should show the view mode field', () => {
-					admin.accountsViewMode.click();
-					admin.accountsViewMode.isVisible().should.be.true;
-				});
-				it('the view mode field value should be 0', () => {
-					admin.accountsViewMode.getValue().should.equal('0');
-				});
-
 				it('it should show the offline email notification field', () => {
 					admin.accountsEmailNotificationMode.click();
 					admin.accountsEmailNotificationMode.isVisible().should.be.true;
