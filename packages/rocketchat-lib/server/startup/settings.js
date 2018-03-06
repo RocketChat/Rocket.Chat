@@ -310,10 +310,29 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Sidebar_list_mode'
 		});
-		this.add('Accounts_Default_User_Preferences_mergeChannels', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
+			type: 'select',
+			values: [
+				{
+					key: 'extended',
+					i18nLabel: 'Extended'
+				},
+				{
+					key: 'medium',
+					i18nLabel: 'Medium'
+				},
+				{
+					key: 'condensed',
+					i18nLabel: 'Extended'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Sidebar_list_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			'public': true,
-			i18nLabel: 'UI_Merge_Channels_Groups'
+			i18nLabel: 'Hide_Avatars'
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
@@ -343,25 +362,6 @@ RocketChat.settings.addGroup('Accounts', function() {
 			],
 			'public': true,
 			i18nLabel: 'Enter_Behaviour'
-		});
-		this.add('Accounts_Default_User_Preferences_viewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal'
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy'
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact'
-				}
-			],
-			'public': true,
-			i18nLabel: 'View_mode'
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
 			type: 'select',
