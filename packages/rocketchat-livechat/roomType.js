@@ -40,11 +40,7 @@ class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		if (!roomData.name) {
-			return roomData.label;
-		} else {
-			return roomData.name;
-		}
+		return roomData.name || roomData.fname || roomData.label;
 	}
 
 	condition() {

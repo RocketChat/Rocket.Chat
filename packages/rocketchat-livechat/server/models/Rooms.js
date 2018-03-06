@@ -177,10 +177,6 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 	});
 };
 
-RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
-	return this.update({ _id: roomId }, { $set: { label } });
-};
-
 RocketChat.models.Rooms.findOpenByAgent = function(userId) {
 	const query = {
 		open: true,

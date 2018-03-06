@@ -8,7 +8,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'rid': 1, 'alert': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'roles': 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1 });
-		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
 		this.tryEnsureIndex({ 'unread': 1 });
@@ -341,13 +340,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateNameByRoomId(roomId, name) {
+	updateDisplayNameByRoomId(roomId, fname) {
 		const query =
 			{rid: roomId};
 
 		const update = {
 			$set: {
-				name
+				fname
 			}
 		};
 

@@ -20,9 +20,6 @@ RocketChat.QueueMethods = {
 			_id: message.rid,
 			msgs: 1,
 			lm: new Date(),
-			code: roomCode,
-			label: guest.name || guest.username,
-			name: (roomInfo && roomInfo.name) || guest.name || guest.username,
 			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
 			// usernames: [agent.username, guest.username],
 			t: 'l',
@@ -43,7 +40,7 @@ RocketChat.QueueMethods = {
 		}, roomInfo);
 		const subscriptionData = {
 			rid: message.rid,
-			name: guest.name || guest.username,
+			fname: guest.name || guest.username,
 			alert: true,
 			open: true,
 			unread: 1,
@@ -57,7 +54,8 @@ RocketChat.QueueMethods = {
 			t: 'l',
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
-			emailNotifications: 'all'
+			emailNotifications: 'all',
+			roles: ['owner']
 		};
 
 		RocketChat.models.Rooms.insert(room);
