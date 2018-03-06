@@ -256,6 +256,18 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
+
+			const userStatus = Object.keys(RocketChat.userStatus.list).map((key) => {
+				const status = RocketChat.userStatus.list[key];
+
+				return {
+					icon: 'circle',
+					name: status.localizeName ? t(status.name) : status.name,
+					modifier: status.statusType,
+					action: () => setStatus(status.statusType)
+				};
+			});
+
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
@@ -263,32 +275,7 @@ Template.sidebarHeader.events({
 						groups: [
 							{
 								title: t('User'),
-								items: [
-									{
-										icon: 'circle',
-										name: t('Online'),
-										modifier: 'online',
-										action: () => setStatus('online')
-									},
-									{
-										icon: 'circle',
-										name: t('Away'),
-										modifier: 'away',
-										action: () => setStatus('away')
-									},
-									{
-										icon: 'circle',
-										name: t('Busy'),
-										modifier: 'busy',
-										action: () => setStatus('busy')
-									},
-									{
-										icon: 'circle',
-										name: t('Invisible'),
-										modifier: 'offline',
-										action: () => setStatus('offline')
-									}
-								]
+								items: userStatus
 							},
 							{
 								items: [
