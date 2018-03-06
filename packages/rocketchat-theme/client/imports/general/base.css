@@ -30,6 +30,8 @@ body {
 	font-size: var(--text-small-size);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+
+	background-color: var(--rc-color-primary)
 }
 
 :focus {
