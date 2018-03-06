@@ -12,7 +12,7 @@
 	justify-content: center;
 }
 
-.loading-animation > div {
+.loading-animation > .bounce {
 	display: inline-block;
 
 	width: 10px;

@@ -25,14 +25,6 @@ Template.listPrivateGroupsFlex.events({
 		return SideNav.closeFlex();
 	},
 
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'scroll .content': _.throttle(function(e, t) {
 		if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
 			return t.limit.set(t.limit.get() + 50);

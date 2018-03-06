@@ -1,28 +1,34 @@
 <template name="popover">
 	<div class="rc-popover rc-popover--{{popoverClass}}" data-popover="popover" style="display:block;">
 		<div class="rc-popover__content {{#if isSafariIos}}rc-popover__content--safariIos{{/if}}">
-			{{#each column in columns}}
-				<div class="rc-popover__column">
-					{{#each group in column.groups}}
-						{{#if group.title}}
-							<h3 class="rc-popover__title">{{group.title}}</h3>
-						{{/if}}
-						<ul class="rc-popover__list">
-							{{#each item in group.items}}
-							<li class="rc-popover__item {{#if item.modifier}}rc-popover__item--{{item.modifier}}{{/if}}" data-type={{item.type}} data-id={{item.id.toLowerCase}} data-href={{item.href}} data-sidenav={{item.sideNav}}>
-									{{#if item.icon}}
-										<span class="rc-popover__icon">
-											{{> icon block="rc-popover__icon-element" icon=item.icon }}
-										</span>
-									{{/if}}
-									<span class="rc-popover__item-text">{{item.name}}</span>
-								</li>
-							{{/each}}
-						</ul>
-						<span class="rc-popover__divider"></span>
-					{{/each}}
-				</div>
-			{{/each}}
+			{{#if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{else}}
+				{{#each column in columns}}
+					<div class="rc-popover__column">
+						{{#each group in column.groups}}
+							{{#if group.title}}
+								<h3 class="rc-popover__title">{{group.title}}</h3>
+							{{/if}}
+							<ul class="rc-popover__list">
+								{{#each item in group.items}}
+									{{# with item}}
+									<li class="rc-popover__item {{#if item.modifier}}rc-popover__item--{{item.modifier}}{{/if}}{{#if hasAction}} js-action{{/if}}" data-type={{item.type}} data-id={{item.id.toLowerCase}} data-href={{item.href}} data-sidenav={{item.sideNav}}>
+										{{#if item.icon}}
+											<span class="rc-popover__icon">
+												{{> icon block="rc-popover__icon-element" icon=item.icon }}
+											</span>
+										{{/if}}
+										<span class="rc-popover__item-text">{{item.name}}</span>
+									</li>
+									{{/with}}
+								{{/each}}
+							</ul>
+							<span class="rc-popover__divider"></span>
+						{{/each}}
+					</div>
+				{{/each}}
+			{{/if}}
 		</div>
 	</div>
 </template>
