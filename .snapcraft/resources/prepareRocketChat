@@ -8,6 +8,7 @@ cd programs/server
 
 npm install
 
+# Ideally this will go away.  For some reason on install its installing node-v57-linux-x64-glibc but when actually running it is looking for node-v57-linux-x64-unknown
 if [[ $(uname -m) == "x86_64" ]]
 then
   cp -r npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-unknown
