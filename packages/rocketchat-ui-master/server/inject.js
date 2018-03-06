@@ -29,8 +29,6 @@ RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1}}).
 
 Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString().replace(/\/\/.*?\n/g, '') })()</script>`);
 
-Inject.rawHead('page-loading', `<style>${ Assets.getText('public/loading.css') }</style>`);
-
 Inject.rawBody('icons', Assets.getText('public/icons.svg'));
 
 Inject.rawBody('page-loading-div', `
