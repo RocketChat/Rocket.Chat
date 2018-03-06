@@ -318,7 +318,6 @@ Template.messagePopupConfig.helpers({
 				getInput: self.getInput,
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
-
 					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
 						return [];
 					}
@@ -327,6 +326,11 @@ Template.messagePopupConfig.helpers({
 						return [];
 					}
 
+
+
+
+					const colorBlind = new RegExp('_tone[1-5]:*$');
+					const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
 					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
 					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
 					return Object.keys(collection).map(key => {
@@ -337,6 +341,14 @@ Template.messagePopupConfig.helpers({
 						};
 					})
 						.filter(obj => regExp.test(obj._id))
+						.filter(obj => {
+							const queryToString = String(regExp).replace(/\//g, '').replace(/i$/, '');
+							if (seeColor.test(queryToString)) {
+								return true;
+							} else {
+								return !colorBlind.test(obj._id);
+							}
+						})
 						.sort(emojiSort(recents))
 						.slice(0, 10);
 				},
