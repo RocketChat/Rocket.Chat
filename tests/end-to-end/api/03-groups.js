@@ -395,11 +395,12 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it.skip('/groups.leave', (done) => {
-		request.post(api('groups.leave'))
+	it('/groups.setType', (done) => {
+		request.post(api('groups.setType'))
 			.set(credentials)
 			.send({
-				roomId: group._id
+				roomId: group._id,
+				type: 'c'
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -409,12 +410,11 @@ describe('groups', function() {
 			.end(done);
 	});
 
-	it('/groups.setType', (done) => {
-		request.post(api('groups.setType'))
+	it('/groups.leave', (done) => {
+		request.post(api('groups.leave'))
 			.set(credentials)
 			.send({
-				roomId: group._id,
-				type: 'c'
+				roomId: group._id
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

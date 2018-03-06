@@ -67,7 +67,7 @@ describe('[Forgot Password]', () => {
 			loginPage.emailInvalidText.getText().should.not.be.empty;
 		});
 
-		it.skip('it should be invalid for email space', () => {
+		it('it should be invalid for email space', () => {
 			loginPage.emailField.setValue('invalid email@mail.com');
 			loginPage.submit();
 			loginPage.emailField.getAttribute('class').should.contain('error');

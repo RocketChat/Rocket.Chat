@@ -26,7 +26,7 @@ class FlexTab extends Page {
 
 	// Members Tab
 	get membersTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--team'); }
-	get membersTabContent() { return browser.element('.animated'); }
+	get membersTabContent() { return browser.element('.members-list'); }
 	get userSearchBar() { return browser.element('#user-add-search'); }
 	get removeUserBtn() { return browser.element('.remove-user'); }
 	get setOwnerBtn() { return browser.element('.set-owner'); }
@@ -35,9 +35,9 @@ class FlexTab extends Page {
 	get viewAllBtn() { return browser.element('.button.back'); }
 	get startVideoCall() { return browser.element('.start-video-call'); }
 	get startAudioCall() { return browser.element('.start-audio-call'); }
-	get showAll() { return browser.element('.see-all'); }
-	get membersUserInfo() { return browser.element('.flex-tab-container .info'); }
-	get avatarImage() { return browser.element('.flex-tab-container .avatar-image'); }
+	get showAll() { return browser.element('.members-list .rc-select__element'); }
+	get membersUserInfo() { return browser.element('.flex-tab .info'); }
+	get avatarImage() { return browser.element('.flex-tab .avatar-image'); }
 	get memberUserName() { return browser.element('.info h3'); }
 	get memberRealName() { return browser.element('.info p'); }
 

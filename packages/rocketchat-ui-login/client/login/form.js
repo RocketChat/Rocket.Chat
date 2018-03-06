@@ -234,12 +234,12 @@ Template.loginForm.onCreated(function() {
 		});
 		const state = instance.state.get();
 		if (state !== 'login') {
-			if (!(formObj['email'] && /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email']))) {
+			if (!(formObj['email'] && /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email']) && formObj['email'].indexOf(' ') === -1)) {
 				validationObj['email'] = t('Invalid_email');
 			}
 		}
 		if (state === 'login') {
-			if (!formObj['emailOrUsername']) {
+			if (!(formObj['emailOrUsername'] && formObj['email'].indexOf(' ') === -1)) {
 				validationObj['emailOrUsername'] = t('Invalid_email');
 			}
 		}
