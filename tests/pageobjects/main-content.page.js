@@ -22,6 +22,9 @@ class MainContent extends Page {
 	get messagePopUpFirstItem() { return browser.element('.popup-item.selected'); }
 	get mentionAllPopUp() { return browser.element('.popup-item[data-id="all"]'); }
 	get joinChannelBtn() { return browser.element('.button.join'); }
+	get messageBoxActionMenu() { return browser.element('.rc-message-box__action-menu'); }
+	get fileAttachment() { return browser.element('.rc-popover__item[data-id="file-upload"]'); }
+	get fileInput() { return browser.element('#fileupload-input'); }
 
 	// Messages
 	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
@@ -94,7 +97,9 @@ class MainContent extends Page {
 	//uploads a file in the given filepath (url).
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
-		this.fileAttachment.chooseFile(filePath);
+		this.messageBoxActionMenu.click();
+		this.fileAttachment.click();
+		this.fileInput.chooseFile(filePath);
 	}
 
 	waitForLastMessageEqualsText(text) {
