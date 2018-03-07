@@ -19,6 +19,7 @@
 </head>
 
 <body class="global-font-family color-primary-font-color">
+	<div id='alert-anchor'></div>
 </body>
 
 <template name="main">
@@ -53,7 +54,7 @@
 							{{#unless modal}}
 								{{> sideNav }}
 							{{/unless}}
-							<div class="rc-old main-content content-background-color {{#if modal}}main-modal{{/if}}">
+							<div class="rc-old main-content content-background-color {{readReceiptsEnabled}} {{#if modal}}main-modal{{/if}}">
 								{{> Template.dynamic template=center}}
 							</div>
 						</div>

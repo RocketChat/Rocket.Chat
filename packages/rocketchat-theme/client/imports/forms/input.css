@@ -99,8 +99,11 @@
 	}
 
 	&--small {
+		font-size: 14px;
+
 		& .rc-input__element {
-			padding: 8px;
+			padding-top: 8px;
+			padding-bottom: 8px;
 		}
 	}
 
