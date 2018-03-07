@@ -287,6 +287,104 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.updateOwnBasicInfo]', () => {
+		const newPassword = `${ password }test`;
+		const editedUsername = `basicInfo.name${ +new Date() }`;
+		const editedName = `basic-info-test-name${ +new Date() }`;
+		const editedEmail = `test${ +new Date() }@mail.com`;
+
+		it('should update the user own basic information', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						name: editedName,
+						username: editedUsername,
+						actualPassword: password,
+						newPassword
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const user = res.body.user;
+					expect(res.body).to.have.property('success', true);
+					expect(user.username).to.be.equal(editedUsername);
+					expect(user.name).to.be.equal(editedName);
+				})
+				.end(done);
+		});
+
+		it('should update the user name only', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						username: editedUsername
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const user = res.body.user;
+					expect(res.body).to.have.property('success', true);
+					expect(user.username).to.be.equal(editedUsername);
+				})
+				.end(done);
+		});
+
+		it('should throw an error when user try change email without the password', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						email: editedEmail
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.end(done);
+		});
+
+		it('should throw an error when user try change password without the actual password', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						newPassword: 'the new pass'
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.end(done);
+		});
+
+		it('should set new email as \'unverified\'', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						email: editedEmail,
+						actualPassword: newPassword
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const user = res.body.user;
+					expect(res.body).to.have.property('success', true);
+					expect(user.emails[0].address).to.be.equal(editedEmail);
+					expect(user.emails[0].verified).to.be.false;
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.createToken]', () => {
 		let user;
 		beforeEach((done) => {
