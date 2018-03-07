@@ -17,7 +17,7 @@
 
 /* Sidebar */
 @import 'imports/components/sidebar/sidebar.css';
-@import 'imports/components/sidebar/sidebar-account.css';
+@import 'imports/components/sidebar/sidebar-header.css';
 @import 'imports/components/sidebar/sidebar-item.css';
 @import 'imports/components/sidebar/sidebar-flex.css';
 @import 'imports/components/sidebar/toolbar.css';
@@ -32,6 +32,7 @@
 @import 'imports/components/avatar.css';
 @import 'imports/components/badge.css';
 @import 'imports/components/popover.css';
+@import 'imports/components/alerts.css';
 @import 'imports/components/popout.css';
 @import 'imports/components/modal.css';
 @import 'imports/components/tooltip.css';
@@ -40,11 +41,12 @@
 @import 'imports/components/messages.css';
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
+@import 'imports/components/table.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
-
+@import 'imports/components/modal/directory.css';
 /* User Info */
 @import 'imports/components/userInfo.css';
 

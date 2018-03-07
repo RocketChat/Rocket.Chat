@@ -17,9 +17,6 @@ function checkedSelected(property, value, defaultValue=undefined) {
 }
 
 Template.accountPreferences.helpers({
-	showMergedChannels() {
-		return ['category', 'unread'].includes(Template.instance().roomsListExhibitionMode.get()) ? '' : 'disabled';
-	},
 	audioAssets() {
 		return (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
 	},
@@ -28,6 +25,9 @@ Template.accountPreferences.helpers({
 	},
 	newRoomNotification() {
 		return RocketChat.getUserPreference(Meteor.user(), 'newRoomNotification');
+	},
+	muteFocusedConversations() {
+		return RocketChat.getUserPreference(Meteor.user(), 'muteFocusedConversations');
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -102,7 +102,6 @@ Template.accountPreferences.onCreated(function() {
 
 	settingsTemplate.child.push(this);
 
-	this.roomsListExhibitionMode = new ReactiveVar(RocketChat.getUserPreference(user, 'roomsListExhibitionMode'));
 	this.useEmojis = new ReactiveVar(RocketChat.getUserPreference(user, 'useEmojis'));
 
 	let instance = this;
@@ -129,36 +128,28 @@ Template.accountPreferences.onCreated(function() {
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val();
 		data.newMessageNotification = $('select[name=newMessageNotification]').val();
-		data.useEmojis = $('input[name=useEmojis]:checked').val();
-		data.convertAsciiEmoji = $('input[name=convertAsciiEmoji]:checked').val();
-		data.saveMobileBandwidth = $('input[name=saveMobileBandwidth]:checked').val();
-		data.collapseMediaByDefault = $('input[name=collapseMediaByDefault]:checked').val();
+		data.useEmojis = JSON.parse($('input[name=useEmojis]:checked').val());
+		data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
+		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
+		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
+		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
 		data.viewMode = parseInt($('#viewMode').find('select').val());
-		data.hideUsernames = $('#hideUsernames').find('input:checked').val();
-		data.hideRoles = $('#hideRoles').find('input:checked').val();
-		data.hideFlexTab = $('#hideFlexTab').find('input:checked').val();
-		data.hideAvatars = $('#hideAvatars').find('input:checked').val();
-		data.mergeChannels = $('#mergeChannels').find('input:checked').val();
+		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
+		data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
+		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
-		data.roomsListExhibitionMode = $('select[name=roomsListExhibitionMode]').val();
-		data.autoImageLoad = $('input[name=autoImageLoad]:checked').val();
+		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
-		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val();
+		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
-		data.unreadAlert = $('#unreadAlert').find('input:checked').val();
+		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
-		data.roomCounterSidebar = $('#roomCounterSidebar').find('input:checked').val();
+		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
 			return s.trim(e);
 		}));
-
-		const selectedLanguage = $('#language').val();
-		const enableAutoAway = $('#enableAutoAway').find('input:checked').val();
-		const idleTimeLimit = parseInt($('input[name=idleTimeLimit]').val());
-
-		data.enableAutoAway = enableAutoAway;
-		data.idleTimeLimit = idleTimeLimit;
 
 		let reload = false;
 
@@ -168,17 +159,22 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
+		const selectedLanguage = $('#language').val();
 		if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
 			localStorage.setItem('userLanguage', selectedLanguage);
 			data.language = selectedLanguage;
 			reload = true;
 		}
 
+		const enableAutoAway = JSON.parse($('#enableAutoAway').find('input:checked').val());
+		data.enableAutoAway = enableAutoAway;
 		if (this.shouldUpdateLocalStorageSetting('enableAutoAway', enableAutoAway)) {
 			localStorage.setItem('enableAutoAway', enableAutoAway);
 			reload = true;
 		}
 
+		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit') : parseInt($('input[name=idleTimeLimit]').val());
+		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
 			localStorage.setItem('idleTimeLimit', idleTimeLimit);
 			reload = true;
@@ -218,7 +214,8 @@ Template.accountPreferences.events({
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
 	},
-	'click .test-notifications'() {
+	'click .test-notifications'(e) {
+		e.preventDefault();
 		KonchatNotification.notify({
 			duration: $('input[name=desktopNotificationDuration]').val(),
 			payload: { sender: { username: 'rocket.cat' }
@@ -226,10 +223,6 @@ Template.accountPreferences.events({
 			title: TAPi18n.__('Desktop_Notification_Test'),
 			text: TAPi18n.__('This_is_a_desktop_notification')
 		});
-	},
-	'change [name=roomsListExhibitionMode]'(e, instance) {
-		const value = $(e.currentTarget).val();
-		instance.roomsListExhibitionMode.set(value);
 	},
 	'change .audio'(e) {
 		e.preventDefault();
@@ -239,7 +232,7 @@ Template.accountPreferences.events({
 		}
 		if (audio) {
 			const $audio = $(`audio#${ audio }`);
-			return $audio && $audio[0] && $audio.play();
+			return $audio && $audio[0] && $audio[0].play();
 		}
 	}
 });
