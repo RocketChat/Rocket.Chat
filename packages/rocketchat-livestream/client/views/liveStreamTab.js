@@ -168,15 +168,17 @@ Template.liveStreamTab.events({
 		});
 		i.popoutOpen.set(true);
 	},
-	'click .js-broadcast'(e) {
+	'click .js-broadcast'(e, i) {
 		e.preventDefault();
-		console.log('call broadcast stuff');
-		Meteor.call('listYoutubeActivities', function(err, result) {
-			if (err) {
-				return handleError(err);
-			}
-			console.log('list youtube activities');
-			console.log(result);
+		popout.open({
+			content: 'broadcastView',
+			// data: {
+			// 	streamingSource: i.streamingOptions.get().url,
+			// 	isAudioOnly: i.streamingOptions.get().isAudioOnly,
+			// 	showVideoControls: true,
+			// 	streamingOptions:  i.streamingOptions.get()
+			// },
+			onCloseCallback: () => i.popoutOpen.set(false)
 		});
 	}
 });

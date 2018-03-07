@@ -137,7 +137,7 @@ Template.popout.events({
 	},
 	'dragstart .rc-popout-wrapper'(event) {
 		const e = event.originalEvent || event;
-		const url = this.data.streamingSource || '.rc-popout-wrapper';
+		const url = (this.data && this.data.streamingSource) || '.rc-popout-wrapper';
 		popout.x = e.offsetX;
 		popout.y = e.offsetY;
 		e.dataTransfer.setData('application/x-moz-node', e.currentTarget);
