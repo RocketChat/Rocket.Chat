@@ -14,6 +14,8 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/views/liveStreamTab.html',
 		'client/views/liveStreamTab.js',
+		'client/views/broadcastView.html',
+		'client/views/broadcastView.js',
 		'client/styles/liveStreamTab.css',
 		'client/views/liveStreamView.html',
 		'client/views/liveStreamView.js',
@@ -24,10 +26,15 @@ Package.onUse(function(api) {
 		'server/models/Rooms.js',
 		'server/functions/saveStreamingOptions.js',
 		'server/functions/listYoutubeActivities.js',
-		'server/settings.js'
+		'server/settings.js',
+		'server/livestreamEncoder.js'
 	], 'server');
 
 	Npm.depends({
-		'googleapis': '25.0.0'
+		'googleapis': '25.0.0',
+		'fluent-ffmpeg': '2.1.2',
+		'websocket-stream': '5.1.2',
+		'ws': '5.0.0',
+		'express': '4.15.4'
 	});
 });
