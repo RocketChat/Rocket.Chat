@@ -323,7 +323,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				},
 				{
 					key: 'condensed',
-					i18nLabel: 'Extended'
+					i18nLabel: 'Condensed'
 				}
 			],
 			'public': true,
