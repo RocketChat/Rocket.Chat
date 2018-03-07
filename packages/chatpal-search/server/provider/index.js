@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import ChatpalLogger from './logger';
+import ChatpalLogger from '../utils/logger';
 
 const Future = Npm.require('fibers/future');
 
@@ -37,7 +37,7 @@ class Backend {
 
 		const options = {data:{
 			delete: {
-				query: '*:*'
+				query: `id:${ id }`
 			},
 			commit:{}
 		}};
@@ -332,10 +332,12 @@ export default class Index {
 		this._batchIndexer.add(this._getIndexDocument(type, doc));
 
 		if (flush) { this._batchIndexer.flush(); }
+
+		return true;
 	}
 
 	removeDoc(type, id) {
-		this._backend.remove(`${ type[0] }_${ id }`);
+		return this._backend.remove(`${ type[0] }_${ id }`);
 	}
 
 	query(text, language, acl, type, start, rows, callback, params = {}) {
