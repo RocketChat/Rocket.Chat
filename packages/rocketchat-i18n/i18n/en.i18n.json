@@ -2092,6 +2092,7 @@
   "Users": "Users",
   "Users_added": "The users have been added",
   "Users_in_role": "Users in role",
+  "Users must use Two Factor Authentication": "Users must use Two Factor Authentication",
   "UTF8_Names_Slugify": "UTF8 Names Slugify",
   "UTF8_Names_Validation": "UTF8 Names Validation",
   "UTF8_Names_Validation_Description": "RegExp that will be used to validate usernames and channel names",

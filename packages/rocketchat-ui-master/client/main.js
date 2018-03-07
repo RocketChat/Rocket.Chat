@@ -162,14 +162,8 @@ Template.main.helpers({
 			return false;
 		}
 
-		return user.roles.reduce((ret, role) => {
-			const roleData = RocketChat.models.Roles.findOne(role);
-			if (roleData && roleData.mandatory2fa === true) {
-				return true;
-			}
-
-			return ret;
-		}, false);
+		const mandatoryRole = RocketChat.models.Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		return mandatoryRole !== undefined;
 	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';
