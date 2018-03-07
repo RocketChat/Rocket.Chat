@@ -270,11 +270,25 @@ Template.sidebarHeader.events({
 				};
 			});
 
+			let statusText = user.statusText;
+			if (statusText === null) {
+				const userStatus = t(user.status);
+				statusText = userStatus[0].toUpperCase() + userStatus.substr(1);
+			}
+
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
 					{
 						groups: [
+							{
+								title: user.name,
+								items: [{
+									icon: 'circle',
+									name: statusText,
+									modifier: user.status
+								}]
+							},
 							{
 								title: t('User'),
 								items: userStatus
@@ -285,30 +299,44 @@ Template.sidebarHeader.events({
 									{
 										input: true,
 										inputTitle: '',
-										inputName: 'customMessage',
+										inputName: 'custom-status',
 										select: true,
 										selectTitle: '',
-										selectName: 'statusType',
+										selectName: 'status-type',
 										selectOptions: [
 											{
 												value: 'online',
-												title: t('Online')
+												title: t('Online'),
+												selected: user.status === 'online'
 											},
 											{
 												value: 'away',
-												title: t('Away')
+												title: t('Away'),
+												selected: user.status === 'away'
 											},
 											{
 												value: 'busy',
-												title: t('Busy')
+												title: t('Busy'),
+												selected: user.status === 'busy'
 											},
 											{
 												value: 'offline',
-												title: t('Invisible')
+												title: t('Invisible'),
+												selected: user.status === 'offline'
 											}
 										],
 										buttonTitle: t('Update'),
-										buttonName: 'updateCustomMessage'
+										buttonAction: () => {
+											return () => {
+												const elText = jQuery('input[type=text][name=custom-status]')[0];
+												const elType = jQuery('select[name=status-type]')[0];
+
+												const statusText = elText.value;
+												const statusType = elType.value;
+
+												setStatus(statusType, statusText);
+											};
+										}
 									}
 								]
 							},
