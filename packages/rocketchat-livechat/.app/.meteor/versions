@@ -1,6 +1,6 @@
 accounts-base@1.4.2
 accounts-password@1.5.0
-aldeed:simple-schema@1.5.3
+aldeed:simple-schema@1.3.3
 allow-deny@1.1.0
 babel-compiler@7.0.4
 babel-runtime@1.2.2
@@ -44,7 +44,6 @@ less@2.7.12
 livedata@1.0.18
 localstorage@1.2.0
 logging@1.1.19
-mdg:validation-error@0.5.1
 meteor@1.8.2
 meteorspark:util@0.2.0
 minifier-css@1.3.1

@@ -1,9 +1,17 @@
 {
+  "403": "Prieiga negalima",
+  "500": "Vidinė serverio klaida",
   "#channel": "#kanalas",
   "0_Errors_Only": "0 - Tik klaidos",
   "1_Errors_and_Information": "1 - Klaidos ir informacija",
   "2_Erros_Information_and_Debug": "2 - Klaidos, informacija ir tvarkymas",
-  "403": "Prieiga negalima",
-  "500": "Vidinė serverio klaida",
-  "@username": "@vartotojovardas"
+  "@username": "@vartotojovardas",
+  "Additional_Feedback": "Papildomi Atsiliepimai",
+  "Appearance": "Išvaizda",
+  "Are_you_sure_do_you_want_end_this_chat": "Ar tikrai norite užbaigti pokalbį?",
+  "Are_you_sure_do_you_want_end_this_chat_and_switch_department": "Ar tikrai norite užbaigti pokalbi ir pakeisti skyrių.",
+  "Cancel": "Atšaukti",
+  "Change": "Keisti",
+  "Chat_ended": "Pokalbis užbaigtas!",
+  "Choose_a_new_department": "Pasirinkite naują skyrių"
 }

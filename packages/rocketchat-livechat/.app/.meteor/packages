@@ -30,7 +30,6 @@ momentjs:moment
 mizzao:timesync
 reactive-var@1.0.11
 accounts-password@1.5.0
-tap:i18n
 smoral:sweetalert
 ecmascript@0.10.0
 es5-shim@4.7.0
@@ -40,3 +39,4 @@ shell-server@0.3.1
 dynamic-import@0.3.0
 
 konecty:user-presence
+tap:i18n
