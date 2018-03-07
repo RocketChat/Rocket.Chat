@@ -84,7 +84,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 	});
 
 	this.section('Two Factor Authentication', function() {
-		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 0, {
+		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta'
