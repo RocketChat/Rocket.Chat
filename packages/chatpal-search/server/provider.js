@@ -137,9 +137,9 @@ class ChatpalProvider extends SearchProvider {
 				}
 			};
 		} else {
-			config.baseurl = this._settings.get('Backend').endsWith('/') ? this._settings.get('Backend').slice(0, -1) : this._settings.get('Backend');
+			config.baseurl = this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL');
 			config.language = this._settings.get('Main_Language');
-			config.searchpath = '/chatpal/search';
+			config.searchpath = '/chatpal/new'; //TODO change when solr is ready
 			config.updatepath = '/chatpal/update';
 			config.pingpath = '/chatpal/ping';
 			config.clearpath = '/chatpal/clear';

@@ -1,10 +1,9 @@
-FlowRouter.route('/admin/chatpal-key', {
-	name: 'admin-chatpal-key',
-	action(p, up) {
+FlowRouter.route('/admin/chatpal', {
+	name: 'chatpal-admin',
+	action() {
 		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
-			pageTitle: t('AdminChatpalKey'),
-			pageTemplate: 'AdminChatpalKey'
+			center: 'ChatpalAdmin',
+			pageTitle: t('Chatpal_AdminPage')
 		});
 	}
 });

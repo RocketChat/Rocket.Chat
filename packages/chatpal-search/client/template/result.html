@@ -1,6 +1,11 @@
 <template name="ChatpalSearchResultTemplate">
 	{{#if result}}
 		<h2>Chatpal Result</h2>
+		<ul>
+		{{#each message in result.message.docs}}
+			{{message.text}}
+		{{/each}}
+		</ul>
 	{{/if}}
 	<p>
 		{{result.result}}

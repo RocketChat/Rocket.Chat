@@ -1,0 +1,53 @@
+<template name="ChatpalAdmin">
+	<section class="page-container page-list">
+		<header class="chatpal-admin-title">
+			<h2>
+				<div class="chatpal-admin-header-icon">
+					{{> icon block="chatpal-header-icon" icon="chatpal"}}
+				</div>
+				<span>
+					{{_ pageTitle}}
+				</span>
+			</h2>
+		</header>
+		<div class="content">
+			{{#unless isAdmin}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<form>
+					<div class="rocket-form">
+						<fieldset>
+							<div class="input-line">
+								<label>{{_ "CHATPAL_TERM_EMAIL_ADDRESS"}}</label>
+								<div>
+									<input class="rc-input__element" type="text" autocomplete="off" name="email">
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "CHATPAL_TERM_TERMS_AND_CONDITIONS"}}</label>
+								<div id="chatpal-tac" class="chatpal-tac rc-input__element">123
+								</div>
+							</div>
+							<div class="input-line">
+								<div>
+									<label>
+										<input type="checkbox" name="readtac">
+										{{_ "CHATPAL_TERM_TAC_READ"}}
+									</label>
+								</div>
+							</div>
+						</fieldset>
+						<div class="submit">
+							<button class="button primary send"><span>{{_ "CHATPAL_TERM_CREATE_KEY"}}</span></button>
+						</div>
+					</div>
+				</form>
+				{{#if apiKey}}
+				<pre class="apikey">
+					{{apiKey}}
+				</pre><!-- TODO copy to clipboard -->
+				{{/if}}
+			{{/unless}}
+		</div>
+	</section>
+</template>

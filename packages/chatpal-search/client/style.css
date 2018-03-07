@@ -2,3 +2,16 @@
 	color:red !important;
 	text-decoration: underline !important;
 }
+
+/*
+.chatpalProvider .rocket-search-input {
+	position: absolute;
+	top: 5px;
+	width: 320px;
+	background-color: white;
+}
+*/
+
+.rocket-search {
+	padding-top: 0 !important;
+}

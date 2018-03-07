@@ -161,7 +161,7 @@ export default class Index {
 					user: doc.u._id,
 					created: doc.ts,
 					updated: doc._updatedAt,
-					type: 'CHATPAL_RESULT_TYPE_MESSAGE'
+					type
 				};
 				idoc[`text_${ this._options.language }`] = doc.msg;
 				return idoc;
@@ -171,7 +171,7 @@ export default class Index {
 					room: doc._id,
 					created: doc.createdAt,
 					updated: doc.lm ? doc.lm : doc._updatedAt,
-					type: 'CHATPAL_RESULT_TYPE_ROOM',
+					type,
 					room_name: doc.name,
 					room_announcement: doc.announcement,
 					room_description: doc.description,
@@ -182,7 +182,7 @@ export default class Index {
 					id: `u_${ doc._id }`,
 					created: doc.createdAt,
 					updated: doc._updatedAt,
-					type: 'CHATPAL_RESULT_TYPE_USER',
+					type,
 					user_username: doc.username,
 					user_name: doc.name,
 					user_email: _.map(doc.emails, (e) => { return e.address; })

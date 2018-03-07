@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/model/provider.js',
 		'server/service/providerService.js',
-		'server/service/resultValidationService.js',
+		'server/service/validationService.js',
 		'server/events/events.js',
 		'server/provider/defaultProvider.js'
 	], 'server');
