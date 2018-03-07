@@ -1,10 +1,15 @@
 import {searchProviderService} from 'meteor/rocketchat:search';
 import {SearchProvider} from 'meteor/rocketchat:search';
+import Index from './index';
+import ChatpalLogger from './logger';
 
 class ChatpalProvider extends SearchProvider {
 
 	constructor() {
 		super('chatpalProvider');
+
+		this.chatpalBaseUrl = 'https://beta.chatpal.io/v1';
+
 		this._settings.add('Backend', 'select', 'cloud', {
 			values:[
 				{key: 'cloud', i18nLabel: 'Cloud Service'},
@@ -41,28 +46,155 @@ class ChatpalProvider extends SearchProvider {
 				{key: 'en', i18nLabel: 'English'}
 			]
 		});
+		this._settings.add('PageSize', 'int', 15);
 	}
 
 	get i18nLabel() {
 		return 'Chatpal Provider';
 	}
 
-	get i18nDescription() {
-		return 'The chatpal provider uses a powerful search backend';
-	}
-
 	get resultTemplate() {
 		return 'ChatpalSearchResultTemplate';
 	}
 
-	start(callback) {
+	on(name, value, payload) {
+
+		if (!this.index) {
+			this.indexFail = true;
+			return false;
+		}
+
+		switch (name) {
+			case 'message.save': return this.index.indexDoc('message', payload);
+			case 'user.save': return this.index.indexDoc('user', payload);
+			case 'room.save': return this.index.indexDoc('room', payload);
+			case 'message.delete': return this.index.removeDoc('message', value);
+			case 'user.delete': return this.index.removeDoc('user', value);
+			case 'room.delete': return this.index.removeDoc('room', value);
+		}
+
+		return true;
+	}
+
+	_checkForClear(reason) {
+
+		if (reason === 'startup') { return false; }
+
+		if (reason === 'switch') { return true; }
+
+		return this._indexConfig.backendtype !== this._settings.get('Backend') ||
+			(this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== this._settings.get('Base_URL')) ||
+			(this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
+			this._indexConfig.language !== this._settings.get('Main_Language');
+	}
+
+	_parseHeaders() {
+		const headers = {};
+		const sh = this._settings.get('HTTP_Headers').split('\n');
+		sh.forEach(function(d) {
+			const ds = d.split(':');
+			if (ds.length === 2 && ds[0].trim() !== '') {
+				headers[ds[0]] = ds[1];
+			}
+		});
+		return headers;
+	}
+
+	_ping(config, callback, timeout = 5000) {
+
+		const maxTimeout = 200000;
+
+		if (Index.ping(config)) {
+			ChatpalLogger.debug('ping was successfull');
+			callback(config);
+		} else {
+
+			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
+
+			this._pingTimeout = Meteor.setTimeout(() => {
+				this._ping(config, callback, Math.min(maxTimeout, 2*timeout));
+			}, timeout);
+		}
+
+	}
+
+	_getIndexConfig(callback) {
+
+		const config = {
+			backendtype: this._settings.get('Backend')
+		};
+
+		if (this._settings.get('Backend') === 'cloud') {
+			config.baseurl = this.chatpalBaseUrl;
+			config.language = this._settings.get('Main_Language');
+			config.searchpath = '/search/search';
+			config.updatepath = '/search/update';
+			config.pingpath = '/search/ping';
+			config.clearpath = '/search/clear';
+			config.httpOptions = {
+				headers: {
+					'X-Api-Key': this._settings.get('API_Key')
+				}
+			};
+		} else {
+			config.baseurl = this._settings.get('Backend').endsWith('/') ? this._settings.get('Backend').slice(0, -1) : this._settings.get('Backend');
+			config.language = this._settings.get('Main_Language');
+			config.searchpath = '/chatpal/search';
+			config.updatepath = '/chatpal/update';
+			config.pingpath = '/chatpal/ping';
+			config.clearpath = '/chatpal/clear';
+			config.httpOptions = {
+				headers: this._parseHeaders()
+			};
+		}
+
+		this._ping(config, callback);
+
+	}
+
+	stop(callback) {
+		ChatpalLogger.info('Provider stopped');
+		Meteor.clearTimeout(this._pingTimeout);
+		this.indexFail = false;
+		this.index = undefined;
 		callback();
 	}
 
-	search(text, rid, payload, callback) {
-		Meteor.setTimeout(()=>{
-			callback(null, {result:`You are searching for ${ text } but I am currently not yet implemeted, sorry ;)`});
-		}, 500);
+	start(reason, callback) {
+
+		const clear = this._checkForClear(reason);
+
+		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
+
+		this._getIndexConfig((config) => {
+			this._indexConfig = config;
+
+			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
+
+			this.index = new Index(this._indexConfig, this.indexFail || clear);
+
+			callback();
+		});
+	}
+
+	_getAcl(context) {
+		return RocketChat.models.Subscriptions.find({'u._id': context.uid}).fetch().map(room => room.rid);
+	}
+
+	search(text, context, payload, callback) {
+
+		if (!this.index) { return callback({msg:'Chatpal_currently_not_active'}); }
+
+		this.index.query(
+			text,
+			this._settings.get('Main_Language'),
+			this._getAcl(context),
+			payload.type || ['message', 'user', 'room'],
+			payload.start || 0,
+			payload.rows || this._settings.get('PageSize'),
+			callback
+		);
+
 	}
 }
 

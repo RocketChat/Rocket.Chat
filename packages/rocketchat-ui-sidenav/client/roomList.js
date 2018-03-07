@@ -5,69 +5,91 @@ import { UiTextContext } from 'meteor/rocketchat:lib';
 
 Template.roomList.helpers({
 	rooms() {
-		if (this.identifier === 'unread') {
-			const query = {
-				alert: true,
-				open: true,
-				hideUnreadStatus: {$ne: true}
-			};
-			return ChatSubscription.find(query, {sort: {'t': 1, 'name': 1}});
-		}
+		/*
+			modes:
+				sortby activity/alphabetical
+				merge channels into one list
+				show favorites
+				show unread
+		*/
 
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
 		}
-
-		const favoritesEnabled = RocketChat.settings.get('Favorite_Rooms');
-
+		const user = Meteor.user();
+		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true
 		};
-		const sort = { 't': 1 };
-		if (this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name')) {
-			sort.fname = 1;
-		} else {
-			sort.name = 1;
+
+		const sort = {};
+
+		if (sortBy === 'activity') {
+			sort.t = 1;
+		} else { // alphabetical
+			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'fname' : 'name'] = /descending/.test(sortBy) ? -1 : 1;
 		}
+
+		if (this.identifier === 'unread') {
+			query.alert = true;
+			query.hideUnreadStatus = {$ne: true};
+			return ChatSubscription.find(query, {sort});
+		}
+
+		const favoritesEnabled = !!(RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites'));
+
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
 		} else {
 			let types = [this.identifier];
-			const user = Meteor.user();
 
-			if (this.identifier === 'activity') {
+			if (this.identifier === 'merged') {
 				types = ['c', 'p', 'd'];
 			}
 
-			if (this.identifier === 'channels' || this.identifier === 'unread' || this.identifier === 'tokens') {
+			if (this.identifier === 'unread' || this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
 
-			if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
-				query.tokens = { $exists: true };
-			} else if (this.identifier === 'c' || this.identifier === 'p') {
+			if (['c', 'p'].includes(this.identifier)) {
 				query.tokens = { $exists: false };
+			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
+				query.tokens = { $exists: true };
 			}
 
-			if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
-
+			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{alert: {$ne: true}},
 					{hideUnreadStatus: true}
 				];
 			}
 			query.t = {$in: types};
-			query.f = {$ne: favoritesEnabled};
+			if (favoritesEnabled) {
+				query.f = {$ne: favoritesEnabled};
+			}
 		}
-		if (this.identifier === 'activity') {
-			const list = ChatSubscription.find(query).fetch().map(sub => {
-				const lm = RocketChat.models.Rooms.findOne(sub.rid, {fields: {_updatedAt: 1}})._updatedAt;
+
+		if (sortBy === 'activity') {
+			const list = ChatSubscription.find(query, {sort: {rid : 1}}).fetch();
+			const ids = list.map(sub => sub.rid);
+			const rooms = RocketChat.models.Rooms.find({
+				_id: { $in : ids}
+			},
+			{
+				sort : {
+					_id: 1
+				},
+				fields: {_updatedAt: 1}
+			}).fetch();
+
+
+			return _.sortBy(list.map((sub, i) => {
+				const lm = rooms[i]._updatedAt;
 				return {
-					lm: lm && lm.toISOString(),
-					...sub
+					...sub,
+					lm: lm && lm.toISOString()
 				};
-			});
-			return _.sortBy(list, 'lm').reverse();
+			}), 'lm').reverse();
 		}
 		return ChatSubscription.find(query, {sort});
 	},
@@ -83,7 +105,7 @@ Template.roomList.helpers({
 		or is unread and has one room
 		*/
 
-		return !['unread', 'f'].includes(group.identifier) || rooms.count();
+		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
 	},
 
 	roomType(room) {
@@ -103,20 +125,3 @@ Template.roomList.helpers({
 	}
 });
 
-// Template.roomList.onRendered(function() {
-// 	$(this.firstNode.parentElement).perfectScrollbar();
-// });
-
-Template.roomList.events({
-	'click .more'(e, t) {
-		if (t.data.identifier === 'p') {
-			SideNav.setFlex('listPrivateGroupsFlex');
-		} else if (t.data.isCombined) {
-			SideNav.setFlex('listCombinedFlex');
-		} else {
-			SideNav.setFlex('listChannelsFlex');
-		}
-
-		return SideNav.openFlex();
-	}
-});

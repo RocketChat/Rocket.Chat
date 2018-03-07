@@ -1,6 +1,9 @@
-/* globals SystemLogger, RocketChat */
+/* globals RocketChat */
 import Future from 'fibers/future';
 import _ from 'underscore';
+
+import {validationService} from '../service/validationService';
+import SearchLogger from '../logger/logger';
 
 class SearchProviderService {
 
@@ -9,14 +12,27 @@ class SearchProviderService {
 		this.activeProvider = undefined;
 	}
 
+	/**
+	 * Stop current provider (if there is one) and start the new
+	 * @param id the id of the provider which should be started
+	 * @param cb a possible callback if provider is active or not (currently not in use)
+	 */
 	use(id, cb = function() {}) {
 
 		if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
 
+		let reason = 'switch';
+
+		if (!this.activeProvider) {
+			reason = 'startup';
+		} else if (this.activeProvider.key === this.providers[id].key) {
+			reason = 'update';
+		}
+
 		const stopProvider = (callback) => {
 			if (this.activeProvider) {
 
-				SystemLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
+				SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
 
 				this.activeProvider.stop(callback);
 			} else {
@@ -30,11 +46,11 @@ class SearchProviderService {
 
 				this.activeProvider = undefined;
 
-				SystemLogger.debug(`Start provider '${ id }'`);
+				SearchLogger.debug(`Start provider '${ id }'`);
 
 				try {
 
-					this.providers[id].run((err) => {
+					this.providers[id].run(reason, (err) => {
 						if (err) {
 							cb(err);
 						} else {
@@ -46,20 +62,27 @@ class SearchProviderService {
 				} catch (e) {
 					cb(e);
 				}
+
 			} else {
 				cb(err);
 			}
 
 		});
-
 	}
 
+	/**
+	 * Registers a search provider on system startup
+	 * @param provider
+	 */
 	register(provider) {
 		this.providers[provider.key] = provider;
 	}
 
+	/**
+	 * Starts the service (loads provider settings for admin ui, add lister not setting changes, enable current provider
+	 */
 	start() {
-		SystemLogger.debug('Load data for all providers');
+		SearchLogger.debug('Load data for all providers');
 
 		const providers = this.providers;
 
@@ -99,13 +122,15 @@ class SearchProviderService {
 				});
 		});
 
-		const configProvider = _.debounce(() => {
+		//add listener to react on setting changes
+		const configProvider = _.debounce(Meteor.bindEnvironment(() => {
 			const providerId = RocketChat.settings.get('Search.Provider');
 
 			if (providerId) {
 				this.use(providerId);
 			}
-		}, 1000);
+
+		}), 1000);
 
 		RocketChat.settings.get(/^Search\./, configProvider);
 	}
@@ -119,6 +144,14 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
+	/**
+	 * Search using the current search provider and check if results are valid for the user. The search result has
+	 * the format {messages:{start:0,numFound:1,docs:[{...}]},users:{...},rooms:{...}}
+	 * @param text the search text
+	 * @param context the context (uid, rid)
+	 * @param payload custom payload (e.g. for paging)
+	 * @returns {*}
+	 */
 	'rocketchatSearch.search'(text, context, payload) {
 		const future = new Future();
 
@@ -128,14 +161,13 @@ Meteor.methods({
 
 		try {
 
-			SystemLogger.debug(`Search:\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+			SearchLogger.debug('query: ', `Search:\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
 
 			searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
 				if (error) {
 					future.throw(error);
 				} else {
-					//TODO could do some access checks
-					future.return(data);
+					future.return(validationService.validateSearchResult(data));
 				}
 			});
 		} catch (e) {
@@ -144,13 +176,18 @@ Meteor.methods({
 
 		return future.wait();
 	},
+	/**
+	 * Get the current provider with key, description, resultTemplate, suggestionItemTemplate and settings (as Map)
+	 * @returns {*}
+	 */
 	'rocketchatSearch.getProvider'() {
-		console.log(searchProviderService.activeProvider);
 		if (!searchProviderService.activeProvider) { return undefined; }
 
 		return {
 			key: searchProviderService.activeProvider.key,
+			description: searchProviderService.activeProvider.i18nDescription,
 			resultTemplate: searchProviderService.activeProvider.resultTemplate,
+			suggestionItemTemplate: searchProviderService.activeProvider.suggestionItemTemplate,
 			settings: _.mapObject(searchProviderService.activeProvider.settingsAsMap, (setting) => {
 				return setting.value;
 			})

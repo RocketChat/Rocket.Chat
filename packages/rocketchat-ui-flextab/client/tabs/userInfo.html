@@ -65,7 +65,7 @@
 									{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
 								</div>
 							{{/if}}
-							{{#if lastLogin}}
+							{{#if createdAt}}
 								<div class="rc-user-info-details__item">
 									<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
 									<p class="rc-user-info-details__info">{{createdAt}}</p>
@@ -75,13 +75,25 @@
 									<p class="rc-user-info-details__info">{{lastLogin}}</p>
 								</div>
 							{{/if}}
+							{{#if shouldDisplayReason}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">{{_ "Reason_To_Join"}}</label>
+									<p class="rc-user-info-details__info">{{user.reason}}</p>
+								</div>
+							{{/if}}
 						{{/if}}
 						{{#if utc}}
 							<div class="rc-user-info-details__item">
-								<label class="rc-user-info-details__label	">Timezone</label>
+								<label class="rc-user-info-details__label">Timezone</label>
 								<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
 							</div>
 						{{/if}}
+						{{#each customField}}
+							<div class="rc-user-info-details__item">
+								<label class="rc-user-info-details__label">{{label}}</label>
+								<p class="rc-user-info-details__info">{{value}}</p>
+							</div>
+						{{/each}}
 						<div class="rc-user-info-details__item">
 							{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 							{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}

@@ -107,6 +107,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			}
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
+			'public': true,
 			type: 'boolean'
 		});
 		this.add('Accounts_AllowedDomainsList', '', {
@@ -313,6 +314,16 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'boolean',
 			'public': true,
 			i18nLabel: 'UI_Merge_Channels_Groups'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Unread_on_top'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Group_favorites'
 		});
 		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',

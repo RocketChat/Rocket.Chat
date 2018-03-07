@@ -11,16 +11,20 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:logger',
-		'rocketchat:search'
+		'rocketchat:search',
+		'kadira:flow-router'
 	]);
 
 	api.addFiles([
-		'server/provider.js'
+		'server/provider.js',
+		'server/index.js'
 	], 'server');
 
 	api.addFiles([
 		'client/style.css',
 		'client/result.html',
+		'client/key.html',
+		'client/route.js',
 		'client/result.js'
 	], 'client');
 });

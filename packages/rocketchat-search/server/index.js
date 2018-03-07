@@ -1,5 +1,5 @@
 import {searchProviderService} from './service/providerService';
-import SearchProvider from './service/provider';
+import SearchProvider from './model/provider';
 
 export {
 	searchProviderService,

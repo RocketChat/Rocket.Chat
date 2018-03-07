@@ -110,6 +110,7 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:apps
 rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
@@ -183,6 +184,7 @@ steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
+rocketchat:version-check
 
 rocketchat:search
 chatpal:search

@@ -1,3 +1,36 @@
+/* globals FlowRouter, RoomHistoryManager */
+import _ from 'underscore';
+
+Meteor.startup(function() {
+	RocketChat.MessageAction.addButton({
+		id: 'jump-to-search-message',
+		icon: 'jump',
+		label: 'Jump_to_message',
+		context: ['search'],
+		action() {
+			const message = this._arguments[1];
+			if (Session.get('openedRoom') === message.rid) {
+				return RoomHistoryManager.getSurroundingMessages(message, 50);
+			}
+
+			FlowRouter.goToRoomById(message.rid);
+			// RocketChat.MessageAction.hideDropDown();
+
+			if (window.matchMedia('(max-width: 500px)').matches) {
+				Template.instance().tabBar.close();
+			}
+
+			window.setTimeout(() => {
+				RoomHistoryManager.getSurroundingMessages(message, 50);
+			}, 400);
+			// 400ms is popular among game devs as a good delay before transition starts
+			// ie. 50, 100, 200, 400, 800 are the favored timings
+		},
+		order: 100,
+		group: 'menu'
+	});
+});
+
 Template.DefaultSearchResultTemplate.onCreated(function() {
 	const self = this;
 
@@ -6,6 +39,7 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 
 	//global search
 	this.globalSearchEnabled = this.data.settings.GlobalSearchEnabled;
+	this.data.parentPayload.searchAll = true;
 
 	this.hasMore = new ReactiveVar(true);
 
@@ -26,7 +60,12 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.result.set(undefined);
 		t.data.search();
 
-	}
+	},
+	'scroll .js-list': _.throttle(function(e, t) {
+		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
+			console.log('scroll');
+		}
+	}, 200)
 });
 
 Template.DefaultSearchResultTemplate.helpers({
@@ -41,5 +80,8 @@ Template.DefaultSearchResultTemplate.helpers({
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
+	},
+	message() {
+		return _.extend(this, { customClass: 'search', actionContext: 'search'});
 	}
 });
