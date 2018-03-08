@@ -6,7 +6,6 @@ class LivechatInquiry extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'name': 1 }); // name of the inquiry (client name for now)
 		this.tryEnsureIndex({ 'message': 1 }); // message sent by the client
 		this.tryEnsureIndex({ 'ts': 1 }); // timestamp
-		this.tryEnsureIndex({ 'code': 1 }); // (for routing)
 		this.tryEnsureIndex({ 'agents': 1}); // Id's of the agents who can see the inquiry (handle departments)
 		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken'
 	}

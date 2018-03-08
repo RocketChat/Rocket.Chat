@@ -347,7 +347,6 @@ RocketChat.Livechat = {
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
-				code: room.code,
 				u: {
 					_id: agent.agentId,
 					username: agent.username
@@ -408,7 +407,6 @@ RocketChat.Livechat = {
 			_id: room._id,
 			label: room.label,
 			topic: room.topic,
-			code: room.code,
 			createdAt: room.ts,
 			lastMessageAt: room.lm,
 			tags: room.tags,

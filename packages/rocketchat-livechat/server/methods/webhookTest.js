@@ -18,7 +18,6 @@ Meteor.methods({
 			_id: 'fasd6f5a4sd6f8a4sdf',
 			label: 'title',
 			topic: 'asiodojf',
-			code: 123123,
 			createdAt: new Date(),
 			lastMessageAt: new Date(),
 			tags: [
