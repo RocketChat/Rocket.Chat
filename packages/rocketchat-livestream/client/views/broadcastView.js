@@ -19,6 +19,19 @@ const sendMessageToWebSocket = (message, ws) => {
 		if (ws.readyState === 1) { ws.send(message); }
 	}
 };
+export const call = (...args) => new Promise(function(resolve, reject) {
+	Meteor.call(...args, function(err, result) {
+		if (err) {
+			handleError(err);
+			reject(err);
+		}
+		resolve(result);
+	});
+});
+
+const delay = (time) => new Promise(function(resolve, reject) {
+	setTimeout(resolve, time);
+});
 
 Template.broadcastView.helpers({
 	broadcastSource() {
@@ -58,7 +71,7 @@ Template.broadcastView.onRendered(function() {
 });
 
 Template.broadcastView.events({
-	'click .start-streaming'(e, i) {
+	async 'click .start-streaming'(e, i) {
 		const connection = i.connection.get();
 		if (!connection) {
 			return;
@@ -86,8 +99,11 @@ Template.broadcastView.events({
 			};
 			mediaRecorder.start(100); // collect 10ms of data
 			i.mediaRecorder.set(mediaRecorder);
+			await delay(20000);
+			await call('livestreamTest', {broadcastId:i.data.broadcast.id});
+			await delay(20000);
+			await call('livestreamStart', {broadcastId:i.data.broadcast.id});
 
-			Meteor.call('livestreamStart', {broadcastId:Session.get('openedRoom')});
 		} catch (e) {
 			console.error(`Exception while creating MediaRecorder: ${ e }`);
 			alert(`Exception while creating MediaRecorder: ${ e }. mimeType: ${ options.mimeType }`);

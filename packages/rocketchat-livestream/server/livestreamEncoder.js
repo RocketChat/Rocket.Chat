@@ -48,7 +48,6 @@ WebSocketServer.on('connection', function(websocket, req) {
 		.save(`rtmp://a.rtmp.youtube.com/live2/${ name }`, function(stdout) {
 			console.log(`Convert complete${ stdout }`);
 		});
-	websocket.once('message', () => websocket.send('ok'));
 	websocket.on('close', () => {
 		encoder.kill();
 	});

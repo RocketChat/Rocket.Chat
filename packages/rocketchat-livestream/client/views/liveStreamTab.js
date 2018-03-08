@@ -2,8 +2,6 @@
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
 
-
-
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
 		if (err) {
