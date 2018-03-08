@@ -26,7 +26,7 @@ WebSocketServer.on('connection', function(websocket, req) {
 		return websocket.terminate();
 	}
 	const stream = wss(websocket);
-	ffmpeg()
+	const encoder = ffmpeg()
 		.input(stream)
 		.videoCodec('libx264')
 		.audioCodec('libmp3lame')
@@ -48,4 +48,9 @@ WebSocketServer.on('connection', function(websocket, req) {
 		.save(`rtmp://a.rtmp.youtube.com/live2/${ name }`, function(stdout) {
 			console.log(`Convert complete${ stdout }`);
 		});
+
+	websocket.on('close', () => {
+		console.log('websocket closed, kill FFMPEG');
+		encoder.kill();
+	});
 });

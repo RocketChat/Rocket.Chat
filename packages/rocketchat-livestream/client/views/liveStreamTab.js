@@ -1,6 +1,27 @@
 /* globals popout */
 import toastr from 'toastr';
 
+export const call = (...args) => new Promise(function(resolve, reject) {
+	Meteor.call(...args, function(err, result) {
+		if (err) {
+			handleError(err);
+			reject(err);
+		}
+		resolve(result);
+	});
+});
+
+export const close = (popup) => {
+	return new Promise(function(resolve) {
+		const checkInterval = setInterval(() => {
+			if (popup.closed) {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 300);
+	});
+};
+
 function optionsFromUrl(url) {
 	const options = {};
 	const parsedUrl = url.match(/(http:|https:|)\/\/(www.)?(youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/|embed\?clip=)?([A-Za-z0-9._%-]*)(\&\S+)?/);
@@ -198,24 +219,3 @@ Template.liveStreamTab.events({
 		}
 	}
 });
-
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
-	});
-});
-
-export const close = (popup) => {
-	return new Promise(function(resolve, reject) {
-		const checkInterval = setInterval(() => {
-			if (popup.closed) {
-				clearInterval(checkInterval);
-				resolve();
-			}
-		}, 300);
-	});
-};
