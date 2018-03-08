@@ -11,6 +11,7 @@ export class ConversationRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'mergeChannels');
+		// returns true only if groupByType is not set
+		return !RocketChat.getUserPreference(user, 'groupByType');
 	}
 }

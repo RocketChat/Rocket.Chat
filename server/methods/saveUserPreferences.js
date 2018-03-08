@@ -34,9 +34,9 @@ Meteor.methods({
 			muteFocusedConversations: Match.Optional(Boolean)
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		if (settings.mergeChannels) {
+		if (settings.groupByType) {
 			check(settings, Match.ObjectIncluding({
-				mergeChannels: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
+				groupByType: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
 			}));
 		}
 		const user = Meteor.userId();
@@ -48,8 +48,8 @@ Meteor.methods({
 			RocketChat.models.Users.setLanguage(user, settings.language);
 		}
 
-		if (settings.mergeChannels != null) {
-			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
+		if (settings.groupByType != null) {
+			settings.groupByType = ['1', true].includes(settings.groupByType);
 		}
 
 
