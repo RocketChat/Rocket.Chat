@@ -11,12 +11,13 @@ const p = fn => new Promise(function(resolve, reject) {
 	});
 });
 
-export const startLiveStream = ({
+export const statusLiveStream = ({
 	id,
 	access_token,
 	refresh_token,
 	clientId,
-	clientSecret
+	clientSecret,
+	status
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
@@ -30,7 +31,7 @@ export const startLiveStream = ({
 	return p(resolve => youtube.liveBroadcasts.transition({
 		part:'id,status',
 		id,
-		broadcastStatus: 'live'
+		broadcastStatus: status
 	}, resolve));
 };
 
