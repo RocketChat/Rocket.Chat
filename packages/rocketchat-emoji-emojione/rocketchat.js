@@ -7,7 +7,29 @@ RocketChat.emoji.packages.emojione.emojiCategories = emojiCategories;
 RocketChat.emoji.packages.emojione.toneList = toneList;
 
 RocketChat.emoji.packages.emojione.render = function(emoji) {
-	return emojione.toImage(emoji);
+	return emojione.toImage(thumbsupConvert(emoji));
+};
+
+// To convert (y)/(Y) to the thumbsup emoji
+function thumbsupConvert(emoji) {
+	emoji = emoji.replace(/^\(y\)$/i, ":thumbsup:");
+	emoji = emoji.replace(/^\(y\)\s+/i, ":thumbsup: ");
+        emoji = emoji.replace(/\s+\(y\)$/i, " :thumbsup:");
+	emoji = emoji.replace(/\s+\(y\)\s+/gi, " :thumbsup: ")
+
+	emoji = emoji.replace(/^(\(y\))([.|,|!|?])/i, function($1, $2, $3) {
+		if($2 == "(y)" ||  $2 == "(Y)") {
+			return ":thumbsup:" + $3;
+		}
+	});
+
+	emoji = emoji.replace(/\s+(\(y\))([.|,|!|?])/gi, function($1, $2, $3) {
+		if($2 == "(y)" ||  $2 == "(Y)") {
+			return " :thumbsup:" + $3;
+		}
+	});
+
+	return emoji
 };
 
 //http://stackoverflow.com/a/26990347 function isSet() from Gajus
