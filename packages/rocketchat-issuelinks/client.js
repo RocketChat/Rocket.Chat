@@ -7,7 +7,7 @@ import s from 'underscore.string';
 
 function IssueLink(message) {
 	if (s.trim(message.html) && RocketChat.settings.get('IssueLinks_Enabled')) {
-		const regexp = new RegExp(`(?:^|\\s|\\n)(#${RocketChat.settings.get('IssueLinks_Format')})\\b`, 'g');
+		const regexp = new RegExp(`(?:^|\\s|\\n)(#${ RocketChat.settings.get('IssueLinks_Format') })\\b`, 'g');
 		message.html = message.html.replace(regexp, function(match, issueNumber) {
 			const url = RocketChat.settings.get('IssueLinks_Template').replace('%s', issueNumber.substring(1));
 			return match.replace(issueNumber, `<a href="${ url }" target="_blank">${ issueNumber }</a>`);
