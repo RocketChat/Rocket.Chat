@@ -120,6 +120,13 @@
 		}
 	}
 
+	&__label {
+		display: flex;
+
+		cursor: pointer;
+		align-items: center;
+	}
+
 	&__icon {
 		display: flex;
 
