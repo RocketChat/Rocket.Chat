@@ -999,6 +999,8 @@
   "IssueLinks_Incompatible": "Warning: do not enable this and the 'Hex Color Preview' at the same time.",
   "IssueLinks_LinkTemplate": "Template for issue links",
   "IssueLinks_LinkTemplate_Description": "Template for issue links; %s will be replaced by the issue number.",
+  "IssueLinks_Format": "Issue number format",
+  "IssueLinks_Format_Description": "Regular expression to match issue numbers.",
   "It_works": "It works",
   "Idle_Time_Limit": "Idle Time Limit",
   "italics": "italics",

@@ -15,3 +15,12 @@ RocketChat.settings.add('IssueLinks_Template', '', {
 	section: 'Issue_Links',
 	public: true
 });
+
+RocketChat.settings.add('IssueLinks_Format', '[0-9]+', {
+	type: 'string',
+	i18nLabel: 'IssueLinks_Format',
+	i18nDescription: 'IssueLinks_Format_Description',
+	group: 'Message',
+	section: 'Issue_Links',
+	public: true
+});
