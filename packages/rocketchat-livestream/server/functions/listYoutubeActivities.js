@@ -26,7 +26,7 @@ const getAccessToken = (cb) => {
 
 Meteor.methods({
 	'listYoutubeActivities'() {
-		console.log('inside method');
+		// console.log('inside method');
 		return getAccessToken((clientAuth) => {
 			google.youtube('v3').activities.list({
 				auth: clientAuth,
@@ -34,7 +34,7 @@ Meteor.methods({
 				mine: true,
 				key: RocketChat.settings.get('Broadcasting_api_key')
 			}, (err, result) => {
-				console.log(err, result);
+				// console.log(err, result);
 				return result;
 			});
 		});

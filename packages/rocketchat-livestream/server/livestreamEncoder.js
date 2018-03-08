@@ -19,7 +19,12 @@ ffmpeg \
     -acodec libmp3lame -ar 44100 -threads 6 -q:v 3 -b:a 712000 -bufsize 4000k -maxrate 960k \
     -f flv "$YOUTUBE_URL/$KEY"
 */
-WebSocketServer.on('connection', function(websocket) {
+WebSocketServer.on('connection', function(websocket, req) {
+	const name = req.url.replace('/', '');
+	console.log(name);
+	if (!name) {
+		return websocket.terminate();
+	}
 	const stream = wss(websocket);
 	ffmpeg()
 		.input(stream)
@@ -40,7 +45,7 @@ WebSocketServer.on('connection', function(websocket) {
 		.on('error', function(err) {
 			console.log(`Error: ${ err.message }`);
 		})
-		.save('rtmp://a.rtmp.youtube.com/live2/x60x-0wyw-51j8-66tf', function(stdout) {
+		.save(`rtmp://a.rtmp.youtube.com/live2/${ name }`, function(stdout) {
 			console.log(`Convert complete${ stdout }`);
 		});
 });

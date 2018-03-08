@@ -26,7 +26,7 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(function() {
-	this.connection = new ReactiveVar(createAndConnect('ws://localhost:3001/'));
+	this.connection = new ReactiveVar(createAndConnect(`ws://localhost:3001/${ this.data.idStream }`));
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 });

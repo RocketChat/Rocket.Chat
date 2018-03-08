@@ -168,17 +168,54 @@ Template.liveStreamTab.events({
 		});
 		i.popoutOpen.set(true);
 	},
-	'click .js-broadcast'(e, i) {
+	async 'click .js-broadcast'(e, i) {
 		e.preventDefault();
-		popout.open({
-			content: 'broadcastView',
-			// data: {
-			// 	streamingSource: i.streamingOptions.get().url,
-			// 	isAudioOnly: i.streamingOptions.get().isAudioOnly,
-			// 	showVideoControls: true,
-			// 	streamingOptions:  i.streamingOptions.get()
-			// },
-			onCloseCallback: () => i.popoutOpen.set(false)
-		});
+		e.currentTarget.classList.add('loading');
+		try {
+			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, { fields: { 'settings.livestream': 1 }});
+			if (!user.settings || !user.settings.livestream) {
+				const oauthWindow = window.open(`/api/v1/livestream/oauth?userId=${ Meteor.userId() }`, 'youtube-integration-oauth', 'width=400,height=600');
+				await close(oauthWindow);
+			}
+
+			const result = await call('livestreamGetChannel', {rid: i.data.rid});
+			popout.open({
+				content: 'broadcastView',
+				data: {
+					idStream : result.id
+					// streamingSource: i.streamingOptions.get().url,
+					// isAudioOnly: i.streamingOptions.get().isAudioOnly,
+					// showVideoControls: true,
+					// streamingOptions:  i.streamingOptions.get()
+				},
+				onCloseCallback: () => i.popoutOpen.set(false)
+			});
+
+		} catch (e) {
+			console.log(e);
+		} finally {
+			e.currentTarget.classList.remove('loading');
+		}
 	}
 });
+
+export const call = (...args) => new Promise(function(resolve, reject) {
+	Meteor.call(...args, function(err, result) {
+		if (err) {
+			handleError(err);
+			reject(err);
+		}
+		resolve(result);
+	});
+});
+
+export const close = (popup) => {
+	return new Promise(function(resolve, reject) {
+		const checkInterval = setInterval(() => {
+			if (popup.closed) {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 300);
+	});
+};
