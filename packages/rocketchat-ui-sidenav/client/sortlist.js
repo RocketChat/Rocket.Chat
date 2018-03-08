@@ -5,9 +5,8 @@ const checked = function(prop, field) {
 	if (prop === 'sidebarShowFavorites') {
 		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
 	}
-	if (prop === 'mergeChannels') {
-		// TODO change mergeChannels to GroupByType
-		return !RocketChat.getUserPreference(user, 'mergeChannels');
+	if (prop === 'groupByType') {
+		return RocketChat.getUserPreference(user, 'groupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
 		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
