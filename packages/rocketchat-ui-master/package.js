@@ -28,5 +28,4 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/inject.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
-	api.addAssets('public/loading.css', 'server');
 });
