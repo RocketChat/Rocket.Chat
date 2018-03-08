@@ -99,9 +99,17 @@ Template.broadcastView.events({
 			};
 			mediaRecorder.start(100); // collect 10ms of data
 			i.mediaRecorder.set(mediaRecorder);
-			await delay(20000);
+
+			while (true) {
+			 	const result = await call('livestreamStreamStatus', {streamId:i.data.stream.id});
+				if (result === 'active') {
+					break;
+				}
+				await delay(1000);
+			}
+
 			await call('livestreamTest', {broadcastId:i.data.broadcast.id});
-			await delay(20000);
+			await delay(25000);
 			await call('livestreamStart', {broadcastId:i.data.broadcast.id});
 
 		} catch (e) {

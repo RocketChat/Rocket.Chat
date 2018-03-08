@@ -1,9 +1,36 @@
 import {Meteor} from 'meteor/meteor';
-import { createLiveStream, statusLiveStream } from './functions/livestream';
+import { createLiveStream, statusLiveStream, statusStreamLiveStream } from './functions/livestream';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
 Meteor.methods({
+
+	async livestreamStreamStatus({streamStatus}) {
+		if (!streamStatus) {
+			// TODO: change error
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'streamStatus'
+			});
+		}
+		const livestreamSettings = selectLivestreamSettings(Meteor.user());
+
+		if (!livestreamSettings) {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'streamStatus'
+			});
+		}
+
+		const {access_token, refresh_token} = livestreamSettings;
+
+		return await statusStreamLiveStream({
+			id: streamStatus,
+			access_token,
+			refresh_token,
+			clientId: RocketChat.settings.get('Broadcasting_client_id'),
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+		});
+
+	},
 	async livestreamStart({broadcastId}) {
 		if (!broadcastId) {
 			// TODO: change error

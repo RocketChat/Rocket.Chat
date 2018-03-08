@@ -11,6 +11,29 @@ const p = fn => new Promise(function(resolve, reject) {
 	});
 });
 
+export const statusStreamLiveStream = async({
+	id,
+	access_token,
+	refresh_token,
+	clientId,
+	clientSecret,
+	status
+}) => {
+	const auth = new OAuth2(clientId, clientSecret);
+
+	auth.setCredentials({
+		access_token,
+		refresh_token
+	});
+
+	const youtube = google.youtube({ version:'v3', auth });
+	const result = await p(resolve => youtube.liveStreams.list({
+		part:'id,status',
+		id
+	}, resolve));
+	return result.items && result.items[0].status.streamStatus;
+};
+
 export const statusLiveStream = ({
 	id,
 	access_token,
