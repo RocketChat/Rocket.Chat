@@ -17,6 +17,11 @@
 						{{/if}}
 					</div>
 				{{/if}}
+				{{#if showStreamControls}}
+					<div class="rc-popout__controls">
+							<button class="rc-popout__controls--record {{ getStreamStatus }}"> {{> icon icon="circle" }} </button>
+					</div>
+				{{/if}}
 				{{#unless isAudioOnly}}
 					<button class="contextual-bar__minimize js-minimize">
 						{{> icon classes="rc-popout__minimize" icon="angle-down"}}
@@ -44,6 +49,11 @@
 						{{else}}
 							<button class="rc-popout__controls--mute"> {{> icon icon="volume" }} </button>
 						{{/if}}
+					</div>
+				{{/if}}
+				{{#if showStreamControls}}
+					<div class="rc-popout__controls">
+						<button class="rc-popout__controls--record {{ getStreamStatus }}"> {{> icon icon="circle" }} </button>
 					</div>
 				{{/if}}
 			</main>

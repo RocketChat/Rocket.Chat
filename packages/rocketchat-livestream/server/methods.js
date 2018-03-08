@@ -5,25 +5,25 @@ const selectLivestreamSettings = (user) => user && user.settings && user.setting
 
 Meteor.methods({
 
-	async livestreamStreamStatus({streamStatus}) {
-		if (!streamStatus) {
+	async livestreamStreamStatus({streamId}) {
+		if (!streamId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'streamStatus'
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to hgggghggg', {
+				method: 'livestreamStreamStatus'
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'streamStatus'
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to fasfas', {
+				method: 'livestreamStreamStatus'
 			});
 		}
 
 		const {access_token, refresh_token} = livestreamSettings;
 
 		return await statusStreamLiveStream({
-			id: streamStatus,
+			id: streamId,
 			access_token,
 			refresh_token,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),

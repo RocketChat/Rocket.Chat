@@ -24,6 +24,7 @@
 		{{/if}}
 		{{#if canEdit}}
 			{{#if editing}}
+				{{ > liveStreamBroadcast}}
 				<form class="liveStreamTab__form">
 					<input type="text" name="streaming-source" class="rc-input__element content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
 					<div class="rc-switch">
@@ -50,5 +51,4 @@
 				</div>
 			{{/if}}
 		{{/if}}
-		{{ > liveStreamBroadcast}}
 </template>

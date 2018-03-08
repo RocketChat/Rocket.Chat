@@ -23,9 +23,7 @@ export const call = (...args) => new Promise(function(resolve, reject) {
 	});
 });
 
-const delay = (time) => new Promise(function(resolve, reject) {
-	setTimeout(resolve, time);
-});
+const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 Template.broadcastView.helpers({
 	broadcastSource() {
@@ -62,7 +60,7 @@ Template.broadcastView.onRendered(function() {
 });
 
 Template.broadcastView.events({
-	async 'click .start-streaming'(e, i) {
+	async 'startStreaming .streaming-popup'(e, i) {
 		const connection = i.connection.get();
 		if (!connection) {
 			return;
@@ -88,8 +86,8 @@ Template.broadcastView.events({
 			mediaRecorder.start(100); // collect 100ms of data
 			i.mediaRecorder.set(mediaRecorder);
 
-			while (true) {
-			 	const result = await call('livestreamStreamStatus', {streamId:i.data.stream.id});
+			while (true) { //eslint-disable-line no-constant-condition
+				const result = await call('livestreamStreamStatus', {streamId:i.data.stream.id});
 				if (result === 'active') {
 					break;
 				}
@@ -97,8 +95,15 @@ Template.broadcastView.events({
 			}
 
 			await call('livestreamTest', {broadcastId:i.data.broadcast.id});
+			call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`}, function(err) {
+				if (err) {
+					return handleError(err);
+				}
+			});
+
 			await delay(25000);
 			await call('livestreamStart', {broadcastId:i.data.broadcast.id});
+			document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
 
 		} catch (e) {
 			alert(`Exception while creating MediaRecorder: ${ e }. mimeType: ${ options.mimeType }`);
