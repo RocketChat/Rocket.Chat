@@ -1,18 +1,12 @@
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
-	if (!'WebSocket' in window) {
+	if (!'WebSocket' in window) { // eslint-disable-line no-negated-in-lhs
 		return false;
 	}
 
 	const ws = new WebSocket(url);
-	ws.onopen = () => console.log('connected');
-
-	ws.onclose = () => console.log('closed');
-
 	ws.onerror = (evt) => console.error(`Error: ${ evt.data }`);
-
 	return ws;
-
 };
 const sendMessageToWebSocket = (message, ws) => {
 	if (ws != null) {
@@ -43,7 +37,6 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function() {
-
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(createAndConnect(`ws://localhost:3001/${ this.data.id }`));
@@ -58,9 +51,7 @@ Template.broadcastView.onDestroyed(function() {
 	this.mediaStream.set(null);
 });
 Template.broadcastView.onRendered(function() {
-
 	navigator.getMedia = getMedia();
-
 	if (!navigator.getMedia) {
 		return alert('getUserMedia() is not supported in your browser!');
 	}
@@ -78,13 +69,10 @@ Template.broadcastView.events({
 		}
 		let options = {mimeType: 'video/webm;codecs=vp9'};
 		if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-			console.log(`${ options.mimeType } is not Supported`);
 			options = {mimeType: 'video/webm;codecs=vp8'};
 			if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-				console.log(`${ options.mimeType } is not Supported`);
 				options = {mimeType: 'video/webm'};
 				if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-					console.log(`${ options.mimeType } is not Supported`);
 					options = {mimeType: ''};
 				}
 			}
@@ -97,7 +85,7 @@ Template.broadcastView.events({
 				}
 				sendMessageToWebSocket(event.data, connection);
 			};
-			mediaRecorder.start(100); // collect 10ms of data
+			mediaRecorder.start(100); // collect 100ms of data
 			i.mediaRecorder.set(mediaRecorder);
 
 			while (true) {
@@ -113,7 +101,6 @@ Template.broadcastView.events({
 			await call('livestreamStart', {broadcastId:i.data.broadcast.id});
 
 		} catch (e) {
-			console.error(`Exception while creating MediaRecorder: ${ e }`);
 			alert(`Exception while creating MediaRecorder: ${ e }. mimeType: ${ options.mimeType }`);
 			return;
 		}
