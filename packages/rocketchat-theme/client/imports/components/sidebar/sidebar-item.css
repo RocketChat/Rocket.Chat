@@ -1,55 +1,65 @@
-.sidebar-light {
-	& .sidebar-item {
-		color: var(--color-dark);
+.sidebar-light .sidebar-item {
+	color: var(--color-dark);
 
-		&:hover {
-			background-color: var(--sidebar-background-light-hover);
-		}
+	&:hover {
+		background-color: var(--sidebar-background-light-hover);
+	}
 
-		&__picture {
-			color: inherit;
-		}
+	&__picture {
+		color: inherit;
+	}
+
+	&__message {
+		margin: 0;
 	}
 }
 
-.sidebar--big {
-	& > .rooms-list,
-	& .rooms-list__toolbar-search {
-		& .sidebar-item {
-			height: var(--sidebar-item-big-height);
+.sidebar--hide-avatar .sidebar-item__picture {
+	display: none;
+}
 
-			&__picture {
-				flex: 0 0 var(--sidebar-item-big-thumb-size);
+.sidebar--medium .sidebar-item {
+	height: var(--sidebar-item-height-medium);
 
-				width: var(--sidebar-item-big-thumb-size);
-				height: var(--sidebar-item-big-thumb-size);
-			}
+	&__picture {
+		flex: 0 0 var(--sidebar-item-thumb-size-medium);
 
-			&__icon {
-				margin: 0 auto;
-			}
+		width: var(--sidebar-item-thumb-size-medium);
+		height: var(--sidebar-item-thumb-size-medium);
+	}
 
-			&__room-type {
-				height: var(--sidebar-item-big-height);
-			}
+	&__user-thumb {
+		width: var(--sidebar-item-thumb-size-medium);
+		height: var(--sidebar-item-thumb-size-medium);
+	}
+}
 
-			&__user-thumb {
-				width: var(--sidebar-item-big-thumb-size);
-				height: var(--sidebar-item-big-thumb-size);
-			}
+.sidebar--extended .sidebar-item {
+	height: var(--sidebar-item-height-extended);
 
-			&__message {
-				flex-direction: column;
-				height: var(--sidebar-item-big-thumb-size);
+	&__picture {
+		flex: 0 0 var(--sidebar-item-thumb-size-extended);
 
-				&-top,
-				&-bottom {
-					display: flex;
+		width: var(--sidebar-item-thumb-size-extended);
+		height: var(--sidebar-item-thumb-size-extended);
+	}
 
-					width: 100%;
-					align-items: center;
-				}
-			}
+	&__user-thumb {
+		width: var(--sidebar-item-thumb-size-extended);
+		height: var(--sidebar-item-thumb-size-extended);
+	}
+
+	&__message {
+		flex-direction: column;
+
+		height: var(--sidebar-item-thumb-size-extended);
+
+		&-top,
+		&-bottom {
+			display: flex;
+
+			width: 100%;
+			align-items: center;
 		}
 	}
 }
@@ -110,21 +120,18 @@
 	}
 
 	&__icon {
-		font-size: 1rem;
-		fill: currentColor;
+
 		display: flex;
+		font-size: 1rem;
 		align-items: center;
+		fill: currentColor;
 	}
 
 	&__room-type {
-		left: 4px;
-		font-size: 1rem;
-		fill: currentColor;
 		display: flex;
-		align-items: center;
-		position: absolute;
-		height: var(--sidebar-item-height);
-		color: var(--sidebar-item-text-color);
+		color: currentColor;
+
+		font-size: 0.6rem;
 	}
 
 	&__user-thumb {
@@ -133,15 +140,10 @@
 	}
 
 	&__user-status {
-		position: absolute;
-
-		top: 50%;
-		left: 8px;
-
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 
-		transform: translateY(-50%);
+		margin: 0 7px 0 7px;
 
 		border-radius: var(--sidebar-item-user-status-radius);
 
@@ -203,11 +205,11 @@
 	}
 
 	&__name {
+		display: flex;
+
 		overflow: hidden;
 
 		flex: 1;
-
-		margin: 0 3px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -215,6 +217,7 @@
 		font-size: var(--sidebar-item-text-size);
 
 		line-height: 1.2rem;
+		align-items: center;
 	}
 
 	&__me {
@@ -225,7 +228,7 @@
 		overflow: hidden;
 		flex: 1;
 
-		margin: 0 3px;
+		margin: 0 5px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -235,6 +238,8 @@
 
 		& .emojione,
 		& .emoji {
+			display: inline-block !important;
+
 			width: 13px !important;
 			min-width: 13px;
 			height: 13px !important;
@@ -243,12 +248,18 @@
 
 		& * {
 			display: inline !important;
-			white-space: unset !important;
-			background-color: unset !important;
-			color: inherit !important;
-			font-weight: unset !important;
-			font-family: inherit !important;
+
 			padding: unset !important;
+
+			white-space: unset !important;
+
+			color: inherit !important;
+
+			background-color: unset !important;
+
+			font-family: inherit !important;
+
+			font-weight: unset !important;
 		}
 
 		& a {
@@ -289,40 +300,14 @@
 		right: auto;
 		left: 0;
 	}
-
-	&__user-status {
-		right: 8px;
-		left: initial;
-	}
-
-	&__room-type {
-		right: 4px;
-		left: initial;
-	}
 }
 
 @media (width <= 400px) {
 	.sidebar-item {
 		padding: 0 0 0 var(--sidebar-small-default-padding);
-
-		&__user-status {
-			left: 4px;
-		}
-
-		&__room-type {
-			left: 0;
-		}
 	}
 
 	.rtl .sidebar-item {
 		padding: 0 var(--sidebar-small-default-padding) 0 0;
-
-		&__user-status {
-			right: 4px;
-		}
-
-		&__room-type {
-			right: 0;
-		}
 	}
 }

@@ -9,6 +9,9 @@ Template.sidebarItem.helpers({
 	isRoom() {
 		return this.rid || this._id;
 	},
+	isExtendedViewMode() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode') === 'extended';
+	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
 	},
@@ -20,6 +23,9 @@ Template.sidebarItem.helpers({
 	},
 	mySelf() {
 		return this.t === 'd' && this.name === Meteor.user().username;
+	},
+	isLivechatQueue() {
+		return this.pathSection === 'livechat-queue';
 	}
 });
 

@@ -508,4 +508,51 @@ describe('[Users]', function() {
 			});
 		});
 	});
+
+	describe('[/user.roles]', () => {
+
+		it('should return id and name of user, and an array of roles', (done) => {
+			request.get(api('user.roles'))
+				.set(credentials)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('username');
+					expect(res.body).to.have.property('roles').and.to.be.a('array');
+					expect(res.body).to.have.property('_id');
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.setPreferences]', () => {
+		it('should set some preferences by user when execute successfully', (done) => {
+			preferences.userId = credentials['X-User-Id'];
+			request.post(api('users.setPreferences'))
+				.set(credentials)
+				.send(preferences)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body.user.settings.preferences).to.be.eql(preferences.data);
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.getPreferences]', () => {
+		it('should return all preferences when execute successfully', (done) => {
+			request.get(api('users.getPreferences'))
+				.set(credentials)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body.preferences).to.be.eql(preferences.data);
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
