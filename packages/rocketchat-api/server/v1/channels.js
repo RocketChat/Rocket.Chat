@@ -330,7 +330,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+			result = Meteor.call('getChannelHistory', {
+				rid: findResult._id,
+				latest: latestDate,
+				oldest: oldestDate,
+				inclusive,
+				count,
+				unreads
+			});
 		});
 
 		if (!result) {
@@ -417,15 +424,15 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = RocketChat.authz.hasPermission(this.userId, 'view-c-room');
 
 			const ourQuery = Object.assign({}, query, { t: 'c' });
 
-			//Special check for the permissions
-			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !hasPermissionToSeeAllPublicChannels) {
 				ourQuery.usernames = {
-					$in: [ this.user.username ]
+					$in: [this.user.username]
 				};
-			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+			} else if (!hasPermissionToSeeAllPublicChannels) {
 				return RocketChat.API.v1.unauthorized();
 			}
 
@@ -476,7 +483,11 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+			returnUsernames: true
+		});
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
@@ -625,7 +636,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId} });
+		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId } });
 
 		if (findResult.name === this.bodyParams.name) {
 			return RocketChat.API.v1.failure('The channel name is the same as what it would be renamed to.');
