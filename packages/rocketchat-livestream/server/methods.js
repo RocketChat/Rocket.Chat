@@ -1,24 +1,41 @@
 import {Meteor} from 'meteor/meteor';
-import google from 'googleapis';
-const OAuth2 = google.auth.OAuth2;
+import { createLiveStream } from './functions/livestream';
 
-
-const p = fn => new Promise(function(resolve, reject) {
-	fn(function(err, value) {
-		if (err) {
-			return reject(err);
-		}
-		resolve(value.data);
-	});
-});
+const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
 Meteor.methods({
-	async livestreamGetChannel({rid}) {
-		const user = Meteor.user();
+	async livestreamStart({broadcastId}) {
+		if (!broadcastId) {
+			// TODO: change error
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'livestreamStart'
+			});
+		}
+		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
-		if (!(user.settings && user.settings.livestream)) {
-			throw new Meteor.Error('error-action-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGetChannel'
+		if (!livestreamSettings) {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'livestreamStart'
+			});
+		}
+
+		const {access_token, refresh_token} = livestreamSettings;
+
+		return await startLiveStream({
+			id: broadcastId,
+			access_token,
+			refresh_token,
+			clientId: RocketChat.settings.get('Broadcasting_client_id'),
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+		});
+
+	},
+	async livestreamGet({rid}) {
+		const livestreamSettings = selectLivestreamSettings(Meteor.user());
+
+		if (!livestreamSettings) {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'livestreamGet'
 			});
 		}
 
@@ -26,58 +43,20 @@ Meteor.methods({
 
 		if (!room) {
 			// TODO: change error
-			throw new Meteor.Error('error-action-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGetChannel'
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
+				method: 'livestreamGet'
 			});
 		}
-		const auth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), 'http://localhost:3000/api/v1/livestream/oauth/callback');
 
-		auth.setCredentials({
-			access_token: user.settings.livestream.access_token,
-  		refresh_token: user.settings.livestream.refresh_token
+		const {access_token, refresh_token} = livestreamSettings;
+
+		return await createLiveStream({
+			room,
+			access_token,
+			refresh_token,
+			clientId: RocketChat.settings.get('Broadcasting_client_id'),
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
 		});
-
-		const youtube = google.youtube({version:'v3', auth});
-
-		const [stream, broadcast] = await Promise.all([p((resolve) => youtube.liveStreams.insert({
-			part: 'id,snippet,cdn,contentDetails,status',
-			resource: {
-				snippet: {
-					'title': room.name || 'teste'
-				},
-				'cdn': {
-					'format': '480p',
-					'ingestionType': 'rtmp'
-				}
-			}
-		}, resolve)), p((resolve)=> youtube.liveBroadcasts.insert({
-			part: 'id,snippet,contentDetails,status',
-			resource: {
-				snippet: {
-  				'title': room.name || 'teste',
-					'scheduledStartTime' : new Date().toISOString()
-				},
-				'status': {
-			    'privacyStatus': 'unlisted'
-			  }
-			}
-		}, resolve))]);
-
-		youtube.liveBroadcasts.transition({
-			part:'id,status',
-			id: broadcast.id,
-			broadcastStatus: 'live'
-		});
-
-		const ret = await p(resolve => youtube.liveBroadcasts.bind({
-			part: 'id,snippet,status',
-			// resource: {
-			id: broadcast.id,
-			streamId: stream.id
-		}, resolve));
-
-		return {id: stream.cdn.ingestionInfo.streamName};
-
 
 	}
 });

@@ -1,5 +1,8 @@
 /* globals popout */
 import toastr from 'toastr';
+import { auth } from './oauth';
+
+
 
 function optionsFromUrl(url) {
 	const options = {};
@@ -174,15 +177,14 @@ Template.liveStreamTab.events({
 		try {
 			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, { fields: { 'settings.livestream': 1 }});
 			if (!user.settings || !user.settings.livestream) {
-				const oauthWindow = window.open(`/api/v1/livestream/oauth?userId=${ Meteor.userId() }`, 'youtube-integration-oauth', 'width=400,height=600');
-				await close(oauthWindow);
+				await auth();
 			}
 
-			const result = await call('livestreamGetChannel', {rid: i.data.rid});
+			const result = await call('livestreamGet', {rid: i.data.rid});
 			popout.open({
 				content: 'broadcastView',
 				data: {
-					idStream : result.id
+					...result
 					// streamingSource: i.streamingOptions.get().url,
 					// isAudioOnly: i.streamingOptions.get().isAudioOnly,
 					// showVideoControls: true,
@@ -208,14 +210,3 @@ export const call = (...args) => new Promise(function(resolve, reject) {
 		resolve(result);
 	});
 });
-
-export const close = (popup) => {
-	return new Promise(function(resolve, reject) {
-		const checkInterval = setInterval(() => {
-			if (popup.closed) {
-				clearInterval(checkInterval);
-				resolve();
-			}
-		}, 300);
-	});
-};

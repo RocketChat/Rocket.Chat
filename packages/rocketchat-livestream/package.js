@@ -28,7 +28,6 @@ Package.onUse(function(api) {
 		'server/index.js',
 		'server/models/Rooms.js',
 		'server/functions/saveStreamingOptions.js',
-		'server/functions/listYoutubeActivities.js',
 		'server/settings.js',
 		'server/livestreamEncoder.js'
 	], 'server');
