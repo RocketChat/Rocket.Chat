@@ -1,8 +1,29 @@
 /* globals popout */
 import toastr from 'toastr';
-import { auth } from './oauth';
+import { auth } from '../oauth.js';
 
 
+
+export const call = (...args) => new Promise(function(resolve, reject) {
+	Meteor.call(...args, function(err, result) {
+		if (err) {
+			handleError(err);
+			reject(err);
+		}
+		resolve(result);
+	});
+});
+
+export const close = (popup) => {
+	return new Promise(function(resolve) {
+		const checkInterval = setInterval(() => {
+			if (popup.closed) {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 300);
+	});
+};
 
 function optionsFromUrl(url) {
 	const options = {};
@@ -199,14 +220,4 @@ Template.liveStreamTab.events({
 			e.currentTarget.classList.remove('loading');
 		}
 	}
-});
-
-export const call = (...args) => new Promise(function(resolve, reject) {
-	Meteor.call(...args, function(err, result) {
-		if (err) {
-			handleError(err);
-			reject(err);
-		}
-		resolve(result);
-	});
 });
