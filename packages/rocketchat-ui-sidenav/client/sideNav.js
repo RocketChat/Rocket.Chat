@@ -73,16 +73,16 @@ Template.sideNav.onRendered(function() {
 });
 
 Template.sideNav.onCreated(function() {
-	this.mergedChannels = new ReactiveVar(false);
+	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.roomsListExhibitionMode': 1,
-				'settings.preferences.mergeChannels': 1
+				'settings.preferences.groupByType': 1
 			}
 		});
-		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'mergeChannels');
-		this.mergedChannels.set(userPref ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'groupByType');
+		this.groupedByType.set(userPref ? userPref : !RocketChat.settings.get('UI_Merge_Channels_Groups'));
 	});
 });
