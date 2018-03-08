@@ -23,7 +23,7 @@ const fixCordova = (url) => {
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {
 		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
 	}
 };
 
