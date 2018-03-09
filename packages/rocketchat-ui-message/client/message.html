@@ -56,7 +56,9 @@
 			</span>
 		{{/if}}
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
-			{{#if isSnippet}}
+			{{#each attachments}}
+				{{injectIndex . @index}} {{> messageAttachment}}
+			{{/each}}{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
 			{{{body}}}
@@ -65,9 +67,6 @@
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each attachments}}
-				{{injectIndex . @index}} {{> messageAttachment}}
-			{{/each}}
 		</div>
 		{{#with readReceipt}}
 		<div class="read-receipt {{readByEveryone}}">
