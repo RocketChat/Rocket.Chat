@@ -1,4 +1,9 @@
 RocketChat.MessageTypes.registerType({
+	id: 'livechat_navigation_history',
+	system: true
+});
+
+RocketChat.MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request'

@@ -5,16 +5,16 @@ Template.visitorNavigation.helpers({
 		return !Template.instance().pageVisited.ready();
 	},
 
-	pageVisited() {
+	pages() {
 		const room = ChatRoom.findOne({ _id: this.rid }, { fields: { 'v.token': 1 } });
 
-		if (room && room.v && room.v.token) {
-			return LivechatPageVisited.find({ token: room.v.token }, { sort: { ts: -1 } });
+		if (room) {
+			return LivechatMessage.find({rid: room._id, t: 'livechat_navigation_history', $or: [{ _shared: { $exists: false  }}, { _shared: true }]}, { sort: { ts: -1 } });
 		}
 	},
 
 	pageTitle() {
-		return this.page.title || t('Empty_title');
+		return this.navigation.page.title || t('Empty_title');
 	},
 
 	accessDateTime() {

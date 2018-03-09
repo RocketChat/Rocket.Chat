@@ -1,4 +1,5 @@
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
+
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));
 	}
@@ -9,8 +10,8 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
-	if (room && room.v && room.v.token) {
-		return RocketChat.models.LivechatPageVisited.findByToken(room.v.token);
+	if (room) {
+		return RocketChat.models.Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history');
 	} else {
 		return this.ready();
 	}

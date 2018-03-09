@@ -7,7 +7,7 @@ Template.messages.helpers({
 		return ChatMessage.find({
 			rid: visitor.getRoom(),
 			t: {
-				'$ne': 't'
+				'$nin': ['t', 'livechat_navigation_history']
 			}
 		}, {
 			sort: {

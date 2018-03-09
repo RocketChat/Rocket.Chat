@@ -1,3 +1,4 @@
+import _ from 'underscore';
 /* globals Commands */
 const msgStream = new Meteor.Streamer('room-messages');
 
@@ -63,10 +64,11 @@ export default {
 
 		this.roomSubscribed = roomId;
 
+		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
-            } else if ( (msg.t !== 'livechat_video_call') && (msg.t !== 'au') ) {
+            } else if (!_.contains(msgTypesNotDisplayed, msg.t)) {
 				ChatMessage.upsert({ _id: msg._id }, msg);
 
 				if (msg.t === 'livechat-close') {

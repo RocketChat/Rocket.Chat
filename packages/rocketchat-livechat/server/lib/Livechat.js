@@ -311,45 +311,31 @@ RocketChat.Livechat = {
 		});
 	},
 
-	savePageHistory(token, pageInfo) {
+	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
 
-			RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
+			// It's necessary to check the room due to the incMsgCountById method inside RocketChat.models.Rooms.findOneOpenByVisitorToken
+			const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(token, roomId);
+			if (!room) {
+				return false;
+			}
 
-				const users = Meteor.users.find({
-					username: {
-						$in: room.usernames
-					}
-				});
+			const user = RocketChat.models.Users.findOneById('rocket.cat');
 
-				if (users.count() === 0) {
-					//return;
+			const pageTitle = pageInfo.title;
+			const pageUrl = pageInfo.location.href;
+			const extraData = {
+				navigation: {
+					page: pageInfo,
+					token
 				}
+			};
 
-				users.forEach(function(user) {
+			if (!RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message')) {
+				extraData._hidden = true;
+			}
 
-					RocketChat.Notifications.notifyUser(user._id, 'message', {
-						_id: Random.id(),
-						rid: room._id,
-						ts: new Date,
-						msg: TAPi18n.__(pageInfo.title, {}, user.language)
-					});
-
-					/*
-					RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
-						_id: Random.id(),
-						rid: room._id,
-						ts: new Date,
-						msg: TAPi18n.__('Visitor Navigation', {
-							postProcess: 'sprintf',
-							sprintf: [user.username]
-						}, currentUser.language)
-					})
-					;*/
-				});
-			});
-
-			return RocketChat.models.LivechatPageVisited.saveByToken(token, pageInfo);
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_navigation_history', room._id, `${ TAPi18n.__('New_visitor_navigation') }: ${pageTitle} - ${pageUrl}`, user, extraData);
 		}
 
 		return;

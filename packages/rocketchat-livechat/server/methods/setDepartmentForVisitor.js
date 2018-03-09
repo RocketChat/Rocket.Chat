@@ -5,9 +5,6 @@ Meteor.methods({
 			department
 		});
 
-		// update visited page history to not expire
-		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
-
 		return true;
 	}
 });
