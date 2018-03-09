@@ -183,7 +183,8 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		if (userData.email) {
-			RocketChat.setEmail(userData._id, userData.email);
+			const shouldSendVerificationEmailToUser = !Boolean(userData.verified);
+			RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 		}
 
 		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
