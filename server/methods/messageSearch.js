@@ -8,7 +8,7 @@ Meteor.methods({
 
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
-			messages: {
+			message: {
 				docs:[]
 			}
 		};
@@ -226,7 +226,7 @@ Meteor.methods({
 				};
 			}
 
-			result.messages.docs = RocketChat.models.Messages.find(query, options).fetch();
+			result.message.docs = RocketChat.models.Messages.find(query, options).fetch();
 		}
 
 		return result;

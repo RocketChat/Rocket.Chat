@@ -12,9 +12,12 @@ class DefaultProvider extends SearchProvider {
 	constructor() {
 		super('defaultProvider');
 		this._settings.add('GlobalSearchEnabled', 'boolean', false, {
-			i18nDescription:'If_search_returns_result_from_all_accessible_rooms'
+			i18nLabel: 'Global_Search',
+			alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 		});
-		this._settings.add('PageSize', 'int', 10);
+		this._settings.add('PageSize', 'int', 10, {
+			i18nLabel: 'Search_Page_Size'
+		});
 	}
 
 	get i18nLabel() {
@@ -36,6 +39,7 @@ class DefaultProvider extends SearchProvider {
 		const _limit = payload.limit || this._settings.get('PageSize');
 
 		Meteor.call('messageSearch', text, _rid, _limit, callback);
+
 	}
 }
 

@@ -12,7 +12,7 @@ Template.ChatpalAdmin.onCreated(function() {
 });
 
 Template.ChatpalAdmin.onRendered(function() {
-	this.$('#chatpal-tac').load('https://cerbot.redlink.io/public/tac.html');
+	this.$('#chatpal-tac').load('https://api.chatpal.io/tac/en');
 });
 
 Template.ChatpalAdmin.events({
@@ -22,23 +22,23 @@ Template.ChatpalAdmin.events({
 		const email = e.target.email.value;
 		const tac = e.target.readtac.checked;
 
-		if (!tac) { return toastr.error(TAPi18n.__('CHATPAL_MSG_ERROR_TAC_MUST_BE_CHECKED')); }
-		if (!email || email === '') { return toastr.error(TAPi18n.__('CHATPAL_MSG_ERROR_EMAIL_MUST_BE_SET')); }
-		if (!t.validateEmail(email)) { return toastr.error(TAPi18n.__('CHATPAL_MSG_ERROR_EMAIL_MUST_BE_VALID')); }
+		if (!tac) { return toastr.error(TAPi18n.__('Chatpal_ERROR_TAC_must_be_checked')); }
+		if (!email || email === '') { return toastr.error(TAPi18n.__('Chatpal_ERROR_Email_must_be_set')); }
+		if (!t.validateEmail(email)) { return toastr.error(TAPi18n.__('Chatpal_ERROR_Email_must_be_valid')); }
 
 		//TODO register
 		try {
 			Meteor.call('chatpalUtilsCreateKey', email, (err, key) => {
-				if (!key) { return toastr.error(TAPi18n.__('CHATPAL_MSG_ERROR_USERNAME_ALREADY_EXISTS')); }
+				if (!key) { return toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists')); }
 
-				toastr.info(TAPi18n.__('CHATPAL_MSG_KEY_CREATED_SUCCESSFULLY'));
+				toastr.info(TAPi18n.__('Chatpal_created_key_successfully'));
 
 				t.apiKey.set(key);
 			});
 
 		} catch (e) {
 			console.log(e);
-			toastr.error(TAPi18n.__('CHATPAL_MSG_ERROR_USERNAME_ALREADY_EXISTS'));//TODO error messages
+			toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists'));//TODO error messages
 		}
 	}
 });

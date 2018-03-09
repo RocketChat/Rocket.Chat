@@ -26,6 +26,7 @@ Template.RocketSearch.onCreated(function() {
 			Meteor.call('rocketchatSearch.search', this.scope.text.get(), {rid:Session.get('openedRoom'), uid:Meteor.userId()}, _p, (err, result) => {
 				if (err) {
 					toastr.error(TAPi18n.__('SEARCH_MSG_ERROR_SEARCH_FAILED'));
+					this.scope.searching.set(false);
 				} else {
 					this.scope.searching.set(false);
 					this.scope.result.set(result);

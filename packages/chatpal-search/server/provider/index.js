@@ -3,14 +3,25 @@ import ChatpalLogger from '../utils/logger';
 
 const Future = Npm.require('fibers/future');
 
+/**
+ * Enables HTTP functions on Chatpal Backend
+ */
 class Backend {
 
 	constructor(options) {
 		this._options = options;
 	}
 
+	/**
+	 * index a set of Sorl documents
+	 * @param docs
+	 * @returns {boolean}
+	 */
 	index(docs) {
-		const options = {data:docs};
+		const options = {
+			data:docs,
+			params:{language:this._options.language}
+		};
 
 		_.extend(options, this._options.httpOptions);
 
@@ -32,12 +43,18 @@ class Backend {
 
 	}
 
-	remove(id) {
-		ChatpalLogger.debug(`Remove ${ id } from Index`);
+	/**
+	 * remove an entry by type and id
+	 * @param type
+	 * @param id
+	 * @returns {boolean}
+	 */
+	remove(type, id) {
+		ChatpalLogger.debug(`Remove ${ type }(${ id }) from Index`);
 
 		const options = {data:{
 			delete: {
-				query: `id:${ id }`
+				query: `id:${ id } AND type:${ type }`
 			},
 			commit:{}
 		}};
@@ -53,6 +70,15 @@ class Backend {
 		}
 	}
 
+	count(type) {
+		return this.query({type, rows:0, text:'*'})[type].numFound;
+	}
+
+	/**
+	 * query with params
+	 * @param params
+	 * @param callback
+	 */
 	query(params, callback) {
 
 		const options = {params};
@@ -105,6 +131,11 @@ class Backend {
 		}
 	}
 
+	/**
+	 * statically ping with configuration
+	 * @param options
+	 * @returns {boolean}
+	 */
 	static ping(options) {
 		try {
 			const response = HTTP.call('GET', options.baseurl + options.pingpath, options.httpOptions);
@@ -117,6 +148,9 @@ class Backend {
 
 }
 
+/**
+ * Enabled batch indexing
+ */
 class BatchIndexer {
 
 	constructor(size, func, ...rest) {
@@ -139,8 +173,16 @@ class BatchIndexer {
 	}
 }
 
+/**
+ * Provides index functions to chatpal provider
+ */
 export default class Index {
 
+	/**
+	 * Creates Index Stub
+	 * @param options
+	 * @param clear if a complete reindex should be done
+	 */
 	constructor(options, clear) {
 
 		this._backend = new Backend(options);
@@ -152,23 +194,29 @@ export default class Index {
 		this._bootstrap(clear);
 	}
 
+	/**
+	 * prepare solr documents
+	 * @param type
+	 * @param doc
+	 * @returns {*}
+	 * @private
+	 */
 	_getIndexDocument(type, doc) {
 		switch (type) {
 			case 'message':
-				const idoc = {
-					id: `m_${ doc._id }`,
-					room: doc.rid,
+				return {
+					id: doc._id,
+					rid: doc.rid,
 					user: doc.u._id,
 					created: doc.ts,
 					updated: doc._updatedAt,
+					text: doc.msg,
 					type
 				};
-				idoc[`text_${ this._options.language }`] = doc.msg;
-				return idoc;
 			case 'room':
 				return {
-					id: `r_${ doc._id }`,
-					room: doc._id,
+					id: doc._id,
+					rid: doc._id,
 					created: doc.createdAt,
 					updated: doc.lm ? doc.lm : doc._updatedAt,
 					type,
@@ -179,7 +227,7 @@ export default class Index {
 				};
 			case 'user':
 				return {
-					id: `u_${ doc._id }`,
+					id: doc._id,
 					created: doc.createdAt,
 					updated: doc._updatedAt,
 					type,
@@ -191,10 +239,27 @@ export default class Index {
 		}
 	}
 
+	/**
+	 * return true if there are messages in the databases which has been created before *date*
+	 * @param date
+	 * @returns {boolean}
+	 * @private
+	 */
 	_existsDataOlderThan(date) {
 		return RocketChat.models.Messages.model.find({ts:{$lt: new Date(date)}, t:{$exists:false}}, {limit:1}).fetch().length > 0;
 	}
 
+	_doesRoomCountDiffer() {
+		return RocketChat.models.Rooms.find({t:{$ne:'d'}}).count() !== this._backend.count('room');
+	}
+
+	_doesUserCountDiffer() {
+		return Meteor.users.find({active:true}).count() !== this._backend.count('user');
+	}
+
+	/**
+	 * Index users by using a database cursor
+	 */
 	_indexUsers() {
 		const cursor = Meteor.users.find({active:true});
 
@@ -207,6 +272,10 @@ export default class Index {
 		ChatpalLogger.info('Users indexed successfully');
 	}
 
+	/**
+	 * Index rooms by database cursor
+	 * @private
+	 */
 	_indexRooms() {
 		const cursor = RocketChat.models.Rooms.find({t:{$ne:'d'}});
 
@@ -242,14 +311,14 @@ export default class Index {
 		try {
 
 			const result = this._backend.query({
-				q:'*:*',
 				rows:1,
 				sort:'created asc',
-				type: 'CHATPAL_RESULT_TYPE_MESSAGE'
+				type: 'message',
+				text: '*'
 			});
 
-			if (result.response.numFound > 0) {
-				return new Date(result.response.docs[0].created).valueOf();
+			if (result.message.numFound > 0) {
+				return new Date(result.message.docs[0].created).valueOf();
 			} else {
 				return new Date().valueOf();
 			}
@@ -281,9 +350,19 @@ export default class Index {
 			fut.return();
 		} else {
 
-			this._indexUsers();
+			ChatpalLogger.info('No messages older than already indexed date ' + new Date(date).toString());
 
-			this._indexRooms();
+			if (this._doesUserCountDiffer()) {
+				this._indexUsers();
+			} else {
+				ChatpalLogger.info('Users already indexed');
+			}
+
+			if (this._doesRoomCountDiffer()) {
+				this._indexRooms();
+			} else {
+				ChatpalLogger.info('Rooms already indexed');
+			}
 
 			this._batchIndexer.flush();
 
@@ -337,7 +416,7 @@ export default class Index {
 	}
 
 	removeDoc(type, id) {
-		return this._backend.remove(`${ type[0] }_${ id }`);
+		return this._backend.remove(type, id);
 	}
 
 	query(text, language, acl, type, start, rows, callback, params = {}) {

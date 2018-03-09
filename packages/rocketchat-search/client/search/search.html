@@ -1,8 +1,8 @@
 <template name="RocketSearch">
-	<div class="rocket-search-tab {{provider.key}}">
+	<div class="rocket-search-tab list-view {{provider.key}}">
 		{{#if provider.description}}
 			<div class="title">
-				<p>{{_ provider.description}}</p>
+				<p>{{{_ provider.description}}}</p>
 			</div>
 		{{/if}}
 		<div class="control rocket-search-input">

@@ -1,14 +1,9 @@
 <template name="ChatpalAdmin">
 	<section class="page-container page-list">
-		<header class="chatpal-admin-title">
-			<h2>
-				<div class="chatpal-admin-header-icon">
-					{{> icon block="chatpal-header-icon" icon="chatpal"}}
-				</div>
-				<span>
-					{{_ pageTitle}}
-				</span>
-			</h2>
+		<header class="rc-header">
+			<span>
+				{{_ pageTitle}}
+			</span>
 		</header>
 		<div class="content">
 			{{#unless isAdmin}}
@@ -18,34 +13,38 @@
 					<div class="rocket-form">
 						<fieldset>
 							<div class="input-line">
-								<label>{{_ "CHATPAL_TERM_EMAIL_ADDRESS"}}</label>
+								<label>{{_ "Chatpal_Email_Address"}}</label>
 								<div>
 									<input class="rc-input__element" type="text" autocomplete="off" name="email">
 								</div>
 							</div>
 							<div class="input-line">
-								<label>{{_ "CHATPAL_TERM_TERMS_AND_CONDITIONS"}}</label>
-								<div id="chatpal-tac" class="chatpal-tac rc-input__element">123
+								<label>{{_ "Chatpal_Terms_and_Conditions"}}</label>
+								<div id="chatpal-tac" class="chatpal-tac rc-input__element">
 								</div>
 							</div>
 							<div class="input-line">
 								<div>
 									<label>
 										<input type="checkbox" name="readtac">
-										{{_ "CHATPAL_TERM_TAC_READ"}}
+										{{_ "Chatpal_TAC_read"}}
 									</label>
 								</div>
 							</div>
 						</fieldset>
 						<div class="submit">
-							<button class="button primary send"><span>{{_ "CHATPAL_TERM_CREATE_KEY"}}</span></button>
+							<button class="button primary send"><span>{{_ "Chatpal_create_key"}}</span></button>
 						</div>
 					</div>
 				</form>
 				{{#if apiKey}}
-				<pre class="apikey">
-					{{apiKey}}
-				</pre><!-- TODO copy to clipboard -->
+					<div class="apikey">
+						<h2>Here is your Chatpal Api Key</h2>
+						<div class="key">
+							{{apiKey}}
+						</div><!-- TODO copy to clipboard -->
+						<p>Please copy the key and insert it in the key field of the Chatpal Provider in the <a href="./admin/Search">Search Admin Page</a>.</p>
+					</div>
 				{{/if}}
 			{{/unless}}
 		</div>

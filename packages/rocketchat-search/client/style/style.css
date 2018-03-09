@@ -1,18 +1,33 @@
+.rocket-search {
+	padding: 0 !important;
+}
+
+.defaultProvider {
+	padding: 24px;
+}
+
+.rocket-search-tab {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.rocket-default-search-results {
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+.rocket-search-result {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
 .rocket-default-search-settings {
-	margin-bottom: 50px;
+	padding-bottom: 20px;
 }
 
-.rocket-default-search-results .loading-animation {
-	margin-top: 10px;
-}
-
-.rocket-default-search-results .load-more {
-	margin-top: 10px;
-	text-align: center;
-	position: relative;
-}
-
-.rocket-default-search-results .load-more button {
-	cursor: pointer;
-	text-decoration: underline;
+.rocket-default-search-results .list .message {
+	padding-left: 70px !important;
+	padding-right: 8px !important;
 }

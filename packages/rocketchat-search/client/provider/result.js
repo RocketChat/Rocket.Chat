@@ -39,21 +39,17 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 
 	//global search
 	this.globalSearchEnabled = this.data.settings.GlobalSearchEnabled;
-	this.data.parentPayload.searchAll = true;
+	this.data.parentPayload.searchAll = this.globalSearchEnabled;
 
 	this.hasMore = new ReactiveVar(true);
 
 	this.autorun(() => {
 		const result = this.data.result.get();
-		self.hasMore.set(!(result && result.messages.docs.length < (self.data.payload.limit || self.pageSize)));
+		self.hasMore.set(!(result && result.message.docs.length < (self.data.payload.limit || self.pageSize)));
 	});
 });
 
 Template.DefaultSearchResultTemplate.events({
-	'click .load-more button'(e, t) {
-		t.data.payload.limit = (t.data.payload.limit || t.pageSize) + t.pageSize;
-		t.data.search();
-	},
 	'change #global-search'(e, t) {
 		t.data.parentPayload.searchAll = e.target.checked;
 		t.data.payload.limit = t.pageSize;
@@ -61,9 +57,10 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.search();
 
 	},
-	'scroll .js-list': _.throttle(function(e, t) {
-		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
-			console.log('scroll');
+	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
+		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {
+			t.data.payload.limit = (t.data.payload.limit || t.pageSize) + t.pageSize;
+			t.data.search();
 		}
 	}, 200)
 });
