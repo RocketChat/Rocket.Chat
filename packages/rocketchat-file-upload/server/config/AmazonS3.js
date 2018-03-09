@@ -1,16 +1,26 @@
 /* globals FileUpload */
 
+import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
+import http from 'http';
+import https from 'https';
 
 const get = function(file, req, res) {
 	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
-		res.setHeader('Location', fileUrl);
-		res.writeHead(302);
+		if (RocketChat.settings.get('FileUpload_S3_Proxy')) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+			request.get(fileUrl, fileRes => fileRes.pipe(res));
+		} else {
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+			res.end();
+		}
+	} else {
+		res.end();
 	}
-	res.end();
 };
 
 const AmazonS3Uploads = new FileUploadClass({

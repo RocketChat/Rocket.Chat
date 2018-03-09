@@ -3,10 +3,12 @@
 		<i></i>
 		<i></i>
 		<i></i>
-		{{#if unread}}
-			<div class="unread-burger-alert color-error-contrast background-error-color">
-				{{unread}}
-			</div>
-		{{/if}}
+		{{#unless embeddedVersion}}
+			{{#if unread}}
+				<div class="unread-burger-alert color-error-contrast background-error-color">
+					{{unread}}
+				</div>
+			{{/if}}
+		{{/unless}}
 	</div>
 </template>

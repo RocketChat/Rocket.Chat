@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 	let slugifiedName = displayName;
 

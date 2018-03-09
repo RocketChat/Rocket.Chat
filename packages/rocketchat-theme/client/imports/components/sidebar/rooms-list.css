@@ -1,56 +1,68 @@
+
+
 .rooms-list {
-	overflow-y: auto;
+	position: relative;
+
+	overflow-x: hidden;
+	overflow-y: scroll;
+
+	flex: 1 1 auto;
 
 	height: 100%;
 
-	&__list {
-		&:not(:last-child) {
-			margin-bottom: 32px;
-		}
+	&--embedded {
+		margin-top: 2rem;
+	}
+
+	&__list:not(:last-child) {
+		margin-bottom: 22px;
 	}
 
 	&__type {
-		margin-bottom: 0.5rem;
-		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
+		display: flex;
+
+		flex-direction: row;
+
+		padding: 0 var(--sidebar-default-padding) 1rem var(--sidebar-default-padding);
 
 		color: var(--rooms-list-title-color);
 
 		font-size: var(--rooms-list-title-text-size);
+		align-items: center;
+		justify-content: space-between;
+
+		&-text--livechat {
+			flex: 1;
+		}
 	}
 
 	&__empty-room {
-		margin-left: calc(var(--sidebar-default-padding) - calc(var(--sidebar-default-padding) / 3));
+		padding: 0 var(--sidebar-default-padding);
 
 		color: var(--rooms-list-empty-text-color);
 
 		font-size: var(--rooms-list-empty-text-size);
 	}
 
-	& .badge {
-		margin-left: 8px;
-	}
-
 	&__toolbar-search {
 		position: absolute;
 		z-index: 1;
 
-		left: 0;
+		left: 10px;
 
-		overflow-y: auto;
-
-		width: 100%;
-		height: calc(100% - calc(var(--sidebar-header-height) + var(--sidebar-footer-height)));
-		padding: 0 8px;
+		overflow-y: scroll;
 
 		background-color: var(--sidebar-background);
 	}
 }
 
 @media (width <= 400px) {
+	padding: 0 calc(var(--sidebar-small-default-padding) - 4px);
+
 	.rooms-list {
 		&__type,
 		&__empty-room {
-			margin-left: 0;
+			padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
 		}
 	}
 }

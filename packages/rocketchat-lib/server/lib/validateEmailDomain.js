@@ -1,4 +1,5 @@
-const dns = Npm.require('dns');
+import _ from 'underscore';
+import dns from 'dns';
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];

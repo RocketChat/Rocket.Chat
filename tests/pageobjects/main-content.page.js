@@ -5,12 +5,12 @@ class MainContent extends Page {
 	get mainContent() { return browser.element('.main-content'); }
 
 	// Main Content Header (Channel Title Area)
-	get emptyFavoriteStar() { return browser.element('.toggle-favorite .icon-star-empty'); }
-	get favoriteStar() { return browser.element('.toggle-favorite .favorite-room'); }
-	get channelTitle() { return browser.element('.room-title'); }
+	get emptyFavoriteStar() { return browser.element('.rc-header__toggle-favorite.empty'); }
+	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
+	get channelTitle() { return browser.element('.rc-header__name'); }
 
 	//Main Content Footer (Message Input Area)
-	get messageInput() { return browser.element('.rc-message-box__container textarea'); }
+	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
@@ -32,20 +32,19 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__label'); }
-	get messageReply() { return browser.element('.message:last-child .rc-popover [data-message-action=reply-message]'); }
-	get messageActionMenu() { return browser.element('.message:last-child .rc-popover'); }
-	get messageActionMenuWrapper() { return browser.element('.message:last-child .rc-popover__wrapper'); }
-	get messageEdit() { return browser.element('.message:last-child .rc-popover [data-message-action=edit-message]'); }
-	get messageDelete() { return browser.element('.message:last-child .rc-popover [data-message-action=delete-message]'); }
-	get messagePermalink() { return browser.element('.message:last-child .rc-popover [data-message-action=permalink]'); }
-	get messageCopy() { return browser.element('.message:last-child .rc-popover [data-message-action=copy]'); }
-	get messageQuote() { return browser.element('.message:last-child .rc-popover [data-message-action=quote-message]'); }
-	get messageStar() { return browser.element('.message:last-child .rc-popover [data-message-action=star-message]'); }
-	get messageUnread() { return browser.element('.message:last-child .rc-popover [data-message-action=mark-message-as-unread]'); }
-	// get messageReaction() { return browser.element('.message:last-child .rc-popover [data-message-action=reaction-message]'); }
-	get messagePin() { return browser.element('.message:last-child .rc-popover [data-message-action=pin-message]'); }
-	// get messageClose() { return browser.element('.message:last-child .rc-popover [data-message-action=rc-popover-close]'); }
+	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
+	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
+	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
+	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
+	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
+	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }
+	get messageCopy() { return browser.element('[data-id="copy"][data-type="message-action"]'); }
+	get messageQuote() { return browser.element('[data-id="quote-message"][data-type="message-action"]'); }
+	get messageStar() { return browser.element('[data-id="star-message"][data-type="message-action"]'); }
+	get messageUnread() { return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]'); }
+	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
+	get messagePin() { return browser.element('[data-id="pin-message"][data-type="message-action"]'); }
+	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }
 
 	// Emojis
 	get emojiPickerMainScreen() { return browser.element('.emoji-picker'); }
@@ -61,10 +60,13 @@ class MainContent extends Page {
 	get emojiPickerChangeTone() { return browser.element('.emoji-picker .change-tone'); }
 	get emojiPickerCustomIcon() { return browser.element('.emoji-picker .icon-rocket'); }
 	get emojiPickerRecentIcon() { return browser.element('.emoji-picker .icon-recent'); }
-	get emojiPickerFilter() { return browser.element('.emoji-picker .emoji-filter'); }
+	get emojiPickerFilter() { return browser.element('.emoji-picker .js-emojipicker-search'); }
 	get emojiPickerEmojiContainer() { return browser.element('.emoji-picker .emojis'); }
 	get emojiGrinning() { return browser.element('.emoji-picker .emoji-grinning'); }
 	get emojiSmile() { return browser.element('.emoji-picker .emoji-smile'); }
+
+	// Popover
+	get popoverWrapper() { return browser.element('.rc-popover'); }
 
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
@@ -85,7 +87,8 @@ class MainContent extends Page {
 	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
-		this.messageInput.setValue(text);
+		this.messageInput.clearElement();
+		this.messageInput.addValue(text);
 	}
 
 	//uploads a file in the given filepath (url).
@@ -122,12 +125,6 @@ class MainContent extends Page {
 		this.messageOptionsBtn.click();
 		this.messageActionMenu.waitForVisible(5000);
 		browser.pause(100);
-	}
-
-	closeMessageActionMenu() {
-		browser.moveToObject(this.messageActionMenu.selector, -30, -30);
-		browser.buttonPress(0);
-		this.messageActionMenu.waitForVisible(5000, true);
 	}
 
 	setLanguageToEnglish() {

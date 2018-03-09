@@ -36,6 +36,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Accounts_AllowRealNameChange', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Accounts_AllowUsernameChange', true, {
 		type: 'boolean',
 		'public': true
@@ -103,6 +107,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			}
 		});
 		this.add('Accounts_ManuallyApproveNewUsers', false, {
+			'public': true,
 			type: 'boolean'
 		});
 		this.add('Accounts_AllowedDomainsList', '', {
@@ -163,6 +168,260 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'code',
 			'public': true,
 			i18nLabel: 'Custom_Fields'
+		});
+	});
+
+	this.section('Accounts_Default_User_Preferences', function() {
+		this.add('Accounts_Default_User_Preferences_enableAutoAway', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Enable_Auto_Away'
+		});
+		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300000, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Idle_Time_Limit'
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotificationDuration', 0, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Notification_Duration'
+		});
+		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'All_messages'
+				},
+				{
+					key: 'mentions',
+					i18nLabel: 'Mentions'
+				},
+				{
+					key: 'nothing',
+					i18nLabel: 'Nothing'
+				}
+			],
+			public: true
+		});
+		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'All_messages'
+				},
+				{
+					key: 'mentions',
+					i18nLabel: 'Mentions'
+				},
+				{
+					key: 'nothing',
+					i18nLabel: 'Nothing'
+				}
+			],
+			'public': true
+		});
+		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'mentions', {
+			type: 'select',
+			values: [
+				{
+					key : 'all',
+					i18nLabel : 'All_messages'
+				},
+				{
+					key : 'mentions',
+					i18nLabel : 'Mentions'
+				},
+				{
+					key : 'nothing',
+					i18nLabel : 'Nothing'
+				}
+			],
+			'public': true
+		});
+		this.add('Accounts_Default_User_Preferences_unreadAlert', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Unread_Tray_Icon_Alert'
+		});
+		this.add('Accounts_Default_User_Preferences_useEmojis', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Use_Emojis'
+		});
+		this.add('Accounts_Default_User_Preferences_convertAsciiEmoji', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Convert_Ascii_Emojis'
+		});
+		this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Auto_Load_Images'
+		});
+		this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Save_Mobile_Bandwidth'
+		});
+		this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Collapse_Embedded_Media_By_Default'
+		});
+		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_usernames'
+		});
+		this.add('Accounts_Default_User_Preferences_hideRoles', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_roles'
+		});
+		this.add('Accounts_Default_User_Preferences_hideFlexTab', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_flextab'
+		});
+		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Hide_Avatars'
+		});
+		this.add('Accounts_Default_User_Preferences_roomsListExhibitionMode', 'category', {
+			type: 'select',
+			values: [
+				{
+					key: 'unread',
+					i18nLabel: 'Unread_Rooms_Mode'
+				},
+				{
+					key: 'activity',
+					i18nLabel: 'Sort_by_activity'
+				},
+				{
+					key: 'category',
+					i18nLabel: 'Split_by_categories'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Sidebar_list_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_mergeChannels', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'UI_Merge_Channels_Groups'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Unread_on_top'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Group_favorites'
+		});
+		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
+			type: 'select',
+			values: [
+				{
+					key: 'normal',
+					i18nLabel: 'Enter_Normal'
+				},
+				{
+					key: 'alternative',
+					i18nLabel: 'Enter_Alternative'
+				},
+				{
+					key: 'desktop',
+					i18nLabel: 'Only_On_Desktop'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Enter_Behaviour'
+		});
+		this.add('Accounts_Default_User_Preferences_viewMode', 0, {
+			type: 'select',
+			values: [
+				{
+					key: 0,
+					i18nLabel: 'Normal'
+				},
+				{
+					key: 1,
+					i18nLabel: 'Cozy'
+				},
+				{
+					key: 2,
+					i18nLabel: 'Compact'
+				}
+			],
+			'public': true,
+			i18nLabel: 'View_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
+			type: 'select',
+			values: [
+				{
+					key: 'disabled',
+					i18nLabel: 'Email_Notification_Mode_Disabled'
+				},
+				{
+					key: 'all',
+					i18nLabel: 'Email_Notification_Mode_All'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Email_Notification_Mode'
+		});
+		this.add('Accounts_Default_User_Preferences_roomCounterSidebar', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Show_room_counter_on_sidebar'
+		});
+		this.add('Accounts_Default_User_Preferences_newRoomNotification', 'door', {
+			type: 'select',
+			values: [
+				{
+					key: 'none',
+					i18nLabel: 'None'
+				},
+				{
+					key: 'door',
+					i18nLabel: 'Default'
+				}
+			],
+			'public': true,
+			i18nLabel: 'New_Room_Notification'
+		});
+		this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
+			type: 'select',
+			values: [
+				{
+					key: 'none',
+					i18nLabel: 'None'
+				},
+				{
+					key: 'chime',
+					i18nLabel: 'Default'
+				}
+			],
+			'public': true,
+			i18nLabel: 'New_Message_Notification'
+		});
+		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Mute_Focused_Conversations'
+		});
+		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
+			type: 'int',
+			'public': true,
+			i18nLabel: 'Notifications_Sound_Volume'
 		});
 	});
 
@@ -422,6 +681,11 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
+	this.add('Store_Last_Message', false, {
+		type: 'boolean',
+		public: true,
+		i18nDescription: 'Store_Last_Message_Sent_per_Room'
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -439,67 +703,16 @@ RocketChat.settings.addGroup('General', function() {
 		});
 	});
 	this.section('Notifications', function() {
-		this.add('Desktop_Notifications_Duration', 0, {
-			type: 'int',
-			'public': true,
-			i18nDescription: 'Desktop_Notification_Durations_Description'
-		});
-
-		this.add('Audio_Notifications_Value', 'chime', {
-			type: 'string',
-			'public': true,
-			i18nDescription: 'Audio_Notification_Value_Description'
-		});
-
-		this.add('Audio_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
-		this.add('Desktop_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
-		this.add('Mobile_Notifications_Default_Alert', 'mentions', {
-			type: 'select',
-			values: [{
-				key: 'all',
-				i18nLabel: 'All_messages'
-			}, {
-				key: 'mentions',
-				i18nLabel: 'Mentions'
-			}, {
-				key: 'nothing',
-				i18nLabel: 'Nothing'
-			}],
-			public: true
-		});
-
 		this.add('Notifications_Max_Room_Members', 100, {
 			type: 'int',
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description'
+		});
+
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description'
 		});
 	});
 	this.section('REST API', function() {
@@ -585,7 +798,7 @@ RocketChat.settings.addGroup('Email', function() {
 			multiline: true,
 			i18nLabel: 'Footer'
 		});
-		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not temper reply email<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1002,6 +1215,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true
 	});
+	this.add('Message_AllowDirectMessagesToYourself', true, {
+		type: 'boolean',
+		'public': true
+	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean'
 	});
@@ -1112,9 +1329,15 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true
 	});
 
-	return this.add('Message_HideType_mute_unmute', false, {
+	this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true
+	});
+
+	this.add('Message_GlobalSearch', false, {
+		type: 'boolean',
+		'public': true,
+		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 	});
 });
 
@@ -1243,7 +1466,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'string',
 			'public': true
 		});
-		this.add('Layout_Home_Body', 'Welcome to Rocket.Chat <br> Go to APP SETTINGS -> Layout to customize this intro.', {
+		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat+,\n  for Android and iOS is available from <a title="Rocket.Chat+ on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat+ on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> -> <strong>Layout</strong> -> <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1255,7 +1478,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.', {
+		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a> and <a href="privacy-policy">Privacy Policy</a>.', {
 			type: 'string',
 			multiline: true,
 			'public': true
@@ -1266,7 +1489,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			'public': true
 		});
-		return this.add('Layout_Sidenav_Footer', '<img src="assets/logo" />', {
+		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo"/></a>', {
 			type: 'code',
 			code: 'text/html',
 			'public': true,

@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		if (me.username === username) {
+		if (RocketChat.settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage'
 			});
@@ -68,6 +68,7 @@ Meteor.methods({
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				customFields: me.customFields,
 				u: {
 					_id: me._id,
 					username: me.username
@@ -96,6 +97,7 @@ Meteor.methods({
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				customFields: to.customFields,
 				u: {
 					_id: to._id,
 					username: to.username
