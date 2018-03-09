@@ -50,9 +50,25 @@ class ChatpalProvider extends SearchProvider {
 		});
 		this._settings.add('Main_Language', 'select', 'en', {
 			values: [
-				{key: 'none', i18nLabel: 'Not_set'},
-				{key: 'de', i18nLabel: 'German'},
-				{key: 'en', i18nLabel: 'English'}
+				{key: 'en', i18nLabel: 'English'},
+				{key: 'none', i18nLabel: 'Language_Not_set'},
+				{key: 'cs', i18nLabel: 'Czech'},
+				{key: 'de', i18nLabel: 'Deutsch'},
+				{key: 'el', i18nLabel: 'Greek'},
+				{key: 'es', i18nLabel: 'Spanish'},
+				{key: 'fi', i18nLabel: 'Finish'},
+				{key: 'fr', i18nLabel: 'French'},
+				{key: 'hu', i18nLabel: 'Hungarian'},
+				{key: 'it', i18nLabel: 'Italian'},
+				{key: 'nl', i18nLabel: 'Dutsch'},
+				{key: 'pl', i18nLabel: 'Polish'},
+				{key: 'pt', i18nLabel: 'Portuguese'},
+				{key: 'pt_BR', i18nLabel: 'Brasilian'},
+				{key: 'ro', i18nLabel: 'Romanian'},
+				{key: 'ru', i18nLabel: 'Russian'},
+				{key: 'sv', i18nLabel: 'Swedisch'},
+				{key: 'tr', i18nLabel: 'Turkish'},
+				{key: 'uk', i18nLabel: 'Ukrainian'}
 			],
 			i18nLabel: 'Chatpal_Main_Language',
 			i18nDescription: 'Chatpal_Main_Language_Description'

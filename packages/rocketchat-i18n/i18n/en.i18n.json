@@ -1078,6 +1078,7 @@
   "Label": "Label",
   "Language": "Language",
   "Language_Version": "English Version",
+  "Language_Not_set":"No specific",
   "Last_login": "Last login",
   "Last_Message_At": "Last Message At",
   "Last_seen": "Last seen",
