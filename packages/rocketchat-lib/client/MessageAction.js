@@ -107,7 +107,9 @@ Meteor.startup(function() {
 			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
 			let text = `[ ](${ url }) `;
 			let inputValue = '';
-
+			$('.rc-message-box__textarea')
+				.data('reply', message)
+				.trigger('dataChange');
 			if (roomInfo.t !== 'd' && message.u.username !== Meteor.user().username) {
 				text += `@${ message.u.username } `;
 			}
