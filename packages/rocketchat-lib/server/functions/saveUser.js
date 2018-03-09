@@ -183,7 +183,7 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		if (userData.email) {
-			const shouldSendVerificationEmailToUser = !userData.verified;
+			const shouldSendVerificationEmailToUser = userData.verified !== true;
 			RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 		}
 
