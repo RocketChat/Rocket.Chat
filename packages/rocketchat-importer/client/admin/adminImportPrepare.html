@@ -1,15 +1,10 @@
 <template name="adminImportPrepare">
 	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
-			<header class="fixed-title border-component-color">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{name}}</span>
-				</h2>
-			</header>
+			{{> header sectionName=name}}
 			<div class="content">
 				{{#unless isAdmin}}
-					<p>You are not authorized to view this page.</p>
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					<div class="rocket-form">
 						<fieldset>

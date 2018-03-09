@@ -1,28 +1,91 @@
 .rc-button {
-	padding: var(--button-padding);
+	&:not([disabled]):hover {
+		opacity: 0.6;
+	}
+
+	&--icon > svg {
+		margin: 0 5px;
+
+		font-size: 20px;
+		fill: currentColor;
+	}
+
+	display: flex;
+
+	min-height: 40px;
+	max-height: 40px;
+	margin: 0.5rem 0;
+	padding: 0 1.5rem;
 
 	cursor: pointer;
-	transition: background-color 0.3s;
+	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+	text-align: center;
+
+	color: #000000;
 
 	border-width: var(--button-border-width);
 	border-style: solid;
+	border-color: #000000;
+
 	border-radius: var(--button-border-radius);
 	background-color: transparent;
 
 	font-size: var(--button-text-size);
+
+	align-items: center;
+	justify-content: center;
 
 	&:disabled {
 		cursor: default;
 
 		color: var(--button-disabled-text-color);
 		border: 0;
+		border-color: var(--button-disabled-background);
 		background-color: var(--button-disabled-background);
+	}
+
+	&--nude {
+		border: none;
+		background: inherit;
+	}
+
+	&--invisible {
+		visibility: hidden;
 	}
 
 	&--primary {
 		color: var(--button-primary-text-color);
 		border: 0;
 		background-color: var(--button-primary-background);
+	}
+
+	&--primary.rc-button--outline {
+		color: var(--button-primary-background);
+		border-color: var(--button-primary-background);
+	}
+
+	&--secondary {
+		color: var(--button-secondary-text-color);
+		border: 0;
+		border-color: var(--button-secondary-background);
+		background-color: var(--button-secondary-background);
+	}
+
+	&--secondary.rc-button--outline {
+		color: var(--button-secondary-background);
+		border-color: var(--button-secondary-background);
+	}
+
+	&--cancel {
+		color: var(--button-primary-text-color);
+		border: 0;
+		border-color: var(--button-cancel-color);
+		background-color: var(--button-cancel-color);
+	}
+
+	&--cancel.rc-button--outline {
+		color: var(--button-cancel-color);
+		border-color: var(--button-cancel-color);
 	}
 
 	&--small {
@@ -33,9 +96,16 @@
 		display: flex;
 		flex: 0 0 var(--button-square-size);
 
+		margin: 0;
 		padding: 0;
 		align-items: center;
 		justify-content: center;
+	}
+
+	&--outline {
+		border-width: 2px;
+		border-style: solid;
+		background: transparent;
 	}
 
 	&.loading {
@@ -62,5 +132,11 @@
 			border-top-color: white;
 			border-radius: 50%;
 		}
+	}
+}
+
+@media (width < 780px) {
+	.rc-button--full {
+		width: 100%;
 	}
 }

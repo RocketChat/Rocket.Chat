@@ -60,9 +60,9 @@
   "busy_male": "opptatt",
   "Busy_male": "Opptatt",
   "by": "av",
-  "Content": "Innhold",
   "Cancel": "Avbryt",
   "Cancel_message_input": "Avbryt",
   "channel": "kanal",
-  "Channel": "Kanal"
+  "Channel": "Kanal",
+  "Content": "Innhold"
 }
