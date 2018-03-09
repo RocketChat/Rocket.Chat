@@ -1184,7 +1184,7 @@
   "You_are_logged_in_as": "您登錄為",
   "You_are_not_authorized_to_view_this_page": "您無權查看此頁。",
   "You_can_change_a_different_avatar_too": "您可以覆蓋從這次整合後的分身。",
-  "You_can_search_using_RegExp_eg": "您可以搜索使用正則表達式。例如",
+  "You_can_search_using_RegExp_eg": "您可以搜索使用正則表達式。例如 <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "您還可以使用表情符號作為頭像。",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "您可以使用網絡掛接輕鬆ID登錄你的CRM集成。",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "你不能離開房間ID登錄。請使用關閉按鈕。",

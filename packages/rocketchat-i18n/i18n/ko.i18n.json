@@ -1287,7 +1287,7 @@
   "You_are_logged_in_as": "당신은로 로그인",
   "You_are_not_authorized_to_view_this_page": "당신은 이 페이지를 볼 수 있는 권한이 없습니다.",
   "You_can_change_a_different_avatar_too": "이 통합을 게시하는 데 사용되는 아바타를 대체 할 수 있습니다.",
-  "You_can_search_using_RegExp_eg": "당신은 정규식을 사용하여 검색 할 수 있습니다. 예를 들어,",
+  "You_can_search_using_RegExp_eg": "당신은 정규식을 사용하여 검색 할 수 있습니다. 예를 들어, <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "또한 아바타로 이모티콘을 사용할 수 있습니다.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "당신은 쉽게 당신의 CRM과 LIVECHAT를 통합하는 webhooks를 사용할 수 있습니다.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "당신은 LIVECHAT 방을 떠날 수 없다. , 닫기 버튼을 사용하십시오.",

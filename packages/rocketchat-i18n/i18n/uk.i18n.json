@@ -1183,7 +1183,7 @@
   "You_are_logged_in_as": "Ви увійшли як",
   "You_are_not_authorized_to_view_this_page": "Ви не авторизовані для перегляду цієї сторінки.",
   "You_can_change_a_different_avatar_too": "Ви можете змінити аватар використовуваний для відправки від цієї інтеграції.",
-  "You_can_search_using_RegExp_eg": "Ви можете здійснювати пошук, використовуючи RegExp. наприклад,",
+  "You_can_search_using_RegExp_eg": "Ви можете здійснювати пошук, використовуючи RegExp. наприклад, <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Ви можете також використовувати смайлик в якості аватара.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Ви можете використовувати webhooks легко інтегрувати з LiveChat CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Ви не можете залишити Livechat кімнату. Будь ласка, використовуйте кнопку закриття.",

@@ -1397,7 +1397,7 @@
   "You_are_logged_in_as": "Ha iniciado sesión como",
   "You_are_not_authorized_to_view_this_page": "No está autorizado para ver esta página.",
   "You_can_change_a_different_avatar_too": "Puedes anular el avatar usado para publicar desde esta integración.",
-  "You_can_search_using_RegExp_eg": "Puede buscar utilizando RegExp. por ejemplo",
+  "You_can_search_using_RegExp_eg": "Puede buscar utilizando RegExp. por ejemplo <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "También puede utilizar un emoji como avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Se puede utilizar para integrar fácilmente WebHooks chat directo con su CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "No se puede dejar una sala de chat directo. Por favor, utilice el botón de cierre.",

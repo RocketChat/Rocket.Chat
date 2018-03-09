@@ -1179,7 +1179,7 @@
   "You_are_logged_in_as": "Kamu masuk sebagai",
   "You_are_not_authorized_to_view_this_page": "Anda tidak memiliki izin untuk melihat halaman ini.",
   "You_can_change_a_different_avatar_too": "Anda dapat mengganti avatar digunakan untuk mengirim dari integrasi ini.",
-  "You_can_search_using_RegExp_eg": "Anda dapat mencari menggunakan RegExp. misalnya",
+  "You_can_search_using_RegExp_eg": "Anda dapat mencari menggunakan RegExp. misalnya <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Anda juga dapat menggunakan emoji sebagai avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Anda dapat menggunakan webhooks dengan mudah mengintegrasikan livechat dengan CRM Anda.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Anda tidak bisa meninggalkan ruang livechat. Silakan, gunakan tombol tutup.",

@@ -1179,7 +1179,7 @@
   "You_are_logged_in_as": "நீங்கள் என பதிவு",
   "You_are_not_authorized_to_view_this_page": "இந்த பக்கத்தை பார்க்க உங்களுக்கு அதிகாரம் இல்லை.",
   "You_can_change_a_different_avatar_too": "இந்த ஒருங்கிணைப்பு இருந்து பதிவு செய்ய பயன்படுத்தப்படும் சின்னம் புறக்கணிக்க முடியாது.",
-  "You_can_search_using_RegExp_eg": "நீங்கள் RegExp பயன்படுத்தி தேடலாம். எ.கா.",
+  "You_can_search_using_RegExp_eg": "நீங்கள் RegExp பயன்படுத்தி தேடலாம். எ.கா. <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "நீங்கள் ஒரு அவதாரமாக ஈமோஜியை பயன்படுத்த முடியும்.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "நீங்கள் எளிதாக உங்கள் CRM உடன் livechat ஒருங்கிணைக்க webhooks பயன்படுத்த முடியும்.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "நீங்கள் ஒரு livechat அறையில் விட்டு போக முடியாது. தயவு செய்து, நெருங்கிய பொத்தானை பயன்படுத்த.",

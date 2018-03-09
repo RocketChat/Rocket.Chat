@@ -1232,7 +1232,7 @@
   "You_are_logged_in_as": "Sie sind angemeldet als",
   "You_are_not_authorized_to_view_this_page": "Sie sind nicht berechtigt, diese Seite zu sehen.",
   "You_can_change_a_different_avatar_too": "Sie können das aktuell verwendete Profilbild überschreiben, um von dieser Integration zu veröffentlichen.",
-  "You_can_search_using_RegExp_eg": "Sie können RegExp zum Suchen verwenden. z.B.",
+  "You_can_search_using_RegExp_eg": "Sie können RegExp zum Suchen verwenden. z.B. <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Sie können auch einen Emoji als Profilbild verwenden.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Sie können webhooks verwenden, um den livechat mit Ihrem CRM zu integrieren.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Sie können keinen Livechat-Raum verlassen. Bitte verwenden Sie die Schaltfläche zum Schließen.",

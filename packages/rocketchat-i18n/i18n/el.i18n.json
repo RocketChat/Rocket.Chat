@@ -1186,7 +1186,7 @@
   "You_are_logged_in_as": "Έχετε συνδεθεί ως",
   "You_are_not_authorized_to_view_this_page": "Δεν έχετε δικαίωμα να δείτε αυτή τη σελίδα.",
   "You_can_change_a_different_avatar_too": "Μπορείτε να παρακάμψετε το avatar που χρησιμοποιείται για να δημοσιεύσετε από αυτή την ένταξη.",
-  "You_can_search_using_RegExp_eg": "Μπορείτε να κάνετε αναζήτηση χρησιμοποιώντας RegExp. π.χ.",
+  "You_can_search_using_RegExp_eg": "Μπορείτε να κάνετε αναζήτηση χρησιμοποιώντας RegExp. π.χ. <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Μπορείτε επίσης να χρησιμοποιήσετε ένα emoji ως avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Μπορείτε να χρησιμοποιήσετε webhooks να ενσωματώσουν εύκολα livechat με CRM σας.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Δεν μπορείτε να αφήσετε ένα δωμάτιο livechat. Παρακαλούμε, χρησιμοποιήστε το κουμπί Κλείσιμο.",

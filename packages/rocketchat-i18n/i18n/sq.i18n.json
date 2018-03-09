@@ -1180,7 +1180,7 @@
   "You_are_logged_in_as": "Ju jeni regjistruar si",
   "You_are_not_authorized_to_view_this_page": "Ju nuk jeni i autorizuar për të parë këtë faqe.",
   "You_can_change_a_different_avatar_too": "Ju mund të pranoj avatar përdorur për të postuar nga ky integrim.",
-  "You_can_search_using_RegExp_eg": "Ju mund të kërkoni duke përdorur RegExp. p.sh.",
+  "You_can_search_using_RegExp_eg": "Ju mund të kërkoni duke përdorur RegExp. p.sh. <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Ju gjithashtu mund të përdorni një emoji si një avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Ju mund të përdorni webhooks të lehtë të integrohen LiveChat me CRM tuaj.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Ju nuk mund të lënë një dhomë LiveChat. Ju lutem, përdorni butonin ngushtë.",

@@ -1979,7 +1979,7 @@
   "You_are_logged_in_as": "Sessió iniciada com",
   "You_are_not_authorized_to_view_this_page": "No està autoritzat a veure aquesta pàgina.",
   "You_can_change_a_different_avatar_too": "Es pot ignorar l'avatar d'aquesta integració.",
-  "You_can_search_using_RegExp_eg": "Es pot cercar utilitzant expressions regulars, p. ex:",
+  "You_can_search_using_RegExp_eg": "Es pot cercar utilitzant expressions regulars, p. ex: <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "També es pot utilitzar un emoji com a avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Es poden utilitzar webhooks per a integrar fàcilment el xat en viu amb el teu CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "No es pot abandonar una sala de xat en viu. Si us plau, utilitzi el botó de tancar.",

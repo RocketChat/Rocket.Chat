@@ -1349,7 +1349,7 @@
   "You_are_logged_in_as": "Du är inloggad som",
   "You_are_not_authorized_to_view_this_page": "Du är inte auktoriserad att se denna sida.",
   "You_can_change_a_different_avatar_too": "Du kan åsidosätta avatar som används för att lägga upp från denna integration.\n",
-  "You_can_search_using_RegExp_eg": "Du kan söka med RegExp. t.ex",
+  "You_can_search_using_RegExp_eg": "Du kan söka med RegExp. t.ex <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Du kan också använda en emoji som avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Du kan använda webhooks att enkelt integrera livechat med CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Du kan inte lämna en livechat rum. Vänligen använd stängknappen.",

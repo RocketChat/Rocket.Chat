@@ -1990,7 +1990,7 @@
   "You_are_logged_in_as": "Вы вошли как",
   "You_are_not_authorized_to_view_this_page": "Недостаточно прав для просмотра страницы.",
   "You_can_change_a_different_avatar_too": "Вы можете заменить аватар, используемый в интеграции.",
-  "You_can_search_using_RegExp_eg": "Искать можно используя RegExp, например:",
+  "You_can_search_using_RegExp_eg": "Искать можно используя RegExp, например: <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Вы также можете использовать эмодзи в качестве аватара.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Вы можете использовать webhooks для легкой интеграции Livechat с вашей CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Вы не можете покинуть Livechat комнату. Пожалуйста, используйте кнопку закрыть.",

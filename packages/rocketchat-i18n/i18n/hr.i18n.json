@@ -1405,7 +1405,7 @@
   "You_are_logged_in_as": "Prijavljeni ste kao",
   "You_are_not_authorized_to_view_this_page": "Nemate dopuštenje za pregled ove stranice.",
   "You_can_change_a_different_avatar_too": "Možete zamijeniti avatara koji se koristi uz objavu iz ove integracije.",
-  "You_can_search_using_RegExp_eg": "Možete pretraživati pomoću regularnog izraza. npr",
+  "You_can_search_using_RegExp_eg": "Možete pretraživati pomoću regularnog izraza. npr <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Također možete koristiti i emotikon kao avatar.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Možete koristiti webhooks lako integrirati LiveChat sa svojim CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Ne možete napustiti LiveChat sobu. Molim, koristite gumb za zatvaranje.",

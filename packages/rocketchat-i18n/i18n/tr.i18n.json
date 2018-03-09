@@ -1373,7 +1373,7 @@
   "You_are_logged_in_as": "Sen olarak oturum",
   "You_are_not_authorized_to_view_this_page": "Bu sayfayı görüntüleme yetkiniz yok.",
   "You_can_change_a_different_avatar_too": "Bu entegrasyondan göndermek için kullanılan avatar geçersiz kılabilirsiniz.",
-  "You_can_search_using_RegExp_eg": "Sen RegExp kullanarak arama yapabilirsiniz. örneğin",
+  "You_can_search_using_RegExp_eg": "Sen RegExp kullanarak arama yapabilirsiniz. örneğin <code class='code-colors inline'>/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Ayrıca bir avatar olarak emoji kullanabilirsiniz.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Kolayca CRM ile LiveChat entegre etmek için webhooks kullanabilirsiniz.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Bir livechat odadan olamaz. , Kapat düğmesini kullanın.",
