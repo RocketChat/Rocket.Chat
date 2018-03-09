@@ -277,17 +277,11 @@ RocketChat.API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			email: this.bodyParams.data.email,
 			realname: this.bodyParams.data.name,
 			username: this.bodyParams.data.username,
-			newPassword: this.bodyParams.data.newPassword
+			newPassword: this.bodyParams.data.newPassword,
+			typedPassword: this.bodyParams.data.currentPassword
 		};
 
-		if (this.bodyParams.data.currentPassword) {
-			userData.typedPassword = SHA256(this.bodyParams.data.currentPassword);
-		}
-
 		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields));
-		if (userData.email) {
-			Meteor.call('sendConfirmationEmail', userData.email);
-		}
 
 		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
 	}

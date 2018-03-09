@@ -9,8 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'nimble:restivus',
-		'sha'
+		'nimble:restivus'
 	]);
 
 	api.addFiles('server/api.js', 'server');

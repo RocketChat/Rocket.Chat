@@ -1,11 +1,11 @@
 Meteor.methods({
-	sendConfirmationEmail(email) {
+	sendConfirmationEmail(email, shouldSendVerificationEmail = true) {
 		check(email, String);
 		email = email.trim();
 
 		const user = RocketChat.models.Users.findOneByEmailAddress(email);
 
-		if (user) {
+		if (user && shouldSendVerificationEmail) {
 			if (RocketChat.settings.get('Verification_Customized')) {
 				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
 				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');

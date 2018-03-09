@@ -2,6 +2,7 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
+import crypto from 'crypto';
 import {
 	getCredentials,
 	api,
@@ -336,7 +337,7 @@ describe('[Users]', function() {
 					data: {
 						name: editedName,
 						username: editedUsername,
-						currentPassword: password,
+						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 						newPassword
 					}
 				})
@@ -401,7 +402,7 @@ describe('[Users]', function() {
 				.send({
 					data: {
 						email: editedEmail,
-						currentPassword: newPassword
+						currentPassword: crypto.createHash('sha256').update(newPassword, 'utf8').digest('hex')
 					}
 				})
 				.expect('Content-Type', 'application/json')
