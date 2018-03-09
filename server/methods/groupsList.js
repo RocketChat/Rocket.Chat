@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.methods({
 	groupsList(nameFilter, limit, sort) {
 
@@ -20,7 +23,7 @@ Meteor.methods({
 		}
 
 		//Verify there is a sort option and it's a string
-		if (_.trim(sort)) {
+		if (s.trim(sort)) {
 			switch (sort) {
 				case 'name':
 					options.sort = { name: 1 };

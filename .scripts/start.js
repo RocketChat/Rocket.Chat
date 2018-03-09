@@ -67,7 +67,7 @@ function startApp(callback) {
 function startChimp() {
 	startProcess({
 		name: 'Chimp',
-		command: 'meteor npm run chimp-test',
+		command: 'npm run chimp-test',
 		options: {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: process.env.NODE_PATH +

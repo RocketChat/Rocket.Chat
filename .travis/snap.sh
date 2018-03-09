@@ -17,7 +17,7 @@ elif [[ $TRAVIS_TAG ]]; then
     RC_VERSION=$TRAVIS_TAG
 else
     CHANNEL=edge
-    RC_VERSION=0.59.0-develop
+    RC_VERSION=0.63.0-develop
 fi
 
 echo "Preparing to trigger a snap release for $CHANNEL channel"
@@ -38,7 +38,7 @@ GIT_SSH_COMMAND="ssh -i launchpadkey" git clone -b $CHANNEL git+ssh://rocket.cha
 
 # Rarely will change, but just incase we copy it all
 cp -r resources buildinfo launchpad/
-sed s/#{RC_VERSION}/$RC_VERSION/ $CHANNEL/snapcraft.yaml > launchpad/snapcraft.yaml
+sed s/#{RC_VERSION}/$RC_VERSION/ snapcraft.yaml > launchpad/snapcraft.yaml
 
 cd launchpad
 git add resources snapcraft.yaml buildinfo

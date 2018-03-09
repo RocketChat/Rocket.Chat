@@ -1,6 +1,9 @@
 /* globals toolbarSearch */
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
+
+import _ from 'underscore';
+
 const keys = {
 	TAB: 9,
 	ENTER: 13,
@@ -139,6 +142,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
+			$('.toolbar').css('display', 'none');
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -287,5 +291,8 @@ Template.messagePopup.helpers({
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
+	},
+	sidebarWidth() {
+		return `${ document.querySelector('.sidebar').offsetWidth }px`;
 	}
 });

@@ -1,5 +1,5 @@
 Template.room.events({
-	'click .add-reaction'(event) {
+	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
@@ -57,7 +57,9 @@ Meteor.startup(function() {
 			const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 			const user = Meteor.user();
 
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			if (!room) {
+				return false;
+			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
 			} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 				return false;

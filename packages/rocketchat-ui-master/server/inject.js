@@ -1,30 +1,42 @@
 /* globals Inject */
-const renderDynamicCssList = () => {
-	const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-	if (!variables || !variables.value) {
+import _ from 'underscore';
+
+const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
+	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
+	const colors = RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+
+	if (!colors) {
 		return;
 	}
-	Inject.rawBody('dynamic-variables', `<style id='css-variables'>${ variables.value }</style>`);
-};
+	const css = colors.map(({_id, value, editor}) => {
+		if (editor === 'expression') {
+			return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
+		}
+		return `--${ _id.replace('theme-color-', '') }: ${ value };`;
+	}).join('\n');
+	Inject.rawBody('dynamic-variables', `<style id='css-variables'> :root {${ css }}</style>`);
+}), 500);
 
 renderDynamicCssList();
 
-RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
+// RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
+// 	changed: renderDynamicCssList
+// });
+
+RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1}}).observe({
 	changed: renderDynamicCssList
 });
 
 Inject.rawHead('dynamic', `<script>(${ require('./dynamic-css.js').default.toString().replace(/\/\/.*?\n/g, '') })()</script>`);
-
-Inject.rawHead('page-loading', `<style>${ Assets.getText('public/loading.css') }</style>`);
 
 Inject.rawBody('icons', Assets.getText('public/icons.svg'));
 
 Inject.rawBody('page-loading-div', `
 <div id="initial-page-loading" class="page-loading">
 	<div class="loading-animation">
-		<div class="bounce1"></div>
-		<div class="bounce2"></div>
-		<div class="bounce3"></div>
+		<div class="bounce bounce1"></div>
+		<div class="bounce bounce2"></div>
+		<div class="bounce bounce3"></div>
 	</div>
 </div>`);
 
@@ -57,8 +69,7 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 });
 
 RocketChat.settings.get('theme-color-sidebar-background', (key, value) => {
-	Inject.rawHead(key, `<style>body { background-color: ${ value };}</style>` +
-						`<meta name="msapplication-TileColor" content="${ value }" />` +
+	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ value }" />` +
 						`<meta name="theme-color" content="${ value }" />`);
 });
 

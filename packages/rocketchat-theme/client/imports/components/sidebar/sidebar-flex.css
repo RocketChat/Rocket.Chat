@@ -1,14 +1,19 @@
 .sidebar-flex {
-	&__back-button {
-		margin-left: 0.25rem;
+	&__header {
+		padding: var(--sidebar-default-padding);
 
-		color: var(--sidebar-flex-back-button-color);
-
-		font-size: 1rem;
+		display: flex;
 	}
 
-	&__back-icon {
-		font-size: 1.25rem;
+	&__title {
+		font-size: 1rem;
+		font-weight: 400;
+
+		flex: 1;
+	}
+
+	&__close-button {
+		font-size: 18px;
 	}
 
 	&__search {
@@ -33,6 +38,14 @@
 					color: var(--sidebar-flex-search-placeholder-color);
 				}
 			}
+		}
+	}
+}
+
+@media (width <= 400px) {
+	.sidebar-flex {
+		&__back-button {
+			padding: 1rem calc(var(--sidebar-small-default-padding) - 8px) 1.5rem;
 		}
 	}
 }

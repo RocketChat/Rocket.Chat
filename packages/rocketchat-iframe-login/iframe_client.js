@@ -1,5 +1,7 @@
 /* globals Accounts, Tracker, ReactiveVar, FlowRouter, Accounts, HTTP, facebookConnectPlugin, TwitterConnect, OAuth */
 
+import _ from 'underscore';
+
 const _unstoreLoginToken = Accounts._unstoreLoginToken;
 Accounts._unstoreLoginToken = function() {
 	RocketChat.iframeLogin.tryLogin();
@@ -66,7 +68,7 @@ class IframeLogin {
 
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
 			console.log(error, result);
-			if (result && result.data && result.data.token) {
+			if (result && result.data && (result.data.token || result.data.loginToken)) {
 				this.loginWithToken(result.data, (error, result) => {
 					if (error) {
 						this.reactiveIframeUrl.set(iframeUrl);
@@ -82,27 +84,27 @@ class IframeLogin {
 		});
 	}
 
-	loginWithToken(token, callback) {
+	loginWithToken(tokenData, callback) {
 		if (!this.enabled) {
 			return;
 		}
 
-		if (Match.test(token, String)) {
-			token = {
-				token
+		if (Match.test(tokenData, String)) {
+			tokenData = {
+				token: tokenData
 			};
 		}
 
 		console.log('loginWithToken');
 
-		if (token.loginToken) {
-			return Meteor.loginWithToken(token.loginToken, callback);
+		if (tokenData.loginToken) {
+			return Meteor.loginWithToken(tokenData.loginToken, callback);
 		}
 
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				iframe: true,
-				token: token.token
+				token: tokenData.token
 			}],
 			userCallback: callback
 		});

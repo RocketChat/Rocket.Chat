@@ -5,5 +5,5 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.addFiles('favico.js', 'client');
+	api.addFiles('client/favico.js', 'client');
 });

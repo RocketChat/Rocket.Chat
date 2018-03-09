@@ -1,56 +1,52 @@
-:root {
-	--rc-popover-open: {
-		display: flex;
-
-		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		align-items: flex-start;
-	}
-	--rc-popover-open-mobile: {
-		position: fixed;
-		top: initial;
-		bottom: 0;
-		left: 0;
-
-		display: inline-block;
-
-		width: 100vw;
-		padding: 8px;
-
-		animation: dropup-show 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
-	}
-}
-
-.rc-popover-anchor {
-	display: none;
-
-	&:checked + .rc-popover {
-		@apply --rc-popover-open;
-	}
-}
-
 .rc-popover {
-	position: absolute;
+	position: fixed;
 	z-index: 9999;
 
+	top: 0;
+	left: 0;
+
 	display: none;
-	will-change: transform;
+
+	width: 100vw;
+	height: 100vh;
+
+	&__close {
+		cursor: pointer;
+		transform: rotate(45deg);
+
+		&:hover {
+			color: var(--rc-color-link-active);
+		}
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+
+		margin-bottom: 16px;
+
+		font-size: 21px;
+		justify-content: flex-end;
+	}
 
 	&__content {
+		position: absolute;
+
 		display: flex;
+
+		flex-direction: column;
 
 		padding: var(--popover-padding);
 
+		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
 		white-space: nowrap;
 
-		cursor: default;
+		opacity: 0;
 
 		border-radius: var(--popover-radius);
 		background-color: var(--popover-background);
 		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
-	}
-
-	&--show {
-		@apply --rc-popover-open;
 	}
 
 	&__column {
@@ -70,6 +66,8 @@
 	}
 
 	&__title {
+		flex: 1;
+
 		margin-bottom: 8px;
 
 		text-transform: uppercase;
@@ -77,6 +75,8 @@
 		color: var(--popover-title-color);
 
 		font-size: var(--popover-title-text-size);
+
+		font-weight: 600;
 	}
 
 	&__item {
@@ -86,9 +86,37 @@
 
 		cursor: pointer;
 
+		user-select: none;
+
 		color: var(--popover-item-color);
 
 		font-size: var(--popover-item-text-size);
+		align-items: center;
+
+		transition: all 0.3s;
+		width: 100%;
+
+		&--alert {
+			color: var(--rc-color-error);
+
+			& .rc-icon {
+				fill: var(--rc-color-error);
+			}
+		}
+
+		&--bold {
+			font-weight: 900;
+		}
+
+		&--star-filled .rc-icon {
+			fill: currentColor;
+		}
+	}
+
+	&__label {
+		display: flex;
+
+		cursor: pointer;
 		align-items: center;
 	}
 
@@ -103,6 +131,10 @@
 
 	&__icon-element {
 		font-size: 18px;
+
+		&--star {
+			fill: none;
+		}
 	}
 
 	&__item-text {
@@ -115,12 +147,103 @@
 		margin: 1rem 0;
 
 		background: var(--popover-divider-color);
+
+		&:last-child {
+			display: none;
+		}
+	}
+}
+
+.rc-popover__item-radio {
+	visibility: hidden;
+
+	&:checked + .rc-popover__item-radio-label {
+		color: #1D73F3;
+
+		&::after {
+			opacity: 1;
+		}
+	}
+
+	&:not(:checked) + .rc-popover__item-radio-label::after {
+		opacity: 0;
+	}
+}
+
+.rc-popover__item-radio-label {
+	position: relative;
+	padding-left: 20px;
+	margin-left: -20px;
+	cursor: pointer;
+
+	&::before {
+		content: '';
+		position: absolute;
+		left:0;
+		top: 0;
+		width: 15px;
+		height: 15px;
+		border: 1px solid #979797;
+		background: transparent;
+		border-radius: 50px;
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 9px;
+		height: 9px;
+		background: #1D73F3;
+		border-radius: 50px;
+		transition: all 0.2s;
+	}
+}
+
+.rtl .rc-popover__item-radio-label {
+	padding-right: 20px;
+	margin-right: -20px;
+	padding-left: 0;
+	margin-left: 0;
+
+	&::before {
+		right: 0;
+		left: auto;
+	}
+
+	&::after {
+		right: 3px;
+		left: auto;
+	}
+}
+
+[data-message-action="unstar-message"] .rc-popover__icon-element--star {
+	fill: currentColor;
+}
+
+@media (width <= 500px) {
+	.rc-popover {
+		& .rc-popover__content {
+			top: initial !important;
+			bottom: 0;
+			left: 0 !important;
+
+			width: calc(100vw - 16px) !important;
+			margin: 8px !important;
+
+			animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+			&--safariIos {
+				bottom: initial;
+			}
+		}
 	}
 }
 
 @keyframes dropdown-show {
 	0% {
-		transform: translate(0, -2%);
+		transform: translate(0, -5%);
 
 		opacity: 0;
 	}
@@ -146,14 +269,9 @@
 	}
 }
 
-@media (width <= 400px) {
-	.rc-popover {
-		&-anchor:checked + .rc-popover {
-			@apply --rc-popover-open-mobile;
-		}
-
-		&--show {
-			@apply --rc-popover-open-mobile;
-		}
+.rtl .rc-popover {
+	&__item-text {
+		margin-right: 0.25rem;
+		margin-left: auto;
 	}
 }

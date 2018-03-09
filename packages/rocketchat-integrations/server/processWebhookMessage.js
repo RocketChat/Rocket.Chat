@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
@@ -46,8 +49,8 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
-			msg: _.trim(messageObj.text || messageObj.msg || ''),
-			attachments: messageObj.attachments,
+			msg: s.trim(messageObj.text || messageObj.msg || ''),
+			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
@@ -67,7 +70,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 			for (let i = 0; i < message.attachments.length; i++) {
 				const attachment = message.attachments[i];
 				if (attachment.msg) {
-					attachment.text = _.trim(attachment.msg);
+					attachment.text = s.trim(attachment.msg);
 					delete attachment.msg;
 				}
 			}

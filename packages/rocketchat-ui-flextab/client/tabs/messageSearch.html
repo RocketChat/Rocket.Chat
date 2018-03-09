@@ -1,14 +1,24 @@
 <template name="messageSearch">
 	<div class="list-view flex-tab__header search-messages-list">
 		<div class="title">
-			<h2>{{_ "Search_Messages"}}</h2>
 			<p>{{_ "You_can_search_using_RegExp_eg"}} <code class="code-colors inline">/^text$/i</code></p>
 		</div>
 		<div class="control">
 			<form class="search-form" role="form">
-				<div class="input-line search">
-					<input type="text" id="message-search" class="search content-background-color" placeholder="{{tSearchMessages}}" autocomplete="off" />
-					<i class="icon-search secondary-font-color"></i>
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+							</div>
+							<input type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{tSearchMessages}}" autocomplete="off" />
+						</div>
+					</label>
+					{{#if allowGlobalSearch}}
+						<label>
+							<input type="checkbox" id="global-search" checked>{{_ "Global_Search"}}
+						</label>
+					{{/if}}
 				</div>
 			</form>
 		</div>
@@ -23,7 +33,7 @@
 		<div class="flex-tab__result js-list">
 			<ul class="list clearfix">
 				{{#each searchResultMessages}}
-				{{#nrr nrrargs 'message' message}}{{/nrr}}
+					{{#nrr nrrargs 'message' message}}{{/nrr}}
 				{{/each}}
 			</ul>
 			{{#if hasMore}}

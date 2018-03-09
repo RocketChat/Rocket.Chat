@@ -1,13 +1,14 @@
 <template name="livechatFlex">
-	<aside class="sidebar sidebar--light" role="navigation">
-		<header class="sidebar__header">
-			{{> accountBox lighten=true modifier="--livechat"}}
-			<button class="sidebar-flex__back-button" data-action="back">
-				{{> icon block="sidebar-flex__back-icon" icon="back"}}
-				<span>{{_ "Back_to_chat"}}</span>
-			</button>
+	<aside class="sidebar-light sidebar--medium" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "Livechat"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
 		</header>
-		<div class="rooms-list">
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
 			<ul class="rooms-list__list">
 				{{> sidebarItem menuItem "Current_Chats" false "livechat-current-chats" }}
 				{{> sidebarItem menuItem "User_management" false "livechat-users" }}
@@ -16,7 +17,8 @@
 				{{> sidebarItem menuItem "Custom_Fields" false "livechat-customfields" }}
 				{{> sidebarItem menuItem "Installation" false "livechat-installation" }}
 				{{> sidebarItem menuItem "Appearance" false "livechat-appearance" }}
-				{{> sidebarItem menuItem "Integrations" false "livechat-integrations" }}
+				{{> sidebarItem menuItem "Webhooks" false "livechat-webhooks" }}
+				{{> sidebarItem menuItem "Facebook Messenger" false "livechat-facebook" }}
 				{{> sidebarItem menuItem "Office_Hours" false "livechat-officeHours" }}
 			</ul>
 		</div>
