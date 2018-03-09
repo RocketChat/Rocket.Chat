@@ -246,6 +246,16 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			name
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
