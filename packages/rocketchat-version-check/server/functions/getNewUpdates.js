@@ -1,7 +1,6 @@
 /* global MongoInternals */
 import os from 'os';
 import { HTTP } from 'meteor/http';
-import logger from '../logger';
 // import checkUpdate from '../checkUpdate';
 
 export default () => {
@@ -28,16 +27,11 @@ export default () => {
 			params: data
 		});
 
-		// const result = {
-		// 	data: {
-		// 		...checkUpdate
-		// 	}
-		// };
-
 		return result.data;
 	} catch (error) {
-		// console.log(error);
-		logger.error('Failed to get version updates', error);
+		// There's no need to log this error
+		// as it's pointless and the user
+		// can't do anything about it anyways
 
 		return {
 			versions: [],
