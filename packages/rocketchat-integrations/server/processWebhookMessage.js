@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
+this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false, isIncoming = true, historyId = null) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -10,6 +10,10 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 
 		let channelValue = channel.substr(1);
 		let room;
+
+		if (historyId) {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'identifying-room' });
+		}
 
 		switch (channelType) {
 			case '#':
@@ -33,11 +37,23 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 					break;
 				}
 
+				if (historyId) {
+					RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'identifying-room', error: true });
+				}
+
 				//No room, so throw an error
 				throw new Meteor.Error('invalid-channel');
 		}
 
+		if (historyId) {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'check-if-user-joined-room' });
+		}
+
 		if (mustBeJoined && !room.usernames.includes(user.username)) {
+			if (historyId) {
+				RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'check-if-user-joined-room', error: true });
+			}
+
 			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
 			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
 		}
@@ -74,6 +90,10 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 					delete attachment.msg;
 				}
 			}
+		}
+
+		if (historyId) {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'send-message' });
 		}
 
 		const messageReturn = RocketChat.sendMessage(user, message, room);
