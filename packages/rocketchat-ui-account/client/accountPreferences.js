@@ -57,7 +57,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const userHighlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
-		return userHighlights ? userHighlights.join('\n') : undefined;
+		return userHighlights ? userHighlights.join(',\n') : undefined;
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -146,7 +146,7 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
 
