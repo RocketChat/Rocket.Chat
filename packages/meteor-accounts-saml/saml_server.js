@@ -333,7 +333,7 @@ const middleware = function(req, res, next) {
 						throw new Error(`Unable to validate response url: ${ err }`);
 					}
 
-					const credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					const credentialToken = profile.inResponseToId.value || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
 						// No credentialToken in IdP-initiated SSO
 						const saml_idp_credentialToken = Random.id();
