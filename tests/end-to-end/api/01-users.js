@@ -13,7 +13,7 @@ import {
 	targetUser,
 	log
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
+import { adminEmail, preferences, password } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 
@@ -288,6 +288,42 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
+		let user;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password})
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+
+		let userCredentials;
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		after(done => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id
+			}).end(done);
+			user = undefined;
+		});
+
 		const newPassword = `${ password }test`;
 		const editedUsername = `basicInfo.name${ +new Date() }`;
 		const editedName = `basic-info-test-name${ +new Date() }`;
@@ -295,13 +331,12 @@ describe('[Users]', function() {
 
 		it('should update the user own basic information', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					userId: targetUser._id,
 					data: {
 						name: editedName,
 						username: editedUsername,
-						actualPassword: password,
+						currentPassword: password,
 						newPassword
 					}
 				})
@@ -318,9 +353,8 @@ describe('[Users]', function() {
 
 		it('should update the user name only', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					userId: targetUser._id,
 					data: {
 						username: editedUsername
 					}
@@ -337,9 +371,8 @@ describe('[Users]', function() {
 
 		it('should throw an error when user try change email without the password', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					userId: targetUser._id,
 					data: {
 						email: editedEmail
 					}
@@ -353,7 +386,6 @@ describe('[Users]', function() {
 			request.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
-					userId: targetUser._id,
 					data: {
 						newPassword: 'the new pass'
 					}
@@ -365,12 +397,11 @@ describe('[Users]', function() {
 
 		it('should set new email as \'unverified\'', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
+				.set(userCredentials)
 				.send({
-					userId: targetUser._id,
 					data: {
 						email: editedEmail,
-						actualPassword: newPassword
+						currentPassword: newPassword
 					}
 				})
 				.expect('Content-Type', 'application/json')
