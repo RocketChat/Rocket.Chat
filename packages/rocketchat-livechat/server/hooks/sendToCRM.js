@@ -18,9 +18,11 @@ function sendToCRM(type, room, includeMessages = true) {
 				return;
 			}
 			const msg = {
+				_id: message._id,
 				username: message.u.username,
 				msg: message.msg,
-				ts: message.ts
+				ts: message.ts,
+				editedAt: message.editedAt
 			};
 
 			if (message.u.username !== postData.visitor.username) {
@@ -57,11 +59,6 @@ RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	// skips this callback if the message was edited
-	if (message.editedAt) {
-		return message;
-	}
-
 	// only call webhook if it is a livechat room
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 		return message;
