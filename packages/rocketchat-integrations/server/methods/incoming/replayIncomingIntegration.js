@@ -1,6 +1,5 @@
 Meteor.methods({
 	replayIncomingIntegration({ integrationId, historyId }) {
-		console.log('aqui-1');
 		let integration;
 
 		if (RocketChat.authz.hasPermission(this.userId, 'manage-integrations') || RocketChat.authz.hasPermission(this.userId, 'manage-integrations', 'bot')) {
@@ -33,7 +32,7 @@ Meteor.methods({
 			}
 		};
 
-		HTTP.call('POST', url, opts, (error, result) => {});
+		HTTP.call('POST', url, opts, () => {});
 		return true;
 	}
 });

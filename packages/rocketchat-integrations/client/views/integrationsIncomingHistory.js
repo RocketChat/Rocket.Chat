@@ -127,7 +127,7 @@ Template.integrationsIncomingHistory.events({
 		}
 
 		const historyId = $(e.currentTarget).attr('data-history-id');
-		
+
 		Meteor.call('replayIncomingIntegration', { integrationId: t.data.params().id, historyId }, (e) => {
 			if (e) {
 				handleError(e);

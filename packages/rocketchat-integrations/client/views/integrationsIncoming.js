@@ -194,7 +194,7 @@ Template.integrationsIncoming.events({
 
 	'click .rc-button.history': () => {
 		FlowRouter.go(`/admin/integrations/incoming/${ FlowRouter.getParam('id') }/history`);
-	},	
+	},
 
 	'click .button-fullscreen': () => {
 		const codeMirrorBox = $('.code-mirror-box');

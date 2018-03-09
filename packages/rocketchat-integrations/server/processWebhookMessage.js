@@ -1,6 +1,35 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
+const getRoom = function(channelType, currentUserId, nameOrId, historyId, isIncoming) {
+	switch (channelType) {
+		case '#':
+			return RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, joinChannel: true });
+		case '@':
+			return RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type: 'd' });
+		default:
+			//Try to find the room by id or name if they didn't include the prefix.
+			let room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, joinChannel: true, errorOnEmpty: false });
+			if (room) {
+				return room;
+			}
+
+			//We didn't get a room, let's try finding direct messages
+			room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type: 'd', tryDirectByUserIdOnly: true });
+			if (room) {
+				return room;
+			}
+
+			if (historyId) {
+				RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'identifying-room', error: true });
+			}
+
+			//No room, so throw an error
+			throw new Meteor.Error('invalid-channel');
+	}
+
+};
+
 this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false, isIncoming = true, historyId = null) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
@@ -9,44 +38,14 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 		const channelType = channel[0];
 
 		let channelValue = channel.substr(1);
-		let room;
 
 		if (historyId) {
 			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'identifying-room' });
 		}
 
-		switch (channelType) {
-			case '#':
-				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
-				break;
-			case '@':
-				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd' });
-				break;
-			default:
-				channelValue = channelType + channelValue;
-
-				//Try to find the room by id or name if they didn't include the prefix.
-				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
-				if (room) {
-					break;
-				}
-
-				//We didn't get a room, let's try finding direct messages
-				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
-				if (room) {
-					break;
-				}
-
-				if (historyId) {
-					RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'identifying-room', error: true });
-				}
-
-				//No room, so throw an error
-				throw new Meteor.Error('invalid-channel');
-		}
-
-		if (historyId) {
-			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'check-if-user-joined-room' });
+		const room = getRoom(channelType, user._id, channelValue, historyId, isIncoming);
+		if (channelType !== '#' && channelType !== '@') {
+			channelValue = channelType + channelValue;
 		}
 
 		if (mustBeJoined && !room.usernames.includes(user.username)) {
