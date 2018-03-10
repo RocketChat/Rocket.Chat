@@ -222,7 +222,7 @@ export class CustomOAuth {
 				if (identity.userid && !identity.id) {
 					identity.id = identity.userid;
 				}
-				
+
 				// Fix Nextcloud provider
 				if (identity.ocs.data.id && !identity.id) {
 					identity.id = identity.ocs.data.id;
