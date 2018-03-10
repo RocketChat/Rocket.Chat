@@ -270,9 +270,6 @@ Template.messageBox.helpers({
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
 	},
-	isMessageFieldEmpty() {
-		return Template.instance().isMessageFieldEmpty.get();
-	},
 	dataReply() {
 		return Template.instance().dataReply.get();
 	}
@@ -376,6 +373,13 @@ Template.messageBox.events({
 			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 			return input.focus();
 		});
+	},
+	'click .cancel-reply'(event, instance) {
+		const input = instance.find('.js-input-message');
+		$(input)
+			.focus()
+			.removeData('reply')
+			.trigger('dataChange');
 	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
@@ -481,13 +485,6 @@ Template.messageBox.onRendered(function() {
 		const reply = input.data('reply');
 		self.dataReply.set(reply);
 	});
-
-	this.autorun(() => {
-		if (self.isMessageFieldEmpty.get()) {
-			self.dataReply.set(undefined);
-		}
-	});
-
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
 	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
