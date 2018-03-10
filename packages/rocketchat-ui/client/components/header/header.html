@@ -1,0 +1,74 @@
+<template name="header">
+	<header class="rc-header">
+		<div class="rc-header__block rc-header--burger">
+			{{> burger}}
+		</div>
+		{{#if showToggleFavorite}}
+			<div class="rc-header__block rc-header__favorite">
+				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+			</div>
+		{{/if}}
+		<!-- TODO: fix it style and helper -->
+		{{#if tokenAccessChannel}}
+			<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
+		{{/if}}
+		{{#if isChannel}}
+			<div class="rc-header__content rc-header__block">
+				{{#if isDirect}}
+					<div class="rc-header__image rc-header__block">
+						{{> avatar username=avatarBackground}}
+					</div>
+				{{/if}}
+
+				<div class="rc-header__data">
+					{{#unless secondaryName}}
+						<div class="rc-header__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</div>
+					{{else}}
+						<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
+					{{/unless}}
+
+					{{#if isDirect}}
+					<span class="rc-header__status">
+							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
+							<div class="rc-header__visual-status">{{userStatus}}</div>
+						</span>
+					{{else}}
+						{{#if roomTopic}}<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>{{/if}}
+					{{/if}}
+				</div>
+
+				{{#if sentimentSmile}}
+					<span class="sentiment">{{sentimentSmile}}</span>
+				{{/if}}
+				{{#if isTranslated}}
+					<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
+				{{/if}}
+			</div>
+		{{/if}}
+
+		{{#if isSection}}
+			<span class="rc-header__block">{{_ sectionName}}</span>
+		{{/if}}
+
+		{{#if Template.contentBlock}}
+			{{> Template.contentBlock}}
+		{{/if}}
+
+		{{#unless isChannel}}
+			{{# unless hideHelp}}
+				<div class="rc-header__section-help"></div>
+			{{/unless}}
+		{{/unless}}
+
+		{{#with toolbarButtons}}
+			<div class="iframe-toolbar">
+				{{#each buttons}}
+					<button class="{{id}}">
+						{{#if icon}}<i class="{{icon}}"></i>{{/if}}
+						{{label}}
+					</button>
+				{{/each}}
+			</div>
+		{{/with}}
+	</header>
+</template>

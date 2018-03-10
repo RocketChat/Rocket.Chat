@@ -5,42 +5,42 @@
 
 rocketchat:cors
 
-accounts-facebook@1.3.0
-accounts-github@1.4.0
-accounts-google@1.3.0
-accounts-meteor-developer@1.4.0
+accounts-facebook@1.3.1
+accounts-github@1.4.1
+accounts-google@1.3.1
+accounts-meteor-developer@1.4.1
 accounts-password@1.5.0
-accounts-twitter@1.4.0
+accounts-twitter@1.4.1
 blaze-html-templates
-check@1.2.5
+check@1.3.0
 ddp-rate-limiter@1.0.7
-ddp-common@1.3.0
-dynamic-import@0.2.0
-ecmascript@0.9.0
+ddp-common@1.4.0
+dynamic-import@0.3.0
+ecmascript@0.10.0
 ejson@1.1.0
 email@1.2.3
 fastclick@1.0.13
-http@1.3.0
+http@1.4.0
 jquery@1.11.10
-less@2.7.11
 logging@1.1.19
-meteor-base@1.2.0
+meteor-base@1.3.0
 mobile-experience@1.0.5
-mongo@1.3.1
-random@1.0.10
+mongo@1.4.2
+random@1.1.0
 rate-limit@1.0.8
 reactive-dict@1.2.0
 reactive-var@1.0.11
-reload@1.1.11
+reload@1.2.0
 service-configuration@1.0.11
 session@1.1.7
-shell-server@0.3.0
+shell-server@0.3.1
 spacebars
-standard-minifier-js@2.2.0
+standard-minifier-js@2.3.1
 tracker@1.1.3
 
 rocketchat:2fa
 rocketchat:action-links
+rocketchat:accounts
 rocketchat:analytics
 rocketchat:api
 rocketchat:assets
@@ -68,6 +68,11 @@ rocketchat:github-enterprise
 rocketchat:gitlab
 #rocketchat:google-natural-language
 rocketchat:google-vision
+rocketchat:grant
+rocketchat:grant-facebook
+rocketchat:grant-github
+rocketchat:grant-google
+rocketchat:graphql
 rocketchat:highlight-words
 rocketchat:iframe-login
 rocketchat:importer
@@ -84,6 +89,7 @@ rocketchat:katex
 rocketchat:ldap
 rocketchat:lib
 rocketchat:livechat
+rocketchat:livestream
 rocketchat:logger
 rocketchat:login-token
 rocketchat:mailer
@@ -104,6 +110,7 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:apps
 rocketchat:sandstorm
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
@@ -143,12 +150,12 @@ rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
+rocketchat:nrr
 
 konecty:change-case
 konecty:delayed-task
 konecty:mongo-counter
 konecty:multiple-instances-status
-konecty:nrr
 konecty:user-presence
 
 deepwell:bootstrap-datepicker2
@@ -178,3 +185,4 @@ todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:e2e
+rocketchat:version-check

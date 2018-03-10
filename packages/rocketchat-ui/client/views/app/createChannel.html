@@ -5,7 +5,7 @@
 				{{> Template.dynamic template=roomType.creationTemplate }}
 			</div>
 		{{/each}}
-		<div class="room-type-creation">
+		<div class="create-channel__wrapper">
 			<header class="create-channel__header">
 				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
 				<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
@@ -175,10 +175,14 @@
 
 <template name='tag'>
 	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-image">
-			{{> avatar username=username}}
-		</span>
-		<span class="rc-tags__tag-text">{{username}}</span>
+		{{#if username}}
+			<span class="rc-tags__tag-image">
+				{{> avatar username=username}}
+			</span>
+			<span class="rc-tags__tag-text">{{username}}</span>
+		{{else}}
+			<span class="rc-tags__tag-text">{{text}}</span>
+		{{/if}}
 		{{> icon block="rc-tags__tag-icon" icon="cross"}}
 	</span>
 </template>

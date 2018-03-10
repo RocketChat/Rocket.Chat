@@ -279,9 +279,29 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	findOneBySlackTs(slackTs) {
-		const query =	{slackTs};
+		const query = {slackTs};
 
 		return this.findOne(query);
+	}
+
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+			t: { $exists: false }
+		};
+
+		if (messageId) {
+			query._id = { $ne: messageId };
+		}
+
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+
+		return this.findOne(query, options);
 	}
 
 	cloneAndSaveAsHistoryById(_id) {
@@ -499,6 +519,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			groupable: false
 		};
 
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
@@ -601,5 +625,46 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
+	}
+
+	setAsRead(rid, until) {
+		return this.update({
+			rid,
+			unread: true,
+			ts: { $lt: until }
+		}, {
+			$unset: {
+				unread: 1
+			}
+		}, {
+			multi: true
+		});
+	}
+
+	setAsReadById(_id) {
+		return this.update({
+			_id
+		}, {
+			$unset: {
+				unread: 1
+			}
+		});
+	}
+
+	findUnreadMessagesByRoomAndDate(rid, after) {
+		const query = {
+			unread: true,
+			rid
+		};
+
+		if (after) {
+			query.ts = { $gt: after };
+		}
+
+		return this.find(query, {
+			fields: {
+				_id: 1
+			}
+		});
 	}
 };

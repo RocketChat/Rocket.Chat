@@ -229,12 +229,16 @@ this.ChatMessages = class ChatMessages {
 							const commandOptions = RocketChat.slashCommands.commands[match[1]];
 							command = match[1];
 							const param = match[2] || '';
-							if (commandOptions.clientOnly) {
-								commandOptions.callback(command, param, msgObject);
-							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+
+							if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
+								if (commandOptions.clientOnly) {
+									commandOptions.callback(command, param, msgObject);
+								} else {
+									Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+								}
+
+								return;
 							}
-							return;
 						}
 
 						if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
@@ -248,6 +252,7 @@ this.ChatMessages = class ChatMessages {
 								},
 								private: true
 							};
+
 							ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
 							return;
 						}
@@ -255,6 +260,9 @@ this.ChatMessages = class ChatMessages {
 				}
 
 				Meteor.call('sendMessage', msgObject);
+
+				localStorage.setItem(`messagebox_${ rid }`, '');
+
 				return done();
 			});
 

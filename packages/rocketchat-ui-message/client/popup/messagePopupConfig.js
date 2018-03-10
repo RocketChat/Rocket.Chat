@@ -282,14 +282,22 @@ Template.messagePopupConfig.helpers({
 					return {
 						_id: command,
 						params: item.params ? TAPi18n.__(item.params) : '',
-						description: TAPi18n.__(item.description)
+						description: TAPi18n.__(item.description),
+						permission: item.permission
 					};
-				})
-					.filter(command => command._id.indexOf(filter) > -1)
-					.sort(function(a, b) {
-						return a._id > b._id;
-					})
-					.slice(0, 11);
+				}).filter(command => {
+					const isMatch = command._id.indexOf(filter) > -1;
+
+					if (!isMatch) {
+						return false;
+					}
+
+					if (!command.permission) {
+						return true;
+					}
+
+					return RocketChat.authz.hasAtLeastOnePermission(command.permission, Session.get('openedRoom'));
+				}).sort((a, b) => a._id > b._id).slice(0, 11);
 			}
 		};
 		return config;
@@ -310,6 +318,10 @@ Template.messagePopupConfig.helpers({
 				getInput: self.getInput,
 				getFilter(collection, filter) {
 					const key = `:${ filter }`;
+
+					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+						return [];
+					}
 
 					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
 						return [];

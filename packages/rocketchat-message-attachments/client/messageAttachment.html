@@ -10,9 +10,9 @@
 						{{#if author_icon}}
 							<img src="{{fixCordova author_icon}}">
 						{{/if}}
-						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
+						<a href="{{fixCordova author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+							<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 						{{/if}}
 					</div>
 				{{else}}
@@ -22,7 +22,7 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+						<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
 					{{/if}}
 					</div>
 				{{/if}}
@@ -30,9 +30,9 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
+						<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
-							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
+							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
 						{{/if}}
 						{{#if decryption_required}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova decryptFile}}" download=""></a>

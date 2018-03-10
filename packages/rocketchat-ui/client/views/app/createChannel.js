@@ -146,6 +146,10 @@ Template.createChannel.events({
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
+	'click .rc-tags__tag-icon'(e, t) {
+		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	},
 	'change [name=setTokensRequired]'(e, t) {
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
@@ -226,7 +230,7 @@ Template.createChannel.events({
 Template.createChannel.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name="name"]').focus();
+	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {

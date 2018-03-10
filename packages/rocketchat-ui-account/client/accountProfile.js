@@ -51,6 +51,9 @@ Template.accountProfile.helpers({
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
 	},
+	selectUrl() {
+		return Template.instance().url.get().trim() ? '' : 'disabled';
+	},
 	services() {
 		const suggestions = Template.instance().suggestions.get();
 		return ['gravatar', 'facebook', 'google', 'github', 'gitlab', 'linkedIn', 'twitter']
@@ -153,6 +156,7 @@ Template.accountProfile.onCreated(function() {
 	self.password = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
+	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 
 	RocketChat.Notifications.onLogged('updateAvatar', () => self.avatar.set());
@@ -185,7 +189,12 @@ Template.accountProfile.onCreated(function() {
 	this.save = function(typedPassword, cb) {
 		const avatar = self.avatar.get();
 		if (avatar) {
-			Meteor.call('setAvatarFromService', avatar.blob, avatar.contentType, avatar.service, function(err) {
+			const params = [avatar.blob];
+
+			params.push(avatar.contentType);
+
+			params.push(avatar.service);
+			Meteor.call('setAvatarFromService', ...params, function(err) {
 				if (err && err.details && err.details.timeToReset) {
 					toastr.error(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000)
@@ -269,8 +278,6 @@ Template.accountProfile.onRendered(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();
 	});
-	$('.main-content').removeClass('rc-old');
-	// TODO: remove this line (:
 });
 
 const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
@@ -294,6 +301,23 @@ Template.accountProfile.events({
 				RocketChat.callbacks.run('userAvatarSet', 'initials');
 			}
 		});
+	},
+	'click .js-select-avatar-url'(e, instance, ...args) {
+		const url = instance.url.get().trim();
+		if (!url) {
+			return;
+		}
+		setAvatar.apply({
+			suggestion: {
+				service: 'url',
+				blob: url,
+				contentType: ''
+			}
+		}, [e, instance, ...args]);
+	},
+	'input .js-avatar-url-input'(e, instance) {
+		const text = e.target.value;
+		instance.url.set(text);
 	},
 	'click .js-select-avatar'(...args) {
 		this.suggestion ? setAvatar.apply(this, args) : loginWith.apply(this, args);

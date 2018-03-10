@@ -133,37 +133,82 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	}
 });
 
+// Channel -> create
+
+function createChannelValidator(params) {
+	if (!RocketChat.authz.hasPermission(params.user.value, 'create-c')) {
+		throw new Error('unauthorized');
+	}
+
+	if (!params.name || !params.name.value) {
+		throw new Error(`Param "${ params.name.key }" is required`);
+	}
+
+	if (params.members && params.members.value && !_.isArray(params.members.value)) {
+		throw new Error(`Param "${ params.members.key }" must be an array if provided`);
+	}
+
+	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
+		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
+	}
+}
+
+function createChannel(userId, params) {
+	let readOnly = false;
+	if (typeof params.readOnly !== 'undefined') {
+		readOnly = params.readOnly;
+	}
+
+	let id;
+	Meteor.runAsUser(userId, () => {
+		id = Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields);
+	});
+
+	return {
+		channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+	};
+}
+
+RocketChat.API.channels = {};
+RocketChat.API.channels.create = {
+	validate: createChannelValidator,
+	execute: createChannel
+};
+
 RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'create-c')) {
-			return RocketChat.API.v1.unauthorized();
+		const userId = this.userId;
+		const bodyParams = this.bodyParams;
+
+		let error;
+
+		try {
+			RocketChat.API.channels.create.validate({
+				user: {
+					value: userId
+				},
+				name: {
+					value: bodyParams.name,
+					key: 'name'
+				},
+				members: {
+					value: bodyParams.members,
+					key: 'members'
+				}
+			});
+		} catch (e) {
+			if (e.message === 'unauthorized') {
+				error = RocketChat.API.v1.unauthorized();
+			} else {
+				error = RocketChat.API.v1.failure(e.message);
+			}
 		}
 
-		if (!this.bodyParams.name) {
-			return RocketChat.API.v1.failure('Body param "name" is required');
+		if (error) {
+			return error;
 		}
 
-		if (this.bodyParams.members && !_.isArray(this.bodyParams.members)) {
-			return RocketChat.API.v1.failure('Body param "members" must be an array if provided');
-		}
-
-		if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
-			return RocketChat.API.v1.failure('Body param "customFields" must be an object if provided');
-		}
-
-		let readOnly = false;
-		if (typeof this.bodyParams.readOnly !== 'undefined') {
-			readOnly = this.bodyParams.readOnly;
-		}
-
-		let id;
-		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createChannel', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
-		});
-
-		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
-		});
+		return RocketChat.API.v1.success(RocketChat.API.channels.create.execute(userId, bodyParams));
 	}
 });
 
@@ -285,7 +330,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+			result = Meteor.call('getChannelHistory', {
+				rid: findResult._id,
+				latest: latestDate,
+				oldest: oldestDate,
+				inclusive,
+				count,
+				unreads
+			});
 		});
 
 		if (!result) {
@@ -372,15 +424,15 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = RocketChat.authz.hasPermission(this.userId, 'view-c-room');
 
 			const ourQuery = Object.assign({}, query, { t: 'c' });
 
-			//Special check for the permissions
-			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !hasPermissionToSeeAllPublicChannels) {
 				ourQuery.usernames = {
-					$in: [ this.user.username ]
+					$in: [this.user.username]
 				};
-			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+			} else if (!hasPermissionToSeeAllPublicChannels) {
 				return RocketChat.API.v1.unauthorized();
 			}
 
@@ -404,8 +456,13 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
-		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', this.userId).fetch(), '_room');
+		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, {
+			t: 'c',
+			'u._id': this.userId
+		});
+
+		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
@@ -426,7 +483,11 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+			returnUsernames: true
+		});
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
@@ -575,7 +636,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId} });
+		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId } });
 
 		if (findResult.name === this.bodyParams.name) {
 			return RocketChat.API.v1.failure('The channel name is the same as what it would be renamed to.');
