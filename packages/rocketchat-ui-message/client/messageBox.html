@@ -23,9 +23,9 @@
 				{{> messagePopupConfig getPopupConfig}}
 				{{#if dataReply}}
 					{{#with dataReply}}
-						<div style="border-top: solid 1px lightgray;">
-							{{> messageAttachment text=msg author_name=u.username}}
-						</div>
+							<div class="reply-preview message-popup">
+								{{> messageAttachment text=msg author_name=u.username}}
+							</div>
 					{{/with}}
 				{{/if}}
 				<label class="rc-message-box__container">

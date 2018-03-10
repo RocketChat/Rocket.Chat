@@ -2608,6 +2608,12 @@
 	position: relative;
 }
 
+.rc-old .rc-message-box .reply-preview {
+	position: relative;
+	background-color:#fff;
+	padding-left: 15px;
+}
+
 .rc-old .message-popup {
 	position: absolute;
 	z-index: 101;
