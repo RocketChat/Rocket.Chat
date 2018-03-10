@@ -103,27 +103,11 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
-			let text = `[ ](${ url }) `;
-			let inputValue = '';
-			$('.rc-message-box__textarea')
+			$(input)
 				.data('reply', message)
 				.trigger('dataChange');
-			if (roomInfo.t !== 'd' && message.u.username !== Meteor.user().username) {
-				text += `@${ message.u.username } `;
-			}
-
-			if (input.value && !input.value.endsWith(' ')) {
-				inputValue += ' ';
-			}
-			inputValue += text;
-
 			$(input)
-				.focus()
-				.val(inputValue)
-				.trigger('change')
-				.trigger('input');
+				.focus();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {

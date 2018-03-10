@@ -25,6 +25,9 @@
 					{{#with dataReply}}
 							<div class="reply-preview message-popup">
 								{{> messageAttachment text=msg author_name=u.username}}
+								<div class="rc-message-box__icon cancel-reply">
+									{{> icon block="rc-input__icon-svg" icon="cross"}}
+								</div>
 							</div>
 					{{/with}}
 				{{/if}}
