@@ -1198,6 +1198,9 @@ class SlackBridge {
 				icon_url: iconUrl,
 				link_names: 1
 			};
+			if (rocketMessage.attachments && rocketMessage.attachments[0]) {
+				data.attachments = JSON.stringify(rocketMessage.attachments);
+			}
 			logger.class.debug('Post Message To Slack', data);
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
