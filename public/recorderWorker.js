@@ -1,7 +1,7 @@
 var recLength = 0,
   recBuffers = [],
-  sampleRate,
-  numChannels;
+  sampleRate,				//sampleRate in kilohertz
+  numChannels;			//number of channels in the recording
 
 this.onmessage = function(e){
   switch(e.data.command){
