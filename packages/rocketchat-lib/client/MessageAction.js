@@ -104,10 +104,9 @@ Meteor.startup(function() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
 			$(input)
+				.focus()
 				.data('reply', message)
 				.trigger('dataChange');
-			$(input)
-				.focus();
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
