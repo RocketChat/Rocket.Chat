@@ -479,10 +479,10 @@ Template.messageBox.events({
 });
 
 Template.messageBox.onRendered(function() {
-	const input = $('.rc-message-box__textarea'); //mssg box
+	const input = this.find('.js-input-message'); //mssg box
 	const self = this;
-	input.on('dataChange', () => {
-		const reply = input.data('reply');
+	$(input).on('dataChange', () => {
+		const reply = $(input).data('reply');
 		self.dataReply.set(reply);
 	});
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
