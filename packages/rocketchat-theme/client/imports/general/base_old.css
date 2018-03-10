@@ -2609,9 +2609,18 @@
 }
 
 .rc-old .rc-message-box .reply-preview {
+	display: flex;
 	position: relative;
 	background-color:#fff;
 	padding-left: 15px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rc-old .reply-preview .cancel-reply {
+	padding: 10px;
 }
 
 .rc-old .message-popup {
