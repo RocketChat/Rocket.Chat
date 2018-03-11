@@ -83,7 +83,8 @@ class FlexTab extends Page {
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
 	get usersButtonCancel() { return browser.element('.button.cancel'); }
 	get usersSendInvitationSend() { return browser.element('.button.send'); }
-	get usersButtonSave() { return browser.element('.button.save'); }
+	get usersAddUserButtonCancel() { return browser.element('.rc-button.cancel'); }
+	get usersButtonSave() { return browser.element('.rc-button.save'); }
 	get usersAddUserName() { return browser.element('#name'); }
 	get usersAddUserUsername() { return browser.element('#username'); }
 	get usersAddUserEmail() { return browser.element('#email'); }

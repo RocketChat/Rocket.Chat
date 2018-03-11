@@ -24,7 +24,7 @@ class Administration extends Page {
 	get infoBuildTable() { return browser.element('.content .statistics-table:nth-of-type(4)'); }
 	get infoUsageTableTitle() { return browser.element('.content h3:nth-of-type(5)'); }
 	get infoUsageTable() { return browser.element('.content .statistics-table:nth-of-type(5)'); }
-	get roomsSearchForm() { return browser.element('.content .search'); }
+	get roomsSearchForm() { return browser.element('.content .search-form'); }
 	get roomsFilter() { return browser.element('#rooms-filter'); }
 	get roomsChannelsCheckbox() { return browser.element('label:nth-of-type(1) input[name="room-type"]'); }
 	get roomsDirectCheckbox() { return browser.element('label:nth-of-type(2) input[name="room-type"]'); }
