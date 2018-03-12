@@ -1,6 +1,7 @@
 /* globals Livechat, t, tr, livechatAutolinker */
 import moment from 'moment';
 import visitor from '../../imports/client/visitor';
+import _ from 'underscore';
 import s from 'underscore.string';
 
 Template.message.helpers({
@@ -40,7 +41,7 @@ Template.message.helpers({
 			case 'wm':
 				return t('Welcome', { user: this.u.username });
 			case 'livechat-close':
-				return t('Conversation_finished');
+				return (!_.isEmpty(Livechat.conversationFinishedMessage)) ? Livechat.conversationFinishedMessage : t('Conversation_finished');
 			//  case 'rtc': return RocketChat.callbacks.run('renderRtcMessage', this);
 			default:
 				this.html = this.msg;

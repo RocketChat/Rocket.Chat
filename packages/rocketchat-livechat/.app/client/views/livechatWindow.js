@@ -51,9 +51,6 @@ Template.livechatWindow.helpers({
 	},
 	showWidget() {
 		return Livechat.online || Livechat.displayOfflineForm;
-	},
-	conversationFinishedMessage() {
-		return Livechat.conversationFinishedMessage;
 	}
 });
 
