@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
 function checkAuthentication(request) {
@@ -12,7 +13,8 @@ RocketChat.API.v1.addRoute('livechat/status/:visitorToken', {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const info = Meteor.call('livechat:getInitialData', this.urlParams.visitorToken);
+		const initialData = Meteor.call('livechat:getInitialData', this.urlParams.visitorToken);
+		const info = _.pick(initialData, 'visitor', 'room', 'departments', 'online', 'agentData');
 		return RocketChat.API.v1.success(info);
 	}
 });
