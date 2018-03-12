@@ -390,6 +390,7 @@
   "Chatpal_Backend":"Backend Type",
   "Chatpal_Backend_Description":"Select if you want to use Chatpal as a Service or as On-Site Installation",
   "Chatpal_Base_URL":"Base Url",
+  "Chatpal_Base_URL_Description":"Find some description how to run a local instance <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\">on github</a>. The URL must be absolue and point to the chatpal core, e.g. http://localhost:8983/solr/chatpal.",
   "Chatpal_Main_Language":"Main Language",
   "Chatpal_Main_Language_Description":"The language that is used most in conversations",
   "Chatpal_AdminPage":"Chatpal Admin Page",

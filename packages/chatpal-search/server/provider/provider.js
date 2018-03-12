@@ -37,7 +37,8 @@ class ChatpalProvider extends SearchProvider {
 				_id: 'Search.chatpalProvider.Backend',
 				value: 'onsite'
 			}],
-			i18nLabel: 'Chatpal_Base_URL'
+			i18nLabel: 'Chatpal_Base_URL',
+			i18nDescription: 'Chatpal_Base_URL_Description'
 		});
 		this._settings.add('HTTP_Headers', 'string', '', {
 			enableQuery:[{
