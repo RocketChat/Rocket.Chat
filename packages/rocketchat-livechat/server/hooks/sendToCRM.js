@@ -81,7 +81,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	sendToCRM('Message', room, [message]);
 	return message;
-}, RocketChat.callbacks.priority.MEDIUM, 'sendMessageToFacebook');
+}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-message');
 
 RocketChat.callbacks.add('livechat.leadCapture', (room) => {
 	if (!RocketChat.settings.get('Livechat_webhook_on_capture')) {
