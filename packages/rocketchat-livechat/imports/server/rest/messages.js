@@ -29,6 +29,16 @@ RocketChat.API.v1.addRoute('livechat/messages', {
 		if (!this.bodyParams.visitor.token) {
 			return RocketChat.API.v1.failure('Body param "visitor.token" is required');
 		}
+		if (!this.bodyParams.messages) {
+			return RocketChat.API.v1.failure('Body param "messages" is required');
+		}
+		if (!(this.bodyParams.messages instanceof Array)) {
+			return RocketChat.API.v1.failure('Body param "messages" is not an array');
+		}
+		if (this.bodyParams.messages.length === 0) {
+			return RocketChat.API.v1.failure('Body param "messages" is empty');
+		}
+
 		const visitorToken = this.bodyParams.visitor.token;
 
 		let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
