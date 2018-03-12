@@ -8,6 +8,10 @@
 	&__picture {
 		color: inherit;
 	}
+
+	&__message {
+		margin: 0;
+	}
 }
 
 .sidebar--hide-avatar .sidebar-item__picture {
@@ -38,10 +42,6 @@
 
 		width: var(--sidebar-item-thumb-size-extended);
 		height: var(--sidebar-item-thumb-size-extended);
-	}
-
-	&__icon {
-		margin: 0 auto;
 	}
 
 	&__user-thumb {
@@ -128,8 +128,9 @@
 	}
 
 	&__room-type {
-
+		display: flex;
 		color: currentColor;
+
 		font-size: 0.6rem;
 	}
 
