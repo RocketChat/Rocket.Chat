@@ -51,6 +51,9 @@ Template.livechatWindow.helpers({
 	},
 	showWidget() {
 		return Livechat.online || Livechat.displayOfflineForm;
+	},
+	conversationFinishedMessage() {
+		return Livechat.conversationFinishedMessage;
 	}
 });
 
@@ -111,6 +114,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.online = true;
 				Livechat.transcript = result.transcript;
 				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;

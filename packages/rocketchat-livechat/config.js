@@ -66,6 +66,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Offline_success_message'
 	});
 
+	RocketChat.settings.add('Livechat_conversation_finished_message', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		section: 'Conversation Finished',
+		i18nLabel: 'Conversation_finished_message'
+	});
+
 	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
 	RocketChat.settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	RocketChat.settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
