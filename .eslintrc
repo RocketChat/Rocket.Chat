@@ -119,6 +119,7 @@
 		"LivechatDepartmentAgents"    : false,
 		"livechatManagerRoutes"       : true,
 		"LivechatPageVisited"         : false,
+        "LivechatMessage"             : false,
 		"LivechatTrigger"             : false,
 		"Logger"                      : false,
 		"Match"                       : false,
