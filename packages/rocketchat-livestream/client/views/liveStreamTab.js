@@ -200,9 +200,7 @@ Template.liveStreamTab.events({
 			if (!user.settings || !user.settings.livestream) {
 				await auth();
 			}
-
 			const result = await call('livestreamGet', {rid: i.data.rid});
-			console.log(result);
 			popout.open({
 				content: 'broadcastView',
 				data: {

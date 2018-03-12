@@ -120,6 +120,7 @@
 
 			&.loading {
 				animation: loading 2s infinite;
+				pointer-events: none;
 			}
 			&.broadcasting {
 				color: red;

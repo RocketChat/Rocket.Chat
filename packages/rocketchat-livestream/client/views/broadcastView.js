@@ -25,6 +25,31 @@ export const call = (...args) => new Promise(function(resolve, reject) {
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
+const waitForStreamStatus = async(id, status) => {
+	const streamActive = new Promise(async(resolve) => {
+		while (true) { //eslint-disable-line no-constant-condition
+			const currentStatus = await call('livestreamStreamStatus', { streamId: id });
+			if (currentStatus === status) {
+				return resolve(status);
+			}
+			await delay(1500);
+		}
+	});
+	await streamActive;
+};
+const waitForBroadcastStatus = async(id, status) => {
+	const broadcastActive = new Promise(async(resolve) => {
+		while (true) { //eslint-disable-line no-constant-condition
+			const currentStatus = await call('getBroadcastStatus', { broadcastId: id });
+			if (currentStatus === status) {
+				return resolve(status);
+			}
+			await delay(1500);
+		}
+	});
+	await broadcastActive;
+};
+
 Template.broadcastView.helpers({
 	broadcastSource() {
 		return Template.instance().mediaStream.get() ? window.URL.createObjectURL(Template.instance().mediaStream.get()) : '';
@@ -50,6 +75,7 @@ Template.broadcastView.onDestroyed(function() {
 	}
 	if (this.mediaRecorder.get()) {
 		this.mediaRecorder.get().stop();
+		this.mediaRecorder.set(null);
 	}
 	if (this.mediaStream) {
 		const mediaStream = this.mediaStream.get();
@@ -85,20 +111,13 @@ Template.broadcastView.onRendered(async function() {
 			}
 			sendMessageToWebSocket(event.data, connection);
 		};
-		mediaRecorder.start(300); // collect 100ms of data
+		mediaRecorder.start(100); // collect 100ms of data
 		this.mediaRecorder.set(mediaRecorder);
 
-		while (true) { //eslint-disable-line no-constant-condition
-			const result = await call('livestreamStreamStatus', {streamId:this.data.stream.id});
-			if (result === 'active') {
-				break;
-			}
-			console.log(result, 'FOR->>>>>');
-			await delay(1000);
-		}
-		console.log('active');
-		await call('livestreamTest', {broadcastId:this.data.broadcast.id});
+		await waitForStreamStatus(this.data.stream.id, 'active');
+		await call('setLivestreamStatus', { broadcastId: this.data.broadcast.id, status: 'testing' });
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStreamReady'));
+
 	} catch (e) {
 		console.log(e);
 	}
@@ -106,7 +125,8 @@ Template.broadcastView.onRendered(async function() {
 
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
-		await call('livestreamStart', {broadcastId: i.data.broadcast.id});
+		await waitForBroadcastStatus(i.data.stream.id, 'testing');
+		await call('setLivestreamStatus', {broadcastId: i.data.broadcast.id, status: 'live'});
 		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
 	}
