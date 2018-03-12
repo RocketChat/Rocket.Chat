@@ -335,7 +335,7 @@ RocketChat.Livechat = {
 				extraData._hidden = true;
 			}
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_navigation_history', room._id, `${ TAPi18n.__('New_visitor_navigation') }: ${pageTitle} - ${pageUrl}`, user, extraData);
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_navigation_history', room._id, `${ TAPi18n.__('New_visitor_navigation') }: ${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
 
 		return;

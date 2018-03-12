@@ -287,7 +287,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findByRoomIdAndType(roomId, type, options) {
 		const query = {
 			rid: roomId,
-			t: type,
+			t: type
 		};
 
 		if (options == null) { options = {}; }
