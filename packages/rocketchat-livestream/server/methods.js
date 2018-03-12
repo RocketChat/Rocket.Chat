@@ -62,7 +62,7 @@ Meteor.methods({
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error--allowed', 'You have no settings to livestream', {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
 				method: 'livestreamGet'
 			});
 		}
@@ -71,7 +71,7 @@ Meteor.methods({
 
 		if (!room) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-', 'You have no settings to livestream', {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
 				method: 'livestreamGet'
 			});
 		}
