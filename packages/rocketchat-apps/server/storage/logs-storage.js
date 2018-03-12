@@ -22,14 +22,11 @@ export class AppRealLogsStorage extends AppLogStorage {
 	}
 
 	storeEntries(appId, logger) {
-		console.log(appId);
 		return new Promise((resolve, reject) => {
 			const item = AppConsole.toStorageEntry(appId, logger);
 
 			try {
-				console.log(item);
 				const id = this.db.insert(item);
-				console.log(id);
 
 				resolve(this.db.findOneById(id));
 			} catch (e) {
