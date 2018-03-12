@@ -33,7 +33,7 @@ RocketChat.API.v1.addRoute('e2e.addKeyToChain', { authRequired: true }, {
 	post() {
 		const RSAPubKey = this.bodyParams.RSAPubKey;
 		const RSAEPrivKey = this.bodyParams.RSAEPrivKey;
-		
+
 		Meteor.runAsUser(this.userId, () => {
 			RocketChat.API.v1.success(Meteor.call('addKeyToChain', {'RSA-PubKey': RSAPubKey, 'RSA-EPrivKey': RSAEPrivKey}));
 		});

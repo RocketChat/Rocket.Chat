@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 Template.e2eFlexTab.helpers({
 	e2eAvailable() {
 		return RocketChat.E2E && RocketChat.E2E.isEnabled();
