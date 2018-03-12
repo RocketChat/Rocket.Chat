@@ -87,13 +87,11 @@ export const createLiveStream = async({
 	clientSecret
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
-	console.log(11);
 	auth.setCredentials({
 		access_token,
 		refresh_token
 	});
 	const youtube = google.youtube({ version:'v3', auth });
-	console.log(12);
 
 	const [stream, broadcast] = await Promise.all([p((resolve) => youtube.liveStreams.insert({
 		part: 'id,snippet,cdn,contentDetails,status',
@@ -118,7 +116,6 @@ export const createLiveStream = async({
 			}
 		}
 	}, resolve))]);
-	console.log(123);
 
 	await p(resolve => youtube.liveBroadcasts.bind({
 		part: 'id,snippet,status',
