@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: [2, { "args": "none" }]*/
 import _ from 'underscore';
 import SearchLogger from '../logger/logger';
 
@@ -119,6 +120,14 @@ export default class SearchProvider {
 	}
 
 	/*--- search functions ---*/
+	/**
+	 * Search using the current search provider and check if results are valid for the user. The search result has
+	 * the format {messages:{start:0,numFound:1,docs:[{...}]},users:{...},rooms:{...}}
+	 * @param text the search text
+	 * @param context the context (uid, rid)
+	 * @param payload custom payload (e.g. for paging)
+	 * @param callback is used to return result an can be called with (error,result)
+	 */
 	search(text, context, payload, callback) {
 		throw new Error('Function search has to be implemented');
 	}
@@ -132,7 +141,7 @@ export default class SearchProvider {
 	}
 
 	/*--- triggers ---*/
-	on(name, value, payload) {
+	on(name, value) {
 		return true;
 	}
 

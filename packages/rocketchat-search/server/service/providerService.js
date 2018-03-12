@@ -161,7 +161,7 @@ Meteor.methods({
 
 		try {
 
-			if (!searchProviderService.activeProvider) throw new Error('Provider currently not active');
+			if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
 
 			SearchLogger.debug('query: ', `Search:\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
 
