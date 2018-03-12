@@ -60,7 +60,7 @@ RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// only call webhook if it is a livechat room
-	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+	if (room.t !== 'l' || room.v == null || room.v.token == null) {
 		return message;
 	}
 
