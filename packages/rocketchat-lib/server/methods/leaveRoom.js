@@ -24,7 +24,9 @@ Meteor.methods({
 		if (RocketChat.authz.hasRole(user._id, 'owner', room._id)) {
 			const numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length;
 			if (numOwners === 1) {
-				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
+				if(room.usernames.length > 1){
+						throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
+				}
 			}
 		}
 
