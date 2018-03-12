@@ -170,8 +170,7 @@ rocketchat:importer-slack@0.0.1
 rocketchat:importer-slack-users@1.0.0
 rocketchat:integrations@0.0.1
 rocketchat:internal-hubot@0.0.1
-rocketchat:irc@0.0.2
-rocketchat:irc-server@0.0.1
+rocketchat:irc@0.0.1
 rocketchat:issuelinks@0.0.1
 rocketchat:katex@0.0.1
 rocketchat:ldap@0.0.1

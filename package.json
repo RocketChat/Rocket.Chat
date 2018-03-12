@@ -159,6 +159,7 @@
 		"poplib": "^0.1.7",
 		"prom-client": "^10.2.2",
 		"querystring": "0.2.0",
+		"queue-fifo": "^0.2.4",
 		"redis": "2.2.5",
 		"semver": "^5.4.1",
 		"slack-client": "2.0.6",
