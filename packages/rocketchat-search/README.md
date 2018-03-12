@@ -18,6 +18,8 @@ class MyProvider extends SearchProvider {
 		//do some search and call the callback with the result
 	};
 }
+
+searchProviderService.register(new MyProvider());
 ```
 
 ### Settings
@@ -43,6 +45,22 @@ Search provider can have their own result template. The template is loaded with 
  parentPayload, //the main search payload (not reset for new searches)
  payload, //the payload (reseted when new search is issed from search field)
  search //the search function
+}
+```
+
+### Search Result
+In order to provide a proper validation of the results the search function of the provider must follow at the following (extendable) format:
+```ecmascript 6
+{
+  message: {
+    docs:[{_id},...]
+  },
+  room: {
+    docs:[{_id},...]
+  },
+  user: {
+    docs:[{_id},...]
+  }
 }
 ```
 
