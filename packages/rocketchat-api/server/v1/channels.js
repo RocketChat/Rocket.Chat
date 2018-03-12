@@ -330,7 +330,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+			result = Meteor.call('getChannelHistory', {
+				rid: findResult._id,
+				latest: latestDate,
+				oldest: oldestDate,
+				inclusive,
+				count,
+				unreads
+			});
 		});
 
 		if (!result) {
@@ -476,7 +483,11 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+			returnUsernames: true
+		});
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
@@ -625,7 +636,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId} });
+		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId } });
 
 		if (findResult.name === this.bodyParams.name) {
 			return RocketChat.API.v1.failure('The channel name is the same as what it would be renamed to.');
@@ -784,3 +795,33 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, {
+	get() {
+		const mountMentionObject = (mention) => {
+			return {
+				messageId: mention._id,
+				roomId: mention.rid,
+				timestamp: mention.ts,
+				user: {
+					id: mention.u._id,
+					username: mention.u.username,
+					name: mention.u.name
+				}
+			};
+		};
+		const { roomId } = this.requestParams();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The request param \'roomId\' is required');
+		}
+
+		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', { roomId }));
+
+		return RocketChat.API.v1.success({
+			mentions: mentions.map(mountMentionObject)
+		});
+	}
+});
+
+
