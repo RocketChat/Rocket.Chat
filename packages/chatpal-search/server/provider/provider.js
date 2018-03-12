@@ -76,6 +76,18 @@ class ChatpalProvider extends SearchProvider {
 		this._settings.add('PageSize', 'int', 15, {
 			i18nLabel: 'Search_Page_Size'
 		});
+		this._settings.add('BatchSize', 'int', 100, {
+			i18nLabel: 'Chatpal_Batch_Size',
+			i18nDescription: 'Chatpal_Batch_Size_Description'
+		});
+		this._settings.add('TimeoutSize', 'int', 5000, {
+			i18nLabel: 'Chatpal_Timeout_Size',
+			i18nDescription: 'Chatpal_Timeout_Size_Description'
+		});
+		this._settings.add('WindowSize', 'int', 48, {
+			i18nLabel: 'Chatpal_Window_Size',
+			i18nDescription: 'Chatpal_Window_Size_Description'
+		});
 	}
 
 	get i18nLabel() {
@@ -203,6 +215,10 @@ class ChatpalProvider extends SearchProvider {
 				headers: this._parseHeaders()
 			};
 		}
+
+		config.batchSize = this._settings.get('BatchSize');
+		config.timeout = this._settings.get('TimeoutSize');
+		config.windowSize = this._settings.get('WindowSize');
 
 		this._ping(config, callback);
 

@@ -3,15 +3,17 @@ import toastr from 'toastr';
 
 Template.RocketSearch.onCreated(function() {
 
-	this.error = new ReactiveVar();
 	this.provider = new ReactiveVar();
+	this.isActive = new ReactiveVar(false);
+	this.error = new ReactiveVar();
 
 	Meteor.call('rocketchatSearch.getProvider', (error, provider) => {
-		if (error) {
-			this.error.set({msg:'Cannot load result template for active search provider', error});
-		} else {
+		if (!error && provider) {
 			this.scope.settings = provider.settings;
 			this.provider.set(provider);
+			this.isActive.set(true);
+		} else {
+			this.error.set('Search_current_provider_not_active');
 		}
 	});
 
@@ -25,7 +27,7 @@ Template.RocketSearch.onCreated(function() {
 
 			Meteor.call('rocketchatSearch.search', this.scope.text.get(), {rid:Session.get('openedRoom'), uid:Meteor.userId()}, _p, (err, result) => {
 				if (err) {
-					toastr.error(TAPi18n.__('SEARCH_MSG_ERROR_SEARCH_FAILED'));
+					toastr.error(TAPi18n.__('Search_message_search_failed'));
 					this.scope.searching.set(false);
 				} else {
 					this.scope.searching.set(false);
@@ -72,6 +74,10 @@ Template.RocketSearch.helpers({
 	},
 	text() {
 		return Template.instance().scope.text.get();
+	},
+	isActive() {
+		return Template.instance().isActive.get();
 	}
+
 });
 

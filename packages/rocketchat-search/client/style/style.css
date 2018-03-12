@@ -31,3 +31,7 @@
 	padding-left: 70px !important;
 	padding-right: 8px !important;
 }
+
+.rocket-search-error {
+	padding: 0 24px;
+}

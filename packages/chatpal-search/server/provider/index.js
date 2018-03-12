@@ -335,7 +335,7 @@ export default class Index {
 		if (this._existsDataOlderThan(date) && !this._break) {
 
 			Meteor.setTimeout(() => {
-				date = this._indexMessages(date, (this._options.gap || 24) * 3600000);
+				date = this._indexMessages(date, (this._options.windowSize || 24) * 3600000);
 
 				this._run(date, fut);
 
@@ -350,7 +350,7 @@ export default class Index {
 			fut.return();
 		} else {
 
-			ChatpalLogger.info('No messages older than already indexed date ' + new Date(date).toString());
+			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
 
 			if (this._doesUserCountDiffer()) {
 				this._indexUsers();

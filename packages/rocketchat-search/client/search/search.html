@@ -1,4 +1,11 @@
 <template name="RocketSearch">
+	{{#unless isActive}}
+		{{#if error}}
+			<div class="rocket-search-error">
+				{{_ error}}
+			</div>
+		{{/if}}
+	{{else}}
 	<div class="rocket-search-tab list-view {{provider.key}}">
 		{{#if provider.description}}
 			<div class="title">
@@ -20,14 +27,9 @@
 			</form>
 		</div>
 
-		{{#unless error}}
-			<div class="rocket-search-result">
-				{{> Template.dynamic template=provider.resultTemplate data=scope}}
-			</div>
-		{{else}}
-			<div class="rocket-search-error">
-				{{error.msg}}
-			</div>
-		{{/unless}}
+		<div class="rocket-search-result">
+			{{> Template.dynamic template=provider.resultTemplate data=scope}}
+		</div>
 	</div>
+	{{/unless}}
 </template>
