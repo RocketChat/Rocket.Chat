@@ -16,7 +16,8 @@
     font-size: 50px;
   }
   & .--play-solid {
-    fill: var(--rc-color-primary-lightest);;
+    fill: var(--color-white);
+    fill: white;
   }
 }
 .liveStreamTab__form {
@@ -37,7 +38,8 @@
   & .current-setting {
     display: inline-block;
     text-decoration: none;
-    color: var(--rc-color-primary-dark);
+    color: var(--color-dark);
+    color: black;
   }
 
   & .rc-button {

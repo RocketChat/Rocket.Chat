@@ -16,8 +16,7 @@ export const statusStreamLiveStream = async({
 	access_token,
 	refresh_token,
 	clientId,
-	clientSecret,
-	status
+	clientSecret
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
@@ -98,7 +97,7 @@ export const createLiveStream = async({
 		}
 	}, resolve))]);
 
-	const ret = await p(resolve => youtube.liveBroadcasts.bind({
+	await p(resolve => youtube.liveBroadcasts.bind({
 		part: 'id,snippet,status',
 		// resource: {
 		id: broadcast.id,

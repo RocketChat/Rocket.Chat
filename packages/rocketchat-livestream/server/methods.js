@@ -8,14 +8,14 @@ Meteor.methods({
 	async livestreamStreamStatus({streamId}) {
 		if (!streamId) {
 			// TODO: change error
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to hgggghggg', {
+			throw new Meteor.Error('error-not-allowed', 'Livestream ID not found', {
 				method: 'livestreamStreamStatus'
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
-			throw new Meteor.Error('error-not-allowed', 'You have no settings to fasfas', {
+			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
 				method: 'livestreamStreamStatus'
 			});
 		}

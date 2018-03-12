@@ -51,7 +51,11 @@ Template.broadcastView.onDestroyed(function() {
 	if (this.mediaRecorder.get()) {
 		this.mediaRecorder.get().stop();
 	}
-	this.mediaStream.set(null);
+	if (this.mediaStream) {
+		const mediaStream = this.mediaStream.get();
+		mediaStream.getTracks().map((track) => track.stop());
+		this.mediaStream.set(null);
+	}
 });
 Template.broadcastView.onRendered(async function() {
 	navigator.getMedia = getMedia();
@@ -102,8 +106,6 @@ Template.broadcastView.onRendered(async function() {
 
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
-
-
 		await call('livestreamStart', {broadcastId: i.data.broadcast.id});
 		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
