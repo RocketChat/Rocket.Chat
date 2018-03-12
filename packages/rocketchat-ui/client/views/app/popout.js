@@ -113,7 +113,7 @@ Template.popout.onCreated(function() {
 
 	this.isMuted = new ReactiveVar(false);
 	this.isPlaying = new ReactiveVar(true);
-	this.streamStatus = new ReactiveVar('');
+	this.streamStatus = new ReactiveVar('loading');
 	document.body.addEventListener('dragstart', popout.dragstart, true);
 	document.body.addEventListener('dragover', popout.dragover, true);
 	document.body.addEventListener('dragend', popout.dragend, true);
@@ -165,9 +165,13 @@ Template.popout.events({
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('startStreaming'));
 		i.streamStatus.set('starting');
 	},
+	'broadcastStreamReady .streaming-popup'(e, i) {
+		e.preventDefault();
+		i.streamStatus.set('ready');
+	},
 	'broadcastStream .streaming-popup'(e, i) {
 		e.preventDefault();
-		i.streamStatus.set('broadcasting');
+		i.streamStatus.set('recording');
 	},
 	'click .rc-popout__controls--play'(e, i) {
 		window.liveStreamPlayer.playVideo();

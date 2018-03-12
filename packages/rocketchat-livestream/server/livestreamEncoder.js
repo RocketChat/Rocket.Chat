@@ -1,7 +1,7 @@
 const ffmpeg = require('fluent-ffmpeg');
 const wss = require('websocket-stream');
 import ws from 'ws';
-const WebSocketServer = new ws.Server({port: 3001});
+const WebSocketServer = new ws.Server({port: 3002});
 
 /*
 VBR="2500k"                                    # Bitrate de la vidéo en sortie

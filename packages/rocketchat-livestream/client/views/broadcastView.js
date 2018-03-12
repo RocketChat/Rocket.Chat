@@ -35,9 +35,14 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function() {
+	const connection = createAndConnect(`ws://localhost:3002/${ this.data.id }`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
-	this.connection = new ReactiveVar(createAndConnect(`ws://localhost:3001/${ this.data.id }`));
+	this.connection = new ReactiveVar(connection);
+
+	if (!connection) {
+		return;
+	}
 });
 Template.broadcastView.onDestroyed(function() {
 	if (this.connection.get()) {
@@ -48,66 +53,59 @@ Template.broadcastView.onDestroyed(function() {
 	}
 	this.mediaStream.set(null);
 });
-Template.broadcastView.onRendered(function() {
+Template.broadcastView.onRendered(async function() {
 	navigator.getMedia = getMedia();
 	if (!navigator.getMedia) {
 		return alert('getUserMedia() is not supported in your browser!');
 	}
-	navigator.getMedia(
-		{video: true, audio: true}, localMediaStream =>	this.mediaStream.set(localMediaStream),
-		(e) => console.log(e)
-	);
+	const localMediaStream = await new Promise((resolve, reject) => navigator.getMedia({video: true, audio: true}, resolve, reject));
+
+	const connection = this.connection.get();
+
+	this.mediaStream.set(localMediaStream);
+	let options = {mimeType: 'video/webm;codecs=vp9'};
+	if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+		options = {mimeType: 'video/webm;codecs=vp8'};
+		if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+			options = {mimeType: 'video/webm'};
+			if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+				options = {mimeType: ''};
+			}
+		}
+	}
+	try {
+		const mediaRecorder = new MediaRecorder(localMediaStream, options);
+		mediaRecorder.ondataavailable = (event) => {
+			if (!(event.data || event.data.size > 0)) {
+				return;
+			}
+			sendMessageToWebSocket(event.data, connection);
+		};
+		mediaRecorder.start(300); // collect 100ms of data
+		this.mediaRecorder.set(mediaRecorder);
+
+		while (true) { //eslint-disable-line no-constant-condition
+			const result = await call('livestreamStreamStatus', {streamId:this.data.stream.id});
+			if (result === 'active') {
+				break;
+			}
+			console.log(result, 'FOR->>>>>');
+			await delay(1000);
+		}
+		console.log('active');
+		await call('livestreamTest', {broadcastId:this.data.broadcast.id});
+		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStreamReady'));
+	} catch (e) {
+		console.log(e);
+	}
 });
 
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
-		const connection = i.connection.get();
-		if (!connection) {
-			return;
-		}
-		let options = {mimeType: 'video/webm;codecs=vp9'};
-		if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-			options = {mimeType: 'video/webm;codecs=vp8'};
-			if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-				options = {mimeType: 'video/webm'};
-				if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-					options = {mimeType: ''};
-				}
-			}
-		}
-		try {
-			const mediaRecorder = new MediaRecorder(i.mediaStream.get(), options);
-			mediaRecorder.ondataavailable = (event) => {
-				if (!(event.data || event.data.size > 0)) {
-					return;
-				}
-				sendMessageToWebSocket(event.data, connection);
-			};
-			mediaRecorder.start(100); // collect 100ms of data
-			i.mediaRecorder.set(mediaRecorder);
 
-			while (true) { //eslint-disable-line no-constant-condition
-				const result = await call('livestreamStreamStatus', {streamId:i.data.stream.id});
-				if (result === 'active') {
-					break;
-				}
-				await delay(1000);
-			}
 
-			await call('livestreamTest', {broadcastId:i.data.broadcast.id});
-			call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`}, function(err) {
-				if (err) {
-					return handleError(err);
-				}
-			});
-
-			await delay(25000);
-			await call('livestreamStart', {broadcastId:i.data.broadcast.id});
-			document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
-
-		} catch (e) {
-			alert(`Exception while creating MediaRecorder: ${ e }. mimeType: ${ options.mimeType }`);
-			return;
-		}
+		await call('livestreamStart', {broadcastId: i.data.broadcast.id});
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
+		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
 	}
 });

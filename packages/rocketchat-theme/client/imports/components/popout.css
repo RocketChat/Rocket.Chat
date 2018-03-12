@@ -1,7 +1,19 @@
-@keyframes blink {
-	from {color: white;}
-	to {color: red;}
+@keyframes loading {
+	0% {
+		opacity: 0;
+		transform: scale(0.7);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(0.7);
+	}
 }
+
+
 
 .rc-popout {
 	min-width: 380px;
@@ -96,8 +108,18 @@
 			font-size: 16px;
 			margin: 0 5px;
 
-			&.starting {
-				animation: blink 2s infinite;
+			& > .rc-icon {
+				fill: currentColor;
+				stroke: currentColor;
+			}
+
+			&.recording {
+				color: red;
+				animation: loading 2s infinite;
+			}
+
+			&.loading {
+				animation: loading 2s infinite;
 			}
 			&.broadcasting {
 				color: red;
