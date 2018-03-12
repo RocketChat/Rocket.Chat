@@ -55,7 +55,7 @@ Meteor.methods({
 			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
-			return RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', {
+			return RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
 				...options,
 				sort,
 				fields: {

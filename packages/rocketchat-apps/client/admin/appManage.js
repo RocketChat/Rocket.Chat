@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { AppEvents } from '../communication';
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -13,24 +15,58 @@ Template.appManage.onCreated(function() {
 
 	const id = this.id.get();
 
+	function _morphSettings(settings) {
+		Object.keys(settings).forEach((k) => {
+			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
+			settings[k].value = settings[k].value || settings[k].packageValue;
+			settings[k].oldValue = settings[k].value;
+		});
+
+		instance.settings.set(settings);
+	}
+
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
 		RocketChat.API.get(`apps/${ id }/settings`)
 	]).then((results) => {
 		instance.app.set(results[0].app);
+		_morphSettings(results[1].settings);
 
-		Object.keys(results[1].settings).forEach((k) => {
-			results[1].settings[k].i18nPlaceholder = results[1].settings[k].i18nPlaceholder || ' ';
-			results[1].settings[k].value = results[1].settings[k].value || results[1].settings[k].packageValue;
-			results[1].settings[k].oldValue = results[1].settings[k].value;
-		});
-
-		instance.settings.set(results[1].settings);
 		this.ready.set(true);
 	}).catch((e) => {
 		instance.hasError.set(true);
 		instance.theError.set(e.message);
 	});
+
+	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
+		if (appId !== id) {
+			return;
+		}
+
+		const app = instance.app.get();
+		app.status = status;
+		instance.app.set(app);
+	};
+
+	instance.onSettingUpdated = function _onSettingUpdated({ appId }) {
+		if (appId !== id) {
+			return;
+		}
+
+		RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
+			_morphSettings(result.settings);
+		});
+	};
+
+	window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+	window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+});
+
+Template.apps.onDestroyed(function() {
+	const instance = this;
+
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
 
 Template.appManage.helpers({
@@ -173,7 +209,6 @@ Template.appManage.events({
 
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
-		console.log(value);
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
