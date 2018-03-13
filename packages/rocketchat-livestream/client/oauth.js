@@ -1,5 +1,5 @@
 export const close = (popup) => {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function(resolve) {
 		const checkInterval = setInterval(() => {
 			if (popup.closed) {
 				clearInterval(checkInterval);
