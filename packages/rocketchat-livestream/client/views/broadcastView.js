@@ -60,7 +60,7 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function() {
-	const connection = createAndConnect(`ws://localhost:3002/${ this.data.id }`);
+	const connection = createAndConnect(`ws://${ RocketChat.settings.get('Site_Url') }:3002/${ this.data.id }`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);

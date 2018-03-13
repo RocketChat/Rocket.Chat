@@ -3,7 +3,7 @@ const OAuth2 = google.auth.OAuth2;
 
 RocketChat.API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), 'http://localhost:3000/api/v1/livestream/oauth/callback');
+		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`);
 		const { userId } = this.queryParams;
 		console.log('userId', userId);
 		const url = clientAuth.generateAuthUrl({
@@ -29,7 +29,7 @@ RocketChat.API.v1.addRoute('livestream/oauth/callback', {
 
 		const { userId } = JSON.parse(state);
 
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), 'http://localhost:3000/api/v1/livestream/oauth/callback');
+		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`);
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
