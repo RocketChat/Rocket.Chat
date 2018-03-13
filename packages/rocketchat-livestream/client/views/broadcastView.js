@@ -116,6 +116,7 @@ Template.broadcastView.onRendered(async function() {
 
 		await waitForStreamStatus(this.data.stream.id, 'active');
 		await call('setLivestreamStatus', { broadcastId: this.data.broadcast.id, status: 'testing' });
+		await waitForBroadcastStatus(this.data.broadcast.id, 'testing');
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStreamReady'));
 
 	} catch (e) {
@@ -125,7 +126,6 @@ Template.broadcastView.onRendered(async function() {
 
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
-		await waitForBroadcastStatus(i.data.stream.id, 'testing');
 		await call('setLivestreamStatus', {broadcastId: i.data.broadcast.id, status: 'live'});
 		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));

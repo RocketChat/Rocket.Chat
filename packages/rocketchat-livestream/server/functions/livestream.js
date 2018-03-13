@@ -24,13 +24,14 @@ export const statusBroadcast = async({
 		access_token,
 		refresh_token
 	});
-
+	console.log('asd', id);
 	const youtube = google.youtube({ version:'v3', auth });
 	const result = await p(resolve => youtube.liveBroadcasts.list({
 		part:'id,status',
 		id
 	}, resolve));
-	return result.items && result.items[0].status.lifeCycleStatus;
+
+	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
 };
 
 export const statusStreamLiveStream = async({
