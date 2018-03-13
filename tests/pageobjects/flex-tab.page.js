@@ -44,7 +44,7 @@ class FlexTab extends Page {
 
 	// Search Tab
 	get searchTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--magnifier'); }
-	get searchTabContent() { return browser.element('.search-messages-list'); }
+	get searchTabContent() { return browser.element('.rocket-search-result'); }
 	get messageSearchBar() { return browser.element('#message-search'); }
 	get searchResult() { return browser.element('.new-day'); }
 
