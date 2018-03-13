@@ -16,7 +16,6 @@
     font-size: 50px;
   }
   & .--play-solid {
-    fill: var(--color-white);
     fill: white;
   }
 }
@@ -38,7 +37,6 @@
   & .current-setting {
     display: inline-block;
     text-decoration: none;
-    color: var(--color-dark);
     color: black;
   }
 

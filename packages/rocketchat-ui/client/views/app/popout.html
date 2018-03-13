@@ -20,6 +20,7 @@
 				{{#if showStreamControls}}
 					<div class="rc-popout__controls">
 							<button class="rc-popout__controls--record {{ getStreamStatus }}"> {{> icon icon="circle" }} </button>
+							<span> {{ getStreamStatus }} </span>
 					</div>
 				{{/if}}
 				{{#unless isAudioOnly}}
@@ -54,6 +55,7 @@
 				{{#if showStreamControls}}
 					<div class="rc-popout__controls">
 						<button class="rc-popout__controls--record {{ getStreamStatus }}"> {{> icon icon="circle" }} </button>
+						<span> {{ getStreamStatus }} </span>
 					</div>
 				{{/if}}
 			</main>
