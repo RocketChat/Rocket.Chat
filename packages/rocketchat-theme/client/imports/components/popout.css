@@ -113,18 +113,18 @@
 				stroke: currentColor;
 			}
 
-			&.recording {
-				color: red;
-				animation: loading 2s infinite;
-			}
-
-			&.loading {
+			&.preparing {
 				animation: loading 2s infinite;
 				pointer-events: none;
 			}
 			&.broadcasting {
 				color: red;
 			}
+		}
+		& span {
+			text-transform: capitalize;
+			font-size: 15px;
+			line-height: 18px;
 		}
 	}
 

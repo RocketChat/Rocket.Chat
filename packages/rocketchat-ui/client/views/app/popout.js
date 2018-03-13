@@ -113,7 +113,7 @@ Template.popout.onCreated(function() {
 
 	this.isMuted = new ReactiveVar(false);
 	this.isPlaying = new ReactiveVar(true);
-	this.streamStatus = new ReactiveVar('loading');
+	this.streamStatus = new ReactiveVar('preparing');
 	document.body.addEventListener('dragstart', popout.dragstart, true);
 	document.body.addEventListener('dragover', popout.dragover, true);
 	document.body.addEventListener('dragend', popout.dragend, true);
@@ -162,8 +162,14 @@ Template.popout.events({
 	},
 	'click .rc-popout__controls--record'(e, i) {
 		e.preventDefault();
-		document.querySelector('.streaming-popup').dispatchEvent(new Event('startStreaming'));
-		i.streamStatus.set('starting');
+		if (i.streamStatus.get() === 'ready') {
+			document.querySelector('.streaming-popup').dispatchEvent(new Event('startStreaming'));
+			i.streamStatus.set('starting');
+		} else if (i.streamStatus.get() === 'broadcasting') {
+			document.querySelector('.streaming-popup').dispatchEvent(new Event('stopStreaming'));
+			i.streamStatus.set('finished');
+			setTimeout(() => popout && popout.close(), 2000);
+		}
 	},
 	'broadcastStreamReady .streaming-popup'(e, i) {
 		e.preventDefault();
@@ -171,7 +177,7 @@ Template.popout.events({
 	},
 	'broadcastStream .streaming-popup'(e, i) {
 		e.preventDefault();
-		i.streamStatus.set('recording');
+		i.streamStatus.set('broadcasting');
 	},
 	'click .rc-popout__controls--play'(e, i) {
 		window.liveStreamPlayer.playVideo();

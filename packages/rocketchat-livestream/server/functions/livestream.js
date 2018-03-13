@@ -11,7 +11,7 @@ const p = fn => new Promise(function(resolve, reject) {
 	});
 });
 
-export const statusBroadcast = async({
+export const getBroadcastStatus = async({
 	id,
 	access_token,
 	refresh_token,
@@ -24,13 +24,11 @@ export const statusBroadcast = async({
 		access_token,
 		refresh_token
 	});
-	console.log('asd', id);
 	const youtube = google.youtube({ version:'v3', auth });
 	const result = await p(resolve => youtube.liveBroadcasts.list({
 		part:'id,status',
 		id
 	}, resolve));
-
 	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
 };
 
@@ -57,6 +55,30 @@ export const statusStreamLiveStream = async({
 };
 
 export const statusLiveStream = ({
+	id,
+	access_token,
+	refresh_token,
+	clientId,
+	clientSecret,
+	status
+}) => {
+	const auth = new OAuth2(clientId, clientSecret);
+
+	auth.setCredentials({
+		access_token,
+		refresh_token
+	});
+
+	const youtube = google.youtube({ version:'v3', auth });
+
+	return p(resolve => youtube.liveBroadcasts.transition({
+		part:'id,status',
+		id,
+		broadcastStatus: status
+	}, resolve));
+};
+
+export const setBroadcastStatus = ({
 	id,
 	access_token,
 	refresh_token,

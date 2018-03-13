@@ -77,9 +77,8 @@ Template.broadcastView.onDestroyed(function() {
 		this.mediaRecorder.get().stop();
 		this.mediaRecorder.set(null);
 	}
-	if (this.mediaStream) {
-		const mediaStream = this.mediaStream.get();
-		mediaStream.getTracks().map((track) => track.stop());
+	if (this.mediaStream.get()) {
+		this.mediaStream.get().getTracks().map((track) => track.stop());
 		this.mediaStream.set(null);
 	}
 });
@@ -127,7 +126,18 @@ Template.broadcastView.onRendered(async function() {
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
 		await call('setLivestreamStatus', {broadcastId: i.data.broadcast.id, status: 'live'});
-		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
+	},
+	async 'stopStreaming .streaming-popup'(e, i) {
+		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
+		if (i.mediaRecorder.get()) {
+			i.mediaRecorder.get().stop();
+			i.mediaRecorder.set(null);
+		}
+		if (i.mediaStream.get()) {
+			i.mediaStream.get().getTracks().map((track) => track.stop());
+			i.mediaStream.set(null);
+		}
 	}
 });
