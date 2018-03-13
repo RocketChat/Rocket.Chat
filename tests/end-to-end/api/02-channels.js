@@ -2,8 +2,20 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log, apiPublicChannelName, channel } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	apiEmail,
+	apiUsername,
+	targetUser,
+	log,
+	apiPublicChannelName,
+	channel
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 function getRoomInfo(roomId) {
@@ -477,26 +489,6 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.leave', async(done) => {
-		const roomInfo = await getRoomInfo(channel._id);
-
-		request.post(api('channels.leave'))
-			.set(credentials)
-			.send({
-				roomId: channel._id
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
-	});
-
 	it('/channels.setType', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
@@ -558,5 +550,63 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
+	});
+
+	it('GET /channels.notifications', (done) => {
+		request.get(api('channels.notifications'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('subscription').and.to.be.an('object');
+			})
+			.end(done);
+	});
+
+	it('POST /channels.notifications', (done) => {
+		request.post(api('channels.notifications'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				notifications: {
+					disableNotifications: '0',
+					emailNotifications: 'nothing',
+					audioNotificationValue: 'beep',
+					desktopNotificationDuration: '2',
+					audioNotifications: 'all',
+					mobilePushNotifications: 'mentions'
+				}
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+
+		it('/channels.leave', async(done) => {
+			const roomInfo = await getRoomInfo(channel._id);
+
+			request.post(api('channels.leave'))
+				.set(credentials)
+				.send({
+					roomId: channel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+				})
+				.end(done);
+		});
+
 	});
 });
