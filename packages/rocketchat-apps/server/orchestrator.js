@@ -1,5 +1,5 @@
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppsRestApi, AppWebsocketNotifier } from './communication';
+import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, AppRealStorage, AppRealLogsStorage } from './storage';
 
@@ -29,7 +29,7 @@ class AppServerOrchestrator {
 
 		this._communicators = new Map();
 		this._communicators.set('methods', new AppMethods(this._manager));
-		this._communicators.set('notifier', new AppWebsocketNotifier());
+		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 	}
 
