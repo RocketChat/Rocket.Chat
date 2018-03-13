@@ -795,3 +795,44 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('channels.notifications', { authRequired: true }, {
+	get() {
+		const removeUnusedProperties = (subscription) => {
+			delete subscription._user;
+			delete subscription.$loki;
+			delete subscription._room;
+
+			return subscription;
+		};
+		const { roomId } = this.requestParams();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+
+		return RocketChat.API.v1.success({
+			subscription: removeUnusedProperties(Object.assign({}, subscription))
+		});
+	},
+	post() {
+		const saveNotifications = (notifications, roomId) => {
+			Object.keys(notifications).map((notificationKey) => {
+				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
+			});
+		};
+		const { roomId, notifications } = this.bodyParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!notifications || Object.keys(notifications).length === 0) {
+			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+		}
+
+		saveNotifications(notifications, roomId);
+	}
+});
