@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 class ValidationService {
 	constructor() {}
 
@@ -10,24 +12,31 @@ class ValidationService {
 		const uid = Meteor.userId();
 		//get subscription for message
 		if (result.message) {
-			result.message.docs.forEach((msg) => {
-				const subscription = Meteor.call('canAccessRoom', msg.rid, uid);
-				if (subscription) {
-					msg.r = {name:subscription.name, t:subscription.t};
-					msg.username = subscription.username;
-				} else {
-					msg.valid = false;
-				}
-			});
+			result.message.doc = _.chain(result.message.docs)
+				.each((msg) => {
+					const subscription = Meteor.call('canAccessRoom', msg.rid, uid);
+					if (subscription) {
+						msg.r = {name: subscription.name, t: subscription.t};
+						msg.username = subscription.username;
+						msg.valid = true;
+					}
+				})
+				.filter((msg) => {
+					return msg.valid;
+				}).value();
 		}
 
 		if (result.room) {
-			result.room.docs.forEach((room) => {
-				const subscription = Meteor.call('canAccessRoom', room._id, uid);
-				if (!subscription) {
-					room.valid = false;
-				}
-			});
+			result.room.docs = _.chain(result.room.docs)
+				.forEach((room) => {
+					const subscription = Meteor.call('canAccessRoom', room._id, uid);
+					if (subscription) {
+						room.valid = true;
+					}
+				})
+				.filter((room) => {
+					return room.valid;
+				}).value();
 		}
 
 		//TODO what to do with non valid massages and rooms?
