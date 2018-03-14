@@ -1,27 +1,29 @@
 import _ from 'underscore';
 
+import SearchLogger from '../logger/logger';
+
 class ValidationService {
 	constructor() {}
 
-	_getSubscription(room_id, user_id) {
-		return RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room_id, user_id);
-	}
-
 	validateSearchResult(result) {
-		//TODO validate if current user is able to get the results
+
 		const uid = Meteor.userId();
 		//get subscription for message
 		if (result.message) {
-			result.message.doc = _.chain(result.message.docs)
+			result.message.docs = _.chain(result.message.docs)
 				.each((msg) => {
 					const subscription = Meteor.call('canAccessRoom', msg.rid, uid);
 					if (subscription) {
 						msg.r = {name: subscription.name, t: subscription.t};
 						msg.username = subscription.username;
 						msg.valid = true;
+						SearchLogger.debug(`user ${ uid } can access ${ msg.rid } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
+					} else {
+						SearchLogger.debug(`user ${ uid } can NOT access ${ msg.rid }`);
 					}
 				})
 				.filter((msg) => {
+					SearchLogger.debug(JSON.stringify(msg,null,2));
 					return msg.valid;
 				}).value();
 		}
@@ -32,14 +34,15 @@ class ValidationService {
 					const subscription = Meteor.call('canAccessRoom', room._id, uid);
 					if (subscription) {
 						room.valid = true;
+						SearchLogger.debug(`user ${ uid } can access ${ room._id } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
+					} else {
+						SearchLogger.debug(`user ${ uid } can NOT access ${ room._id }`);
 					}
 				})
 				.filter((room) => {
 					return room.valid;
 				}).value();
 		}
-
-		//TODO what to do with non valid massages and rooms?
 
 		return result;
 	}
