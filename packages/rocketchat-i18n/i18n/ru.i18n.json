@@ -736,6 +736,8 @@
   "From": "От",
   "From_Email": "Адрес электронной почты отправителя",
   "From_email_warning": "<b>Внимание</b>: Поле <b>От</b> зависит от настроек вашего почтового сервера.",
+  "Full_Screen_Mode_Enter": "На полный экран",
+  "Full_Screen_Mode_Exit": "Свернуть",
   "General": "Общие настройки",
   "github_no_public_email": "В вашей учетной записи GitHub отсутствует публично доступный адрес электронной почты",
   "Give_a_unique_name_for_the_custom_oauth": "Задайте uniquie name OAuth",

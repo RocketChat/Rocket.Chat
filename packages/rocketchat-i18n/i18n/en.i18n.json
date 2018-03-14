@@ -788,6 +788,8 @@
   "From": "From",
   "From_Email": "From Email",
   "From_email_warning": "<b>Warning</b>: The field <b>From</b> is subject to your mail server settings.",
+  "Full_Screen_Mode_Enter": "Full screen",
+  "Full_Screen_Mode_Exit": "Exit full screen",
   "General": "General",
   "github_no_public_email": "You don't have any email as public email in your GitHub account",
   "Give_a_unique_name_for_the_custom_oauth": "Give a unique name for the custom oauth",
