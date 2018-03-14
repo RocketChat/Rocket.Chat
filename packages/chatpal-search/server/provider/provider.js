@@ -233,7 +233,7 @@ class ChatpalProvider extends SearchProvider {
 		ChatpalLogger.info('Provider stopped');
 		Meteor.clearTimeout(this._pingTimeout);
 		this.indexFail = false;
-		this.index = undefined;
+		this.index && this.index.stop();
 		callback();
 	}
 

@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import ChatpalLogger from '../utils/logger';
+import { Random } from 'meteor/random'
 
 const Future = Npm.require('fibers/future');
 
@@ -185,6 +186,8 @@ export default class Index {
 	 */
 	constructor(options, clear) {
 
+		this._id = Random.id();
+
 		this._backend = new Backend(options);
 
 		this._options = options;
@@ -269,7 +272,7 @@ export default class Index {
 			this.indexDoc('user', user, false);
 		});
 
-		ChatpalLogger.info('Users indexed successfully');
+		ChatpalLogger.info(`Users indexed successfully (index-id: ${ this._id })`);
 	}
 
 	/**
@@ -285,7 +288,7 @@ export default class Index {
 			this.indexDoc('room', room, false);
 		});
 
-		ChatpalLogger.info('Rooms indexed successfully');
+		ChatpalLogger.info(`Rooms indexed successfully (index-id: ${ this._id })`);
 	}
 
 	_indexMessages(date, gap) {
@@ -301,7 +304,7 @@ export default class Index {
 			this.indexDoc('message', message, false);
 		});
 
-		ChatpalLogger.info(`Messages between ${ start.toString() } and ${ end.toString() } indexed successfully`);
+		ChatpalLogger.info(`Messages between ${ start.toString() } and ${ end.toString() } indexed successfully (index-id: ${ this._id })`);
 
 		return start.getTime();
 	}
@@ -341,7 +344,7 @@ export default class Index {
 
 			}, this._options.timeout || 1000);
 		} else if (this._break) {
-			ChatpalLogger.info('stopped bootstrap');
+			ChatpalLogger.info(`stopped bootstrap (index-id: ${ this._id })`);
 
 			this._batchIndexer.flush();
 
@@ -352,13 +355,13 @@ export default class Index {
 
 			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
 
-			if (this._doesUserCountDiffer()) {
+			if (this._doesUserCountDiffer() && !this._break) {
 				this._indexUsers();
 			} else {
 				ChatpalLogger.info('Users already indexed');
 			}
 
-			if (this._doesRoomCountDiffer()) {
+			if (this._doesRoomCountDiffer() && !this._break) {
 				this._indexRooms();
 			} else {
 				ChatpalLogger.info('Rooms already indexed');
@@ -366,7 +369,7 @@ export default class Index {
 
 			this._batchIndexer.flush();
 
-			ChatpalLogger.info('finished bootstrap');
+			ChatpalLogger.info(`finished bootstrap (index-id: ${ this._id })`);
 
 			this._running = false;
 
