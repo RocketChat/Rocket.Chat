@@ -74,6 +74,14 @@ class ChatpalProvider extends SearchProvider {
 			i18nLabel: 'Chatpal_Main_Language',
 			i18nDescription: 'Chatpal_Main_Language_Description'
 		});
+		this._settings.add('DefaultResultType', 'select', 'All', {
+			values: [
+				{key: 'All', i18nLabel: 'All'},
+				{key: 'Messages', i18nLabel: 'Messages'}
+			],
+			i18nLabel: 'Default_Result_Type',
+			i18nDescription: 'Default_Result_Type_Description'
+		});
 		this._settings.add('PageSize', 'int', 15, {
 			i18nLabel: 'Search_Page_Size'
 		});

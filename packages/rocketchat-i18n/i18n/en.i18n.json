@@ -393,6 +393,8 @@
   "Chatpal_Base_URL_Description":"Find some description how to run a local instance <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\">on github</a>. The URL must be absolue and point to the chatpal core, e.g. http://localhost:8983/solr/chatpal.",
   "Chatpal_Main_Language":"Main Language",
   "Chatpal_Main_Language_Description":"The language that is used most in conversations",
+  "Chatpal_Default_Result_Type":"Default Result Type",
+  "Chatpal_Default_Result_Type_Description":"Defines which result type is shown by result. All means that an overview for all types is provided.",
   "Chatpal_AdminPage":"Chatpal Admin Page",
   "Chatpal_Email_Address":"Email Address",
   "Chatpal_Terms_and_Conditions":"Terms and Conditions",
