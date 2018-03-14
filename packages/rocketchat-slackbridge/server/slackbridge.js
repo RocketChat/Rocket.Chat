@@ -1,9 +1,4 @@
 /* globals logger */
-import _ from 'underscore';
-import util from 'util';
-import url from 'url';
-import http from 'http';
-import https from 'https';
 
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
@@ -58,35 +53,34 @@ class SlackBridge {
 				}
 			}
 
-			logger.class.debug('Setting: ' + key, value);
-		}
-	});
+			logger.class.debug(`Setting: ${ key }`, value);
+		});
 
 		//Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		RocketChat.settings.get('SlackBridge_AliasFormat', (key, value) => {
 			this.aliasFormat = value;
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		RocketChat.settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
 			this.excludeBotnames = value;
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Choose whether SlackBridge should also send your messages back to Slack
 		RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Send messages from all channels that exist in Slack and the bot has joined
 		RocketChat.settings.get('SlackBridge_Out_All', (key, value) => {
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Choose which channels will send messages back to Slack
 		RocketChat.settings.get('SlackBridge_Out_Channels', (key, value) => {
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 
@@ -97,7 +91,7 @@ class SlackBridge {
 			} else {
 				this.disconnect();
 			}
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 	}
 }

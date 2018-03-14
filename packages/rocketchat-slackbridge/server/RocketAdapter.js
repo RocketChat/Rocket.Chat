@@ -1,5 +1,7 @@
 /* globals logger*/
 
+import _ from 'underscore';
+
 export default class RocketAdapter {
 	constructor(slackBridge) {
 		logger.rocket.debug('constructor');
@@ -57,7 +59,7 @@ export default class RocketAdapter {
 			logger.rocket.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete('set' + rocketMsgID + reaction)) {
+				if (this.slackBridge.reactionsMap.delete(`set${ rocketMsgID }${ reaction }`)) {
 					//This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -80,7 +82,7 @@ export default class RocketAdapter {
 			logger.rocket.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete('unset' + rocketMsgID + reaction)) {
+				if (this.slackBridge.reactionsMap.delete(`unset${ rocketMsgID }${ reaction }`)) {
 					//This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -165,7 +167,7 @@ export default class RocketAdapter {
 	}
 
 	createRocketID(slackChannel, ts) {
-		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
+		return `slack-${ slackChannel }-${ ts.replace(/\./g, '-') }`;
 	}
 
 	findChannel(slackChannelId) {
@@ -243,7 +245,7 @@ export default class RocketAdapter {
 	findUser(slackUserID) {
 		const rocketUser = RocketChat.models.Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
-			this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUser.username}` };
+			this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUser.username }` };
 		}
 		return rocketUser;
 	}
@@ -321,7 +323,7 @@ export default class RocketAdapter {
 			}
 			RocketChat.models.Users.addImportIds(rocketUserData.rocketId, importIds);
 			if (!this.userTags[slackUserID]) {
-				this.userTags[slackUserID] = { slack: `<@${slackUserID}>`, rocket: `@${rocketUserData.name}` };
+				this.userTags[slackUserID] = { slack: `<@${ slackUserID }>`, rocket: `@${ rocketUserData.name }` };
 			}
 			return RocketChat.models.Users.findOneById(rocketUserData.rocketId);
 		}
@@ -330,9 +332,9 @@ export default class RocketAdapter {
 	}
 
 	addAliasToMsg(rocketUserName, rocketMsgObj) {
-		var aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
+		const aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		if (aliasFormat) {
-			var alias = this.util.format(aliasFormat, rocketUserName);
+			const alias = this.util.format(aliasFormat, rocketUserName);
 
 			if (alias !== rocketUserName) {
 				rocketMsgObj.alias = alias;
