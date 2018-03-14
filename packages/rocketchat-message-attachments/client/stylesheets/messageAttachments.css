@@ -57,7 +57,7 @@ html.rtl .attachment {
 			margin-bottom: -2px;
 		}
 
-		& .time {
+		& .time, .time-link {
 			font-size: 0.8em;
 			font-weight: normal;
 		}
