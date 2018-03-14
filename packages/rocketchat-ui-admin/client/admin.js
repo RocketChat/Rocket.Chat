@@ -298,6 +298,9 @@ Template.admin.helpers({
 			return `.${ fileConstraints.extensions.join(', .') }`;
 		}
 	},
+	disableAutocomplete(disable = false) {
+		autocomplete: off
+	},
 	autocompleteRoom() {
 		return {
 			limit: 10,
