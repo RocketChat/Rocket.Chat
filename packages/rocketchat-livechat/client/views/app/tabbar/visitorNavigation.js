@@ -9,7 +9,7 @@ Template.visitorNavigation.helpers({
 		const room = ChatRoom.findOne({ _id: this.rid }, { fields: { 'v.token': 1 } });
 
 		if (room) {
-			return LivechatMessage.find({rid: room._id, t: 'livechat_navigation_history', $or: [{ _shared: { $exists: false }}, { _shared: true }]}, { sort: { ts: -1 } });
+			return LivechatMessage.find({rid: room._id, t: 'livechat_navigation_history'}, { sort: { ts: -1 } });
 		}
 	},
 
