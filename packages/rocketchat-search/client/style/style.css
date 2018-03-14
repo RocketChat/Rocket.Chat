@@ -35,3 +35,7 @@
 .rocket-search-error {
 	padding: 0 24px;
 }
+
+.rocket-default-search-results .js-list {
+	overflow: hidden;
+}
