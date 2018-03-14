@@ -601,6 +601,11 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
+	this.add('Server_First_Access', true, {
+		type: 'boolean',
+		public: true,
+		blocked: true
+	});
 	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
 		i18nDescription: 'Site_Url_Description',

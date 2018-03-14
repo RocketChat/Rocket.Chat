@@ -24,6 +24,7 @@
 @import 'imports/components/sidebar/rooms-list.css';
 
 /* Main */
+@import 'imports/components/setup-wizard.css';
 @import 'imports/components/flex-nav.css';
 @import 'imports/components/header.css';
 @import 'imports/components/memberlist.css';

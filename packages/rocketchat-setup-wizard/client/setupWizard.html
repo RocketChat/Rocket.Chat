@@ -1,0 +1,34 @@
+<template name="setupWizard">
+	<section class="setup-wizard">
+		<div class="setup-wizard-wrapper">
+			<header class="setup-wizard-header">
+				<img class="setup-wizard-header-logo" src="images/logo/logo-dark.svg">
+			</header>
+			<main class="setup-wizard-content">
+				<p>step {{currentStep}}</p>
+				{{> Template.dynamic template=currentStepTemplate}}
+			</main>
+			<footer class="setup-wizard-footer">
+				{{#if $neq currentStep 0}}
+					<button class="rc-button rc-button--secondary setup-wizard-button-back">
+						<span>Back</span>
+					</button>
+				{{/if}}
+				<button class="rc-button rc-button--primary setup-wizard-button-next">
+					<span>Next</span>
+				</button>
+			</footer>
+		</div>
+	</section>
+</template>
+
+<template name="setup-wizard-step0">
+		<div class="setup-wizard-content-ilustration"></div>
+		<h1 class="setup-wizard-content-title">Introduction to the setup wizard</h1>
+		<p class="setup-wizard-content-text">
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a lacus hendrerit, sodales arcu vitae, dictum ex. In vestibulum odio non leo feugiat venenatis.
+		</p>
+		<p class="setup-wizard-content-text">
+			Nulla facilisi. Nunc consectetur id lacus a volutpat. Vestibulum convallis ante libero, id scelerisque sapien accumsan sit amet. Vestibulum risus ex, porttitor at tellus et, consectetur consectetur lectus.
+		</p>
+</template>

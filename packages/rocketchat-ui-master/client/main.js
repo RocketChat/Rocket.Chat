@@ -147,6 +147,9 @@ Template.main.helpers({
 		});
 		return ready;
 	},
+	serverFirstAccess() {
+		return RocketChat.settings.get('Server_First_Access');
+	},
 	hasUsername() {
 		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},

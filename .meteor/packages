@@ -185,3 +185,4 @@ todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:version-check
+rocketchat:setup-wizard
