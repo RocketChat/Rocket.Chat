@@ -18,6 +18,26 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('oAuthServices', { authRequired: false }, {
+	get() {
+		const mountOAuthServices = () => {
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}).fetch();
+
+			return oAuthServicesEnabled.map((service) => {
+				return {
+					id: service._id,
+					name: service.service,
+					appId: service.appId || service.clientId
+				}
+			})
+		};
+
+		return RocketChat.API.v1.success({
+			services: mountOAuthServices()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
 		const me = _.pick(this.user, [
