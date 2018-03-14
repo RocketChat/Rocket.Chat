@@ -99,6 +99,10 @@ class ChatpalProvider extends SearchProvider {
 		return 'ChatpalSearchResultTemplate';
 	}
 
+	get supportsSuggestions() {
+		return true;
+	}
+
 	/**
 	 * indexing for messages, rooms and users
 	 * @inheritDoc

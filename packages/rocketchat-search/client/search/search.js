@@ -1,5 +1,6 @@
 /* globals ReactiveVar, TAPi18n */
 import toastr from 'toastr';
+import _ from 'underscore';
 
 Template.RocketSearch.onCreated(function() {
 
@@ -17,7 +18,7 @@ Template.RocketSearch.onCreated(function() {
 		}
 	});
 
-	this.search = () => {
+	const _search = () => {
 
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
 
@@ -44,22 +45,38 @@ Template.RocketSearch.onCreated(function() {
 		settings: {},
 		parentPayload: {},
 		payload: {},
-		search: this.search
+		search: _search
+	};
+
+	this.search = (value) => {
+		this.scope.result.set(undefined);
+		this.scope.payload = {};
+		this.scope.text.set(value);
+		_search();
+	};
+
+	this.autocomplete = (value) => {
+		console.debug('automplete currently not implemented', value);
 	};
 
 });
 
-
 Template.RocketSearch.events = {
-	'keydown #message-search'(evt, t) {
-		if (evt.which === 13) {
-			evt.preventDefault();
-			t.scope.text.set(evt.target.value);
-			t.scope.result.set(undefined);
-			t.scope.payload = {};
-			t.search();
+	'keydown #message-search'(e) {
+		if (e.keyCode === 13) {
+			return e.preventDefault();
 		}
-	}
+	},
+	'keyup #message-search': _.debounce(function(evt, t) {
+		const value = evt.target.value.trim();
+
+		if (!t.provider.get().supportsSuggestions || evt.which === 13) {
+			t.search(value);
+		} else {
+			t.autocomplete(value);
+		}
+		return;
+	}, 300)
 };
 
 Template.RocketSearch.helpers({
