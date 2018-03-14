@@ -23,7 +23,7 @@ class ValidationService {
 					}
 				})
 				.filter((msg) => {
-					SearchLogger.debug(JSON.stringify(msg,null,2));
+					SearchLogger.debug(JSON.stringify(msg, null, 2));
 					return msg.valid;
 				}).value();
 		}

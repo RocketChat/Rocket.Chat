@@ -2,7 +2,7 @@ import moment from 'moment';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
-	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);console.log(this.resultType.get())
+	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
 	this.data.parentPayload.resultType = this.resultType.get();
 });
 

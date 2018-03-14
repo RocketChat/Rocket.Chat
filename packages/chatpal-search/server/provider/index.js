@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import ChatpalLogger from '../utils/logger';
-import { Random } from 'meteor/random'
+import { Random } from 'meteor/random';
 
 const Future = Npm.require('fibers/future');
 
