@@ -1,4 +1,5 @@
 import moment from 'moment';
+const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');
 
 Template.visitorNavigation.helpers({
 	loadingNavigation() {
@@ -9,7 +10,7 @@ Template.visitorNavigation.helpers({
 		const room = ChatRoom.findOne({ _id: this.rid }, { fields: { 'v.token': 1 } });
 
 		if (room) {
-			return LivechatMessage.find({rid: room._id, t: 'livechat_navigation_history'}, { sort: { ts: -1 } });
+			return visitorNavigationHistory.find({ rid: room._id }, { sort: { ts: -1 } });
 		}
 	},
 

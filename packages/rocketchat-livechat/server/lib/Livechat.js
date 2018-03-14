@@ -105,6 +105,10 @@ RocketChat.Livechat = {
 			throw new Meteor.Error('cannot-access-room');
 		}
 
+		if (newRoom) {
+			RocketChat.models.Messages.setRoomIdByToken(guest.token, room._id);
+		}
+
 		return { room, newRoom };
 	},
 	sendMessage({ guest, message, roomInfo, agent }) {
@@ -314,12 +318,6 @@ RocketChat.Livechat = {
 	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
 
-			// It's necessary to check the room due to the incMsgCountById method inside RocketChat.models.Rooms.findOneOpenByVisitorToken
-			const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(token, roomId);
-			if (!room) {
-				return false;
-			}
-
 			const user = RocketChat.models.Users.findOneById('rocket.cat');
 
 			const pageTitle = pageInfo.title;
@@ -331,11 +329,17 @@ RocketChat.Livechat = {
 				}
 			};
 
+			if (!roomId) {
+				// keep history of unregistered visitors for 1 month
+				const keepHistoryMiliseconds = 2592000000;
+				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+			}
+
 			if (!RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message')) {
 				extraData._hidden = true;
 			}
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_navigation_history', room._id, `${ TAPi18n.__('New_visitor_navigation') }: ${ pageTitle } - ${ pageUrl }`, user, extraData);
+			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ TAPi18n.__('New_visitor_navigation') }: ${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
 
 		return;

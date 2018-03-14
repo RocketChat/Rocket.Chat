@@ -7,6 +7,9 @@ Meteor.methods({
 			department
 		});
 
+		// update visited page history to not expire
+		RocketChat.models.Messages.keepHistoryForToken(token);
+
 		return {
 			userId
 		};

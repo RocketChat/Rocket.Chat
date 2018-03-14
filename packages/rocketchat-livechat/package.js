@@ -67,7 +67,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatInquiry.js', 'client');
 	api.addFiles('client/collections/livechatOfficeHour.js', 'client');
 	api.addFiles('client/collections/LivechatVisitor.js', 'client');
-	api.addFiles('client/collections/LivechatMessage.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -181,12 +180,12 @@ Package.onUse(function(api) {
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
 	api.addFiles('server/models/LivechatDepartmentAgents.js', 'server');
 	api.addFiles('server/models/LivechatPageVisited.js', 'server');
-	api.addFiles('server/models/LivechatMessage.js', 'server');
 	api.addFiles('server/models/LivechatTrigger.js', 'server');
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/LivechatInquiry.js', 'server');

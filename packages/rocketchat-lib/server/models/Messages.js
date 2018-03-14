@@ -541,6 +541,34 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return record;
 	}
 
+	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_navigation_history';
+		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 }});
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date,
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username
+			},
+			groupable: false
+		};
+
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
+		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
