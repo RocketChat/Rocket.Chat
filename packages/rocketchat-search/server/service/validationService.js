@@ -13,7 +13,7 @@ class ValidationService {
 			result.message.docs.forEach((msg) => {
 				const subscription = Meteor.call('canAccessRoom', msg.rid, uid);
 				if (subscription) {
-					msg.r = {name:subscription.name};
+					msg.r = {name:subscription.name, t:subscription.t};
 					msg.username = subscription.username;
 				} else {
 					msg.valid = false;

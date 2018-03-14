@@ -94,6 +94,11 @@ Template.ChatpalSearchSingleMessage.helpers({
 		return RocketChat.roomTypes.getRouteLink(subscription.t, subscription);
 	},
 
+	roomName() {
+		const room = Session.get(`roomData${ this.rid }`);
+		return RocketChat.roomTypes.getRoomName(room.t, room);
+	},
+
 	time() {
 		return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
 	},
