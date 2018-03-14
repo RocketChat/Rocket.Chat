@@ -632,6 +632,24 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('groups.setCustomFields', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.customFields) {
+			return RocketChat.API.v1.failure('The bodyParam "customFields" is required');
+		}
+
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'customFields', this.bodyParams.customFields);
+		});
+
+		return RocketChat.API.v1.success({
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
