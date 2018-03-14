@@ -298,7 +298,7 @@ Template.admin.helpers({
 			return `.${ fileConstraints.extensions.join(', .') }`;
 		}
 	},
-	isAutocomplete(autocomplete = true) {
+	hasAutocomplete(autocomplete = true) {
 		if (this.autocomplete === false) {
 			return {
 				autocomplete: 'off'
