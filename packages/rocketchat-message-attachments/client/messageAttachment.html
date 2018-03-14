@@ -12,7 +12,15 @@
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+							{{#if message_link}}
+								<span class="time-link">
+									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+								</span>
+							{{else}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/if}}
 						{{/if}}
 					</div>
 				{{else}}
@@ -22,7 +30,15 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+						{{#if message_link}}
+								<span class="time-link">
+									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+								</span>
+							{{else}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/if}}
 					{{/if}}
 					</div>
 				{{/if}}
