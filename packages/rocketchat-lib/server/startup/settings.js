@@ -999,13 +999,13 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Username',
-			disableAutocomplete: true
+			autocomplete: false
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password',
-			disableAutocomplete: true
+			autocomplete: false
 		});
 		this.add('From_Email', '', {
 			type: 'string',

@@ -298,8 +298,12 @@ Template.admin.helpers({
 			return `.${ fileConstraints.extensions.join(', .') }`;
 		}
 	},
-	disableAutocomplete(disable = false) {
-		autocomplete: off
+	isAutocomplete(autocomplete = true) {
+		if (this.autocomplete === false) {
+			return {
+				autocomplete: 'off'
+			};
+		}
 	},
 	autocompleteRoom() {
 		return {
