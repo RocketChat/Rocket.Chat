@@ -281,8 +281,6 @@ Template.accountProfile.onRendered(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();
 	});
-	$('.main-content').removeClass('rc-old');
-	// TODO: remove this line (:
 });
 
 const checkAvailability = _.debounce((username, {usernameAvaliable}) => {

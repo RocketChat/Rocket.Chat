@@ -23,7 +23,7 @@ const fixCordova = (url) => {
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {
 		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
 	}
 };
 
@@ -66,7 +66,6 @@ Template.uploadedFilesList.helpers({
 		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
 	},
 	files() {
-		console.log(roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } }).fetch());
 		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
 	},
 

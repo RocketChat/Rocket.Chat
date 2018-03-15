@@ -1,7 +1,7 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
-const can = {
+import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+const common = {
 	canLeaveRoom() {
 		const { cl: canLeave, t: roomType } = Template.instance().room;
 		return roomType !== 'd' && canLeave !== false;
@@ -19,20 +19,12 @@ const can = {
 	canEditRoom() {
 		const { _id } = Template.instance().room;
 		return RocketChat.authz.hasAllPermission('edit-room', _id);
+	},
+	isDirectMessage() {
+		const { room } = Template.instance();
+		return room.t === 'd';
 	}
 };
-const call = (method, ...params) => {
-	return new Promise((resolve, reject) => {
-		Meteor.call(method, ...params, (err, result)=> {
-			if (err) {
-				handleError(err);
-				return reject(err);
-			}
-			return resolve(result);
-		});
-	});
-};
-
 
 Template.channelSettingsEditing.events({
 	'input .js-input'(e) {
@@ -42,11 +34,11 @@ Template.channelSettingsEditing.events({
 		this.value.set(e.currentTarget.checked);
 	},
 	'click .js-reset'(e, t) {
-		const {settings} = t;
+		const { settings } = t;
 		Object.keys(settings).forEach(key => settings[key].value.set(settings[key].default.get()));
 	},
 	async 'click .js-save'(e, t) {
-		const {settings} = t;
+		const { settings } = t;
 		Object.keys(settings).forEach(async name => {
 			const setting = settings[name];
 			const value = setting.value.get();
@@ -197,7 +189,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				};
 				if (room['default']) {
 					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
-						return new Promise((resolve, reject)=> {
+						return new Promise((resolve, reject) => {
 							modal.open({
 								title: t('Room_default_change_to_private_will_be_default_no_more'),
 								type: 'warning',
@@ -265,7 +257,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id);
 			},
 			save(value) {
-				return new Promise((resolve, reject)=>{
+				return new Promise((resolve, reject) => {
 					modal.open({
 						title: t('Are_you_sure'),
 						type: 'warning',
@@ -343,14 +335,14 @@ Template.channelSettingsEditing.onCreated(function() {
 	};
 	Object.keys(this.settings).forEach(key => {
 		const setting = this.settings[key];
-		const def =setting.getValue ? setting.getValue(this.room): this.room[key];
+		const def = setting.getValue ? setting.getValue(this.room) : this.room[key];
 		setting.default = new ReactiveVar(def || false);
 		setting.value = new ReactiveVar(def || false);
 	});
 });
 
 Template.channelSettingsEditing.helpers({
-	...can,
+	...common,
 	value() {
 		return this.value.get();
 	},
@@ -364,7 +356,7 @@ Template.channelSettingsEditing.helpers({
 		return this.value.get();// ? '' : 'checked';
 	},
 	modified(text = '') {
-		const {settings} = Template.instance();
+		const { settings } = Template.instance();
 		return !Object.keys(settings).some(key => settings[key].default.get() !== settings[key].value.get()) ? text : '';
 	},
 	equal(text = '', text2 = '', ret = '*') {
@@ -381,7 +373,7 @@ Template.channelSettingsEditing.helpers({
 				return 'hashtag';
 			case 'l':
 				return 'livechat';
-			default :
+			default:
 				return null;
 		}
 	},
@@ -416,96 +408,20 @@ Template.channelSettings.events({
 		t.editing.set(true);
 	},
 	'click .js-leave'(e, instance) {
-		let warnText;
-		const { rid, name, t : type } = instance.room;
-		switch (type) {
-			case 'c': warnText = 'Leave_Room_Warning'; break;
-			case 'p': warnText = 'Leave_Group_Warning'; break;
-			case 'd': warnText = 'Leave_Private_Warning'; break;
-			case 'l': warnText = 'Leave_Livechat_Warning'; break;
-		}
-
-		modal.open({
-			title: t('Are_you_sure'),
-			text: warnText ? t(warnText, name) : '',
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_leave_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: true,
-			html: false
-		}, async function() {
-			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-				FlowRouter.go('home');
-			}
-
-			await call('leaveRoom', rid);
-
-			if (rid === Session.get('openedRoom')) {
-				Session.delete('openedRoom');
-			}
-
-		});
+		const { name, t: type } = instance.room;
+		const rid = instance.room._id;
+		leave(type, rid, name);
 	},
 	'click .js-hide'(e, instance) {
-		let warnText;
-		const { rid, name, t: type } = instance.room;
-		switch (type) {
-			case 'c': warnText = 'Hide_Room_Warning'; break;
-			case 'p': warnText = 'Hide_Group_Warning'; break;
-			case 'd': warnText = 'Hide_Private_Warning'; break;
-			case 'l': warnText = 'Hide_Livechat_Warning'; break;
-		}
-
-		modal.open({
-			title: t('Are_you_sure'),
-			text: warnText ? t(warnText, name) : '',
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_hide_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: true,
-			html: false
-		}, async function() {
-			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-				FlowRouter.go('home');
-			}
-
-			await call('hideRoom', rid);
-
-			if (rid === Session.get('openedRoom')) {
-				Session.delete('openedRoom');
-			}
-
-		});
+		const { name, t: type } = instance.room;
+		const rid = instance.room._id;
+		hide(type, rid, name);
 	},
 	'click .js-cancel'(e, t) {
 		t.editing.set(false);
 	},
 	'click .js-delete'() {
-		return modal.open({
-			title: t('Are_you_sure'),
-			text: t('Delete_Room_Warning'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_delete_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
-			html: false
-		}, () => {
-			call('eraseRoom', this.rid).then(() => {
-				modal.open({
-					title: t('Deleted'),
-					text: t('Room_has_been_deleted'),
-					type: 'success',
-					timer: 2000,
-					showConfirmButton: false
-				});
-			});
-		});
+		return erase(this.rid);
 	}
 });
 
@@ -514,7 +430,7 @@ Template.channelSettingsInfo.onCreated(function() {
 });
 
 Template.channelSettingsInfo.helpers({
-	...can,
+	...common,
 	channelName() {
 		return `@${ Template.instance().room.name }`;
 	},
@@ -554,7 +470,7 @@ Template.channelSettingsInfo.helpers({
 				return 'hashtag';
 			case 'l':
 				return 'livechat';
-			default :
+			default:
 				return null;
 		}
 	}

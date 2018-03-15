@@ -6,15 +6,18 @@ import moment from 'moment';
 import {getActions} from './userActions';
 
 const more = function() {
-	return Template.instance().actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
+	return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
 };
 
 
 Template.userInfo.helpers({
+	hideHeader() {
+		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
+	},
 	moreActions: more,
 
 	actions() {
-		return Template.instance().actions.map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
+		return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
 	},
 	customField() {
 		if (!RocketChat.authz.hasAllPermission('view-full-other-user-info')) {
@@ -35,7 +38,7 @@ Template.userInfo.helpers({
 					_.map(el, (key, label) => {
 						const value = RocketChat.templateVarHandler(key, userCustomFields);
 						if (value) {
-							content = `${ label }: ${ value }`;
+							content = {label, value};
 						}
 					});
 				} else {
@@ -152,6 +155,11 @@ Template.userInfo.helpers({
 		const roomRoles = RoomRoles.findOne({'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+	},
+
+	shouldDisplayReason() {
+		const user = Template.instance().user.get();
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
 /* globals isRtl popover */
@@ -210,14 +218,21 @@ Template.userInfo.events({
 Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
 	this.user = new ReactiveVar;
+	this.actions = new ReactiveVar;
 
 
 	this.autorun(() => {
-		this.actions = getActions({
-			user: this.user.get(),
+		const user = this.user.get();
+		if (!user) {
+			this.actions.set([]);
+			return;
+		}
+		const actions = getActions({
+			user,
 			hideAdminControls: this.data.hideAdminControls,
 			directActions: this.data.showAll
 		});
+		this.actions.set(actions);
 	});
 	this.editingUser = new ReactiveVar;
 	this.loadingUserInfo = new ReactiveVar(true);
