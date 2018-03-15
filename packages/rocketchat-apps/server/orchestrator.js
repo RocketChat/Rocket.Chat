@@ -15,7 +15,7 @@ class AppServerOrchestrator {
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
-		this._logStorage = new AppRealLogsStorage(this._persistModel);
+		this._logStorage = new AppRealLogsStorage(this._logModel);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
