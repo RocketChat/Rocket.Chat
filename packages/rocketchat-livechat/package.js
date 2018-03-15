@@ -70,6 +70,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
+	//client startup
+	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
+
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');

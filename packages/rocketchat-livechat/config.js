@@ -193,6 +193,13 @@ Meteor.startup(function() {
 		i18nLabel: 'Office_hours_enabled'
 	});
 
+	RocketChat.settings.add('Livechat_continuous_sound_notification_new_livechat_message', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Continuous_sound_notifications_for_new_livechat_message'
+	});
+
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
 		type: 'boolean',
 		group: 'Livechat',
