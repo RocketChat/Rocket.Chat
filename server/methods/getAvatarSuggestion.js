@@ -4,7 +4,7 @@ function getAvatarSuggestionForUser(user) {
 	check(user, Object);
 
 	const avatars = [];
-	
+
 	if (user.services.facebook && user.services.facebook.id && RocketChat.settings.get('Accounts_OAuth_Facebook')) {
 		avatars.push({
 			service: 'facebook',
