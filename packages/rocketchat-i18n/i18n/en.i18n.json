@@ -1709,6 +1709,8 @@
   "Send_request_on_chat_close": "Send Request on Chat Close",
   "Send_request_on_lead_capture": "Send request on lead capture",
   "Send_request_on_offline_messages": "Send Request on Offline Messages",
+  "Send_request_on_visitor_message": "Send Request on Visitor Messages",
+  "Send_request_on_agent_message": "Send Request on Agent Messages",
   "Send_Test": "Send Test",
   "Send_welcome_email": "Send welcome email",
   "Send_your_JSON_payloads_to_this_URL": "Send your JSON payloads to this URL.",
