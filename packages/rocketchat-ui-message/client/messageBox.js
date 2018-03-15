@@ -275,8 +275,8 @@ Template.messageBox.helpers({
 	},
 	dataReply() {
 		return Template.instance().dataReply.get();
-  	},
-  	isAudioMessageAllowed() {
+	},
+	isAudioMessageAllowed() {
 		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
 	}
 });
