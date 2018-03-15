@@ -224,7 +224,7 @@ export class CustomOAuth {
 				}
 
 				// Fix Nextcloud provider
-				if (identity.ocs.data.id && !identity.id) {
+				if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
 					identity.id = identity.ocs.data.id;
 					identity.name = identity.ocs.data.display-name;
 					identity.email = identity.ocs.data.email;
