@@ -64,18 +64,27 @@ class AppServerOrchestrator {
 	getManager() {
 		return this._manager;
 	}
+
+	isEnabled() {
+		return true;
+	}
+
+	isLoaded() {
+		return this.getManager().areAppsLoaded();
+	}
 }
 
 Meteor.startup(function _appServerOrchestrator() {
 	// Ensure that everything is setup
 	if (process.env[AppManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[AppManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true') {
-		return new AppMethods();
+		global.Apps = new AppMethods();
+		return;
 	}
 
 	console.log('Orchestrating the app piece...');
 	global.Apps = new AppServerOrchestrator();
 
 	global.Apps.getManager().load()
-		.then(() => console.log('...done! ;)'))
+		.then(() => console.log('...done! :)'))
 		.catch((err) => console.warn('...failed!', err));
 });
