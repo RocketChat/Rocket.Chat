@@ -24,7 +24,7 @@ FlowRouter.route('/', {
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
-		// gazzo sidenav line 65;
+
 		Tracker.autorun(function(c) {
 			if (FlowRouter.subsReady() === true) {
 				Meteor.defer(function() {
