@@ -798,23 +798,16 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.notifications', { authRequired: true }, {
 	get() {
-		const removeUnusedProperties = (subscription) => {
-			delete subscription._user;
-			delete subscription.$loki;
-			delete subscription._room;
-
-			return subscription;
-		};
 		const { roomId } = this.requestParams();
 
 		if (!roomId) {
 			return RocketChat.API.v1.failure('The \'roomId\' param is required');
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+		const subscription = RocketChat.models.Subscriptions.findOne({}, {fields: {_room: 0, _user: 0, $loki: 0}});
 
 		return RocketChat.API.v1.success({
-			subscription: removeUnusedProperties(Object.assign({}, subscription))
+			subscription
 		});
 	},
 	post() {
