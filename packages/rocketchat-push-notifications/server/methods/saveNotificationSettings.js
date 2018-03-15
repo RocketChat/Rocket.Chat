@@ -38,7 +38,7 @@ Meteor.methods({
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
 		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];
-		const fieldsMustHaveBasicValues = ['emailNotifications', 'audioNotifications', 'mobilePushNotifications'];
+		const fieldsMustHaveBasicValues = ['emailNotifications', 'audioNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 		if (isInvalidNotification) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
