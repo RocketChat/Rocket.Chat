@@ -415,6 +415,7 @@ RocketChat.Livechat = {
 			customFields: room.livechatData,
 			visitor: {
 				_id: visitor._id,
+				token: visitor.token,
 				name: visitor.name,
 				username: visitor.username,
 				email: null,
