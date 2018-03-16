@@ -1006,12 +1006,14 @@ RocketChat.settings.addGroup('Email', function() {
 		this.add('SMTP_Username', '', {
 			type: 'string',
 			env: true,
-			i18nLabel: 'Username'
+			i18nLabel: 'Username',
+			autocomplete: false
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
-			i18nLabel: 'Password'
+			i18nLabel: 'Password',
+			autocomplete: false
 		});
 		this.add('From_Email', '', {
 			type: 'string',

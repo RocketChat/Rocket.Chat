@@ -298,6 +298,13 @@ Template.admin.helpers({
 			return `.${ fileConstraints.extensions.join(', .') }`;
 		}
 	},
+	hasAutocomplete() {
+		if (this.autocomplete === false) {
+			return {
+				autocomplete: 'off'
+			};
+		}
+	},
 	autocompleteRoom() {
 		return {
 			limit: 10,
