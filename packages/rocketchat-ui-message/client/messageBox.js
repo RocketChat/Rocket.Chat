@@ -1,6 +1,9 @@
-/* globals fileUpload KonchatNotification chatMessages popover isRtl */
+/* globals fileUpload KonchatNotification chatMessages popover isRtl AudioRecorder chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
+import _ from 'underscore';
+
+let audioMessageIntervalId;
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
@@ -269,6 +272,9 @@ Template.messageBox.helpers({
 	},
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
+	},
+	isAudioMessageAllowed() {
+		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
 	}
 });
 
@@ -452,7 +458,7 @@ Template.messageBox.events({
 				}
 			],
 			mousePosition: {
-				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 10,
+				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 40,
 				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
 			},
 			customCSSProperties: {
@@ -465,6 +471,162 @@ Template.messageBox.events({
 		};
 
 		popover.open(config);
+	},
+	'click .js-audio-message-record'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+
+		chatMessages[RocketChat.openedRoom].recording = true;
+		AudioRecorder.start(function() {
+			const startTime = new Date;
+			timer.innerHTML = '00:00';
+			audioMessageIntervalId = setInterval(()=> {
+				const now = new Date;
+				const distance = now-startTime;
+				let minutes = Math.floor(distance / (1000 * 60));
+				let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+				if (minutes < 10) { minutes = `0${ minutes }`; }
+				if (seconds < 10) { seconds = `0${ seconds }`; }
+				timer.innerHTML = `${ minutes }:${ seconds }`;
+			}, 1000);
+
+			icon.classList.add('hidden');
+			timer_box.classList.add('active');
+		});
+	},
+	'click .js-audio-message-cross'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+
+		timer_box.classList.remove('active');
+		icon.classList.remove('hidden');
+		timer.innerHTML = '00:00';
+		if (audioMessageIntervalId) {
+			clearInterval(audioMessageIntervalId);
+		}
+
+		AudioRecorder.stop();
+		chatMessages[RocketChat.openedRoom].recording = false;
+	},
+	'click .js-audio-message-check'(event) {
+		event.preventDefault();
+		const icon = document.querySelector('.rc-message-box__audio-message');
+		const timer = document.querySelector('.rc-message-box__timer');
+		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const loader = document.querySelector('.js-audio-message-loading');
+		const mic = document.querySelector('.js-audio-message-record');
+
+		icon.classList.remove('hidden');
+		timer_box.classList.remove('active');
+		mic.classList.remove('active');
+		loader.classList.add('active');
+
+		timer.innerHTML = '00:00';
+		if (audioMessageIntervalId) {
+			clearInterval(audioMessageIntervalId);
+		}
+
+		chatMessages[RocketChat.openedRoom].recording = false;
+		AudioRecorder.stop(function(blob) {
+
+			loader.classList.remove('active');
+			mic.classList.add('active');
+			const roomId = Session.get('openedRoom');
+			const record = {
+				name: `${ TAPi18n.__('Audio record') }.mp3`,
+				size: blob.size,
+				type: 'audio/mp3',
+				rid: roomId,
+				description: ''
+			};
+			const upload = fileUploadHandler('Uploads', record, blob);
+			let uploading = Session.get('uploading') || [];
+			uploading.push({
+				id: upload.id,
+				name: upload.getFileName(),
+				percentage: 0
+			});
+			Session.set('uploading', uploading);
+			upload.onProgress = function(progress) {
+				uploading = Session.get('uploading');
+
+				const item = _.findWhere(uploading, {id: upload.id});
+				if (item != null) {
+					item.percentage = Math.round(progress * 100) || 0;
+					return Session.set('uploading', uploading);
+				}
+			};
+
+			upload.start(function(error, file, storage) {
+				if (error) {
+					let uploading = Session.get('uploading');
+					if (!Array.isArray(uploading)) {
+						uploading = [];
+					}
+
+					const item = _.findWhere(uploading, { id: upload.id });
+
+					if (_.isObject(item)) {
+						item.error = error.message;
+						item.percentage = 0;
+					} else {
+						uploading.push({
+							error: error.error,
+							percentage: 0
+						});
+					}
+
+					Session.set('uploading', uploading);
+					return;
+				}
+
+
+				if (file) {
+					Meteor.call('sendFileMessage', roomId, storage, file, () => {
+						Meteor.setTimeout(() => {
+							const uploading = Session.get('uploading');
+							if (uploading !== null) {
+								const item = _.findWhere(uploading, {
+									id: upload.id
+								});
+								return Session.set('uploading', _.without(uploading, item));
+							}
+						}, 2000);
+					});
+				}
+			});
+
+			Tracker.autorun(function(c) {
+				const cancel = Session.get(`uploading-cancel-${ upload.id }`);
+				if (cancel) {
+					let item;
+					upload.stop();
+					c.stop();
+
+					uploading = Session.get('uploading');
+					if (uploading != null) {
+						item = _.findWhere(uploading, {id: upload.id});
+						if (item != null) {
+							item.percentage = 0;
+						}
+						Session.set('uploading', uploading);
+					}
+
+					return Meteor.setTimeout(function() {
+						uploading = Session.get('uploading');
+						if (uploading != null) {
+							item = _.findWhere(uploading, {id: upload.id});
+							return Session.set('uploading', _.without(uploading, item));
+						}
+					}, 1000);
+				}
+			});
+		});
+		return false;
 	}
 });
 
