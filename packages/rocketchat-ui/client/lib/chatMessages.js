@@ -182,7 +182,9 @@ this.ChatMessages = class ChatMessages {
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			const msg = input.value;
+			// Get the input value and remove the first carriage return if it's a multi line code (```) message
+			const msg = input.value.replace('\`\`\`\n', '\`\`\`');
+
 			const msgObject = { _id: Random.id(), rid, msg};
 
 			if (msg.slice(0, 2) === '+:') {
