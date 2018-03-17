@@ -231,6 +231,22 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.setAnnouncement', (done) => {
+		request.post(api('channels.setAnnouncement'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				announcement: 'this is an announcement of a channel for api tests'
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
+			})
+			.end(done);
+	});
+
 	it('/channels.setPurpose', (done) => {
 		request.post(api('channels.setPurpose'))
 			.set(credentials)
