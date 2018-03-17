@@ -5,16 +5,24 @@ export class AppMethods {
 		this._addMethods();
 	}
 
+	isEnabled() {
+		return typeof this._manager !== 'undefined';
+	}
+
+	isLoaded() {
+		return typeof this._manager !== 'undefined' && this.manager.areAppsLoaded();
+	}
+
 	_addMethods() {
-		const manager = this._manager;
+		const instance = this;
 
 		Meteor.methods({
 			'apps/is-enabled'() {
-				return typeof manager !== 'undefined';
+				return instance.isEnabled();
 			},
 
 			'apps/is-loaded'() {
-				return typeof manager !== 'undefined' || manager.areAppsLoaded();
+				return instance.isLoaded();
 			}
 		});
 	}
