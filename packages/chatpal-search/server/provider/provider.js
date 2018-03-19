@@ -292,7 +292,7 @@ class ChatpalProvider extends SearchProvider {
 
 		if (!this.index) { return callback({msg:'Chatpal_currently_not_active'}); }
 
-		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : 'message';
+		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
 
 		this.index.query(
 			text,
