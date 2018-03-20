@@ -431,7 +431,7 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 
-	describe('Manually Approve New Users:', () => {
+	describe.only('Manually Approve New Users:', () => {
 		before(() => {
 			sideNav.sidebarUserMenu.waitForVisible(5000);
 			sideNav.sidebarUserMenu.click();
