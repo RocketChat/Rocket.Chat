@@ -79,6 +79,7 @@
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 28px;
+		width: 100%;
 	}
 
 	&__username {

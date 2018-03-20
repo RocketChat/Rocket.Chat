@@ -32,12 +32,14 @@
 		padding: var(--default-padding);
 
 		flex: 1 1 auto;
-		justify-content: space-between;
 
 		display: flex;
 
 		flex-direction: column;
 
+		& .js-back {
+			margin: auto 0;
+		}
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
