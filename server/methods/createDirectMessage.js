@@ -50,7 +50,8 @@ Meteor.methods({
 			$setOnInsert: {
 				t: 'd',
 				msgs: 0,
-				ts: now
+				ts: now,
+				customFields: [me.customFields, to.customFields]
 			}
 		});
 

@@ -764,6 +764,27 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	setCustomFieldsDirectMessagesByUsername(username, fields, index = 0) {
+		const values = {};
+		var query = {};
+
+		Object.keys(fields).forEach(key => {
+			values[`customFields.${index}.${key}`] = fields[key];
+		});
+
+		query[`usernames.${index}`] = username;
+		query['t'] = 'd';
+
+		const update = {
+			$set: values
+		};
+		const options = {
+			'multi': true
+		};
+
+		return this.update(query, update, options);
+	}
+
 	// INSERT
 	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
