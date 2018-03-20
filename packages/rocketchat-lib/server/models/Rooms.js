@@ -766,7 +766,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 	setCustomFieldsDirectMessagesByUsername(username, fields, index = 0) {
 		const values = {};
-		let query = {};
+		const query = {};
 
 		Object.keys(fields).forEach(key => {
 			values[`customFields.${ index }.${ key }`] = fields[key];
