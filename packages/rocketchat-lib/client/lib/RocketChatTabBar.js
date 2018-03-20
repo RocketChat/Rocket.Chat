@@ -46,7 +46,7 @@ export class RocketChatTabBar {
 	open(button) {
 		this.state.set('opened');
 		Tracker.afterFlush(() => {
-			$('.contextual-bar__container').scrollTop(0).find('input[type=text]:first').focus();
+			$('.contextual-bar__content').scrollTop(0).find('input[type=text]:first').focus();
 		});
 
 		if (!button) {
