@@ -18,7 +18,6 @@ Meteor.methods({
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
 			desktopNotificationDuration: Match.Optional(Number),
-			viewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			hideAvatars: Match.Optional(Boolean),
@@ -39,13 +38,18 @@ Meteor.methods({
 				mergeChannels: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
 			}));
 		}
-		const user = Meteor.userId();
+		const user = Meteor.user();
+
 		if (!user) {
 			return false;
 		}
 
+		if (user.settings == null) {
+			RocketChat.models.Users.clearSettings(user._id);
+		}
+
 		if (settings.language != null) {
-			RocketChat.models.Users.setLanguage(user, settings.language);
+			RocketChat.models.Users.setLanguage(user._id, settings.language);
 		}
 
 		if (settings.mergeChannels != null) {
@@ -58,7 +62,7 @@ Meteor.methods({
 			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
-		RocketChat.models.Users.setPreferences(user, settings);
+		RocketChat.models.Users.setPreferences(user._id, settings);
 
 		return true;
 	}
