@@ -776,7 +776,7 @@
   "Force_Disable_OpLog_For_Cache_Description": "Will not use OpLog to sync cache even when it's available",
   "Force_SSL": "Force SSL",
   "Force_SSL_Description": "*Caution!* _Force SSL_ should never be used with reverse proxy. If you have a reverse proxy, you should do the redirect THERE. This option exists for deployments like Heroku, that does not allow the redirect configuration at the reverse proxy.",
-  "Forgot_password": "Forgot your password",
+  "Forgot_password": "Forgot your password?",
   "Forgot_Password_Description": "You may use the following placeholders: <br /><ul><li>[Forgot_Password_Url] for the password recovery URL.</li><li>[name], [fname], [lname] for the user's full name, first name or last name, respectively.</li><li>[email] for the user's email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Forgot_Password_Email": "Click <a href=\"[Forgot_Password_Url]\">here</a> to reset your password.",
   "Forgot_Password_Email_Subject": "[Site_Name] - Password Recovery",
