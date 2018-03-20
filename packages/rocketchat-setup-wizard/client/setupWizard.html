@@ -5,7 +5,6 @@
 				<img class="setup-wizard-header-logo" src="images/logo/logo-dark.svg">
 			</header>
 			<main class="setup-wizard-content">
-				<p>step {{currentStep}}</p>
 				{{> Template.dynamic template=currentStepTemplate}}
 			</main>
 			<footer class="setup-wizard-footer">
@@ -31,4 +30,56 @@
 		<p class="setup-wizard-content-text">
 			Nulla facilisi. Nunc consectetur id lacus a volutpat. Vestibulum convallis ante libero, id scelerisque sapien accumsan sit amet. Vestibulum risus ex, porttitor at tellus et, consectetur consectetur lectus.
 		</p>
+</template>
+
+<template name="setup-wizard-step1">
+	<h1 class="setup-wizard-content-title">Admin Information</h1>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Name</div>
+			<div class="rc-input__wrapper">
+				<input type="text" name="name" class="rc-input__element js-input" />
+			</div>
+		</label>
+	</div>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Username</div>
+			<div class="rc-input__wrapper">
+				<input type="text" name="username" class="rc-input__element js-input" />
+			</div>
+		</label>
+	</div>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Org email</div>
+			<div class="rc-input__wrapper">
+				<input type="email" name="orgEmail" class="rc-input__element js-input" />
+			</div>
+		</label>
+	</div>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Job Title</div>
+			<div class="rc-input__wrapper">
+				<input type="text" name="jobTitle" class="rc-input__element js-input" />
+			</div>
+		</label>
+	</div>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Password</div>
+			<div class="rc-input__wrapper">
+				<input type="password" name="password" class="rc-input__element js-input" />
+			</div>
+		</label>
+	</div>
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__wrapper">
+				<input type="checkbox" name="tos" class="js-checkbox" />
+				I agree to the <a href="#">Rocket.Chat Terms of Service</a> and <a href="#">Privacy Policy</a>
+			</div>
+		</label>
+	</div>
 </template>
