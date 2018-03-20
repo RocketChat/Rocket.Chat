@@ -15,7 +15,7 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 
 		// Update customFields of all Direct Messages' Rooms for userId
 		RocketChat.models.Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
-		let user = RocketChat.models.Users.findOneById(userId);
+		const user = RocketChat.models.Users.findOneById(userId);
 		RocketChat.models.Rooms.setCustomFieldsDirectMessagesByUsername(user.username, customFields, 0);
 		RocketChat.models.Rooms.setCustomFieldsDirectMessagesByUsername(user.username, customFields, 1);
 
