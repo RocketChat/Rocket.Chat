@@ -1,23 +1,27 @@
 (function(window){
 
-  var WORKER_PATH = 'recorderWorker.js';
+  var WORKER_PATH = 'mp3-realtime-worker.js';
 
   var Recorder = function(source, cfg){
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
-    var numChannels = config.numChannels || 2;
+    var numChannels = config.numChannels || 1;
+    var bitRate = RocketChat.settings.get('Message_Audio_bitRate');
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
                  this.context.createJavaScriptNode).call(this.context,
                  bufferLen, numChannels, numChannels);
     var worker = new Worker(config.workerPath || WORKER_PATH);
+
     worker.postMessage({
       command: 'init',
       config: {
         sampleRate: this.context.sampleRate,
-        numChannels: numChannels
+        numChannels: numChannels,
+	bitRate: bitRate
       }
     });
+
     var recording = false,
       currCallback;
 
@@ -27,18 +31,11 @@
       for (var channel = 0; channel < numChannels; channel++){
           buffer.push(e.inputBuffer.getChannelData(channel));
       }
-      worker.postMessage({
-        command: 'record',
-        buffer: buffer
-      });
-    }
 
-    this.configure = function(cfg){
-      for (var prop in cfg){
-        if (cfg.hasOwnProperty(prop)){
-          config[prop] = cfg[prop];
-        }
-      }
+      worker.postMessage({
+        command: 'encode',
+        buffer: buffer[0]
+      });
     }
 
     this.record = function(){
@@ -49,28 +46,32 @@
       recording = false;
     }
 
-    this.clear = function(){
-      worker.postMessage({ command: 'clear' });
-    }
-
-    this.getBuffer = function(cb) {
+    this.exportMP3 = function(cb, type){
       currCallback = cb || config.callback;
-      worker.postMessage({ command: 'getBuffer' })
-    }
-
-    this.exportWAV = function(cb, type){
-      currCallback = cb || config.callback;
-      type = type || config.type || 'audio/wav';
       if (!currCallback) throw new Error('Callback not set');
       worker.postMessage({
-        command: 'exportWAV',
-        type: type
+        command: 'finish',
       });
     }
 
     worker.onmessage = function(e){
-      var blob = e.data;
-      currCallback(blob);
+      switch (e.data.command) {
+        case 'end':
+          currCallback(new Blob(e.data.buffer, {type: 'audio/mp3'}));
+          break;
+        default:
+          console.log(e);
+      }
+    }
+
+    function Uint8ArrayToFloat32Array(u8a){
+      var f32Buffer = new Float32Array(u8a.length);
+      for (var i = 0; i < u8a.length; i++) {
+        var value = u8a[i<<1] + (u8a[(i<<1)+1]<<8);
+        if (value >= 0x8000) value |= ~0x7FFF;
+        f32Buffer[i] = value / 0x8000;
+      }
+      return f32Buffer;
     }
 
     source.connect(this.node);
@@ -81,7 +82,7 @@
     var url = (window.URL || window.webkitURL).createObjectURL(blob);
     var link = window.document.createElement('a');
     link.href = url;
-    link.download = filename || 'output.wav';
+    link.download = filename || 'audio-message.mp3';
     var click = document.createEvent("Event");
     click.initEvent("click", true, true);
     link.dispatchEvent(click);
