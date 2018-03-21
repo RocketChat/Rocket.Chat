@@ -430,7 +430,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			//Special check for the permissions
 			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
 				ourQuery.usernames = {
-					$in: [ this.user.username ]
+					$in: [this.user.username]
 				};
 			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
 				return RocketChat.API.v1.unauthorized();
@@ -798,28 +798,25 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, {
 	get() {
-		const mountMentionObject = (mention) => {
-			return {
-				messageId: mention._id,
-				roomId: mention.rid,
-				timestamp: mention.ts,
-				user: {
-					id: mention.u._id,
-					username: mention.u.username,
-					name: mention.u.name
-				}
-			};
-		};
 		const { roomId } = this.requestParams();
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
 
 		if (!roomId) {
 			return RocketChat.API.v1.failure('The request param \'roomId\' is required');
 		}
 
-		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', { roomId }));
+		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {
+				sort: sort ? sort : { ts: 1 },
+				skip: offset,
+				limit: count
+			}
+		}));
 
 		return RocketChat.API.v1.success({
-			mentions: mentions.map(mountMentionObject)
+			mentions
 		});
 	}
 });
