@@ -804,7 +804,13 @@ RocketChat.API.v1.addRoute('channels.notifications', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The \'roomId\' param is required');
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOne({}, {fields: {_room: 0, _user: 0, $loki: 0}});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
+			fields: {
+				_room: 0,
+				_user: 0,
+				$loki: 0
+			}
+		});
 
 		return RocketChat.API.v1.success({
 			subscription
