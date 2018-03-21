@@ -424,15 +424,15 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = RocketChat.authz.hasPermission(this.userId, 'view-c-room');
 
 			const ourQuery = Object.assign({}, query, { t: 'c' });
 
-			//Special check for the permissions
-			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !hasPermissionToSeeAllPublicChannels) {
 				ourQuery.usernames = {
 					$in: [this.user.username]
 				};
-			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+			} else if (!hasPermissionToSeeAllPublicChannels) {
 				return RocketChat.API.v1.unauthorized();
 			}
 
@@ -754,6 +754,24 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 
 		return RocketChat.API.v1.success({
 			topic: this.bodyParams.topic
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "announcement" is required');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
+		});
+
+		return RocketChat.API.v1.success({
+			announcement: this.bodyParams.announcement
 		});
 	}
 });
