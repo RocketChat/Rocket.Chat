@@ -1,5 +1,5 @@
 Meteor.methods({
-	getUserMentionsByChannel({ roomId }) {
+	getUserMentionsByChannel({ roomId, options }) {
 		check(roomId, String);
 
 		if (!Meteor.userId()) {
@@ -14,6 +14,6 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
 
-		return RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, roomId).fetch();
+		return RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
 	}
 });
