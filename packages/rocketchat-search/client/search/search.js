@@ -7,6 +7,8 @@ Template.RocketSearch.onCreated(function() {
 	this.provider = new ReactiveVar();
 	this.isActive = new ReactiveVar(false);
 	this.error = new ReactiveVar();
+	this.suggestions = new ReactiveVar();
+	this.suggestionActive = new ReactiveVar();
 
 	Meteor.call('rocketchatSearch.getProvider', (error, provider) => {
 		if (!error && provider) {
@@ -55,28 +57,87 @@ Template.RocketSearch.onCreated(function() {
 		_search();
 	};
 
-	this.autocomplete = (value) => {
-		console.debug('automplete currently not implemented', value);
+	this.suggest = (value) => {
+		this.suggestions.set();
+		Meteor.call('rocketchatSearch.suggest', value, {rid:Session.get('openedRoom'), uid:Meteor.userId()}, this.scope.parentPayload, (err, result) => {
+			if (err) {
+				//TODO what should happen
+			} else {
+				this.suggestionActive.set(undefined);
+				this.suggestions.set(result);
+			}
+		});
 	};
 
 });
 
 Template.RocketSearch.events = {
-	'keydown #message-search'(e) {
-		if (e.keyCode === 13) {
-			return e.preventDefault();
+	'keydown #message-search'(evt, t) {
+		if (evt.keyCode === 13) {
+			if (t.suggestionActive.get() !== undefined) {
+				const suggestion = t.suggestions.get()[t.suggestionActive.get()];
+				if (suggestion.action) {
+					const value = suggestion.action();
+					if (value) {
+						t.search(value);
+					}
+				} else {
+					t.search(suggestion.text);
+				}
+				t.suggestions.set();
+			} else {
+				t.search(evt.target.value.trim());
+			}
+			return evt.preventDefault();
+		}
+
+		const suggestions = t.suggestions.get();
+		const suggestionActive = t.suggestionActive.get();
+
+		if (evt.keyCode === 40 && suggestions) {
+			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive < suggestions.length-1) ? suggestionActive +1 : 0);
+			return;
+		}
+
+		if (evt.keyCode === 38 && suggestions) {
+			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive === 0) ? suggestions.length-1 : suggestionActive-1);
+			return;
 		}
 	},
 	'keyup #message-search': _.debounce(function(evt, t) {
+
+		if (evt.keyCode === 13) {
+			return evt.preventDefault();
+		}
+
 		const value = evt.target.value.trim();
 
-		if (!t.provider.get().supportsSuggestions || evt.which === 13) {
+		if (evt.keyCode === 40 || evt.keyCode === 38) {
+			return evt.preventDefault();
+		}
+
+		if (!t.provider.get().supportsSuggestions) {
 			t.search(value);
 		} else {
-			t.autocomplete(value);
+			t.suggest(value);
 		}
 		return;
-	}, 300)
+	}, 300),
+	'click .rocket-search-suggestion-item'(e, t) {
+		if (this.action) {
+			const value = this.action();
+			if (value) {
+				t.search(value);
+			} else {
+				t.suggestions.set();
+			}
+		} else {
+			t.search(this.text);
+		}
+	},
+	'mouseenter .rocket-search-suggestion-item'(e, t) {
+		t.suggestionActive.set(t.suggestions.get().indexOf(this));
+	}
 };
 
 Template.RocketSearch.helpers({
@@ -94,7 +155,29 @@ Template.RocketSearch.helpers({
 	},
 	isActive() {
 		return Template.instance().isActive.get();
+	},
+	suggestions() {
+		return Template.instance().suggestions.get();
+	},
+	suggestionActive() {
+		return Template.instance().suggestionActive.get();
+	},
+	suggestionSelected(index) {
+		return Template.instance().suggestionActive.get() === index ? 'active' : '';
 	}
 
+});
+
+//add closer to suggestions
+Template.RocketSearch.onRendered(function() {
+	$(document).on(`click.suggestionclose.${ this.data.rid }`, ()=>{
+		//if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
+		this.suggestions.set();
+		//}
+	});
+});
+
+Template.RocketSearch.onDestroyed(function() {
+	$(document).off(`click.suggestionclose.${ this.data.rid }`);
 });
 

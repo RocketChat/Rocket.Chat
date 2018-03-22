@@ -27,6 +27,8 @@ Package.onUse(function(api) {
 	], 'server');
 
 	api.addFiles([
+		'client/template/suggestion.html',
+		'client/template/suggestion.js',
 		'client/template/result.html',
 		'client/template/result.js',
 		'client/template/admin.html',

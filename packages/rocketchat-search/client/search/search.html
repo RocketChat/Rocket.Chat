@@ -24,9 +24,15 @@
 						</div>
 					</label>
 				</div>
-				<div class="search-suggestions">
-					<!-- TODO -->
+				{{#if suggestions}}
+				<div id="rocket-search-suggestions">
+					{{#each suggestions}}
+						<div class="rocket-search-suggestion-item {{suggestionSelected @index}}">
+							{{> Template.dynamic template=provider.suggestionItemTemplate}}
+						</div>
+					{{/each}}
 				</div>
+				{{/if}}
 			</form>
 		</div>
 

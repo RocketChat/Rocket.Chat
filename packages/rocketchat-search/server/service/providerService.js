@@ -155,7 +155,29 @@ Meteor.methods({
 	'rocketchatSearch.search'(text, context, payload) {
 		const future = new Future();
 
-		if (!searchProviderService.activeProvider) { future.throw(new Error('No active provider defined')); }
+		payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
+
+		try {
+
+			if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
+
+			SearchLogger.debug('search: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+
+			searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
+				if (error) {
+					future.throw(error);
+				} else {
+					future.return(validationService.validateSearchResult(data));
+				}
+			});
+		} catch (e) {
+			future.throw(e);
+		}
+
+		return future.wait();
+	},
+	'rocketchatSearch.suggest'(text, context, payload) {
+		const future = new Future();
 
 		payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
 
@@ -163,13 +185,13 @@ Meteor.methods({
 
 			if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
 
-			SearchLogger.debug('query: ', `Search:\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+			SearchLogger.debug('suggest: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
 
-			searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
+			searchProviderService.activeProvider.suggest(text, context, payload, (error, data) => {
 				if (error) {
 					future.throw(error);
 				} else {
-					future.return(validationService.validateSearchResult(data));
+					future.return(data);
 				}
 			});
 		} catch (e) {

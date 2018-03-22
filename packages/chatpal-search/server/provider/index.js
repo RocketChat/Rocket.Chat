@@ -111,6 +111,31 @@ class Backend {
 		}
 	}
 
+	suggest(text, language, acl, size, callback) {
+		const options = {
+			params: {
+				q:'*:*',
+				facet:true,
+				'facet.field':`text_${ language }`,
+				'facet.prefix': text,
+				'facet.mincount': 1,
+				'facet.limit': size
+			}//TODO ACL
+		};
+
+		_.extend(options, this._options.httpOptions);
+
+		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
+			if (err) { return callback(err); }
+
+			try {
+				callback(undefined, _.map(result.data.facet_counts.facet_fields[`text_${ language }`],(text)=>{return {text}}));
+			} catch (e) {
+				callback(e);
+			}
+		});
+	}
+
 	clear() {
 		ChatpalLogger.debug('Clear Index');
 
@@ -316,7 +341,7 @@ export default class Index {
 			const result = this._backend.query({
 				rows:1,
 				sort:'created asc',
-				type: 'message',
+				type:['message'],
 				text: '*'
 			});
 
@@ -389,7 +414,7 @@ export default class Index {
 			this._backend.clear();
 		} else {
 			date = this._getlastdate();
-		}
+		}console.log(date)
 
 		this._run(date, fut);
 
@@ -431,6 +456,10 @@ export default class Index {
 			start,
 			rows
 		}), callback);
+	}
+
+	suggest(text, language, acl, size, callback) {
+		this._backend.suggest(text, language, acl, size, callback);
 	}
 
 }

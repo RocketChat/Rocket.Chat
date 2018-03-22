@@ -274,3 +274,7 @@
 .apikey a {
 	text-decoration: underline;
 }
+
+.chatpal-suggestion {
+	padding: 10px;
+}

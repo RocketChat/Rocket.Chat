@@ -116,7 +116,7 @@ export default class SearchProvider {
 	}
 
 	get suggestionItemTemplate() {
-		return undefined;
+		return 'DefaultSuggestionItemTemplate';
 	}
 
 	/*--- search functions ---*/
@@ -132,7 +132,14 @@ export default class SearchProvider {
 		throw new Error('Function search has to be implemented');
 	}
 
-	suggest(text, callback) {
+	/**
+	 * Returns an ordered list of suggestions. The result should have at least the form [{text:string}]
+	 * @param text
+	 * @param context
+	 * @param payload
+	 * @param callback
+	 */
+	suggest(text, context, payload, callback) {
 		callback(null, []);
 	}
 

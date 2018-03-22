@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/search/search.html',
 		'client/search/search.js',
+		'client/provider/suggestion.html',
 		'client/provider/result.html',
 		'client/provider/result.js',
 		'client/style/style.css'

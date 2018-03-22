@@ -107,6 +107,10 @@ class ChatpalProvider extends SearchProvider {
 		return 'ChatpalSearchResultTemplate';
 	}
 
+	get suggestionItemTemplate() {
+		return 'ChatpalSuggestionItemTemplate';
+	}
+
 	get supportsSuggestions() {
 		return true;
 	}
@@ -212,6 +216,7 @@ class ChatpalProvider extends SearchProvider {
 			config.updatepath = '/search/update';
 			config.pingpath = '/search/ping';
 			config.clearpath = '/search/clear';
+			config.suggestionpath = '/select';
 			config.httpOptions = {
 				headers: {
 					'X-Api-Key': this._settings.get('API_Key')
@@ -224,6 +229,7 @@ class ChatpalProvider extends SearchProvider {
 			config.updatepath = '/chatpal/update';
 			config.pingpath = '/chatpal/ping';
 			config.clearpath = '/chatpal/clear';
+			config.suggestionpath = '/select';
 			config.httpOptions = {
 				headers: this._parseHeaders()
 			};
@@ -282,10 +288,6 @@ class ChatpalProvider extends SearchProvider {
 
 	/**
 	 * @inheritDoc
-	 * @param text
-	 * @param context
-	 * @param payload
-	 * @param callback
 	 * @returns {*}
 	 */
 	search(text, context, payload, callback) {
@@ -304,6 +306,19 @@ class ChatpalProvider extends SearchProvider {
 			callback
 		);
 
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	suggest(text, context, payload, callback) {
+		this.index.suggest(
+			text,
+			this._settings.get('Main_Language'),
+			this._getAcl(context),
+			10,
+			callback
+		);
 	}
 }
 
