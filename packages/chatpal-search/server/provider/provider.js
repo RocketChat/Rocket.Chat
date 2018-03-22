@@ -184,9 +184,11 @@ class ChatpalProvider extends SearchProvider {
 
 		const maxTimeout = 200000;
 
-		if (Index.ping(config)) {
+		const stats = Index.ping(config);
+
+		if (stats) {
 			ChatpalLogger.debug('ping was successfull');
-			callback(config);
+			callback(config, stats);
 		} else {
 
 			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
@@ -266,12 +268,15 @@ class ChatpalProvider extends SearchProvider {
 
 		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
 
-		this._getIndexConfig((config) => {
+		this._getIndexConfig((config, stats) => {
 			this._indexConfig = config;
 
-			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
+			this._stats = stats;
 
-			this.index = new Index(this._indexConfig, this.indexFail || clear);
+			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
+			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
+
+			this.index = new Index(this._indexConfig, this.indexFail || clear, stats.message.oldest || new Date().valueOf());
 
 			callback();
 		});
