@@ -119,6 +119,7 @@ class Backend {
 				'facet.field':`text_${ language }`,
 				'facet.prefix': text,
 				'facet.mincount': 1,
+				'json.nl': 'arrntv',
 				'facet.limit': size,
 				'fq':`rid:(${ acl.join(' OR ') })`
 			}
@@ -130,7 +131,7 @@ class Backend {
 			if (err) { return callback(err); }
 
 			try {
-				callback(undefined, _.map(result.data.facet_counts.facet_fields[`text_${ language }`], (text)=>{ return {text}; }));
+				callback(undefined, _.map(result.data.facet_counts.facet_fields[`text_${ language }`], (item)=>{ return {text: item.name}; }));
 			} catch (e) {
 				callback(e);
 			}
