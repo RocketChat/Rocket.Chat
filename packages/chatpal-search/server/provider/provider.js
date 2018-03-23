@@ -218,7 +218,7 @@ class ChatpalProvider extends SearchProvider {
 			config.updatepath = '/search/update';
 			config.pingpath = '/search/ping';
 			config.clearpath = '/search/clear';
-			config.suggestionpath = '/select';
+			config.suggestionpath = '/search/suggest';
 			config.httpOptions = {
 				headers: {
 					'X-Api-Key': this._settings.get('API_Key')
@@ -231,7 +231,7 @@ class ChatpalProvider extends SearchProvider {
 			config.updatepath = '/chatpal/update';
 			config.pingpath = '/chatpal/ping';
 			config.clearpath = '/chatpal/clear';
-			config.suggestionpath = '/select';
+			config.suggestionpath = '/chatpal/suggest';
 			config.httpOptions = {
 				headers: this._parseHeaders()
 			};

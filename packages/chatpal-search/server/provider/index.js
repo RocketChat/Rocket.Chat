@@ -114,12 +114,7 @@ class Backend {
 	suggest(text, language, acl, size, callback) {
 		const options = {
 			params: {
-				q:'*:*',
-				facet:true,
 				'facet.field':`text_${ language }`,
-				'facet.prefix': text,
-				'facet.mincount': 1,
-				'json.nl': 'arrntv',
 				'facet.limit': size,
 				'fq':`rid:(${ acl.join(' OR ') })`
 			}
