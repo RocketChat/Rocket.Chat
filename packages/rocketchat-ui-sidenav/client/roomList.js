@@ -98,7 +98,6 @@ Template.roomList.helpers({
 		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	}
 });
-
 RocketChat.Notifications['onUser']('rooms-changed', (t, room) => {
 	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt};
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
