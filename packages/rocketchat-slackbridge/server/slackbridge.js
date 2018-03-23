@@ -17,6 +17,12 @@ class SlackBridge {
 		this.rocket.setSlack(this.slack);
 		this.slack.setRocket(this.rocket);
 
+		//Settings that we cache versus looking up at runtime
+		this.apiToken = {};
+		this.aliasFormat = {};
+		this.excludeBotnames = {};
+		this.isReactionsEnabled = {};
+
 		this.processSettings();
 	}
 
@@ -83,6 +89,11 @@ class SlackBridge {
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
+		//Reactions
+		RocketChat.settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
+			this.isReactionsEnabled = value;
+			logger.class.debug('Setting: ' + key, value);
+		});
 
 		//Is this entire SlackBridge enabled
 		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {
