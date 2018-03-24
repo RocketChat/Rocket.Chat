@@ -133,7 +133,7 @@ Host your own Rocket.Chat server in a few seconds.
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
 
-![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)
+[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...).
