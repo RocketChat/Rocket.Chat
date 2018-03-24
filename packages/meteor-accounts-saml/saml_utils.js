@@ -83,12 +83,12 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 	}
 
 	let request =
-		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
+		`<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="${ id }" Version="2.0" IssueInstant="${ instant }" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="${ callbackUrl }" Destination="${
 			this.options.entryPoint }">` +
 		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>\n`;
 
 	if (this.options.identifierFormat) {
-		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat}" AllowCreate="true"></samlp:NameIDPolicy>\n`;
+		request += `<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="${ this.options.identifierFormat }" AllowCreate="true"></samlp:NameIDPolicy>\n`;
 	}
 
 	request +=
@@ -109,7 +109,7 @@ SAML.prototype.generateLogoutRequest = function(options) {
 	const instant = this.generateInstant();
 
 	let request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ' +
-		'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="' }${ id }" Version="2.0" IssueInstant="${ instant}" Destination="${ this.options.idpSLORedirectURL }">` +
+		'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="' }${ id }" Version="2.0" IssueInstant="${ instant }" Destination="${ this.options.idpSLORedirectURL }">` +
 		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
 		`<saml:NameID Format="${ this.options.identifierFormat }">${ options.nameID }</saml:NameID>` +
 		'</samlp:LogoutRequest>';
@@ -206,7 +206,7 @@ SAML.prototype.getLogoutUrl = function(req, callback) {
 	this.requestToUrl(request, 'logout', callback);
 };
 
-SAML.prototype.certToPEM = function (cert) {
+SAML.prototype.certToPEM = function(cert) {
 	cert = cert.match(/.{1,64}/g).join('\n');
 	cert = `-----BEGIN CERTIFICATE-----\n${ cert }`;
 	cert = `${ cert }\n-----END CERTIFICATE-----\n`;
@@ -291,7 +291,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 				if (response) {
 
 					// TBD. Check if this msg corresponds to one we sent
-					var inResponseTo;
+					let inResponseTo;
 					try {
 						inResponseTo = response.getAttribute('InResponseTo');
 						if (Meteor.settings.debug) {
@@ -427,21 +427,19 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 								value = values[0].textContent;
 							} else {
 								value = [];
-								for (var attributeValue of values) {
+								for (let attributeValue of values) {
 									value.push(attributeValue.textContent);
 								}
 							}
 							if (Meteor.settings.debug) {
 								console.log(`Name:  ${ attributes[i] }`);
-								console.log(`Adding attrinute from SAML response to profile: ${attributes[i].getAttribute('Name')} = ${ value.textContent }`);
+								console.log(`Adding attrinute from SAML response to profile: ${ attributes[i].getAttribute('Name') } = ${ value.textContent }`);
 							}
 							profile[attributes[i].getAttribute('Name')] = value.textContent;
 
 						}
-					} else {
-						if (Meteor.settings.debug) {
-							console.log('No Attributes found in SAML attribute statement.');
-						}
+					} else if(Meteor.settings.debug) {
+						console.log('No Attributes found in SAML attribute statement.');
 					}
 
 					if (!profile.mail && profile['urn:oid:0.9.2342.19200300.100.1.3']) {
@@ -452,10 +450,8 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 					if (!profile.email && profile.mail) {
 						profile.email = profile.mail;
 					}
-				} else {
-					if (Meteor.settings.debug) {
-						console.log('No Attribute Statement found in SAML response.');
-					}
+				} else if (Meteor.settings.debug) {
+					console.log('No Attribute Statement found in SAML response.');
 				}
 
 				if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
