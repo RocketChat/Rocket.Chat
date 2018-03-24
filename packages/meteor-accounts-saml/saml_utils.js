@@ -427,7 +427,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 								value = values[0].textContent;
 							} else {
 								value = [];
-								for (let attributeValue of values) {
+								for (const attributeValue of values) {
 									value.push(attributeValue.textContent);
 								}
 							}
@@ -438,7 +438,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 							profile[attributes[i].getAttribute('Name')] = value.textContent;
 
 						}
-					} else if(Meteor.settings.debug) {
+					} else if (Meteor.settings.debug) {
 						console.log('No Attributes found in SAML attribute statement.');
 					}
 
