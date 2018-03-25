@@ -51,6 +51,12 @@ Template.roomList.helpers({
 				types = ['c', 'p'];
 			}
 
+			if (this.identifier === 'g') {
+				types = [];
+			} else if (this.identifier === 'd') {
+				types = ['d', 'g'];
+			}
+
 			if (['c', 'p'].includes(this.identifier)) {
 				query.tokens = { $exists: false };
 			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
@@ -95,6 +101,10 @@ Template.roomList.helpers({
 		or is favorite and has one room
 		or is unread and has one room
 		*/
+
+		if (group.identifier === 'g') {
+			return false;
+		}
 
 		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
 	},
