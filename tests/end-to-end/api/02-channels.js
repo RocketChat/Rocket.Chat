@@ -588,6 +588,9 @@ describe('[Channels]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('mentions').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
 				})
 				.end(done);
 		});
