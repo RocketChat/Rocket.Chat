@@ -625,4 +625,24 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/channels.getAllUserMentionsByChannel', () => {
+		it('should return and array of mentions by channel', (done) => {
+			request.get(api('channels.getAllUserMentionsByChannel'))
+				.set(credentials)
+				.query({
+					roomId: channel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('mentions').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+	});
 });
