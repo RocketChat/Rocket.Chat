@@ -197,10 +197,6 @@
 		margin: 0 -3px;
 		align-items: center;
 		justify-content: space-between;
-
-		&-top {
-			overflow: hidden;
-		}
 	}
 
 	&__name {
