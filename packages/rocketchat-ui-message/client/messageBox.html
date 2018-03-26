@@ -21,6 +21,16 @@
 			{{/with}}
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
+				{{#if dataReply}}
+					{{#with dataReply}}
+							<div class="reply-preview message-popup">
+								{{> messageAttachment text=msg author_name=u.username}}
+								<div class="rc-message-box__icon cancel-reply">
+									{{> icon block="rc-input__icon-svg" icon="cross"}}
+								</div>
+							</div>
+					{{/with}}
+				{{/if}}
 				<label class="rc-message-box__container">
 					<div class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnable}}emoji-picker-icon--disabled{{/unless}}">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
