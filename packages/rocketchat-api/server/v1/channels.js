@@ -847,4 +847,42 @@ RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequire
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.notifications', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
 
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
+			fields: {
+				_room: 0,
+				_user: 0,
+				$loki: 0
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			subscription
+		});
+	},
+	post() {
+		const saveNotifications = (notifications, roomId) => {
+			Object.keys(notifications).map((notificationKey) => {
+				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
+			});
+		};
+		const { roomId, notifications } = this.bodyParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!notifications || Object.keys(notifications).length === 0) {
+			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+		}
+
+		saveNotifications(notifications, roomId);
+	}
+});
