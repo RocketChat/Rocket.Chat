@@ -119,6 +119,10 @@ export default class RocketAdapter {
 				return rocketMessage;
 			}
 
+			if (rocketMessage.file) {
+				return this.processFileShare(rocketMessage);
+			}
+
 			//A new message from Rocket.Chat
 			this.processSendMessage(rocketMessage);
 		} catch (err) {
@@ -143,6 +147,17 @@ export default class RocketAdapter {
 		}
 	}
 
+	processFileShare(rocketMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (rocketMessage.file.name) {
+			rocketMessage.msg = 'Uploaded a file: ' + rocketMessage.file.name;
+			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+		}
+	}
+
 	processMessageChanged(rocketMessage) {
 		if (rocketMessage) {
 			if (rocketMessage.updatedBySlack) {
@@ -156,7 +171,6 @@ export default class RocketAdapter {
 			this.slack.postMessageUpdate(slackChannel, rocketMessage);
 		}
 	}
-
 
 	getChannel(slackMessage) {
 		return slackMessage.channel ? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel) : null;
