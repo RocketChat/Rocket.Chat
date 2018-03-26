@@ -266,25 +266,25 @@ Template.sidebarHeader.events({
 								items: [
 									{
 										icon: 'circle',
-										name: t('Online'),
+										name: t('online'),
 										modifier: 'online',
 										action: () => setStatus('online')
 									},
 									{
 										icon: 'circle',
-										name: t('Away'),
+										name: t('away'),
 										modifier: 'away',
 										action: () => setStatus('away')
 									},
 									{
 										icon: 'circle',
-										name: t('Busy'),
+										name: t('busy'),
 										modifier: 'busy',
 										action: () => setStatus('busy')
 									},
 									{
 										icon: 'circle',
-										name: t('Invisible'),
+										name: t('invisible'),
 										modifier: 'offline',
 										action: () => setStatus('offline')
 									}
