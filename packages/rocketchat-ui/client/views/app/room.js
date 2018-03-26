@@ -308,13 +308,6 @@ Template.room.helpers({
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
 	},
 
-	viewMode() {
-		const user = Meteor.user();
-		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
-		const modes = ['', 'cozy', 'compact'];
-		return modes[viewMode] || modes[0];
-	},
-
 	selectable() {
 		return Template.instance().selectable.get();
 	},

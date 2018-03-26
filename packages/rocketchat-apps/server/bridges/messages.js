@@ -37,4 +37,30 @@ export class AppMessageBridge {
 
 		RocketChat.updateMessage(msg, editor);
 	}
+
+	notifyUser(user, message, appId) {
+		console.log(`The App ${ appId } is notifying a user.`);
+
+		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+
+		RocketChat.Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+			_id: Random.id(),
+			ts: new Date(),
+			u: undefined,
+			editor: undefined
+		}));
+	}
+
+	notifyRoom(room, message, appId) {
+		console.log(`The App ${ appId } is notifying a room's users.`);
+
+		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+
+		RocketChat.Notifications.notifyUsersOfRoom(room.id, 'message', Object.assign(msg, {
+			_id: Random.id(),
+			ts: new Date(),
+			u: undefined,
+			editor: undefined
+		}));
+	}
 }
