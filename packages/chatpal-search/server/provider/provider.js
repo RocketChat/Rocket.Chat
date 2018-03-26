@@ -321,7 +321,6 @@ class ChatpalProvider extends SearchProvider {
 			text,
 			this._settings.get('Main_Language'),
 			this._getAcl(context),
-			10,
 			callback
 		);
 	}

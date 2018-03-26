@@ -111,22 +111,17 @@ class Backend {
 		}
 	}
 
-	suggest(text, language, acl, size, callback) {
-		const options = {
-			params: {
-				'facet.field':`text_${ language }`,
-				'facet.limit': size,
-				'fq':`rid:(${ acl.join(' OR ') })`
-			}
-		};
+	suggest(params, callback) {
 
-		_.extend(options, this._options.httpOptions);
+		const options = {params};
+
+		_.extend(options, this._options.httpOptions);console.log(options);
 
 		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
 			if (err) { return callback(err); }
 
 			try {
-				callback(undefined, _.map(result.data.facet_counts.facet_fields[`text_${ language }`], (item)=>{ return {text: item.name}; }));
+				callback(undefined, result.data.suggestions);
 			} catch (e) {
 				callback(e);
 			}
@@ -443,8 +438,12 @@ export default class Index {
 		}), callback);
 	}
 
-	suggest(text, language, acl, size, callback) {
-		this._backend.suggest(text, language, acl, size, callback);
+	suggest(text, language, acl, callback) {
+		this._backend.suggest({
+			text,
+			language,
+			acl
+		}, callback);
 	}
 
 }

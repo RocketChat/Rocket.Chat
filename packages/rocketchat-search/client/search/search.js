@@ -110,7 +110,7 @@ Template.RocketSearch.events = {
 			return evt.preventDefault();
 		}
 
-		const value = evt.target.value.trim();
+		const value = evt.target.value;
 
 		if (evt.keyCode === 40 || evt.keyCode === 38) {
 			return evt.preventDefault();
