@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 		'meteorhacks:inject-initial'
 	]);
 
-	api.addFiles('server/asset/chatpal-icon.svg', 'server', {isAsset:true});
+	api.addFiles('server/asset/chatpal-enter.svg', 'server', {isAsset:true});
 
 	api.addFiles([
 		'server/provider/provider.js',

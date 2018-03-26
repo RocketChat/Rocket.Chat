@@ -278,3 +278,16 @@
 .chatpal-suggestion {
 	padding: 10px;
 }
+
+.chatpal-suggestion-hint {
+	float: right;
+	display: none;
+}
+
+.rocket-search-suggestion-item.active .chatpal-suggestion-hint {
+	display: block;
+}
+
+.chatpal-suggestion-hint .icon-level-down {
+	/*transform: scaleX(-1);*/
+}

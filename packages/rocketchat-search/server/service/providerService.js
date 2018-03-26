@@ -94,7 +94,8 @@ class SearchProviderService {
 			self.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: _.map(providers, (p) => { return {key:p.key, i18nLabel: p.i18nLabel}; }),
-				public: true
+				public: true,
+				i18nLabel: 'Search_Provider'
 			});
 
 			_.chain(providers)
