@@ -273,6 +273,9 @@ Template.messageBox.helpers({
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
 	},
+	dataReply() {
+		return Template.instance().dataReply.get();
+	},
 	isAudioMessageAllowed() {
 		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
 	}
@@ -376,6 +379,13 @@ Template.messageBox.events({
 			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 			return input.focus();
 		});
+	},
+	'click .cancel-reply'(event, instance) {
+		const input = instance.find('.js-input-message');
+		$(input)
+			.focus()
+			.removeData('reply')
+			.trigger('dataChange');
 	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
@@ -631,6 +641,12 @@ Template.messageBox.events({
 });
 
 Template.messageBox.onRendered(function() {
+	const input = this.find('.js-input-message'); //mssg box
+	const self = this;
+	$(input).on('dataChange', () => {
+		const reply = $(input).data('reply');
+		self.dataReply.set(reply);
+	});
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
 	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
@@ -643,6 +659,7 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.onCreated(function() {
+	this.dataReply = new ReactiveVar(''); //if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
 });
