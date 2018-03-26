@@ -121,7 +121,7 @@ class Backend {
 			if (err) { return callback(err); }
 
 			try {
-				callback(undefined, result.data.suggestions);
+				callback(undefined, result.data.suggestion);
 			} catch (e) {
 				callback(e);
 			}
