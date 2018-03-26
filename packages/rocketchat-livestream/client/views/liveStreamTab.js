@@ -107,6 +107,17 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		i.editing.set(false);
 	},
+	'click .js-clear'(e, i) {
+		e.preventDefault();
+		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', {}, function(err) {
+			if (err) {
+				return handleError(err);
+			}
+			i.editing.set(false);
+			i.streamingOptions.set({});
+			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+		});
+	},
 	'click .js-save'(e, i) {
 		e.preventDefault();
 

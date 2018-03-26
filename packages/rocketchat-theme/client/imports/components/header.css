@@ -203,6 +203,25 @@
 		&:hover {
 			color: var(--rc-color-link-active);
 		}
+		&.live {
+			position: relative;
+		}
+		&.live:before {
+			content: '';
+			position: absolute;
+	    right: -2px;
+	    bottom: -1px;
+	    display: block;
+	    width: 10px;
+	    width: var(--sidebar-account-status-bullet-size);
+	    height: 10px;
+	    height: var(--sidebar-account-status-bullet-size);
+	    border-radius: 50%;
+	    border-radius: var(--sidebar-account-status-bullet-radius);
+			background-color: #f5455c;
+			z-index: 1;
+			animation: blink 1.5s ease-in-out infinite;
+		}
 	}
 
 	&__more {
