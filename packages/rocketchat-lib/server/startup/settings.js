@@ -83,6 +83,14 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true
 	});
 
+	this.section('Two Factor Authentication', function() {
+		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
+			type: 'int',
+			public: true,
+			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta'
+		});
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string'
@@ -310,10 +318,29 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Sidebar_list_mode'
 		});
-		this.add('Accounts_Default_User_Preferences_mergeChannels', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
+			type: 'select',
+			values: [
+				{
+					key: 'extended',
+					i18nLabel: 'Extended'
+				},
+				{
+					key: 'medium',
+					i18nLabel: 'Medium'
+				},
+				{
+					key: 'condensed',
+					i18nLabel: 'Condensed'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Sidebar_list_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			'public': true,
-			i18nLabel: 'UI_Merge_Channels_Groups'
+			i18nLabel: 'Hide_Avatars'
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 			type: 'boolean',
@@ -343,25 +370,6 @@ RocketChat.settings.addGroup('Accounts', function() {
 			],
 			'public': true,
 			i18nLabel: 'Enter_Behaviour'
-		});
-		this.add('Accounts_Default_User_Preferences_viewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal'
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy'
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact'
-				}
-			],
-			'public': true,
-			i18nLabel: 'View_mode'
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
 			type: 'select',
@@ -1192,10 +1200,16 @@ RocketChat.settings.addGroup('Message', function() {
 			'public': true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription'
 		});
+	});
+	this.section('Message_Audio', function() {
 		this.add('Message_AudioRecorderEnabled', true, {
 			type: 'boolean',
 			'public': true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription'
+		});
+		this.add('Message_Audio_bitRate', 32, {
+			type: 'int',
+			'public': true
 		});
 	});
 	this.add('Message_AllowEditing', true, {

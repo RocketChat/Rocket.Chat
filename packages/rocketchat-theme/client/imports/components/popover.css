@@ -65,6 +65,13 @@
 		}
 	}
 
+		&__content-scroll {
+
+			.rc-popover__item {
+				display:block;
+			}
+	}
+
 	&__title {
 		flex: 1;
 
