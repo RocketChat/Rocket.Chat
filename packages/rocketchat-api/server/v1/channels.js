@@ -758,6 +758,24 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "announcement" is required');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
+		});
+
+		return RocketChat.API.v1.success({
+			announcement: this.bodyParams.announcement
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
@@ -793,5 +811,45 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.notifications', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
+			fields: {
+				_room: 0,
+				_user: 0,
+				$loki: 0
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			subscription
+		});
+	},
+	post() {
+		const saveNotifications = (notifications, roomId) => {
+			Object.keys(notifications).map((notificationKey) => {
+				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
+			});
+		};
+		const { roomId, notifications } = this.bodyParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!notifications || Object.keys(notifications).length === 0) {
+			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+		}
+
+		saveNotifications(notifications, roomId);
 	}
 });
