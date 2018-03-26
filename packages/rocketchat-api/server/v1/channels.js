@@ -833,8 +833,16 @@ RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequire
 			}
 		}));
 
+		const allMentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {}
+		}));
+
 		return RocketChat.API.v1.success({
-			mentions
+			mentions,
+			count: mentions.length,
+			offset,
+			total: allMentions.length
 		});
 	}
 });
