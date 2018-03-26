@@ -92,7 +92,7 @@ class SlackBridge {
 		//Reactions
 		RocketChat.settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
 			this.isReactionsEnabled = value;
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Is this entire SlackBridge enabled
