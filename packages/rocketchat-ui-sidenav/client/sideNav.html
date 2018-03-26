@@ -9,12 +9,6 @@
 					{{#each roomType}}
 						{{> Template.dynamic template=template data=data }}
 					{{/each}}
-
-					{{#if canViewHistory}}
-						<h3 class="history-div">
-							<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
-						</h3>
-					{{/if}}
 				</div>
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
 					{{_ "More_unreads"}} <i class="icon-down-big"></i>
