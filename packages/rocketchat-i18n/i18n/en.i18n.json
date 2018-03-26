@@ -1135,6 +1135,8 @@
   "Lead_capture_email_regex": "Lead capture email regex",
   "Lead_capture_phone_regex": "Lead capture phone regex",
   "Least_Amount": "Least Amount",
+  "leave-c": "Leave Channels",
+  "leave-p": "Leave Private Groups",
   "Leave_Group_Warning": "Are you sure you want to leave the group \"%s\"?",
   "Leave_Livechat_Warning": "Are you sure you want to leave the livechat with \"%s\"?",
   "Leave_Private_Warning": "Are you sure you want to leave the discussion with \"%s\"?",

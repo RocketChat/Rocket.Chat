@@ -90,6 +90,9 @@ Template.sidebarItem.events({
 
 			if (!roomData) { return false; }
 
+			if (roomData.t === 'c' && !RocketChat.authz.hasAtLeastOnePermission('leave-c')) { return false; }
+			if (roomData.t === 'p' && !RocketChat.authz.hasAtLeastOnePermission('leave-p')) { return false; }
+
 			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
 		};
 
