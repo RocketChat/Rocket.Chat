@@ -116,6 +116,72 @@
 	}
 }
 
+
+.rc-input-file {
+	position: relative;
+
+	width: 100%;
+
+	&__label {
+		cursor: pointer;
+	}
+
+	&__title {
+		font-size: var(--input-font-size);
+	}
+
+
+	&__wrapper {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-end;
+
+		width: 100%;
+		padding: 0.3rem;
+		margin: .5rem 0;
+
+		color: var(--input-text-color);
+
+		border-width: var(--input-border-width);
+		border-color: var(--input-border-color);
+		border-radius: var(--input-border-radius);
+		background-color: transparent;
+
+		font-size: var(--input-font-size);
+
+		&::placeholder {
+			color: var(--input-placeholder-color);
+		}
+
+		& > .rc-button {
+			height: 10px;
+			flex: 0 0 auto;
+			min-height: 31px;
+			border-color: #E1E5E8;
+			background: #F1F1F1;
+			border-radius: 2px;
+			margin: 0;
+			padding: 8px;
+		}
+	}
+
+	&__name {
+		white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+    padding: 0 5px;
+		width: 100%;
+		line-height: 16px;
+	}
+
+	&__element {
+		display: none;
+	}
+
+}
+
 select.rc-input {
 	padding: 0.782rem;
 	margin: 0.5rem 0;

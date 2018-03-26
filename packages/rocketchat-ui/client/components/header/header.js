@@ -5,6 +5,9 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 Template.header.helpers({
+	back() {
+		return Template.instance().data.back;
+	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -85,6 +88,10 @@ Template.header.helpers({
 
 	showToggleFavorite() {
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+	},
+
+	fixedHeight() {
+		return Template.instance().data.fixedHeight;
 	},
 
 	isChannel() {

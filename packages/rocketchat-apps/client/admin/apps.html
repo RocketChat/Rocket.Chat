@@ -1,10 +1,9 @@
 <template name="apps">
+	<!-- TODO: fix this class -->
 	<section class="preferences-page preferences-page--apps">
-		<header class="preferences-page__header">
-			{{> burger}}
-			<h2>{{_ "Manage_Apps"}}</h2>
-			<button class="rc-button rc-button--primary" data-button="install">{{_ "Install_package"}}</button>
-		</header>
+		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
+		{{/header}}
 		<div class="preferences-page__content">
 			{{#requiresPermission 'manage-apps'}}
 				<div class="rc-discovery">
@@ -24,6 +23,8 @@
 									</button>
 								</div>
 							</div>
+						{{else}}
+							you dont have any app installed :/
 						{{/each}}
 					</div>
 				</div>
