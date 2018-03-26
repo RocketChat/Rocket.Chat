@@ -189,6 +189,15 @@
 	font-weight: 500;
 }
 
+.rc-button-group {
+	display: flex;
+	margin: 0 calc(-var(--default-small-padding) / 2);
+
+	& .rc-button {
+		margin: 0 calc(var(--default-small-padding) / 2);
+	}
+}
+
 .rc-grid {
 	display: flex;
 	align-items: flex-start;
