@@ -85,6 +85,10 @@ class ChatpalProvider extends SearchProvider {
 		this._settings.add('PageSize', 'int', 15, {
 			i18nLabel: 'Search_Page_Size'
 		});
+		this._settings.add('SuggestionEnabled', 'boolean', true, {
+			i18nLabel: 'Chatpal_Suggestion_Enabled',
+			alert: 'This feature is currently in beta and will ne extended in the future'
+		});
 		this._settings.add('BatchSize', 'int', 100, {
 			i18nLabel: 'Chatpal_Batch_Size',
 			i18nDescription: 'Chatpal_Batch_Size_Description'
@@ -112,7 +116,7 @@ class ChatpalProvider extends SearchProvider {
 	}
 
 	get supportsSuggestions() {
-		return true;
+		return this._settings.get('SuggestionEnabled');
 	}
 
 	/**

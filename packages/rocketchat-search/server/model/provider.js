@@ -28,7 +28,9 @@ class Setting {
 	}
 
 	load() {
-		this._value = RocketChat.settings.get(this.id) || this.defaultValue;
+		this._value = RocketChat.settings.get(this.id);
+
+		if (this._value === undefined) { this._value = this.defaultValue; }
 	}
 
 }
