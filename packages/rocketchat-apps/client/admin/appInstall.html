@@ -1,33 +1,58 @@
 <template name="appInstall">
 	<section class="preferences-page">
-		<header class="preferences-page__header">
-			{{> burger}}
-			<a href="{{pathFor "apps"}}" title="{{_ "Back_to_Manage_Apps"}}">
-				<i class="icon-left-open"></i>
-			</a> &nbsp;
+		{{#header sectionName="App_Installation" hideHelp=true  fixedHeight=true}}
 
-			<h2>{{_ "App_Installation"}}</h2>
-		</header>
+		{{/header}}
 		<div class="preferences-page__content">
 			{{#if isInstalling}}
 				{{> loading}}
 			{{else}}
 				<div class="rc-form-group rc-grid">
 					<div class="rc-input rc-w50 padded">
-						<div class="rc-select-avatar__list-item rc-tooltip js-select-app-upload" aria-label="{{_ "Upload_file" }}">
-							<label class="rc-select-avatar__upload-label app" for="upload-app">
-								{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
-							</label>
-							<input type="file" name="" value="" id="upload-app" style="display:none;">
-						</div>
 						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ "App_Url_to_Install_From"}}</div>
+							<div class="rc-input__title">{{>icon icon='clip'}}{{_ "App_Url_to_Install_From"}}</div>
 							<div class="rc-input__wrapper">
 								<input type="text" class="rc-input__element" name="appPackageUrl" id="appPackage" placeholder="https://rocket.chat/apps/package.zip" value="{{appUrl}}" >
 							</div>
 						</label>
-						<button class="rc-button install">{{ _ "Install" }}</button>
 					</div>
+					<div class="rc-input-file rc-w50 padded">
+						<label class="rc-input-file__label">
+							<div class="rc-input-file__title">{{>icon icon='clip'}}{{_ "App_Url_to_Install_From_File"}}</div>
+							<div class="rc-input-file__wrapper">
+								<div class="rc-input-file__name">
+									{{appFile}}
+								</div>
+								<input type="file" class="rc-input-file__element" name="appPackageUrl" id="upload-app" placeholder="https://rocket.chat/apps/package.zip">
+								<label for='upload-app' class="rc-button rc-button-secondary install">{{_ "Browse_Files"}}</label>
+							</div>
+						</label>
+						  <!-- <input type="file" id="file" class="inputfile" onchange='uploadFile(this)'>
+						  <label for="file">
+						    <span id="file-name" class="file-box"></span>
+						    <span class="file-button">
+						      <i class="fa fa-upload" aria-hidden="true"></i>
+						      Select File
+						    </span>
+						  </label>
+
+
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{>icon icon='clip'}}{{_ "App_Url_to_Install_From_File"}}</div>
+							<div class="rc-input__wrapper">
+							</div>
+						</label> -->
+						<!-- <div class="rc-select-avatar__list-item rc-tooltip js-select-app-upload" aria-label="{{_ "Upload_file" }}">
+							<label class="rc-select-avatar__upload-label app" for="upload-app">
+								{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+							</label>
+							<input type="file" name="" value="" id="upload-app" style="display:none;">
+						</div> -->
+					</div>
+				</div>
+				<div class="rc-button-group">
+					<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
+					<button class="rc-button rc-button--primary js-install" disabled='{{disabled}}'>{{ _ "Install" }}</button>
 				</div>
 			{{/if}}
 		</div>
