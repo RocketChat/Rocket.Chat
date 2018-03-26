@@ -155,7 +155,7 @@ class ChatpalProvider extends SearchProvider {
 		if (reason === 'switch') { return true; }
 
 		return this._indexConfig.backendtype !== this._settings.get('Backend') ||
-			(this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== this._settings.get('Base_URL')) ||
+			(this._indexConfig.backendtype === 'onsite' && this._indexConfig.baseurl !== (this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL'))) ||
 			(this._indexConfig.backendtype === 'cloud' && this._indexConfig.httpOptions.headers['X-Api-Key'] !== this._settings.get('API_Key')) ||
 			this._indexConfig.language !== this._settings.get('Main_Language');
 	}
