@@ -84,10 +84,10 @@ Template.RocketSearch.events = {
 				} else {
 					t.search(suggestion.text);
 				}
-				t.suggestions.set();
 			} else {
 				t.search(evt.target.value.trim());
 			}
+			t.suggestions.set();
 			return evt.preventDefault();
 		}
 
