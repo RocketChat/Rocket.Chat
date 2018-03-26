@@ -12,7 +12,7 @@ Meteor.methods({
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const user = Meteor.user();
 
-		if (room.t === 'd') {
+		if (room.t === 'd' || (room.t === 'c' && !RocketChat.authz.hasPermission(user._id, 'leave-c')) || (room.t === 'p' && !RocketChat.authz.hasPermission(user._id, 'leave-p'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
