@@ -44,7 +44,7 @@ RocketChat.API = {
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
-				url: `${ Meteor.absoluteUrl() }api/${ endpoint }${ query }`,
+				url: `${ window.location.origin }/api/${ endpoint }${ query }`,
 				headers: {
 					'Content-Type': 'application/json',
 					'X-User-Id': localStorage['Meteor.userId'],

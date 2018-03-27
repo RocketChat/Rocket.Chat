@@ -1,5 +1,5 @@
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppsRestApi, AppWebsocketNotifier } from './communication';
+import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, AppRealStorage, AppRealLogsStorage } from './storage';
 
@@ -15,7 +15,7 @@ class AppServerOrchestrator {
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
-		this._logStorage = new AppRealLogsStorage(this._persistModel);
+		this._logStorage = new AppRealLogsStorage(this._logModel);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -29,7 +29,7 @@ class AppServerOrchestrator {
 
 		this._communicators = new Map();
 		this._communicators.set('methods', new AppMethods(this._manager));
-		this._communicators.set('notifier', new AppWebsocketNotifier());
+		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 	}
 
@@ -64,18 +64,27 @@ class AppServerOrchestrator {
 	getManager() {
 		return this._manager;
 	}
+
+	isEnabled() {
+		return true;
+	}
+
+	isLoaded() {
+		return this.getManager().areAppsLoaded();
+	}
 }
 
 Meteor.startup(function _appServerOrchestrator() {
 	// Ensure that everything is setup
 	if (process.env[AppManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[AppManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true') {
-		return new AppMethods();
+		global.Apps = new AppMethods();
+		return;
 	}
 
 	console.log('Orchestrating the app piece...');
 	global.Apps = new AppServerOrchestrator();
 
 	global.Apps.getManager().load()
-		.then(() => console.log('...done! ;)'))
+		.then(() => console.log('...done! :)'))
 		.catch((err) => console.warn('...failed!', err));
 });

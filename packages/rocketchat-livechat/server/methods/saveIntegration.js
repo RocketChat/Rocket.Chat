@@ -22,6 +22,14 @@ Meteor.methods({
 			RocketChat.settings.updateById('Livechat_webhook_on_offline_msg', !!values['Livechat_webhook_on_offline_msg']);
 		}
 
+		if (typeof values['Livechat_webhook_on_visitor_message'] !== 'undefined') {
+			RocketChat.settings.updateById('Livechat_webhook_on_visitor_message', !!values['Livechat_webhook_on_visitor_message']);
+		}
+
+		if (typeof values['Livechat_webhook_on_agent_message'] !== 'undefined') {
+			RocketChat.settings.updateById('Livechat_webhook_on_agent_message', !!values['Livechat_webhook_on_agent_message']);
+		}
+
 		return;
 	}
 });
