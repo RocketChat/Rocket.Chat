@@ -62,6 +62,12 @@ Template.userInfo.helpers({
 		return user && user.username;
 	},
 
+	userStatus() {
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus;
+	},
+
 	email() {
 		const user = Template.instance().user.get();
 		return user && user.emails && user.emails[0] && user.emails[0].address;
