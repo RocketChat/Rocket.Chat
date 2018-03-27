@@ -31,14 +31,9 @@
 		overflow: auto;
 		padding: var(--default-padding);
 
-		flex: 1 1 auto;
-
-		display: flex;
-
-		flex-direction: column;
-
 		& .js-back {
-			margin: auto 0;
+			width: 100%;
+			margin-top: 2rem;
 		}
 
 		& .section:not(:last-child) {
