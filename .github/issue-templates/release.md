@@ -11,6 +11,7 @@ For any regression, open a new issue and link to this one.
 - [ ] Define the highlights from release PRs as suggestion to be included on Blog Post
 - [ ] Talk to the Marketing Team about the Blog Post release
 - [ ] Talk to the Documentation Team about the Docs release
+- [ ] Sync translations from [LingoHub](https://translate.lingohub.com/rocketchat/rocket-dot-chat/dashboard)
 
 ## Release Candidate 1 - On the 20th
 - [ ] Delete branch `release-candidate`
