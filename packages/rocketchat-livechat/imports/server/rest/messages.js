@@ -1,6 +1,6 @@
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
-RocketChat.API.v1.addRoute('livechat/messages', {
+RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
 			return RocketChat.API.v1.unauthorized();
