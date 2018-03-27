@@ -9,9 +9,10 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name</td>
-							<td class="rc-table-td js-sort" data-sort="usernames">Version</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Status</td>
+							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td">Version</td>
+							<td class="rc-table-td">Status</td>
+							<td class="rc-table-td"></td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
@@ -19,7 +20,7 @@
 							<tr class="rc-table-tr" data-name="{{name}}">
 								<td class="rc-table-td rc-table-td--name">
 									<div class="rc-directory-channel-wrapper">
-
+										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
 										<div class="rc-directory-channel-info">
 											<span class="rc-directory-channel-name">
 												{{name}}
@@ -30,9 +31,12 @@
 									</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--users">{{users}}</td>
+								<td class="rc-table-td rc-table-td--users">{{version}}</td>
 								<td class="rc-table-td">
-									<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
+									{{status}}
+								</td>
+								<td class="rc-table-td">
+									<button class="rc-button rc-button--nude rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
 										{{> icon icon="cog"}}
 									</button>
 								</td>
