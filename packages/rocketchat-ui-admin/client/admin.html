@@ -54,9 +54,9 @@
 											<div class="setting-field">
 												{{#if $eq type 'string'}}
 													{{#if multiline}}
-														<textarea class="input-monitor rc-input__element" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}}>{{value}}</textarea>
+														<textarea class="input-monitor rc-input__element" name="{{_id}}" rows="4" style="height: auto" {{isDisabled}} {{isReadonly}}>{{value}}</textarea>
 													{{else}}
-														<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+														<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
 													{{/if}}
 												{{/if}}
 
@@ -65,20 +65,20 @@
 												{{/if}}
 
 												{{#if $eq type 'password'}}
-													<input class="input-monitor rc-input__element" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="password" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
 												{{/if}}
 
 												{{#if $eq type 'int'}}
-													<input class="input-monitor rc-input__element" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="number" name="{{_id}}" value="{{value}}" placeholder="{{placeholder}}" {{isDisabled}} {{isReadonly}}/>
 												{{/if}}
 
 												{{#if $eq type 'boolean'}}
-													<label><input class="input-monitor" type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" {{isDisabled}}/> {{_ "True"}}</label>
-													<label><input class="input-monitor" type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" {{isDisabled}}/> {{_ "False"}}</label>
+													<label><input class="input-monitor" type="radio" name="{{_id}}" value="1" checked="{{$eq value true}}" {{isDisabled}} {{isReadonly}}/> {{_ "True"}}</label>
+													<label><input class="input-monitor" type="radio" name="{{_id}}" value="0" checked="{{$eq value false}}" {{isDisabled}} {{isReadonly}}/> {{_ "False"}}</label>
 												{{/if}}
 
 												{{#if $eq type 'select'}}
-													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}}>
+													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
 														{{#each values}}
 															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
 														{{/each}}
@@ -86,7 +86,7 @@
 												{{/if}}
 
 												{{#if $eq type 'language'}}
-													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}}>
+													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
 														{{#each languages}}
 														<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
 														{{/each}}
@@ -118,7 +118,7 @@
 												{{/if}}
 
 												{{#if $eq type 'font'}}
-													<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}}/>
+													<input class="input-monitor rc-input__element" type="text" name="{{_id}}" value="{{value}}" {{isDisabled}} {{isReadonly}}/>
 												{{/if}}
 
 												{{#if $eq type 'code'}}

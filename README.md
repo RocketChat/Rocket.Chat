@@ -297,6 +297,7 @@ It is a great solution for communities and companies wanting to privately host t
 - File Upload / Sharing
 - Scalable file sharing - S3 uploads with CDN downloads
 - Full text search
+- Global search (from all channels/rooms at once)
 - Live chat / Messaging call center
 - LDAP Authentication
 - CAS 1.0, 2.0 support for educational institutions and hosting providers worldwide
@@ -362,7 +363,11 @@ Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-e
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track todos, bugs, feature requests, and more.
+[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
+
+## Feature Requests
+
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions. 
 
 ### Stack Overflow
 

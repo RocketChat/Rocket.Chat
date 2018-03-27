@@ -38,7 +38,7 @@ Template.userInfo.helpers({
 					_.map(el, (key, label) => {
 						const value = RocketChat.templateVarHandler(key, userCustomFields);
 						if (value) {
-							content = `${ label }: ${ value }`;
+							content = {label, value};
 						}
 					});
 				} else {
@@ -60,6 +60,12 @@ Template.userInfo.helpers({
 	username() {
 		const user = Template.instance().user.get();
 		return user && user.username;
+	},
+
+	userStatus() {
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus;
 	},
 
 	email() {
@@ -155,6 +161,11 @@ Template.userInfo.helpers({
 		const roomRoles = RoomRoles.findOne({'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+	},
+
+	shouldDisplayReason() {
+		const user = Template.instance().user.get();
+		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
 /* globals isRtl popover */

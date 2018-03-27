@@ -4,6 +4,7 @@ whitelist:
   users:
     - TwizzyDizzy
     - theorenck
+    - JSzaszvari
   labels:
     - duplicate
     - enhancement

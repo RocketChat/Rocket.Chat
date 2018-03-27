@@ -136,20 +136,67 @@
 		}
 
 		& .rc-input__icon-svg--plus {
-			transition: transform 0.2s linear;
+			transition: transform 0.1s linear;
 		}
+
+		&.cross {
+			color: red;
+		}
+
+		&.loading {
+			cursor: pointer;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.mic {
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
 	}
 
 	&__action-menu {
 		position: relative;
 
 		&.active .rc-input__icon-svg--plus {
-			transform: rotate(135deg);
+			transform: rotate(45deg);
 		}
 	}
 
 	& [data-small] {
 		display: none;
+	}
+
+	&__audio-recording {
+		display: none;
+		position: relative;
+		z-index: -1;
+		&.active{
+			display: flex;
+			z-index: 2;
+		}
+	}
+
+	&__audio-message{
+		&.hidden{
+			z-index: -1;
+		}
+	}
+
+	&__timer-box{
+		display: flex;
+		width: 50px;
+	}
+
+	&__timer-dot{
+		font-size: 1.5em;
+		color: #d60000;
+		line-height: 0.8em;
 	}
 }
 

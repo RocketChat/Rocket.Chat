@@ -69,7 +69,6 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:nrr@2.0.2
 konecty:user-presence@2.0.1
 launch-screen@1.1.1
 less@2.7.12
@@ -129,6 +128,7 @@ rocketchat:accounts@0.0.1
 rocketchat:action-links@0.0.1
 rocketchat:analytics@0.0.2
 rocketchat:api@0.0.1
+rocketchat:apps@1.0.0
 rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
@@ -191,6 +191,7 @@ rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:monitoring@2.30.2_3
+rocketchat:nrr@1.0.0
 rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
@@ -235,6 +236,7 @@ rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:ui-vrecord@0.0.1
 rocketchat:version@1.0.0
+rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1

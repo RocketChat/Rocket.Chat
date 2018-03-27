@@ -11,7 +11,8 @@ renderMessageBody = function(msg) {
 	const message = RocketChat.callbacks.run('renderMessage', msg);
 
 	if (message.tokens && message.tokens.length > 0) {
-		for (const {token, text} of message.tokens) {
+		// Unmounting tokens(LIFO)
+		for (const {token, text} of message.tokens.reverse()) {
 			message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
 		}
 	}

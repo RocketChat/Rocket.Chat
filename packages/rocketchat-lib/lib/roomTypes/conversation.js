@@ -3,7 +3,7 @@ import { RoomTypeConfig } from '../RoomTypeConfig';
 export class ConversationRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
-			identifier: 'activity',
+			identifier: 'merged',
 			order: 30,
 			label: 'Conversations'
 		});
@@ -11,6 +11,6 @@ export class ConversationRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'activity';
+		return RocketChat.getUserPreference(user, 'mergeChannels');
 	}
 }

@@ -1,0 +1,91 @@
+.rc-directory {
+
+	&-header {
+		display: flex;
+	}
+
+
+	/* TODO: -plus and -search should be "globals" */
+
+	&-plus {
+		width: 36px;
+		min-width: 36px;
+		height: 36px;
+		min-height: 36px;
+		padding: 0;
+	}
+	&-search {
+		max-width: 230px;
+	}
+
+	&-selector,
+	&-search,
+	&-plus {
+		margin: 0 0.5rem;
+	}
+}
+
+.rc-directory-header .rc-input__wrapper {
+	padding: 0;
+}
+
+.rc-directory-channel {
+	&-wrapper {
+		display: flex;
+		align-items: center;
+		margin: 0 -9px;
+	}
+
+	&-avatar {
+		width: 60px;
+		height: 60px;
+		margin: 0 9px;
+	}
+
+	&-info {
+		display: flex;
+		margin: 0 9px;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	&-name {
+		font-size: 1rem;
+		font-weight: 500;
+	}
+
+	&-description {
+		margin-top: 0.625rem;
+		color: var(--rc-color-primary-light);
+		overflow: hidden;
+    text-overflow: ellipsis;
+		max-width: 200px;
+	}
+
+	&-createdAt {
+		text-transform: capitalize;
+	}
+}
+
+.rc-directory-content {
+	width: 100%;
+	overflow-x: auto;
+
+	& .js-sort {
+		cursor: pointer;
+	}
+}
+
+@media (width <= 500px) {
+	.rc-directory-content .rc-table-head {
+		display: none;
+	}
+
+	.rc-directory {
+		&-selector,
+		&-search,
+		&-plus {
+			padding: 0 0.3rem;
+		}
+	}
+}

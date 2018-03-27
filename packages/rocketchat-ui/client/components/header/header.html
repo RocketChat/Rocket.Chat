@@ -55,7 +55,9 @@
 		{{/if}}
 
 		{{#unless isChannel}}
-			<div class="rc-header__section-help"></div>
+			{{# unless hideHelp}}
+				<div class="rc-header__section-help"></div>
+			{{/unless}}
 		{{/unless}}
 
 		{{#with toolbarButtons}}
