@@ -93,6 +93,15 @@ class API extends Restivus {
 		};
 	}
 
+	notFound(msg) {
+		return {
+			statusCode: 404,
+			body: {
+				success: false,
+				error: msg ? msg : 'Resource not found'
+			}
+		};
+	}
 
 	unauthorized(msg) {
 		return {
@@ -100,16 +109,6 @@ class API extends Restivus {
 			body: {
 				success: false,
 				error: msg ? msg : 'unauthorized'
-			}
-		};
-	}
-
-	notFound(msg) {
-		return {
-			statusCode: 404,
-			body: {
-				success: false,
-				error: msg ? msg : 'Nothing was found'
 			}
 		};
 	}
@@ -328,9 +327,9 @@ class API extends Restivus {
 		};
 
 		/*
-		Add a logout endpoint to the API
-		After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
-		adding hook).
+			Add a logout endpoint to the API
+			After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
+			adding hook).
 		*/
 		return this.addRoute('logout', {
 			authRequired: true
@@ -344,11 +343,6 @@ class API extends Restivus {
 		});
 	}
 }
-
-
-RocketChat.API = {
-	helperMethods: new Map()
-};
 
 const getUserAuth = function _getUserAuth() {
 	const invalidResults = [undefined, null, false];
@@ -381,6 +375,12 @@ const getUserAuth = function _getUserAuth() {
 			};
 		}
 	};
+};
+
+RocketChat.API = {
+	helperMethods: new Map(),
+	getUserAuth,
+	ApiClass: API
 };
 
 const createApi = function _createApi(enableCors) {

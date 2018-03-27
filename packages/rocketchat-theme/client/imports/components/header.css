@@ -20,6 +20,8 @@
 
 	font-size: var(--header-title-font-size);
 
+	justify-content: space-between;
+
 	&__content {
 		display: flex;
 
@@ -194,7 +196,7 @@
 		cursor: pointer;
 		transition: all 0.3s;
 
-		font-size: 24px;
+		font-size: 18px;
 		align-items: center;
 
 		&.active,

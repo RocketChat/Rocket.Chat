@@ -84,6 +84,13 @@ Template.popover.onRendered(function() {
 			});
 		}
 
+		const realTop = Number(popoverContent.style.top.replace('px', ''));
+		if (realTop + popoverContent.offsetHeight > window.innerHeight) {
+			popoverContent.style.overflow = 'scroll';
+			popoverContent.style.bottom = 0;
+			popoverContent.className = 'rc-popover__content rc-popover__content-scroll';
+		}
+
 		if (activeElement) {
 			$(activeElement).addClass('active');
 		}
@@ -163,46 +170,6 @@ Template.popover.events({
 			});
 			popover.close();
 		}
-	},
-	'click [data-type="set-state"]'(e) {
-		AccountBox.setStatus(e.currentTarget.dataset.id);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
-		popover.close();
-	},
-	'click [data-type="open"]'(e) {
-		const data = e.currentTarget.dataset;
-
-		switch (data.id) {
-			case 'account':
-				SideNav.setFlex('accountFlex');
-				SideNav.openFlex();
-				FlowRouter.go('account');
-				break;
-			case 'logout':
-				const user = Meteor.user();
-				Meteor.logout(() => {
-					RocketChat.callbacks.run('afterLogoutCleanUp', user);
-					Meteor.call('logoutCleanUp', user);
-					FlowRouter.go('home');
-				});
-				break;
-			case 'administration':
-				SideNav.setFlex('adminFlex');
-				SideNav.openFlex();
-				FlowRouter.go('admin-info');
-				break;
-		}
-
-		if (data.href) {
-			FlowRouter.go(data.href);
-		}
-
-		if (data.sideNav) {
-			SideNav.setFlex(data.sideNav);
-			SideNav.openFlex();
-		}
-
-		popover.close();
 	},
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
