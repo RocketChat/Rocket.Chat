@@ -47,7 +47,7 @@
   "Accounts_Default_User_Preferences_mobileNotifications": "Alapértelmezett mobil értesítő",
   "Accounts_Default_User_Preferences_not_available": "A felhasználói beállítások lekérése sikertelen volt, mivel még nem állította be a felhasználó",
   "Accounts_denyUnverifiedEmail": "Nem megerősített e-mail elutasítása",
-  "Accounts_EmailVerification": "E-mail megerősítése",
+  "Accounts_EmailVerification": "Email megerősítése",
   "Accounts_EmailVerification_Description": "Győződjön meg róla, hogy az SMTP megfelelően be van állítva",
   "Accounts_Email_Approved": "[name]<br/><br/><p>Fiókod jóváhagyása.</p>",
   "Accounts_Email_Activated": "[name]<br/><br/><p>A fiók aktiválva volt.</p>",
