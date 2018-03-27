@@ -23,7 +23,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 			const users = RocketChat.authz.getUsersInRole(role);
 
 			return RocketChat.API.v1.success({
-				users: users.fetch().map(user => ({ _id: user._id, username: user.username }))
+				users: users.fetch().map(user => _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat'))
 			});
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
