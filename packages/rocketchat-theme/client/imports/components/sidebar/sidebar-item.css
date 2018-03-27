@@ -192,16 +192,11 @@
 	&__message {
 		display: flex;
 		overflow: hidden;
-		flex-direction: row !important;
 		flex: 1;
 
 		margin: 0 -3px;
 		align-items: center;
 		justify-content: space-between;
-
-		&-top {
-			overflow: hidden;
-		}
 	}
 
 	&__name {
@@ -293,6 +288,10 @@
 		color: inherit;
 		background: transparent;
 	}
+}
+
+.flex-nav .sidebar-item__message {
+	flex-direction: row;
 }
 
 .rtl .sidebar-item {
