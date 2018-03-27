@@ -1,10 +1,10 @@
 {
+  "403": "Bị cấm",
+  "500": "Lỗi máy chủ",
   "#channel": "kênh ",
   "0_Errors_Only": "0 - Chỉ lỗi",
   "1_Errors_and_Information": "1- Lỗi và thông tin",
   "2_Erros_Information_and_Debug": "2 - Lỗi, thông tin và gỡ lỗi",
-  "403": "Bị cấm",
-  "500": "Lỗi máy chủ",
   "@username": "@username",
   "Accept": "Đồng ý",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Cho phép gửi yêu cầu livechat ngay cả khi không có nhân viên nào online",

@@ -1,0 +1,4 @@
+{
+    "supported_languages": ["ar", "az", "bg", "ca", "cs", "da", "de", "el", "en", "eo", "es", "fa", "fi", "fr", "he", "hr", "hu", "id", "it", "ja", "km", "ko", "lo", "lt", "nl", "pl", "pt-BR", "pt", "ro", "ru", "sq", "sr", "sv", "tr", "ug", "uk", "zh", "zh-HK", "zh-TW"],
+    "preloaded_langs": ["en"]
+}
