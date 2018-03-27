@@ -140,6 +140,7 @@
 	}
 
 	&__user-status {
+		min-width: var(--sidebar-item-user-status-size);
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 
