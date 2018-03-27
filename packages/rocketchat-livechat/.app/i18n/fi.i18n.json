@@ -30,9 +30,10 @@
   "Skip": "Ohita",
   "Start_Chat": "Aloita Chat",
   "Survey": "Kysely",
-  "Survey_instructions": "Arvioi jokainen kysymys sen mukaan miten tyytyväinen olet niin, että 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
+  "Survey_instructions": "Arvioi jokainen kysymys sen mukaan, miten tyytyväinen olet: 1 tarkoittaa että olet täysin tyytymätön ja 5 tarkoittaa että olet täysin tyytyväinen.",
   "Thank_you_for_your_feedback": "Kiitos palautteestasi",
   "Thanks_We_ll_get_back_to_you_soon": "Kiitos! Palaamme asiaan pian.",
+  "transcript_sent": "Lähetys lähetettiin",
   "Type_your_email": "Kirjoita sähköpostiosoitteesi",
   "Type_your_message": "Kirjoita viestisi",
   "Type_your_name": "Kirjoita nimesi",
@@ -40,5 +41,6 @@
   "User_left": "Käyttäjä poistui",
   "We_are_offline_Sorry_for_the_inconvenience": "Palvelu on offline-tilassa. Pahoittelut häiriöstä.",
   "Yes": "Kyllä",
+  "You": "Sinä",
   "You_must_complete_all_fields": "Täytä kaikki kentät"
 }
