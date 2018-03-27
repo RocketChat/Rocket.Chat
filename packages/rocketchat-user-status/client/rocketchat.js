@@ -9,25 +9,25 @@ RocketChat.userStatus = {
 
 	list: {
 		'online': {
-			name: 'Online',
+			name: 'online',
 			localizeName: true,
 			id: 'online',
 			statusType: 'online'
 		},
 		'away' : {
-			name: 'Away',
+			name: 'away',
 			localizeName: true,
 			id: 'away',
 			statusType: 'away'
 		},
 		'busy' : {
-			name: 'Busy',
+			name: 'busy',
 			localizeName: true,
 			id: 'busy',
 			statusType: 'busy'
 		},
 		'invisible': {
-			name: 'Invisible',
+			name: 'invisible',
 			localizeName: true,
 			id: 'offline',
 			statusType: 'offline'
