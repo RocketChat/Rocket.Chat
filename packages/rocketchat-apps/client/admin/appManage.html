@@ -3,6 +3,46 @@
 	{{#with app}}
 		<section class="page-container page-list page-settings flex-tab-main-content">
 			{{# header sectionName='Manage_the_App' fixedHeight=true}} {{/header}}
+			<div class="rc-apps-details">
+				<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
+				<div class="rc-apps-details__content">
+					<div class="rc-apps-details__row">
+						<div class="rc-apps-details__name">
+							{{name}}
+						</div>
+						<div class="rc-apps-details__version">
+							{{version}}
+						</div>
+					</div>
+					<div class="rc-apps-details__row">
+						{{description}}
+					</div>
+					<div class="rc-apps-details__row">
+						<div class="rc-apps-details__item">
+							{{> icon icon='user'}}
+							{{author.name}}
+						</div>
+						<a href="{{author.homepage}}" class="rc-apps-details__item">
+							{{> icon icon='permalink'}}
+							author homepage
+						</a>
+						<a href="{{author.support}}" class="rc-apps-details__item">
+							{{> icon icon='at'}}
+							support url
+						</a>
+
+
+						<!-- <div class="input-line double-col">
+							<label>{{_ "Author_Information"}}</label>
+							<div>
+								<input class="input-monitor app-author-name" type="text" disabled value="{{author.name}}">
+								{{#if author.homepage}}<a class="button" target="_blank" href="{{author.homepage}}">{{_ "Website"}}</a>{{/if}}
+								{{#if author.support}}<a class="button" target="_blank" href="{{author.support}}">{{_ "Support"}}</a>{{/if}}
+							</div>
+						</div> -->
+					</div>
+				</div>
+			</div>
 			<!-- <header class="fixed-title">
 				{{> burger}}
 				<a href="{{pathFor "apps"}}" title="{{_ "Back_to_Manage_Apps"}}">
