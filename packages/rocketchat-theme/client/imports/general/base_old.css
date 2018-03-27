@@ -2608,6 +2608,44 @@
 	position: relative;
 }
 
+.rc-old .rc-message-box .reply-preview {
+	display: flex;
+	position: relative;
+	background-color:#fff;
+	padding-left: 15px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rc-old .rc-message-box .reply-preview-with-popup {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);;
+}
+
+.rc-old .reply-preview .cancel-reply {
+	padding: 10px;
+}
+
+.rc-old .reply-preview .mention-link.mention-link-all {
+    color: #fff;
+}
+
+.rc-old .reply-preview .mention-link.mention-link-me {
+    color: #fff;
+}
+
+.rc-old .message-popup.popup-with-reply-preview {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
 .rc-old .message-popup {
 	position: absolute;
 	z-index: 101;

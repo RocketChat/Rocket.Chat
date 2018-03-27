@@ -306,22 +306,22 @@ Template.sidebarHeader.events({
 										selectOptions: [
 											{
 												value: 'online',
-												title: t('Online'),
+												title: t('online'),
 												selected: user.status === 'online'
 											},
 											{
 												value: 'away',
-												title: t('Away'),
+												title: t('away'),
 												selected: user.status === 'away'
 											},
 											{
 												value: 'busy',
-												title: t('Busy'),
+												title: t('busy'),
 												selected: user.status === 'busy'
 											},
 											{
 												value: 'offline',
-												title: t('Invisible'),
+												title: t('invisible'),
 												selected: user.status === 'offline'
 											}
 										],

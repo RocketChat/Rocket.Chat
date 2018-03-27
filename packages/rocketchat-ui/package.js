@@ -90,7 +90,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/popout.html', 'client');
 	api.addFiles('client/views/app/alerts.html', 'client');
 
-	api.addFiles('client/views/app/privateHistory.html', 'client');
 	api.addFiles('client/views/app/room.html', 'client');
 	api.addFiles('client/views/app/roomSearch.html', 'client');
 	api.addFiles('client/views/app/secretURL.html', 'client');
@@ -110,7 +109,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
 	api.addFiles('client/views/app/directory.js', 'client');
-	api.addFiles('client/views/app/privateHistory.js', 'client');
 	api.addFiles('client/views/app/room.js', 'client');
 	api.addFiles('client/views/app/roomSearch.js', 'client');
 	api.addFiles('client/views/app/secretURL.js', 'client');
