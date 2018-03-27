@@ -238,6 +238,22 @@ Template.messagePopup.onRendered(function() {
 	if (this.input == null) {
 		console.error('Input not found for popup');
 	}
+	const self = this;
+	self.autorun(() => {
+		const open = self.open.get();
+		if ($('.reply-preview').length) {
+			if (open === true) {
+				$('.reply-preview').addClass('reply-preview-with-popup');
+				setTimeout(() => {
+					$('#popup').addClass('popup-with-reply-preview');
+				}, 50);
+			}
+		}
+		if (open === false) {
+			$('.reply-preview').removeClass('reply-preview-with-popup');
+			$('#popup').removeClass('popup-with-reply-preview');
+		}
+	});
 	$(this.input).on('keyup', this.onInputKeyup.bind(this));
 	$(this.input).on('keydown', this.onInputKeydown.bind(this));
 	$(this.input).on('focus', this.onFocus.bind(this));
