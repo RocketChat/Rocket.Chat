@@ -148,7 +148,7 @@ Template.appManage.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
-	'click .js-cancel'(e, t) {
+	'click .js-cancel'() {
 		FlowRouter.go('/admin/apps');
 	},
 	'change #enabled': (e, t) => {
