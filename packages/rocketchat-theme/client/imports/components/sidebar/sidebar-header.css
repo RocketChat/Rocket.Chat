@@ -14,6 +14,10 @@
 		width: var(--sidebar-account-thumb-size);
 		height: var(--sidebar-account-thumb-size);
 		margin: 0 10px;
+
+		& .avatar {
+			cursor: pointer;
+		}
 	}
 
 	&-status-bullet {
