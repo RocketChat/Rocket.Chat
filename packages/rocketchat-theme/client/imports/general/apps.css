@@ -1,0 +1,47 @@
+.rc-apps {
+	&-details {
+		display: flex;
+		padding: 25px;
+
+		&__photo {
+			width: 141px;
+			height: 141px;
+			flex: 0 0 auto;
+			background-size:     cover;
+	    background-repeat:   no-repeat;
+	    background-position: center center;
+		}
+
+		&__content {
+			flex: 1 1 auto;
+	    justify-content: space-between;
+	    padding: 0 28px;
+	    display: flex;
+	    flex-direction: column;
+	    overflow: hidden;
+		}
+
+		&__row {
+			display: flex;
+			align-items: flex-end;
+		}
+
+		&__name {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		&__version {
+			font-size: 17px;
+			padding: 0 14px;
+		}
+
+		&__item {
+			white-space: nowrap;
+	    flex: 1 1 1px;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+		}
+
+	}
+}

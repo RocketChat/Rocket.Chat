@@ -30,6 +30,7 @@ Template.appManage.onCreated(function() {
 		RocketChat.API.get(`apps/${ id }/settings`)
 	]).then((results) => {
 		instance.app.set(results[0].app);
+		console.log(instance.app.get());
 		_morphSettings(results[1].settings);
 
 		this.ready.set(true);
