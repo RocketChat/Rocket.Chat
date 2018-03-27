@@ -31,13 +31,10 @@
 		overflow: auto;
 		padding: var(--default-padding);
 
-		flex: 1 1 auto;
-		justify-content: space-between;
-
-		display: flex;
-
-		flex-direction: column;
-
+		& .js-back {
+			width: 100%;
+			margin-top: 2rem;
+		}
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
