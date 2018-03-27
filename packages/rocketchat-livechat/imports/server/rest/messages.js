@@ -1,27 +1,8 @@
-import _ from 'underscore';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
-
-function checkAuthentication(request) {
-	const receivedToken = request.headers['x-rocketchat-livechat-token'];
-	const secretToken = RocketChat.settings.get('Livechat_secret_token');
-	return receivedToken && receivedToken === secretToken;
-}
-
-RocketChat.API.v1.addRoute('livechat/status/:visitorToken', {
-	get() {
-		if (!checkAuthentication(this.request)) {
-			return RocketChat.API.v1.unauthorized();
-		}
-
-		const initialData = Meteor.call('livechat:getInitialData', this.urlParams.visitorToken);
-		const info = _.pick(initialData, 'visitor', 'room', 'departments', 'online', 'agentData');
-		return RocketChat.API.v1.success(info);
-	}
-});
 
 RocketChat.API.v1.addRoute('livechat/messages', {
 	post() {
-		if (!checkAuthentication(this.request)) {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
