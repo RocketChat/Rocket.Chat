@@ -45,7 +45,7 @@ Template.appInstall.events({
 		const file = e.currentTarget.files[0];
 		i.file.set(file.name);
 	},
-	'click .js-cancel'(e, t) {
+	'click .js-cancel'() {
 		FlowRouter.go('/admin/apps');
 	},
 	async 'click .js-install'(e, t) {
