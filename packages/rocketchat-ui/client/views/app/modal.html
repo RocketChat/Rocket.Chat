@@ -5,7 +5,13 @@
 				{{> Template.dynamic template=template data=data}}
 			{{else}}
 				<header class="rc-modal__header">
-					<h1 class="rc-modal__title">{{title}}</h1>
+					<h1 class="rc-modal__title">
+						{{#if html}}
+							{{{title}}}
+						{{else}}
+							{{title}}
+						{{/if}}
+					</h1>
 					<button class="contextual-bar__close js-close">
 						{{> icon classes="rc-modal__close" icon="plus"}}
 					</button>
