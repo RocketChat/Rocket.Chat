@@ -3,13 +3,14 @@
 
 	width: 100%;
 	height: 100%;
-	align-items: center;
 
 	background-color: var(--color-white);
+	align-items: center;
 
 	&-wrapper {
 		display: flex;
 		flex-direction: column;
+
 		width: 510px;
 		margin: 0 auto;
 	}
@@ -28,8 +29,9 @@
 		&-ilustration {
 			width: 100%;
 			height: 262px;
-			background: lightgray;
 			margin-bottom: 3.5rem;
+
+			background: lightgray;
 		}
 
 		&-title {
