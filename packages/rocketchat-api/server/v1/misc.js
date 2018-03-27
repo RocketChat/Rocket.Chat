@@ -52,12 +52,18 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'username',
 			'utcOffset',
 			'active',
-			'language'
+			'language',
+			'roles',
+			'settings'
 		]);
 
 		const verifiedEmail = me.emails.find((email) => email.verified);
+		const preferencesDontSetUpYet = !me.settings || !me.settings.preferences;
 
 		me.email = verifiedEmail ? verifiedEmail.address : undefined;
+		if (preferencesDontSetUpYet) {
+			me.settings = { preferences: {} };
+		}
 
 		return RocketChat.API.v1.success(me);
 	}
