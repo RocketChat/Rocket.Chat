@@ -4,6 +4,8 @@
 	width: 1vw;
 
 	height: 100%;
+
+	position: relative;
 }
 
 .messages-container .room-icon {
