@@ -42,6 +42,7 @@
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
+@import 'imports/components/file-list.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';

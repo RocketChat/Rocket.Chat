@@ -44,7 +44,7 @@ Meteor.methods({
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
-		if (subscription && subscription.blocked || subscription.blocker) {
+		if (subscription && (subscription.blocked || subscription.blocker)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
