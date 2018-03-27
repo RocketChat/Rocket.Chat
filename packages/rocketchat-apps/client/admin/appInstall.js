@@ -38,6 +38,9 @@ Template.appInstall.onCreated(function() {
 });
 
 Template.appInstall.events({
+	'input #appPackage'(e, i) {
+		i.appUrl.set(e.currentTarget.value);
+	},
 	'change #upload-app'(e, i) {
 		const file = e.currentTarget.files[0];
 		i.file.set(file.name);

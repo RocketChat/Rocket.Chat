@@ -2,7 +2,8 @@
 <template name="appManage">
 	{{#with app}}
 		<section class="page-container page-list page-settings flex-tab-main-content">
-			<header class="fixed-title">
+			{{# header sectionName='Manage_the_App' fixedHeight=true}} {{/header}}
+			<!-- <header class="fixed-title">
 				{{> burger}}
 				<a href="{{pathFor "apps"}}" title="{{_ "Back_to_Manage_Apps"}}">
 					<i class="icon-left-open"></i>
@@ -23,7 +24,19 @@
 						<span class="room-title">{{ theError }}</span>
 					</h2>
 				{{/if}}
-			</header>
+				<div class="input-line double-col">
+					<label>{{_ "Enabled"}}</label>
+					<div class="input checkbox toggle" style="margin: 10px 0 0;">
+						<input type="checkbox" id="enabled" name="enabledToggle" checked="{{isEnabled}}" />
+						<label for="enabled"></label>
+						{{#if isProcessingEnabled}}
+							<div class="app-enable-loading">
+								{{> loading}}
+							</div>
+						{{/if}}
+					</div>
+				</div>
+			</header> -->
 			<div class="content background-transparent-dark">
 				{{#requiresPermission 'manage-apps'}}
 					{{#if isReady}}
@@ -40,18 +53,7 @@
 									</div>
 								</div>
 								<div class="section-content">
-									<div class="input-line double-col">
-										<label>{{_ "Enabled"}}</label>
-										<div class="input checkbox toggle" style="margin: 10px 0 0;">
-											<input type="checkbox" id="enabled" name="enabledToggle" checked="{{isEnabled}}" />
-											<label for="enabled"></label>
-											{{#if isProcessingEnabled}}
-												<div class="app-enable-loading">
-													{{> loading}}
-												</div>
-											{{/if}}
-										</div>
-									</div>
+
 									<div class="input-line double-col">
 										<label>{{_ "Name"}}</label>
 										<div>

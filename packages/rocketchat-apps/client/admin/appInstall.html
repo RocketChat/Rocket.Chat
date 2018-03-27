@@ -1,8 +1,6 @@
 <template name="appInstall">
 	<section class="preferences-page">
-		{{#header sectionName="App_Installation" hideHelp=true  fixedHeight=true}}
-
-		{{/header}}
+		{{> header sectionName="App_Installation" hideHelp=true  fixedHeight=true}}
 		<div class="preferences-page__content">
 			{{#if isInstalling}}
 				{{> loading}}
@@ -23,7 +21,7 @@
 								<div class="rc-input-file__name">
 									{{appFile}}
 								</div>
-								<input type="file" class="rc-input-file__element" name="appPackageUrl" id="upload-app" placeholder="https://rocket.chat/apps/package.zip">
+								<input type="file" accept=".zip" class="rc-input-file__element" name="appPackageUrl" id="upload-app" placeholder="https://rocket.chat/apps/package.zip">
 								<label for='upload-app' class="rc-button rc-button-secondary install">{{_ "Browse_Files"}}</label>
 							</div>
 						</label>
