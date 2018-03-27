@@ -89,7 +89,7 @@
 		"autoprefixer": "^8.0.0",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
-		"chimp": "^0.51.0",
+		"chimp": "^0.51.1",
 		"conventional-changelog-cli": "^1.3.14",
 		"eslint": "^4.18.1",
 		"mocha": "^5.0.1",
