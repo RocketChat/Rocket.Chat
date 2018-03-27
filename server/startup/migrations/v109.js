@@ -11,7 +11,7 @@ RocketChat.Migrations.add({
 						{ $set: { value: setting.value / 1000 } }
 					);
 				}
-			}
+			}a
 
 			if (RocketChat.models.Users) {
 				RocketChat.models.Users.find({ 'settings.preferences.idleTimeLimit': { $exists: 1 } }).forEach(function(user) {
