@@ -80,7 +80,7 @@ Template.header.helpers({
 
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
 	},
 
 	showToggleFavorite() {

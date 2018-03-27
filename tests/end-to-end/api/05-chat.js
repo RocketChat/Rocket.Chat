@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import { getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('[Chat]', function() {
@@ -169,18 +169,20 @@ describe('[Chat]', function() {
 			.end(done);
 	});
 
-	it('/chat.react', (done) => {
-		request.post(api('chat.react'))
-			.set(credentials)
-			.send({
-				emoji: 'smile',
-				messageId: message._id
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/chat.react', () => {
+		it('should return statusCode: 200 when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
 });
