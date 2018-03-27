@@ -40,19 +40,24 @@ export class AppPersistenceBridge {
 	readByAssociations(associations, appId) {
 		console.log(`The App ${ appId } is searching for records that are associated with the following:`, associations);
 
-		throw new Error('Not implemented.');
+		const records = this.orch.getPersistenceModel().find({
+			appId,
+			associations: { $all: associations }
+		}).fetch();
+
+		return Array.isArray(records) ? records.map((r) => r.data) : [];
 	}
 
 	remove(id, appId) {
 		console.log(`The App ${ appId } is removing one of their records by the id: "${ id }"`);
 
-		const record = this.orch.getPersistenceModel().findOneById(id);
+		const record = this.orch.getPersistenceModel().findOne({ _id: id, appId });
 
 		if (!record) {
 			return undefined;
 		}
 
-		this.orch.getPersistenceModel().remove({ _id: id });
+		this.orch.getPersistenceModel().remove({ _id: id, appId });
 
 		return record.data;
 	}
@@ -60,7 +65,22 @@ export class AppPersistenceBridge {
 	removeByAssociations(associations, appId) {
 		console.log(`The App ${ appId } is removing records with the following associations:`, associations);
 
-		throw new Error('Not implemented.');
+		const query = {
+			appId,
+			associations: {
+				$all: associations
+			}
+		};
+
+		const records = this.orch.getPersistenceModel().find(query).fetch();
+
+		if (!records) {
+			return undefined;
+		}
+
+		this.orch.getPersistenceModel().remove(query);
+
+		return Array.isArray(records) ? records.map((r) => r.data) : [];
 	}
 
 	update(id, data, upsert, appId) {

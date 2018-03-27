@@ -151,7 +151,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "registry.connect.redhat.com/rocketchat",
+                "dockerImageRepository": "registry.connect.redhat.com/rocketchat/rocketchat",
                 "tags": [
                     {
                         "name": "latest",
@@ -208,7 +208,6 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "${NAMESPACE}",
                                 "name": "rocketchat:latest"
                             }
                         }
@@ -396,12 +395,6 @@
             "value": "512Mi"
         },
         {
-            "name": "NAMESPACE",
-            "displayName": "Namespace",
-            "description": "The OpenShift Namespace where the ImageStream resides.",
-            "value": "openshift"
-        },
-        {
             "name": "DATABASE_SERVICE_NAME",
             "displayName": "Database Service Name",
             "description": "The name of the OpenShift Service exposed for the database.",
@@ -428,7 +421,7 @@
             "name": "MONGODB_DATABASE",
             "displayName": "MongoDB Database Name",
             "description": "Name of the MongoDB database accessed.",
-            "value": "sampledb",
+            "value": "rocketchatdb",
             "required": true
         },
         {

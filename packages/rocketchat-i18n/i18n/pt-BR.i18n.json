@@ -1033,6 +1033,8 @@
   "Send_invitation_email_success": "Você enviou com sucesso um convite por e-mail para os seguintes endereços:",
   "Send_request_on_chat_close": "Enviar requisição ao fechar conversa",
   "Send_request_on_offline_messages": "Enviar requisição para mensagens off-line",
+  "Send_request_on_visitor_message": "Enviar requisição para mensagens do Visitante",
+  "Send_request_on_agent_message": "Enviar requisição para mensagens do Agente",
   "Send_Test": "Enviar teste",
   "Send_welcome_email": "Enviar e-mail de boas-vindas",
   "Send_your_JSON_payloads_to_this_URL": "Envie seu payload  JSON para esta URL.",
