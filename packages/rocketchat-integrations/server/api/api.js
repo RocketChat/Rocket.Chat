@@ -198,6 +198,7 @@ function executeIntegrationRest() {
 			content: this.bodyParams,
 			content_raw: this.request._readableState && this.request._readableState.buffer && this.request._readableState.buffer.toString(),
 			headers: this.request.headers,
+			body: this.request.body,
 			user: {
 				_id: this.user._id,
 				name: this.user.name,
