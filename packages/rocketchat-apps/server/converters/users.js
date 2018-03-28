@@ -65,6 +65,7 @@ export class AppUsersConverter {
 			case 'busy':
 				return UserStatusConnection.BUSY;
 			default:
+				console.warn(`A user does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);
 				return status === '' ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	}
