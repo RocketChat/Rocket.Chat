@@ -1,3 +1,84 @@
+<a name="0.63.0-rc.0"></a>
+# 0.63.0-rc.0 (2018-03-28)
+
+
+### BREAKING CHANGES
+
+- [#10103](https://github.com/RocketChat/Rocket.Chat/pull/10103) Removed Private History Route
+
+
+### New Features
+
+- [#9584](https://github.com/RocketChat/Rocket.Chat/pull/9584) Add leave public channel & leave private channel permissions
+- [#9816](https://github.com/RocketChat/Rocket.Chat/pull/9816) Add option to login via REST using Facebook and Twitter tokens
+- [#9629](https://github.com/RocketChat/Rocket.Chat/pull/9629) Add REST endpoint to get the list of custom emojis
+- [#10144](https://github.com/RocketChat/Rocket.Chat/pull/10144) Added endpoint to get the list of available oauth services
+- [#10105](https://github.com/RocketChat/Rocket.Chat/pull/10105) Added endpoint to retrieve mentions of a channel
+- [#10128](https://github.com/RocketChat/Rocket.Chat/pull/10128) Added GET/POST channels.notifications
+- [#9367](https://github.com/RocketChat/Rocket.Chat/pull/9367) Announcement bar color wasn't using color from theming variables
+- [#9726](https://github.com/RocketChat/Rocket.Chat/pull/9726) Audio recording as mp3 and better ui for recording
+- [#9907](https://github.com/RocketChat/Rocket.Chat/pull/9907) Endpoint to retrieve message read receipts
+- [#9947](https://github.com/RocketChat/Rocket.Chat/pull/9947) GDPR Right to be forgotten/erased
+- [#10246](https://github.com/RocketChat/Rocket.Chat/pull/10246) Interface to install and manage RocketChat Apps (alpha)
+- [#10054](https://github.com/RocketChat/Rocket.Chat/pull/10054) Livechat messages rest APIs
+- [#9870](https://github.com/RocketChat/Rocket.Chat/pull/9870) Livechat webhook request on message
+- [#10086](https://github.com/RocketChat/Rocket.Chat/pull/10086) Reply preview
+- [#9742](https://github.com/RocketChat/Rocket.Chat/pull/9742) REST API method to set room's announcement (channels.setAnnouncement)
+- [#9732](https://github.com/RocketChat/Rocket.Chat/pull/9732) Setting to configure max delta for 2fa
+- [#10123](https://github.com/RocketChat/Rocket.Chat/pull/10123) Support for agent's phone field
+
+
+### Bug Fixes
+
+- [#10012](https://github.com/RocketChat/Rocket.Chat/pull/10012) "View All Members" button inside channel's "User Info" is over sized
+- [#8667](https://github.com/RocketChat/Rocket.Chat/pull/8667) Able to react with invalid emoji
+- [#9739](https://github.com/RocketChat/Rocket.Chat/pull/9739) Apostrophe-containing URL misparsed
+- [#10011](https://github.com/RocketChat/Rocket.Chat/pull/10011) Avatar input was accepting not supported image types
+- [#9872](https://github.com/RocketChat/Rocket.Chat/pull/9872) Broken video call accept dialog
+- [#9932](https://github.com/RocketChat/Rocket.Chat/pull/9932) Browser was auto-filling values when editing another user profile
+- [#10082](https://github.com/RocketChat/Rocket.Chat/pull/10082) Cannot answer to a livechat as a manager if agent has not answered yet
+- [#9986](https://github.com/RocketChat/Rocket.Chat/pull/9986) Delete user without username was removing direct rooms of all users
+- [#10029](https://github.com/RocketChat/Rocket.Chat/pull/10029) Download links was duplicating Sub Paths
+- [#10152](https://github.com/RocketChat/Rocket.Chat/pull/10152) Dynamic CSS script isn't working on older browsers
+- [#9960](https://github.com/RocketChat/Rocket.Chat/pull/9960) Empty sidenav when sorting by activity and there is a subscription without room
+- [#10160](https://github.com/RocketChat/Rocket.Chat/pull/10160) Extended view mode on sidebar
+- [#10028](https://github.com/RocketChat/Rocket.Chat/pull/10028) Initial loading feedback was missing
+- [#10061](https://github.com/RocketChat/Rocket.Chat/pull/10061) Message editing is crashing the server when read receipts are enabled
+- [#10016](https://github.com/RocketChat/Rocket.Chat/pull/10016) Missing sidebar default options on admin
+- [#9672](https://github.com/RocketChat/Rocket.Chat/pull/9672) Name of files in file upload list cuts down at bottom due to overflow
+- [#9988](https://github.com/RocketChat/Rocket.Chat/pull/9988) New channel page on medium size screens
+- [#10090](https://github.com/RocketChat/Rocket.Chat/pull/10090) Nextcloud as custom oauth provider wasn't mapping data correctly
+- [#9783](https://github.com/RocketChat/Rocket.Chat/pull/9783) No pattern for user's status text capitalization
+- [#9860](https://github.com/RocketChat/Rocket.Chat/pull/9860) Popover divs don't scroll if they overflow the viewport
+- [#10104](https://github.com/RocketChat/Rocket.Chat/pull/10104) Reactions not working on mobile
+- [#10009](https://github.com/RocketChat/Rocket.Chat/pull/10009) REST API: Can't list all public channels when user has permission `view-joined-room`
+- [#10071](https://github.com/RocketChat/Rocket.Chat/pull/10071) Slack Import reports `invalid import file type` due to a call to BSON.native() which is now doesn't exist
+- [#9982](https://github.com/RocketChat/Rocket.Chat/pull/9982) Two factor authentication modal was not showing
+- [#10076](https://github.com/RocketChat/Rocket.Chat/pull/10076) Update preferences of users with settings: null was crashing the server
+- [#10051](https://github.com/RocketChat/Rocket.Chat/pull/10051) User preferences can't be saved when roles are hidden in admin settings
+- [#9866](https://github.com/RocketChat/Rocket.Chat/pull/9866) User status missing on user info
+- [#10222](https://github.com/RocketChat/Rocket.Chat/pull/10222) user status on sidenav
+- [#9719](https://github.com/RocketChat/Rocket.Chat/pull/9719) Verified property of user is always set to false if not supplied
+- [#10081](https://github.com/RocketChat/Rocket.Chat/pull/10081) Wrong switch button border color
+
+
+<details>
+<summary>Others</summary>
+
+- [#10154](https://github.com/RocketChat/Rocket.Chat/pull/10154) Add a few listener supports for the Rocket.Chat Apps
+- [#10148](https://github.com/RocketChat/Rocket.Chat/pull/10148) Add forums as a place to suggest, discuss and upvote features
+- [#10065](https://github.com/RocketChat/Rocket.Chat/pull/10065) Fix tests breaking randomly
+- [#10159](https://github.com/RocketChat/Rocket.Chat/pull/10159) Fix typo for Nextcloud login
+- [#10243](https://github.com/RocketChat/Rocket.Chat/pull/10243) LingoHub based on develop
+- [#10036](https://github.com/RocketChat/Rocket.Chat/pull/10036) Reactivate all tests
+- [#9844](https://github.com/RocketChat/Rocket.Chat/pull/9844) Reactivate API tests
+- [#10237](https://github.com/RocketChat/Rocket.Chat/pull/10237) Rename migration name on 108 to match file name
+- [#10242](https://github.com/RocketChat/Rocket.Chat/pull/10242) Revert "[FIX] Apostrophe-containing URL misparsed"
+- [#9985](https://github.com/RocketChat/Rocket.Chat/pull/9985) Start 0.63.0-develop / develop sync from master
+</details>
+
+
+
 <a name="0.62.0"></a>
 # 0.62.0 (2018-02-28)
 
