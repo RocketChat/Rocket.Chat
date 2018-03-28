@@ -1,8 +1,12 @@
 .toolbar {
-	padding: 0 var(--sidebar-default-padding);
 	position: absolute;
-	right: 0;
+	left: 10px;
+
 	display: none;
+
+	width: 100%;
+	margin: 0 -10px;
+	padding: 0 calc(var(--sidebar-default-padding) + 10px);
 
 	&__wrapper {
 

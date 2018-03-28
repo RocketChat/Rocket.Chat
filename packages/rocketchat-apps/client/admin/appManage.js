@@ -1,6 +1,8 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { AppEvents } from '../communication';
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -13,27 +15,76 @@ Template.appManage.onCreated(function() {
 
 	const id = this.id.get();
 
+	function _morphSettings(settings) {
+		Object.keys(settings).forEach((k) => {
+			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
+			settings[k].value = settings[k].value || settings[k].packageValue;
+			settings[k].oldValue = settings[k].value;
+		});
+
+		instance.settings.set(settings);
+	}
+
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
 		RocketChat.API.get(`apps/${ id }/settings`)
 	]).then((results) => {
 		instance.app.set(results[0].app);
+		console.log(instance.app.get());
+		_morphSettings(results[1].settings);
 
-		Object.keys(results[1].settings).forEach((k) => {
-			results[1].settings[k].i18nPlaceholder = results[1].settings[k].i18nPlaceholder || ' ';
-			results[1].settings[k].value = results[1].settings[k].value || results[1].settings[k].packageValue;
-			results[1].settings[k].oldValue = results[1].settings[k].value;
-		});
-
-		instance.settings.set(results[1].settings);
 		this.ready.set(true);
 	}).catch((e) => {
 		instance.hasError.set(true);
 		instance.theError.set(e.message);
 	});
+
+	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
+		if (appId !== id) {
+			return;
+		}
+
+		const app = instance.app.get();
+		app.status = status;
+		instance.app.set(app);
+	};
+
+	instance.onSettingUpdated = function _onSettingUpdated({ appId }) {
+		if (appId !== id) {
+			return;
+		}
+
+		RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
+			_morphSettings(result.settings);
+		});
+	};
+
+	window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+	window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+});
+
+Template.apps.onDestroyed(function() {
+	const instance = this;
+
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+	window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
 
 Template.appManage.helpers({
+	disabled() {
+		const t = Template.instance();
+
+		const toSave = Object.keys(t.settings.get()).filter((k) => {
+			const setting = t.settings.get()[k];
+			if (setting.hasChanged) {
+				return true;
+			}
+		});
+
+		if (toSave.length === 0) {
+			return true;
+		}
+	},
 	isReady() {
 		if (Template.instance().ready) {
 			return Template.instance().ready.get();
@@ -97,7 +148,9 @@ Template.appManage.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
-
+	'click .js-cancel'() {
+		FlowRouter.go('/admin/apps');
+	},
 	'change #enabled': (e, t) => {
 		t.processingEnabled.set(true);
 		$('#enabled').prop('disabled', true);
@@ -119,7 +172,7 @@ Template.appManage.events({
 		});
 	},
 
-	'click .uninstall': (e, t) => {
+	'click .js-uninstall': (e, t) => {
 		t.ready.set(false);
 
 		RocketChat.API.delete(`apps/${ t.id.get() }`).then(() => {
@@ -134,7 +187,7 @@ Template.appManage.events({
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 
-	'click .save': (e, t) => {
+	'click .js-save': (e, t) => {
 		const toSave = [];
 
 		Object.keys(t.settings.get()).forEach((k) => {
@@ -157,23 +210,23 @@ Template.appManage.events({
 		});
 	},
 
-	'click .input.checkbox label': (e, t) => {
-		const labelFor = $(e.currentTarget).attr('for');
-		const isChecked = $(`input[name="${ labelFor }"]`).prop('checked');
+	'change input[type="checkbox"]': (e, t) => {
+		const labelFor = $(e.currentTarget).attr('name');
+		const isChecked = $(e.currentTarget).prop('checked');
 
-		$(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
+		// $(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
 
 		const setting = t.settings.get()[labelFor];
 
 		if (setting) {
-			setting.value = !isChecked;
+			setting.value = isChecked;
 			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.settings.set(t.settings.get());
 		}
 	},
 
 	'change .input-monitor, keyup .input-monitor': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
-		console.log(value);
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);

@@ -13,7 +13,8 @@ class SideNav extends Page {
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
 	get accountMenu() { return browser.element('.sidebar__account'); }
 	get sidebarHeader() { return browser.element('.sidebar__header'); }
-	get sidebarUserMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
+	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
+	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 	get popOverContent() { return browser.element('.rc-popover__content'); }
 	get statusOnline() { return browser.element('.rc-popover__item--online'); }
 	get statusAway() { return browser.element('.rc-popover__item--away'); }
@@ -28,7 +29,7 @@ class SideNav extends Page {
 	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
-	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--plus'); }
+	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 
 	// Rooms List

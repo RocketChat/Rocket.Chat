@@ -30,6 +30,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
+		$('.toolbar').css('display', 'block');
 		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
 	}

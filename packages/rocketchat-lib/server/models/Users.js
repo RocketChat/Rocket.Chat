@@ -435,6 +435,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
+	clearSettings(_id) {
+		const update = {
+			$set: {
+				settings: {}
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
 	setPreferences(_id, preferences) {
 		const settings = Object.assign(
 			{},
