@@ -1,7 +1,7 @@
 # Release {version}
 We are releasing a new version, this issue will keep track of the progress between the first release candidate (20th of each month) to the final release (27th of each month).
 
-After the 20th of each month we start the release process that ends 7 days after, during that period we enter a Feature Freeze. While in the Feature Freeze we do not merge new features or non critical or important bug fixes.  Fixes for bugs created by this release will be prioritized.
+After the 20th of each month we start the release process that ends 7 days after, during that period we enter a Feature Freeze. While in the Feature Freeze, we will only be merging bug fixes and not new features.
 
 For any regression, open a new issue and link to this one.
 
