@@ -6,6 +6,11 @@
 	height: 100%;
 
 	position: relative;
+
+	display: flex;
+	flex-direction: column;
+
+	margin-bottom: 25px;
 }
 
 .messages-container .room-icon {
