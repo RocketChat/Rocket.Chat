@@ -30,6 +30,7 @@ Template.appManage.onCreated(function() {
 		RocketChat.API.get(`apps/${ id }/settings`)
 	]).then((results) => {
 		instance.app.set(results[0].app);
+		console.log(instance.app.get());
 		_morphSettings(results[1].settings);
 
 		this.ready.set(true);
@@ -70,6 +71,20 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	disabled() {
+		const t = Template.instance();
+
+		const toSave = Object.keys(t.settings.get()).filter((k) => {
+			const setting = t.settings.get()[k];
+			if (setting.hasChanged) {
+				return true;
+			}
+		});
+
+		if (toSave.length === 0) {
+			return true;
+		}
+	},
 	isReady() {
 		if (Template.instance().ready) {
 			return Template.instance().ready.get();
@@ -133,7 +148,9 @@ Template.appManage.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
-
+	'click .js-cancel'() {
+		FlowRouter.go('/admin/apps');
+	},
 	'change #enabled': (e, t) => {
 		t.processingEnabled.set(true);
 		$('#enabled').prop('disabled', true);
@@ -155,7 +172,7 @@ Template.appManage.events({
 		});
 	},
 
-	'click .uninstall': (e, t) => {
+	'click .js-uninstall': (e, t) => {
 		t.ready.set(false);
 
 		RocketChat.API.delete(`apps/${ t.id.get() }`).then(() => {
@@ -170,7 +187,7 @@ Template.appManage.events({
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 
-	'click .save': (e, t) => {
+	'click .js-save': (e, t) => {
 		const toSave = [];
 
 		Object.keys(t.settings.get()).forEach((k) => {
@@ -193,17 +210,18 @@ Template.appManage.events({
 		});
 	},
 
-	'click .input.checkbox label': (e, t) => {
-		const labelFor = $(e.currentTarget).attr('for');
-		const isChecked = $(`input[name="${ labelFor }"]`).prop('checked');
+	'change input[type="checkbox"]': (e, t) => {
+		const labelFor = $(e.currentTarget).attr('name');
+		const isChecked = $(e.currentTarget).prop('checked');
 
-		$(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
+		// $(`input[name="${ labelFor }"]`).prop('checked', !isChecked);
 
 		const setting = t.settings.get()[labelFor];
 
 		if (setting) {
-			setting.value = !isChecked;
+			setting.value = isChecked;
 			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.settings.set(t.settings.get());
 		}
 	},
 
