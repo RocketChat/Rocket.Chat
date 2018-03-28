@@ -50,7 +50,7 @@ export class AppUsersConverter {
 			case 'bot':
 				return UserType.BOT;
 			default:
-				throw new Error('Unknown user type of:', type);
+				return type.toUpperCase();
 		}
 	}
 
@@ -65,7 +65,7 @@ export class AppUsersConverter {
 			case 'busy':
 				return UserStatusConnection.BUSY;
 			default:
-				throw new Error('Unknown status type of:', status);
+				return status === '' ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	}
 }
