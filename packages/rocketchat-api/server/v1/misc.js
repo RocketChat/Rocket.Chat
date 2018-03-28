@@ -58,10 +58,10 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 		]);
 
 		const verifiedEmail = me.emails.find((email) => email.verified);
-		const preferencesDontSetUpYet = !me.settings || !me.settings.preferences;
+		const userHasNotSetPreferencesYet = !me.settings || !me.settings.preferences;
 
 		me.email = verifiedEmail ? verifiedEmail.address : undefined;
-		if (preferencesDontSetUpYet) {
+		if (userHasNotSetPreferencesYet) {
 			me.settings = { preferences: {} };
 		}
 
