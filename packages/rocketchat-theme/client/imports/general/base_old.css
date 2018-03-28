@@ -2241,6 +2241,7 @@
 	position: relative;
 	z-index: 1;
 	flex-grow: 1;
+	overflow: auto;
 }
 
 .rc-old .room-container {
@@ -3413,7 +3414,6 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - var(--header-height));
 
 		& .control {
 			& .header {

@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 107,
+	version: 108,
 	up() {
 		const roles = RocketChat.models.Roles.find({
 			_id: { $ne: 'guest' },
