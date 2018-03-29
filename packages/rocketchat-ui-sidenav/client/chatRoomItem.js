@@ -55,6 +55,6 @@ RocketChat.callbacks.add('enter-room', (sub) => {
 Template.sidebarItemStatus.helpers({
 	statusClass() {
 		const instance = Template.instance();
-		return instance.data.t === 'd' ? Session.get(`user_${ instance.data.name }_status`) || 'offline' : instance.data.t === 'l' ? RocketChat.roomTypes.getUserStatus('l', instance.data.rid) || 'offline' : false;
+		return instance.data.t === 'd' ? Session.get(`user_${ instance.data.username }_status`) || 'offline' : instance.data.t === 'l' ? RocketChat.roomTypes.getUserStatus('l', instance.data.rid) || 'offline' : false;
 	}
 });
