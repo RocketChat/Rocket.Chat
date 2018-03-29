@@ -1,22 +1,19 @@
 Template.livechatFlex.helpers({
-	active(...routes) {
-		FlowRouter.watchPathChange();
-		if (routes.indexOf(FlowRouter.current().route.name) !== -1) {
-			return 'active';
-		}
+	menuItem(name, icon, section) {
+		return {
+			name: t(name),
+			icon,
+			pathSection: section,
+			darken: true
+		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
 Template.livechatFlex.events({
-	'mouseenter header'() {
-		SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		SideNav.leaveArrow();
-	},
-
-	'click header'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	}
 });

@@ -1,29 +1,31 @@
 <template name="otrFlexTab">
-	<div class="content">
-		<div class="list-view otr">
-			<div class="title">
-				<h2>{{_ "Off_the_record_conversation"}}</h2>
-			</div>
-			{{#if otrAvailable}}
-				<form>
-					<ul class="list clearfix">
-						{{#if userIsOnline}}
-							{{#if established}}
-								<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
-								<button class="button end"><span>{{_ "End_OTR"}}</span></button>
-							{{else}} {{#if establishing}}
-								{{_ "Please_wait_while_OTR_is_being_established"}}
-							{{else}}
-								<button class="button start"><span>{{_ "Start_OTR"}}</span></button>
-							{{/if}} {{/if}}
-						{{else}}
-							<h2>{{_ "OTR_is_only_available_when_both_users_are_online"}}</h2>
-						{{/if}}
-					</ul>
-				</form>
-			{{else}}
-				<h2>{{_ "Off_the_record_conversation_is_not_available_for_your_browser_or_device"}}</h2>
-			{{/if}}
+	<div class="list-view otr">
+		<div class="title">
+			<h2>{{_ "Off_the_record_conversation"}}</h2>
 		</div>
+		{{#if otrAvailable}}
+			<form>
+				<ul class="list clearfix">
+					{{#if userIsOnline}}
+						{{#if established}}
+							<div class="buttons-group">
+								<button class="button refresh"><span>{{_ "Refresh_keys"}}</span></button>
+							</div>
+							<div class="buttons-group">
+								<button class="button end"><span>{{_ "End_OTR"}}</span></button>
+							</div>
+						{{else}} {{#if establishing}}
+							{{_ "Please_wait_while_OTR_is_being_established"}}
+						{{else}}
+							<button class="button start"><span>{{_ "Start_OTR"}}</span></button>
+						{{/if}} {{/if}}
+					{{else}}
+						<h2>{{_ "OTR_is_only_available_when_both_users_are_online"}}</h2>
+					{{/if}}
+				</ul>
+			</form>
+		{{else}}
+			<h2>{{_ "Off_the_record_conversation_is_not_available_for_your_browser_or_device"}}</h2>
+		{{/if}}
 	</div>
 </template>

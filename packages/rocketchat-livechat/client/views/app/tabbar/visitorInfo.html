@@ -1,77 +1,70 @@
 <template name="visitorInfo">
-	<div class="content">
-		{{#if editing}}
-			{{> visitorEdit (editDetails)}}
-		{{/if}}
-		{{#if forwarding}}
-			{{> visitorForward (forwardDetails)}}
-		{{/if}}
-		<div class="user-view {{showDetail}}">
-			<div class="about clearfix">
-				{{#with user}}
-					<div class="info">
-						<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
-						<p class="secondary-font-color">{{name}}</p>
+	{{#if editing}}
+		{{> visitorEdit (editDetails)}}
+	{{/if}}
+	{{#if forwarding}}
+		{{> visitorForward (forwardDetails)}}
+	{{/if}}
+	<div class="user-view {{showDetail}}">
+		<div class="about clearfix">
+			{{#with user}}
+				<div class="info">
+					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
+					<p class="secondary-font-color">{{name}}</p>
 
-						<ul>
-							{{#if utc}}<li><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</li>{{/if}}
-							{{#each visitorEmails}} <li><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</li> {{/each}}
-							{{#each phone}} <li><i class="icon-phone"></i> {{phoneNumber}}</li> {{/each}}
-							{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</li> {{/if}}
-							{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</li> {{/if}}
-							{{#if ip}}<li><i class="icon-laptop"></i><span>{{ip}}</span></li>{{/if}}
-							{{#if os}}<li><i class="{{osIcon}}"></i><span>{{os}}</span></li>{{/if}}
-							{{#if browser}}<li><i class="{{browserIcon}}"></i><span>{{browser}}</span></li>{{/if}}
-						</ul>
-					</div>
-				{{/with}}
-
-				{{#with room}}
-					<div class="info">
-						<ul>
-							{{#if sms}}
-								<li><i class="icon-mobile"></i>{{_ "SMS_Enabled"}}</li>
-							{{/if}}
-							{{#if topic}}
-								<li><strong>{{_ "Topic"}}</strong>: {{topic}}</li>
-							{{/if}}
-							{{#if tags}}
-								<li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li>
-							{{/if}}
-						</ul>
-					</div>
-				{{/with}}
-			</div>
-
-			{{#if canSeeButtons}}
-				<nav class="centered-buttons">
-					<button class='button button-block edit-livechat'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
-					{{#if roomOpen}}
-						<button class='button button-block close-livechat'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
-						<button class="button button-block forward-livechat"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button>
-					{{/if}}
-
-					{{#if guestPool}}
-						<button class="button button-block return-inquiry"><span><i class="icon-ccw"></i> {{_ "Return"}}</span></button>
-					{{/if}}
-				</nav>
-			{{/if}}
-
-			{{#if customFields}}
-				<div class="visitor-custom-fields">
-					<h4>{{_ "Custom_Fields"}}</h4>
-
-					<div class="visitor-scroll">
-						<ul>
-							{{#each customFields}}
-								<li>{{label}}: {{value}}</li>
-							{{/each}}
-						</ul>
-					</div>
+					<ul>
+						{{#if utc}}<li><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</li>{{/if}}
+						{{#each visitorEmails}} <li><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</li> {{/each}}
+						{{#each phone}} <li><i class="icon-phone"></i> {{phoneNumber}}</li> {{/each}}
+						{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Created_at"}}: {{createdAt}}</li> {{/if}}
+						{{#if lastLogin}} <li><i class="icon-calendar"></i> {{_ "Last_login"}}: {{lastLogin}}</li> {{/if}}
+						{{#if ip}}<li><i class="icon-laptop"></i><span>{{ip}}</span></li>{{/if}}
+						{{#if os}}<li><i class="{{osIcon}}"></i><span>{{os}}</span></li>{{/if}}
+						{{#if browser}}<li><i class="{{browserIcon}}"></i><span>{{browser}}</span></li>{{/if}}
+					</ul>
 				</div>
-			{{/if}}
+			{{/with}}
 
-			{{> visitorNavigation .}}
+			{{#with room}}
+				<div class="info">
+					<ul>
+						{{#if facebook}} <li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li> {{/if}}
+						{{#if sms}} <li><i class="icon-mobile"></i>{{_ "SMS_Enabled"}}</li> {{/if}}
+						{{#if topic}} <li><strong>{{_ "Topic"}}</strong>: {{topic}}</li> {{/if}}
+						{{#if tags}} <li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li> {{/if}}
+					</ul>
+				</div>
+			{{/with}}
 		</div>
+
+		{{#if canSeeButtons}}
+			<nav class="centered-buttons">
+				<button class='button button-block edit-livechat'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+				{{#if roomOpen}}
+					<button class='button button-block close-livechat'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
+					<button class="button button-block forward-livechat"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button>
+				{{/if}}
+
+				{{#if guestPool}}
+					<button class="button button-block return-inquiry"><span><i class="icon-ccw"></i> {{_ "Return"}}</span></button>
+				{{/if}}
+			</nav>
+		{{/if}}
+
+		{{#if customFields}}
+			<div class="visitor-custom-fields">
+				<h4>{{_ "Custom_Fields"}}</h4>
+
+				<div class="visitor-scroll">
+					<ul>
+						{{#each customFields}}
+							<li>{{label}}: {{value}}</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		{{/if}}
+
+		{{> visitorNavigation .}}
 	</div>
 </template>

@@ -1,5 +1,6 @@
 /* globals RoutePolicy, SAML */
 /* jshint newcap: false */
+import _ from 'underscore';
 
 if (!Accounts.saml) {
 	Accounts.saml = {
@@ -11,8 +12,8 @@ if (!Accounts.saml) {
 	};
 }
 
-const fiber = Npm.require('fibers');
-const connect = Npm.require('connect');
+import fiber from 'fibers';
+import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -21,8 +22,8 @@ RoutePolicy.declare('/_saml/', 'network');
 function getSamlProviderConfig(provider) {
 	if (! provider) {
 		throw new Meteor.Error('no-saml-provider',
-														'SAML internal error',
-														{ method: 'getSamlProviderConfig' });
+			'SAML internal error',
+			{ method: 'getSamlProviderConfig' });
 	}
 	const samlProvider = function(element) {
 		return (element.provider === provider);
@@ -102,8 +103,10 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
+		const email = RegExp.escape(loginResult.profile.email);
+		const emailRegex = new RegExp(`^${ email }$`, 'i');
 		let user = Meteor.users.findOne({
-			'emails.address': loginResult.profile.email
+			'emails.address': emailRegex
 		});
 
 		if (!user) {

@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 const accountsConfig = {
 	forbidClientAccountCreation: true,
 	loginExpirationInDays: RocketChat.settings.get('Accounts_LoginExpiration')
@@ -8,6 +11,54 @@ Accounts.config(accountsConfig);
 Accounts.emailTemplates.siteName = RocketChat.settings.get('Site_Name');
 
 Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
+
+Accounts.emailTemplates.userToActivate = {
+	subject() {
+		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const siteName = RocketChat.settings.get('Site_Name');
+
+		return `[${ siteName }] ${ subject }`;
+	},
+
+	html(options = {}) {
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
+		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
+
+		const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
+			name: options.name,
+			email: options.email,
+			reason: options.reason
+		});
+
+		return header + html + footer;
+	}
+};
+
+Accounts.emailTemplates.userActivated = {
+	subject({active, username}) {
+		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+		const subject = `Accounts_Email_${ action }_Subject`;
+		const siteName = RocketChat.settings.get('Site_Name');
+
+		return `[${ siteName }] ${ TAPi18n.__(subject) }`;
+	},
+
+	html({active, name, username}) {
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
+		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+
+		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
+			name
+		});
+
+		return header + html + footer;
+	}
+};
+
 
 const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
 
@@ -91,6 +142,27 @@ Accounts.onCreateUser(function(options, user = {}) {
 		}
 	}
 
+	if (!user.active) {
+		const destinations = [];
+
+		RocketChat.models.Roles.findUsersInRole('admin').forEach(adminUser => {
+			if (Array.isArray(adminUser.emails)) {
+				adminUser.emails.forEach(email => {
+					destinations.push(`${ adminUser.name }<${ email.address }>`);
+				});
+			}
+		});
+
+		const email = {
+			to: destinations,
+			from: RocketChat.settings.get('From_Email'),
+			subject: Accounts.emailTemplates.userToActivate.subject(),
+			html: Accounts.emailTemplates.userToActivate.html(options)
+		};
+
+		Meteor.defer(() => Email.send(email));
+	}
+
 	return user;
 });
 
@@ -120,10 +192,18 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		_id
 	});
 
-	if (user.username && options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-		Meteor.runAsUser(_id, function() {
-			return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
-		});
+	if (user.username) {
+		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
+			Meteor.runAsUser(_id, function() {
+				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+			});
+		}
+
+		if (user.type !== 'visitor') {
+			Meteor.defer(function() {
+				return RocketChat.callbacks.run('afterCreateUser', user);
+			});
+		}
 	}
 
 	if (roles.length === 0) {
@@ -161,6 +241,12 @@ Accounts.validateLoginAttempt(function(login) {
 
 	if (!!login.user.active !== true) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
+			'function': 'Accounts.validateLoginAttempt'
+		});
+	}
+
+	if (!login.user.roles || !Array.isArray(login.user.roles)) {
+		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
 			'function': 'Accounts.validateLoginAttempt'
 		});
 	}

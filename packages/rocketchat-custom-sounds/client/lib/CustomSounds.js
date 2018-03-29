@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 class CustomSounds {
 	constructor() {
 		this.list = new ReactiveVar({});

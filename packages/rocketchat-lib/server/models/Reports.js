@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models.Reports = new class extends RocketChat.models._Base {
 	constructor() {
 		super('reports');

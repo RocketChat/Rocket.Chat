@@ -11,21 +11,21 @@
     },
     "objects": [
         {
-        "kind": "PersistentVolumeClaim",
-        "apiVersion": "v1",
-        "metadata": {
-            "name": "${DATABASE_SERVICE_NAME}"
-        },
-        "spec": {
-            "accessModes": [
-            "ReadWriteOnce"
-            ],
-            "resources": {
-            "requests": {
-                "storage": "${VOLUME_CAPACITY}"
+            "kind": "PersistentVolumeClaim",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${DATABASE_SERVICE_NAME}"
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "${VOLUME_CAPACITY}"
+                    }
+                }
             }
-            }
-        }
         },
         {
             "kind": "DeploymentConfig",
@@ -151,7 +151,7 @@
                             {
                                 "name": "${DATABASE_SERVICE_NAME}-data",
                                 "persistentVolumeClaim": {
-                                "claimName": "${DATABASE_SERVICE_NAME}"
+                                    "claimName": "${DATABASE_SERVICE_NAME}"
                                 }
                             }
                         ],
@@ -171,7 +171,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "docker.io/rocket.chat",
+                "dockerImageRepository": "registry.connect.redhat.com/rocketchat/rocketchat",
                 "tags": [
                     {
                         "name": "latest",
@@ -228,8 +228,7 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "openshift",
-                                "name": "rocket.chat:latest"
+                                "name": "rocketchat:latest"
                             }
                         }
                     }
@@ -262,7 +261,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "rocketchat/rocket.chat:latest",
+                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
@@ -282,6 +281,30 @@
                                         "mountPath": "/app/uploads"
                                     }
                                 ],
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 5,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/api/v1/info",
+                                        "port": 3000,
+                                        "scheme": "HTTP"
+                                    },
+                                    "initialDelaySeconds": 30,
+                                    "timeoutSeconds": 1,
+                                    "periodSeconds": 10,
+                                    "successThreshold": 1,
+                                    "failureThreshold": 3
+                                },
                                 "terminationMessagePath": "/dev/termination-log",
                                 "imagePullPolicy": "Always"
                             }
@@ -392,12 +415,6 @@
             "value": "512Mi"
         },
         {
-            "name": "NAMESPACE",
-            "displayName": "Namespace",
-            "description": "The OpenShift Namespace where the ImageStream resides.",
-            "value": "openshift"
-        },
-        {
             "name": "DATABASE_SERVICE_NAME",
             "displayName": "Database Service Name",
             "description": "The name of the OpenShift Service exposed for the database.",
@@ -424,7 +441,7 @@
             "name": "MONGODB_DATABASE",
             "displayName": "MongoDB Database Name",
             "description": "Name of the MongoDB database accessed.",
-            "value": "sampledb",
+            "value": "rocketchatdb",
             "required": true
         },
         {
@@ -436,11 +453,11 @@
             "required": true
         },
         {
-        "name": "VOLUME_CAPACITY",
-        "displayName": "Volume Capacity",
-        "description": "Volume space available for data, e.g. 512Mi, 2Gi.",
-        "value": "1Gi",
-        "required": true
+            "name": "VOLUME_CAPACITY",
+            "displayName": "Volume Capacity",
+            "description": "Volume space available for data, e.g. 512Mi, 2Gi.",
+            "value": "1Gi",
+            "required": true
         }
     ]
 }

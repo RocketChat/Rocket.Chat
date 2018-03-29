@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);

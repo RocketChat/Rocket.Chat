@@ -1,0 +1,111 @@
+.sound-info {
+	& .icon-play-circled {
+		cursor: pointer;
+	}
+}
+
+.sound-view {
+	z-index: 15;
+
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	& .thumb {
+		width: 100%;
+		height: 350px;
+		padding: 20px;
+	}
+
+	& nav {
+		padding: 0 20px;
+	}
+
+	& .info {
+		padding: 0 20px;
+
+		white-space: normal;
+
+		& h3 {
+			overflow: hidden;
+
+			width: 100%;
+			margin: 8px 0;
+
+			user-select: text;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			font-size: 24px;
+			line-height: 27px;
+
+			& i::after {
+				display: inline-block;
+
+				width: 8px;
+				height: 8px;
+
+				content: " ";
+				vertical-align: middle;
+
+				border-radius: 4px;
+			}
+		}
+
+		& p {
+			-webkit-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			user-select: text;
+
+			font-size: 12px;
+			font-weight: 300;
+			line-height: 18px;
+		}
+	}
+
+	& .edit-form {
+		padding: 20px 20px 0;
+
+		white-space: normal;
+
+		& h3 {
+			margin-bottom: 8px;
+
+			font-size: 24px;
+			line-height: 22px;
+		}
+
+		& p {
+			font-size: 12px;
+			font-weight: 300;
+			line-height: 18px;
+		}
+
+		& > .input-line {
+			margin-top: 20px;
+		}
+
+		& nav {
+			padding: 0;
+
+			&.buttons {
+				margin-top: 2em;
+			}
+		}
+
+		& .form-divisor {
+			height: 9px;
+			margin: 2em 0;
+
+			text-align: center;
+
+			& > span {
+				padding: 0 1em;
+			}
+		}
+	}
+
+	& .room-info-content > div {
+		margin: 0 0 20px;
+	}
+}

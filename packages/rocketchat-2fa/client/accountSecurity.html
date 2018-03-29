@@ -1,20 +1,15 @@
 <template name="accountSecurity">
-	<section class="page-container page-home page-static">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Security"}}</span>
-			</h2>
-		</header>
-		<div class="content">
-			<div class="rocket-form">
+	<section class="preferences-page">
+			{{> header sectionName="Security"}}
+	<div class="preferences-page__content">
+		<form id="security" autocomplete="off" class="container">
 				<fieldset>
 					<div class="section">
 						<h1>{{_ "Two-factor_authentication"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="alert pending-background pending-color pending-border">
 								<strong>
-									WARNING: Once you enable this, you will not be able to login on the native mobile apps (Rocket.Chat+) using your password until they implement the 2FA.
+									{{_ "Two-factor_authentication_native_mobile_app_warning"}}
 								</strong>
 							</div>
 							{{#if isEnabled}}
@@ -26,12 +21,13 @@
 									<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
 								{{else}}
 									<p>{{_ "Scan_QR_code"}}</p>
+									<p>{{_ "Scan_QR_code_alternative_s" code=imageSecret}}</p>
 
 									<img src="{{imageData}}">
 
-									<form class="inline verify-code">
-										<input type="text" id="testCode" placeholder="{{_ "Enter_authentication_code"}}">
-										<button type="submit" class="button primary">{{_ "Verify"}}</button>
+									<form class="inline">
+										<input type="text" class="rc-input__element" id="testCode" placeholder="{{_ "Enter_authentication_code"}}">
+										<button class="button primary verify-code">{{_ "Verify"}}</button>
 									</form>
 								{{/unless}}
 							{{/if}}
@@ -51,7 +47,7 @@
 						</div>
 					</fieldset>
 				{{/if}}
-			</div>
+			</form>
 		</div>
 	</section>
 </template>

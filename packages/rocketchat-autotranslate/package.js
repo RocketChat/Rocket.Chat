@@ -9,14 +9,13 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'ddp-rate-limiter',
-		'less',
 		'rocketchat:lib'
 	]);
 
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/stylesheets/autotranslate.less',
+		'client/stylesheets/autotranslate.css',
 		'client/lib/autotranslate.js',
 		'client/lib/actionButton.js',
 		'client/lib/tabBar.js',

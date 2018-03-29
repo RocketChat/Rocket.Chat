@@ -1,0 +1,14 @@
+bot:
+  name: "@rocket-cat"
+whitelist:
+  users:
+    - TwizzyDizzy
+    - theorenck
+    - JSzaszvari
+  labels:
+    - duplicate
+    - enhancement
+    - "help wanted"
+    - invalid
+    - question
+    - wontfix

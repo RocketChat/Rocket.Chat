@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		let unreadCount = 0;
 		let unreadAlert = false;
 
-		const subscriptions = ChatSubscription.find({open: true}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
+		const subscriptions = ChatSubscription.find({open: true, hideUnreadStatus: { $ne: true }}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
 
 		let openedRoomId = undefined;
 		Tracker.nonreactive(function() {
@@ -32,7 +32,7 @@ Meteor.startup(function() {
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.unreadAlert;
+					const userUnreadAlert = RocketChat.getUserPreference(Meteor.user(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}

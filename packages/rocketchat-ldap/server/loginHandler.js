@@ -1,5 +1,7 @@
-/* globals LDAP, slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
+
+import {slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser} from './sync';
+import LDAP from './ldap';
 
 const logger = new Logger('LDAPHandler', {});
 
@@ -62,22 +64,12 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		logger.error(error);
 	}
 
-	ldap.disconnect();
-
 	if (ldapUser === undefined) {
 		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
 			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 		}
 
 		throw new Meteor.Error('LDAP-login-error', `LDAP Authentication failed with provided username [${ loginRequest.username }]`);
-	}
-
-	let username;
-
-	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
-		username = slug(getLdapUsername(ldapUser));
-	} else {
-		username = slug(loginRequest.username);
 	}
 
 	// Look to see if user already exists
@@ -95,6 +87,14 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		logger.debug('userQuery', userQuery);
 
 		user = Meteor.users.findOne(userQuery);
+	}
+
+	let username;
+
+	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+		username = slug(getLdapUsername(ldapUser));
+	} else {
+		username = slug(loginRequest.username);
 	}
 
 	if (!user) {
@@ -125,7 +125,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		});
 
 		syncUserData(user, ldapUser);
-		Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
+
+		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
+			Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
+		}
+
 		return {
 			userId: user._id,
 			token: stampedToken.token
@@ -134,6 +138,20 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	logger.info('User does not exist, creating', username);
 
+	if (RocketChat.settings.get('LDAP_Username_Field') === '') {
+		username = undefined;
+	}
+
+	if (RocketChat.settings.get('LDAP_Login_Fallback') !== true) {
+		loginRequest.ldapPass = undefined;
+	}
+
 	// Create new user
-	return addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+
+	if (result instanceof Error) {
+		throw result;
+	}
+
+	return result;
 });

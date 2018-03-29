@@ -25,6 +25,6 @@ RocketChat.updateMessage = function(message, user) {
 	const room = RocketChat.models.Rooms.findOneById(message.rid);
 
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room);
+		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room, user._id);
 	});
 };

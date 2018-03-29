@@ -26,7 +26,7 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 		});
 		return;
 	}
-	if ((room.usernames || []).includes(username)) {
+	if ((room.usernames || []).includes(username) === false) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
@@ -42,4 +42,7 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 		rid: item.rid,
 		username
 	});
+}, {
+	description: 'Mute_someone_in_room',
+	params: '@username'
 });

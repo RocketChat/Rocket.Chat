@@ -36,7 +36,7 @@ export function log(res) {
 	});
 }
 
-export function getCredentials() {
+export function getCredentials(done = function() {}) {
 	request.post(api('login'))
 		.send(login)
 		.expect('Content-Type', 'application/json')
@@ -44,6 +44,7 @@ export function getCredentials() {
 		.expect((res) => {
 			credentials['X-Auth-Token'] = res.body.data.authToken;
 			credentials['X-User-Id'] = res.body.data.userId;
-		});
+		})
+		.end(done);
 }
 

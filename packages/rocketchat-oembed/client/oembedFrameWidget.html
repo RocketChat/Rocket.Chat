@@ -3,19 +3,19 @@
 	<blockquote class="background-transparent-darker-before">
 		{{#if meta.oembedProviderName}}
 			{{#if meta.oembedProviderUrl}}
-				<a href="{{meta.oembedProviderUrl}}" style="color: #9e9ea6">{{meta.oembedProviderName}}</a>
+				<a href="{{meta.oembedProviderUrl}}" target="_blank" style="color: #9e9ea6">{{meta.oembedProviderName}}</a>
 			{{/if}}
 		{{/if}}
 		{{#if meta.oembedAuthorName}}
 			{{#if meta.oembedAuthorUrl}}
 				<br class="only-after-a"/>
-				<a href="{{meta.oembedAuthorUrl}}">{{meta.oembedAuthorName}}</a>
+				<a href="{{meta.oembedAuthorUrl}}" target="_blank">{{meta.oembedAuthorName}}</a>
 			{{/if}}
 		{{/if}}
 		{{#if meta.oembedTitle}}
 			{{#if meta.oembedUrl}}
 				<br class="only-after-a"/>
-				<a href="{{meta.oembedUrl}}">{{meta.oembedTitle}}</a>
+				<a href="{{meta.oembedUrl}}" target="_blank">{{meta.oembedTitle}}</a>
 			{{/if}}
 		{{/if}}
 		{{#if collapsed}}

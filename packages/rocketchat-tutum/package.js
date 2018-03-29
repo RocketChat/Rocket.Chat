@@ -9,7 +9,3 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.addFiles('startup.js', 'server');
 });
-
-Npm.depends({
-	'redis': '2.2.5'
-});

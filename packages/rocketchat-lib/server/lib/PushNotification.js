@@ -16,7 +16,7 @@ class PushNotification {
 		return hash;
 	}
 
-	send({ roomName, roomId, username, message, usersTo, payload }) {
+	send({ roomName, roomId, username, message, usersTo, payload, badge = 1, category }) {
 		let title;
 		if (roomName && roomName !== '') {
 			title = `${ roomName }`;
@@ -27,7 +27,7 @@ class PushNotification {
 		const icon = RocketChat.settings.get('Assets_favicon_192').url || RocketChat.settings.get('Assets_favicon_192').defaultUrl;
 		const config = {
 			from: 'push',
-			badge: 1,
+			badge,
 			sound: 'default',
 			title,
 			text: message,
@@ -38,11 +38,14 @@ class PushNotification {
 				style: 'inbox',
 				summaryText: '%n% new messages',
 				image: RocketChat.getURL(icon, { full: true })
-			},
-			apn: {
-				text: title + ((title !== '' && message !== '') ? '\n' : '') + message
 			}
 		};
+
+		if (category !== '') {
+			config.apn = {
+				category
+			};
+		}
 
 		return Push.send(config);
 	}

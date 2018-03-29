@@ -1,35 +1,21 @@
 
-RocketChat.saveRoomName = function(rid, name, user, sendMessage = true) {
+RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = RocketChat.models.Rooms.findOneById(rid);
-	if (room.t !== 'c' && room.t !== 'p') {
+	if (RocketChat.roomTypes.roomTypes[room.t].preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-			'function': 'RocketChat.saveRoomName'
+			'function': 'RocketChat.saveRoomdisplayName'
 		});
 	}
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-	if (!nameValidation.test(name)) {
-		throw new Meteor.Error('error-invalid-room-name', `${ name } is not a valid room name. Use only letters, numbers, hyphens and underscores`, {
-			'function': 'RocketChat.saveRoomName',
-			room_name: name
-		});
-	}
-	if (name === room.name) {
+	if (displayName === room.name) {
 		return;
 	}
-	if (RocketChat.models.Rooms.findOneByName(name)) {
-		throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ name }' exists`, {
-			'function': 'RocketChat.saveRoomName',
-			channel_name: name
-		});
-	}
-	const update = RocketChat.models.Rooms.setNameById(rid, name) && RocketChat.models.Subscriptions.updateNameAndAlertByRoomId(rid, name);
+
+	const slugifiedRoomName = RocketChat.getValidRoomName(displayName, rid);
+
+	const update = RocketChat.models.Rooms.setNameById(rid, slugifiedRoomName, displayName) && RocketChat.models.Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+
 	if (update && sendMessage) {
-		RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, name, user);
+		RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
-	return name;
+	return displayName;
 };

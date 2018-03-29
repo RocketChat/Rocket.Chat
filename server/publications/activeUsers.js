@@ -6,6 +6,7 @@ Meteor.publish('activeUsers', function() {
 	return RocketChat.models.Users.findUsersNotOffline({
 		fields: {
 			username: 1,
+			name: 1,
 			status: 1,
 			utcOffset: 1
 		}

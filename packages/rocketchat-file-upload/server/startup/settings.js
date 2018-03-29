@@ -90,6 +90,20 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			},
 			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.'
 		});
+		this.add('FileUpload_S3_SignatureVersion', 'v4', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			}
+		});
+		this.add('FileUpload_S3_ForcePathStyle', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			}
+		});
 		this.add('FileUpload_S3_URLExpiryTimeSpan', 120, {
 			type: 'int',
 			enableQuery: {
@@ -97,6 +111,13 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'AmazonS3'
 			},
 			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description'
+		});
+		this.add('FileUpload_S3_Proxy', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			}
 		});
 	});
 
@@ -121,6 +142,13 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			type: 'string',
 			multiline: true,
 			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+		this.add('FileUpload_GoogleStorage_Proxy', false, {
+			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'GoogleCloudStorage'

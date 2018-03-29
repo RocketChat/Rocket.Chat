@@ -1,6 +1,10 @@
 /* global InstanceStatus, DDP, LoggerManager */
 
+import _ from 'underscore';
 import {DDPCommon} from 'meteor/ddp-common';
+
+process.env.PORT = String(process.env.PORT).trim();
+process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
 
 const connections = {};
 this.connections = connections;
@@ -137,11 +141,17 @@ Meteor.methods({
 			return 'not-authorized';
 		}
 
-		if (!Meteor.StreamerCentral.instances[streamName]) {
+		const instance = Meteor.StreamerCentral.instances[streamName];
+		if (!instance) {
 			return 'stream-not-exists';
 		}
 
-		Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		if (instance.serverOnly) {
+			const scope = {};
+			instance.emitWithScope(eventName, scope, ...args);
+		} else {
+			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		}
 	}
 });
 
@@ -256,4 +266,19 @@ function startStreamBroadcast() {
 
 Meteor.startup(function() {
 	return startStreamBroadcast();
+});
+
+Meteor.methods({
+	'instances/get'() {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-statistics')) {
+			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
+				method: 'instances/get'
+			});
+		}
+
+		return Object.keys(connections).map(address => {
+			const conn = connections[address];
+			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
+		});
+	}
 });

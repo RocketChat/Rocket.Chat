@@ -2,6 +2,10 @@ Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
 		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');
 		const piwikSiteId = piwikUrl && RocketChat.settings.get('PiwikAnalytics_siteId');
+		const piwikPrependDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_prependDomain');
+		const piwikCookieDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_cookieDomain');
+		const piwikDomains = piwikUrl && RocketChat.settings.get('PiwikAnalytics_domains');
+		const piwikAdditionalTracker = piwikUrl && RocketChat.settings.get('PiwikAdditionalTrackers');
 		const googleId = RocketChat.settings.get('GoogleAnalytics_enabled') && RocketChat.settings.get('GoogleAnalytics_ID');
 		if (piwikSiteId || googleId) {
 			c.stop();
@@ -14,7 +18,39 @@ Template.body.onRendered(() => {
 
 				window._paq.push(['trackPageView']);
 				window._paq.push(['enableLinkTracking']);
+				if (piwikPrependDomain) {
+					window._paq.push(['setDocumentTitle', `${ window.location.hostname }/${ document.title }`]);
+				}
+				const upperLevelDomain = `*.${ window.location.hostname.split('.').slice(1).join('.') }`;
+				if (piwikCookieDomain) {
+					window._paq.push(['setCookieDomain', upperLevelDomain]);
+				}
+				if (piwikDomains) {
+					// array
+					const domainsArray = piwikDomains.split(/\n/);
+					const domains = [];
+					for (let i = 0; i < domainsArray.length; i++) {
+						// only push domain if it contains a non whitespace character.
+						if (/\S/.test(domainsArray[i])) {
+							domains.push(`*.${ domainsArray[i].trim() }`);
+						}
+					}
+					window._paq.push(['setDomains', domains]);
+				}
 				(() => {
+					try {
+						if (/\S/.test(piwikAdditionalTracker)) {
+							// piwikAdditionalTracker is not empty or whitespace only
+							const addTrackers = JSON.parse(piwikAdditionalTracker);
+							for (let i = 0; i < addTrackers.length; i++) {
+								const tracker = addTrackers[i];
+								window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
+							}
+						}
+					} catch (e) {
+						// parsing JSON faild
+						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
+					}
 					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;

@@ -1,0 +1,130 @@
+html.rtl .flex-tab {
+  direction: rtl;
+
+  & .channel-settings {
+	& .editing {
+	  padding-right: 8px;
+	  padding-left: 80px;
+	}
+	& .buttons {
+	  right: auto;
+	  left: 1px;
+	  border-radius: 4px 0 0 4px;
+	}
+  }
+}
+
+.flex-tab {
+	& .channel-settings {
+		& ul {
+			& li {
+				margin-bottom: 20px;
+			}
+		}
+
+		& label {
+			display: block;
+
+			margin-bottom: 5px;
+
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+		& .current-setting {
+			display: inline-block;
+
+			width: calc(100% - 38px);
+			min-height: 20px;
+			margin-top: 3px;
+
+			cursor: pointer;
+			vertical-align: middle;
+			word-wrap: break-word;
+
+			font-size: 14px;
+
+			&[data-edit="false"] {
+				cursor: inherit;
+				user-select: initial;
+			}
+		}
+
+		& .editing {
+			padding-right: 80px;
+			font-size: 14px;
+		}
+
+		& .buttons {
+			position: absolute;
+			top: -1px;
+			right: 10px;
+
+			border-radius: 0 4px 4px 0;
+
+			& .button {
+				padding: 8px;
+			}
+		}
+
+		& .button {
+			display: inline-block;
+			visibility: hidden;
+
+			padding: 8px;
+
+			vertical-align: middle;
+
+			font-size: 12px;
+		}
+
+		& .submit {
+			margin-top: 30px;
+
+			text-align: center;
+		}
+
+		& .boolean {
+			font-size: 0;
+
+			& > label {
+				display: inline-block;
+
+				width: calc(100% - 45px);
+
+				vertical-align: middle;
+			}
+
+			& .setting-block {
+				display: inline-block;
+
+				width: 40px;
+				margin-left: -5px;
+
+				vertical-align: middle;
+			}
+		}
+
+		& .setting-block {
+			position: relative;
+
+			font-size: 0;
+
+			display: flex;
+
+			& .loading-animation {
+				top: 30px;
+			}
+
+			&:hover {
+				& .button {
+					visibility: visible;
+				}
+			}
+		}
+
+		& nav {
+			text-align: right;
+		}
+	}
+}

@@ -9,6 +9,6 @@ Meteor.methods({
 			return Meteor.call('deleteMessage', msg);
 		}
 
-		return FileUpload.delete(fileID);
+		return FileUpload.getStore('Uploads').deleteById(fileID);
 	}
 });

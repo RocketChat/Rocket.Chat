@@ -1,4 +1,6 @@
 /* globals msgStream */
+import _ from 'underscore';
+
 Meteor.methods({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
@@ -17,6 +19,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
+		if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+			throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
+		}
+
 		const user = Meteor.user();
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
@@ -30,6 +36,8 @@ Meteor.methods({
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
+
+		reaction = `:${ reaction.replace(/:/g, '') }:`;
 
 		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);

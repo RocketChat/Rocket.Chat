@@ -3,9 +3,9 @@ this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
 
-msgStream.allowRead(function(eventName) {
+msgStream.allowRead(function(eventName, args) {
 	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId);
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
 
 		if (!room) {
 			return false;
@@ -50,6 +50,13 @@ Meteor.startup(function() {
 			if (record.u && record.u._id && UI_Use_Real_Name) {
 				const user = RocketChat.models.Users.findOneById(record.u._id);
 				record.u.name = user && user.name;
+			}
+
+			if (record.mentions && record.mentions.length && UI_Use_Real_Name) {
+				record.mentions.forEach((mention) => {
+					const user = RocketChat.models.Users.findOneById(mention._id);
+					mention.name = user && user.name;
+				});
 			}
 			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
 			return msgStream.emitWithoutBroadcast(record.rid, record);

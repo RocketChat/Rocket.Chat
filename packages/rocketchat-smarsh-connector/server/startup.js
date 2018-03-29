@@ -1,4 +1,6 @@
 /* globals SyncedCron */
+import _ from 'underscore';
+
 const smarshJobName = 'Smarsh EML Connector';
 
 const _addSmarshSyncedCronJob = _.debounce(Meteor.bindEnvironment(function __addSmarshSyncedCronJobDebounced() {

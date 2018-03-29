@@ -8,13 +8,22 @@
 					<legend>{{_ "Livechat_online"}}</legend>
 					<div class="input-line">
 						<label for="title">{{_ "Title"}}</label>
-						<input type="text" class="preview-settings" name="title" id="title" value="{{title}}">
+						<input type="text" class="preview-settings rc-input__element" name="title" id="title" value="{{title}}">
 					</div>
 					<div class="input-line">
 						<label for="color">{{_ "Title_bar_color"}}</label>
 						<div>
-							<input type="text" class="preview-settings colorpicker-input" name="color" id="color" value="{{color}}">
+							<input type="text" class="preview-settings colorpicker-input rc-input__element" name="color" id="color" value="{{color}}">
 							<span class="colorpicker-swatch border-component-color" style="background-color: {{color}}"></span>
+						</div>
+					</div>
+					<div class="input-line">
+						<label for="showAgentEmail">{{_ "Show_agent_email"}}</label>
+						<div class="inline-fields">
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormTrue" checked="{{showAgentEmailFormTrueChecked}}" value="true">
+							<label for="showAgentEmailFormTrue">{{_ "True"}}</label>
+							<input type="radio" class="preview-settings" name="showAgentEmail" id="showAgentEmailFormFalse" checked="{{showAgentEmailFormFalseChecked}}" value="false">
+							<label for="showAgentEmailFormFalse">{{_ "False"}}</label>
 						</div>
 					</div>
 				</fieldset>
@@ -31,30 +40,30 @@
 					</div>
 					<div class="input-line">
 						<label for="offlineUnavailableMessage">{{_ "Offline_form_unavailable_message"}}</label>
-						<textarea class="preview-settings" name="offlineUnavailableMessage" id="offlineUnavailableMessage">{{offlineUnavailableMessage}}</textarea>
+						<textarea class="preview-settings rc-input__element" name="offlineUnavailableMessage" id="offlineUnavailableMessage">{{offlineUnavailableMessage}}</textarea>
 					</div>
 					<div class="input-line">
 						<label for="offlineMessage">{{_ "Offline_message"}}</label>
-						<textarea class="preview-settings" name="offlineMessage" id="offlineMessage">{{offlineMessage}}</textarea>
+						<textarea class="preview-settings rc-input__element" name="offlineMessage" id="offlineMessage">{{offlineMessage}}</textarea>
 					</div>
 					<div class="input-line">
 						<label for="titleOffline">{{_ "Title_offline"}}</label>
-						<input type="text" class="preview-settings" name="titleOffline" id="titleOffline" value="{{titleOffline}}">
+						<input type="text" class="preview-settings rc-input__element" name="titleOffline" id="titleOffline" value="{{titleOffline}}">
 					</div>
 					<div class="input-line">
 						<label for="colorOffline">{{_ "Title_bar_color_offline"}}</label>
 						<div>
-							<input type="text" class="preview-settings colorpicker-input" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
+							<input type="text" class="preview-settings colorpicker-input rc-input__element" name="colorOffline" id="colorOffline" value="{{colorOffline}}">
 							<span class="colorpicker-swatch border-component-color" style="background-color: {{colorOffline}}"></span>
 						</div>
 					</div>
 					<div class="input-line">
 						<label for="emailOffline">{{_ "Email_address_to_send_offline_messages"}}</label>
-						<input type="text" class="preview-settings" name="emailOffline" id="emailOffline" value="{{emailOffline}}">
+						<input type="text" class="preview-settings rc-input__element" name="emailOffline" id="emailOffline" value="{{emailOffline}}">
 					</div>
 					<div class="input-line">
 						<label for="offlineSuccessMessage">{{_ "Offline_success_message"}}</label>
-						<textarea class="preview-settings" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
+						<textarea class="preview-settings rc-input__element" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
 					</div>
 				</fieldset>
 				<div class="submit">
@@ -112,7 +121,7 @@
 								</div>
 								<div class="footer">
 									<div class="input-wrapper">
-										<textarea class="input-message" placeholder="Type your message"></textarea>
+										<textarea class="input-message rc-input__element" placeholder="Type your message"></textarea>
 									</div>
 									<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
 								</div>
@@ -123,11 +132,11 @@
 									<p class="offline-message">{{{sampleOfflineMessage}}}</p>
 
 									<form>
-										<input type="text" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
+										<input type="text" class="rc-input__element" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
 
-										<input type="email" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
+										<input type="email" class="rc-input__element" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
 
-										<textarea id="message" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
+										<textarea id="message" class="rc-input__element" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
 
 										<div class="buttons">
 											<button class="button primary send">{{_ "Send"}}</button>

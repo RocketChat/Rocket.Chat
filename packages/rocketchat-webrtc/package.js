@@ -7,16 +7,15 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('rocketchat:lib');
-	api.use('coffeescript');
 	api.use('ecmascript');
 
 	api.use('templating', 'client');
+	api.mainModule('client/WebRTCClass.js', 'client');
+	api.addFiles('client/adapter.js', 'client');
+	// api.addFiles(');
+	api.addFiles('client/screenShare.js', 'client');
 
-	api.addFiles('adapter.js', 'client');
-	api.addFiles('WebRTCClass.coffee', 'client');
-	api.addFiles('screenShare.coffee', 'client');
+	api.addFiles('server/settings.js', 'server');
 
-	api.addFiles('server/settings.coffee', 'server');
-
-	api.export('WebRTC');
+	api.export('WebRTC', 'client');
 });

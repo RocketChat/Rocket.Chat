@@ -1,5 +1,5 @@
 /* eslint new-cap: 0 */
-
+import _ from 'underscore';
 import loki from 'lokijs';
 import {EventEmitter} from 'events';
 import objectPath from 'object-path';
@@ -763,6 +763,7 @@ class ModelsBaseCache extends EventEmitter {
 			console.error('Cache.updateDiffById: No record', this.collectionName, id, diff);
 			return;
 		}
+		this.removeFromAllIndexes(record);
 
 		const updatedFields = _.without(Object.keys(diff), ...this.ignoreUpdatedFields);
 
@@ -777,6 +778,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		this.collection.update(record);
+		this.addToAllIndexes(record);
 
 		if (updatedFields.length > 0) {
 			this.emit('updated', record, diff);
@@ -791,6 +793,8 @@ class ModelsBaseCache extends EventEmitter {
 				delete record.$set.usernames;
 			}
 		}
+
+		this.removeFromAllIndexes(record);
 
 		const topLevelFields = Object.keys(update).map(field => field.split('.')[0]);
 		const updatedFields = _.without(topLevelFields, ...this.ignoreUpdatedFields);
@@ -914,6 +918,7 @@ class ModelsBaseCache extends EventEmitter {
 		}
 
 		this.collection.update(record);
+		this.addToAllIndexes(record);
 
 		if (updatedFields.length > 0) {
 			this.emit('updated', record, record);

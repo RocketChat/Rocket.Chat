@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.listPrivateGroupsFlex.helpers({
 	groups() {
 		return Template.instance().groups.get();
@@ -22,23 +25,17 @@ Template.listPrivateGroupsFlex.events({
 		return SideNav.closeFlex();
 	},
 
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'scroll .content': _.throttle(function(e, t) {
 		if (t.hasMore.get() && (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight))) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}
-	, 200),
+	}, 200),
 
-	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val())
-	, 300),
+	'keyup #channel-search': _.debounce((e, instance) => instance.nameFilter.set($(e.currentTarget).val()), 300),
+
+	'submit .search-form'(e) {
+		return e.preventDefault();
+	},
 
 	'change #sort'(e, instance) {
 		return instance.sort.set($(e.currentTarget).val());
@@ -58,7 +55,7 @@ Template.listPrivateGroupsFlex.onCreated(function() {
 		if (_.isNumber(this.limit.get())) {
 			options.limit = this.limit.get();
 		}
-		if (_.trim(this.sort.get())) {
+		if (s.trim(this.sort.get())) {
 			switch (this.sort.get()) {
 				case 'name':
 					options.sort = { name: 1 };

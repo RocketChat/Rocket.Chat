@@ -1,0 +1,88 @@
+.message {
+	& .reactions {
+		margin-top: 4px;
+		padding: 0;
+
+		& > li {
+			position: relative;
+
+			display: inline-block;
+
+			height: 22px;
+			padding: 0 4px 0 2px;
+
+			cursor: pointer;
+
+			color: #aaaaaa;
+			border: 1px solid #e7e7e7;
+			border-radius: 5px;
+			background-color: #fcfcfc;
+
+			line-height: 20px;
+
+			& .reaction-emoji {
+				& .emoji,
+				& .emojione {
+					width: 16px;
+					min-width: 16px;
+					height: 16px;
+					min-height: 16px;
+					margin: -0.2ex 0.15em 0.2ex;
+				}
+			}
+
+			& .people {
+				display: none;
+			}
+
+			& .reaction-count {
+				position: relative;
+				top: -1px;
+
+				margin-left: -3px;
+
+				font-size: 0.65rem;
+			}
+
+			&.add-reaction {
+				visibility: hidden;
+
+				margin-left: 10px;
+				padding: 0 2px;
+
+				transition: opacity 0.2s ease;
+
+				opacity: 0;
+				color: #888888;
+			}
+
+			&:hover {
+				border-color: #4fb0fc;
+			}
+
+			&.selected {
+				color: #4fb0fc;
+				border-color: #bde1fe;
+				background-color: #f3f9ff;
+			}
+		}
+
+		&:hover {
+			& > li.add-reaction {
+				visibility: visible;
+
+				opacity: 1;
+			}
+		}
+	}
+}
+
+html.rtl .message .reactions > li .reaction-count {
+	margin-right: -3px;
+	margin-left: auto;
+}
+
+html.rtl .message .reactions > li .add-reaction {
+	margin-right: 10px;
+	margin-left: 0;
+}
