@@ -90,8 +90,7 @@ Template.roomList.helpers({
 
 	noSubscriptionText() {
 		const instance = Template.instance();
-		const roomType = (instance.data.header || instance.data.identifier);
-		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+		return RocketChat.roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 
 	showRoomCounter() {

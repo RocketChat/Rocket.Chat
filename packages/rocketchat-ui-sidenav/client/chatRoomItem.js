@@ -48,7 +48,9 @@ Template.chatRoomItem.helpers({
 RocketChat.callbacks.add('enter-room', (sub) => {
 	const items = $('.rooms-list .sidebar-item');
 	items.filter('.sidebar-item--active').removeClass('sidebar-item--active');
-	items.filter(`[data-id=${ sub._id }]`).addClass('sidebar-item--active');
+	if (sub) {
+		items.filter(`[data-id=${ sub._id }]`).addClass('sidebar-item--active');
+	}
 	return sub;
 });
 

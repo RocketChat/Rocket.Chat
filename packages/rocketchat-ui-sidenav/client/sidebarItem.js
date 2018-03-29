@@ -41,12 +41,12 @@ function timeAgo(time) {
 }
 function setLastMessageTs(instance, ts) {
 	if (instance.timeAgoInterval) {
-		Meteor.clearInterval(instance.timeAgoInterval);
+		clearInterval(instance.timeAgoInterval);
 	}
 
 	instance.lastMessageTs.set(timeAgo(ts));
 
-	instance.timeAgoInterval = Meteor.setInterval(() => {
+	instance.timeAgoInterval = setInterval(() => {
 		requestAnimationFrame(() => instance.lastMessageTs.set(timeAgo(ts)));
 	}, 60000);
 }
@@ -57,28 +57,31 @@ Template.sidebarItem.onCreated(function() {
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
 
+	// console.log('sidebarItem.onCreated');
 
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
-		if (!currentData.lastMessage || !RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended') {
-			return Meteor.clearInterval(this.timeAgoInterval);
+		if (!currentData.xlastMessage || RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+			return clearInterval(this.timeAgoInterval);
 		}
-		if (currentData.lastMessage._id) {
-			const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-			const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
-			const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
-			if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
-				this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
-			} else {
-				this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', {user: sender}) : `${ sender }: ${ renderedMessage }`;
-			}
+		if (!currentData.lastMessage._id) {
+			return this.renderedMessage = currentData.lastMessage.msg;
+		}
 
-			setLastMessageTs(this, currentData.lastMessage.ts);
+		const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+		console.log('will.renderMessageBody');
+		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
+		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
+
+		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', {user: sender}) : `${ sender }: ${ renderedMessage }`;
 		}
+
+		setLastMessageTs(this, currentData.lastMessage.ts);
 	});
 });
 
