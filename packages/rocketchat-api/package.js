@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
 	api.addFiles('server/helpers/isUserFromParams.js', 'server');
 	api.addFiles('server/helpers/parseJsonQuery.js', 'server');
+	api.addFiles('server/helpers/deprecationWarning.js', 'server');
 	api.addFiles('server/helpers/getLoggedInUser.js', 'server');
 
 	//Add default routes
