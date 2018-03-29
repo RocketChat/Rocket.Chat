@@ -64,6 +64,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	// only call webhook if this message dont come from API
+	if (message.receivedByAPI) {
+		return message;
+	}
+
 	// if the message has a token, it was sent from the visitor
 	// if not, it was sent from the agent
 	if (message.token) {
