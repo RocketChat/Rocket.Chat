@@ -684,11 +684,11 @@ export default class SlackAdapter {
 
 			//Hack to notify that a file was attempted to be uploaded
 			delete slackMessage.subtype;
-			slackMessage.text = 'Uploaded a file: ' + slackMessage.file.permalink;
+			slackMessage.text = `Uploaded a file: ${ slackMessage.file.permalink }`;
 			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
 			const msgDataDefaults = {
 				_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
-				ts: ts,
+				ts,
 				updatedBySlack: true
 			};
 

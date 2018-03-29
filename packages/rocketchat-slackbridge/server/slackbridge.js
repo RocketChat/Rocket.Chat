@@ -57,7 +57,7 @@ class SlackBridge {
 		});
 
 		RocketChat.settings.get('SlackBridge_FileUpload_Enabled', (key, value) => {
-			logger.class.debug('Setting: ' + key, value);
+			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
 		//Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.

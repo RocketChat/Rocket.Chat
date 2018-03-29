@@ -147,13 +147,41 @@ export default class RocketAdapter {
 		}
 	}
 
+	getFileDownloadUrl(rocketMessage) {
+		if (!rocketMessage.file) {
+			return;
+		}
+
+		if (!rocketMessage.attachments || !rocketMessage.attachments.length) {
+			return;
+		}
+
+		const fileId = rocketMessage.file._id;
+		const attachment = rocketMessage.attachments.find((attachment) => {
+			return attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0;
+		});
+
+		if (attachment) {
+			return attachment.title_link;
+		}
+	}
+
 	processFileShare(rocketMessage) {
 		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
 		}
 
 		if (rocketMessage.file.name) {
-			rocketMessage.msg = 'Uploaded a file: ' + rocketMessage.file.name;
+			let file_name = rocketMessage.file.name;
+
+			const title_link = this.getFileDownloadUrl(rocketMessage, rocketMessage.file);
+			if (title_link) {
+				file_name = Meteor.absoluteUrl(title_link);
+			}
+
+			const message = `Uploaded a file: ${ file_name }`;
+
+			rocketMessage.msg = message;
 			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		}
 	}
