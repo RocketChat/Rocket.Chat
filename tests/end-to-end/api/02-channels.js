@@ -505,44 +505,6 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('GET /channels.notifications', (done) => {
-		request.get(api('channels.notifications'))
-			.set(credentials)
-			.query({
-				roomId: channel._id
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('subscription').and.to.be.an('object');
-			})
-			.end(done);
-	});
-
-	it('POST /channels.notifications', (done) => {
-		request.post(api('channels.notifications'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				notifications: {
-					disableNotifications: '0',
-					emailNotifications: 'nothing',
-					audioNotificationValue: 'beep',
-					desktopNotifications: 'nothing',
-					desktopNotificationDuration: '2',
-					audioNotifications: 'all',
-					mobilePushNotifications: 'mentions'
-				}
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
 	it('/channels.leave', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
