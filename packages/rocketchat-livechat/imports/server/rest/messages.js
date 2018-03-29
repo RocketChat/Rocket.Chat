@@ -46,7 +46,8 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					_id: Random.id(),
 					rid,
 					token: visitorToken,
-					msg: message.msg
+					msg: message.msg,
+					receivedByAPI: true
 				}
 			};
 			const sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
