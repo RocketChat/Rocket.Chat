@@ -359,7 +359,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			delete this.bodyParams.data.language;
 			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
 		} else {
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }});
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
@@ -369,10 +369,12 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 });
 
 /**
-	This API returns the logged user roles.
+ DEPRECATED
+ // TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
+ This API returns the logged user roles.
 
-	Method: GET
-	Route: api/v1/user.roles
+ Method: GET
+ Route: api/v1/user.roles
  */
 RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 	get() {
@@ -384,6 +386,10 @@ RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 			currentUserRoles = result[0];
 		}
 
-		return RocketChat.API.v1.success(currentUserRoles);
+		return RocketChat.API.v1.success(this.deprecationWarning({
+			endpoint: 'user.roles',
+			versionWillBeRemove: 'v0.66',
+			response: currentUserRoles
+		}));
 	}
 });
