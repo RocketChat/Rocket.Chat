@@ -28,7 +28,7 @@ Meteor.publish('userData', function() {
 			'services.password.bcrypt': 1,
 			'services.totp.enabled': 1,
 			statusLivechat: 1,
-			banners: 1
+			curRoom: 1
 		}
 	});
 });

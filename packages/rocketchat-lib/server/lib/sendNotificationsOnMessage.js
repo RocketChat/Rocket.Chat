@@ -269,6 +269,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		push_room = `#${ room.name }`;
 	}
 
+	console.log (room._id);
+	console.log (message);
 	if (room.t == null || room.t === 'd') {
 		const userOfMentionId = message.rid.replace(message.u._id, '');
 		const userOfMention = RocketChat.models.Users.findOne({
@@ -276,7 +278,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}, {
 			fields: {
 				username: 1,
-				statusConnection: 1
+				statusConnection: 1,
+				curRoom: 1,
 			}
 		});
 
@@ -290,8 +293,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 				notifyDesktopUser(userOfMention._id, user, message, room, duration);
 			}
 
+
+			console.log (userOfMention);
 			if (canBeNotified(userOfMentionId, 'mobile')) {
-				if (Push.enabled === true && (userOfMention.statusConnection !== 'online' || alwaysNotifyMobileBoolean === true)) {
+				console.log ('sending mobile push 1');
+				if (Push.enabled === true && (userOfMention.statusConnection !== 'online' || userOfMention.curRoom !== room._id || alwaysNotifyMobileBoolean === true)) {
+					console.log ('sending mobile push 2');
 					RocketChat.PushNotification.send({
 						roomId: message.rid,
 						username: push_username,
@@ -355,7 +362,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			};
 
 			if (alwaysNotifyMobileBoolean !== true) {
-				usersOfMobileMentionsQuery.statusConnection = { $ne: 'online' };
+				//usersOfMobileMentionsQuery.statusConnection = { $ne: 'online' };
+				usersOfMobileMentionsQuery['$or'] = [{statusConnection: { $ne: 'online' }}, {curRoom: {$ne: room._id}}];
 			}
 
 			let usersOfMobileMentions = RocketChat.models.Users.find(usersOfMobileMentionsQuery, {
