@@ -1,3 +1,25 @@
+<a name="0.63.0-rc.1"></a>
+# 0.63.0-rc.1 (2018-03-30)
+
+
+### Bug Fixes
+
+- [#10240](https://github.com/RocketChat/Rocket.Chat/pull/10240) /me REST endpoint was missing user roles and preferences
+- [#10272](https://github.com/RocketChat/Rocket.Chat/pull/10272) File had redirect delay when using external storage services and no option to proxy only avatars
+- [#10262](https://github.com/RocketChat/Rocket.Chat/pull/10262) Missing pt-BR translations
+
+
+<details>
+<summary>Others</summary>
+
+- [#10015](https://github.com/RocketChat/Rocket.Chat/pull/10015) Fix snap install. Remove execstack from sharp, and bypass grpc error
+- [#10252](https://github.com/RocketChat/Rocket.Chat/pull/10252) Fix: possible errors on rocket.chat side of the apps
+- [#10257](https://github.com/RocketChat/Rocket.Chat/pull/10257) Fix: Renaming channels.notifications Get/Post endpoints
+- [#10260](https://github.com/RocketChat/Rocket.Chat/pull/10260) Fix: snaps caddy download link to pull from github
+</details>
+
+
+
 <a name="0.63.0-rc.0"></a>
 # 0.63.0-rc.0 (2018-03-28)
 
