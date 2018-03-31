@@ -1,0 +1,56 @@
+<template name="apps">
+	<!-- TODO: fix this class -->
+	<section class="preferences-page preferences-page--apps">
+		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
+		{{/header}}
+		<div class="rc-directory-content">
+			{{#requiresPermission 'manage-apps'}}
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td">Version</td>
+							<td class="rc-table-td">Status</td>
+							<td class="rc-table-td"></td>
+						</tr>
+					</thead>
+					<tbody class="rc-table-body">
+						{{#each apps}}
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">
+												{{name}}
+											</span>
+											{{#if description}}
+												<span class="rc-directory-channel-description">{{description}}</span>
+											{{/if}}
+									</div>
+									</div>
+								</td>
+								<td class="rc-table-td rc-table-td--users">{{version}}</td>
+								<td class="rc-table-td">
+									{{status}}
+								</td>
+								<td class="rc-table-td">
+									<button class="rc-button rc-button--nude rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
+										{{> icon icon="cog"}}
+									</button>
+								</td>
+							</tr>
+						{{else}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td rc-table-td--name">
+								you dont have any app installed :/
+							</td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			{{/requiresPermission}}
+		</div>
+	</section>
+</template>

@@ -18,13 +18,17 @@
 			{{> userEdit (userToEdit)}}
 		{{else}}
 			{{#with user}}
-				<main class="contextual-bar__container rc-user-info-wrapper">
+				<main class="contextual-bar__content rc-user-info-wrapper">
 					<div class="rc-user-info">
 						<div class="rc-user-info__avatar">
 							{{> avatar username=username}}
 						</div>
 						<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
 						{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
+						<span class="rc-header__status">
+							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
+							<div class="rc-header__visual-status">{{userStatus}}</div>
+						</span>
 					</div>
 
 					<div class="rc-user-info-action">
@@ -65,7 +69,7 @@
 									{{#each phone}} <a href="tel:{{phoneNumber}}" class="rc-user-info-details__info">{{phoneNumber}}</a> {{/each}}
 								</div>
 							{{/if}}
-							{{#if lastLogin}}
+							{{#if createdAt}}
 								<div class="rc-user-info-details__item">
 									<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
 									<p class="rc-user-info-details__info">{{createdAt}}</p>
@@ -75,13 +79,25 @@
 									<p class="rc-user-info-details__info">{{lastLogin}}</p>
 								</div>
 							{{/if}}
+							{{#if shouldDisplayReason}}
+								<div class="rc-user-info-details__item">
+									<label class="rc-user-info-details__label	">{{_ "Reason_To_Join"}}</label>
+									<p class="rc-user-info-details__info">{{user.reason}}</p>
+								</div>
+							{{/if}}
 						{{/if}}
 						{{#if utc}}
 							<div class="rc-user-info-details__item">
-								<label class="rc-user-info-details__label	">Timezone</label>
+								<label class="rc-user-info-details__label">Timezone</label>
 								<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
 							</div>
 						{{/if}}
+						{{#each customField}}
+							<div class="rc-user-info-details__item">
+								<label class="rc-user-info-details__label">{{label}}</label>
+								<p class="rc-user-info-details__info">{{value}}</p>
+							</div>
+						{{/each}}
 						<div class="rc-user-info-details__item">
 							{{#if services.facebook.id}} <p class="secondary-font-color"><i class="icon-facebook"></i><a href="{{services.facebook.link}}" target="_blank">{{services.facebook.name}}</a></p> {{/if}}
 							{{#if services.github.id}} <p class="secondary-font-color"><i class="icon-github-circled"></i><a href="https://www.github.com/{{services.github.username}}" target="_blank">{{services.github.username}}</a></p> {{/if}}
@@ -93,11 +109,11 @@
 							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 						</div>
 					</div>
+					{{#if ../showAll}}
+						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
+					{{/if}}
 				</main>
 			{{/with}}
 		{{/if}}
-	{{/if}}
-	{{#if showAll}}
-				<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 	{{/if}}
 </template>

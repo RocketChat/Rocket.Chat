@@ -85,7 +85,7 @@
 							{{_ "Just_invited_people_can_access_this_channel"}}
 						</div>
 					</div>
-				
+
 				</div>
 			</div>
 		{{/with}}
@@ -93,10 +93,10 @@
 		{{#with settings.ro}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
-						{{_ "Read_only"}}{{equal default value '*'}}
+					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+						{{_ "Colaborative"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
-							{{_ "Only_authorized_users_can_write_new_messages"}}
+							{{_ "All_users_in_the_channel_can_write_new_messages"}}
 						</div>
 					</div>
 					<div class="rc-switch rc-switch--blue">
@@ -107,10 +107,10 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
-						{{_ "Colaborative"}}
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Read_only"}}
 						<div class="rc-switch-double__description">
-							{{_ "All_users_in_the_channel_can_write_new_messages"}}
+							{{_ "Only_authorized_users_can_write_new_messages"}}
 						</div>
 					</div>
 				</div>

@@ -127,8 +127,8 @@ class ModelRooms extends RocketChat.models._Base {
 					return item._room;
 				}
 				console.log('Empty Room for Subscription', item);
-				return {};
 			});
+			data = data.filter(item => item);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -152,9 +152,8 @@ class ModelRooms extends RocketChat.models._Base {
 					return item._room;
 				}
 				console.log('Empty Room for Subscription', item);
-				return {};
 			});
-			data = data.filter(item => item._updatedAt > _updatedAt);
+			data = data.filter(item => item && item._updatedAt > _updatedAt);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -245,6 +244,16 @@ class ModelRooms extends RocketChat.models._Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findByNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			name
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameAndTypeNotDefault(name, type, options) {

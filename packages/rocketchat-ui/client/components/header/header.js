@@ -5,10 +5,13 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 Template.header.helpers({
+	back() {
+		return Template.instance().data.back;
+	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData) ;
+		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData);
 	},
 	buttons() {
 		return RocketChat.TabBar.getButtons();
@@ -32,7 +35,7 @@ Template.header.helpers({
 	},
 
 	isDirect() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd' ;
+		return RocketChat.models.Rooms.findOne(this._id).t === 'd';
 	},
 
 	roomName() {
@@ -66,8 +69,8 @@ Template.header.helpers({
 				return 'hashtag';
 			case 'l':
 				return 'livechat';
-			default :
-				return null;
+			default:
+				return RocketChat.roomTypes.getIcon(roomType);
 		}
 	},
 
@@ -80,11 +83,15 @@ Template.header.helpers({
 
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
 	},
 
 	showToggleFavorite() {
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+	},
+
+	fixedHeight() {
+		return Template.instance().data.fixedHeight;
 	},
 
 	isChannel() {
@@ -120,5 +127,5 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id) || undefined;
 });

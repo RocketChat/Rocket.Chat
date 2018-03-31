@@ -1,5 +1,5 @@
 <template name="header">
-	<header class="rc-header">
+	<header class="rc-header{{#if fixedHeight}} rc-header--height-fixed{{/if}}" >
 		<div class="rc-header__block rc-header--burger">
 			{{> burger}}
 		</div>
@@ -55,7 +55,9 @@
 		{{/if}}
 
 		{{#unless isChannel}}
-			<div class="rc-header__section-help"></div>
+			{{# unless hideHelp}}
+				<div class="rc-header__section-help"></div>
+			{{/unless}}
 		{{/unless}}
 
 		{{#with toolbarButtons}}

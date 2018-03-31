@@ -3,7 +3,7 @@ import s from 'underscore.string';
 Meteor.methods({
 	messageSearch(text, rid, limit) {
 		check(text, String);
-		check(rid, String);
+		check(rid, Match.Maybe(String));
 		check(limit, Match.Optional(Number));
 
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
@@ -21,12 +21,17 @@ Meteor.methods({
 		}
 
 		// Don't process anything else if the user can't access the room
-		if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
+		if (rid) {
+			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
+				return result;
+			}
+		} else if (RocketChat.settings.get('Message_GlobalSearch') !== true) {
 			return result;
 		}
 
-		const currentUserName = Meteor.user().username;
-		const currentUserTimezoneOffset = Meteor.user().utcOffset;
+		const user = Meteor.user();
+		const currentUserName = user.username;
+		const currentUserTimezoneOffset = user.utcOffset;
 
 		const query = {};
 		const options = {
@@ -204,13 +209,23 @@ Meteor.methods({
 			query._hidden = {
 				$ne: true // don't return _hidden messages
 			};
-			query.rid = rid;
+
+			if (rid) {
+				query.rid = rid;
+			} else {
+				query.rid = {
+					$in: RocketChat.models.Subscriptions.findByUserId(user._id)
+						.fetch()
+						.map(subscription => subscription.rid)
+				};
+			}
 
 			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 				options.fields = {
 					'editedAt': 0
 				};
 			}
+
 			result.messages = RocketChat.models.Messages.find(query, options).fetch();
 		}
 

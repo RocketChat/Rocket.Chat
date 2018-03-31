@@ -8,6 +8,7 @@ RocketChat.slashCommands.add('me', function Me(command, params, item) {
 	if (command !== 'me') {
 		return;
 	}
+
 	if (s.trim(params)) {
 		const msg = item;
 		msg.msg = `_${ params }_`;

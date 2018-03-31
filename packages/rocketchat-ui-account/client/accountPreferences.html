@@ -1,7 +1,7 @@
 <template name="accountPreferences">
 	<section class="page-container page-home page-static">
 		{{#header sectionName="Preferences" buttons=true}}
-		<div class="rc-header__section-button" style="max-width: 649px;">
+		<div class="rc-header__section-button">
 			<button class="rc-button rc-button--primary save"><span>{{_ "Save_changes"}}</span></button>
 		</div>
 		{{/header}}
@@ -30,8 +30,8 @@
 							<div class="input-line double-col" id="enableAutoAway">
 								<label>{{_ "Enable_Auto_Away"}}</label>
 								<div>
-									<label><input type="radio" name="enableAutoAway" value="1" checked="{{ checked 'enableAutoAway' true }}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="enableAutoAway" value="0" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="true" checked="{{ checked 'enableAutoAway' true }}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="enableAutoAway" value="false" checked="{{ checked 'enableAutoAway' false }}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 
@@ -101,76 +101,76 @@
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 								<div>
-									<label><input type="radio" name="unreadAlert" value="1" checked="{{checked 'unreadAlert' true}}"/> {{_ "On"}}</label>
-									<label><input type="radio" name="unreadAlert" value="0" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
+									<label><input type="radio" name="unreadAlert" value="true" checked="{{checked 'unreadAlert' true}}"/> {{_ "On"}}</label>
+									<label><input type="radio" name="unreadAlert" value="false" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>
-									<label><input type="radio" name="useEmojis" value="1" checked="{{checked 'useEmojis' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="useEmojis" value="0" checked="{{checked 'useEmojis' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="useEmojis" value="true" checked="{{checked 'useEmojis' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="useEmojis" value="false" checked="{{checked 'useEmojis' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="convertAsciiEmoji">
 								<label>{{_ "Convert_Ascii_Emojis"}}</label>
 								<div>
-									<label><input type="radio" name="convertAsciiEmoji" value="1" checked="{{checked 'convertAsciiEmoji' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="convertAsciiEmoji" value="0" checked="{{checked 'convertAsciiEmoji' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="convertAsciiEmoji" value="true" checked="{{checked 'convertAsciiEmoji' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="convertAsciiEmoji" value="false" checked="{{checked 'convertAsciiEmoji' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="autoImageLoad">
 								<label>{{_ "Auto_Load_Images"}}</label>
 								<div>
-									<label><input type="radio" name="autoImageLoad" value="1" checked="{{checked 'autoImageLoad' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="autoImageLoad" value="0" checked="{{checked 'autoImageLoad' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="autoImageLoad" value="true" checked="{{checked 'autoImageLoad' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="autoImageLoad" value="false" checked="{{checked 'autoImageLoad' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="saveMobileBandwidth">
 								<label>{{_ "Save_Mobile_Bandwidth"}}</label>
 								<div>
-									<label><input type="radio" name="saveMobileBandwidth" value="1" checked="{{checked 'saveMobileBandwidth' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="saveMobileBandwidth" value="0" checked="{{checked 'saveMobileBandwidth' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="saveMobileBandwidth" value="true" checked="{{checked 'saveMobileBandwidth' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="saveMobileBandwidth" value="false" checked="{{checked 'saveMobileBandwidth' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="collapseMediaByDefault">
 								<label>{{_ "Collapse_Embedded_Media_By_Default"}}</label>
 								<div>
-									<label><input type="radio" name="collapseMediaByDefault" value="1" checked="{{checked 'collapseMediaByDefault' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="collapseMediaByDefault" value="0" checked="{{checked 'collapseMediaByDefault' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="collapseMediaByDefault" value="true" checked="{{checked 'collapseMediaByDefault' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="collapseMediaByDefault" value="false" checked="{{checked 'collapseMediaByDefault' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="hideUsernames">
 								<label>{{_ "Hide_usernames"}}</label>
 								<div>
-									<label><input type="radio" name="hideUsernames" value="1" checked="{{checked 'hideUsernames' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="hideUsernames" value="0" checked="{{checked 'hideUsernames' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="hideUsernames" value="true" checked="{{checked 'hideUsernames' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideUsernames" value="false" checked="{{checked 'hideUsernames' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							{{#if showRoles}}
 								<div class="input-line double-col" id="hideRoles">
 									<label>{{_ "Hide_roles"}}</label>
 									<div>
-										<label><input type="radio" name="hideRoles" value="1" checked="{{checked 'hideRoles' true}}" /> {{_ "True"}}</label>
-										<label><input type="radio" name="hideRoles" value="0" checked="{{checked 'hideRoles' false}}" /> {{_ "False"}}</label>
+										<label><input type="radio" name="hideRoles" value="true" checked="{{checked 'hideRoles' true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="hideRoles" value="false" checked="{{checked 'hideRoles' false}}" /> {{_ "False"}}</label>
 									</div>
 								</div>
 							{{/if}}
 							<div class="input-line double-col" id="hideFlexTab">
 								<label>{{_ "Hide_flextab"}}</label>
 								<div>
-									<label><input type="radio" name="hideFlexTab" value="1" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
-									<label><input type="radio" name="hideFlexTab" value="0" checked="{{checked 'hideFlexTab' false}}" /> {{_ "False"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="true" checked="{{checked 'hideFlexTab' true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="hideFlexTab" value="false" checked="{{checked 'hideFlexTab' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col" id="hideAvatars">
 								<label>{{_ "Hide_Avatars"}}</label>
 								<div>
-									<label><input type="radio" name="hideAvatars" value="1" checked="{{checked 'hideAvatars' true}}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="hideAvatars" value="0" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="hideAvatars" value="true" checked="{{checked 'hideAvatars' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
-							<div class="input-line double-col">
+							<!-- <div class="input-line double-col">
 								<label for="roomsListExhibitionMode">{{_ "Sidebar_list_mode"}}</label>
 								<div>
 									<select class="input-monitor rc-input__element" name="roomsListExhibitionMode" id="roomsListExhibitionMode">
@@ -179,8 +179,8 @@
 										<option value="category" selected="{{selected 'roomsListExhibitionMode' 'category'}}">{{_ "Split_by_categories"}}</option>
 									</select>
 								</div>
-							</div>
-							{{# with disabled=showMergedChannels}}
+							</div> -->
+							<!-- {{# with disabled=showMergedChannels}}
 							<div class="input-line double-col" id="mergeChannels" {{disabled}}>
 								<label>{{_ "UI_Merge_Channels_Groups"}}</label>
 								<div>
@@ -189,7 +189,7 @@
 									<label><input type="radio" name="mergeChannels" value="-1" checked="{{checked 'mergeChannels' 'default' 'default'}}" {{disabled}}/> {{_ "Default"}}</label>
 								</div>
 							</div>
-							{{/with}}
+							{{/with}} -->
 
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
@@ -200,17 +200,6 @@
 										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
 									</select>
 									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
-								</div>
-							</div>
-							<div class="input-line double-col" id="viewMode">
-								<label>{{_ "View_mode"}}</label>
-								<div>
-									<select class="input-monitor rc-input__element" name="viewMode">
-										<option value="0" selected="{{selected 'viewMode' '0'}}">{{_ "Normal"}}</option>
-										<option value="1" selected="{{selected 'viewMode' '1'}}">{{_ "Cozy"}}</option>
-										<option value="2" selected="{{selected 'viewMode' '2'}}">{{_ "Compact"}}</option>
-									</select>
-									<div class="info">{{_ "View_mode_info"}}</div>
 								</div>
 							</div>
 							<div class="input-line double-col" id="emailNotificationMode">
@@ -231,8 +220,8 @@
 							<div class="input-line double-col" id="roomCounterSidebar">
 								<label>{{_ "Show_room_counter_on_sidebar"}}</label>
 								<div>
-									<label><input type="radio" name="roomCounterSidebar" value="1" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
-									<label><input type="radio" name="roomCounterSidebar" value="0" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="true" checked="{{checked 'roomCounterSidebar' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="roomCounterSidebar" value="false" checked="{{checked 'roomCounterSidebar' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 						</div>
@@ -274,6 +263,13 @@
 											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+								</div>
+							</div>
+							<div class="input-line double-col" id="muteFocusedConversations">
+								<label>{{_ "Mute_Focused_Conversations"}}</label>
+								<div>
+									<label><input type="radio" name="muteFocusedConversations" value="true" checked="{{checked 'muteFocusedConversations' true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="muteFocusedConversations" value="false" checked="{{checked 'muteFocusedConversations' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
 							<div class="input-line double-col">
