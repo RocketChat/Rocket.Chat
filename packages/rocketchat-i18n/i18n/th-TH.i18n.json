@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "จับ regex โทรศัพท์ที่เป็นผู้นำ",
   "Least_Amount": "จำนวนเงินน้อยที่สุด",
   "leave-c": "ออกจากช่อง",
+  "leave-channel" : "ออกจากช่อง",
   "leave-p": "ออกจากกลุ่มส่วนตัว",
   "Leave_Group_Warning": "คุณแน่ใจหรือไม่ว่าต้องการออกจากกลุ่ม \"% s\"?",
   "Leave_Livechat_Warning": "คุณแน่ใจหรือไม่ว่าต้องการออกจาก livechat ด้วย \"% s\"?",

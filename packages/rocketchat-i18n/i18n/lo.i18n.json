@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "ນໍາການຈັບພາບໂທລະສັບ regex",
   "Least_Amount": "Least Amount",
   "leave-c": "ອອກຈາກຊ່ອງ",
+  "leave-channel" : "ອອກຈາກຊ່ອງ",
   "leave-p": "ອອກຈາກກຸ່ມເອກະຊົນ",
   "Leave_Group_Warning": "ທ່ານແນ່ໃຈວ່າທ່ານຕ້ອງການທີ່ຈະອອກຈາກກຸ່ມ \" %s\"?",
   "Leave_Livechat_Warning": "ທ່ານແນ່ໃຈແນ່ແທ້ວ່າທ່ານຕ້ອງການທີ່ຈະປ່ອຍ livechat ດ້ວຍ \"% s\"?",

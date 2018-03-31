@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Lead Capture Telefon Regex",
   "Least_Amount": "Geringste Anzahl",
   "leave-c": "Kanäle verlassen",
+  "leave-channel" : "Kanal verlassen",
   "leave-p": "Verlassen Sie private Gruppen",
   "Leave_Group_Warning": "Sind sie sicher, die Chatgruppe \"%s\" verlassen zu wollen?",
   "Leave_Livechat_Warning": "Möchtest du den Livechat wirklich mit \"% s\" verlassen?",

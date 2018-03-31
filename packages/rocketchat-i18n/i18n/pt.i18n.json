@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Regex de telefone de captura de chumbo",
   "Least_Amount": "Menor Valor",
   "leave-c": "Deixar canais",
+  "leave-channel" : "Sair do canal",
   "leave-p": "Deixar grupos privados",
   "Leave_Group_Warning": "Tem certeza de que quer sair do grupo \"%s\"?",
   "Leave_Livechat_Warning": "Tem certeza de que deseja deixar o Livechat com \"% s\"?",

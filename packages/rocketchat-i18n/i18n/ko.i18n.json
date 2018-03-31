@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "리드 캡처 휴대 전화 regex",
   "Least_Amount": "최소 금액",
   "leave-c": "채널 탈퇴",
+  "leave-channel" : "채널 나가기",
   "leave-p": "비공개 그룹에서 나가기",
   "Leave_Group_Warning": "당신은 당신이 그룹 \" %s을 (를)\"에서 탈퇴 하시겠습니까?",
   "Leave_Livechat_Warning": "livechat을 \"% s\"(으)로 남기시겠습니까?",

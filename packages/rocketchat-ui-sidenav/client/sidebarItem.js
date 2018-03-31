@@ -141,7 +141,7 @@ Template.sidebarItem.events({
 		if (canLeave()) {
 			items.push({
 				icon: 'sign-out',
-				name: t('Leave_room'),
+				name: t('leave-channel'),
 				type: 'sidebar-item',
 				id: 'leave',
 				modifier: 'error'
