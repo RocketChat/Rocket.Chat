@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "سرب گرفتن مجدد خط تلفن",
   "Least_Amount": "کمترین مقدار",
   "leave-c": "ترک کانال ها",
+  "leave-channel" : "ترک کانال",
   "leave-p": "گروه های خصوصی را ترک کنید",
   "Leave_Group_Warning": "آیا واقعا می خواهید گروه \"%s\" را ترک کنید؟",
   "Leave_Livechat_Warning": "آیا مطمئن هستید که میخواهید livechat را با «٪ s» ترک کنید؟",

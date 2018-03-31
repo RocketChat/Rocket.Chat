@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Plumbo kapti telefonan regex",
   "Least_Amount": "Plej malgranda Kvanto",
   "leave-c": "Lasi Kanalojn",
+  "leave-channel" : "Lasi kanalon",
   "leave-p": "Lasi privatajn grupojn",
   "Leave_Group_Warning": "Ĉu vi certas, ke vi volas forlasi la grupon \"% s\"?",
   "Leave_Livechat_Warning": "Ĉu vi certas, ke vi volas lasi la vivkaptanton kun \"% s\"?",

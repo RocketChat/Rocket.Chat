@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "リードキャプチャ電話の正規表現",
   "Least_Amount": "最低額",
   "leave-c": "チャンネルを離れる",
+  "leave-channel" : "チャネルを離れる",
   "leave-p": "プライベートグループを離れる",
   "Leave_Group_Warning": "本当にグループ \"%s\" から退出しますか?",
   "Leave_Livechat_Warning": "あなたは \"％s\"でライブチャットを残してもよろしいですか？",

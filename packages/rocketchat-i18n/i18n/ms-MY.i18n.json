@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Regex telefon menangkap utama",
   "Least_Amount": "Kurang jumlah",
   "leave-c": "Tinggalkan Saluran",
+  "leave-channel" : "Tinggalkan saluran",
   "leave-p": "Tinggalkan Kumpulan Swasta",
   "Leave_Group_Warning": "Adakah anda pasti anda mahu meninggalkan kumpulan \" %s\"?",
   "Leave_Livechat_Warning": "Adakah anda pasti mahu meninggalkan livechat dengan \"% s\"?",

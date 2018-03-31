@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Lead capture phone regex",
   "Least_Amount": "Mindste beløb",
   "leave-c": "Forlad kanaler",
+  "leave-channel" : "Forlad kanal",
   "leave-p": "Forlad private grupper",
   "Leave_Group_Warning": "Er du sikker på, at du vil forlade gruppen \"% s\"?",
   "Leave_Livechat_Warning": "Er du sikker på at du vil forlade livechat med \"% s\"?",

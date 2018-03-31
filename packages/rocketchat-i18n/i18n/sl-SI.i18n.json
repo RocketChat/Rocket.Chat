@@ -1132,6 +1132,7 @@
   "Lead_capture_phone_regex": "Regularni izraz za prepoznavanje telefonskih številk",
   "Least_Amount": "Najmanjša količina",
   "leave-c": "Zapusti kanale",
+  "leave-channel" : "Pusti kanal",
   "leave-p": "Pustite zasebne skupine",
   "Leave_Group_Warning": "Ali ste prepričani, da želite zapustiti skupino \"%s\"?",
   "Leave_Livechat_Warning": "Ali ste prepričani, da želite zapustiti klepet v živo z osebo \"%s\"?",

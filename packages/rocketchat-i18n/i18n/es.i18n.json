@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Regex de teléfono de captura de plomo",
   "Least_Amount": "Menor Cantidad",
   "leave-c": "Dejar canales",
+  "leave-channel" : "Dejar canal",
   "leave-p": "Deje grupos privados",
   "Leave_Group_Warning": "¿Seguro que quieres dejar el grupo \"%s\"?",
   "Leave_Livechat_Warning": "¿Seguro que quieres salir del chat en vivo con \"% s\"?",

@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Olovo za hvatanje regex telefona",
   "Least_Amount": "Najmanja količina",
   "leave-c": "Ostavite kanale",
+  "leave-channel" : "Ostavite kanal",
   "leave-p": "Napusti privatne grupe",
   "Leave_Group_Warning": "Jeste li sigurni da želite napustiti grupu \"%s\"?",
   "Leave_Livechat_Warning": "Jeste li sigurni da želite napustiti livechat s \"% s\"?",

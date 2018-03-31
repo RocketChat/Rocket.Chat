@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Kurşun yakalama telefonu regex",
   "Least_Amount": "En az miktar",
   "leave-c": "Kanallardan Çık",
+  "leave-channel" : "Kanaldan çık",
   "leave-p": "Özel Grupları Bırak",
   "Leave_Group_Warning": "Eğer grup \" %s\" ayrılmak istediğinize emin misiniz?",
   "Leave_Livechat_Warning": "Livechat'ı \"% s\" ile terk etmek istediğinize emin misiniz?",

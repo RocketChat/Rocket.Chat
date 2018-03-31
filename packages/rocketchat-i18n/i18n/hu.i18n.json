@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Lead capture phone regex",
   "Least_Amount": "Legkevesebb mennyiség",
   "leave-c": "Hagyja a csatornákat",
+  "leave-channel" : "Hagyja a csatornát",
   "leave-p": "Hagyjon privát csoportokat",
   "Leave_Group_Warning": "Biztos benne, hogy szeretné elhagyni a csoportot \" %s\"?",
   "Leave_Livechat_Warning": "Biztosan el szeretné hagyni a \"% s\" élőcsatornát?",

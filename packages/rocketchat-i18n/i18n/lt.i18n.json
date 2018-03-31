@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "\"Lead\" užfiksuok telefoną regex",
   "Least_Amount": "Mažiausia suma",
   "leave-c": "Palikti kanalus",
+  "leave-channel" : "Palikite kanalą",
   "leave-p": "Palikti privačias grupes",
   "Leave_Group_Warning": "Ar tikrai norite išeiti iš grupės \"% s\"?",
   "Leave_Livechat_Warning": "Ar tikrai norite palikti livechat su \"% s\"?",
