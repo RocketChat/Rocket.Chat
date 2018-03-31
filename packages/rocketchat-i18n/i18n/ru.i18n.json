@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Повторное использование",
   "Least_Amount": "Наименьшее количество",
   "leave-c": "Оставить каналы",
+  "leave-channel" : "Оставить канал",
   "leave-p": "Оставить личные группы",
   "Leave_Group_Warning": "Вы уверены, что хотите покинуть группу \"%s\"?",
   "Leave_Livechat_Warning": "Вы уверены, что хотите покинуть Livechat с \"%s\"?",

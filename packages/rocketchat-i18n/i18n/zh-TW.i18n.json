@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "領導捕獲手機正則表達式",
   "Least_Amount": "最少量",
   "leave-c": "保留頻道",
+  "leave-channel" : "离开渠道",
   "leave-p": "離開私人團體",
   "Leave_Group_Warning": "你確定你要離開組“%s”嗎？",
   "Leave_Livechat_Warning": "你確定要離開“％s”的即時聊天嗎？",

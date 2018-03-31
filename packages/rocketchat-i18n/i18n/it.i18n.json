@@ -1130,6 +1130,7 @@
   "Lead_capture_phone_regex": "Piombo regex del telefono di acquisizione",
   "Least_Amount": "Importo Minimo",
   "leave-c": "Lascia i canali",
+  "leave-channel" : "Lascia il canale",
   "leave-p": "Lascia i gruppi privati",
   "Leave_Group_Warning": "Sei sicuro di voler lasciare il gruppo \"%s\"?",
   "Leave_Livechat_Warning": "Sei sicuro di voler lasciare il live con \"% s\"?",

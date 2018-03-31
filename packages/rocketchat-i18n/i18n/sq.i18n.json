@@ -1139,6 +1139,7 @@
   "Lead_capture_phone_regex": "Regjimi i kapjes së telefonit të plumbit",
   "Least_Amount": "Shuma më e vogël",
   "leave-c": "Lërini kanalet",
+  "leave-channel" : "Lëreni kanalin",
   "leave-p": "Lini Grupet Private",
   "Leave_Group_Warning": "Jeni te sigurte qe doni te largohet nga grupi \" %s\"?",
   "Leave_Livechat_Warning": "Je i sigurt që dëshiron të largosh livechat me \"% s\"?",
