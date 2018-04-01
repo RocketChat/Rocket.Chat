@@ -60,7 +60,9 @@
 					{{/if}}
 				</div>
 			{{/unless}}
-
+			{{#if pdfFile}}
+			  <canvas id="{{title_link}}"></canvas>
+			{{/if}}
 			{{#if image_url}}
 				{{#unless collapsed}}
 					<div class="attachment-image">

@@ -74,5 +74,30 @@ Template.messageAttachment.helpers({
 
 	isFile() {
 		return this.type === 'file';
+	},
+
+	pdfFile() {
+		return this.type === 'file' && this.title_link.endsWith('.pdf');
+	}
+});
+
+/*globals PDFJS*/
+Template.messageAttachment.onCreated(function() {
+	if (this.type === 'file' && this.title_link.endsWith('.pdf')) {
+		PDFJS.workerSrc = '/packages/pascoual_pdfjs/build/pdf.worker.js';
+		PDFJS.getDocument(this.data.title_link).then((pdf) => {
+			pdf.getPage(1).then((page) => {
+				const scale = 0.75;
+				const viewport = page.getViewport(scale);
+				const canvas = document.getElementById(this.data.title_link);
+				const context = canvas.getContext('2d');
+				canvas.height = viewport.height;
+				canvas.width = viewport.width;
+				page.render({
+					canvasContext: context,
+					viewport
+				});
+			});
+		});
 	}
 });

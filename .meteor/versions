@@ -108,6 +108,7 @@ oauth2@1.2.0
 observe-sequence@1.0.16
 ordered-dict@1.1.0
 ostrio:cookies@2.2.4
+pascoual:pdfjs@1.1.114
 pauli:accounts-linkedin@2.1.5
 pauli:linkedin-oauth@1.2.0
 percolate:synced-cron@1.3.2
