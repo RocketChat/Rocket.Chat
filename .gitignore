@@ -73,3 +73,5 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+packages/rocketchat-katex/package-lock.json
+packages/rocketchat-livechat/.app/package-lock.json
