@@ -29,6 +29,30 @@ RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
+	get() {
+		const mountOAuthServices = () => {
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}).fetch();
+
+			return oAuthServicesEnabled.map((service) => {
+				return {
+					id: service._id,
+					name: service.service,
+					appId: service.appId || service.clientId,
+					buttonLabelText: service.buttonLabelText || '',
+					buttonColor: service.buttonColor || '',
+					buttonLabelColor: service.buttonLabelColor || '',
+					custom: Boolean(service.custom)
+				};
+			});
+		};
+
+		return RocketChat.API.v1.success({
+			services: mountOAuthServices()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
