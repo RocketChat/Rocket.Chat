@@ -108,6 +108,14 @@ export class AppMessagesConverter {
 				video_url: attachment.videoUrl,
 				fields: attachment.fields
 			};
+		}).map((a) => {
+			Object.keys(a).forEach((k) => {
+				if (typeof a[k] === 'undefined') {
+					delete a[k];
+				}
+			});
+
+			return a;
 		});
 	}
 

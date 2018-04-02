@@ -50,7 +50,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 
 		let result;
 		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message);
-		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', message);
+		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result);
 
 		if (typeof result === 'object') {
 			message = result;
