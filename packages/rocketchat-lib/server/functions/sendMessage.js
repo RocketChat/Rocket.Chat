@@ -41,6 +41,22 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		message.unread = true;
 	}
 
+	// For the Rocket.Chat Apps :)
+	if (message && Apps && Apps.isLoaded()) {
+		const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
+		if (prevent) {
+			return false;
+		}
+
+		let result;
+		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message);
+		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', message);
+
+		if (typeof result === 'object') {
+			message = result;
+		}
+	}
+
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
@@ -48,16 +64,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		if (message.sandstormSessionId) {
 			sandstormSessionId = message.sandstormSessionId;
 			delete message.sandstormSessionId;
-		}
-
-		// For the Rocket.Chat Apps :)
-		if (Apps && Apps.isLoaded()) {
-			const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
-			if (prevent) {
-				return false;
-			}
-
-			// TODO: The rest of the IPreMessageSent events
 		}
 
 		if (message._id && upsert) {
