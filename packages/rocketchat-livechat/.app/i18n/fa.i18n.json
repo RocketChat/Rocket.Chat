@@ -24,6 +24,8 @@
   "Powered_by": "طراحی شده توسط",
   "Request_video_chat": "درخواست چت ویدیویی",
   "Select_a_department": "انتخاب بخش",
+  "Switch_department": "سوئیچ بخش",
+  "Department_switched": "گروه عوض شد",
   "Send": "ارسال",
   "Skip": "پرش",
   "Start_Chat": "شروع چت",
@@ -31,11 +33,14 @@
   "Survey_instructions": "به هر سوال بر اساس رضایتتان نمره دهید. ۱ به معنای عدم رضایت کامل و ۵ به معنای رضایت کامل است.",
   "Thank_you_for_your_feedback": "تشکر به خاطر انعکاس نظرات",
   "Thanks_We_ll_get_back_to_you_soon": "تشکر! به زودی باز خواهیم گشت.",
+  "transcript_sent": "رونوشت فرستاده شد",
   "Type_your_email": "ایمیل خود را بنویسید",
   "Type_your_message": "پیام خود را بنویسید",
   "Type_your_name": "نامتان را بنویسید",
   "User_joined": "تاریخ عضویت کاربر",
   "User_left": "تاریخ ترک کاربر",
   "We_are_offline_Sorry_for_the_inconvenience": "متأسفانه در حال حاضر آفلاین هستیم.",
+  "Yes": "بله",
+  "You": "شما",
   "You_must_complete_all_fields": "باید همه موارد را کامل کنید"
 }
