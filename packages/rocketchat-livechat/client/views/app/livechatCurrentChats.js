@@ -21,6 +21,9 @@ Template.livechatCurrentChats.helpers({
 	},
 	agents() {
 		return AgentUsers.find({}, { sort: { name: 1 } });
+	},
+	isClosed() {
+		return !this.open;
 	}
 });
 
@@ -55,6 +58,34 @@ Template.livechatCurrentChats.events({
 
 		instance.filter.set(filter);
 		instance.limit.set(20);
+	},
+	'click .remove-livechat-room'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		modal.open({
+			title: t('Are_you_sure'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, () => {
+			Meteor.call('livechat:removeRoom', this._id, function(error/*, result*/) {
+				if (error) {
+					return handleError(error);
+				}
+				modal.open({
+					title: t('Deleted'),
+					text: t('Room_has_been_deleted'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+			});
+		});
 	}
 });
 
