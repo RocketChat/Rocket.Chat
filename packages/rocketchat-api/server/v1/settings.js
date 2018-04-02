@@ -42,7 +42,7 @@ RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
-					custom: Boolean(service.custom)
+					custom: String(service.custom).toLowerCase() === 'true'
 				};
 			});
 		};
