@@ -41,7 +41,9 @@
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
 					{{else}}
-						{{> messageBox__audioMessage}}
+						{{#if isAudioMessageAllowed}}
+							{{> messageBox__audioMessage}}
+						{{/if}}
 						{{> messageBox__actions}}
 					{{/unless}}
 					{{# messageBox__actionsSmall}}

@@ -277,7 +277,12 @@ Template.messageBox.helpers({
 		return Template.instance().dataReply.get();
 	},
 	isAudioMessageAllowed() {
-		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
+		return (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+			RocketChat.settings.get('FileUpload_Enabled') &&
+			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
+			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
+			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	}
 });
 
