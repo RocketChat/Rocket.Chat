@@ -269,11 +269,15 @@
 			order: 3;
 		}
 
+		&__audio-message {
+			order: 4;
+		}
+
 		&__send {
 			flex: 0;
 
 			font-size: 20px;
-			order: 4;
+			order: 5;
 		}
 	}
 }
