@@ -7,7 +7,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 			asUser: Match.Maybe(Boolean)
 		}));
 
-		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 }});
+		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 } });
 
 		if (!msg) {
 			return RocketChat.API.v1.failure(`No message found with the id of "${ this.bodyParams.msgId }".`);
@@ -247,7 +247,6 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 		//Permission checks are already done in the updateMessage method, so no need to duplicate them
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
-
 		});
 
 		return RocketChat.API.v1.success({
@@ -273,5 +272,27 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id));
 
 		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }, {
+	get() {
+		const { messageId } = this.queryParams;
+		if (!messageId) {
+			return RocketChat.API.v1.failure({
+				error: 'The required \'messageId\' param is missing.'
+			});
+		}
+
+		try {
+			const messageReadReceipts = Meteor.runAsUser(this.userId, () => Meteor.call('getReadReceipts', { messageId }));
+			return RocketChat.API.v1.success({
+				receipts: messageReadReceipts
+			});
+		} catch (error) {
+			return RocketChat.API.v1.failure({
+				error: error.message
+			});
+		}
 	}
 });
