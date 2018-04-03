@@ -265,7 +265,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	let push_room = '';
 	if (RocketChat.settings.get('Push_show_username_room')) {
 		push_username = user.username;
-		push_room = `#${ room.name }`;
+		push_room = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
 	}
 
 	if (room.t == null || room.t === 'd') {
