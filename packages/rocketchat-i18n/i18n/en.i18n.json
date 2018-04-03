@@ -552,6 +552,8 @@
   "Disable_Notifications": "Disable Notifications",
   "Disable_two-factor_authentication": "Disable two-factor authentication",
   "Disabled": "Disabled",
+  "Disallow_reacting": "Disallow Reacting",
+  "Disallow_reacting_Description": "Disallows reacting",
   "Display_unread_counter": "Display number of unread messages",
   "Display_offline_form": "Display Offline Form",
   "Displays_action_text": "Displays action text",
