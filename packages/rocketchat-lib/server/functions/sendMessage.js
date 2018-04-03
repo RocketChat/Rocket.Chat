@@ -4,17 +4,21 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
-	if (message.ts == null) {
-		message.ts = new Date();
-	}
-	message.u = _.pick(user, ['_id', 'username', 'name']);
+
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
 	}
+
+	if (message.ts == null) {
+		message.ts = new Date();
+	}
+
 	message.rid = room._id;
+	message.u = _.pick(user, ['_id', 'username', 'name']);
+
 	if (!room.usernames || room.usernames.length === 0) {
 		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
-		if (updated_room != null) {
+		if (updated_room) {
 			room = updated_room;
 		} else {
 			room.usernames = [];
@@ -45,6 +49,17 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			sandstormSessionId = message.sandstormSessionId;
 			delete message.sandstormSessionId;
 		}
+
+		// For the Rocket.Chat Apps :)
+		if (Apps && Apps.isLoaded()) {
+			const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
+			if (prevent) {
+				return false;
+			}
+
+			// TODO: The rest of the IPreMessageSent events
+		}
+
 		if (message._id && upsert) {
 			const _id = message._id;
 			delete message._id;
@@ -55,6 +70,10 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			message._id = _id;
 		} else {
 			message._id = RocketChat.models.Messages.insert(message);
+		}
+
+		if (Apps && Apps.isLoaded()) {
+			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
 		/*

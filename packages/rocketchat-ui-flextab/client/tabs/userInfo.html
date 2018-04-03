@@ -18,13 +18,17 @@
 			{{> userEdit (userToEdit)}}
 		{{else}}
 			{{#with user}}
-				<main class="contextual-bar__container rc-user-info-wrapper">
+				<main class="contextual-bar__content rc-user-info-wrapper">
 					<div class="rc-user-info">
 						<div class="rc-user-info__avatar">
 							{{> avatar username=username}}
 						</div>
 						<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
 						{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
+						<span class="rc-header__status">
+							<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
+							<div class="rc-header__visual-status">{{userStatus}}</div>
+						</span>
 					</div>
 
 					<div class="rc-user-info-action">
@@ -105,11 +109,11 @@
 							{{#if services.wordpress.id}} <p class="secondary-font-color"><i class="icon-wordpress"></i>{{services.wordpress.user_login}}</p> {{/if}}
 						</div>
 					</div>
+					{{#if ../showAll}}
+						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
+					{{/if}}
 				</main>
 			{{/with}}
 		{{/if}}
-	{{/if}}
-	{{#if showAll}}
-				<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 	{{/if}}
 </template>

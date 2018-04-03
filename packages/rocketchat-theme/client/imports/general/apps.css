@@ -1,0 +1,91 @@
+.rc-apps {
+	&-settings {
+		padding: 25px;
+		flex-direction: column;
+
+		&__item {
+			padding: 10px 0;
+			    width: 100%;
+		}
+	}
+
+	&-container {
+		max-width: 705px;
+		margin: auto;
+    width: 100%;
+		display: flex;
+		padding-bottom: 25px;
+	}
+
+	&-details {
+		display: flex;
+		padding: 25px;
+		border-bottom: 1px solid #E1E1E1;
+
+		&__photo {
+			width: 141px;
+			height: 141px;
+			flex: 0 0 auto;
+			background-size: contain;
+	    background-repeat: no-repeat;
+	    background-position: center center;
+			border: 1px solid #f7f7f7;
+		}
+
+		&__content {
+			flex: 1 1 auto;
+	    justify-content: space-between;
+	    padding: 0 28px;
+	    display: flex;
+	    flex-direction: column;
+	    overflow: hidden;
+		}
+
+		&__row {
+			display: flex;
+			align-items: flex-end;
+		}
+
+		&__row + &__row {
+			padding-top: 15px
+		}
+
+		&__name {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		&__version {
+			font-size: 17px;
+			padding: 0 14px;
+		}
+
+		&__item {
+			white-space: nowrap;
+	    flex: 1 1 1px;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+		}
+
+	}
+}
+
+@media (width <= 500px) {
+	.rc-apps {
+		&-container {
+			flex-direction: column;
+			align-items: center;
+		}
+		&-details {
+
+			&__item {
+				text-align: center;
+			}
+
+			&__row {
+		    justify-content: center;
+			}
+		}
+
+	}
+}
