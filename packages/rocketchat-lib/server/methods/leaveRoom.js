@@ -26,6 +26,10 @@ Meteor.methods({
 			if (numOwners === 1) {
 				if (room.usernames.length > 1) {
 					throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
+				}else{
+					Meteor.runAsUser(this.userId, () => {
+						Meteor.call('eraseRoom', rid);
+					});
 				}
 			}
 		}
