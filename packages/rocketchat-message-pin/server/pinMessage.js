@@ -42,16 +42,30 @@ Meteor.methods({
 		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
 		RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 
-		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
-			attachments: [
-				{
-					'text': originalMessage.msg,
-					'author_name': originalMessage.u.username,
-					'author_icon': getAvatarUrlFromUsername(originalMessage.u.username),
-					'ts': originalMessage.ts
+		const attachments = [{
+			'text': originalMessage.msg,
+			'author_name': originalMessage.u.username,
+			'author_icon': getAvatarUrlFromUsername(originalMessage.u.username),
+			'ts': originalMessage.ts
+		}];
+
+		const recursiveRemove = (msg, deep = 1) => {
+			if (msg) {
+				if ('attachments' in msg && msg.attachments !== null && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
+					msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1));
+				} else {
+					delete(msg.attachments);
 				}
-			]
-		});
+			}
+			return msg;
+		};
+
+		if (Array.isArray(originalMessage.attachments)) {
+			attachments.push(...originalMessage.attachments);
+			attachments[attachments.length - 1] = recursiveRemove(attachments[attachments.length - 1]);
+		}
+
+		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {attachments});
 	},
 	unpinMessage(message) {
 		if (!Meteor.userId()) {
