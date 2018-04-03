@@ -193,6 +193,36 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
+		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: 'bee',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					reaction: 'ant',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/chat.getMessageReadReceipts]', () => {
