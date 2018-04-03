@@ -109,9 +109,24 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// Update all the room activity tracker fields
 	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
 
-	// Update all other subscriptions to alert their owners but witout incrementing
+	// Update all other subscriptions to alert their owners but without incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
+
+	const subscriptions = RocketChat.models.Subscriptions.findByRoomIdAndNotUserId(message.rid, message.u._id).fetch();
+
+	let user = {};
+	let openRoom;
+
+	subscriptions.forEach(subscription => {
+		user = RocketChat.models.Users.findOneById(subscription.u._id);
+
+		openRoom = user && user.settings && user.settings.preferences && user.settings.preferences.showHiddenRoomsWhenUnreadMessages;
+
+		if (typeof openRoom === 'undefined' || openRoom === true) {
+			RocketChat.models.Subscriptions.setOpenRoomBySubscriptionId(subscription._id);
+		}
+	});
 
 	return message;
 

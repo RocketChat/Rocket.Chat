@@ -1757,6 +1757,7 @@
   "Show_all": "Mostrar todos",
   "Show_Avatars": "Mostrar avatares",
   "Show_counter": "Mostrar contador",
+  "Show_hidden_rooms_when_unread_messages": "Mostrar salas ocultas al recibir mensajes",
   "Show_room_counter_on_sidebar": "Mostrar contador de salas en la barra lateral",
   "Show_more": "Mostrar más",
   "show_offline_users": "Mostrar usuarios desconectados",

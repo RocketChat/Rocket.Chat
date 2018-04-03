@@ -461,18 +461,27 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				$ne: userId
 			},
 			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
+				{ alert: { $ne: true } }
 			]
 		};
 
 		const update = {
 			$set: {
-				alert: true,
+				alert: true
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	setOpenRoomBySubscriptionId(_id) {
+		const update = {
+			$set: {
 				open: true
 			}
 		};
-		return this.update(query, update, { multi: true });
+
+		return this.update(_id, update);
 	}
 
 	setBlockedByRoomId(rid, blocked, blocker) {
