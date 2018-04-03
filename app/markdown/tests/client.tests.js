@@ -319,7 +319,9 @@ const linkFiltered = {
 	'[Text](http://link)': 'Text',
 	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': 'Open Site For Rocket.Chat',
 	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': ' Open Site For Rocket.Chat',
-	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site'
+	'[Rocket.Chat Site](https://rocket.chat/)': 'Rocket.Chat Site',
+	'<http://link|Text>': 'Text',
+	'<http://link|Text for test>': 'Text for test'
 };
 
 const inlinecodeFiltered = {

@@ -15,8 +15,13 @@ const filterMarkdownTags = function(message) {
 		return match.substr(1, match.length - 2);
 	});
 
-	// Filter all links
+	// Filter [text](url), ![alt_text](image_url)
 	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => {
+		return title;
+	});
+
+	// Filter <http://link|Text>
+	message = message.replace(new RegExp(`(?:<|&lt;)(?:${ schemes }):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, title) => {
 		return title;
 	});
 
