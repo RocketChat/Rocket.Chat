@@ -106,7 +106,7 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"@babel/runtime": "^7.0.0-beta.40",
+		"@babel/runtime": "^7.0.0-beta.44",
 		"@google-cloud/language": "^1.1.0",
 		"@google-cloud/storage": "^1.6.0",
 		"@google-cloud/vision": "^0.15.2",
