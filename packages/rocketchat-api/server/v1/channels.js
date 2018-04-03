@@ -492,15 +492,16 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		let sortFn = (a, b) => a > b;
-		if (Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1) {
-			sortFn = (a, b) => b < a;
-		}
+		const shouldBeOrderedDesc = Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1;
 
-		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames).sort(sortFn), {
+		let members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames).sort(), {
 			skip: offset,
 			limit: count
 		});
+
+		if (shouldBeOrderedDesc) {
+			members = members.reverse();
+		}
 
 		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
@@ -509,7 +510,7 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 
 		return RocketChat.API.v1.success({
 			members: users,
-			count: members.length,
+			count: users.length,
 			offset,
 			total: findResult.usernames.length
 		});
