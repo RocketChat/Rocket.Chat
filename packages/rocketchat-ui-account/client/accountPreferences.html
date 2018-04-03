@@ -191,6 +191,14 @@
 							</div>
 							{{/with}} -->
 
+							<div class="input-line double-col" id="showHiddenRoomsWhenUnreadMessages">
+								<label>{{_ "Show_hidden_rooms_when_unread_messages"}}</label>
+								<div>
+									<label><input type="radio" name="showHiddenRoomsWhenUnreadMessages" value="1" checked="{{checked 'showHiddenRoomsWhenUnreadMessages' true true}}"/> {{_ "True"}}</label>
+									<label><input type="radio" name="showHiddenRoomsWhenUnreadMessages" value="0" checked="{{checked 'showHiddenRoomsWhenUnreadMessages' false}}"/> {{_ "False"}}</label>
+								</div>
+							</div>
+
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
 								<div>
