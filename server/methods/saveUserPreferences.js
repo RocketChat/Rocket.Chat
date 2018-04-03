@@ -57,7 +57,7 @@ Meteor.methods({
 		}
 
 		if (settings.showHiddenRoomsWhenUnreadMessages) {
-			preferences.showHiddenRoomsWhenUnreadMessages = settings.showHiddenRoomsWhenUnreadMessages === '1';
+			settings.showHiddenRoomsWhenUnreadMessages = settings.showHiddenRoomsWhenUnreadMessages === '1';
 		}
 
 		if (settings.roomsListExhibitionMode != null) {
