@@ -1,26 +1,38 @@
 .rc-header {
+	padding: 0 0.5rem;
+
+	&__wrap {
+
+		z-index: 2;
+
+		display: flex;
+
+		margin: 0 -0.5rem;
+
+		padding: var(--header-padding);
+
+		white-space: nowrap;
+
+		background-color: var(--header-background-color);
+		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+
+		font-size: var(--header-title-font-size);
+
+		align-items: center;
+
+		justify-content: space-between;
+	}
+
+	&--height-fixed {
+		height: 78px;
+	}
+
 	&__block {
 		display: flex;
 
 		margin: 0 0.5rem;
 		align-items: center;
 	}
-	z-index: 2;
-
-	display: flex;
-
-	margin: 0 -0.5rem;
-
-	padding: var(--header-padding);
-
-	white-space: nowrap;
-
-	background-color: var(--header-background-color);
-	box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
-
-	font-size: var(--header-title-font-size);
-
-	justify-content: space-between;
 
 	&__content {
 		display: flex;
