@@ -56,7 +56,9 @@ Meteor.methods({
 			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
 		}
 
-
+		if (settings.showHiddenRoomsWhenUnreadMessages) {
+			preferences.showHiddenRoomsWhenUnreadMessages = settings.showHiddenRoomsWhenUnreadMessages === '1';
+		}
 
 		if (settings.roomsListExhibitionMode != null) {
 			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
