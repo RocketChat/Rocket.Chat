@@ -18,4 +18,5 @@ packages/rocketchat-videobridge/client/public/external_api.js
 packages/rocketchat-theme/client/vendor/
 private/moment-locales/
 public/livechat/
-public/recorderWorker.js
+public/mp3-realtime-worker.js
+public/lame.min.js
