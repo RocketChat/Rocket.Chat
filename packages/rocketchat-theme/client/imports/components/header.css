@@ -1,10 +1,17 @@
 .rc-header {
+
+	&--height-fixed {
+		height: 78px;
+	}
+
 	&__block {
 		display: flex;
 
 		margin: 0 0.5rem;
 		align-items: center;
 	}
+
+	align-items: center;
 	z-index: 2;
 
 	display: flex;
