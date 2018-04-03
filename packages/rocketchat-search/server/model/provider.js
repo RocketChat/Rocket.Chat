@@ -104,6 +104,10 @@ export default class SearchProvider {
 		return undefined;
 	}
 
+	get iconName() {
+		return 'magnifier';
+	}
+
 	get settings() {
 		return this._settings.list();
 	}

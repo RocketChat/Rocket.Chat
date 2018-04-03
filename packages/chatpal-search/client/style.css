@@ -38,7 +38,7 @@
 }
 
 .chatpal-search-typefilter li.selected {
-	border-bottom: 4px solid var(--button-primary-background);
+	border-bottom: 4px solid #125074;
 }
 
 .chatpal-admin-header {
@@ -109,7 +109,7 @@
 .chatpal-show-more-messages {
 	font-size: 14px;
 	font-weight: bold;
-	color: var(--button-primary-background);
+	color: #125074;
 	text-align: center;
 	cursor: pointer;
 	margin-bottom: 20px;
@@ -120,7 +120,7 @@
 }
 
 .chatpal-search-result-user .direct-message a {
-	color: var(--button-primary-background);
+	color: #125074;
 }
 
 .chatpal-search-result-user .direct-message a:hover {
@@ -179,7 +179,7 @@
 .chatpal-search-result-single .chatpal-link {
 	display: none;
 	margin-left: 3px;
-	color: var(--button-primary-background);
+	color: #125074;
 }
 
 .chatpal-search-result-single .chatpal-link:hover {
@@ -202,7 +202,7 @@
 }
 
 .chatpal-paging .chatpal-paging-button {
-	color: var(--button-primary-background);
+	color: #125074;
 	cursor: pointer;
 	font-size: 20px;
 	display: inline-block;
@@ -238,7 +238,7 @@
 .chatpal-search-result-room .chatpal-link {
 	display: none;
 	margin-left: 3px;
-	color: var(--button-primary-background);
+	color: #125074;
 }
 
 .chatpal-search-result-room:hover .chatpal-link {
@@ -288,6 +288,17 @@
 	display: block;
 }
 
-.chatpal-suggestion-hint .icon-level-down {
-	/*transform: scaleX(-1);*/
+.chatpalProvider .rc-input__icon {
+	width: 26px;
+	left: 10px;
+	top: 3px;
+}
+
+.chatpalProvider .rc-input__icon-svg {
+	font-size: 26px !important;
+}
+
+.chatpalProvider .rocket-search-suggestion-item.active, .chatpalProvider .rocket-search-suggestion-item:hover {
+	background-color: #125074;
+	color: white;
 }

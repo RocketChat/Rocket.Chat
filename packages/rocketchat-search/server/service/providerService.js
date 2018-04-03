@@ -211,6 +211,7 @@ Meteor.methods({
 		return {
 			key: searchProviderService.activeProvider.key,
 			description: searchProviderService.activeProvider.i18nDescription,
+			icon: searchProviderService.activeProvider.iconName,
 			resultTemplate: searchProviderService.activeProvider.resultTemplate,
 			supportsSuggestions: searchProviderService.activeProvider.supportsSuggestions,
 			suggestionItemTemplate: searchProviderService.activeProvider.suggestionItemTemplate,

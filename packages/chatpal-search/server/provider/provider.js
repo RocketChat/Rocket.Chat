@@ -107,6 +107,10 @@ class ChatpalProvider extends SearchProvider {
 		return 'Chatpal Provider';
 	}
 
+	get iconName() {
+		return 'chatpal-logo-icon-darkblue';
+	}
+
 	get resultTemplate() {
 		return 'ChatpalSearchResultTemplate';
 	}
