@@ -39,7 +39,7 @@ apps:
 parts:
     node:
         plugin: nodejs
-        node-engine: 8.8.1
+        node-engine: 8.11.1
         build-packages:
             # For fibers
             - python
