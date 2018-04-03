@@ -92,3 +92,26 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
+	post() {
+		const saveNotifications = (notifications, roomId) => {
+			Object.keys(notifications).map((notificationKey) => {
+				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
+			});
+		};
+		const { roomId, notifications } = this.bodyParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!notifications || Object.keys(notifications).length === 0) {
+			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+		}
+
+		saveNotifications(notifications, roomId);
+
+		return RocketChat.API.v1.success();
+	}
+});

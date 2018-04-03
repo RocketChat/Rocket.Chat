@@ -813,3 +813,37 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The request param "roomId" is required');
+		}
+
+		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {
+				sort: sort ? sort : { ts: 1 },
+				skip: offset,
+				limit: count
+			}
+		}));
+
+		const allMentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {}
+		}));
+
+		return RocketChat.API.v1.success({
+			mentions,
+			count: mentions.length,
+			offset,
+			total: allMentions.length
+		});
+	}
+});
+
