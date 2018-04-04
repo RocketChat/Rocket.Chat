@@ -115,3 +115,23 @@ RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('rooms.favorite/:roomId', { authRequired: true }, {
+	post() {
+		const { favorite } = this.bodyParams;
+		const { roomId } = this.urlParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!this.bodyParams.hasOwnProperty('favorite')) {
+			return RocketChat.API.v1.failure('The \'favorite\' param is required');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', roomId, favorite));
+
+		return RocketChat.API.v1.success();
+	}
+});
+

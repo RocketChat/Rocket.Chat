@@ -71,4 +71,44 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/rooms.favorite/:roomId', () => {
+		let testChannel;
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('should favorite the room when send favorite: true', (done) => {
+			request.post(api(`rooms.favorite/${ testChannel._id }`))
+				.set(credentials)
+				.send({
+					favorite: true
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should unfavorite room when send favorite: false', (done) => {
+			request.post(api(`rooms.favorite/${ testChannel._id }`))
+				.set(credentials)
+				.send({
+					favorite: false
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
