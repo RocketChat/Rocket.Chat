@@ -27,11 +27,16 @@
 		margin-bottom: 2.75rem;
 
 		&-ilustration {
+
+			display: flex;
 			width: 100%;
 			height: 262px;
 			margin-bottom: 3.5rem;
+			justify-content: center;
 
-			background: lightgray;
+			& img {
+				height: 100%;
+			}
 		}
 
 		&-title {
@@ -67,5 +72,9 @@
 
 	& .rc-input:not(:last-child) {
 		margin-bottom: 2rem;
+	}
+
+	& .rc-select {
+		margin: 0.5rem 0;
 	}
 }

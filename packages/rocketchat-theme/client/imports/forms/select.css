@@ -19,7 +19,8 @@
 
 	&__arrow {
 		position: absolute;
-		z-index: -1;
+
+		/* z-index: -1; */
 
 		margin: 0 -5px;
 
@@ -29,6 +30,7 @@
 	}
 
 	&__element {
+		width: 100%;
 		padding: 0.75rem 2rem 0.75rem 1rem;
 
 		text-transform: capitalize;
