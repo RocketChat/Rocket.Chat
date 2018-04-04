@@ -95,6 +95,6 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	return {
 		rid: room._id,
-		name: room.fname
+		name: room.name
 	};
 };
