@@ -24,7 +24,7 @@
 							<div class="rc-apps-details__content">
 								<div class="rc-apps-details__row">
 									<div class="rc-apps-details__name">{{name}}</div>
-									<div class="rc-apps-details__version">v {{version}}</div>
+									<div class="rc-apps-details__version">v{{version}}</div>
 								</div>
 								<div class="rc-apps-details__row">{{description}}</div>
 								<div class="rc-apps-details__row">
@@ -236,6 +236,8 @@
 							<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
 							<button class="rc-button rc-button--primary js-save" disabled='{{disabled}}'>{{ _ "Save" }}</button>
 							<button class="rc-button rc-button--cancel js-uninstall">{{ _ "Uninstall" }}</button>
+							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
+							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
 						</div>
 					</div>
 				{{else if hasError}}

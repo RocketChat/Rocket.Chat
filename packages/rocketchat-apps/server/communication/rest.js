@@ -71,15 +71,10 @@ export class AppsRestApi {
 					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
 				}
 
-				const item = Meteor.wrapAsync((callback) => {
-					manager.add(buff.toString('base64'), false).then((rl) => callback(undefined, rl)).catch((e) => {
-						console.warn('Error!', e);
-						callback(e);
-					});
-				})();
+				const prl = Promise.await(manager.add(buff.toString('base64'), false));
 
-				const info = item.getInfo();
-				info.status = item.getStatus();
+				const info = prl.getInfo();
+				info.status = prl.getStatus();
 
 				return RocketChat.API.v1.success({ app: info });
 			}
@@ -116,13 +111,27 @@ export class AppsRestApi {
 				console.log('Updating:', this.urlParams.id);
 				// TODO: Verify permissions
 
-				const buff = fileHandler(this.request, 'app');
-				const item = Meteor.wrapAsync((callback) => {
-					manager.update(buff.toString('base64')).then((rl) => callback(rl)).catch((e) => callback(e));
-				});
+				let buff;
 
-				const info = item.getInfo();
-				info.status = item.getStatus();
+				if (this.bodyParams.url) {
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' }});
+
+					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return RocketChat.API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'base64');
+				} else {
+					buff = fileHandler(this.request, 'app');
+				}
+
+				if (!buff) {
+					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
+				}
+
+				const prl = Promise.await(manager.update(buff.toString('base64')));
+				const info = prl.getInfo();
+				info.status = prl.getStatus();
 
 				return RocketChat.API.v1.success({ app: info });
 			},

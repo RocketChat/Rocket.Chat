@@ -183,7 +183,11 @@ Template.appManage.events({
 		});
 	},
 
-	'click .logs': (e, t) => {
+	'click .js-update': (e, t) => {
+		FlowRouter.go(`/admin/app/install?isUpdatingId=${ t.id.get() }`);
+	},
+
+	'click .js-view-logs': (e, t) => {
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 

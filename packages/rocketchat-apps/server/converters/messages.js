@@ -47,10 +47,18 @@ export class AppMessagesConverter {
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(message.room.id);
-		const user = RocketChat.models.Users.findOneById(message.sender.id);
 
-		if (!room || !user) {
-			throw new Error('Invalid user or room provided on the message.');
+		if (!room) {
+			throw new Error('Invalid room provided on the message.');
+		}
+
+		let u;
+		if (message.sender && message.sender.id) {
+			const user = RocketChat.models.Users.findOneById(message.sender.id);
+			u = {
+				_id: user._id,
+				username: user.username
+			};
 		}
 
 		let editedBy;
@@ -67,10 +75,7 @@ export class AppMessagesConverter {
 		return {
 			_id: message.id || Random.id(),
 			rid: room._id,
-			u: {
-				_id: user._id,
-				username: user.username
-			},
+			u,
 			msg: message.text,
 			ts: message.createdAt || new Date(),
 			_updatedAt: message.updatedAt || new Date(),

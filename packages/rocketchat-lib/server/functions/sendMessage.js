@@ -25,18 +25,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 	}
 
-	if (message.parseUrls !== false) {
-		const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
-
-		if (urls) {
-			message.urls = urls.map(function(url) {
-				return {
-					url
-				};
-			});
-		}
-	}
-
 	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
@@ -45,7 +33,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
-			return false;
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
 		}
 
 		let result;
@@ -53,7 +41,19 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result);
 
 		if (typeof result === 'object') {
-			message = result;
+			message = Object.assign(message, result);
+		}
+	}
+
+	if (message.parseUrls) {
+		const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+
+		if (urls) {
+			message.urls = urls.map(function(url) {
+				return {
+					url
+				};
+			});
 		}
 	}
 
