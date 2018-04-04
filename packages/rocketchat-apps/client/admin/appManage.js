@@ -3,6 +3,7 @@ import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
 
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -12,14 +13,16 @@ Template.appManage.onCreated(function() {
 	this.processingEnabled = new ReactiveVar(false);
 	this.app = new ReactiveVar({});
 	this.settings = new ReactiveVar({});
+	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
 
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
 			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value || settings[k].packageValue;
+			settings[k].value = settings[k].value !== undefined ? settings[k].value : settings[k].packageValue;
 			settings[k].oldValue = settings[k].value;
+			settings[k].hasChanged = false;
 		});
 
 		instance.settings.set(settings);
@@ -73,17 +76,8 @@ Template.apps.onDestroyed(function() {
 Template.appManage.helpers({
 	disabled() {
 		const t = Template.instance();
-
-		const toSave = Object.keys(t.settings.get()).filter((k) => {
-			const setting = t.settings.get()[k];
-			if (setting.hasChanged) {
-				return true;
-			}
-		});
-
-		if (toSave.length === 0) {
-			return true;
-		}
+		const settings = t.settings.get();
+		return !Object.keys(settings).some((k) => settings[k].hasChanged);
 	},
 	isReady() {
 		if (Template.instance().ready) {
@@ -134,6 +128,9 @@ Template.appManage.helpers({
 		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
 
 		return item.html;
+	},
+	saving() {
+		return Template.instance().loading.get();
 	}
 });
 
@@ -172,15 +169,16 @@ Template.appManage.events({
 		});
 	},
 
-	'click .js-uninstall': (e, t) => {
+	'click .js-uninstall': async(e, t) => {
 		t.ready.set(false);
-
-		RocketChat.API.delete(`apps/${ t.id.get() }`).then(() => {
+		try {
+			await RocketChat.API.delete(`apps/${ t.id.get() }`);
 			FlowRouter.go('/admin/apps');
-		}).catch((err) => {
+		} catch (err) {
 			console.warn('Error:', err);
+		} finally {
 			t.ready.set(true);
-		});
+		}
 	},
 
 	'click .js-update': (e, t) => {
@@ -191,27 +189,44 @@ Template.appManage.events({
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 
-	'click .js-save': (e, t) => {
-		const toSave = [];
-
-		Object.keys(t.settings.get()).forEach((k) => {
-			const setting = t.settings.get()[k];
-			if (setting.hasChanged) {
-				toSave.push(setting);
-			}
-		});
-
-		if (toSave.length === 0) {
-			console.log('Nothing to save..');
+	'click .js-save': async(e, t) => {
+		if (t.loading.get()) {
 			return;
 		}
+		t.loading.set(true);
+		const settings = t.settings.get();
 
-		RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave }).then((result) => {
-			console.log('Updating results:', result);
-			result.updated.forEach((setting) => {
-				t.settings.get()[setting.id].oldValue = setting.value;
+
+		try {
+			const toSave = [];
+			Object.keys(settings).forEach(k => {
+				const setting = settings[k];
+				if (setting.hasChanged) {
+					toSave.push(setting);
+				}
+				// return !!setting.hasChanged;
 			});
-		});
+
+			if (toSave.length === 0) {
+				throw 'Nothing to save..';
+			}
+			const result = await RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
+			console.log('Updating results:', result);
+			result.updated.forEach(setting => {
+				settings[setting.id].value = settings[setting.id].oldValue = setting.value;
+			});
+			Object.keys(settings).forEach(k => {
+				const setting = settings[k];
+				setting.hasChanged = false;
+			});
+			t.settings.set(settings);
+
+		} catch (e) {
+			console.log(e);
+		} finally {
+			t.loading.set(false);
+		}
+
 	},
 
 	'change input[type="checkbox"]': (e, t) => {
@@ -229,7 +244,7 @@ Template.appManage.events({
 		}
 	},
 
-	'change .input-monitor, keyup .input-monitor': _.throttle(function(e, t) {
+	'input input': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':
@@ -244,6 +259,7 @@ Template.appManage.events({
 
 		if (setting.oldValue !== setting.value) {
 			t.settings.get()[this.id].hasChanged = true;
+			t.settings.set(t.settings.get());
 		}
 	}, 500)
 });

@@ -91,20 +91,60 @@
 								</label>
 								<span class="rc-switch__description">{{{parseDescription i18nDescription}}}</span>
 							</div>
+							{{else if  $eq type 'int'}}
+								<div class="rc-input">
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ i18nLabel}}</div>
+										<div class="rc-input__wrapper">
+											{{#if multiline}}
+											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+											{{else}}
+											<input class="rc-input__element" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+											{{/if}}
+										</div>
+									</label>
+									{{# if i18nDescription}}
+									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+									{{/if}}
+									{{# if i18nAlert}}
+									<div class="rc-input__error">
+										<div class="rc-input__error-icon">
+											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										</div>
+										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+									</div>
+									{{/if}}
+								</div>
+							{{else if  $eq type 'password'}}
+								<div class="rc-input">
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ i18nLabel}}</div>
+										<div class="rc-input__wrapper">
+											{{#if multiline}}
+											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+											{{else}}
+											<input class="rc-input__element" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+											{{/if}}
+										</div>
+									</label>
+									{{# if i18nDescription}}
+									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+									{{/if}}
+									{{# if i18nAlert}}
+									<div class="rc-input__error">
+										<div class="rc-input__error-icon">
+											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										</div>
+										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+									</div>
+									{{/if}}
+								</div>
 							{{else}}
 							<div class="input-line double-col">
 								<label class="setting-label">{{_ i18nLabel}}</label>
 								<div class="setting-field">
 									{{#if $eq type 'relativeUrl'}}
 									<input class="input-monitor" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{_ i18nPlaceholder}}" {{isReadonly}}/>
-									{{/if}}
-
-									{{#if $eq type 'password'}}
-									<input class="input-monitor" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
-									{{/if}}
-
-									{{#if $eq type 'int'}}
-									<input class="input-monitor" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
 									{{/if}}
 
 									{{#if $eq type 'select'}}
@@ -234,7 +274,7 @@
 					<div class="rc-apps-container">
 						<div class="rc-button-group">
 							<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
-							<button class="rc-button rc-button--primary js-save" disabled='{{disabled}}'>{{ _ "Save" }}</button>
+							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{ _ "Save" }}</button>
 							<button class="rc-button rc-button--cancel js-uninstall">{{ _ "Uninstall" }}</button>
 							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
 							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
