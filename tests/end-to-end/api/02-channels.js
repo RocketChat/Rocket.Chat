@@ -409,6 +409,24 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.members', (done) => {
+		request.get(api('channels.members'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+			})
+			.end(done);
+	});
+
 	it('/channels.rename', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
