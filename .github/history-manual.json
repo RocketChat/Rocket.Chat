@@ -1,0 +1,15 @@
+{
+	"0.55.0": [{
+		"title": "[BREAK] `getUsersOfRoom` API to return array of objects with user and username, instead of array of strings",
+		"userLogin": "rodrigok",
+		"contributors": []
+	}, {
+		"title": "[FIX] Incoming integrations would break when trying to use the `Store` feature.`",
+		"userLogin": "rodrigok",
+		"contributors": []
+	}, {
+		"title": "[FIX] Removed Deprecated Package rocketchat:sharedsecret`",
+		"userLogin": "rodrigok",
+		"contributors": []
+	}]
+}
