@@ -541,6 +541,8 @@ describe('[Users]', function() {
 		});
 	});
 
+	//DEPRECATED
+	// TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
 	describe('[/user.roles]', () => {
 
 		it('should return id and name of user, and an array of roles', (done) => {
