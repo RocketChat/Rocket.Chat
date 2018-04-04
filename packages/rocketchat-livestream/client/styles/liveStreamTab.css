@@ -23,6 +23,9 @@
   & .rc-switch {
     padding: 15px 5px;
   }
+  & .rc-input__label p {
+    padding: 10px 0;
+  }
 }
 
 .livestream--url {

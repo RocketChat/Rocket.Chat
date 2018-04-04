@@ -20,13 +20,20 @@
 				{{/if}}
 			{{/if}}
 		{{else}}
-		 <p> {{_ "Livestream_not_found" }} </p>
+		 <p> {{ streamingUnavailableMessage }} </p>
 		{{/if}}
 		{{#if canEdit}}
 			{{#if editing}}
 				{{ > liveStreamBroadcast}}
 				<form class="liveStreamTab__form">
-					<input type="text" name="streaming-source" class="rc-input__element content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
+					<label class="rc-input__label">
+						<p> Livestream not available message: </p>
+						<input type="text" name="streaming-message" class="rc-input__element content-background-color editing" placeholder="{{_ "Livestream_not_found"}}" value="{{ streamingUnavailableMessage }}"/>
+					</label>
+					<label class="rc-input__label">
+						<p> Livestream source (URL): </p>
+						<input type="text" name="streaming-source" class="rc-input__element content-background-color editing" placeholder="{{_ "Livestream_url"}}" value="{{ streamingSource }}"/>
+					</label>
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
 							<input type="checkbox" class="rc-switch__input" name="streaming-audio-only" checked={{isAudioOnly}}>
