@@ -12107,7 +12107,36 @@
       ]
     }
   ],
-  "HEAD": [
+  "HEAD": [],
+  "0.63.0": [
+    {
+      "pr": "10303",
+      "title": "[FIX] Audio Message UI fixes",
+      "userLogin": "kb0304",
+      "contributors": [
+        "kb0304",
+        "ggazzo",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10319",
+      "title": "[NEW] Improve history generation",
+      "userLogin": "rodrigok",
+      "milestone": "0.63.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10323",
+      "title": "Fix: Reaction endpoint/api only working with regular emojis",
+      "userLogin": "graywolf336",
+      "milestone": "0.63.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
     {
       "pr": "10313",
       "title": "Bump snap version to include security fix",
