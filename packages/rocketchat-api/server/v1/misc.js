@@ -18,6 +18,29 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
+	get() {
+		const mountOAuthServices = () => {
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}).fetch();
+
+			return oAuthServicesEnabled.map((service) => {
+				return {
+					id: service._id,
+					name: service.service,
+					appId: service.appId || service.clientId,
+					buttonLabelText: service.buttonLabelText || '',
+					buttonColor: service.buttonColor || '',
+					buttonLabelColor: service.buttonLabelColor || ''
+				};
+			});
+		};
+
+		return RocketChat.API.v1.success({
+			services: mountOAuthServices()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
 		const me = _.pick(this.user, [
@@ -29,12 +52,18 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'username',
 			'utcOffset',
 			'active',
-			'language'
+			'language',
+			'roles',
+			'settings'
 		]);
 
 		const verifiedEmail = me.emails.find((email) => email.verified);
+		const userHasNotSetPreferencesYet = !me.settings || !me.settings.preferences;
 
 		me.email = verifiedEmail ? verifiedEmail.address : undefined;
+		if (userHasNotSetPreferencesYet) {
+			me.settings = { preferences: {} };
+		}
 
 		return RocketChat.API.v1.success(me);
 	}

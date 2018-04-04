@@ -1,5 +1,7 @@
 #! /bin/bash
 
+caddy_version="v0.10.12"
+
 caddy_bin="caddy"
 caddy_dl_ext=".tar.gz"
 
@@ -26,11 +28,13 @@ else
         return 2
 fi
 
+caddy_arch=_linux_$caddy_arch
+
 echo "Downloading Caddy for $caddy_os/$caddy_arch$caddy_arm..."
 caddy_file="caddy_linux_$caddy_arch${caddy_arm}_custom$caddy_dl_ext"
-caddy_url="https://caddyserver.com/download/linux/$caddy_arch$caddy_arm?plugins=$caddy_plugins"
+caddy_url="https://github.com/mholt/caddy/releases/download/$caddy_version/caddy_$caddy_version$caddy_arch$caddy_arm.tar.gz"
 echo "$caddy_url"
 
-wget --quiet "$caddy_url" -O "$caddy_file"
+curl -L "$caddy_url" -o "$caddy_file"
 tar -xzf $caddy_file -C . "$caddy_bin"
 chmod +x $caddy_bin

@@ -2,19 +2,19 @@
 	z-index: 1;
 
 	display: flex;
+
+	overflow: hidden;
 	flex-direction: column;
 	flex: 0 0 var(--flex-tab-width);
 
 	width: var(--flex-tab-width);
 	height: 100%;
 
-
 	background: var(--color-white);
 	box-shadow: 0 3px 1px 2px rgba(31, 35, 41, 0.08);
 
 	&-wrap {
 		position: relative;
-
 
 		display: flex;
 		flex-direction: column;
@@ -29,15 +29,13 @@
 
 	&__content {
 		overflow: auto;
+
 		padding: var(--default-padding);
 
-		flex: 1 1 auto;
-		justify-content: space-between;
-
-		display: flex;
-
-		flex-direction: column;
-
+		& .js-back {
+			width: 100%;
+			margin-top: 2rem;
+		}
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
@@ -47,10 +45,11 @@
 	&__header {
 		display: flex;
 		flex: 0 0 auto;
-		justify-content: flex-end;
+
 		padding: var(--default-padding);
 
 		align-items: end;
+		justify-content: flex-end;
 
 		&-data {
 			display: flex;
@@ -84,9 +83,8 @@
 		}
 	}
 
-
 	& .search-form .rc-input__icon-svg {
-    font-size: 1.2rem;
+		font-size: 1.2rem;
 	}
 }
 
@@ -119,9 +117,9 @@
 .attachments {
 	&__item {
 		display: flex;
+		overflow: hidden;
 
 		flex: 1;
-		overflow: hidden;
 
 		transition: background-color 0.3s;
 
@@ -237,20 +235,25 @@
 
 .mail-messages__instructions {
 	display: flex;
-	border-width: 1px;
-	border-color: var(--rc-color-alert-message-primary);
-	background: var(--rc-color-alert-message-primary-background);
-	border-radius: 2px;
-	color: var(--rc-color-alert-message-primary);
-	padding: 1.25rem;
+
 	margin-bottom: 3rem;
 
+	padding: 1.25rem;
+
+	color: var(--rc-color-alert-message-primary);
+
+	border-width: 1px;
+	border-color: var(--rc-color-alert-message-primary);
+	border-radius: 2px;
+	background: var(--rc-color-alert-message-primary-background);
+
 	&--selected {
-		background: var(--rc-color-alert-message-secondary-background);
-		border-color: var(--rc-color-alert-message-secondary);
-		color: var(--rc-color-alert-message-secondary);
 
 		cursor: pointer;
+
+		color: var(--rc-color-alert-message-secondary);
+		border-color: var(--rc-color-alert-message-secondary);
+		background: var(--rc-color-alert-message-secondary-background);
 	}
 
 	&--warning {
@@ -261,26 +264,31 @@
 
 	&-wrapper {
 		display: flex;
+
 		margin: 0 -10px;
 	}
 
 	&-icon {
-		font-size: 2rem;
 		margin: 0 10px;
 
+		font-size: 2rem;
+
 		&--hand-pointer {
-			transform: rotate3d(0, 0, 1, -25deg);
 			margin: 0 15px;
+
+			transform: rotate3d(0, 0, 1, -25deg);
 			fill: currentColor;
 		}
 	}
 
 	&-text {
-		font-size: 0.875rem;
-		font-weight: 600;
-		margin: 0 10px;
 		display: flex;
 		flex-direction: column;
+
+		margin: 0 10px;
+
+		font-size: 0.875rem;
+		font-weight: 600;
 		line-height: 1.2rem;
 
 		&-selected {
