@@ -35,14 +35,17 @@ RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}).fetch();
 
 			return oAuthServicesEnabled.map((service) => {
+				if (service.custom) {
+					return { ...service };
+				}
 				return {
 					id: service._id,
 					name: service.service,
-					appId: service.appId || service.clientId,
+					clientId: service.appId || service.clientId,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
-					custom: String(service.custom).toLowerCase() === 'true'
+					custom: false
 				};
 			});
 		};
@@ -114,7 +117,7 @@ RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
 
 		return RocketChat.API.v1.success({
-			configurations: ServiceConfiguration.configurations.find({}, {fields: {secret: 0}}).fetch()
+			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch()
 		});
 	}
 });
