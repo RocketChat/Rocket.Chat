@@ -21,6 +21,16 @@
 			{{/with}}
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
+				{{#if dataReply}}
+					{{#with dataReply}}
+							<div class="reply-preview message-popup">
+								{{> messageAttachment text=msg author_name=u.username}}
+								<div class="rc-message-box__icon cancel-reply">
+									{{> icon block="rc-input__icon-svg" icon="cross"}}
+								</div>
+							</div>
+					{{/with}}
+				{{/if}}
 				<label class="rc-message-box__container">
 					<div class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnable}}emoji-picker-icon--disabled{{/unless}}">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
@@ -31,7 +41,9 @@
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
 					{{else}}
-						{{> messageBox__audioMessage}}
+						{{#if isAudioMessageAllowed}}
+							{{> messageBox__audioMessage}}
+						{{/if}}
 						{{> messageBox__actions}}
 					{{/unless}}
 					{{# messageBox__actionsSmall}}
@@ -92,24 +104,22 @@
 	</div>
 </template>
 <template name="messageBox__audioMessage">
-	<div class="rc-message-box__audio-recording">
+	<div class="rc-message-box__audio-message">
 		<div class="rc-message-box__icon cross js-audio-message-cross">
-			<img src="/images/circle-cross.svg">
+			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
 		</div>
 		<div class="rc-message-box__timer-box">
 			<p class="rc-message-box__timer-dot">&#8226;&nbsp;</p>
 			<span class="rc-message-box__timer"> 00:00</span>
 		</div>
 		<div class="rc-message-box__icon check js-audio-message-check">
-			<img src="/images/circle-check.svg">
+			{{> icon block="rc-input__icon-svg" icon="circle-check"}}
 		</div>
-	</div>
-	<div class="rc-message-box__audio-message">
 		<div class="rc-message-box__icon mic active js-audio-message-record">
 			{{> icon block="rc-input__icon-svg" icon="mic"}}
 		</div>
 		<div class="rc-message-box__icon loading js-audio-message-loading">
-			<img class="rc-input__icon-svg" src="/images/loading.svg">
+			{{> icon block="rc-input__icon-svg" icon="loading"}}
 		</div>
 	</div>
 </template>
