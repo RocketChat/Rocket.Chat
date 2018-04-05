@@ -124,7 +124,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 
 		const update = {
 			$set: {
-				'username': username
+				username
 			}
 		};
 
