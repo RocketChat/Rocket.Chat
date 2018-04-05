@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 /* globals expect */
 
-import {getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('[Subscriptions]', function() {
 	this.retries(0);
@@ -34,6 +34,35 @@ describe('[Subscriptions]', function() {
 				expect(res.body).to.have.property('remove').that.have.lengthOf(0);
 			})
 			.end(done);
+	});
+
+	it('/subscriptions.getOne:', () => {
+		let testChannel;
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('subscriptions.getOne', (done) => {
+			request.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('subscription').and.to.be.an('object');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/subscriptions.read]', () => {

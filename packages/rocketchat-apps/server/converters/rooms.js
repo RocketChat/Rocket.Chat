@@ -76,7 +76,7 @@ export class AppRoomsConverter {
 			case 'lc':
 				return RoomType.LIVE_CHAT;
 			default:
-				throw new Error(`Unknown room type of: "${ typeChar }"`);
+				return typeChar;
 		}
 	}
 }
