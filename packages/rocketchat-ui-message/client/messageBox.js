@@ -273,8 +273,16 @@ Template.messageBox.helpers({
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
 	},
+	dataReply() {
+		return Template.instance().dataReply.get();
+	},
 	isAudioMessageAllowed() {
-		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
+		return (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+			RocketChat.settings.get('FileUpload_Enabled') &&
+			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
+			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
+			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	}
 });
 
@@ -377,6 +385,13 @@ Template.messageBox.events({
 			return input.focus();
 		});
 	},
+	'click .cancel-reply'(event, instance) {
+		const input = instance.find('.js-input-message');
+		$(input)
+			.focus()
+			.removeData('reply')
+			.trigger('dataChange');
+	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
 		return instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
@@ -474,9 +489,9 @@ Template.messageBox.events({
 	},
 	'click .js-audio-message-record'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
 
 		chatMessages[RocketChat.openedRoom].recording = true;
 		AudioRecorder.start(function() {
@@ -492,18 +507,18 @@ Template.messageBox.events({
 				timer.innerHTML = `${ minutes }:${ seconds }`;
 			}, 1000);
 
-			icon.classList.add('hidden');
-			timer_box.classList.add('active');
+			mic.classList.remove('active');
+			recording_icons.forEach((e)=>{ e.classList.add('active'); });
 		});
 	},
 	'click .js-audio-message-cross'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		timer_box.classList.remove('active');
-		icon.classList.remove('hidden');
+		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
+		mic.classList.add('active');
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
@@ -514,17 +529,13 @@ Template.messageBox.events({
 	},
 	'click .js-audio-message-check'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
 		const loader = document.querySelector('.js-audio-message-loading');
-		const mic = document.querySelector('.js-audio-message-record');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		icon.classList.remove('hidden');
-		timer_box.classList.remove('active');
-		mic.classList.remove('active');
+		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
 		loader.classList.add('active');
-
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
@@ -631,6 +642,12 @@ Template.messageBox.events({
 });
 
 Template.messageBox.onRendered(function() {
+	const input = this.find('.js-input-message'); //mssg box
+	const self = this;
+	$(input).on('dataChange', () => {
+		const reply = $(input).data('reply');
+		self.dataReply.set(reply);
+	});
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
 	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
@@ -643,6 +660,7 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.onCreated(function() {
+	this.dataReply = new ReactiveVar(''); //if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
 });

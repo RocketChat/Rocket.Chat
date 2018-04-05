@@ -25,6 +25,28 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
+			fields: {
+				_room: 0,
+				_user: 0,
+				$loki: 0
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			subscription
+		});
+	}
+});
+
 /**
 	This API is suppose to mark any room as read.
 
