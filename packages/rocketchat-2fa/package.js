@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:custom-oauth',
 		'pauli:accounts-linkedin',
+		'steffo:meteor-accounts-saml',
 		'sha',
 		'random'
 	]);
@@ -25,6 +26,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/TOTPPassword.js', 'client');
 	api.addFiles('client/TOTPOAuth.js', 'client');
 	api.addFiles('client/TOTPGoogle.js', 'client');
+	api.addFiles('client/TOTPSaml.js', 'client');
 
 	api.addFiles('server/lib/totp.js', 'server');
 

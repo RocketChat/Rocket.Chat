@@ -12,11 +12,9 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 	}
 
 	if (login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-		const totpEnabledProviders = ['password', 'facebook', 'github', 'twitter', 'meteor-developer', 'google', 'gitlab', 'wordpress', 'github_enterprise', 'dolphin', 'drupal', 'tokenpass', 'linkedin'];
-		//missing: proxy
-
-		if (totpEnabledProviders.indexOf(login.type) >= 0) {
+		if (login.type !== 'proxy') {
 			const { totp } = login.methodArguments[0];
+			console.log(totp);
 
 			if (!totp || !totp.code) {
 				throw new Meteor.Error('totp-required', 'TOTP Required');

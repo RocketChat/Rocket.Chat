@@ -40,6 +40,8 @@ this.overrideLoginMethod = function(loginMethod, loginArgs, cb, loginMethodTOTP)
 			}
 
 			loginMethodTOTP && loginMethodTOTP.apply(this, loginArgs.concat([code, (error) => {
+				console.log('failed');
+				console.log(error);
 				if (error && error.error === 'totp-invalid') {
 					toastr.error(t('Invalid_two_factor_code'));
 					cb();
@@ -65,7 +67,6 @@ this.createOAuthTotpLoginMethod = function(credentialProvider) {
 		provider.requestCredential(options, credentialRequestCompleteCallback);
 	};
 };
-
 
 const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
 CustomOAuth.prototype.configureLogin = function() {
