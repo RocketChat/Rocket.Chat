@@ -9,13 +9,13 @@
 			{{else}}
 				{{#if hasThumbnail}}
 					<div class="thumbnail-container" style="background: url({{thumbnailUrl}}) 100% no-repeat no-repeat;">
-						<a href="#" class="js-popout --absolute-center">
-							{{> icon icon="play-solid"}}
+						<a href="#" class="js-popout popout--absolute-center">
+							{{> icon icon="play-solid" block="popout"}}
 						</a>
 					</div>
 				{{else}}
-					<a href="#" class="js-popout --absolute-center">
-						{{> icon icon="play-solid"}}
+					<a href="#" class="js-popout popout--absolute-center">
+						{{> icon icon="play-solid" block="popout"}}
 					</a>
 				{{/if}}
 			{{/if}}
