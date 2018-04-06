@@ -107,7 +107,7 @@ export class AppMessagesConverter {
 				author_icon: attachment.author ? attachment.author.icon : undefined,
 				title: attachment.title ? attachment.title.value : undefined,
 				title_link: attachment.title ? attachment.title.link : undefined,
-				title_link_download: attachment.title ? attachment.title.downloadLink : undefined,
+				title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
 				image_url: attachment.imageUrl,
 				audio_url: attachment.audioUrl,
 				video_url: attachment.videoUrl,
@@ -144,7 +144,7 @@ export class AppMessagesConverter {
 				title = {
 					value: attachment.title,
 					link: attachment.title_link,
-					downloadLink: attachment.title_link_download
+					displayDownloadLink: attachment.title_link_download
 				};
 			}
 
