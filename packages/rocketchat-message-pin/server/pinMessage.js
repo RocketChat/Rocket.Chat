@@ -49,7 +49,8 @@ Meteor.methods({
 			'ts': originalMessage.ts
 		}];
 
-		const recursiveRemove = (msg, deep = 1) => {
+		const recursiveRemove = (attachmentMsg, deep = 1) => {
+			const msg = attachmentMsg;
 			if (msg) {
 				if ('attachments' in msg && msg.attachments !== null && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
 					msg.attachments.map((nestedMsg) => recursiveRemove(nestedMsg, deep + 1));
@@ -60,9 +61,28 @@ Meteor.methods({
 			return msg;
 		};
 
+		const shouldAdd = (attachment) => {
+			let toAdd = true;
+			for (let i = 0; i < attachments.length; i++ && toAdd) {
+				if (attachments[i].message_link) {
+					if (attachments[i].message_link === attachment.message_link) {
+						toAdd = false;
+					}
+				}
+			}
+			return toAdd;
+		};
+
 		if (Array.isArray(originalMessage.attachments)) {
-			attachments.push(...originalMessage.attachments);
-			attachments[attachments.length - 1] = recursiveRemove(attachments[attachments.length - 1]);
+			for (const attachment of originalMessage.attachments) {
+				if (attachment.message_link) {
+					if (shouldAdd(attachment)) {
+						attachments.push(recursiveRemove(attachment));
+					}
+				} else {
+					attachments.push(recursiveRemove(attachment));
+				}
+			}
 		}
 
 		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {attachments});
