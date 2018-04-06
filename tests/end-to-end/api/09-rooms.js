@@ -72,7 +72,7 @@ describe('[Rooms]', function() {
 		});
 	});
 
-	describe('/rooms.favorite/:roomId', () => {
+	describe('/rooms.favorite', () => {
 		let testChannel;
 		it('create an channel', (done) => {
 			request.post(api('channels.create'))
@@ -86,9 +86,10 @@ describe('[Rooms]', function() {
 				});
 		});
 		it('should favorite the room when send favorite: true', (done) => {
-			request.post(api(`rooms.favorite/${ testChannel._id }`))
+			request.post(api('rooms.favorite'))
 				.set(credentials)
 				.send({
+					roomId: testChannel._id,
 					favorite: true
 				})
 				.expect(200)
@@ -99,9 +100,10 @@ describe('[Rooms]', function() {
 		});
 
 		it('should unfavorite room when send favorite: false', (done) => {
-			request.post(api(`rooms.favorite/${ testChannel._id }`))
+			request.post(api('rooms.favorite'))
 				.set(credentials)
 				.send({
+					roomId: testChannel._id,
 					favorite: false
 				})
 				.expect(200)

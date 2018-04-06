@@ -116,10 +116,9 @@ RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('rooms.favorite/:roomId', { authRequired: true }, {
+RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
 	post() {
-		const { favorite } = this.bodyParams;
-		const { roomId } = this.urlParams;
+		const { favorite, roomId } = this.bodyParams;
 
 		if (!roomId) {
 			return RocketChat.API.v1.failure('The \'roomId\' param is required');
