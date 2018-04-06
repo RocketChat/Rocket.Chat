@@ -112,5 +112,20 @@ describe('[Rooms]', function() {
 				})
 				.end(done);
 		});
+
+		it('should return an error when send an invalid room', (done) => {
+			request.post(api('rooms.favorite'))
+				.set(credentials)
+				.send({
+					roomId: 'foo',
+					favorite: false
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
 	});
 });
