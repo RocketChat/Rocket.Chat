@@ -37,9 +37,9 @@ FlowRouter.route('/', {
 						user.settings &&
 						user.settings.preferences.saveLastVisitedRoom &&
 						user.lastVisitedRoom) {
-							 const room = user.lastVisitedRoom;
-							 FlowRouter.go(room, FlowRouter.current().queryParams);
-							}
+							const room = user.lastVisitedRoom;
+							FlowRouter.go(room, FlowRouter.current().queryParams);
+					}
 					else {
 						FlowRouter.go('home');
 					}
