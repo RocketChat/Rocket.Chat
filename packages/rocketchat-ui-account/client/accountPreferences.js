@@ -188,7 +188,11 @@ Template.accountPreferences.onCreated(function() {
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
-						Meteor._reload.reload();
+						if (Meteor._reload && Meteor._reload.reload) { // make it compatible with old meteor
+							Meteor._reload.reload();
+						} else {
+							Reload._reload();
+						}
 					}, 1000);
 				}
 			}
