@@ -168,18 +168,3 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 		};
 	}
 });
-
-RocketChat.API.v1.addRoute('forgotPassword', { authRequired: false }, {
-	post() {
-		const { email } = this.bodyParams;
-		if (!email) {
-			return RocketChat.API.v1.failure('The \'email\' param is required');
-		}
-
-		const emailSent = Meteor.call('sendForgotPasswordEmail', email);
-		if (emailSent) {
-			return RocketChat.API.v1.success();
-		}
-		return RocketChat.API.v1.failure('User not found');
-	}
-});
