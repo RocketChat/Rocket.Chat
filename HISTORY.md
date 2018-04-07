@@ -1,3 +1,17 @@
+<a name="0.64.0-develop"></a>
+# 0.64.0-develop (2018-04-07)
+
+
+### Bug Fixes
+
+- [#10084](https://github.com/RocketChat/Rocket.Chat/pull/10084) Add '.value' in the SAML package to fix TypeErrors on SAML token validation
+- [#10348](https://github.com/RocketChat/Rocket.Chat/pull/10348) fixing deprecated Meteor._reload.reload method
+- [#10355](https://github.com/RocketChat/Rocket.Chat/pull/10355) Incorrect French language usage for Disabled
+- [#10356](https://github.com/RocketChat/Rocket.Chat/pull/10356) Incorrect german translation of user online status
+- [#10351](https://github.com/RocketChat/Rocket.Chat/pull/10351) Snaps crashing due to Node v8.11.1 Segfault
+
+
+
 
 # 0.63.0
 `2018-04-03  ·  1 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  20 🔍  ·  13 👩‍💻👨‍💻`
