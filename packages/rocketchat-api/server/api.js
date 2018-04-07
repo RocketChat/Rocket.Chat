@@ -325,6 +325,22 @@ class API extends Restivus {
 			}
 			return response;
 		};
+		const forgotPassword = function() {
+			const { email } = this.bodyParams;
+			if (!email) {
+				return RocketChat.API.v1.failure('The \'email\' param is required');
+			}
+
+			const emailSent = Meteor.call('sendForgotPasswordEmail', email);
+			if (emailSent) {
+				return RocketChat.API.v1.success();
+			}
+			return RocketChat.API.v1.failure('User not found');
+		};
+
+		this.addRoute('forgotPassword',
+			{ authRequired: false },
+			{ post: forgotPassword });
 
 		/*
 			Add a logout endpoint to the API
