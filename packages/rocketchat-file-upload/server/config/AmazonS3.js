@@ -27,8 +27,7 @@ const get = function(file, req, res) {
 		} else {
 			res.end();
 		}
-		});
-
+	});
 };
 
 const AmazonS3Uploads = new FileUploadClass({
