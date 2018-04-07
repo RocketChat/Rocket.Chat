@@ -1,6 +1,23 @@
 
+# 0.63.1
+`2018-04-07  ·  5 🐛  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Change deprecated Meteor._reload.reload method in favor of Reload._reload ([#10348](https://github.com/RocketChat/Rocket.Chat/pull/10348) by [@tttt-conan](https://github.com/tttt-conan))
+- Snaps crashing due to Node v8.11.1 Segfault ([#10351](https://github.com/RocketChat/Rocket.Chat/pull/10351))
+- Add '.value' in the SAML package to fix TypeErrors on SAML token validation ([#10084](https://github.com/RocketChat/Rocket.Chat/pull/10084) by [@TechyPeople](https://github.com/TechyPeople))
+- Incorrect german translation of user online status ([#10356](https://github.com/RocketChat/Rocket.Chat/pull/10356) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Incorrect French language usage for Disabled ([#10355](https://github.com/RocketChat/Rocket.Chat/pull/10355))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@TechyPeople](https://github.com/TechyPeople)
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+- [@tttt-conan](https://github.com/tttt-conan)
+
 # 0.63.0
-`2018-04-03  ·  1 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  20 🔍  ·  13 👩‍💻👨‍💻`
+`2018-04-04  ·  1 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  20 🔍  ·  13 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
