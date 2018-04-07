@@ -208,7 +208,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8
 
     steps:
       - attach_workspace:
