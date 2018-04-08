@@ -20,6 +20,9 @@ RocketChat.Migrations.add({
 					RocketChat.models.Users.update(
 						{ _id: user._id },
                         { $set: { 'settings.preferences.messageViewMode': user.settings.preferences.viewMode }},
+					);
+					RocketChat.models.Users.update(
+						{ _id: user._id },
                         { $unset: { 'settings.preferences.viewMode': 1 } }
 					);
 				});
