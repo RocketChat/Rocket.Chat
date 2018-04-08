@@ -202,6 +202,17 @@
 									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
 								</div>
 							</div>
+							<div class="input-line double-col" id="messageViewMode">
+								<label>{{_ "Message_view_mode"}}</label>
+								<div>
+									<select class="input-monitor rc-input__element" name="messageViewMode">
+										<option value="0" selected="{{selected 'messageViewMode' 0}}">{{_ "Normal"}}</option>
+										<option value="1" selected="{{selected 'messageViewMode' 1}}">{{_ "Cozy"}}</option>
+										<option value="2" selected="{{selected 'messageViewMode' 2}}">{{_ "Compact"}}</option>
+									</select>
+									<div class="info">{{_ "Message_view_mode_info"}}</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="emailNotificationMode">
 								<label>{{_ "Email_Notification_Mode"}}</label>
 								<div>
