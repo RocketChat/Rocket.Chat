@@ -49,7 +49,7 @@
 
 					</div>
 					<div class="section">
-						<h1>{{_ "Messages"}}</h1>
+						<h1>{{_ "Notifications"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Desktop_Notifications"}}</label>
@@ -98,6 +98,21 @@
 									</select>
 								</div>
 							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<select class="input-monitor rc-input__element" name="emailNotificationMode">
+										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+									</select>
+									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Messages"}}</h1>
+						<div class="section-content border-component-color">
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 								<div>
@@ -190,20 +205,8 @@
 								</div>
 							</div>
 							{{/with}} -->
-
-							<div class="input-line double-col" id="sendOnEnter">
-								<label>{{_ "Enter_Behaviour"}}</label>
-								<div>
-									<select class="input-monitor rc-input__element" name="sendOnEnter">
-										<option value="normal" selected="{{selected 'sendOnEnter' 'normal'}}">{{_ "Enter_Normal"}}</option>
-										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
-										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
-									</select>
-									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
-								</div>
-							</div>
 							<div class="input-line double-col" id="messageViewMode">
-								<label>{{_ "Message_view_mode"}}</label>
+								<label>{{_ "View_mode"}}</label>
 								<div>
 									<select class="input-monitor rc-input__element" name="messageViewMode">
 										<option value="0" selected="{{selected 'messageViewMode' 0}}">{{_ "Normal"}}</option>
@@ -213,14 +216,15 @@
 									<div class="info">{{_ "Message_view_mode_info"}}</div>
 								</div>
 							</div>
-							<div class="input-line double-col" id="emailNotificationMode">
-								<label>{{_ "Email_Notification_Mode"}}</label>
+							<div class="input-line double-col" id="sendOnEnter">
+								<label>{{_ "Enter_Behaviour"}}</label>
 								<div>
-									<select class="input-monitor rc-input__element" name="emailNotificationMode">
-										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+									<select class="input-monitor rc-input__element" name="sendOnEnter">
+										<option value="normal" selected="{{selected 'sendOnEnter' 'normal'}}">{{_ "Enter_Normal"}}</option>
+										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
+										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
 									</select>
-									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
 								</div>
 							</div>
 						</div>

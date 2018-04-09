@@ -6,12 +6,14 @@ RocketChat.Migrations.add({
 			if (RocketChat.models.Settings) {
 				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_viewMode' });
 				if (setting && setting.value) {
-					RocketChat.models.Settings.update(
+					RocketChat.models.Settings.create(
 						{ _id: 'Accounts_Default_User_Preferences_messageViewMode' },
 						{ $set: { value: setting.value } }
                     );
 
-                    RocketChat.models.Settings.deleteOne({_id: 'Accounts_Default_User_Preferences_viewMode'});
+                    RocketChat.models.Settings.remove(
+						{ _id: 'Accounts_Default_User_Preferences_viewMode' }
+                    );
 				}
 			}
 
@@ -19,11 +21,34 @@ RocketChat.Migrations.add({
 				RocketChat.models.Users.find({ 'settings.preferences.viewMode': { $exists: 1 } }).forEach(function(user) {
 					RocketChat.models.Users.update(
 						{ _id: user._id },
-                        { $set: { 'settings.preferences.messageViewMode': user.settings.preferences.viewMode }},
+                        { $rename: { 'settings.preferences.viewMode': 'user.settings.preferences.messageViewMode' } },
 					);
+				});
+			}
+		}
+	},
+	down() {
+		if (RocketChat && RocketChat.models) {
+
+			if (RocketChat.models.Settings) {
+				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_messageViewMode' });
+				if (setting && setting.value) {
+					RocketChat.models.Settings.create(
+						{ _id: 'Accounts_Default_User_Preferences_viewMode' },
+						{ $set: { value: setting.value } }
+                    );
+
+                    RocketChat.models.Settings.remove(
+						{ _id: 'Accounts_Default_User_Preferences_messageViewMode' }
+                    );
+				}
+			}
+
+			if (RocketChat.models.Users) {
+				RocketChat.models.Users.find({ 'settings.preferences.messageViewMode': { $exists: 1 } }).forEach(function(user) {
 					RocketChat.models.Users.update(
 						{ _id: user._id },
-                        { $unset: { 'settings.preferences.viewMode': 1 } }
+                        { $rename: { 'settings.preferences.messageViewMode': 'user.settings.preferences.viewMode' } },
 					);
 				});
 			}

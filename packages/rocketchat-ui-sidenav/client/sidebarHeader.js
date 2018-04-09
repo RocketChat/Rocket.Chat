@@ -50,7 +50,7 @@ const toolbarButtons = (user) => {
 		}
 	},
 	{
-		name: t('Sidebar_view_mode'),
+		name: t('View_mode'),
 		icon: () => RocketChat.getUserPreference(user, 'sidebarViewMode') ? viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')] : viewModeIcon.condensed,
 		action: (e) => {
 			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
