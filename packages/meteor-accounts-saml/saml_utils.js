@@ -413,7 +413,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				}
 			}
 
-			if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
+			if (!profile.email && profile.nameID && (profile.nameIDFormat && profile.nameIDFormat.value != null ? profile.nameIDFormat.value : profile.nameIDFormat).indexOf('emailAddress') >= 0) {
 				profile.email = profile.nameID;
 			}
 			if (Meteor.settings.debug) {
