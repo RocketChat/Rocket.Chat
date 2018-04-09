@@ -138,17 +138,19 @@
 							</div>
 							{{/with}}
 							<div class="rc-input rc-w50 padded">
-								{{#with canChange=allowPasswordChange}}
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "New_password"}}</div>
-										<div class="rc-input__wrapper">
-											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
-										</div>
-									</label>
-									{{# unless canChange}}
-										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
-									{{/unless}}
-								{{/with}}
+								{{#if isPasswordVisible}}
+									{{#with canChange=allowPasswordChange}}
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ "New_password"}}</div>
+											<div class="rc-input__wrapper">
+												<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+											</div>
+										</label>
+										{{# unless canChange}}
+											<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
+										{{/unless}}
+									{{/with}}
+								{{/if}}
 							</div>
 						</div>
 					</div>

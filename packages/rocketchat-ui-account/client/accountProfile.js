@@ -138,6 +138,14 @@ Template.accountProfile.helpers({
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
 	},
+	isPasswordVisible() {
+		const user = Meteor.user();
+		if (!user.services.password) {
+			return false;
+		}
+
+		return true;
+	},
 	allowAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
 	},
