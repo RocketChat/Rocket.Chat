@@ -12107,7 +12107,36 @@
       ]
     }
   ],
-  "HEAD": [
+  "HEAD": [],
+  "0.63.0": [
+    {
+      "pr": "10303",
+      "title": "[FIX] Audio Message UI fixes",
+      "userLogin": "kb0304",
+      "contributors": [
+        "kb0304",
+        "ggazzo",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10319",
+      "title": "[NEW] Improve history generation",
+      "userLogin": "rodrigok",
+      "milestone": "0.63.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10323",
+      "title": "Fix: Reaction endpoint/api only working with regular emojis",
+      "userLogin": "graywolf336",
+      "milestone": "0.63.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
     {
       "pr": "10313",
       "title": "Bump snap version to include security fix",
@@ -12125,6 +12154,57 @@
       "milestone": "0.63.0",
       "contributors": [
         "rodrigok"
+      ]
+    }
+  ],
+  "0.63.1": [
+    {
+      "pr": "10348",
+      "title": "[FIX] Change deprecated Meteor._reload.reload method in favor of Reload._reload",
+      "userLogin": "tttt-conan",
+      "milestone": "0.63.1",
+      "contributors": [
+        "tttt-conan"
+      ]
+    },
+    {
+      "pr": "10351",
+      "title": "[FIX] Snaps crashing due to Node v8.11.1 Segfault",
+      "userLogin": "geekgonecrazy",
+      "milestone": "0.63.1",
+      "contributors": [
+        "geekgonecrazy",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10084",
+      "title": "[FIX] Add '.value' in the SAML package to fix TypeErrors on SAML token validation",
+      "userLogin": "TechyPeople",
+      "milestone": "0.63.1",
+      "contributors": [
+        "TechyPeople",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10356",
+      "title": "[FIX] Incorrect german translation of user online status",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.63.1",
+      "contributors": [
+        "kaiiiiiiiii"
+      ]
+    },
+    {
+      "pr": "10355",
+      "title": "[FIX] Incorrect French language usage for Disabled",
+      "userLogin": "graywolf336",
+      "milestone": "0.63.1",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
       ]
     }
   ]
