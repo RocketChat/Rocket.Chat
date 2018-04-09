@@ -139,8 +139,20 @@
 			transition: transform 0.1s linear;
 		}
 
+		&.check {
+			color: red;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
 		&.cross {
 			color: red;
+			display: none;
+			&.active {
+				display: flex;
+			}
 		}
 
 		&.loading {
@@ -172,25 +184,16 @@
 		display: none;
 	}
 
-	&__audio-recording {
-		display: none;
-		position: relative;
-		z-index: -1;
-		&.active{
-			display: flex;
-			z-index: 2;
-		}
-	}
-
 	&__audio-message{
-		&.hidden{
-			z-index: -1;
-		}
+		display: flex;
 	}
 
 	&__timer-box{
-		display: flex;
+		display: none;
 		width: 50px;
+		&.active {
+			display: flex;
+		}
 	}
 
 	&__timer-dot{
@@ -266,11 +269,15 @@
 			order: 3;
 		}
 
+		&__audio-message {
+			order: 4;
+		}
+
 		&__send {
 			flex: 0;
 
 			font-size: 20px;
-			order: 4;
+			order: 5;
 		}
 	}
 }
