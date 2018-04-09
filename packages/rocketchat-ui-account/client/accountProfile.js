@@ -139,6 +139,10 @@ Template.accountProfile.helpers({
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
 	},
 	isPasswordVisible() {
+		if (RocketChat.settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
+			return true;
+		}
+
 		const user = Meteor.user();
 		if (!user || !user.services || !user.services.password) {
 			return false;
