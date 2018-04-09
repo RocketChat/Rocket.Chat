@@ -1011,6 +1011,8 @@
   "IssueLinks_Incompatible": "Warning: do not enable this and the 'Hex Color Preview' at the same time.",
   "IssueLinks_LinkTemplate": "Template for issue links",
   "IssueLinks_LinkTemplate_Description": "Template for issue links; %s will be replaced by the issue number.",
+  "IssueLinks_RegExp": "RegExp used to find issue in message",
+  "IssueLinks_RegExp_Description": "The RegExp must contain a capture group which will be used in conjunction with the Template Below",
   "It_works": "It works",
   "Idle_Time_Limit": "Idle Time Limit",
   "italics": "italics",
