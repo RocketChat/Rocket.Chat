@@ -140,7 +140,7 @@ Template.accountProfile.helpers({
 	},
 	isPasswordVisible() {
 		const user = Meteor.user();
-		if (!user || user.services || !user.services.password) {
+		if (!user || !user.services || !user.services.password) {
 			return false;
 		}
 
