@@ -55,7 +55,7 @@ describe('[Administration]', () => {
 				admin.infoCommitTable.isVisible().should.be.true;
 			});
 
-			it.skip('the first title should be Runtime Environment', () => {
+			it('the first title should be Runtime Environment', () => {
 				admin.infoRuntimeTableTitle.moveToObject();
 				admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
 			});
@@ -64,7 +64,7 @@ describe('[Administration]', () => {
 				admin.infoRuntimeTable.isVisible().should.be.true;
 			});
 
-			it.skip('the first title should be Build Environment', () => {
+			it('the first title should be Build Environment', () => {
 				admin.infoBuildTableTitle.moveToObject();
 				admin.infoBuildTableTitle.getText().should.equal('Build Environment');
 			});
@@ -227,7 +227,7 @@ describe('[Administration]', () => {
 					admin.usersFilter.setValue('');
 				});
 
-				it.skip('it should show rocket.cat', () => {
+				it('it should show rocket.cat', () => {
 					admin.usersRocketCat.waitForVisible();
 					admin.usersRocketCat.isVisible().should.be.true;
 				});

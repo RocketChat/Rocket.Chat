@@ -239,7 +239,7 @@ Template.loginForm.onCreated(function() {
 			}
 		}
 		if (state === 'login') {
-			if (!(formObj['emailOrUsername'] && formObj['email'].indexOf(' ') === -1)) {
+			if (!(formObj['emailOrUsername'] && formObj['emailOrUsername'].indexOf(' ') === -1)) {
 				validationObj['emailOrUsername'] = t('Invalid_email');
 			}
 		}
