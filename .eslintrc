@@ -132,6 +132,7 @@
 		"Promise"                     : false,
 		"Random"                      : false,
 		"ReactiveVar"                 : false,
+		"Reload"                      : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
 		"RoomHistoryManager"          : false,
