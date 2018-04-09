@@ -6,7 +6,7 @@ RocketChat.Migrations.add({
 			if (RocketChat.models.Settings) {
 				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_viewMode' });
 				if (setting && setting.value) {
-					RocketChat.models.Settings.create(
+					RocketChat.models.Settings.update(
 						{ _id: 'Accounts_Default_User_Preferences_messageViewMode' },
 						{ $set: { value: setting.value } }
                     );
@@ -33,7 +33,7 @@ RocketChat.Migrations.add({
 			if (RocketChat.models.Settings) {
 				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_messageViewMode' });
 				if (setting && setting.value) {
-					RocketChat.models.Settings.create(
+					RocketChat.models.Settings.update(
 						{ _id: 'Accounts_Default_User_Preferences_viewMode' },
 						{ $set: { value: setting.value } }
                     );
