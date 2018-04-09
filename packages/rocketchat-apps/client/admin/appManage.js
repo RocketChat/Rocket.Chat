@@ -5,6 +5,16 @@ import { AppEvents } from '../communication';
 
 
 Template.appManage.onCreated(function() {
+
+	if (RocketChat.settings.cachedCollectionPrivate == null) {
+		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
+			name: 'private-settings',
+			eventType: 'onLogged'
+		});
+		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
+		RocketChat.settings.cachedCollectionPrivate.init();
+	}
+
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
@@ -74,6 +84,51 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	// setEditorOnBlur(_id) {
+	// 	Meteor.defer(function() {
+	// 		if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
+	// 			return;
+	// 		}
+	// 		const codeMirror = $(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0].CodeMirror;
+	// 		if (codeMirror.changeAdded === true) {
+	// 			return;
+	// 		}
+	// 		const onChange = function() {
+	// 			const value = codeMirror.getValue();
+	// 			TempSettings.update({ _id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value }});
+	// 		};
+	// 		const onChangeDelayed = _.debounce(onChange, 500);
+	// 		codeMirror.on('change', onChangeDelayed);
+	// 		codeMirror.changeAdded = true;
+	// 	});
+	// },
+	languages() {
+		const languages = TAPi18n.getLanguages();
+
+		let result = Object.keys(languages).map(key => {
+			const language = languages[key];
+			return _.extend(language, { key });
+		});
+
+		result = _.sortBy(result, 'key');
+		result.unshift({
+			'name': 'Default',
+			'en': 'Default',
+			'key': ''
+		});
+		return result;
+	},
+	appLanguage(key) {
+		const setting = RocketChat.settings.get('Language');
+		return setting && setting.split('-').shift().toLowerCase() === key;
+	},
+	selectedOption(_id, val) {
+		const settings = Template.instance().settings.get();
+		return settings[_id].value === val;
+	},
+	getColorVariable(color) {
+		return color.replace(/theme-color-/, '@');
+	},
 	disabled() {
 		const t = Template.instance();
 		const settings = t.settings.get();
@@ -240,7 +295,20 @@ Template.appManage.events({
 		}
 	},
 
-	'input input': _.throttle(function(e, t) {
+	'change .rc-select__element' : (e, t) => {
+		const labelFor = $(e.currentTarget).attr('name');
+		const value = $(e.currentTarget).val();
+
+		const setting = t.settings.get()[labelFor];
+
+		if (setting) {
+			setting.value = value;
+			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.settings.set(t.settings.get());
+		}
+	},
+
+	'input input, input textarea, change input[type="color"]': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':
