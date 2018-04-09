@@ -185,6 +185,9 @@ function executeIntegrationRest() {
 			return RocketChat.API.v1.failure(e.message);
 		}
 
+		this.request.setEncoding('utf8');
+		const content_raw = this.request.read();
+
 		const request = {
 			url: {
 				hash: this.request._parsedUrl.hash,
@@ -196,7 +199,7 @@ function executeIntegrationRest() {
 			url_raw: this.request.url,
 			url_params: this.urlParams,
 			content: this.bodyParams,
-			content_raw: this.request._readableState && this.request._readableState.buffer && this.request._readableState.buffer.toString(),
+			content_raw,
 			headers: this.request.headers,
 			user: {
 				_id: this.user._id,
