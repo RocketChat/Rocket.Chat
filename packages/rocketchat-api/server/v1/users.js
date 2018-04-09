@@ -260,6 +260,33 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			data: Match.ObjectIncluding({
+				email: Match.Maybe(String),
+				name: Match.Maybe(String),
+				username: Match.Maybe(String),
+				currentPassword: Match.Maybe(String),
+				newPassword: Match.Maybe(String)
+			}),
+			customFields: Match.Maybe(Object)
+		});
+
+		const userData = {
+			email: this.bodyParams.data.email,
+			realname: this.bodyParams.data.name,
+			username: this.bodyParams.data.username,
+			newPassword: this.bodyParams.data.newPassword,
+			typedPassword: this.bodyParams.data.currentPassword
+		};
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields));
+
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
+	}
+});
+
 RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 	post() {
 		const user = this.getUserFromParams();
@@ -267,7 +294,7 @@ RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => {
 			data = Meteor.call('createToken', user._id);
 		});
-		return data ? RocketChat.API.v1.success({data}) : RocketChat.API.v1.unauthorized();
+		return data ? RocketChat.API.v1.success({ data }) : RocketChat.API.v1.unauthorized();
 	}
 });
 
@@ -308,7 +335,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
-				viewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),
@@ -333,7 +359,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			delete this.bodyParams.data.language;
 			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
 		} else {
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }});
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
@@ -343,10 +369,12 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 });
 
 /**
-	This API returns the logged user roles.
+ DEPRECATED
+ // TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
+ This API returns the logged user roles.
 
-	Method: GET
-	Route: api/v1/user.roles
+ Method: GET
+ Route: api/v1/user.roles
  */
 RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 	get() {
@@ -358,6 +386,10 @@ RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 			currentUserRoles = result[0];
 		}
 
-		return RocketChat.API.v1.success(currentUserRoles);
+		return RocketChat.API.v1.success(this.deprecationWarning({
+			endpoint: 'user.roles',
+			versionWillBeRemove: 'v0.66',
+			response: currentUserRoles
+		}));
 	}
 });

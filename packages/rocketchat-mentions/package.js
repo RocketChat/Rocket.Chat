@@ -12,5 +12,6 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/server.js', 'server');
+	api.addFiles('server/methods/getUserMentionsByChannel.js', 'server');
 	api.addFiles('client/client.js', 'client');
 });

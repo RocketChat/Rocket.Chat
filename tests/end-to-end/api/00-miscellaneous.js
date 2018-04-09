@@ -66,8 +66,36 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
+				expect(res.body).to.have.property('roles').and.to.be.an('array');
 				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
 			})
 			.end(done);
 	});
+
+	describe('/settings.oauth', () => {
+		it('should have return list of available oauth services when user is not logged', (done) => {
+			request.get(api('settings.oauth'))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should have return list of available oauth services when user is logged', (done) => {
+			request.get(api('settings.oauth'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
 });
