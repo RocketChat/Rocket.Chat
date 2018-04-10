@@ -74,18 +74,45 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.favorite', () => {
 		let testChannel;
+		const testChannelName = `channel.test.${ Date.now() }`;
 		it('create an channel', (done) => {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: testChannelName
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
 				});
 		});
-		it('should favorite the room when send favorite: true', (done) => {
+		it('should favorite the room when send favorite: true by roomName', (done) => {
+			request.post(api('rooms.favorite'))
+				.set(credentials)
+				.send({
+					roomName: testChannelName,
+					favorite: true
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should unfavorite the room when send favorite: false by roomName', (done) => {
+			request.post(api('rooms.favorite'))
+				.set(credentials)
+				.send({
+					roomName: testChannelName,
+					favorite: false
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should favorite the room when send favorite: true by roomId', (done) => {
 			request.post(api('rooms.favorite'))
 				.set(credentials)
 				.send({
@@ -99,7 +126,7 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 
-		it('should unfavorite room when send favorite: false', (done) => {
+		it('should unfavorite room when send favorite: false by roomId', (done) => {
 			request.post(api('rooms.favorite'))
 				.set(credentials)
 				.send({
