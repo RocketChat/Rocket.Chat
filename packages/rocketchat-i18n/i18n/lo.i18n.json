@@ -1318,7 +1318,6 @@
   "Message_too_long": "ຂໍ້ຄວາມຍາວເກີນໄປ",
   "Message_VideoRecorderEnabled": "Video Recorder Enabled",
   "Message_VideoRecorderEnabledDescription": "ຕ້ອງການໄຟລ໌ 'video / webm' ເປັນສື່ມວນຊົນທີ່ຍອມຮັບພາຍໃນ 'ການອັບໂຫລດໄຟລ໌'.",
-  "Message_view_mode_info": "ການປ່ຽນແປງນີ້ຈໍານວນຂອງຂໍ້ຄວາມຊ່ອງທີ່ໃຊ້ເວລາເຖິງໃນຫນ້າຈໍ.",
   "Messages": "ຂໍ້ຄວາມ",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "ຂໍ້ຄວາມທີ່ຖືກສົ່ງໄປທີ່ເຂົ້າມາ WebHook ຈະໄດ້ຮັບການຈັດພີມມາທີ່ນີ້.",
   "Meta": "Meta",

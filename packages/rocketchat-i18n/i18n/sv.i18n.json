@@ -1318,7 +1318,6 @@
   "Message_too_long": "Meddelandet är för långt",
   "Message_VideoRecorderEnabled": "Videobandspelare aktiverad",
   "Message_VideoRecorderEnabledDescription": "Kräver \"video / webm\" -filer för att vara en accepterad medietyp inom inställningarna \"Filuppladdning\".",
-  "Message_view_mode_info": "Detta ändrar mängden rymd meddelanden tar upp på skärmen.",
   "Messages": "Meddelanden",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Meddelanden som skickas till den inkommande WebHook kommer att publiceras här.",
   "Meta": "Meta",

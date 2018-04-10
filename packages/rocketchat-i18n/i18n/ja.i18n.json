@@ -1318,7 +1318,6 @@
   "Message_too_long": "メッセージが長すぎです",
   "Message_VideoRecorderEnabled": "ビデオレコーダー有効",
   "Message_VideoRecorderEnabledDescription": "'ファイル/アップロード'設定で 'video / webm'ファイルを受け入れ可能なメディアタイプにする必要があります。",
-  "Message_view_mode_info": "画面上のメッセージが取るスペースを変化させます。",
   "Messages": "メッセージ",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Incoming WebHook へ送信されたメッセージは、こちらへ投稿されます。",
   "Meta": "メタ情報",

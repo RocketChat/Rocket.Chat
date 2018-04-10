@@ -1318,7 +1318,6 @@
   "Message_too_long": "Az üzenet túl hosszú",
   "Message_VideoRecorderEnabled": "Videofelvevő engedélyezve",
   "Message_VideoRecorderEnabledDescription": "Szükséges, hogy a \"video / webm\" fájlok elfogadott média típus legyenek a \"Fájl feltöltése\" beállításai között.",
-  "Message_view_mode_info": "Ez megváltoztatja a tárterületet üzeneteket veszi fel a képernyőn.",
   "Messages": "Üzenetek",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Küldött üzenetek a Bejövő WebHook felteszik itt.",
   "Meta": "meta",

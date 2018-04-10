@@ -1318,7 +1318,6 @@
   "Message_too_long": "Съобщението е твърде дълго",
   "Message_VideoRecorderEnabled": "Видеорекордерът е активиран",
   "Message_VideoRecorderEnabledDescription": "Изисква файловете \"видео / уеб\" да бъдат приети типове медии в настройките \"Качване на файлове\".",
-  "Message_view_mode_info": "Това променя броя на космическите съобщения, които се заемат на екрана.",
   "Messages": "Съобщения",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Съобщенията, които се изпращат в Incoming WebHook, ще бъдат публикувани тук.",
   "Meta": "Мета",

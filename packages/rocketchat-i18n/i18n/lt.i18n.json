@@ -1318,7 +1318,6 @@
   "Message_too_long": "Pranešimas per ilgas",
   "Message_VideoRecorderEnabled": "Vaizdo įrašymo įrenginys įjungtas",
   "Message_VideoRecorderEnabledDescription": "Reikalaujama, kad \"video / webm\" failai būtų priimtini medijos tipo parametrai \"Failo įkėlimas\".",
-  "Message_view_mode_info": "Tai pakeičia kosminių pranešimų kiekį ekrane.",
   "Messages": "Žinutės",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Pranešimai, siunčiami į \"Incoming WebHook\", bus paskelbti čia.",
   "Meta": "Meta",

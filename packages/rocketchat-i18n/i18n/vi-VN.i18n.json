@@ -1308,7 +1308,6 @@
   "Message_too_long": "Tin nhắn quá dài",
   "Message_VideoRecorderEnabled": "Đã bật Trình ghi hình Video",
   "Message_VideoRecorderEnabledDescription": "Yêu cầu tệp 'video / webm' là loại phương tiện được chấp nhận trong cài đặt 'Tải lên tệp'.",
-  "Message_view_mode_info": "Điều này thay đổi số lượng tin nhắn không gian chiếm trên màn hình.",
   "Messages": "Tin nhắn",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Thông báo được gửi đến WebHook vào sẽ được đăng ở đây.",
   "Meta": "Meta",

@@ -1318,7 +1318,6 @@
   "Message_too_long": "Mesej terlalu lama",
   "Message_VideoRecorderEnabled": "Perakam Video Dihidupkan",
   "Message_VideoRecorderEnabledDescription": "Memerlukan fail 'video / webm' menjadi jenis media yang diterima dalam tetapan 'Upload File'.",
-  "Message_view_mode_info": "Ini mengubah jumlah mesej ruang mengambil pada skrin.",
   "Messages": "Mesej",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Mesej-mesej yang dihantar ke masuk WebHook akan disiarkan di sini.",
   "Meta": "Meta",

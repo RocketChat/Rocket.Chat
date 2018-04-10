@@ -1318,7 +1318,6 @@
   "Message_too_long": "信息太长",
   "Message_VideoRecorderEnabled": "录像机启用",
   "Message_VideoRecorderEnabledDescription": "要求'视频/ webm'文件在'文件上传'设置中成为可接受的媒体类型。",
-  "Message_view_mode_info": "这改变了屏幕上占用的空间消息量。",
   "Messages": "消息",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "发送到传入WebHook的消息将在此处发布。",
   "Meta": "Meta",

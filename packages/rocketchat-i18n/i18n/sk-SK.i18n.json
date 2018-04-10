@@ -1318,7 +1318,6 @@
   "Message_too_long": "Príliš dlhá správa",
   "Message_VideoRecorderEnabled": "Videorekordér je zapnutý",
   "Message_VideoRecorderEnabledDescription": "Vyžaduje, aby súbory typu \"video / web\" boli akceptovaným typom média v nastaveniach \"Nahrávanie súborov\".",
-  "Message_view_mode_info": "Tým sa zmení množstvo správ na miesto na obrazovke.",
   "Messages": "správy",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Správy, ktoré sa posielajú na adresu WebHook prichádzajú, sa sem zobrazia.",
   "Meta": "meta",

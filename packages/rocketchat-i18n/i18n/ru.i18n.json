@@ -1318,7 +1318,6 @@
   "Message_too_long": "Сообщение слишком длинное",
   "Message_VideoRecorderEnabled": "Запись видео включена",
   "Message_VideoRecorderEnabledDescription": "Тип файлов 'video/webm' должен быть в списке разрешенных к передаче файлов в разделе настроек \"загрузка файлов\"",
-  "Message_view_mode_info": "Сколько места сообщения занимают на экране.",
   "Messages": "Сообщения",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Сообщения, отосланные на Входящие WebHook, будут публиковаться здесь.",
   "Meta": "Мета",

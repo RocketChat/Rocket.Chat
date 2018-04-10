@@ -1318,7 +1318,6 @@
   "Message_too_long": "çok uzun İleti",
   "Message_VideoRecorderEnabled": "Video Kaydedici Etkin",
   "Message_VideoRecorderEnabledDescription": "'Dosya Yükleme' ayarları içinde kabul edilen bir medya türü olması için 'video / webm' dosyalarının olması gerekir.",
-  "Message_view_mode_info": "Bu alan mesajlarının miktarı ekranda sürebilir değiştirir.",
   "Messages": "Mesajlar",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Gelen WebHook gönderilen mesajları burada ilan edilecektir.",
   "Meta": "Meta",

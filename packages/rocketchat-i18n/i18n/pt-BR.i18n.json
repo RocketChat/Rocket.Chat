@@ -1318,7 +1318,6 @@
   "Message_too_long": "Mensagem muito longa",
   "Message_VideoRecorderEnabled": "Gravação de vídeo habilitada",
   "Message_VideoRecorderEnabledDescription": "Requer arquivos 'video / webm' para ser um tipo de mídia aceito dentro das configurações 'Upload de arquivo'.",
-  "Message_view_mode_info": "Isso muda o espaço que as mensagens ocupam na tela.",
   "Messages": "Mensagens",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "As mensagens que são enviadas para o WebHook de Entrada serão publicadas aqui.",
   "Meta": "Meta",

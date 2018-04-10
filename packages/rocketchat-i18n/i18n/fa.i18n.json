@@ -1318,7 +1318,6 @@
   "Message_too_long": "پیام بسیار طولانی",
   "Message_VideoRecorderEnabled": "ضبط ویدئو فعال",
   "Message_VideoRecorderEnabledDescription": "نیاز به فایل های 'video / webm' برای نوع رسانه پذیرفته شده در تنظیمات 'Upload File' است.",
-  "Message_view_mode_info": "این تغییر مقدار از پیام های فضایی را بر روی صفحه نمایش.",
   "Messages": "پیام",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "پیام هایی که به ورودی WebHook ارسال خواهد شد در اینجا نوشته شده است.",
   "Meta": "متا",

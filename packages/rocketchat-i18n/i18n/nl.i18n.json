@@ -1318,7 +1318,6 @@
   "Message_too_long": "Bericht te lang",
   "Message_VideoRecorderEnabled": "Videorecorder ingeschakeld",
   "Message_VideoRecorderEnabledDescription": "Vereist dat 'video / webm'-bestanden een geaccepteerd mediatype zijn binnen de instellingen voor' Bestand uploaden '.",
-  "Message_view_mode_info": "Dit verandert de hoeveelheid ruimte boodschappen nemen op het scherm.",
   "Messages": "Berichten",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Berichten die worden verstuurd naar de binnenkomende WebHook zullen hier gepost worden.",
   "Meta": "Meta",
