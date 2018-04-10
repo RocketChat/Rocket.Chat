@@ -34,12 +34,16 @@
 		display: flex;
 		align-items: center;
 		margin: 0 -9px;
+
+		overflow: hidden;
 	}
 
 	&-avatar {
 		width: 60px;
 		height: 60px;
 		margin: 0 9px;
+
+		flex: 0 0 auto;
 
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -48,14 +52,22 @@
 
 	&-info {
 		display: flex;
-		margin: 0 9px;
+
 		flex-direction: column;
-		width: 100%;
+		width: 1%;
+		flex-grow: 1;
+
+		white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 	}
 
 	&-name {
 		font-size: 1rem;
 		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&-description {
@@ -78,6 +90,18 @@
 	& .js-sort {
 		cursor: pointer;
 	}
+}
+
+.rc-table-td--createdAt,
+.rc-table-td--users {
+	width: 120px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.rc-table-td--users {
+	width: 80px;
 }
 
 @media (width <= 500px) {
