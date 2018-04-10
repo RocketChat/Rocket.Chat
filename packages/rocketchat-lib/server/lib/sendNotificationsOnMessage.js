@@ -225,22 +225,28 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 
 		const {
-			audioNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'audioNotifications'),
-			desktopNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'desktopNotifications'),
-			mobilePushNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'mobileNotifications')
+			audioNotifications,
+			desktopNotifications,
+			mobilePushNotifications
 		} = subscription;
 
-		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
+		const preferenceAudioNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'audioNotifications');
+		const preferenceDesktopNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'desktopNotifications');
+		const preferenceMobilePushNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'mobileNotifications');
+
+		if ((audioNotifications === 'all') || (preferenceAudioNotifications === 'all' && !disableAllMessageNotifications)) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}
-		if (desktopNotifications === 'all' && !disableAllMessageNotifications) {
+
+		if ((desktopNotifications === 'all') || (preferenceDesktopNotifications === 'all' && !disableAllMessageNotifications)) {
 			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (desktopNotifications === 'nothing') {
+		} else if ([desktopNotifications, preferenceDesktopNotifications].includes('nothing')) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 		}
-		if (mobilePushNotifications === 'all' && !disableAllMessageNotifications) {
+
+		if ((mobilePushNotifications === 'all') || (preferenceMobilePushNotifications === 'all' && !disableAllMessageNotifications)) {
 			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (mobilePushNotifications === 'nothing') {
+		} else if ([mobilePushNotifications, preferenceMobilePushNotifications].includes('nothing')) {
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 		}
 
