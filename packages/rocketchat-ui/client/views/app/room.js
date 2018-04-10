@@ -238,6 +238,12 @@ Template.room.helpers({
 		return roomData.announcement && roomData.announcement.message;
 	},
 
+	getAnnouncementStyle() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		return roomData.announcement && roomData.announcement.style !== undefined ? roomData.announcement.style : '';
+	},
+
 	roomIcon() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
