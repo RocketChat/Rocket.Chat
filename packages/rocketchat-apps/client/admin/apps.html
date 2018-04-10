@@ -1,32 +1,55 @@
 <template name="apps">
+	<!-- TODO: fix this class -->
 	<section class="preferences-page preferences-page--apps">
-		<header class="preferences-page__header">
-			{{> burger}}
-			<h2>{{_ "Manage_Apps"}}</h2>
-			<button class="rc-button rc-button--primary" data-button="install">{{_ "Install_package"}}</button>
-		</header>
-		<div class="preferences-page__content">
+		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
+		{{/header}}
+		<div class="rc-directory-content">
 			{{#requiresPermission 'manage-apps'}}
-				<div class="rc-discovery">
-					<div class="rc-discovery-wrap">
+				<table class="rc-table">
+					<thead class="rc-table-head">
+						<tr class="rc-table-tr">
+							<td class="rc-table-td">Name</td>
+							<td class="rc-table-td">Version</td>
+							<td class="rc-table-td">Status</td>
+							<td class="rc-table-td"></td>
+						</tr>
+					</thead>
+					<tbody class="rc-table-body">
 						{{#each apps}}
-							<div class="rc-discovery__item">
-								<div class="rc-discovery__item-image-wrap">
-									<div class="rc-discovery__item-image" style="background-image: url({{ iconFileContent }})"></div>
-								</div>
-								<div class="rc-discovery__item-footer">
-									<div class="rc-discovery__container">
-										<div class="discovery__item-footer-title">{{name}}</div>
-										<div class="rc-discovery__item-footer-description">{{description}}</div>
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									<div class="rc-directory-channel-wrapper">
+										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
+										<div class="rc-directory-channel-info">
+											<span class="rc-directory-channel-name">
+												{{name}}
+											</span>
+											{{#if description}}
+												<span class="rc-directory-channel-description">{{description}}</span>
+											{{/if}}
 									</div>
-									<button class="rc-button rc-button--square rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
+									</div>
+								</td>
+								<td class="rc-table-td rc-table-td--users">{{version}}</td>
+								<td class="rc-table-td">
+									{{status}}
+								</td>
+								<td class="rc-table-td">
+									<button class="rc-button rc-button--nude rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
 										{{> icon icon="cog"}}
 									</button>
-								</div>
-							</div>
+								</td>
+							</tr>
+						{{else}}
+						<tr class="rc-table-tr" data-name="{{name}}">
+							<td class="rc-table-td rc-table-td--name">
+								you dont have any app installed :/
+							</td>
+						</tr>
 						{{/each}}
-					</div>
-				</div>
+					</tbody>
+				</table>
 			{{/requiresPermission}}
 		</div>
 	</section>

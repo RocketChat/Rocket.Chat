@@ -40,6 +40,10 @@
 		width: 60px;
 		height: 60px;
 		margin: 0 9px;
+
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: center center;
 	}
 
 	&-info {
