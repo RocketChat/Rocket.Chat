@@ -16,7 +16,7 @@ apps:
     rocketchat-server:
         command: startRocketChat
         daemon: simple
-        plugs: [network, network-bind]
+        plugs: [network, network-bind, desktop]
     rocketchat-mongo:
         command: startmongo
         daemon: simple
@@ -38,8 +38,8 @@ apps:
         command: env LC_ALL=c initcaddy
 parts:
     node:
-        plugin: nodejs
-        node-engine: 8.11.1
+        plugin: dump 
+        prepare: wget https://nodejs.org/dist/v8.9.4/node-v8.9.4-linux-x64.tar.xz; tar xvf node-v8.9.4-linux-x64.tar.xz --strip 1; 
         build-packages:
             # For fibers
             - python
