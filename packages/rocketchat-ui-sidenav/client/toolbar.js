@@ -149,14 +149,15 @@ Template.toolbar.helpers({
 					query._id = query.rid;
 					delete query.rid;
 				}
-
-				if (filterText[0] === '#') {
+				const searchForChannels = filterText[0] === '#';
+				const searchForDMs = filterText[0] === '@';
+				if (searchForChannels) {
 					filterText = filterText.slice(1);
 					type.users = false;
 					query.t = 'c';
 				}
 
-				if (filterText[0] === '@') {
+				if (searchForDMs) {
 					filterText = filterText.slice(1);
 					type.rooms = false;
 					query.t = 'd';

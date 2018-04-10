@@ -168,3 +168,22 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 		};
 	}
 });
+
+RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+	get() {
+		check(this.queryParams, {
+			query: String
+		});
+
+		const { query } = this.queryParams;
+
+		const result = Meteor.runAsUser(this.userId, () =>
+			Meteor.call('spotlight', query, null, {
+				rooms: true,
+				users: true
+			})
+		);
+
+		return RocketChat.API.v1.success(result);
+	}
+});
