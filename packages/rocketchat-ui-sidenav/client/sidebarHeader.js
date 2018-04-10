@@ -253,7 +253,7 @@ Template.sidebarHeader.events({
 		}
 		return this.action && this.action.apply(this, [e]);
 	},
-	'click .sidebar__header .avatar'(e) {
+	'click .sidebar__header .sidebar__header-thumb'(e) {
 		if (!(Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
 			const config = {
