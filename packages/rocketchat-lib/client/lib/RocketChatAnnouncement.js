@@ -1,4 +1,4 @@
-export class RocketChatRoomAnnouncement {
+export class RocketChatAnnouncement {
 	constructor(args={}) {
 		this.room = new ReactiveVar(args.room);
 		this.message = new ReactiveVar(args.message);
