@@ -1,0 +1,44 @@
+FROM registry.access.redhat.com/rhscl/nodejs-8-rhel7
+
+ENV RC_VERSION 0.63.1
+
+MAINTAINER buildmaster@rocket.chat
+
+LABEL name="Rocket.Chat" \
+      vendor="Rocket.Chat" \
+      version="${RC_VERSION}" \
+      release="1" \
+      url="https://rocket.chat" \
+      summary="The Ultimate Open Source Web Chat Platform" \
+      description="The Ultimate Open Source Web Chat Platform" \
+      run="docker run -d --name ${NAME} ${IMAGE}"
+
+
+# This is ugly... But for some reason npm and node aren't available at this stage.
+ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/.npm-global/bin/:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN set -x \
+ && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104 \
+ && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/download" -o rocket.chat.tgz \
+ && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
+ && gpg --verify rocket.chat.tgz.asc \
+ && tar -zxf rocket.chat.tgz -C /opt/app-root/src/ \
+ && cd /opt/app-root/src/bundle/programs/server \
+ && npm install
+
+COPY licenses /licenses
+
+VOLUME /opt/app-root/src/uploads
+
+WORKDIR /opt/app-root/src/bundle
+
+ENV DEPLOY_METHOD=docker-redhat \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000
+
+EXPOSE 3000
+
+CMD ["node", "main.js"]
