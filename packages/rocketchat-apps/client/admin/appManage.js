@@ -6,15 +6,6 @@ import { AppEvents } from '../communication';
 
 Template.appManage.onCreated(function() {
 
-	if (RocketChat.settings.cachedCollectionPrivate == null) {
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
-			name: 'private-settings',
-			eventType: 'onLogged'
-		});
-		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
-		RocketChat.settings.cachedCollectionPrivate.init();
-	}
-
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
