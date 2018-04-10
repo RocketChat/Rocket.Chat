@@ -146,7 +146,6 @@ Template.userInfo.helpers({
 				if (username != null) {
 					const user = instance.user.get();
 					if ((user != null ? user.username : undefined) !== username) {
-						
 						data.username = username;
 						return instance.loadedUsername.set(username);
 					}
