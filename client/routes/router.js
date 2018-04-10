@@ -32,14 +32,12 @@ FlowRouter.route('/', {
 					if (user && user.defaultRoom) {
 						const room = user.defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
-					}
-					else if (user && user.lastVisitedRoom) {
+					} else if (user && user.lastVisitedRoom) {
 						const room = user.lastVisitedRoom;
 						FlowRouter.go(room, FlowRouter.current().queryParams);
-					}
-					else {
+					 } else {
 						FlowRouter.go('home');
-					}
+					  }
 				});
 				c.stop();
 			}
