@@ -43,7 +43,10 @@ Template.popover.onRendered(function() {
 	const position = _.throttle(() => {
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
+		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
+			x: this.data.currentTarget.getBoundingClientRect()[isRtl() ? 'right': 'left'],
+			y: this.data.currentTarget.getBoundingClientRect().bottom + 50
+		};
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;

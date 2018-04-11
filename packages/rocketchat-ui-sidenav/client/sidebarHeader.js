@@ -105,13 +105,9 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
+				currentTarget: e.currentTarget,
 				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
 				})
 			};
 
@@ -125,13 +121,9 @@ const toolbarButtons = (user) => {
 			const options = [];
 			const config = {
 				template: 'sortlist',
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
+				currentTarget: e.currentTarget,
 				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
 				}),
 				data: {
 					// value: instance.form[key].get(),
@@ -209,13 +201,9 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
+				currentTarget: e.currentTarget,
 				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
 				})
 			};
 
@@ -323,13 +311,9 @@ Template.sidebarHeader.events({
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
+				currentTarget: e.currentTarget,
 				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
+					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
 				})
 			};
 
