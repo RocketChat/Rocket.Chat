@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.63.0-develop",
+	"version": "0.64.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -86,6 +86,7 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
+		"@octokit/rest": "^15.2.6",
 		"autoprefixer": "^8.0.0",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -99,6 +100,7 @@
 		"postcss-media-minmax": "^3.0.0",
 		"postcss-nested": "^3.0.0",
 		"postcss-selector-not": "^3.0.1",
+		"progress": "^2.0.0",
 		"proxyquire": "^1.8.0",
 		"simple-git": "^1.91.0",
 		"stylelint": "^8.4.0",
@@ -106,7 +108,7 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"@babel/runtime": "^7.0.0-beta.40",
+		"@babel/runtime": "^7.0.0-beta.44",
 		"@google-cloud/language": "^1.1.0",
 		"@google-cloud/storage": "^1.6.0",
 		"@google-cloud/vision": "^0.15.2",
