@@ -45,21 +45,19 @@
 				</div>
 			{{/if}}
 
-			{{#unless collapsed}}
-				<div class="attachment-flex">
-					{{#if thumb_url}}
-						<div class="attachment-thumb">
-							<img src="{{fixCordova thumb_url}}">
-						</div>
-					{{/if}}
+			<div class="attachment-flex">
+				{{#if thumb_url}}
+					<div class="attachment-thumb">
+						<img src="{{fixCordova thumb_url}}">
+					</div>
+				{{/if}}
 
-					{{#if text}}
-						<div class="attachment-flex-column-grow attachment-text">
-							{{{parsedText}}}
-						</div>
-					{{/if}}
-				</div>
-			{{/unless}}
+				{{#if text}}
+					<div class="attachment-flex-column-grow attachment-text">
+						{{{parsedText}}}
+					</div>
+				{{/if}}
+			</div>
 
 			{{#if image_url}}
 				{{#unless collapsed}}
