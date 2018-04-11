@@ -48,8 +48,8 @@ describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
 		// sideNav.spotlightSearch.waitForVisible(10000);
-		// sideNav.general.waitForVisible(5000);
-		// sideNav.general.click();
+		sideNav.general.waitForVisible(5000);
+		sideNav.general.click();
 
 		request.post(api('login'))
 			.send(login)
@@ -85,7 +85,7 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the edit messages', () => {
+		it('it should not show the edit messages', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message Edit Block');
 			mainContent.openMessageActionMenu();
@@ -118,8 +118,9 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the delete messages', () => {
+		it('it should not show the delete messages', () => {
 		//the page needs a refresh to show the changes in the client
+			browser.refresh();
 			mainContent.sendMessage('Message for Message delete Block');
 			mainContent.openMessageActionMenu();
 			mainContent.messageDelete.isVisible().should.be.false;
@@ -151,7 +152,7 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the audo file button', () => {
+		it('it should not show the audo file button', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.recordBtn.waitForVisible(10000, true);
 			mainContent.recordBtn.isVisible().should.be.false;
@@ -183,7 +184,7 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the video file button', () => {
+		it('it should not show the video file button', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.videoCamBtn.waitForVisible(10000, true);
 			mainContent.videoCamBtn.isVisible().should.be.false;
@@ -228,6 +229,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should send a bad word', () => {
+			browser.refresh();
 			sideNav.general.waitForVisible(5000);
 			sideNav.general.click();
 			mainContent.setTextToInput('badword');
@@ -261,17 +263,18 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the pinned tab button', () => {
+		it('it should not show the pinned tab button', () => {
 		//the page needs a refresh to show the changes in the client
+			browser.refresh();
 			flexTab.pinnedTab.waitForVisible(10000, true);
 			flexTab.pinnedTab.isVisible().should.be.false;
 		});
 
-		it.skip('it should not show the pin message action', () => {
+		it('it should not show the pin message action', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
-			mainContent.pinMessage.isVisible().should.be.false;
+			mainContent.messagePin.isVisible().should.be.false;
 		});
 
 		it('it should change the message pin via api', (done) => {
@@ -300,8 +303,9 @@ describe('[Api Settings Change]', () => {
 				.end(done);
 		});
 
-		it.skip('it should not show the starred tab button', () => {
+		it('it should not show the starred tab button', () => {
 		//the page needs a refresh to show the changes in the client
+			browser.refresh();
 			flexTab.starredTab.waitForVisible(10000, true);
 			flexTab.starredTab.isVisible().should.be.false;
 		});
@@ -310,7 +314,7 @@ describe('[Api Settings Change]', () => {
 		//the page needs a refresh to show the changes in the client
 			mainContent.sendMessage('Message for Message pin Block');
 			mainContent.openMessageActionMenu();
-			mainContent.starMessage.isVisible().should.be.false;
+			mainContent.messageStar.isVisible().should.be.false;
 		});
 
 		it('it should change the message star via api', (done) => {
@@ -326,7 +330,7 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 
-	describe.skip('block file upload:', () => {
+	describe('block file upload:', () => {
 		it('it should change the file upload via api', (done) => {
 			request.post(api('settings/FileUpload_Enabled'))
 				.set(credentials)
@@ -356,7 +360,7 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 
-	describe.skip('profile changes:', () => {
+	describe('profile changes:', () => {
 		before(() => {
 			sideNav.sidebarUserMenu.click();
 			sideNav.account.waitForVisible(5000);
@@ -367,7 +371,7 @@ describe('[Api Settings Change]', () => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
 			sideNav.avatar.waitForVisible(5000, true);
-			sideNav.spotlightSearch.waitForVisible(10000);
+			// sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
 		});
 		describe('block profile change', () => {
