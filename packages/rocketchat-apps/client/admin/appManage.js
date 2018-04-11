@@ -5,7 +5,6 @@ import { AppEvents } from '../communication';
 
 
 Template.appManage.onCreated(function() {
-
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
 	this.ready = new ReactiveVar(false);
@@ -75,24 +74,6 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
-	// setEditorOnBlur(_id) {
-	// 	Meteor.defer(function() {
-	// 		if (!$(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0]) {
-	// 			return;
-	// 		}
-	// 		const codeMirror = $(`.code-mirror-box[data-editor-id="${ _id }"] .CodeMirror`)[0].CodeMirror;
-	// 		if (codeMirror.changeAdded === true) {
-	// 			return;
-	// 		}
-	// 		const onChange = function() {
-	// 			const value = codeMirror.getValue();
-	// 			TempSettings.update({ _id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value }});
-	// 		};
-	// 		const onChangeDelayed = _.debounce(onChange, 500);
-	// 		codeMirror.on('change', onChangeDelayed);
-	// 		codeMirror.changeAdded = true;
-	// 	});
-	// },
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
