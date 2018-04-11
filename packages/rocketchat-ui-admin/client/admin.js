@@ -113,6 +113,11 @@ Template.admin.helpers({
 		const settings = RocketChat.settings.collectionPrivate.find({ group: groupId }, { sort: { section: 1, sorter: 1, i18nLabel: 1 }}).fetch();
 		const sections = {};
 
+		const uptime = RocketChat.statistics.process ? (RocketChat.statistics.process.uptime * 1000) : Infinity;
+		const loadTimestamp = RocketChat.statistics.loadTimestamp;
+		//Adds a two minute margin
+		const buildMoment = loadTimestamp - uptime - (1000 * 60 * 2);
+
 		Object.keys(settings).forEach(key => {
 			const setting = settings[key];
 			if (setting.i18nDefaultQuery != null) {
@@ -131,6 +136,11 @@ Template.admin.helpers({
 					}
 				});
 			}
+
+			if (setting._updatedAt < buildMoment) {
+				return;
+			}
+
 			const settingSection = setting.section || '';
 			if (sections[settingSection] == null) {
 				sections[settingSection] = [];
