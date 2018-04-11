@@ -1,7 +1,7 @@
 /* globals popout */
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
-
+import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';
 
 
 export const call = (...args) => new Promise(function(resolve, reject) {
@@ -123,6 +123,8 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(clearedObject);
+			const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
+			if(roomAnnouncement.getMessage() !== '') roomAnnouncement.clear();
 			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
@@ -141,6 +143,19 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
+			if(streamingOptions.url !== '') {
+				new RocketChatAnnouncement({
+					room: i.data.rid,
+					message: 'Broadcast is now live. Click here to watch!',
+					callback: 'openBroadcast'
+				}).save()
+			} else {
+				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
+				if(roomAnnouncement.getMessage() !== '') {
+					roomAnnouncement.clear();
+				}
+			}
+
 			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
@@ -188,6 +203,18 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
+			if(streamingOptions.url !== '') {
+				new RocketChatAnnouncement({
+					room: i.data.rid,
+					message: 'Broadcast is now live. Click here to watch!',
+					callback: 'openBroadcast'
+				}).save()
+			} else {
+				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
+				if(roomAnnouncement.getMessage() !== '') {
+					roomAnnouncement.clear();
+				}
+			}
 			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
@@ -230,4 +257,18 @@ Template.liveStreamTab.events({
 			e.currentTarget.classList.remove('loading');
 		}
 	}
+});
+
+RocketChat.callbacks.add('openBroadcast', (rid) => {
+	const roomData = Session.get(`roomData${ rid }`)
+	if(!roomData) return;
+	popout.open({
+		content: 'liveStreamView',
+		data: {
+			streamingSource: roomData.streamingOptions.url,
+			isAudioOnly: roomData.streamingOptions.isAudioOnly,
+			showVideoControls: true,
+			streamingOptions:  roomData.streamingOptions
+		}
+	});
 });
