@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 	]);
 
 	// Statistics
-	api.addFiles('lib/rocketchat.js', [ 'client' ]);
+	api.addFiles('client/lib/rocketchat.js', [ 'client' ]);
 	api.addFiles([
 		'server/models/Statistics.js',
 		'server/lib/rocketchat.js',
