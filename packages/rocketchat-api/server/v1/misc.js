@@ -178,10 +178,7 @@ RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
 		const { query } = this.queryParams;
 
 		const result = Meteor.runAsUser(this.userId, () =>
-			Meteor.call('spotlight', query, null, {
-				rooms: true,
-				users: true
-			})
+			Meteor.call('spotlight', query)
 		);
 
 		return RocketChat.API.v1.success(result);
