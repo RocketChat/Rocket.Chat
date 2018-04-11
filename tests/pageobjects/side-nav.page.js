@@ -11,7 +11,7 @@ class SideNav extends Page {
 	getPopOverContent() { return browser.element('.rc-popover__content'); }
 	get accountBoxUserName() { return browser.element('.sidebar__account-username'); }
 	get accountBoxUserAvatar() { return browser.element('.sidebar__account .avatar-image'); }
-	get accountMenu() { return browser.element('.sidebar__account'); }
+	get accountMenu() { return browser.element('.sidebar__header-thumb'); }
 	get sidebarHeader() { return browser.element('.sidebar__header'); }
 	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
 	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
@@ -24,8 +24,10 @@ class SideNav extends Page {
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
 	get logout() { return browser.element('[data-id="logout"][data-type="open"]'); }
 	get sideNavBar() { return browser.element('.sidebar'); }
+	get sideBar() { return browser.element('.sidebar-flex__header'); }
 
 	// Toolbar
+	get spotlightSearchMagnifier() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
 	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button[aria-label="Search"]'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }

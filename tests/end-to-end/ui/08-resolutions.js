@@ -10,7 +10,7 @@ import {checkIfUserIsValid} from '../../data/checks';
 
 
 //skipping this since the main content its not moved anymore, instead there is a overlay of the side nav over the main content
-describe.skip('[Resolution]', ()=> {
+describe.only('[Resolution]', ()=> {
 	describe('[Mobile Render]', ()=> {
 		before(()=> {
 			checkIfUserIsValid(username, email, password);
@@ -23,12 +23,12 @@ describe.skip('[Resolution]', ()=> {
 			Global.setWindowSize(1450, 900);
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.spotlightSearch.waitForVisible(5000);
+			// sideNav.spotlightSearch.waitForVisible(5000);
 		});
 
 		describe('moving elements:', () => {
 			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
+				return !sideNav.sideBar.isVisibleWithinViewport();
 			});
 
 			it('it should press the navbar button', () => {
@@ -36,7 +36,7 @@ describe.skip('[Resolution]', ()=> {
 			});
 
 			it('it should open de sidenav', () => {
-				mainContent.mainContent.getLocation().should.not.deep.equal({x:0, y:0});
+				sideNav.sideBar.isVisibleWithinViewport();
 			});
 
 			it('it should open general channel', () => {
@@ -44,7 +44,7 @@ describe.skip('[Resolution]', ()=> {
 			});
 
 			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
+				return !sideNav.sideBar.isVisibleWithinViewport();
 			});
 
 			it('it should press the navbar button', () => {
@@ -64,7 +64,7 @@ describe.skip('[Resolution]', ()=> {
 			});
 
 			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
+				return !sideNav.sideBar.isVisibleWithinViewport();
 			});
 
 			it('it should press the navbar button', () => {
@@ -77,20 +77,7 @@ describe.skip('[Resolution]', ()=> {
 			});
 
 			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
-			});
-
-			it('it should press the navbar button', () => {
-				sideNav.burgerBtn.click();
-			});
-
-			it('it should press the avatar link', () => {
-				sideNav.avatar.waitForVisible(5000);
-				sideNav.avatar.click();
-			});
-
-			it('it should close de sidenav', () => {
-				mainContent.mainContent.getLocation().should.deep.equal({x:0, y:0});
+				return !sideNav.sideBar.isVisibleWithinViewport();
 			});
 
 			it('it should press the navbar button', () => {
