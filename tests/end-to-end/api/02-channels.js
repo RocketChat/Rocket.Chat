@@ -2,8 +2,20 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log, apiPublicChannelName, channel } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	apiEmail,
+	apiUsername,
+	targetUser,
+	log,
+	apiPublicChannelName,
+	channel
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 function getRoomInfo(roomId) {
@@ -397,6 +409,24 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.members', (done) => {
+		request.get(api('channels.members'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+			})
+			.end(done);
+	});
+
 	it('/channels.rename', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
@@ -571,6 +601,26 @@ describe('[Channels]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/channels.getAllUserMentionsByChannel', () => {
+		it('should return and array of mentions by channel', (done) => {
+			request.get(api('channels.getAllUserMentionsByChannel'))
+				.set(credentials)
+				.query({
+					roomId: channel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('mentions').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
 				})
 				.end(done);
 		});
