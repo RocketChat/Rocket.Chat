@@ -32,10 +32,6 @@ Package.onUse(function(api) {
 	], 'server');
 
 	Npm.depends({
-		'googleapis': '25.0.0',
-		'fluent-ffmpeg': '2.1.2',
-		'websocket-stream': '5.1.2',
-		'ws': '5.0.0',
-		'express': '4.15.4'
+		'googleapis': '25.0.0'
 	});
 });

@@ -33,8 +33,6 @@ RocketChat.API.v1.addRoute('livestream/oauth/callback', {
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
-		console.log(ret);
-
 		RocketChat.models.Users.update({ _id: userId }, {$set: {
 			'settings.livestream' : ret
 		}});
