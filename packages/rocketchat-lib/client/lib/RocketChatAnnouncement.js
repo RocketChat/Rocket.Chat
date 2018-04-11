@@ -19,8 +19,8 @@ export class RocketChatAnnouncement {
 		return this.callback.get();
 	}
 	getByRoom(rid) {
-		const roomData = Session.get(`roomData${ rid }`)
-		if(!roomData) return null;
+		const roomData = Session.get(`roomData${ rid }`);
+		if (!roomData) { return null; }
 		this.room.set(rid);
 		this.message.set(roomData.announcement.message);
 		this.callback.set(roomData.announcement.callback);

@@ -124,7 +124,7 @@ Template.liveStreamTab.events({
 			i.editing.set(false);
 			i.streamingOptions.set(clearedObject);
 			const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-			if(roomAnnouncement.getMessage() !== '') roomAnnouncement.clear();
+			if (roomAnnouncement.getMessage() !== '') { roomAnnouncement.clear(); }
 			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
 		});
 	},
@@ -143,15 +143,15 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
-			if(streamingOptions.url !== '') {
+			if (streamingOptions.url !== '') {
 				new RocketChatAnnouncement({
 					room: i.data.rid,
 					message: 'Broadcast is now live. Click here to watch!',
 					callback: 'openBroadcast'
-				}).save()
+				}).save();
 			} else {
 				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-				if(roomAnnouncement.getMessage() !== '') {
+				if (roomAnnouncement.getMessage() !== '') {
 					roomAnnouncement.clear();
 				}
 			}
@@ -203,15 +203,15 @@ Template.liveStreamTab.events({
 			}
 			i.editing.set(false);
 			i.streamingOptions.set(streamingOptions);
-			if(streamingOptions.url !== '') {
+			if (streamingOptions.url !== '') {
 				new RocketChatAnnouncement({
 					room: i.data.rid,
 					message: 'Broadcast is now live. Click here to watch!',
 					callback: 'openBroadcast'
-				}).save()
+				}).save();
 			} else {
 				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
-				if(roomAnnouncement.getMessage() !== '') {
+				if (roomAnnouncement.getMessage() !== '') {
 					roomAnnouncement.clear();
 				}
 			}
@@ -260,8 +260,8 @@ Template.liveStreamTab.events({
 });
 
 RocketChat.callbacks.add('openBroadcast', (rid) => {
-	const roomData = Session.get(`roomData${ rid }`)
-	if(!roomData) return;
+	const roomData = Session.get(`roomData${ rid }`);
+	if (!roomData) { return; }
 	popout.open({
 		content: 'liveStreamView',
 		data: {
