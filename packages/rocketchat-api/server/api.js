@@ -28,7 +28,8 @@ class API extends Restivus {
 			roles: 0,
 			statusDefault: 0,
 			_updatedAt: 0,
-			customFields: 0
+			customFields: 0,
+			settings: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
