@@ -38,15 +38,26 @@ Template.popover.onRendered(function() {
 			popover.close();
 		}
 	});
+	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
+
+		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
+
+		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
+		const horizontalDirection = /left/.test(direction) ? 'left' : /right/.test(direction) ? 'right' : isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		console.log(horizontalDirection);
+
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
+
 		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.currentTarget.getBoundingClientRect()[isRtl() ? 'right': 'left'],
-			y: this.data.currentTarget.getBoundingClientRect().bottom + 50
+			x: this.data.currentTarget.getBoundingClientRect()[horizontalDirection === 'left'? 'right' : 'left'],
+			y: this.data.currentTarget.getBoundingClientRect()[verticalDirection]
 		};
+		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
+		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;
@@ -57,24 +68,30 @@ Template.popover.onRendered(function() {
 			const windowWidth = window.innerWidth;
 			const windowHeight = window.innerHeight;
 
-			let top;
-			if (mousePosition.y <= popoverHeightHalf) {
-				top = 10;
-			} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
-				top = windowHeight - popoverHeight - 10;
-			} else {
-				top = mousePosition.y - popoverHeightHalf;
+			let top = mousePosition.y - popoverHeight + offsetHeight;
+
+			if (verticalDirection === 'top') {
+				top = mousePosition.y - popoverHeight + offsetHeight;
+			}
+			if (top <= popoverHeightHalf) {
+				top = 10 + offsetHeight;
+			}
+			if (top > windowHeight) {
+				top = windowHeight - offsetHeight;
 			}
 
-			let left;
-			if (mousePosition.x + popoverWidth >= windowWidth) {
-				left = mousePosition.x - popoverWidth;
-			} else if (mousePosition.x <= popoverWidth) {
-				left = isRtl() ? mousePosition.x + 10 : 10;
-			} else if (mousePosition.x <= windowWidth / 2) {
-				left = mousePosition.x;
-			} else {
-				left = mousePosition.x - popoverWidth;
+			let left = mousePosition.x - popoverWidth + offsetWidth;
+
+			if (horizontalDirection === 'right') {
+				left = mousePosition.x + offsetWidth;
+			}
+
+			if (left + popoverWidth >= windowWidth) {
+				left = mousePosition.x - popoverWidth + offsetWidth;
+			}
+
+			if (left <= 0) {
+				left = mousePosition.x + offsetWidth;
 			}
 
 			popoverContent.style.top = `${ top }px`;
