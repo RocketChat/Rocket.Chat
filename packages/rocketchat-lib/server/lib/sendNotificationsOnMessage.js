@@ -71,7 +71,7 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 		text = message.msg;
 	} else if (room.name) {
 		title = `#${ room.name }`;
-		text = `@${ user.username }: ${ message.msg }`;
+		text = `${ user.username }: ${ message.msg }`;
 	}
 
 	if (title === '' || text === '') {
