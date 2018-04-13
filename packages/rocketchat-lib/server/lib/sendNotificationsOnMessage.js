@@ -64,9 +64,9 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 		message.msg = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
 
-	let title = ''
-	let text = ''
-	if (room.t == 'd') {
+	let title = '';
+	let text = '';
+	if (room.t === 'd') {
 		title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
 		text = message.msg;
 	} else if (room.name) {
@@ -74,8 +74,8 @@ function notifyDesktopUser(userId, user, message, room, duration) {
 		text = `@${ user.username }: ${ message.msg }`;
 	}
 
-	if (title == '' || text == '') {
-		return
+	if (title === '' || text === '') {
+		return;
 	}
 
 	RocketChat.Notifications.notifyUser(userId, 'notification', {
