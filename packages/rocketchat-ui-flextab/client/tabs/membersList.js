@@ -1,4 +1,4 @@
-/* globals WebRTC popover isRtl */
+/* globals WebRTC popover */
 import _ from 'underscore';
 import {getActions} from './userActions';
 

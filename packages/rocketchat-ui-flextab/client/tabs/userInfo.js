@@ -1,4 +1,4 @@
-/* globals RoomRoles, UserRoles*/
+/* globals RoomRoles UserRoles popover */
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -168,7 +168,7 @@ Template.userInfo.helpers({
 		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
-/* globals isRtl popover */
+
 Template.userInfo.events({
 	'click .js-more'(e, instance) {
 		const actions = more.call(this);

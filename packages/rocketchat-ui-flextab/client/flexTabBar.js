@@ -1,4 +1,4 @@
-/* globals popover, isRtl */
+/* globals popover */
 import _ from 'underscore';
 
 const commonHelpers = {
