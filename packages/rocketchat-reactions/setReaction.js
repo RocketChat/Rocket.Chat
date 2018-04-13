@@ -2,7 +2,7 @@
 import _ from 'underscore';
 
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
@@ -39,12 +39,21 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
+		const userAlreadyReacted = message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		const removeUserReaction = () => {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
-
+		};
+		const removeMessageReactionIfNeed = () => {
 			if (message.reactions[reaction].usernames.length === 0) {
 				delete message.reactions[reaction];
 			}
+		};
+		if (userAlreadyReacted) {
+			if (shouldReact) {
+				throw new Meteor.Error('error-not-allowed', 'You already reacted with this message.', { method: 'setReaction' });
+			}
+			removeUserReaction();
+			removeMessageReactionIfNeed();
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
@@ -55,6 +64,9 @@ Meteor.methods({
 				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
+			if (shouldReact === false) {
+				throw new Meteor.Error('error-not-allowed', 'You still haven\'t reacted with this message.', { method: 'setReaction' });
+			}
 			if (!message.reactions) {
 				message.reactions = {};
 			}
