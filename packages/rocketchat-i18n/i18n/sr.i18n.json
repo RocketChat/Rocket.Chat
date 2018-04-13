@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Фолдер за учитавање скрипте",
   "InternalHubot_reload": "Поново учитајте скрипте",
   "InternalHubot_ScriptsToLoad": "Скрипте за учитавање",
-  "InternalHubot_ScriptsToLoad_Description": "Унесите зарезом одвојена листа сценарија за учитавање од хттпс://гитхуб.цом/гитхуб/хубот-сцриптс/трее/мастер/срц/сцриптс",
   "InternalHubot_Username_Description": "Ово мора бити валидна корисничко име бот регистрована на серверу.",
   "InternalHubot_EnableForChannels": "Омогући за јавне канале",
   "InternalHubot_EnableForDirectMessages": "Омогућите директне поруке",

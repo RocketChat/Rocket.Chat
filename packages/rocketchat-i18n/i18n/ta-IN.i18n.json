@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "ஸ்கிரிப்ட்களை ஏற்ற கோப்புறை",
   "InternalHubot_reload": "ஸ்கிரிப்ட்களை மீண்டும் ஏற்றவும்",
   "InternalHubot_ScriptsToLoad": "ஸ்கிரிப்டை ஏற்ற",
-  "InternalHubot_ScriptsToLoad_Description": "https://github.com/github/hubot-scripts/tree/master/src/scripts இருந்து ஏற்ற தயவு செய்து திரைக்கதை ஒரு கமா பிரிக்கப்பட்ட பட்டியலில் நுழைய",
   "InternalHubot_Username_Description": "இந்த உங்கள் சர்வரில் பதிவு ஒரு பொட் சரியான பயனர் பெயர் இருக்க வேண்டும்.",
   "InternalHubot_EnableForChannels": "பொது சேனல்களுக்கு இயக்கு",
   "InternalHubot_EnableForDirectMessages": "நேரடி செய்திகளை இயக்கவும்",

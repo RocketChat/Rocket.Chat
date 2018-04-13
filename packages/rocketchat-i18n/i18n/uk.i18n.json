@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Папка для завантаження скриптів",
   "InternalHubot_reload": "Перезавантажте скрипти",
   "InternalHubot_ScriptsToLoad": "Сценарії для завантаження",
-  "InternalHubot_ScriptsToLoad_Description": "Будь ласка, введіть розділений комами список скриптів для завантаження з https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Це повинно бути дійсним ім'ям користувача бота, зареєстрований на сервері.",
   "InternalHubot_EnableForChannels": "Увімкнути для публічних каналів",
   "InternalHubot_EnableForDirectMessages": "Увімкнути для прямих повідомлень",

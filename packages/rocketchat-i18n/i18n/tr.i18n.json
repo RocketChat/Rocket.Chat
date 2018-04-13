@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Komut Dosyalarını Yüklemek İçin Klasör",
   "InternalHubot_reload": "Komut dosyalarını yeniden yükle",
   "InternalHubot_ScriptsToLoad": "Scripts yüklemek için",
-  "InternalHubot_ScriptsToLoad_Description": "https://github.com/github/hubot-scripts/tree/master/src/scripts yüklemek için komut bir virgülle ayrılmış listesini girin",
   "InternalHubot_Username_Description": "Bu sunucuda kayıtlı bir bot geçerli bir kullanıcı adı olmalıdır.",
   "InternalHubot_EnableForChannels": "Herkese Açık Kanallar için Etkinleştir",
   "InternalHubot_EnableForDirectMessages": "Doğru Mesajları Etkinleştir",

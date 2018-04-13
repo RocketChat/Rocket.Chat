@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "A parancsfájlok betöltésére szolgáló mappa",
   "InternalHubot_reload": "Töltse újra a szkripteket",
   "InternalHubot_ScriptsToLoad": "Scripts betölteni",
-  "InternalHubot_ScriptsToLoad_Description": "Kérjük, vesszővel elválasztott listáját szkriptek betölteni https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Ez kell, hogy legyen egy érvényes felhasználónevet egy bot van regisztrálva a szerveren.",
   "InternalHubot_EnableForChannels": "Engedélyezve a nyilvános csatornákhoz",
   "InternalHubot_EnableForDirectMessages": "Közvetlen üzenetek engedélyezése",

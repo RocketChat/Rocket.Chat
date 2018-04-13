@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "スクリプトをロードするフォルダ",
   "InternalHubot_reload": "スクリプトを再読み込みする",
   "InternalHubot_ScriptsToLoad": "ロードするスクリプト",
-  "InternalHubot_ScriptsToLoad_Description": "https://github.com/github/hubot-scripts/tree/master/src/scriptsからロードするためのスクリプトのカンマ区切りリストを入力してください。",
   "InternalHubot_Username_Description": "これは、サーバーに登録されたボットの有効なユーザ名でなければなりません。",
   "InternalHubot_EnableForChannels": "パブリックチャネル用に有効にする",
   "InternalHubot_EnableForDirectMessages": "ダイレクトメッセージを有効にする",

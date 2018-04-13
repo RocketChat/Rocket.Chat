@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Map om de scripts te laden",
   "InternalHubot_reload": "Herlaad de scripts",
   "InternalHubot_ScriptsToLoad": "Scripts om te laden",
-  "InternalHubot_ScriptsToLoad_Description": "Geef een door komma's gescheiden lijst met scripts te laden uit https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Dit moet een geldige gebruikersnaam van een bot geregistreerd op uw server.",
   "InternalHubot_EnableForChannels": "Inschakelen voor publieke zenders",
   "InternalHubot_EnableForDirectMessages": "Inschakelen voor Direct Messages",

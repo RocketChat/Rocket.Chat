@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Mapp för att ladda skript",
   "InternalHubot_reload": "Ladda om skript",
   "InternalHubot_ScriptsToLoad": "Skript för att ladda",
-  "InternalHubot_ScriptsToLoad_Description": "Ange en kommaseparerad lista med skript för att ladda från https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Detta måste vara ett giltigt användarnamn av en bot är registrerad på din server.",
   "InternalHubot_EnableForChannels": "Aktivera för offentliga kanaler",
   "InternalHubot_EnableForDirectMessages": "Aktivera direktmeddelanden",

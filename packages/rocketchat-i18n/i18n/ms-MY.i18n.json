@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Folder untuk Memuatkan Skrip",
   "InternalHubot_reload": "Muat semula skrip",
   "InternalHubot_ScriptsToLoad": "Skrip untuk memuatkan",
-  "InternalHubot_ScriptsToLoad_Description": "Sila masukkan senarai dipisah koma skrip untuk memuatkan dari https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Ini mesti nama pengguna yang sah daripada bot yang berdaftar pada pelayan anda.",
   "InternalHubot_EnableForChannels": "Dayakan untuk Saluran Awam",
   "InternalHubot_EnableForDirectMessages": "Dayakan Mesej Terus",

@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Pasta para carregar os Scripts",
   "InternalHubot_reload": "Recarregar os scripts",
   "InternalHubot_ScriptsToLoad": "Scripts para carregar",
-  "InternalHubot_ScriptsToLoad_Description": "Por favor insira uma lista separada por vírgula de scripts para carregar a partir de https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Este deve ser um nome de usuário válido de um bot registrado em seu servidor.",
   "InternalHubot_EnableForChannels": "Ativar para canais públicos",
   "InternalHubot_EnableForDirectMessages": "Ativar para mensagens diretas",

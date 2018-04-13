@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Arkistoi komentotiedostoja",
   "InternalHubot_reload": "Lataa komentosarjat uudelleen",
   "InternalHubot_ScriptsToLoad": "Ladattavat skriptit",
-  "InternalHubot_ScriptsToLoad_Description": "Syötä pilkuilla erotettu lista skripteistä, jotka ladataan sijainnista https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Tämän on oltava voimassa oleva käyttäjätunnus rekisteröidylle bot käyttäjätunnukselle.",
   "InternalHubot_EnableForChannels": "Ota käyttöön julkisilla kanavilla",
   "InternalHubot_EnableForDirectMessages": "Ota Direct Viestit",

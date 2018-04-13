@@ -953,7 +953,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Ordner zum Laden der Skripte",
   "InternalHubot_reload": "Laden Sie die Skripts neu",
   "InternalHubot_ScriptsToLoad": "Zu ladende Skripte",
-  "InternalHubot_ScriptsToLoad_Description": "Bitte geben Sie eine durch Kommata getrennte Liste von zu ladenden Skripten von https://github.com/github/hubot-scripts/tree/master/src/scripts an.",
   "InternalHubot_Username_Description": "Dies muss ein gültiger Benutzername eines auf dem Server registrierten Bots sein.",
   "InternalHubot_EnableForChannels": "Für öffentliche Kanäle aktivieren",
   "InternalHubot_EnableForDirectMessages": "Aktivieren Sie für direkte Nachrichten",
