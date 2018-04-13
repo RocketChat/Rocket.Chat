@@ -106,9 +106,7 @@ const toolbarButtons = (user) => {
 					}
 				],
 				currentTarget: e.currentTarget,
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
-				})
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -122,13 +120,10 @@ const toolbarButtons = (user) => {
 			const config = {
 				template: 'sortlist',
 				currentTarget: e.currentTarget,
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
-				}),
 				data: {
-					// value: instance.form[key].get(),
 					options
-				}
+				},
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 			popover.open(config);
 		}
@@ -202,9 +197,7 @@ const toolbarButtons = (user) => {
 					}
 				],
 				currentTarget: e.currentTarget,
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
-				})
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -312,9 +305,7 @@ Template.sidebarHeader.events({
 					}
 				],
 				currentTarget: e.currentTarget,
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`
-				})
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);

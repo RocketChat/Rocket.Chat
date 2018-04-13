@@ -47,7 +47,6 @@ Template.popover.onRendered(function() {
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
 		const horizontalDirection = /left/.test(direction) ? 'left' : /right/.test(direction) ? 'right' : isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
-		console.log(horizontalDirection);
 
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
@@ -58,26 +57,29 @@ Template.popover.onRendered(function() {
 		};
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
+
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;
 		} else {
+			const clientHeight = this.data.currentTarget.clientHeight;
 			const popoverWidth = popoverContent.offsetWidth;
 			const popoverHeight = popoverContent.offsetHeight;
-			const popoverHeightHalf = popoverHeight / 2;
 			const windowWidth = window.innerWidth;
 			const windowHeight = window.innerHeight;
 
-			let top = mousePosition.y - popoverHeight + offsetHeight;
+			let top = mousePosition.y - clientHeight + offsetHeight;
 
 			if (verticalDirection === 'top') {
 				top = mousePosition.y - popoverHeight + offsetHeight;
+
+				if (top < 0) {
+					top = 10 + offsetHeight;
+				}
 			}
-			if (top <= popoverHeightHalf) {
-				top = 10 + offsetHeight;
-			}
-			if (top > windowHeight) {
-				top = windowHeight - offsetHeight;
+
+			if (top + popoverHeight > windowHeight) {
+				top = windowHeight - 10 - popoverHeight - offsetHeight;
 			}
 
 			let left = mousePosition.x - popoverWidth + offsetWidth;

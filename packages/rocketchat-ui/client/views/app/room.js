@@ -112,10 +112,6 @@ const mountPopover = (e, i, outerContext) => {
 		],
 		instance: i,
 		data: outerContext,
-		mousePosition: {
-			x: e.clientX,
-			y: e.clientY
-		},
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
 	};
