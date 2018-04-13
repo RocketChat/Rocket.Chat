@@ -44,10 +44,12 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		sendMessage.message.msg = sms.body;
 		sendMessage.guest = visitor;
 
-		sms.media.map(function(curr) {
-			const attachment = {};
-			const contentType = curr.contentType;
+		sendMessage.message.attachments = sms.media.map(curr => {
+			const attachment = {
+				message_link: curr.url
+			};
 
+			const contentType = curr.contentType;
 			switch (contentType.substr(0, contentType.indexOf('/'))) {
 				case 'image':
 					attachment.image_url = curr.url;
@@ -60,9 +62,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 					break;
 			}
 
-			attachment.message_link = curr.url;
-
-			sendMessage.message.attachments.push(attachment);
+			return attachment;
 		});
 
 		try {
