@@ -28,7 +28,7 @@ class PushNotification {
 		const config = {
 			from: 'push',
 			badge,
-			sound: 'default',
+			sound: 'default', // Sound for GCM
 			title,
 			text: message,
 			payload,
@@ -43,7 +43,8 @@ class PushNotification {
 
 		if (category !== '') {
 			config.apn = {
-				category
+				category,
+				sound: 'chime.mp3' // Sound for APN
 			};
 		}
 
