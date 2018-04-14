@@ -23,8 +23,8 @@ export class AppUsersConverter {
 		}
 
 		const type = this._convertUserTypeToEnum(user.type);
-		const status = this._convertStatusConnectionToEnum(user.status);
-		const statusConnection = this._convertStatusConnectionToEnum(user.statusConnection);
+		const status = this._convertStatusConnectionToEnum(user.username, user._id, user.status);
+		const statusConnection = this._convertStatusConnectionToEnum(user.username, user._id, user.statusConnection);
 
 		return {
 			id: user._id,
@@ -50,11 +50,12 @@ export class AppUsersConverter {
 			case 'bot':
 				return UserType.BOT;
 			default:
-				throw new Error('Unknown user type of:', type);
+				console.warn(`A new user type has been added that the Apps don't know about? "${ type }"`);
+				return type.toUpperCase();
 		}
 	}
 
-	_convertStatusConnectionToEnum(status) {
+	_convertStatusConnectionToEnum(username, userId, status) {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -65,7 +66,8 @@ export class AppUsersConverter {
 			case 'busy':
 				return UserStatusConnection.BUSY;
 			default:
-				throw new Error('Unknown status type of:', status);
+				console.warn(`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);
+				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	}
 }
