@@ -618,6 +618,10 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'string',
 		'public': true
 	});
+	this.add('Document_Domain', '', {
+		type: 'string',
+		'public': true
+	});
 	this.add('Language', '', {
 		type: 'language',
 		'public': true
