@@ -1,9 +1,11 @@
 <template name="ChatpalAdmin">
 	<section class="page-container page-list">
 		<header class="rc-header">
-			<span>
-				{{_ pageTitle}}
-			</span>
+			<div class="rc-header__wrap">
+				<span class="rc-header__block">
+					{{_ pageTitle}}
+				</span>
+			</div>
 		</header>
 		<div class="content">
 			{{#unless isAdmin}}

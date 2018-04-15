@@ -9,10 +9,14 @@ Template.ChatpalAdmin.onCreated(function() {
 	};
 
 	this.apiKey = new ReactiveVar();
+
+	const lang = RocketChat.settings.get('Language');
+
+	this.lang = (lang === 'de' || lang === 'en') ? lang : 'en';
 });
 
 Template.ChatpalAdmin.onRendered(function() {
-	this.$('#chatpal-tac').load('https://api.chatpal.io/tac/en');
+	this.$('#chatpal-tac').load(`https://beta.chatpal.io/v1/terms/${ this.lang }.html`);
 });
 
 Template.ChatpalAdmin.events({
