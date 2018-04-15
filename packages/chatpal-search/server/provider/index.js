@@ -136,7 +136,7 @@ class Backend {
 					query: '*:*'
 				},
 				commit:{}
-			},...this._options.httpOptions
+			}, ...this._options.httpOptions
 		};
 
 		try {

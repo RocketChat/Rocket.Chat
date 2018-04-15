@@ -7,7 +7,7 @@ class ValidationService {
 
 		const subscriptionCache = {};
 
-		const getSubscription = (rid, uid) => {console.log(rid,subscriptionCache.hasOwnProperty(rid));
+		const getSubscription = (rid, uid) => {
 			if (!subscriptionCache.hasOwnProperty(rid)) {
 				subscriptionCache[rid] = Meteor.call('canAccessRoom', rid, uid);
 			}
