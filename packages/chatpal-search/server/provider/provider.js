@@ -184,11 +184,12 @@ class ChatpalProvider extends SearchProvider {
 	/**
 	 * ping if configuration has been set correctly
 	 * @param config
-	 * @param callback (err,result) if ping was successfull
+	 * @param resolve if ping was successfull
+	 * @param reject if some error occurs
 	 * @param timeout until ping is repeated
 	 * @private
 	 */
-	_ping(config, callback, timeout = 5000) {
+	_ping(config, resolve, reject, timeout = 5000) {
 
 		const maxTimeout = 200000;
 
@@ -196,13 +197,13 @@ class ChatpalProvider extends SearchProvider {
 
 		if (stats) {
 			ChatpalLogger.debug('ping was successfull');
-			callback(config, stats);
+			resolve({config, stats});
 		} else {
 
 			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
 
 			this._pingTimeout = Meteor.setTimeout(() => {
-				this._ping(config, callback, Math.min(maxTimeout, 2*timeout));
+				this._ping(config, resolve, reject, Math.min(maxTimeout, 2*timeout));
 			}, timeout);
 		}
 
@@ -213,43 +214,45 @@ class ChatpalProvider extends SearchProvider {
 	 * @param callback
 	 * @private
 	 */
-	_getIndexConfig(callback) {
+	_getIndexConfig() {
 
-		const config = {
-			backendtype: this._settings.get('Backend')
-		};
-
-		if (this._settings.get('Backend') === 'cloud') {
-			config.baseurl = this.chatpalBaseUrl;
-			config.language = this._settings.get('Main_Language');
-			config.searchpath = '/search/search';
-			config.updatepath = '/search/update';
-			config.pingpath = '/search/ping';
-			config.clearpath = '/search/clear';
-			config.suggestionpath = '/search/suggest';
-			config.httpOptions = {
-				headers: {
-					'X-Api-Key': this._settings.get('API_Key')
-				}
+		return new Promise((resolve, reject) => {
+			const config = {
+				backendtype: this._settings.get('Backend')
 			};
-		} else {
-			config.baseurl = this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL');
-			config.language = this._settings.get('Main_Language');
-			config.searchpath = '/chatpal/search';
-			config.updatepath = '/chatpal/update';
-			config.pingpath = '/chatpal/ping';
-			config.clearpath = '/chatpal/clear';
-			config.suggestionpath = '/chatpal/suggest';
-			config.httpOptions = {
-				headers: this._parseHeaders()
-			};
-		}
 
-		config.batchSize = this._settings.get('BatchSize');
-		config.timeout = this._settings.get('TimeoutSize');
-		config.windowSize = this._settings.get('WindowSize');
+			if (this._settings.get('Backend') === 'cloud') {
+				config.baseurl = this.chatpalBaseUrl;
+				config.language = this._settings.get('Main_Language');
+				config.searchpath = '/search/search';
+				config.updatepath = '/search/update';
+				config.pingpath = '/search/ping';
+				config.clearpath = '/search/clear';
+				config.suggestionpath = '/search/suggest';
+				config.httpOptions = {
+					headers: {
+						'X-Api-Key': this._settings.get('API_Key')
+					}
+				};
+			} else {
+				config.baseurl = this._settings.get('Base_URL').endsWith('/') ? this._settings.get('Base_URL').slice(0, -1) : this._settings.get('Base_URL');
+				config.language = this._settings.get('Main_Language');
+				config.searchpath = '/chatpal/search';
+				config.updatepath = '/chatpal/update';
+				config.pingpath = '/chatpal/ping';
+				config.clearpath = '/chatpal/clear';
+				config.suggestionpath = '/chatpal/suggest';
+				config.httpOptions = {
+					headers: this._parseHeaders()
+				};
+			}
 
-		this._ping(config, callback);
+			config.batchSize = this._settings.get('BatchSize');
+			config.timeout = this._settings.get('TimeoutSize');
+			config.windowSize = this._settings.get('WindowSize');
+
+			this._ping(config, resolve, reject);
+		});
 
 	}
 
@@ -257,37 +260,38 @@ class ChatpalProvider extends SearchProvider {
 	 * @inheritDoc
 	 * @param callback
 	 */
-	stop(callback) {
+	stop(resolve) {
 		ChatpalLogger.info('Provider stopped');
 		Meteor.clearTimeout(this._pingTimeout);
 		this.indexFail = false;
 		this.index && this.index.stop();
-		callback();
+		resolve();
 	}
 
 	/**
 	 * @inheritDoc
 	 * @param reason
-	 * @param callback
+	 * @param resolve
+	 * @param reject
 	 */
-	start(reason, callback) {
+	start(reason, resolve, reject) {
 
 		const clear = this._checkForClear(reason);
 
 		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
 
-		this._getIndexConfig((config, stats) => {
-			this._indexConfig = config;
+		this._getIndexConfig().then((server) => {
+			this._indexConfig = server.config;
 
-			this._stats = stats;
+			this._stats = server.stats;
 
 			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
 			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
 
-			this.index = new Index(this._indexConfig, this.indexFail || clear, stats.message.oldest || new Date().valueOf());
+			this.index = new Index(this._indexConfig, this.indexFail || clear, this._stats.message.oldest || new Date().valueOf());
 
-			callback();
-		});
+			resolve();
+		}, reject);
 	}
 
 	/**

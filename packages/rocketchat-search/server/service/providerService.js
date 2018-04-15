@@ -16,57 +16,51 @@ class SearchProviderService {
 	 * @param id the id of the provider which should be started
 	 * @param cb a possible callback if provider is active or not (currently not in use)
 	 */
-	use(id, cb = function() {}) {
+	use(id) {
 
-		if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
+		return new Promise((resolve, reject) => {
+			if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
 
-		let reason = 'switch';
+			let reason = 'switch';
 
-		if (!this.activeProvider) {
-			reason = 'startup';
-		} else if (this.activeProvider.key === this.providers[id].key) {
-			reason = 'update';
-		}
-
-		const stopProvider = (callback) => {
-			if (this.activeProvider) {
-
-				SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
-
-				this.activeProvider.stop(callback);
-			} else {
-				callback();
+			if (!this.activeProvider) {
+				reason = 'startup';
+			} else if (this.activeProvider.key === this.providers[id].key) {
+				reason = 'update';
 			}
-		};
 
-		stopProvider((err)=>{
+			const stopProvider = () => {
+				return new Promise((resolve, reject) => {
+					if (this.activeProvider) {
 
-			if (!err) {
+						SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
 
+						this.activeProvider.stop(resolve, reject);
+					} else {
+						resolve();
+					}
+				});
+			};
+
+			stopProvider().then(() => {
 				this.activeProvider = undefined;
 
 				SearchLogger.debug(`Start provider '${ id }'`);
 
 				try {
 
-					this.providers[id].run(reason, (err) => {
-						if (err) {
-							cb(err);
-						} else {
-							this.activeProvider = this.providers[id];
-							cb();
-						}
-					});
+					this.providers[id].run(reason).then(() => {
+						this.activeProvider = this.providers[id];
+						resolve();
+					}, reject);
 
 				} catch (e) {
-					cb(e);
+					reject(e);
 				}
-
-			} else {
-				cb(err);
-			}
+			}, reject);
 
 		});
+
 	}
 
 	/**
@@ -126,7 +120,7 @@ class SearchProviderService {
 			const providerId = RocketChat.settings.get('Search.Provider');
 
 			if (providerId) {
-				this.use(providerId);
+				this.use(providerId);//TODO do something with success and errors
 			}
 
 		}), 1000);

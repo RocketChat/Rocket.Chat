@@ -159,16 +159,18 @@ export default class SearchProvider {
 
 	/*--- livecycle ---*/
 	run(reason, callback) {
-		this._settings.load();
-		this.start(reason, callback);
+		return new Promise((resolve, reject) => {
+			this._settings.load();
+			this.start(reason, resolve, reject);
+		});
 	}
 
-	start(reason, callback) {
-		callback();
+	start(reason, resolve) {
+		resolve();
 	}
 
-	stop(callback) {
-		callback();
+	stop(resolve) {
+		resolve();
 	}
 }
 
