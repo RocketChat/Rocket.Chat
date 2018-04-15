@@ -1,8 +1,6 @@
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
 
-const Future = Npm.require('fibers/future');
-
 /**
  * Enables HTTP functions on Chatpal Backend
  */
@@ -339,7 +337,7 @@ export default class Index {
 		return start.getTime();
 	}
 
-	_run(date, fut) {
+	_run(date, resolve, reject) {
 
 		this._running = true;
 
@@ -348,7 +346,7 @@ export default class Index {
 			Meteor.setTimeout(() => {
 				date = this._indexMessages(date, (this._options.windowSize || 24) * 3600000);
 
-				this._run(date, fut);
+				this._run(date, resolve, reject);
 
 			}, this._options.timeout || 1000);
 		} else if (this._break) {
@@ -358,7 +356,7 @@ export default class Index {
 
 			this._running = false;
 
-			fut.return();
+			resolve();
 		} else {
 
 			ChatpalLogger.info(`No messages older than already indexed date ${ new Date(date).toString() }`);
@@ -381,7 +379,7 @@ export default class Index {
 
 			this._running = false;
 
-			fut.return();
+			resolve();
 		}
 	}
 
@@ -389,16 +387,16 @@ export default class Index {
 
 		ChatpalLogger.info('Start bootstrapping');
 
-		const fut = new Future();
+		return new Promise((resolve, reject) => {
 
-		if (clear) {
-			this._backend.clear();
-			date = new Date().getTime();
-		}
+			if (clear) {
+				this._backend.clear();
+				date = new Date().getTime();
+			}
 
-		this._run(date, fut);
+			this._run(date, resolve, reject);
 
-		return fut;
+		});
 	}
 
 	static ping(options) {
