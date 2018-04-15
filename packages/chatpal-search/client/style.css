@@ -27,13 +27,17 @@
 	flex: 1;
 }
 
+.chatpal-search-typefilter {
+	display: flex;
+}
+
 .chatpal-search-typefilter li {
 	cursor: pointer;
-	display: inline-block;
-	width: 49%;/*WHY? Fix*/
+	display: flex;
+	flex: 0 0 50%;
 	border-bottom: 4px solid white;
 	height: 35px;
-	text-align: center;
+	justify-content: center;
 	padding-top: 10px;
 }
 

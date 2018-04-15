@@ -1,5 +1,7 @@
 .rocket-search {
 	padding: 0 !important;
+	display: flex;
+	flex: 1;
 }
 
 .defaultProvider {
