@@ -23,13 +23,5 @@ Package.onUse(function(api) {
 		'client/style/style.css'
 	], 'client');
 
-	api.addFiles([
-		'server/model/provider.js',
-		'server/service/providerService.js',
-		'server/service/validationService.js',
-		'server/events/events.js',
-		'server/provider/defaultProvider.js'
-	], 'server');
-
 	api.mainModule('server/index.js', 'server');
 });
