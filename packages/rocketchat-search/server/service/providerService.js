@@ -93,28 +93,27 @@ class SearchProviderService {
 
 			self.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
-				values: _.map(providers, (p) => { return {key:p.key, i18nLabel: p.i18nLabel}; }),
+				values: Object.keys(providers).map((key) => { return {key, i18nLabel: providers[key].i18nLabel}; }),
 				public: true,
 				i18nLabel: 'Search_Provider'
 			});
 
-			_.chain(providers)
-				.filter((provider) => provider.settings && provider.settings.length > 0)
-				.each(function(provider) {
-					self.section(provider.i18nLabel, function() {
-						provider.settings.forEach((setting) => {
+			Object.keys(providers)
+				.filter((key) => providers[key].settings && providers[key].settings.length > 0)
+				.forEach(function(key) {
+					self.section(providers[key].i18nLabel, function() {
+						providers[key].settings.forEach((setting) => {
 
 							const _options = {
-								type: setting.type
+								type: setting.type,
+								...setting.options
 							};
-
-							_.extend(_options, setting.options);
 
 							_options.enableQuery = _options.enableQuery || [];
 
 							_options.enableQuery.push({
 								_id: 'Search.Provider',
-								value: provider.key
+								value: key
 							});
 
 							this.add(setting.id, setting.defaultValue, _options);

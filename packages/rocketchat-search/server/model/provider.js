@@ -1,5 +1,4 @@
 /*eslint no-unused-vars: [2, { "args": "none" }]*/
-import _ from 'underscore';
 import SearchLogger from '../logger/logger';
 
 /**
@@ -49,7 +48,7 @@ class Settings {
 	}
 
 	list() {
-		return _.values(this.settings);
+		return Object.keys(this.settings).map(key => this.settings[key]);
 	}
 
 	map() {
@@ -69,8 +68,8 @@ class Settings {
 	 * load currently stored values of all settings
 	 */
 	load() {
-		_.each(this.settings, (setting) => {
-			setting.load();
+		Object.keys(this.settings).forEach((key) => {
+			this.settings[key].load();
 		});
 	}
 }
@@ -159,8 +158,8 @@ export default class SearchProvider {
 	}
 
 	/*--- livecycle ---*/
-	run(reason, callback) {
-		this._settings.load();
+	run(reason, callback) {console.log(1111)
+		this._settings.load();console.log(2222)
 		this.start(reason, callback);
 	}
 

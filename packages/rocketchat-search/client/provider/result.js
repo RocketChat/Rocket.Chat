@@ -79,6 +79,6 @@ Template.DefaultSearchResultTemplate.helpers({
 		return Template.instance().hasMore.get();
 	},
 	message() {
-		return _.extend(this, { customClass: 'search', actionContext: 'search'});
+		return { customClass: 'search', actionContext: 'search', ...this};
 	}
 });
