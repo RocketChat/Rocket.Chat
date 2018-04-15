@@ -32,28 +32,21 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
 /**
  * Listen to user and room changes via cursor
  */
-const cursor = Meteor.users.find({}, {fields: {name:1, username:1, emails:1, active:1}});
-cursor.observeChanges({
-	added: (id) => {
-		eventService.promoteEvent('user.save', id, Meteor.users.findOne(id));
-	},
-	changed: (id) => {
-		eventService.promoteEvent('user.save', id, Meteor.users.findOne(id));
-	},
-	removed: (id) => {
-		eventService.promoteEvent('user.delete', id);
+
+RocketChat.models.Users.on('changed', (type, user)=>{
+	if (type === 'inserted' || type === 'updated') {
+		eventService.promoteEvent('user.save', user._id, user);
+	}
+	if (type === 'removed') {
+		eventService.promoteEvent('user.delete', user._id);
 	}
 });
 
-const cursor2 = RocketChat.models.Rooms.find({t:{$ne:'d'}}, {fields:{name:1, announcement:1, description:1, topic:1}});
-cursor2.observeChanges({
-	added: (id) => {
-		eventService.promoteEvent('room.save', id, RocketChat.models.Rooms.findOneByIdOrName(id));
-	},
-	changed: (id) => {
-		eventService.promoteEvent('room.save', id, RocketChat.models.Rooms.findOneByIdOrName(id));
-	},
-	removed: (id) => {
-		eventService.promoteEvent('room.delete', id);
+RocketChat.models.Rooms.on('changed', (type, room)=>{
+	if (type === 'inserted' || type === 'updated') {
+		eventService.promoteEvent('room.save', room._id, room);
+	}
+	if (type === 'removed') {
+		eventService.promoteEvent('room.delete', room._id);
 	}
 });
