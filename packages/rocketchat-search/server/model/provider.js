@@ -158,8 +158,8 @@ export default class SearchProvider {
 	}
 
 	/*--- livecycle ---*/
-	run(reason, callback) {console.log(1111)
-		this._settings.load();console.log(2222)
+	run(reason, callback) {
+		this._settings.load();
 		this.start(reason, callback);
 	}
 
