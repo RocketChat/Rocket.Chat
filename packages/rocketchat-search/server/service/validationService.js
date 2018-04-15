@@ -33,7 +33,6 @@ class ValidationService {
 			});
 
 			result.message.docs.filter((msg) => {
-				SearchLogger.debug(JSON.stringify(msg, null, 2));
 				return msg.valid;
 			});
 		}
