@@ -1,5 +1,4 @@
 /* globals RocketChat */
-import Future from 'fibers/future';
 import _ from 'underscore';
 
 import {validationService} from '../service/validationService';
@@ -153,52 +152,53 @@ Meteor.methods({
 	 * @returns {*}
 	 */
 	'rocketchatSearch.search'(text, context, payload) {
-		const future = new Future();
 
-		payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
+		return new Promise((resolve, reject) => {
 
-		try {
+			payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
 
-			if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
+			try {
 
-			SearchLogger.debug('search: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
-
-			searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
-				if (error) {
-					future.throw(error);
-				} else {
-					future.return(validationService.validateSearchResult(data));
+				if (!searchProviderService.activeProvider) {
+					throw new Error('Provider currently not active');
 				}
-			});
-		} catch (e) {
-			future.throw(e);
-		}
 
-		return future.wait();
+				SearchLogger.debug('search: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+
+				searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve(validationService.validateSearchResult(data));
+					}
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
 	},
 	'rocketchatSearch.suggest'(text, context, payload) {
-		const future = new Future();
 
-		payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
+		return new Promise((resolve, reject) => {
+			payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
 
-		try {
+			try {
 
-			if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
+				if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
 
-			SearchLogger.debug('suggest: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+				SearchLogger.debug('suggest: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
 
-			searchProviderService.activeProvider.suggest(text, context, payload, (error, data) => {
-				if (error) {
-					future.throw(error);
-				} else {
-					future.return(data);
-				}
-			});
-		} catch (e) {
-			future.throw(e);
-		}
-
-		return future.wait();
+				searchProviderService.activeProvider.suggest(text, context, payload, (error, data) => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve(data);
+					}
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
 	},
 	/**
 	 * Get the current provider with key, description, resultTemplate, suggestionItemTemplate and settings (as Map)
