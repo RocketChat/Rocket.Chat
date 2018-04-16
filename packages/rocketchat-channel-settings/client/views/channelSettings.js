@@ -14,7 +14,7 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room);
+		return roomType && RocketChat.roomTypes.roomTypes[roomType].canBeDeleted(room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
