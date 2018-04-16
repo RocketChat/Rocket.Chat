@@ -372,7 +372,7 @@ Template.message.onViewRendered = function(context) {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
 					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day')) {
+				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
 					$nextNode.addClass('sequential');
 				}
 			}
