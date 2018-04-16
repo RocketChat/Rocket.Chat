@@ -339,7 +339,20 @@ Template.message.onViewRendered = function(context) {
 	return this._domrange.onAttached(function(domRange) {
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
-		const previousNode = currentNode.previousElementSibling;
+		const getPreviousSentMessage = (currentNode) => {
+			if ($(currentNode).hasClass('temp')) {
+				return currentNode.previousElementSibling;
+			} else if (currentNode.previousElementSibling != null) {
+				let previousValid = currentNode.previousElementSibling;
+				while (previousValid != null && $(previousValid).hasClass('temp')) {
+					previousValid = previousValid.previousElementSibling;
+				}
+				return previousValid;
+			} else {
+				return null;
+			}
+		};
+		const previousNode = getPreviousSentMessage(currentNode);//currentNode.previousElementSibling; //getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 		const $currentNode = $(currentNode);
 		const $nextNode = $(nextNode);
