@@ -168,8 +168,6 @@ Template.sidebarItem.events({
 			offsetHorizontal: -e.currentTarget.clientWidth
 		};
 
-		console.log(e.currentTarget.clientWidth);
-
 		popover.open(config);
 	}
 });
