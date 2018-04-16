@@ -164,8 +164,11 @@ Template.sidebarItem.events({
 				rid: this.rid,
 				name: this.name
 			},
-			currentTarget: e.currentTarget
+			currentTarget: e.currentTarget,
+			offsetHorizontal: -e.currentTarget.clientWidth
 		};
+
+		console.log(e.currentTarget.clientWidth);
 
 		popover.open(config);
 	}
