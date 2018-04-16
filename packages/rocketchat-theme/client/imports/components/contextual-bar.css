@@ -30,6 +30,8 @@
 	&__content {
 		overflow: auto;
 
+		height: 100%;
+
 		padding: var(--default-padding);
 
 		& .js-back {
