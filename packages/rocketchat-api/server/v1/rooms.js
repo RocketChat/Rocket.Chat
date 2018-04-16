@@ -76,7 +76,8 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			name: file.filename,
 			size: file.fileBuffer.length,
 			type: file.mimetype,
-			rid: this.urlParams.rid
+			rid: this.urlParams.rid,
+			userId: this.userId
 		};
 
 		Meteor.runAsUser(this.userId, () => {
