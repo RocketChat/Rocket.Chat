@@ -20,3 +20,4 @@ private/moment-locales/
 public/livechat/
 public/mp3-realtime-worker.js
 public/lame.min.js
+!.scripts

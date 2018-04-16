@@ -201,6 +201,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
 	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
