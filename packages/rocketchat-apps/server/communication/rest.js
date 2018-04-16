@@ -71,12 +71,15 @@ export class AppsRestApi {
 					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
 				}
 
-				const prl = Promise.await(manager.add(buff.toString('base64'), false));
+				const aff = Promise.await(manager.add(buff.toString('base64'), false));
+				const info = aff.getAppInfo();
+				info.status = aff.getApp().getStatus();
 
-				const info = prl.getInfo();
-				info.status = prl.getStatus();
-
-				return RocketChat.API.v1.success({ app: info });
+				return RocketChat.API.v1.success({
+					app: info,
+					implemented: aff.getImplementedInferfaces(),
+					compilerErrors: aff.getCompilerErrors()
+				});
 			}
 		});
 
@@ -129,11 +132,15 @@ export class AppsRestApi {
 					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
 				}
 
-				const prl = Promise.await(manager.update(buff.toString('base64')));
-				const info = prl.getInfo();
-				info.status = prl.getStatus();
+				const aff = Promise.await(manager.update(buff.toString('base64')));
+				const info = aff.getAppInfo();
+				info.status = aff.getApp().getStatus();
 
-				return RocketChat.API.v1.success({ app: info });
+				return RocketChat.API.v1.success({
+					app: info,
+					implemented: aff.getImplementedInferfaces(),
+					compilerErrors: aff.getCompilerErrors()
+				});
 			},
 			delete() {
 				console.log('Uninstalling:', this.urlParams.id);

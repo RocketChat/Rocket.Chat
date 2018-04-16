@@ -3,9 +3,9 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
-	messageEvent(inte, message) {
+	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
-		const result = this.orch.getManager().getListenerManager().executeListener(inte, msg);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
 
 		if (typeof result === 'boolean') {
 			return result;
@@ -20,9 +20,9 @@ export class AppListenerBridge {
 		// }
 	}
 
-	roomEvent(inte, room) {
+	async roomEvent(inte, room) {
 		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
-		const result = this.orch.getManager().getListenerManager().executeListener(inte, rm);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
 
 		if (typeof result === 'boolean') {
 			return result;

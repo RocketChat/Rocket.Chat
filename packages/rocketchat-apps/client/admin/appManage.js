@@ -20,7 +20,7 @@ Template.appManage.onCreated(function() {
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
 			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value !== undefined ? settings[k].value : settings[k].packageValue;
+			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
 			settings[k].oldValue = settings[k].value;
 			settings[k].hasChanged = false;
 		});

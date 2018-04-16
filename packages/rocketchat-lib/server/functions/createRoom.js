@@ -38,14 +38,14 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	});
 
 	if (Apps && Apps.isLoaded()) {
-		const prevent = Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room);
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		let result;
-		result = Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', room);
-		result = Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result);
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', room));
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
 
 		if (typeof result === 'object') {
 			room = Object.assign(room, result);
@@ -91,6 +91,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	}
 
 	if (Apps && Apps.isLoaded()) {
+		// This returns a promise, but it won't mutate anything about the message
+		// so, we don't really care if it is successful or fails
 		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
 	}
 

@@ -31,14 +31,14 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
-		const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
 		}
 
 		let result;
-		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message);
-		result = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result);
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -79,6 +79,8 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (Apps && Apps.isLoaded()) {
+			// This returns a promise, but it won't mutate anything about the message
+			// so, we don't really care if it is successful or fails
 			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
