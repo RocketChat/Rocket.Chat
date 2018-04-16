@@ -22,9 +22,9 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="usernames">Users {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon=(sortIcon 'name')}}</td>
+							<td class="rc-table-td js-sort" data-sort="usernames">Users {{> icon icon=(sortIcon 'usernames') }}</td>
+							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon=(sortIcon 'createdAt') }}</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
