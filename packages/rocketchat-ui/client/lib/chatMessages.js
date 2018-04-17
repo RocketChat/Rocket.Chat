@@ -1,4 +1,4 @@
-/* globals MsgTyping */
+/* globals MsgTyping, emojione */
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -541,7 +541,10 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		const adjustedMessage = message.replace(/:\w+:/gm, (match) => {
+		// converting emoji unicodes to shortnames if present
+		let adjustedMessage = emojione.toShort(message);
+
+		adjustedMessage = adjustedMessage.replace(/:\w+:/gm, (match) => {
 			if (RocketChat.emoji.list[match] !== undefined) {
 				return ' ';
 			}

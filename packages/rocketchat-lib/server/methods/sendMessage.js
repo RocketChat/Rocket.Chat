@@ -1,3 +1,4 @@
+/* globals emojione */
 import moment from 'moment';
 
 Meteor.methods({
@@ -26,7 +27,10 @@ Meteor.methods({
 		}
 
 		if (message.msg) {
-			const adjustedMessage = message.msg.replace(/:\w+:/gm, (match) => {
+			// converting emoji unicodes to shortnames if present
+			let adjustedMessage = emojione.toShort(message.msg);
+
+			adjustedMessage = adjustedMessage.replace(/:\w+:/gm, (match) => {
 				if (RocketChat.emoji.list[match] !== undefined) {
 					return ' ';
 				}
