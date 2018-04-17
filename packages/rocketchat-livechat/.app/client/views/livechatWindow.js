@@ -113,6 +113,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.transcriptMessage = result.transcriptMessage;
 			}
 			Livechat.videoCall = result.videoCall;
+			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
 
 			if (result.room) {

@@ -25,7 +25,10 @@
     "bcrypt": "^1.0.3",
     "core-js": "^2.5.3",
     "jquery": "^3.3.1",
+    "meteor-node-stubs": "^0.3.3",
+    "mime-type": "^3.0.5",
     "moment": "^2.20.1",
+    "request": "^2.85.0",
     "toastr": "^2.1.4",
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4"

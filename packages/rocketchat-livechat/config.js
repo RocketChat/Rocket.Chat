@@ -216,6 +216,13 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Jitsi_Enabled', value: true }
 	});
 
+	RocketChat.settings.add('Livechat_fileupload_enabled', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Fileupload_Enabled'
+	});
+
 	RocketChat.settings.add('Livechat_enable_transcript', false, {
 		type: 'boolean',
 		group: 'Livechat',

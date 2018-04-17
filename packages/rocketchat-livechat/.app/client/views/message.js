@@ -66,7 +66,15 @@ Template.message.helpers({
 			return agent.name || agent.username;
 		}
 		return this.u.username;
-	}
+	},
+
+	hasAttachments() {
+		return ((this.attachments) && (this.attachments.length > 0));
+	},
+	
+	injectIndex(data, index) {
+		data.index = index;
+	}	
 });
 
 Template.message.onViewRendered = function(context) {

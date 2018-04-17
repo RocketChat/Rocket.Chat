@@ -166,16 +166,19 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveTrigger.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
+	api.addFiles('server/methods/sendFileLivechatMessage.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
 	api.addFiles('server/methods/setDepartmentForVisitor.js', 'server');
 	api.addFiles('server/methods/startVideoCall.js', 'server');
+	api.addFiles('server/methods/startFileUploadRoom.js', 'server');
 	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
 	api.addFiles('server/methods/sendTranscript.js', 'server');
+	api.addFiles('server/methods/checkTypeFileUpload.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
@@ -197,6 +200,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/sendMessageBySMS.js', 'server');
 	api.addFiles('server/unclosedLivechats.js', 'server');
+
+	api.addFiles('server/lib/requests.js', 'server');
 
 	// publications
 	api.addFiles('server/publications/customFields.js', 'server');

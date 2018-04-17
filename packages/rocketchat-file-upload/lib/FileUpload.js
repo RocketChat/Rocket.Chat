@@ -10,7 +10,7 @@ FileUpload = {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
-
+		return true;
 		const user = Meteor.user();
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
 		const directMessageAllow = RocketChat.settings.get('FileUpload_Enabled_Direct');

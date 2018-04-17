@@ -20,7 +20,8 @@ Meteor.methods({
 			offlineSuccessMessage: null,
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
-			videoCall: null
+			videoCall: null,
+			fileUpload: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -65,6 +66,7 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.fileUpload = initSettings.Livechat_fileupload_enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 
@@ -80,7 +82,7 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
-
+		console.log(info);
 		return info;
 	}
 });

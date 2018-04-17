@@ -275,7 +275,8 @@ RocketChat.Livechat = {
 			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
-			'Livechat_transcript_message'
+			'Livechat_transcript_message',
+			'Livechat_fileupload_enabled'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});

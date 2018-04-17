@@ -1,6 +1,7 @@
-/* globals Livechat, LivechatVideoCall, MsgTyping */
+/* globals Livechat, LivechatFileUpload, LivechatVideoCall, MsgTyping */
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
+import mime from 'mime-type/with-db';
 
 Template.messages.helpers({
 	messages() {
@@ -31,6 +32,9 @@ Template.messages.helpers({
 	},
 	videoCallEnabled() {
 		return Livechat.videoCall;
+	},
+	fileUploadEnabled() {
+		return Livechat.fileUpload;
 	},
 	showConnecting() {
 		return Livechat.connecting;
@@ -130,6 +134,32 @@ Template.messages.events({
 		} else {
 			LivechatVideoCall.request();
 		}
+	},
+	'click .upload-button'(event) {
+		event.preventDefault();
+
+		const $input = $(document.createElement('input'));
+		$input.css('display', 'none');
+		$input.attr({
+			id: 'fileupload-input',
+			type: 'file'			
+		});
+
+		$(document.body).append($input);
+		
+		$input.one('change', function(e) {
+			const files = e.target.files;
+			if (files && ( files.length > 0 )) {
+				const file = files[0];
+				Object.defineProperty(file, 'type', {
+					value: mime.lookup(file.name)
+				});
+				fileUpload(file);
+			}
+			$input.remove();
+		});
+		
+		$input.click();		
 	}
 });
 
