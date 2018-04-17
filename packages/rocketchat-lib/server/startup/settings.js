@@ -371,6 +371,25 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enter_Behaviour'
 		});
+		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
+			type: 'select',
+			values: [
+				{
+					key: 0,
+					i18nLabel: 'Normal'
+				},
+				{
+					key: 1,
+					i18nLabel: 'Cozy'
+				},
+				{
+					key: 2,
+					i18nLabel: 'Compact'
+				}
+			],
+			'public': true,
+			i18nLabel: 'MessageBox_view_mode'
+		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
 			type: 'select',
 			values: [
@@ -1006,12 +1025,14 @@ RocketChat.settings.addGroup('Email', function() {
 		this.add('SMTP_Username', '', {
 			type: 'string',
 			env: true,
-			i18nLabel: 'Username'
+			i18nLabel: 'Username',
+			autocomplete: false
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
-			i18nLabel: 'Password'
+			i18nLabel: 'Password',
+			autocomplete: false
 		});
 		this.add('From_Email', '', {
 			type: 'string',

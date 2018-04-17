@@ -67,6 +67,10 @@
 		&::placeholder {
 			color: var(--input-placeholder-color);
 		}
+
+		&[type=color] {
+			height: 45px;
+		}
 	}
 
 	&__description {
