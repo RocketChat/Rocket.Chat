@@ -433,6 +433,7 @@
   "Content": "Content",
   "Conversation": "Conversation",
   "Conversation_closed": "Conversation closed: __comment__.",
+  "Conversation_finished_message": "Conversation Finished Message",
   "Convert_Ascii_Emojis": "Convert ASCII to Emoji",
   "Copied": "Copied",
   "Copy": "Copy",
