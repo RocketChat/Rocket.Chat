@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - checkout
@@ -134,7 +134,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -179,7 +179,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: circleci/mongo:3.4
 
     environment:
@@ -208,7 +208,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - attach_workspace:
@@ -247,6 +247,7 @@ jobs:
             bash .circleci/update-releases.sh
             bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/redhat-registry.sh
 
 workflows:
   version: 2
