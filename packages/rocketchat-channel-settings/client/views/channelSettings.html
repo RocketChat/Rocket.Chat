@@ -137,9 +137,9 @@
 						</label>
 					</div>
 					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
-						{{_ "No_reactions"}}
+						{{_ "Disallow_reacting"}}
 						<div class="rc-switch-double__description">
-							{{_ "No_reactions"}}
+							{{_ "Disallow_reacting_Description"}}
 						</div>
 					</div>
 				</div>
@@ -245,8 +245,8 @@
 		{{#if canLeaveRoom}}
 		<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
 		{{/if}}
-		<!-- {{#if canDeleteRoom}}
-		<button class="rc-button rc-button-outline rc-button-cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
-		{{/if}} -->
 	</div>
+	{{#if canDeleteRoom}}
+	<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+	{{/if}}
 </template>
