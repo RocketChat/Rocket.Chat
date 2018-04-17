@@ -1,7 +1,7 @@
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('Livechat_continuous_sound_notification_new_livechat_message')) {
-			const unreadAlertCount = ChatSubscription.find({ t: 'l', open: true, alert: true, disableNotifications: { $ne: true }, audioNotifications: { $ne: 'nothing'} }, { fields: { unread: 1, alert: 1, rid: 1, unreadAlert: 1 } }).count();
+		if (RocketChat.settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
+			const unreadAlertCount = ChatSubscription.find({ t: 'l', open: true, alert: true, unread: 1, disableNotifications: { $ne: true }, audioNotifications: { $ne: 'nothing'} }, { fields: { unread: 1, alert: 1, rid: 1, unreadAlert: 1 } }).count();
 			const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 				fields: {
 					'settings.preferences.newRoomNotification': 1
