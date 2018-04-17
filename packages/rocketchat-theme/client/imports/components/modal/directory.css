@@ -60,8 +60,8 @@
 		flex-grow: 1;
 
 		white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&-name {
@@ -76,7 +76,7 @@
 		margin-top: 0.625rem;
 		color: var(--rc-color-primary-light);
 		overflow: hidden;
-    text-overflow: ellipsis;
+		text-overflow: ellipsis;
 		max-width: 200px;
 	}
 
