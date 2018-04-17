@@ -105,14 +105,8 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -125,18 +119,11 @@ const toolbarButtons = (user) => {
 			const options = [];
 			const config = {
 				template: 'sortlist',
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				}),
+				currentTarget: e.currentTarget,
 				data: {
-					// value: instance.form[key].get(),
 					options
-				}
+				},
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 			popover.open(config);
 		}
@@ -209,14 +196,8 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -323,14 +304,8 @@ Template.sidebarHeader.events({
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);

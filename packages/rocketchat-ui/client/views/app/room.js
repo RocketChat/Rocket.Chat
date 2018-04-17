@@ -112,10 +112,6 @@ const mountPopover = (e, i, outerContext) => {
 		],
 		instance: i,
 		data: outerContext,
-		mousePosition: {
-			x: e.clientX,
-			y: e.clientY
-		},
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
 	};
@@ -582,10 +578,7 @@ Template.room.events({
 			],
 			instance: i,
 			data: this,
-			mousePosition: {
-				x: e.clientX,
-				y: e.clientY
-			},
+			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item')
 		};
