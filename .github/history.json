@@ -12207,5 +12207,23 @@
         "web-flow"
       ]
     }
+  ],
+  "0.63.2": [
+    {
+      "pr": "10475",
+      "title": "[FIX] Even TypeErrors with SAML",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10408",
+      "title": "add redhat dockerfile to master",
+      "userLogin": "geekgonecrazy",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    }
   ]
 }
