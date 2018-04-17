@@ -10,10 +10,12 @@ const get = function(file, req, res) {
 	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
-		if (RocketChat.settings.get('FileUpload_S3_Proxy')) {
+		const storeType = file.store.split(':').pop();
+		if (RocketChat.settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 			request.get(fileUrl, fileRes => fileRes.pipe(res));
 		} else {
+			res.removeHeader('Content-Length');
 			res.setHeader('Location', fileUrl);
 			res.writeHead(302);
 			res.end();

@@ -130,6 +130,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/UserDataFiles.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
+	api.addFiles('server/oauth/facebook.js', 'server');
+	api.addFiles('server/oauth/twitter.js', 'server');
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
@@ -201,6 +203,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
+	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
 	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');

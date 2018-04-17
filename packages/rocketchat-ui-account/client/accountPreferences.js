@@ -136,9 +136,7 @@ Template.accountPreferences.onCreated(function() {
 		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
 		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
 		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
-		data.viewMode = parseInt($('#viewMode').find('select').val());
 		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
-		data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
@@ -155,6 +153,10 @@ Template.accountPreferences.onCreated(function() {
 		}));
 
 		let reload = false;
+
+		if (RocketChat.settings.get('UI_DisplayRoles')) {
+			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		}
 
 		// if highlights changed we need page reload
 		const highlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
@@ -189,7 +191,11 @@ Template.accountPreferences.onCreated(function() {
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
-						Meteor._reload.reload();
+						if (Meteor._reload && Meteor._reload.reload) { // make it compatible with old meteor
+							Meteor._reload.reload();
+						} else {
+							Reload._reload();
+						}
 					}, 1000);
 				}
 			}
