@@ -138,6 +138,38 @@
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
 		}
+
+		&.check {
+			color: red;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.cross {
+			color: red;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.loading {
+			cursor: pointer;
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.mic {
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
 	}
 
 	&__action-menu {
@@ -150,6 +182,24 @@
 
 	& [data-small] {
 		display: none;
+	}
+
+	&__audio-message{
+		display: flex;
+	}
+
+	&__timer-box{
+		display: none;
+		width: 50px;
+		&.active {
+			display: flex;
+		}
+	}
+
+	&__timer-dot{
+		font-size: 1.5em;
+		color: #d60000;
+		line-height: 0.8em;
 	}
 }
 
@@ -219,11 +269,15 @@
 			order: 3;
 		}
 
+		&__audio-message {
+			order: 4;
+		}
+
 		&__send {
 			flex: 0;
 
 			font-size: 20px;
-			order: 4;
+			order: 5;
 		}
 	}
 }
