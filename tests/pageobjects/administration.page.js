@@ -195,6 +195,9 @@ class Administration extends Page {
 	get accountsSendOnEnter() { return browser.element('[name="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 	get accountsSendOnEnterReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 
+	get accountsMessageViewMode() { return browser.element('[name="Accounts_Default_User_Preferences_messageViewMode"]'); }
+	get accountsMessageViewModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_messageViewMode"]'); }
+
 	get accountsEmailNotificationMode() { return browser.element('[name="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 	get accountsEmailNotificationModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 
