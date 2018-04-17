@@ -28,16 +28,17 @@
 	}
 
 	&__content {
-		overflow: auto;
-		padding: var(--default-padding);
-
-		flex: 1 1 auto;
-		justify-content: space-between;
-
 		display: flex;
+		overflow: auto;
 
 		flex-direction: column;
 
+		flex: 1 1 auto;
+
+		height: 100%;
+
+		padding: var(--default-padding);
+		justify-content: space-between;
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
