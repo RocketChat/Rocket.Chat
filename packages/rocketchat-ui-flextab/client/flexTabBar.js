@@ -1,4 +1,4 @@
-/* globals popover, isRtl */
+/* globals popover */
 import _ from 'underscore';
 
 const commonHelpers = {
@@ -149,22 +149,15 @@ Template.RoomsActionTab.events({
 		columns[0] = {groups};
 		const config = {
 			columns,
-			// template: 'RoomsActionMore',
 			popoverClass: 'message-box',
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().right + 10,
-				y: e.currentTarget.getBoundingClientRect().bottom + 100
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
-			}),
 			data: {
 				rid: this._id,
 				buttons: instance.small.get() ? buttons : buttons.slice(4),
 				tabBar: instance.tabBar
 			},
-			activeElement: e.currentTarget
+			currentTarget: e.currentTarget,
+			offsetHorizontal: -e.currentTarget.clientWidth,
+			offsetVertical: e.currentTarget.clientHeight + 10
 		};
 
 		popover.open(config);
