@@ -55,13 +55,6 @@ this.Commands = {
 					}
 				}
 			});
-		} else {
-			swal({
-				title: t('Chat_ended'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false
-			});
 		}
 	},
 
