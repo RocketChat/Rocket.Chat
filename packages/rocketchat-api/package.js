@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
 	api.addFiles('server/helpers/isUserFromParams.js', 'server');
 	api.addFiles('server/helpers/parseJsonQuery.js', 'server');
+	api.addFiles('server/helpers/deprecationWarning.js', 'server');
 	api.addFiles('server/helpers/getLoggedInUser.js', 'server');
 
 	//Add default routes
@@ -33,6 +34,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/subscriptions.js', 'server');
 	api.addFiles('server/v1/chat.js', 'server');
 	api.addFiles('server/v1/commands.js', 'server');
+	api.addFiles('server/v1/emoji-custom.js', 'server');
 	api.addFiles('server/v1/groups.js', 'server');
 	api.addFiles('server/v1/im.js', 'server');
 	api.addFiles('server/v1/integrations.js', 'server');

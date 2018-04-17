@@ -18,7 +18,7 @@
 		& .rc-switch__input {
 			&:checked {
 				& + .rc-switch__button {
-				 border-color: #1757B7;
+				 border-color: var(--button-primary-background);
 				 background-color: var(--button-primary-background);
 			 }
 			}
