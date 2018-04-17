@@ -14,7 +14,7 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room);
+		return roomType && RocketChat.roomTypes.roomTypes[roomType].canBeDeleted(room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
@@ -118,6 +118,9 @@ Template.channelSettingsEditing.onCreated(function() {
 		announcement: {
 			type: 'markdown',
 			label: 'Announcement',
+			getValue() {
+				return Template.instance().room.announcement && Template.instance().room.announcement.message;
+			},
 			canView() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
 			},
@@ -450,7 +453,7 @@ Template.channelSettingsInfo.helpers({
 		return Template.instance().room.description;
 	},
 	announcement() {
-		return Template.instance().room.announcement;
+		return Template.instance().room.announcement ? Template.instance().room.announcement.message : '';
 	},
 	topic() {
 		return Template.instance().room.topic;
