@@ -1,8 +1,7 @@
 RocketChat.Migrations.add({
-	version: 110,
+	version: 112,
 	up() {
 		if (RocketChat && RocketChat.models) {
-
 			if (RocketChat.models.Settings) {
 				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_idleTimeoutLimit' });
 				if (setting && setting.value) {
