@@ -1006,12 +1006,14 @@ RocketChat.settings.addGroup('Email', function() {
 		this.add('SMTP_Username', '', {
 			type: 'string',
 			env: true,
-			i18nLabel: 'Username'
+			i18nLabel: 'Username',
+			autocomplete: false
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
-			i18nLabel: 'Password'
+			i18nLabel: 'Password',
+			autocomplete: false
 		});
 		this.add('From_Email', '', {
 			type: 'string',
@@ -1352,6 +1354,23 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		'public': true,
 		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
+	});
+
+	this.add('Message_ErasureType', 'Delete', {
+		type: 'select',
+		'public': true,
+		values: [
+			{
+				key: 'Keep',
+				i18nLabel: 'Message_ErasureType_Keep'
+			}, {
+				key: 'Delete',
+				i18nLabel: 'Message_ErasureType_Delete'
+			}, {
+				key: 'Unlink',
+				i18nLabel: 'Message_ErasureType_Unlink'
+			}
+		]
 	});
 });
 

@@ -218,7 +218,7 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
+		return (roomData.announcement !== undefined) && (roomData.announcement.message !== '');
 	},
 
 	messageboxData() {
@@ -236,7 +236,13 @@ Template.room.helpers({
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomData.announcement;
+		return roomData.announcement && roomData.announcement.message;
+	},
+
+	getAnnouncementStyle() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		return roomData.announcement && roomData.announcement.style !== undefined ? roomData.announcement.style : '';
 	},
 
 	roomIcon() {
@@ -710,13 +716,21 @@ Template.room.events({
 		}
 	},
 	'click .announcement'(e) {
-		modal.open({
-			title: t('Announcement'),
-			text: $(e.target).attr('aria-label'),
-			showConfirmButton: false,
-			showCancelButton: true,
-			cancelButtonText: t('Close')
-		});
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcement !== undefined && roomData.announcement.callback !== undefined) {
+			return RocketChat.callbacks.run(roomData.announcement.callback, this._id);
+		} else {
+			modal.open({
+				title: t('Announcement'),
+				text: $(e.target).attr('aria-label'),
+				showConfirmButton: false,
+				showCancelButton: true,
+				cancelButtonText: t('Close')
+			});
+
+		}
+
 	}
 });
 

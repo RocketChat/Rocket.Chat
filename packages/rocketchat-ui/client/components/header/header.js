@@ -5,6 +5,9 @@ const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 Template.header.helpers({
+	back() {
+		return Template.instance().data.back;
+	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -92,6 +95,10 @@ Template.header.helpers({
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
 	},
 
+	fixedHeight() {
+		return Template.instance().data.fixedHeight;
+	},
+
 	isChannel() {
 		return Template.instance().currentChannel != null;
 	},
@@ -125,5 +132,5 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id) || undefined;
 });
