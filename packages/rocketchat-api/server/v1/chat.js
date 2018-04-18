@@ -267,7 +267,11 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 		}
 
-		const emoji = this.bodyParams.emoji;
+		const emoji = this.bodyParams.emoji || this.bodyParams.reaction;
+
+		if (!emoji) {
+			throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id));
 
@@ -294,5 +298,22 @@ RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }
 				error: error.message
 			});
 		}
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
+	post() {
+		const { messageId, description } = this.bodyParams;
+		if (!messageId) {
+			return RocketChat.API.v1.failure('The required "messageId" param is missing.');
+		}
+
+		if (!description) {
+			return RocketChat.API.v1.failure('The required "description" param is missing.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
+
+		return RocketChat.API.v1.success();
 	}
 });

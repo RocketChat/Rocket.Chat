@@ -193,6 +193,36 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
+		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: 'bee',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					reaction: 'ant',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/chat.getMessageReadReceipts]', () => {
@@ -218,6 +248,42 @@ describe('[Chat]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).not.have.property('receipts');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.reportMessage]', () => {
+		describe('when execute successfully', () => {
+			it('should return the statusCode 200', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+						description: 'test'
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
 					})
