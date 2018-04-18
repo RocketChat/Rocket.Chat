@@ -20,6 +20,7 @@
 											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 						</div>
@@ -85,6 +86,7 @@
 										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'desktopNotifications' 'nothing' 'default'}}">{{_ "Nothing"}}</option>
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col" id="mobileNotifications">
@@ -96,6 +98,7 @@
 										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' 'default'}}">{{_ "Nothing"}}</option>
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col" id="emailNotificationMode">
@@ -106,6 +109,7 @@
 											<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
 											<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
 										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
 									</div>
 									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 								</div>
@@ -216,6 +220,7 @@
 											<option value="1" selected="{{selected 'messageViewMode' 1}}">{{_ "Cozy"}}</option>
 											<option value="2" selected="{{selected 'messageViewMode' 2}}">{{_ "Compact"}}</option>
 										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
 									</div>
 									<div class="info">{{_ "Message_view_mode_info"}}</div>
 								</div>
@@ -229,6 +234,7 @@
 											<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
 											<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
 										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
 									</div>
 									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
 								</div>
@@ -272,6 +278,7 @@
 											<option value="{{_id}}" selected="{{$eq newRoomNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col">
@@ -284,6 +291,7 @@
 											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col" id="muteFocusedConversations">
