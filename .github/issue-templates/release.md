@@ -17,6 +17,7 @@ For any regression, open a new issue and link to this one.
 - [ ] Delete branch `release-candidate`
 - [ ] Create branch `release-candidate` based on `develop`
 - [ ] On branch `release-candidate` run `npm run release` and follow the steps
+- [ ] Bump the `appVersion` inside of the file `sandstorm-pkgdef.capnp`
 - [ ] Publish the branch and the generated tag
 - [ ] Edit the tag on GitHub and paste the generated History removing the version from the first line and mark the checkbox **This is a pre-release**
 - [ ] Ensure the build is passing on CircleCI
