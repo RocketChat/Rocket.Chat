@@ -21,10 +21,10 @@ Meteor.startup(function() {
 		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
 		{ _id: 'clean-channel-history',         roles : ['admin'] }, // special permission to bulk delete a channel's mesages
-		{ _id: 'delete-c',                      roles : ['admin'] },
+		{ _id: 'delete-c',                      roles : ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles : ['admin'] },
 		{ _id: 'delete-message',                roles : ['admin', 'owner', 'moderator'] },
-		{ _id: 'delete-p',                      roles : ['admin'] },
+		{ _id: 'delete-p',                      roles : ['admin', 'owner'] },
 		{ _id: 'delete-user',                   roles : ['admin'] },
 		{ _id: 'edit-message',                  roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-other-user-active-status', roles : ['admin'] },
