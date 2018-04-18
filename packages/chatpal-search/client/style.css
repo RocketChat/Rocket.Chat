@@ -106,6 +106,10 @@
 	font-weight: bold;
 }
 
+.chatpal-channel {
+	flex: 1 1 auto;
+}
+
 .chatpal-search-result-user .chatpal-channel {
 	font-weight: bold;
 }
@@ -133,6 +137,8 @@
 
 .chatpal-search-result-single h2 {
 	margin-bottom: 20px;
+	display: flex;
+	align-items: center;
 }
 
 .chatpal-search-result-single .chatpal-avatar {
@@ -156,7 +162,6 @@
 }
 
 .chatpal-search-result-single .chatpal-date {
-	float: right;
 	font-size: 12px;
 	color: #a0a0a0;
 	font-weight: normal;
@@ -182,7 +187,7 @@
 
 .chatpal-search-result-single .chatpal-link {
 	display: none;
-	margin-left: 3px;
+	flex: 20;
 	color: #125074;
 }
 
