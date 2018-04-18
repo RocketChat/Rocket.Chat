@@ -300,3 +300,20 @@ RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }
 		}
 	}
 });
+
+RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
+	post() {
+		const { messageId, description } = this.bodyParams;
+		if (!messageId) {
+			return RocketChat.API.v1.failure('The required "messageId" param is missing.');
+		}
+
+		if (!description) {
+			return RocketChat.API.v1.failure('The required "description" param is missing.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
+
+		return RocketChat.API.v1.success();
+	}
+});
