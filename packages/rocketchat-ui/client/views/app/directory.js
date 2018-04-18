@@ -41,6 +41,14 @@ Template.directory.helpers({
 	},
 	searchType() {
 		return Template.instance().searchType.get();
+	},
+	sortIcon(key) {
+		const {
+			sortDirection,
+			searchSortBy
+		} = Template.instance();
+
+		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
 	}
 });
 
