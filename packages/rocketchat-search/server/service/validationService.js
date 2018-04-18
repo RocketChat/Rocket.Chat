@@ -15,6 +15,19 @@ class ValidationService {
 			return subscriptionCache[rid];
 		};
 
+		const userCache = {};
+
+		const getUsername = (uid) => {
+			if (!userCache.hasOwnProperty(uid)) {
+				try {
+					userCache[uid] = RocketChat.models.Users.findById(uid).fetch()[0].username;
+				} catch (e) {
+					userCache[uid] = undefined;
+				}
+			}
+			return userCache[uid];
+		};
+
 		const uid = Meteor.userId();
 		//get subscription for message
 		if (result.message) {
@@ -24,12 +37,12 @@ class ValidationService {
 
 				if (subscription) {
 					msg.r = {name: subscription.name, t: subscription.t};
-					msg.username = subscription.username;
+					msg.username = getUsername(msg.user);
 					msg.valid = true;
 					SearchLogger.debug(`user ${ uid } can access ${ msg.rid } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
 				} else {
 					SearchLogger.debug(`user ${ uid } can NOT access ${ msg.rid }`);
-				}
+				}console.log(msg);
 			});
 
 			result.message.docs.filter((msg) => {
