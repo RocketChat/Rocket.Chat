@@ -328,8 +328,8 @@ Template.sidebarHeader.events({
 										buttonTitle: t('Update'),
 										buttonAction: () => {
 											return () => {
-												const elText = jQuery('input[type=text][name=custom-status]')[0];
-												const elType = jQuery('select[name=status-type]')[0];
+												const elText = $('input[type=text][name=custom-status]')[0];
+												const elType = $('select[name=status-type]')[0];
 
 												const statusText = elText.value;
 												const statusType = elType.value;

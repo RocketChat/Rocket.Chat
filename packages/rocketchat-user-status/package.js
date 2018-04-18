@@ -13,5 +13,5 @@ Package.onUse(function(api) {
 		'rocketchat:ui'
 	]);
 
-	api.addFiles('client/rocketchat.js');
+	api.addFiles('client/userStatus.js');
 });

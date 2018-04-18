@@ -171,11 +171,6 @@ Template.popover.events({
 			popover.close();
 		}
 	},
-	'click [data-type="set-state"]'(e) {
-		AccountBox.setStatus(e.currentTarget.dataset.statusType, e.currentTarget.dataset.statusName);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.id);
-		popover.close();
-	},
 	'click [data-type="open"]'(e) {
 		const data = e.currentTarget.dataset;
 

@@ -13,9 +13,7 @@ class CustomUserStatus extends RocketChat.models._Base {
 	//find
 	findByName(name, options) {
 		const query = {
-			$or: [
-				{name}
-			]
+			name
 		};
 
 		return this.find(query, options);
@@ -24,9 +22,7 @@ class CustomUserStatus extends RocketChat.models._Base {
 	findByNameExceptID(name, except, options) {
 		const query = {
 			_id: { $nin: [ except ] },
-			$or: [
-				{name}
-			]
+			name
 		};
 
 		return this.find(query, options);
