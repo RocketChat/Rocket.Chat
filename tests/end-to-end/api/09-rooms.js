@@ -2,6 +2,7 @@
 /* globals expect */
 
 import { getCredentials, api, request, credentials} from '../../data/api-data.js';
+import { password } from '../../data/user';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -160,6 +161,41 @@ describe('[Rooms]', function() {
 		let publicChannel;
 		let privateChannel;
 		let directMessageChannel;
+		let user;
+		beforeEach((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+
+		let userCredentials;
+		beforeEach((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		afterEach(done => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id
+			}).end(done);
+			user = undefined;
+		});
 		it('create a public channel', (done) => {
 			request.post(api('channels.create'))
 				.set(credentials)
@@ -239,6 +275,22 @@ describe('[Rooms]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return not allowed error when try deleting messages with user without permission', (done) => {
+			request.post(api('rooms.cleanHistory'))
+				.set(userCredentials)
+				.send({
+					roomId: directMessageChannel._id,
+					latest: '2016-12-09T13:42:25.304Z',
+					oldest: '2016-08-30T13:42:25.304Z'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
 				})
 				.end(done);
 		});
