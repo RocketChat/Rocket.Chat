@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 RocketChat.models.ExportOperations = new class ModelExportOperations extends RocketChat.models._Base {
 	constructor() {
-		super('exportOperations');
+		super('export_operations');
 
 		this.tryEnsureIndex({ 'userId': 1 });
 		this.tryEnsureIndex({ 'status': 1 });

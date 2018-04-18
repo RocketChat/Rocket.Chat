@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 RocketChat.models.UserDataFiles = new class ModelUserDataFiles extends RocketChat.models._Base {
 	constructor() {
-		super('userDataFiles');
+		super('user_data_files');
 
 		this.tryEnsureIndex({ 'userId': 1 });
 	}
