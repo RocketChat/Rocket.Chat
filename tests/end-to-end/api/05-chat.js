@@ -255,4 +255,40 @@ describe('[Chat]', function() {
 			});
 		});
 	});
+
+	describe('[/chat.reportMessage]', () => {
+		describe('when execute successfully', () => {
+			it('should return the statusCode 200', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+						description: 'test'
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
 });
