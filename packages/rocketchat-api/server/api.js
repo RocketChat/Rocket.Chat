@@ -28,7 +28,8 @@ class API extends Restivus {
 			roles: 0,
 			statusDefault: 0,
 			_updatedAt: 0,
-			customFields: 0
+			customFields: 0,
+			settings: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
@@ -145,20 +146,7 @@ class API extends Restivus {
 							return RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						result = result ? result : RocketChat.API.v1.success();
-
-						if (
-							/(channels|groups)\./.test(route)
-							&& result
-							&& result.body
-							&& result.body.success === true
-							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
-						) {
-							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
-						}
-
-						return result;
+						return result ? result : RocketChat.API.v1.success();
 					};
 
 					for (const [name, helperMethod] of this.getHelperMethods()) {
