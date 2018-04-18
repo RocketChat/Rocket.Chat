@@ -53,11 +53,13 @@
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
 							<td>{{status}}</td>
-							{{#if isClosed}}
-								<td><a href="#remove" class="remove-livechat-room"><i class="icon-trash"></i></a></td>
-							{{else}}
-								<th>&nbsp;</th>	
-							{{/if}}						
+							{{#requiresPermission 'remove-closed-livechat-rooms'}}
+								{{#if isClosed}}
+									<td><a href="#remove" class="remove-livechat-room"><i class="icon-trash"></i></a></td>
+								{{else}}
+									<th>&nbsp;</th>	
+								{{/if}}						
+							{{/requiresPermission}}									
 						</tr>
 					{{/each}}
 				</tbody>
