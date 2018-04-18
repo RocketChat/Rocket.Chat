@@ -61,6 +61,7 @@
 	],
 	"scripts": {
 		"start": "meteor npm i && meteor",
+		"debug": "meteor run --inspect",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint packages/**/*.css",

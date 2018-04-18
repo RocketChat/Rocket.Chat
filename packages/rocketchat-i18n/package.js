@@ -10,9 +10,19 @@ Package.onUse(function(api) {
 
 	const fs = Npm.require('fs');
 	const workingDir = process.env.PWD || '.';
-	fs.readdirSync(`${ workingDir }/packages/rocketchat-i18n/i18n`).forEach(function(filename) {
-		if (filename.indexOf('.json') > -1 && fs.statSync(`${ workingDir }/packages/rocketchat-i18n/i18n/${ filename }`).size > 16) {
+	const i18nDir = `${ workingDir }/packages/rocketchat-i18n/i18n`;
+	fs.readdirSync(i18nDir).forEach(function(filename) {
+		if (filename.indexOf('.json') > -1 && fs.statSync(`${ i18nDir }/${ filename }`).size > 16) {
 			api.addFiles(`i18n/${ filename }`);
+		}
+	});
+
+	const livechatDir = `${ workingDir }/packages/rocketchat-livechat/.app/i18n`;
+	fs.readdirSync(livechatDir).forEach(function(filename) {
+		if (filename.indexOf('.json') > -1 && fs.statSync(`${ livechatDir }/${ filename }`).size > 16) {
+			fs.writeFileSync(`${ i18nDir }/livechat.${ filename }`, fs.readFileSync(`${ livechatDir }/${ filename }`));
+
+			api.addFiles(`i18n/livechat.${ filename }`);
 		}
 	});
 
