@@ -1699,8 +1699,6 @@
 
 	cursor: pointer;
 	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 
 	color: var(--rc-color-content);
 
