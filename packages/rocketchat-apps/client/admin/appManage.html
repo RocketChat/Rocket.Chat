@@ -24,7 +24,7 @@
 							<div class="rc-apps-details__content">
 								<div class="rc-apps-details__row">
 									<div class="rc-apps-details__name">{{name}}</div>
-									<div class="rc-apps-details__version">v {{version}}</div>
+									<div class="rc-apps-details__version">v{{version}}</div>
 								</div>
 								<div class="rc-apps-details__row">{{description}}</div>
 								<div class="rc-apps-details__row">
@@ -37,13 +37,13 @@
 									{{#if author.homepage}}
 									<a href="{{author.homepage}}" class="rc-apps-details__item">
 										{{> icon icon='permalink'}}
-										author homepage
+										{{_ "App_author_homepage"}}
 									</a>
 									{{/if}}
 									{{#if author.support}}
 									<a href="{{author.support}}" class="rc-apps-details__item">
 										{{> icon icon='at'}}
-										support url
+										{{_ "App_support_url"}}
 									</a>
 									{{/if}}
 								</div>
@@ -384,6 +384,8 @@
 							<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
 							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{ _ "Save" }}</button>
 							<button class="rc-button rc-button--cancel js-uninstall">{{ _ "Uninstall" }}</button>
+							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
+							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
 						</div>
 					</div>
 				{{else if hasError}}
