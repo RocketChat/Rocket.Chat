@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import net from 'net';
 import Lru from 'lru-cache';
 
@@ -44,10 +45,13 @@ class IrcClient {
 		this.socket.setNoDelay;
 		this.socket.setEncoding('utf-8');
 		this.socket.setKeepAlive(true);
+		this.connect = this.connect.bind(this);
+		this.onConnect = this.onConnect.bind(this);
 		this.onConnect = bind(this.onConnect);
 		this.onClose = bind(this.onClose);
 		this.onTimeout = bind(this.onTimeout);
 		this.onError = bind(this.onError);
+		this.onReceiveRawMessage = this.onReceiveRawMessage.bind(this);
 		this.onReceiveRawMessage = bind(this.onReceiveRawMessage);
 		this.socket.on('data', this.onReceiveRawMessage);
 		this.socket.on('close', this.onClose);
@@ -58,14 +62,14 @@ class IrcClient {
 		this.receiveMemberListBuf = {};
 		this.pendingJoinRoomBuf = [];
 
-		this.successLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_successLogin');/;
-		this.failedLoginMessageRegex = /RocketChat.settings.get('IRC_RegEx_failedLogin');/;
-		this.receiveMessageRegex = /RocketChat.settings.get('IRC_RegEx_receiveMessage');/;
-		this.receiveMemberListRegex = /RocketChat.settings.get('IRC_RegEx_receiveMemberList');/;
-		this.endMemberListRegex = /RocketChat.settings.get('IRC_RegEx_endMemberList');/;
-		this.addMemberToRoomRegex = /RocketChat.settings.get('IRC_RegEx_addMemberToRoom');/;
-		this.removeMemberFromRoomRegex = /RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom');/;
-		this.quitMemberRegex = /RocketChat.settings.get('IRC_RegEx_quitMember');/;
+		this.successLoginMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_successLogin'));
+		this.failedLoginMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_failedLogin'));
+		this.receiveMessageRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_receiveMessage'));
+		this.receiveMemberListRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_receiveMemberList'));
+		this.endMemberListRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_endMemberList'));
+		this.addMemberToRoomRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_addMemberToRoom'));
+		this.removeMemberFromRoomRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_removeMemberFromRoom'));
+		this.quitMemberRegex = new RegExp(RocketChat.settings.get('IRC_RegEx_quitMember'));
 	}
 
 	connect(loginCb) {

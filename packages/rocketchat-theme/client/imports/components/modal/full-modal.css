@@ -12,6 +12,8 @@
 	&__wrapper {
 		position: relative;
 
+		display: flex;
+
 		width: var(--modal-wrapper-width);
 		margin: var(--modal-wrapper-margin) 0;
 	}

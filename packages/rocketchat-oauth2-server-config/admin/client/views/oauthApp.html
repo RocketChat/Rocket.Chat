@@ -15,14 +15,14 @@
 						<div class="input-line double-col">
 							<label>{{_ "Application_Name"}}</label>
 							<div>
-								<input type="text" name="name" value="{{data.name}}" />
+								<input type="text" class="rc-input__element" name="name" value="{{data.name}}" />
 								<div class="settings-description secondary-font-color">{{_ "Give_the_application_a_name_This_will_be_seen_by_your_users"}}</div>
 							</div>
 						</div>
 						<div class="input-line double-col">
 							<label>{{_ "Redirect_URI"}}</label>
 							<div>
-								<input type="text" name="redirectUri" value="{{data.redirectUri}}" />
+								<input type="text" class="rc-input__element" name="redirectUri" value="{{data.redirectUri}}" />
 								<div class="settings-description secondary-font-color">{{_ "After_OAuth2_authentication_users_will_be_redirected_to_this_URL"}}</div>
 							</div>
 						</div>
@@ -30,28 +30,28 @@
 							<div class="input-line double-col">
 								<label>{{_ "Client_ID"}}</label>
 								<div>
-									<input type="text" name="clientId" value="{{data.clientId}}" readonly="readonly" />
+									<input type="text" class="rc-input__element" name="clientId" value="{{data.clientId}}" readonly="readonly" />
 									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=clientId]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Client_Secret"}}</label>
 								<div>
-									<input type="text" name="clientSecret" value="{{data.clientSecret}}" readonly="readonly" />
+									<input type="text" class="rc-input__element" name="clientSecret" value="{{data.clientSecret}}" readonly="readonly" />
 									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=clientSecret]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Authorization_URL"}}</label>
 								<div>
-									<input type="text" name="authorization_url" value="{{data.authorization_url}}" readonly="readonly" />
+									<input type="text" class="rc-input__element" name="authorization_url" value="{{data.authorization_url}}" readonly="readonly" />
 									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=authorization_url]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Access_Token_URL"}}</label>
 								<div>
-									<input type="text" name="access_token_url" value="{{data.access_token_url}}" readonly="readonly" />
+									<input type="text" class="rc-input__element" name="access_token_url" value="{{data.access_token_url}}" readonly="readonly" />
 									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=access_token_url]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
 								</div>
 							</div>

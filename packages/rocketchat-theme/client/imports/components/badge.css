@@ -11,8 +11,11 @@
 
 	font-size: var(--badge-text-size);
 
-	&--unread,
-	&--mention {
+	&--unread {
+		margin: 0 3px;
+
+		white-space: nowrap;
+
 		background-color: var(--badge-unread-background);
 	}
 }

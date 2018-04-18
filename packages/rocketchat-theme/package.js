@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:assets');
 	api.use('ecmascript');
 	api.use('less');
-	api.use('underscore');
 	api.use('webapp');
 	api.use('webapp-hashing');
 	api.use('templating', 'client');
@@ -40,9 +39,4 @@ Package.onUse(function(api) {
 
 	// Run-time stylesheets
 	api.addAssets('server/colors.less', 'server');
-});
-
-Npm.depends({
-	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
-	'less-plugin-autoprefix': '1.4.2'
 });

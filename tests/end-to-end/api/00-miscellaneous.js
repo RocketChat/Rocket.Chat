@@ -3,7 +3,7 @@
 /* eslint no-unused-vars: 0 */
 
 import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail} from '../../data/user.js';
+import {adminEmail, adminUsername, adminPassword} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -29,6 +29,32 @@ describe('miscellaneous', function() {
 		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
 	});
 
+	it('/login (wrapper username)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					username: adminUsername
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
+	});
+
+	it('/login (wrapper email)', (done) => {
+		request.post(api('login'))
+			.send({
+				user: {
+					email: adminEmail
+				},
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end(done);
+	});
+
 	it('/me', (done) => {
 		request.get(api('me'))
 			.set(credentials)
@@ -40,8 +66,36 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.property('username', login.user);
 				expect(res.body).to.have.property('active');
 				expect(res.body).to.have.property('name');
-				expect(res.body).to.have.deep.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.property('roles').and.to.be.an('array');
+				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
+				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
 			})
 			.end(done);
 	});
+
+	describe('/settings.oauth', () => {
+		it('should have return list of available oauth services when user is not logged', (done) => {
+			request.get(api('settings.oauth'))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should have return list of available oauth services when user is logged', (done) => {
+			request.get(api('settings.oauth'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
 });

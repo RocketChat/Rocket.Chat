@@ -1,6 +1,9 @@
 /* globals toolbarSearch */
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
+
+import _ from 'underscore';
+
 const keys = {
 	TAB: 9,
 	ENTER: 13,
@@ -62,7 +65,7 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| )${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
 	} else {
 		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
 	}
@@ -139,6 +142,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
+			$('.toolbar').css('display', 'none');
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -234,6 +238,22 @@ Template.messagePopup.onRendered(function() {
 	if (this.input == null) {
 		console.error('Input not found for popup');
 	}
+	const self = this;
+	self.autorun(() => {
+		const open = self.open.get();
+		if ($('.reply-preview').length) {
+			if (open === true) {
+				$('.reply-preview').addClass('reply-preview-with-popup');
+				setTimeout(() => {
+					$('#popup').addClass('popup-with-reply-preview');
+				}, 50);
+			}
+		}
+		if (open === false) {
+			$('.reply-preview').removeClass('reply-preview-with-popup');
+			$('#popup').removeClass('popup-with-reply-preview');
+		}
+	});
 	$(this.input).on('keyup', this.onInputKeyup.bind(this));
 	$(this.input).on('keydown', this.onInputKeydown.bind(this));
 	$(this.input).on('focus', this.onFocus.bind(this));
@@ -287,5 +307,8 @@ Template.messagePopup.helpers({
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
+	},
+	sidebarWidth() {
+		return `${ document.querySelector('.sidebar').offsetWidth }px`;
 	}
 });

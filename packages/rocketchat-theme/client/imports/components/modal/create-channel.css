@@ -1,10 +1,22 @@
 .create-channel {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
+	&__wrapper {
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		height: 100%;
+	}
+
 	&__header,
 	&__switches,
-	&__inputs,
+	&__inputs:not(:last-child),
 	& .rc-input:not(:last-child) {
 		margin-bottom: var(--create-channel-gap-between-elements);
 	}

@@ -150,47 +150,47 @@ const quote = {
 
 const link = {
 	'&lt;http://link|Text&gt;': linkWrapped('http://link', 'Text'),
-	'&lt;https://demo.rocket.chat/|Demo Site For Rocket.Chat&gt;': linkWrapped('https://demo.rocket.chat/', 'Demo Site For Rocket.Chat'),
-	'&lt;https://demo.rocket.chat/ | Demo Site For Rocket.Chat&gt;': linkWrapped('https://demo.rocket.chat/ ', ' Demo Site For Rocket.Chat'),
+	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
+	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
 	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
 	'&lt;http://linkText&gt;': '&lt;http://linkText&gt;',
-	'&lt;https:demo.rocket.chat/ | Demo Site For Rocket.Chat&gt;': '&lt;https:demo.rocket.chat/ | Demo Site For Rocket.Chat&gt;',
-	'https://demo.rocket.chat/|Demo Site For Rocket.Chat': 'https://demo.rocket.chat/|Demo Site For Rocket.Chat',
-	'&lt;www.demo.rocket.chat/|Demo Site For Rocket.Chat&gt;': '&lt;www.demo.rocket.chat/|Demo Site For Rocket.Chat&gt;',
+	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': '&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;',
+	'https://open.rocket.chat/|Open Site For Rocket.Chat': 'https://open.rocket.chat/|Open Site For Rocket.Chat',
+	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': '&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;',
 	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': '&lt;htps://rocket.chat/|Rocket.Chat Site&gt;',
 	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': '&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;',
 	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': '&lt;tps://rocket.chat/|Rocket.Chat Site&gt;',
-	'&lt;demo.rocket.chat/|Demo Site For Rocket.Chat&gt;': '&lt;demo.rocket.chat/|Demo Site For Rocket.Chat&gt;',
+	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': '&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;',
 	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': '&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;',
 
 	'<http://link|Text>': linkWrapped('http://link', 'Text'),
-	'<https://demo.rocket.chat/|Demo Site For Rocket.Chat>': linkWrapped('https://demo.rocket.chat/', 'Demo Site For Rocket.Chat'),
-	'<https://demo.rocket.chat/ | Demo Site For Rocket.Chat>': linkWrapped('https://demo.rocket.chat/ ', ' Demo Site For Rocket.Chat'),
+	'<https://open.rocket.chat/|Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
+	'<https://open.rocket.chat/ | Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
 	'<https://rocket.chat/|Rocket.Chat Site>': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'<https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
 	'<http://linkText>': '<http://linkText>',
-	'<https:demo.rocket.chat/ | Demo Site For Rocket.Chat>': '<https:demo.rocket.chat/ | Demo Site For Rocket.Chat>',
-	'<www.demo.rocket.chat/|Demo Site For Rocket.Chat>': '<www.demo.rocket.chat/|Demo Site For Rocket.Chat>',
+	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': '<https:open.rocket.chat/ | Open Site For Rocket.Chat>',
+	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': '<www.open.rocket.chat/|Open Site For Rocket.Chat>',
 	'<htps://rocket.chat/|Rocket.Chat Site>': '<htps://rocket.chat/|Rocket.Chat Site>',
 	'<ttps://rocket.chat/|Rocket.Chat Site>': '<ttps://rocket.chat/|Rocket.Chat Site>',
 	'<tps://rocket.chat/|Rocket.Chat Site>': '<tps://rocket.chat/|Rocket.Chat Site>',
-	'<demo.rocket.chat/|Demo Site For Rocket.Chat>': '<demo.rocket.chat/|Demo Site For Rocket.Chat>',
+	'<open.rocket.chat/|Open Site For Rocket.Chat>': '<open.rocket.chat/|Open Site For Rocket.Chat>',
 	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': '<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>',
 
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
-	'[Demo Site For Rocket.Chat](https://demo.rocket.chat/)': linkWrapped('https://demo.rocket.chat/', 'Demo Site For Rocket.Chat'),
-	'[ Demo Site For Rocket.Chat](https://demo.rocket.chat/ )': linkWrapped('https://demo.rocket.chat/ ', ' Demo Site For Rocket.Chat'),
+	'[Open Site For Rocket.Chat](https://open.rocket.chat/)': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
+	'[ Open Site For Rocket.Chat](https://open.rocket.chat/ )': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
 	'[Rocket.Chat Site](https://rocket.chat/)': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'[Testing Entry on Rocket.Chat Docs Site](https://rocket.chat/docs/developer-guides/testing/#testing)': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
 	'[](http://linkText)': '[](http://linkText)',
 	'[text]': '[text]',
-	'[Demo Site For Rocket.Chat](https:demo.rocket.chat/)': '[Demo Site For Rocket.Chat](https:demo.rocket.chat/)',
-	'[Demo Site For Rocket.Chat](www.demo.rocket.chat/)': '[Demo Site For Rocket.Chat](www.demo.rocket.chat/)',
+	'[Open Site For Rocket.Chat](https:open.rocket.chat/)': '[Open Site For Rocket.Chat](https:open.rocket.chat/)',
+	'[Open Site For Rocket.Chat](www.open.rocket.chat/)': '[Open Site For Rocket.Chat](www.open.rocket.chat/)',
 	'[Rocket.Chat Site](htps://rocket.chat/)': '[Rocket.Chat Site](htps://rocket.chat/)',
 	'[Rocket.Chat Site](ttps://rocket.chat/)': '[Rocket.Chat Site](ttps://rocket.chat/)',
 	'[Rocket.Chat Site](tps://rocket.chat/)': '[Rocket.Chat Site](tps://rocket.chat/)',
-	'[Demo Site For Rocket.Chat](demo.rocket.chat/)': '[Demo Site For Rocket.Chat](demo.rocket.chat/)',
+	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
 	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)'
 };
 
@@ -226,6 +226,9 @@ const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
 			const result = parser({html: objectKey});
+			result.tokens.forEach((token) => {
+				result.html = result.html.replace(token.token, token.text);
+			});
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);
 			});
@@ -254,21 +257,9 @@ describe('Original', function() {
 
 	describe('Link', () => testObject(link));
 
-	describe('Inline Code', () => testObject(inlinecode, undefined, (result, object, objectKey) => {
-		let html = result.html;
-		result.tokens.forEach((token) => {
-			html = html.replace(token.token, token.text);
-		});
-		assert.equal(html, object[objectKey]);
-	}));
+	describe('Inline Code', () => testObject(inlinecode));
 
-	describe('Code', () => testObject(code, undefined, (result, object, objectKey) => {
-		let html = result.html;
-		result.tokens.forEach((token) => {
-			html = html.replace(token.token, token.text);
-		});
-		assert.equal(html, object[objectKey]);
-	}));
+	describe('Code', () => testObject(code));
 });
 
 // describe.only('Marked', function() {

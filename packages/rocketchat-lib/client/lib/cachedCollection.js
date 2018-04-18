@@ -1,4 +1,5 @@
 import localforage from 'localforage';
+import _ from 'underscore';
 
 class CachedCollectionManager {
 	constructor() {
@@ -98,7 +99,7 @@ class CachedCollection {
 		useSync = true,
 		useCache = true,
 		debug = false,
-		version = 6,
+		version = 7,
 		maxCacheTime = 60*60*24*30,
 		onSyncData = (/* action, record */) => {}
 	}) {
@@ -330,6 +331,7 @@ class CachedCollection {
 			this.log('record received', t, record);
 			if (t === 'removed') {
 				this.collection.remove(record._id);
+				RoomManager.close(record.t+record.name);
 			} else {
 				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));

@@ -1,4 +1,6 @@
 /* global Babel */
+import _ from 'underscore';
+import s from 'underscore.string';
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({

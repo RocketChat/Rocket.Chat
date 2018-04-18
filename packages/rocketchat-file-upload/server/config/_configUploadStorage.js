@@ -1,5 +1,6 @@
 /* globals UploadFS */
 
+import _ from 'underscore';
 import './AmazonS3.js';
 import './FileSystem.js';
 import './GoogleStorage.js';

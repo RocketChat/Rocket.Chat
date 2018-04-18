@@ -427,7 +427,7 @@ class WebRTCClass {
 		}
 		const getScreen = (audioStream) => {
 			const refresh = function() {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Refresh_your_page_after_install_to_enable_screen_sharing')
 				});
@@ -437,7 +437,7 @@ class WebRTCClass {
 			const isFirefoxExtensionInstalled = this.navigator === 'firefox' && window.rocketchatscreenshare != null;
 
 			if (!isChromeExtensionInstalled && !isFirefoxExtensionInstalled) {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: TAPi18n.__('Screen_Share'),
 					text: TAPi18n.__('You_need_install_an_extension_to_allow_screen_sharing'),
@@ -722,29 +722,29 @@ class WebRTCClass {
 		let title;
 		if (data.monitor === true) {
 			icon = 'eye';
-			title = `Monitor call from ${ fromUsername }`;
+			title = t('WebRTC_monitor_call_from_%s', fromUsername);
 		} else if (subscription && subscription.t === 'd') {
 			if (data.media && data.media.video) {
 				icon = 'videocam';
-				title = `Direct video call from ${ fromUsername }`;
+				title = t('WebRTC_direct_video_call_from_%s', fromUsername);
 			} else {
 				icon = 'phone';
-				title = `Direct audio call from ${ fromUsername }`;
+				title = t('WebRTC_direct_audio_call_from_%s', fromUsername);
 			}
 		} else if (data.media && data.media.video) {
 			icon = 'videocam';
-			title = `Group video call from ${ subscription.name }`;
+			title = t('WebRTC_group_video_call_from_%s', subscription.name);
 		} else {
 			icon = 'phone';
-			title = `Group audio call from ${ subscription.name }`;
+			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
 		}
-		swal({
+		modal.open({
 			title: `<i class='icon-${ icon } alert-icon success-color'></i>${ title }`,
-			text: 'Do you want to accept?',
+			text: t('Do_you_want_to_accept'),
 			html: true,
 			showCancelButton: true,
-			confirmButtonText: 'Yes',
-			cancelButtonText: 'No'
+			confirmButtonText: t('Yes'),
+			cancelButtonText: t('No')
 		}, (isConfirm) => {
 			if (isConfirm) {
 				FlowRouter.goToRoomById(data.room);

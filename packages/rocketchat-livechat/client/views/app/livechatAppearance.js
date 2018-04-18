@@ -1,5 +1,6 @@
 /*globals jscolor*/
 /*eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
@@ -25,6 +26,9 @@ Template.livechatAppearance.helpers({
 	color() {
 		return Template.instance().color.get();
 	},
+	showAgentEmail() {
+		return Template.instance().showAgentEmail.get();
+	},
 	title() {
 		return Template.instance().title.get();
 	},
@@ -46,6 +50,16 @@ Template.livechatAppearance.helpers({
 	sampleOfflineSuccessMessage() {
 		return Template.instance().offlineSuccessMessage.get().replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 	},
+	showAgentEmailFormTrueChecked() {
+		if (Template.instance().showAgentEmail.get()) {
+			return 'checked';
+		}
+	},
+	showAgentEmailFormFalseChecked() {
+		if (!Template.instance().showAgentEmail.get()) {
+			return 'checked';
+		}
+	},
 	displayOfflineFormTrueChecked() {
 		if (Template.instance().displayOfflineForm.get()) {
 			return 'checked';
@@ -64,6 +78,9 @@ Template.livechatAppearance.helpers({
 	},
 	emailOffline() {
 		return Template.instance().offlineEmail.get();
+	},
+	conversationFinishedMessage() {
+		return Template.instance().conversationFinishedMessage.get();
 	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
@@ -155,6 +172,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.title = new ReactiveVar(null);
 	this.color = new ReactiveVar(null);
 
+	this.showAgentEmail = new ReactiveVar(null);
 	this.displayOfflineForm = new ReactiveVar(null);
 	this.offlineUnavailableMessage = new ReactiveVar(null);
 	this.offlineMessage = new ReactiveVar(null);
@@ -162,6 +180,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.titleOffline = new ReactiveVar(null);
 	this.colorOffline = new ReactiveVar(null);
 	this.offlineEmail = new ReactiveVar(null);
+	this.conversationFinishedMessage = new ReactiveVar(null);
 
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title');
@@ -170,6 +189,10 @@ Template.livechatAppearance.onCreated(function() {
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title_color');
 		this.color.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_show_agent_email');
+		this.showAgentEmail.set(setting && setting.value);
 	});
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_display_offline_form');
@@ -199,6 +222,10 @@ Template.livechatAppearance.onCreated(function() {
 		const setting = LivechatAppearance.findOne('Livechat_offline_email');
 		this.offlineEmail.set(setting && setting.value);
 	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_conversation_finished_message');
+		this.conversationFinishedMessage.set(setting && setting.value);
+	});
 });
 
 Template.livechatAppearance.events({
@@ -221,6 +248,9 @@ Template.livechatAppearance.events({
 		const settingTitleColor = LivechatAppearance.findOne('Livechat_title_color');
 		instance.color.set(settingTitleColor && settingTitleColor.value);
 
+		const settingShowAgentEmail = LivechatAppearance.findOne('Livechat_show_agent_email');
+		instance.showAgentEmail.set(settingShowAgentEmail && settingShowAgentEmail.value);
+
 		const settingDiplayOffline = LivechatAppearance.findOne('Livechat_display_offline_form');
 		instance.displayOfflineForm.set(settingDiplayOffline && settingDiplayOffline.value);
 
@@ -238,6 +268,9 @@ Template.livechatAppearance.events({
 
 		const settingOfflineTitleColor = LivechatAppearance.findOne('Livechat_offline_title_color');
 		instance.colorOffline.set(settingOfflineTitleColor && settingOfflineTitleColor.value);
+
+		const settingConversationFinishedMessage = LivechatAppearance.findOne('Livechat_conversation_finished_message');
+		instance.conversationFinishedMessage.set(settingConversationFinishedMessage && settingConversationFinishedMessage.value);
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
@@ -245,11 +278,15 @@ Template.livechatAppearance.events({
 		const settings = [
 			{
 				_id: 'Livechat_title',
-				value: _.trim(instance.title.get())
+				value: s.trim(instance.title.get())
 			},
 			{
 				_id: 'Livechat_title_color',
 				value: instance.color.get()
+			},
+			{
+				_id: 'Livechat_show_agent_email',
+				value: instance.showAgentEmail.get()
 			},
 			{
 				_id: 'Livechat_display_offline_form',
@@ -257,19 +294,19 @@ Template.livechatAppearance.events({
 			},
 			{
 				_id: 'Livechat_offline_form_unavailable',
-				value: _.trim(instance.offlineUnavailableMessage.get())
+				value: s.trim(instance.offlineUnavailableMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_message',
-				value: _.trim(instance.offlineMessage.get())
+				value: s.trim(instance.offlineMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_success_message',
-				value: _.trim(instance.offlineSuccessMessage.get())
+				value: s.trim(instance.offlineSuccessMessage.get())
 			},
 			{
 				_id: 'Livechat_offline_title',
-				value: _.trim(instance.titleOffline.get())
+				value: s.trim(instance.titleOffline.get())
 			},
 			{
 				_id: 'Livechat_offline_title_color',
@@ -278,6 +315,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_offline_email',
 				value: instance.$('#emailOffline').val()
+			},
+			{
+				_id: 'Livechat_conversation_finished_message',
+				value: s.trim(instance.conversationFinishedMessage.get())
 			}
 		];
 

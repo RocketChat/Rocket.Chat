@@ -1,5 +1,6 @@
 /* globals FileUploadBase:true, UploadFS */
 /* exported FileUploadBase */
+import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 	insert(userId, doc) {

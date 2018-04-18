@@ -1,16 +1,11 @@
 <template name="integrationsOutgoingHistory">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{pageTitle}}</span>
-			</h2>
-			{{#if hasPermission}}
-				<div class="submit">
-					<button class="button danger clear-history"><i class="icon-history"></i>{{_ "clear_history"}}</button>
-				</div>
-			{{/if}}
-		</header>
+		{{#header sectionName=pageTitle buttons=true}}
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--cancel clear-history">{{_ "clear_history"}}</button>
+			</div>
+		{{/header}}
+
 		<div class="content background-transparent-dark">
 			{{#unless hasPermission}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
@@ -121,7 +116,7 @@
 									<div class="input-line double-col">
 										<label>{{_ "Integration_Outgoing_WebHook_History_Error_Stacktrace"}}</label>
 										<div>
-											<pre><code class="code-colors hljs json">{{{ hljsStack history.errorStack }}}</code></pre>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify history.errorStack }}}</code></pre>
 										</div>
 									</div>
 								{{/if}}

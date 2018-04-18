@@ -1,4 +1,6 @@
 /* globals readMessage UserRoles RoomRoles*/
+import _ from 'underscore';
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;

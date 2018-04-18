@@ -17,9 +17,9 @@ RocketChat.authz.roomAccessValidators = [
 	}
 ];
 
-RocketChat.authz.canAccessRoom = function(room, user) {
+RocketChat.authz.canAccessRoom = function(room, user, extraData) {
 	return RocketChat.authz.roomAccessValidators.some((validator) => {
-		return validator.call(this, room, user);
+		return validator.call(this, room, user, extraData);
 	});
 };
 

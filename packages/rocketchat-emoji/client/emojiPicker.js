@@ -248,12 +248,7 @@ Template.emojiPicker.events({
 
 		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
 	},
-	'keydown .emoji-filter .search'(event) {
-		if (event.keyCode === 13) {
-			event.preventDefault();
-		}
-	},
-	'keyup .emoji-filter .search, change .emoji-filter .search'(event, instance) {
+	'keyup .js-emojipicker-search, change .js-emojipicker-search'(event, instance) {
 		const value = event.target.value.trim();
 		const cst = instance.currentSearchTerm;
 		if (value === cst.get()) {
