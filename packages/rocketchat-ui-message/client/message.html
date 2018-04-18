@@ -59,15 +59,15 @@
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
+			{{#each attachments}}
+				{{injectIndex . @index}} {{> messageAttachment}}
+			{{/each}}
 			{{{body}}}
 			{{#if hasOembed}}
 				{{#each urls}}
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each attachments}}
-				{{injectIndex . @index}} {{> messageAttachment}}
-			{{/each}}
 		</div>
 		{{#with readReceipt}}
 		<div class="read-receipt {{readByEveryone}}">
