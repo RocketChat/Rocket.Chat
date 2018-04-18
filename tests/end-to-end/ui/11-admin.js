@@ -739,8 +739,8 @@ describe('[Administration]', () => {
 					admin.accountsIdleTimeoutLimit.click();
 					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
 				});
-				it('the idle timeout limit field value should be 0', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				it('the idle timeout limit field value should be 300', () => {
+					admin.accountsIdleTimeoutLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
