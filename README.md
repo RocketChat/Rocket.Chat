@@ -66,7 +66,7 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 
 You can also join the conversation at [Twitter](https://twitter.com/RocketChat), [Facebook](https://www.facebook.com/RocketChatApp) or [Google Plus](https://plus.google.com/+RocketChatApp).
 
-# Desktop Apps
+# Desktop App
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
 
 
