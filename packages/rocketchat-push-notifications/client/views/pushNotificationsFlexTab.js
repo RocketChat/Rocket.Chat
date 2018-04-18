@@ -28,6 +28,9 @@ Template.pushNotificationsFlexTab.helpers({
 	showUnreadStatus() {
 		return !Template.instance().form.hideUnreadStatus.get();
 	},
+	muteGenericMentions() {
+		return Template.instance().form.muteGenericMentions.get();
+	},
 	hideUnreadStatus() {
 		return Template.instance().form.hideUnreadStatus.get();
 	},
@@ -109,7 +112,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
 			desktopNotificationDuration: 1,
-			audioNotificationValue: 1
+			audioNotificationValue: 1,
+			muteGenericMentions: 1
 		}
 	}) || {};
 
@@ -121,7 +125,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
 		desktopNotificationDuration = 0,
-		audioNotificationValue = null
+		audioNotificationValue = null,
+		muteGenericMentions = false
 	} = sub;
 
 	this.original = {
@@ -132,7 +137,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
-		audioNotificationValue: new ReactiveVar(audioNotificationValue)
+		audioNotificationValue: new ReactiveVar(audioNotificationValue),
+		muteGenericMentions: new ReactiveVar(muteGenericMentions)
 	};
 
 	this.form = {
@@ -143,7 +149,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
-		audioNotificationValue: new ReactiveVar(audioNotificationValue)
+		audioNotificationValue: new ReactiveVar(audioNotificationValue),
+		muteGenericMentions: new ReactiveVar(muteGenericMentions)
 	};
 
 	this.saveSetting = async() => {

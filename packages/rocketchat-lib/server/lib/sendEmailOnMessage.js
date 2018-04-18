@@ -129,6 +129,12 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
+			if (isMentionAll) {
+				if (sub.muteGenericMentions) {
+					return delete usersToSendEmail[sub.u._id];
+				}
+			}
+
 			const mentionedUser = isMentionAll || message.mentions.find(mention => mention._id === sub.u._id);
 
 			if (emailNotifications === 'default' || emailNotifications == null) {

@@ -181,7 +181,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		desktopNotificationDurations: {},
 		alwaysNotifyAudioUsers: [],
 		dontNotifyAudioUsers: [],
-		audioNotificationValues: {}
+		audioNotificationValues: {},
+		dontNotifyUsersOnGenericMentions: []
 	};
 
 	/**
@@ -245,6 +246,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		settings.audioNotificationValues[subscription.u._id] = subscription.audioNotificationValue;
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
+
+		if (subscription.muteGenericMentions) {
+			settings.dontNotifyUsersOnGenericMentions.push(subscription.u._id);
+		}
 	});
 	let userIdsForAudio = [];
 	let userIdsToNotify = [];
@@ -417,6 +422,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 					statusConnection: 1
 				}
 			}).forEach(function(user) {
+				if ((settings.dontNotifyUsersOnGenericMentions || []).includes(user._id)) {
+					return;
+				}
+
 				if (['online', 'away', 'busy'].includes(user.status) && !(settings.dontNotifyDesktopUsers || []).includes(user._id)) {
 					userIdsToNotify.push(user._id);
 					userIdsForAudio.push(user._id);

@@ -26,6 +26,24 @@
 		</div>
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
+				<div class="rc-switch-double__label {{#if muteGenericMentions}}disabled{{/if}}">
+					{{_ "Receive_Generic_Mentions"}}
+				</div>
+				<div class="rc-switch rc-switch--blue">
+					<label class="rc-switch__label">
+						<input type="checkbox" class="rc-switch__input js-input-check" id="muteGenericMentions" name="muteGenericMentions" value="1" checked="{{$eq muteGenericMentions true}}">
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+				<div class="rc-switch-double__label {{#unless muteGenericMentions}}disabled{{/unless}}">
+					{{_ "Mute_Generic_Mentions"}}
+				</div>
+			</div>
+		</div>
+		<div class="rc-user-info__row rc-user-info__row--separator">
+			<div class="rc-switch-double">
 				<div class="rc-switch-double__label {{#if showUnreadStatus}}disabled{{/if}}">
 					{{_ "Hide_counter"}}
 					<div class="rc-switch-double__description">
