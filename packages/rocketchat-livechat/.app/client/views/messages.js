@@ -154,7 +154,11 @@ Template.messages.events({
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name)
 				});
-				fileUpload(file);
+
+				fileUpload({
+					file,
+					name: file.name
+				});
 			}
 			$input.remove();
 		});

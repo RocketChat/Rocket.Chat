@@ -1,9 +1,13 @@
 import Busboy from 'busboy';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
-RocketChat.API.v1.addRoute('livechat/upload/:rid/:visitorToken', {
+RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 	post() {
-		const visitorToken = this.urlParams.visitorToken;
+		if (!this.request.headers['x-visitor-token']) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const visitorToken = this.request.headers['x-visitor-token'];
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
