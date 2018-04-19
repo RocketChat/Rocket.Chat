@@ -55,14 +55,6 @@
 	font-weight: bold;
 }
 
-.chatpal-search-number {
-	float: left;
-}
-
-.chatpal-search-sorting {
-	float: right;
-}
-
 .chatpal-search-result-single {
 	background-color: white;
 	padding: 10px;
@@ -286,10 +278,15 @@
 
 .chatpal-suggestion {
 	padding: 10px;
+	display: flex;
+	justify-items: center;
+}
+
+.chatpal-suggestion-text {
+	flex: 1 1 auto;
 }
 
 .chatpal-suggestion-hint {
-	float: right;
 	display: none;
 }
 

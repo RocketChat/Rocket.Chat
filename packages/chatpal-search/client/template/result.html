@@ -19,7 +19,6 @@
 					{{#if result.user.docs}}
 						<div class="chatpal-search-result-header">
 							{{_ "Chatpal_Users"}}
-							<div style="clear:both"></div>
 						</div>
 						<div class="chatpal-search-result-list">
 							{{#each result.user.docs}}
@@ -30,7 +29,6 @@
 					{{#if result.room.docs}}
 						<div class="chatpal-search-result-header">
 							{{_ "Chatpal_Rooms"}}
-							<div style="clear:both"></div>
 						</div>
 						<div class="chatpal-search-result-list">
 							{{#each result.room.docs}}
@@ -41,7 +39,6 @@
 					{{#if result.message.docs}}
 						<div class="chatpal-search-result-header">
 							{{_ "Chatpal_Messages"}}
-							<div style="clear:both"></div>
 						</div>
 						<div class="chatpal-search-result-list">
 							{{#each result.message.docs}}
@@ -59,7 +56,6 @@
 							<h2 class="chatpal-search-number">
 								<h2>{{_ "Chatpal_No_Results"}}</h2>
 							</h2>
-							<div style="clear: both"></div>
 						</div>
 					{{/if}}
 				{{/if}}
@@ -70,7 +66,6 @@
 								{{resultNumFound}}
 							{{/if}}
 						</h2>
-						<div style="clear: both"></div>
 					</div>
 					{{#if result.message}}
 						<div class="chatpal-search-result-list">
