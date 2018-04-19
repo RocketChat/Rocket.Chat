@@ -17,6 +17,8 @@ Meteor.methods({
 				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '', data);
 				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Forgot_Password_Email') || '', data);
 
+				Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
+
 				Accounts.emailTemplates.resetPassword.subject = function(/*userModel*/) {
 					return subject;
 				};
