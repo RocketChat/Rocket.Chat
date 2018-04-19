@@ -79,15 +79,15 @@ class ChatpalProvider extends SearchProvider {
 				{key: 'All', i18nLabel: 'All'},
 				{key: 'Messages', i18nLabel: 'Messages'}
 			],
-			i18nLabel: 'Default_Result_Type',
-			i18nDescription: 'Default_Result_Type_Description'
+			i18nLabel: 'Chatpal_Default_Result_Type',
+			i18nDescription: 'Chatpal_Default_Result_Type_Description'
 		});
 		this._settings.add('PageSize', 'int', 15, {
 			i18nLabel: 'Search_Page_Size'
 		});
 		this._settings.add('SuggestionEnabled', 'boolean', true, {
 			i18nLabel: 'Chatpal_Suggestion_Enabled',
-			alert: 'This feature is currently in beta and will ne extended in the future'
+			alert: 'This feature is currently in beta and will be extended in the future'
 		});
 		this._settings.add('BatchSize', 'int', 100, {
 			i18nLabel: 'Chatpal_Batch_Size',
