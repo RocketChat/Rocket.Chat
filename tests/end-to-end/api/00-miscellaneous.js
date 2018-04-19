@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
-import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
+import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
+import {adminEmail, adminUsername, adminPassword, password} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -106,7 +106,7 @@ describe('miscellaneous', function() {
 			const email = `${ username }@rocket.chat`;
 			request.post(api('users.create'))
 				.set(credentials)
-				.send({ email, name: username, username, password})
+				.send({email, name: username, username, password})
 				.end((err, res) => {
 					user = res.body.user;
 					done();
@@ -129,7 +129,7 @@ describe('miscellaneous', function() {
 					done();
 				});
 		});
-		it('should have return an array(result) when search by user and execute succesfully', (done) => {
+		it('should return an array(result) when search by user and execute succesfully', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -151,7 +151,7 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
-		it('should have return an array(result) when search by channel and execute succesfully', (done) => {
+		it('should return an array(result) when search by channel and execute succesfully', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -172,5 +172,23 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
+
+		it('should return an error when send invalid query', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: 'invalid channel',
+						type: 'invalid'
+					})
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+
 	});
 });
