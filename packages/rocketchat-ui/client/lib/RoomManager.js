@@ -304,6 +304,6 @@ RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms()
 RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
 	ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
 	if (sub.ignored) {
-		ChatMessage.update({rid: sub.rid, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
+		ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
 	}
 });

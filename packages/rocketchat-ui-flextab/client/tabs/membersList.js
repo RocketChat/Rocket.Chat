@@ -1,4 +1,4 @@
-/* globals WebRTC popover */
+/* globals WebRTC popover isRtl */
 import _ from 'underscore';
 import {getActions} from './userActions';
 
@@ -81,7 +81,7 @@ Template.membersList.helpers({
 		}
 		// show online users first.
 		// sortBy is stable, so we can do this
-		users = _.sortBy(users, u => u.status === 'offline');
+		users = _.sortBy(users, u => u.status ===	 'offline');
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
@@ -221,12 +221,20 @@ Template.membersList.events({
 		e.preventDefault();
 		const config = {
 			columns,
+			mousePosition: () => ({
+				x: e.currentTarget.getBoundingClientRect().right + 10,
+				y: e.currentTarget.getBoundingClientRect().bottom + 100
+			}),
+			customCSSProperties: () => ({
+				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
+			}),
 			data: {
 				rid: this._id,
 				username: instance.data.username,
 				instance
 			},
-			currentTarget: e.currentTarget,
+			activeElement: e.currentTarget,
 			onDestroyed:() => {
 				e.currentTarget.parentElement.classList.remove('active');
 			}
