@@ -44,7 +44,61 @@
 						<h1 class="setup-wizard-forms__header-title">Admin Info</h1>
 					</header>
 					<main class="setup-wizard-forms__content">
-						x
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">Name</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-sv" icon="user"}}
+									</div>
+									<input type="text" class="rc-input__element" name="name" placeholder="Type your name">
+								</div>
+							</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">Username</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-sv" icon="at"}}
+									</div>
+									<input type="text" class="rc-input__element" name="username" placeholder="Type your username">
+								</div>
+							</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">Organization Email</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-sv" icon="mail"}}
+									</div>
+									<input type="email" class="rc-input__element" name="email" placeholder="Type your email address">
+								</div>
+							</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">Job Title</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-sv" icon="lock"}}
+									</div>
+									<input type="text" class="rc-input__element" name="jobTitle" placeholder="Type your job title">
+								</div>
+							</label>
+						</div>
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">Password</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-sv" icon="key"}}
+									</div>
+									<input type="password" class="rc-input__element" name="password" placeholder="Type your password">
+								</div>
+							</label>
+						</div>
 					</main>
 					<footer class="setup-wizard-forms__footer">
 						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next">
