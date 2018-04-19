@@ -312,7 +312,6 @@ describe('[Chat]', function() {
 		});
 	});
 
-<<<<<<< HEAD
 	describe('/chat.search', () => {
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
@@ -320,24 +319,12 @@ describe('[Chat]', function() {
 				.query({
 					roomId: 'GENERAL',
 					searchText: 'This message was edited via API'
-=======
-	describe('/chat.react', () => {
-		it('should return statusCode: 200 when the emoji is valid', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id
->>>>>>> develop
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-<<<<<<< HEAD
 					expect(res.body).to.have.property('messages');
-=======
->>>>>>> develop
 				})
 				.end(done);
 		});
@@ -349,6 +336,21 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					emoji: 'smile',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return statusCode: 200 when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
 					messageId: message._id
 				})
 				.expect('Content-Type', 'application/json')

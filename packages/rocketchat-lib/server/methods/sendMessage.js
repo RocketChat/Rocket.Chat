@@ -11,7 +11,7 @@ Meteor.methods({
 		}
 
 		if (!message.rid) {
-			throw new Error('The \'rid\' param, must be provided');
+			throw new Error('The \'rid\' property on the message object is missing.');
 		}
 
 		if (message.ts) {

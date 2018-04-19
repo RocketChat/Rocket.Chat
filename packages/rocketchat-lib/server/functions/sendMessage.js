@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 const validateBodyAttachments = (attachments) => {
 
 	const validateAttachmentsFields = (attachmentFields) => {
@@ -42,27 +40,30 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	try {
-		check(message, Match.ObjectIncluding({
-			msg: Match.Maybe(String),
-			text: Match.Maybe(String),
-			alias: Match.Maybe(String),
-			emoji: Match.Maybe(String),
-			avatar: Match.Maybe(String),
-			attachments: Match.Maybe(Array)
-		}));
+	check(message, Match.ObjectIncluding({
+		_id: Match.Maybe(String),
+		msg: Match.Maybe(String),
+		text: Match.Maybe(String),
+		alias: Match.Maybe(String),
+		emoji: Match.Maybe(String),
+		avatar: Match.Maybe(String),
+		attachments: Match.Maybe(Array)
+	}));
 
-		if (Array.isArray(message.attachments) && message.attachments.length) {
-			validateBodyAttachments(message.attachments);
-		}
-	} catch (error) {
-		throw error;
+	if (Array.isArray(message.attachments) && message.attachments.length) {
+		validateBodyAttachments(message.attachments);
 	}
 
-	if (message.ts == null) {
+	if (!message.ts) {
 		message.ts = new Date();
 	}
-	message.u = _.pick(user, ['_id', 'username', 'name']);
+	const { _id, username, name } = message;
+	message.u = {
+		_id,
+		username,
+		name
+	};
+	message.rid = room._id;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
@@ -71,9 +72,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message.ts == null) {
 		message.ts = new Date();
 	}
-
-	message.rid = room._id;
-	message.u = _.pick(user, ['_id', 'username', 'name']);
 
 	if (!room.usernames || room.usernames.length === 0) {
 		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
