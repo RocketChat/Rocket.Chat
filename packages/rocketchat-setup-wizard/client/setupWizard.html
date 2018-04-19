@@ -1,5 +1,6 @@
 <template name="setupWizard">
-	<section class="setup-wizard">
+	<div class="setup-wizard">
+		{{!--
 		<div class="setup-wizard-wrapper">
 			<header class="setup-wizard-header">
 				<img class="setup-wizard-header-logo" src="images/logo/logo-dark.svg">
@@ -18,7 +19,42 @@
 				</button>
 			</footer>
 		</div>
-	</section>
+		--}}
+		<section class="setup-wizard-info">
+			<header class="setup-wizard-info__header">
+				<img class="setup-wizard-info__header-logo" src="images/logo/logo-black.svg">
+				<span class="setup-wizard-info__header-tag">Setup Wizard</span>
+			</header>
+			<main class="setup-wizard-info__content">
+				<h1 class="setup-wizard-info__content-title">Setup Wizard</h1>
+				<p class="setup-wizard-info__content-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a lacus hendrerit, sodales arcu vitae, dictum ex. In vestibulum odio non leo feugiat venenatis.</p>
+				<ol class="setup-wizard-info__steps">
+					<li class="setup-wizard-info__steps-item {{itemModifier 1}}">Admin Info</li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 2}}">Organization Info<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 3}}">Server Info<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 4}}">Register Server<span class="setup-wizard-info__steps-item-bonding"></span></li>
+				</ol>
+			</main>
+		</section>
+		<section class="setup-wizard-forms">
+			<div class="setup-wizard-forms__wrapper">
+				<div class="setup-wizard-forms__box">
+					<header class="setup-wizard-forms__header">
+						<span class="setup-wizard-forms__header-step">Step 1</span>
+						<h1 class="setup-wizard-forms__header-title">Admin Info</h1>
+					</header>
+					<main class="setup-wizard-forms__content">
+						x
+					</main>
+					<footer class="setup-wizard-forms__footer">
+						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next">
+							<span>Continue</span>
+						</button>
+					</footer>
+				</div>
+			</div>
+		</section>
+	</div>
 </template>
 
 <template name="setup-wizard-step0">

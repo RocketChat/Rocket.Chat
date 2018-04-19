@@ -640,11 +640,19 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
-		'public': true
+		'public': false,
+		wizard: {
+			step: 3,
+			order: 1
+		}
 	});
 	this.add('Language', '', {
 		type: 'language',
-		'public': true
+		'public': true,
+		wizard: {
+			step: 3,
+			order: 1
+		}
 	});
 	this.add('Allow_Invalid_SelfSigned_Certs', false, {
 		type: 'boolean'
