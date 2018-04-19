@@ -6,7 +6,7 @@ Template.membersList.helpers({
 	ignored() {
 		const {user} = this;
 		const sub = RocketChat.models.Subscriptions.findOne({rid: Session.get('openedRoom')});
-		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1 ? '(ignorado)' : '';
+		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1 ? `(${ t('Ignored') })` : '';
 	},
 	tAddUsers() {
 		return t('Add_users');
@@ -234,7 +234,9 @@ Template.membersList.events({
 				username: instance.data.username,
 				instance
 			},
+			offsetHorizontal: 15,
 			activeElement: e.currentTarget,
+			currentTarget: e.currentTarget,
 			onDestroyed:() => {
 				e.currentTarget.parentElement.classList.remove('active');
 			}
