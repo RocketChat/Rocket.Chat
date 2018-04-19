@@ -274,10 +274,11 @@
 			flex-direction: column;
 
 			width: 350px;
-			justify-content: space-between;
 		}
 
 		&__header {
+			margin-bottom: 2rem;
+
 			&-step {
 
 				display: block;
@@ -306,6 +307,10 @@
 
 				line-height: 1.75rem;
 			}
+		}
+
+		&__content {
+			margin-bottom: 2rem;
 		}
 	}
 

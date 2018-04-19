@@ -51,7 +51,7 @@
 									<div class="rc-input__icon">
 										{{> icon block="rc-input__icon-sv" icon="user"}}
 									</div>
-									<input type="text" class="rc-input__element" name="name" placeholder="Type your name">
+									<input type="text" class="rc-input__element" name="step1-name" placeholder="Type your name" data-step="1" value="{{getValue 'step1-name'}}">
 								</div>
 							</label>
 						</div>
@@ -62,7 +62,7 @@
 									<div class="rc-input__icon">
 										{{> icon block="rc-input__icon-sv" icon="at"}}
 									</div>
-									<input type="text" class="rc-input__element" name="username" placeholder="Type your username">
+									<input type="text" class="rc-input__element" name="step1-username" placeholder="Type your username" data-step="1" value="{{getValue 'step1-username'}}">
 								</div>
 							</label>
 						</div>
@@ -73,7 +73,7 @@
 									<div class="rc-input__icon">
 										{{> icon block="rc-input__icon-sv" icon="mail"}}
 									</div>
-									<input type="email" class="rc-input__element" name="email" placeholder="Type your email address">
+									<input type="email" class="rc-input__element" name="step1-email" placeholder="Type your email address" data-step="1" value="{{getValue 'step1-email'}}">
 								</div>
 							</label>
 						</div>
@@ -84,7 +84,7 @@
 									<div class="rc-input__icon">
 										{{> icon block="rc-input__icon-sv" icon="lock"}}
 									</div>
-									<input type="text" class="rc-input__element" name="jobTitle" placeholder="Type your job title">
+									<input type="text" class="rc-input__element" name="step1-jobTitle" placeholder="Type your job title" data-step="1" value="{{getValue 'step1-jobTitle'}}">
 								</div>
 							</label>
 						</div>
@@ -95,13 +95,13 @@
 									<div class="rc-input__icon">
 										{{> icon block="rc-input__icon-sv" icon="key"}}
 									</div>
-									<input type="password" class="rc-input__element" name="password" placeholder="Type your password">
+									<input type="password" class="rc-input__element" name="step1-password" placeholder="Type your password" data-step="1">
 								</div>
 							</label>
 						</div>
 					</main>
 					<footer class="setup-wizard-forms__footer">
-						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next">
+						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next" {{isDisabled}}>
 							<span>Continue</span>
 						</button>
 					</footer>
