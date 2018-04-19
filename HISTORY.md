@@ -2,22 +2,6 @@
 # 0.64.0-develop (2018-04-07)
 
 
-
-
-# 0.63.2
-`2018-04-17  ·  1 🐛  ·  1 🔍`
-
-### 🐛 Bug fixes
-
-- Even TypeErrors with SAML ([#10475](https://github.com/RocketChat/Rocket.Chat/pull/10475))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
-
-</details>
-
 # 0.63.3
 `2018-04-18  ·  2 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
