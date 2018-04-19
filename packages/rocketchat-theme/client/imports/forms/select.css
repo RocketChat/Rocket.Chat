@@ -45,6 +45,8 @@
 
 		width: 100%;
 
+		line-height: 1rem !important;
+
 		&::-ms-expand {
 			display: none;
 		}
