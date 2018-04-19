@@ -519,7 +519,7 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
