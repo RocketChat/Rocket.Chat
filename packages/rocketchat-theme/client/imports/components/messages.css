@@ -42,9 +42,19 @@
 
 .message {
 
-	&--ignored {
-		background: red;
+	& .toggle-hidden {
+		display: none;
 	}
+
+	&--ignored {
+		& .body {
+			display: none;
+		}
+		& .toggle-hidden {
+			display: block;
+		}
+	}
+
 	&.active {
 		& .message-actions__label {
 			color: var(--rc-color-button-primary);

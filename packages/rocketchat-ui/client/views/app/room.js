@@ -722,9 +722,11 @@ Template.room.events({
 				showCancelButton: true,
 				cancelButtonText: t('Close')
 			});
-
 		}
-
+	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	}
 });
 

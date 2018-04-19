@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{isIgnored}} {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -54,6 +54,9 @@
 			<span class="user color-info-font-color">
 				{{>icon icon=roomIcon}}{{channelName}}
 			</span>
+		{{/if}}
+		{{#if isIgnored}}
+			<span class="toggle-hidden icon-right-dir" data-message="{{_id}}"> This message was ignored </span>
 		{{/if}}
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
