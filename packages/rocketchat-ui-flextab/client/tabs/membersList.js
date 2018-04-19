@@ -6,7 +6,7 @@ Template.membersList.helpers({
 	ignored() {
 		const {user} = this;
 		const sub = RocketChat.models.Subscriptions.findOne({rid: Session.get('openedRoom')});
-		return sub.ignored && sub.ignored.indexOf(user._id) > -1 ? '(ignorado)' : '';
+		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1 ? '(ignorado)' : '';
 	},
 	tAddUsers() {
 		return t('Add_users');
