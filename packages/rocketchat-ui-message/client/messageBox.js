@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages popover isRtl AudioRecorder chatMessages fileUploadHandler*/
+/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -277,7 +277,12 @@ Template.messageBox.helpers({
 		return Template.instance().dataReply.get();
 	},
 	isAudioMessageAllowed() {
-		return RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList'));
+		return (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+			RocketChat.settings.get('FileUpload_Enabled') &&
+			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
+			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
+			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	}
 });
 
@@ -444,8 +449,6 @@ Template.messageBox.events({
 	},
 	'click .rc-message-box__action-menu'(e) {
 		const groups = RocketChat.messageBox.actions.get();
-		const textArea = document.querySelector('.rc-message-box__textarea');
-
 		const config = {
 			popoverClass: 'message-box',
 			columns: [
@@ -467,13 +470,9 @@ Template.messageBox.events({
 					})
 				}
 			],
-			mousePosition: {
-				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 40,
-				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
-			},
-			customCSSProperties: {
-				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : undefined
-			},
+			offsetVertical: 10,
+			direction: 'top-inverted',
+			currentTarget: e.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this._id
 			},
@@ -484,9 +483,9 @@ Template.messageBox.events({
 	},
 	'click .js-audio-message-record'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
 
 		chatMessages[RocketChat.openedRoom].recording = true;
 		AudioRecorder.start(function() {
@@ -502,18 +501,18 @@ Template.messageBox.events({
 				timer.innerHTML = `${ minutes }:${ seconds }`;
 			}, 1000);
 
-			icon.classList.add('hidden');
-			timer_box.classList.add('active');
+			mic.classList.remove('active');
+			recording_icons.forEach((e)=>{ e.classList.add('active'); });
 		});
 	},
 	'click .js-audio-message-cross'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		timer_box.classList.remove('active');
-		icon.classList.remove('hidden');
+		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
+		mic.classList.add('active');
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
@@ -524,17 +523,13 @@ Template.messageBox.events({
 	},
 	'click .js-audio-message-check'(event) {
 		event.preventDefault();
-		const icon = document.querySelector('.rc-message-box__audio-message');
 		const timer = document.querySelector('.rc-message-box__timer');
-		const timer_box = document.querySelector('.rc-message-box__audio-recording');
+		const mic = document.querySelector('.rc-message-box__icon.mic');
 		const loader = document.querySelector('.js-audio-message-loading');
-		const mic = document.querySelector('.js-audio-message-record');
+		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		icon.classList.remove('hidden');
-		timer_box.classList.remove('active');
-		mic.classList.remove('active');
+		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
 		loader.classList.add('active');
-
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);

@@ -248,7 +248,6 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 		//Permission checks are already done in the updateMessage method, so no need to duplicate them
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
-
 		});
 
 		return RocketChat.API.v1.success({
@@ -269,9 +268,52 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 		}
 
-		const emoji = this.bodyParams.emoji;
+		const emoji = this.bodyParams.emoji || this.bodyParams.reaction;
+
+		if (!emoji) {
+			throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id));
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }, {
+	get() {
+		const { messageId } = this.queryParams;
+		if (!messageId) {
+			return RocketChat.API.v1.failure({
+				error: 'The required \'messageId\' param is missing.'
+			});
+		}
+
+		try {
+			const messageReadReceipts = Meteor.runAsUser(this.userId, () => Meteor.call('getReadReceipts', { messageId }));
+			return RocketChat.API.v1.success({
+				receipts: messageReadReceipts
+			});
+		} catch (error) {
+			return RocketChat.API.v1.failure({
+				error: error.message
+			});
+		}
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
+	post() {
+		const { messageId, description } = this.bodyParams;
+		if (!messageId) {
+			return RocketChat.API.v1.failure('The required "messageId" param is missing.');
+		}
+
+		if (!description) {
+			return RocketChat.API.v1.failure('The required "description" param is missing.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
 
 		return RocketChat.API.v1.success();
 	}

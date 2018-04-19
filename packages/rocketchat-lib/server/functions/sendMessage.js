@@ -84,20 +84,52 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 	}
 
-	if (message.parseUrls !== false) {
-		const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		message.unread = true;
+	}
 
-		if (urls) {
-			message.urls = urls.map(function(url) {
-				return {
-					url
-				};
-			});
+	// For the Rocket.Chat Apps :)
+	if (message && Apps && Apps.isLoaded()) {
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+		}
+
+		let result;
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
+
+		if (typeof result === 'object') {
+			message = Object.assign(message, result);
 		}
 	}
 
-	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
-		message.unread = true;
+	if (message.parseUrls !== false) {
+		const urlRegex = /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g;
+		const urls = message.msg.match(urlRegex);
+		if (urls) {
+			// ignoredUrls contain blocks of quotes with urls inside
+			const ignoredUrls = message.msg.match(/(?:(?:\`{1,3})(?:[\n\r]*?.*?)*?)(([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?)(?:(?:[\n\r]*.*?)*?(?:\`{1,3}))/gm);
+			if (ignoredUrls) {
+				ignoredUrls.forEach((url) => {
+					const shouldBeIgnored = url.match(urlRegex);
+					if (shouldBeIgnored) {
+						shouldBeIgnored.forEach((match) => {
+							const matchIndex = urls.indexOf(match);
+							urls.splice(matchIndex, 1);
+						});
+					}
+				});
+			}
+			if (urls) {
+				// use the Set to remove duplicity, so it doesn't embed the same link twice
+				message.urls = [...new Set(urls)].map(function(url) {
+					return {
+						url
+					};
+				});
+			}
+		}
 	}
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
@@ -107,16 +139,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		if (message.sandstormSessionId) {
 			sandstormSessionId = message.sandstormSessionId;
 			delete message.sandstormSessionId;
-		}
-
-		// For the Rocket.Chat Apps :)
-		if (Apps && Apps.isLoaded()) {
-			const prevent = Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
-			if (prevent) {
-				return false;
-			}
-
-			// TODO: The rest of the IPreMessageSent events
 		}
 
 		if (message._id && upsert) {
@@ -132,6 +154,8 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (Apps && Apps.isLoaded()) {
+			// This returns a promise, but it won't mutate anything about the message
+			// so, we don't really care if it is successful or fails
 			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
