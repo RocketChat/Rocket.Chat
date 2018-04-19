@@ -41,6 +41,10 @@
 }
 
 .message {
+
+	&--ignored {
+		background: red;
+	}
 	&.active {
 		& .message-actions__label {
 			color: var(--rc-color-button-primary);

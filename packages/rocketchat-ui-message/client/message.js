@@ -6,6 +6,9 @@ Template.message.helpers({
 	encodeURI(text) {
 		return encodeURI(text);
 	},
+	isIgnored() {
+		return this.ignored ? 'message--ignored' : '';
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';
