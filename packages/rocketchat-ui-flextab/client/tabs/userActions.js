@@ -306,7 +306,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				})
 			};
 		}, () => {
-			if (user._id === Meteor.userId()) {
+			if (!directActions || user._id === Meteor.userId()) {
 				return;
 			}
 			if (isIgnored()) {
