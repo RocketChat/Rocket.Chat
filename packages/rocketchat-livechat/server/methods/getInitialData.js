@@ -20,7 +20,8 @@ Meteor.methods({
 			offlineSuccessMessage: null,
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
-			videoCall: null
+			videoCall: null,
+			conversationFinishedMessage: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -67,6 +68,7 @@ Meteor.methods({
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
+		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
