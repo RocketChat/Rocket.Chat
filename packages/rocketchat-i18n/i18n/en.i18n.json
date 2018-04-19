@@ -890,6 +890,7 @@
   "Iframe_Integration_send_target_origin": "Send Target Origin",
   "Iframe_Integration_send_target_origin_Description": "Origin with protocol prefix, which commands are sent to e.g. 'https://localhost', or * to allow sending to anywhere.",
   "Ignore": "Ignore",
+  "Ignored": "Ignored",
   "IMAP_intercepter_already_running": "IMAP intercepter already running",
   "IMAP_intercepter_Not_running": "IMAP intercepter Not running",
   "Impersonate_next_agent_from_queue": "Impersonate next agent from queue",
