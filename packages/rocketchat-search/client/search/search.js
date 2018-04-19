@@ -59,7 +59,10 @@ Template.RocketSearch.onCreated(function() {
 
 	this.suggest = (value) => {
 		this.suggestions.set();
-		Meteor.call('rocketchatSearch.suggest', value, {rid:Session.get('openedRoom'), uid:Meteor.userId()}, this.scope.parentPayload, (err, result) => {
+
+		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
+
+		Meteor.call('rocketchatSearch.suggest', value, {rid:Session.get('openedRoom'), uid:Meteor.userId()}, this.scope.parentPayload, _p, (err, result) => {
 			if (err) {
 				//TODO what should happen
 			} else {

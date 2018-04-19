@@ -437,11 +437,12 @@ export default class Index {
 		}, callback);
 	}
 
-	suggest(text, language, acl, callback) {
+	suggest(text, language, acl, type, callback) {
 		this._backend.suggest({
 			text,
 			language,
-			acl
+			acl,
+			type
 		}, callback);
 	}
 

@@ -329,10 +329,16 @@ class ChatpalProvider extends SearchProvider {
 	 * @inheritDoc
 	 */
 	suggest(text, context, payload, callback) {
+
+		if (!this.index) { return callback({msg:'Chatpal_currently_not_active'}); }
+
+		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+
 		this.index.suggest(
 			text,
 			this._settings.get('Main_Language'),
 			this._getAcl(context),
+			type,
 			callback
 		);
 	}
