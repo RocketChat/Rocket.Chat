@@ -61,7 +61,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid/:visitorToken', {
 			rid: this.urlParams.rid,
 			visitorToken
 		};
-		console.log(details);
+
 		const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
 
 		uploadedFile.description = fields.description;

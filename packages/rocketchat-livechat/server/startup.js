@@ -11,6 +11,19 @@ Meteor.startup(() => {
 		return room.t === 'l' && extraData && extraData.token && room.v && room.v.token === extraData.token;
 	});
 
+	RocketChat.authz.addRoomAccessValidator(function(room, file) {
+		return room.t === 'l' && file && file.visitorToken && room.v && room.v.token === file.visitorToken;
+	});
+
+	RocketChat.authz.addRoomAccessValidator(function(file) {
+		if (!file || !file.rid || !file.visitorToken) {
+			return;
+		}
+
+		const room = RocketChat.models.Rooms.findOneById(file.rid);
+		return room && room.t === 'l' && file && file.visitorToken && room.v && room.v.token === file.visitorToken;
+	});
+
 	RocketChat.callbacks.add('beforeLeaveRoom', function(user, room) {
 		if (room.t !== 'l') {
 			return user;

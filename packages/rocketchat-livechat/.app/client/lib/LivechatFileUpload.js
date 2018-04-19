@@ -1,7 +1,6 @@
 /* globals, fileUpload, swal, Livechat */
 /* exported fileUpload */
 import visitor from '../../imports/client/visitor';
-import _ from 'underscore';
 import s from 'underscore.string';
 import request from 'request';
 
@@ -14,18 +13,15 @@ function sendFileRequest(file, roomId, visitorToken) {
 	request.open("POST", url);
 
 	request.onload = function () {
-		if (request.status !== 200) {						
-			swal({
-				title: request.statusText,
-				text: request.responseText,
-				type: 'error',
-				showConfirmButton: true,
-				closeOnConfirm: true,
-				confirmButtonText: t('Close')
-			});					
+		if (request.status !== 200) {	
+			showError(request.statusText);					
 		}
 	};
-	
+	/*
+	request.onprogress = function () {
+		console.log('LOADING', request.status);
+	};
+	*/
 	request.onerror = function () {
 		swal({
 			title: request.statusText,

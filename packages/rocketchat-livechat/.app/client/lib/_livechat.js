@@ -23,6 +23,7 @@ this.Livechat = new (class Livechat {
 		this._videoCall = new ReactiveVar(false);
 		this._fileUpload = new ReactiveVar(false);
 		this._transcriptMessage = new ReactiveVar('');
+		this._conversationFinishedMessage = new ReactiveVar('');
 		this._connecting = new ReactiveVar(false);
 		this._room = new ReactiveVar(null);
 		this._department = new ReactiveVar(null);
@@ -104,6 +105,9 @@ this.Livechat = new (class Livechat {
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
 	}
+	get conversationFinishedMessage() {
+		return this._conversationFinishedMessage.get();
+	}
 	get department() {
 		return this._department.get();
 	}
@@ -167,6 +171,9 @@ this.Livechat = new (class Livechat {
 	}
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
+	}
+	set conversationFinishedMessage(value) {
+		this._conversationFinishedMessage.set(value);
 	}
 	set connecting(value) {
 		this._connecting.set(value);

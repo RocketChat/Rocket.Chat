@@ -4,10 +4,7 @@ import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 	insert(userId, doc) {
-		console.log('saida doc:');
-		console.log(doc);
-		return true;
-		return userId || (doc && doc.message_id && doc.message_id.indexOf('slack-') === 0); // allow inserts from slackbridge (message_id = slack-timestamp-milli)
+		return userId || (doc && doc.message_id && doc.message_id.indexOf('slack-') === 0) || RocketChat.authz.canAccessRoom(doc); // allow inserts from slackbridge (message_id = slack-timestamp-milli)
 	},
 	update(userId, doc) {
 		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (RocketChat.settings.get('Message_AllowDeleting') && userId === doc.userId);
