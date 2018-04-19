@@ -479,16 +479,16 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			if (isIgnored()) {
 				return {
 					group: 'channel',
-					icon : 'plus',
-					name: 'designore',
-					action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: false}, success(() => toastr.success(t('user ignored no more')))))
+					icon : 'ban',
+					name: 'Unignore',
+					action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: false}, success(() => toastr.success(t('User_has_been_unignored')))))
 				};
 			}
 			return {
 				group: 'channel',
-				icon : 'plus',
+				icon : 'ban',
 				name: 'ignore',
-				action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: true}, success(() => toastr.success(t('user ignored')))))
+				action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: true}, success(() => toastr.success(t('User_has_been_ignored')))))
 			};
 		}];
 	return actions;
