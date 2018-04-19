@@ -295,12 +295,12 @@ Meteor.startup(function() {
 
 	RocketChat.MessageAction.addButton({
 		id: 'ignore-user',
-		icon: 'quote',
-		label: 'Ignore user',
+		icon: 'ban',
+		label: t('Ignore'),
 		context: ['message', 'message-mobile'],
 		action() {
 			const [, {rid, u: {_id}}] = this._arguments;
-			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true}, success(() => toastr.success(t('ignored'))));
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true}, success(() => toastr.success(t('User_has_been_ignored'))));
 		},
 		condition(message) {
 			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
@@ -310,15 +310,15 @@ Meteor.startup(function() {
 		order: 20,
 		group: 'menu'
 	});
-	// TODO: i18n icon
+
 	RocketChat.MessageAction.addButton({
-		id: 'remove-igonore-user',
-		icon: 'quote',
-		label: 'Remove Ignore user',
+		id: 'unignore-user',
+		icon: 'ban',
+		label: t('Unignore'),
 		context: ['message', 'message-mobile'],
 		action() {
 			const [, {rid, u: {_id}}] = this._arguments;
-			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false}, success(() => toastr.success(t('ignored no more'))));
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false}, success(() => toastr.success(t('User_has_been_unignored'))));
 
 		},
 		condition(message) {
