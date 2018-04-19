@@ -40,8 +40,3 @@ Package.onUse(function(api) {
 	// Run-time stylesheets
 	api.addAssets('server/colors.less', 'server');
 });
-
-Npm.depends({
-	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
-	'less-plugin-autoprefix': '1.4.2'
-});

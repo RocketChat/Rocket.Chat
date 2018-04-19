@@ -9,7 +9,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	} else if (message.editedAt) {
-		// skips this callback if the message was edited
+
+		// only updates last message if it was edited (skip rest of callback)
+		if (RocketChat.settings.get('Store_Last_Message') && (!room.lastMessage || room.lastMessage._id === message._id)) {
+			RocketChat.models.Rooms.setLastMessageById(message.rid, message);
+		}
 		return message;
 	}
 

@@ -2,8 +2,17 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, message, log, apiPrivateChannelName } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	message,
+	log,
+	apiPrivateChannelName
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('[Chat]', function() {
@@ -51,7 +60,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+				expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 				message._id = res.body.message._id;
 			})
 			.end(done);
@@ -67,7 +76,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message._id', message._id);
+				expect(res.body).to.have.nested.property('message._id', message._id);
 			})
 			.end(done);
 	});
@@ -116,7 +125,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'Sample message');
+				expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 			})
 			.end(done);
 	});
@@ -131,7 +140,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message._id', message._id);
+				expect(res.body).to.have.nested.property('message._id', message._id);
 			})
 			.end(done);
 	});
@@ -148,7 +157,7 @@ describe('[Chat]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'This message was edited via API');
+				expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 			})
 			.end(done);
 	});
@@ -167,5 +176,119 @@ describe('[Chat]', function() {
 				expect(res.body).to.have.property('messages');
 			})
 			.end(done);
+	});
+
+	describe('/chat.react', () => {
+		it('should return statusCode: 200 when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: 'bee',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					reaction: 'ant',
+					messageId: message._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/chat.getMessageReadReceipts]', () => {
+		describe('when execute successfully', () => {
+			it('should return the statusCode 200 and \'receipts\' property and should be equal an array', (done) => {
+				request.get(api(`chat.getMessageReadReceipts?messageId=${ message._id }`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('receipts').and.to.be.an('array');
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error', (done) => {
+				request.get(api('chat.getMessageReadReceipts'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).not.have.property('receipts');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.reportMessage]', () => {
+		describe('when execute successfully', () => {
+			it('should return the statusCode 200', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+						description: 'test'
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error', (done) => {
+				request.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
 	});
 });

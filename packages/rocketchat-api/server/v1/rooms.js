@@ -1,3 +1,28 @@
+import Busboy from 'busboy';
+
+function findRoomByIdOrName({ params, checkedArchived = true}) {
+	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
+		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+	}
+
+	const fields = { ...RocketChat.API.v1.defaultFieldsToExclude };
+
+	let room;
+	if (params.roomId) {
+		room = RocketChat.models.Rooms.findOneById(params.roomId, { fields });
+	} else if (params.roomName) {
+		room = RocketChat.models.Rooms.findOneByName(params.roomName, { fields });
+	}
+	if (!room) {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
+	}
+	if (checkedArchived && room.archived) {
+		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
+	}
+
+	return room;
+}
+
 RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
@@ -33,7 +58,6 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const Busboy = Npm.require('busboy');
 		const busboy = new Busboy({ headers: this.request.headers });
 		const files = [];
 		const fields = {};
@@ -91,3 +115,43 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
+	post() {
+		const saveNotifications = (notifications, roomId) => {
+			Object.keys(notifications).map((notificationKey) => {
+				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
+			});
+		};
+		const { roomId, notifications } = this.bodyParams;
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		if (!notifications || Object.keys(notifications).length === 0) {
+			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+		}
+
+		saveNotifications(notifications, roomId);
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
+	post() {
+		const { favorite } = this.bodyParams;
+
+		if (!this.bodyParams.hasOwnProperty('favorite')) {
+			return RocketChat.API.v1.failure('The \'favorite\' param is required');
+		}
+
+		const room = findRoomByIdOrName({ params: this.bodyParams });
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', room._id, favorite));
+
+		return RocketChat.API.v1.success();
+	}
+});
+

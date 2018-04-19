@@ -1,11 +1,11 @@
 /* globals getHttpBridge, waitPromise, UploadFS */
 /* exported getHttpBridge, waitPromise */
+import Future from 'fibers/future';
 
 RocketChat.Sandstorm = {};
 
 if (process.env.SANDSTORM === '1') {
-	const Future = Npm.require('fibers/future');
-	const Capnp = Npm.require('/node_modules/capnp.js');
+	const Capnp = require('/node_modules/capnp.js');
 	const SandstormHttpBridge = Capnp.importSystem('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
 
 	let capnpConnection = null;

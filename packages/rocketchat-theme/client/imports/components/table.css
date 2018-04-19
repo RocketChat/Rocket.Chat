@@ -1,0 +1,54 @@
+.rc-table {
+	font-size: 0.875rem;
+	color: var(--rc-color-primary);
+	width: 100%;
+
+	&-head {
+		color: var(--rc-color-primary-light);
+
+		& .rc-icon {
+			fill: var(--rc-color-primary-light);
+		}
+	}
+
+	&-body .rc-table-tr {
+		cursor: pointer;
+
+		&:hover {
+			background-color: var(--rc-color-primary-lightest);
+		}
+	}
+
+	&-tr {
+		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+	}
+
+	&-td {
+		padding: 1.25rem 0;
+		vertical-align: middle;
+
+		&:first-child {
+			padding-left: 1rem;
+		}
+
+		&:last-child {
+			padding-right: 1rem;
+		}
+
+		&--bold {
+			font-weight: 600;
+		}
+	}
+}
+
+.rtl .rc-table-td {
+	&:first-child {
+		padding-right: 1rem;
+		padding-left: 0;
+	}
+
+	&:last-child {
+		padding-right: 0;
+		padding-left: 1rem;
+	}
+}

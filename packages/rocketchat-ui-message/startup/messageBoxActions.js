@@ -1,4 +1,4 @@
-/* globals fileUpload chatMessages AudioRecorder device popover modal */
+/* globals fileUpload device modal */
 
 import mime from 'mime-type/with-db';
 import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
@@ -12,60 +12,23 @@ RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	}
 });
 
-RocketChat.messageBox.actions.add('Create_new', 'Audio_message', {
-	id: 'audio-message',
-	icon: 'mic',
-	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_AudioRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/wav|audio\/\*/i)),
-	action({event, element}) {
-		event.preventDefault();
-		const icon = element.querySelector('.rc-icon');
-
-		if (chatMessages[RocketChat.openedRoom].recording) {
-			AudioRecorder.stop(function(blob) {
-				popover.close();
-				icon.style.color = '';
-				icon.classList.remove('pulse');
-				chatMessages[RocketChat.openedRoom].recording = false;
-				fileUpload([
-					{
-						file: blob,
-						type: 'audio',
-						name: `${ TAPi18n.__('Audio record') }.wav`
-					}
-				]);
-			});
-			return false;
-		}
-
-		chatMessages[RocketChat.openedRoom].recording = true;
-		AudioRecorder.start(function() {
-			icon.classList.add('pulse');
-			icon.style.color = 'red';
-		});
-	}
-});
-
-
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
 	action({event}) {
 		event.preventDefault();
-		const input = document.createElement('input');
-		input.style.display = 'none';
-		input.type = 'file';
-		input.setAttribute('multiple', 'multiple');
-		document.body.appendChild(input);
+		const $input = $(document.createElement('input'));
+		$input.css('display', 'none');
+		$input.attr({
+			id: 'fileupload-input',
+			type: 'file',
+			multiple: 'multiple'
+		});
 
-		input.click();
+		$(document.body).append($input);
 
-		// Simple hack for cordova aka codegueira
-		if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-			input.click();
-		}
-
-		input.addEventListener('change', function(e) {
+		$input.one('change', function(e) {
 			const filesToUpload = [...e.target.files].map(file => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name)
@@ -75,10 +38,17 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 					name: file.name
 				};
 			});
-			fileUpload(filesToUpload);
-		}, {once: true});
 
-		input.remove();
+			fileUpload(filesToUpload);
+			$input.remove();
+		});
+
+		$input.click();
+
+		// Simple hack for cordova aka codegueira
+		if ((typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') || navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+			$input.click();
+		}
 	}
 });
 

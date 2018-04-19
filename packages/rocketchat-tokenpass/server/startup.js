@@ -23,7 +23,7 @@ function validateTokenAccess(userData, roomData) {
 
 Meteor.startup(function() {
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		if (!room.tokenpass) {
+		if (!room.tokenpass || !user) {
 			return false;
 		}
 

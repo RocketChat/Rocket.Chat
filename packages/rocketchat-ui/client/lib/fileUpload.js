@@ -150,7 +150,8 @@ fileUpload = function(filesToUpload) {
 				closeOnCancel: false,
 				confirmButtonText: t('Send'),
 				cancelButtonText: t('Cancel'),
-				html: true
+				html: true,
+				onRendered: () => $('#file-name').focus()
 			}, function(isConfirm) {
 
 				const record = {

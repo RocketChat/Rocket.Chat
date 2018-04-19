@@ -10,10 +10,6 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	clipboard: '1.7.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'mongo',
@@ -31,6 +27,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/main.js', 'client');
 
 	api.addFiles('server/inject.js', 'server');
+	api.addAssets('server/dynamic-css.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
-	api.addAssets('public/loading.css', 'server');
 });

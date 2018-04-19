@@ -103,20 +103,11 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
-			let text = `[ ](${ url }) `;
-
-			if (roomInfo.t !== 'd' && message.u.username !== Meteor.user().username) {
-				text += `@${ message.u.username } `;
-			}
-
-			if (input.value && !input.value.endsWith(' ')) {
-				input.value += ' ';
-			}
-			input.value += text;
-			input.focus();
-			$(input).trigger('change').trigger('input');
+			input.value = `@${ message.u.username } `;
+			$(input)
+				.focus()
+				.data('reply', message)
+				.trigger('dataChange');
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -273,14 +264,10 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const text = `[ ](${ url }) `;
-			if (input.value) {
-				input.value += input.value.endsWith(' ') ? '' : ' ';
-			}
-			input.value += text;
-			input.focus();
-			$(input).trigger('change').trigger('input');
+			$(input)
+				.focus()
+				.data('reply', message)
+				.trigger('dataChange');
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {

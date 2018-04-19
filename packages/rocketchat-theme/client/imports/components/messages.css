@@ -1,3 +1,7 @@
+.messages-container-wrapper {
+	position: relative;
+}
+
 .message-actions {
 	position: absolute;
 	top: 2px;
@@ -5,7 +9,7 @@
 
 	display: none;
 
-	color: #6c727a;
+	color: var(--color-darkest);
 
 	font-size: 1rem;
 
