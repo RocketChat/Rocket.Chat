@@ -57,26 +57,25 @@
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
 							<td class="rc-table-td js-sort" data-sort="username">Username {{> icon icon="sort" }}</td>
+							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
 							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
 						{{#each searchResults}}
 							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
+								<td class="rc-table-td rc-table-td--username">
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=username}}</div>
 										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">
-												{{>icon icon="at"}}
-												{{name}}
+											<span class="rc-directory-channel-username">
+												{{>icon icon="at"}}{{username}}
 											</span>
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--username">{{username}}</td>
+								<td class="rc-table-td rc-table-td--name">{{name}}</td>
 								<td class="rc-table-td rc-table-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
