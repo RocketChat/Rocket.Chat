@@ -28,16 +28,17 @@
 	}
 
 	&__content {
+		display: flex;
 		overflow: auto;
+
+		flex-direction: column;
+
+		flex: 1 1 auto;
 
 		height: 100%;
 
 		padding: var(--default-padding);
-
-		& .js-back {
-			width: 100%;
-			margin-top: 2rem;
-		}
+		justify-content: space-between;
 
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;

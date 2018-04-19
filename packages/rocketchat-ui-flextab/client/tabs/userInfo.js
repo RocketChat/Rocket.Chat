@@ -137,6 +137,7 @@ Template.userInfo.helpers({
 
 	userToEdit() {
 		const instance = Template.instance();
+		const data = Template.currentData();
 		return {
 			user: instance.user.get(),
 			back(username) {
@@ -145,6 +146,7 @@ Template.userInfo.helpers({
 				if (username != null) {
 					const user = instance.user.get();
 					if ((user != null ? user.username : undefined) !== username) {
+						data.username = username;
 						return instance.loadedUsername.set(username);
 					}
 				}

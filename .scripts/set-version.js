@@ -25,6 +25,7 @@ const files = [
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
+	'./.docker/Dockerfile.rhel',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
 const readFile = (file) => {
