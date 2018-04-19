@@ -13,10 +13,12 @@ Template.ChatpalAdmin.onCreated(function() {
 	const lang = RocketChat.settings.get('Language');
 
 	this.lang = (lang === 'de' || lang === 'en') ? lang : 'en';
-});
 
-Template.ChatpalAdmin.onRendered(function() {
-	this.$('#chatpal-tac').load(`https://beta.chatpal.io/v1/terms/${ this.lang }.html`);
+	this.tac = new ReactiveVar();
+
+	Meteor.call('chatpalUtilsGetTaC', this.lang, (err, data) => {
+		this.tac.set(data);
+	});
 });
 
 Template.ChatpalAdmin.events({
@@ -54,5 +56,8 @@ Template.ChatpalAdmin.helpers({
 	},
 	isAdmin() {
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+	},
+	tac() {
+		return Template.instance().tac.get();
 	}
 });

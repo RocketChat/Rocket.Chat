@@ -10,5 +10,17 @@ Meteor.methods({
 		} catch (e) {
 			return false;
 		}
+	},
+	'chatpalUtilsGetTaC'(lang) {
+		try {
+			const response = HTTP.call('GET', `https://beta.chatpal.io/v1/terms/${ lang }.html`);
+			if (response.statusCode === 200) {
+				return response.content;
+			} else {
+				return undefined;
+			}
+		} catch (e) {
+			return false;
+		}
 	}
 });
