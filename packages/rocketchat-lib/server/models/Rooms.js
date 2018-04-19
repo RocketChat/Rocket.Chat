@@ -800,6 +800,13 @@ class ModelRooms extends RocketChat.models._Base {
 		return room;
 	}
 
+	createWithFullRoomData(room) {
+		delete room._id;
+
+		room._id = this.insert(room);
+		return room;
+	}
+
 
 	// REMOVE
 	removeById(_id) {
