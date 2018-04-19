@@ -1,4 +1,4 @@
-/* globals WebRTC popover isRtl */
+/* globals WebRTC popover */
 import _ from 'underscore';
 import {getActions} from './userActions';
 
@@ -221,20 +221,12 @@ Template.membersList.events({
 		e.preventDefault();
 		const config = {
 			columns,
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().right + 10,
-				y: e.currentTarget.getBoundingClientRect().bottom + 100
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
-			}),
 			data: {
 				rid: this._id,
 				username: instance.data.username,
 				instance
 			},
-			activeElement: e.currentTarget,
+			currentTarget: e.currentTarget,
 			onDestroyed:() => {
 				e.currentTarget.parentElement.classList.remove('active');
 			}

@@ -342,7 +342,19 @@ Template.message.onViewRendered = function(context) {
 	return this._domrange.onAttached(function(domRange) {
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
-		const previousNode = currentNode.previousElementSibling;
+		const getPreviousSentMessage = (currentNode) => {
+			if ($(currentNode).hasClass('temp')) {
+				return currentNode.previousElementSibling;
+			}
+			if (currentNode.previousElementSibling != null) {
+				let previousValid = currentNode.previousElementSibling;
+				while (previousValid != null && $(previousValid).hasClass('temp')) {
+					previousValid = previousValid.previousElementSibling;
+				}
+				return previousValid;
+			}
+		};
+		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 		const $currentNode = $(currentNode);
 		const $nextNode = $(nextNode);
@@ -375,7 +387,7 @@ Template.message.onViewRendered = function(context) {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
 					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day')) {
+				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
 					$nextNode.addClass('sequential');
 				}
 			}
