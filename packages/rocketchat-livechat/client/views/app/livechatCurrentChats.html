@@ -57,8 +57,10 @@
 								{{#if isClosed}}
 									<td><a href="#remove" class="remove-livechat-room"><i class="icon-trash"></i></a></td>
 								{{else}}
-									<th>&nbsp;</th>	
-								{{/if}}						
+									<td>&nbsp;</td>	
+								{{/if}}	
+							{{else}}						
+								<td>&nbsp;</td>
 							{{/requiresPermission}}									
 						</tr>
 					{{/each}}

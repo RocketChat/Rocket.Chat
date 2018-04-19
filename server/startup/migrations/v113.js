@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 109,
+	version: 113,
 	up() {
 		if (RocketChat.models && RocketChat.models.Permissions) {
 
