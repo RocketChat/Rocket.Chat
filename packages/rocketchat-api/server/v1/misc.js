@@ -145,3 +145,42 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 		};
 	}
 });
+
+RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+	get() {
+		check(this.queryParams, {
+			query: String
+		});
+
+		const { query } = this.queryParams;
+
+		const result = Meteor.runAsUser(this.userId, () =>
+			Meteor.call('spotlight', query)
+		);
+
+		return RocketChat.API.v1.success(result);
+	}
+});
+
+RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		const { text, type } = query;
+		const sortDirection = sort && sort === 1 ? 'asc' : 'desc';
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
+			text,
+			type,
+			sort: sortDirection,
+			page: offset,
+			limit: count
+		}));
+
+		if (!result) {
+			return RocketChat.API.v1.failure('Please verify the parameters');
+		}
+		return RocketChat.API.v1.success({ result });
+	}
+});
