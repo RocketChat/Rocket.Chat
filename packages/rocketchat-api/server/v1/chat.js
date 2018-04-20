@@ -137,10 +137,10 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, limit));
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, limit).message.docs);
 
 		return RocketChat.API.v1.success({
-			messages: result.messages
+			messages: result
 		});
 	}
 });
@@ -313,6 +313,27 @@ RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
+	get() {
+		const { rid, userId } = this.queryParams;
+		let { ignore = true } = this.queryParams;
+
+		ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+
+		if (!rid || !rid.trim()) {
+			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
+		}
+
+		if (!userId || !userId.trim()) {
+			throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return RocketChat.API.v1.success();
 	}

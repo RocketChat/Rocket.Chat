@@ -111,6 +111,7 @@ const mountPopover = (e, i, outerContext) => {
 			}
 		],
 		instance: i,
+		currentTarget: e.currentTarget,
 		data: outerContext,
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
@@ -726,9 +727,11 @@ Template.room.events({
 				showCancelButton: true,
 				cancelButtonText: t('Close')
 			});
-
 		}
-
+	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	}
 });
 

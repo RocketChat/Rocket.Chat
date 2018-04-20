@@ -9,6 +9,12 @@ Template.message.helpers({
 	broadcast() {
 		const instance = Template.instance();
 		return this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
+  },
+	isIgnored() {
+		return this.ignored;
+	},
+	ignoredClass() {
+		return this.ignored ? 'message--ignored' : '';
 	},
 	isBot() {
 		if (this.bot != null) {
@@ -51,7 +57,10 @@ Template.message.helpers({
 		}
 	},
 	isSequential() {
-		if (this.groupable !== false && !Template.instance().room.broadcast) {
+		return this.groupable !== false && !Template.instance().room.broadcast;
+	},
+	sequentialClass() {
+		if (this.groupable !== false) {
 			return 'sequential';
 		}
 	},
