@@ -81,7 +81,7 @@ Template.membersList.helpers({
 		}
 		// show online users first.
 		// sortBy is stable, so we can do this
-		users = _.sortBy(users, u => u.status ===	 'offline');
+		users = _.sortBy(users, u => u.status === 'offline');
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();

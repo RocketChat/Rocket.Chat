@@ -132,7 +132,9 @@ export const RoomHistoryManager = new class {
 		if (ts) {
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
 				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (msg.t !== 'command') { upsertMessage({msg, subscription}); }
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
+					}
 				}
 
 				Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
@@ -189,7 +191,9 @@ export const RoomHistoryManager = new class {
 
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
 				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (msg.t !== 'command') { upsertMessage({msg, subscription}); }
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
+					}
 				}
 
 				Meteor.defer(function() {

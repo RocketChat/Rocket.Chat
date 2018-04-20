@@ -321,18 +321,19 @@ RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
 RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 	get() {
 		const { rid, userId } = this.queryParams;
-		let { ignore = false } = this.queryParams;
+		let { ignore = true } = this.queryParams;
 
-		ignore = typeof ignore === typeof '' ? /true|1/.test(ignore) : ignore;
+		ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
 
 		if (!rid || !rid.trim()) {
 			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
 		}
+
 		if (!userId || !userId.trim()) {
 			throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
 		}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore}));
+		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return RocketChat.API.v1.success();
 	}

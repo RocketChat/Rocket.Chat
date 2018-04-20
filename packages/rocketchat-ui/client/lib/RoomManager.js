@@ -224,9 +224,7 @@ const loadMissedMessages = function(rid) {
 	}
 	const subscription = ChatSubscription.findOne({rid});
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map(item =>
-			RocketChat.promises.run('onClientMessageReceived', item).then(msg => upsertMessage({msg, subscription})
-			))
+		Array.from(result).map(item => RocketChat.promises.run('onClientMessageReceived', item).then(msg => upsertMessage({msg, subscription})))
 	);
 };
 

@@ -222,7 +222,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			return;
 		}
 
-		if (subscription.ignored && subscription.ignored.find(message.u._id)) {
+		if (Array.isArray(subscription.ignored) && subscription.ignored.find(message.u._id)) {
 			return;
 		}
 
