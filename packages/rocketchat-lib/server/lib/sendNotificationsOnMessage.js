@@ -206,12 +206,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
-	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications) || [];
 	const userIds = [];
-	subscriptions.forEach((s) => {
-		userIds.push(s.u._id);
-	});
+	subscriptions.forEach(s => userIds.push(s.u._id));
 	const users = {};
+
 	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences': 1 } }).forEach((user) => {
 		users[user._id] = user;
 	});
@@ -221,6 +220,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			settings.dontNotifyDesktopUsers.push(subscription.u._id);
 			settings.dontNotifyMobileUsers.push(subscription.u._id);
 			settings.dontNotifyAudioUsers.push(subscription.u._id);
+			return;
+		}
+
+		if (Array.isArray(subscription.ignored) && subscription.ignored.find(message.u._id)) {
 			return;
 		}
 

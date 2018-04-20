@@ -5384,6 +5384,11 @@ body:not(.is-cordova) {
 	cursor: pointer;
 }
 
+.toggle-hidden {
+	cursor: pointer;
+	font-style: italic;
+}
+
 /* kinda hacky, needed in oembedFrageWidget.html */
 
 .rc-old br.only-after-a {

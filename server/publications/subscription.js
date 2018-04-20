@@ -29,7 +29,8 @@ const fields = {
 	autoTranslateLanguage: 1,
 	disableNotifications: 1,
 	hideUnreadStatus: 1,
-	muteGenericMentions: 1
+	muteGenericMentions: 1,
+	ignored: 1
 };
 
 Meteor.methods({
