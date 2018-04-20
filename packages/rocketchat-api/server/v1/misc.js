@@ -182,6 +182,5 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Please verify the parameters');
 		}
 		return RocketChat.API.v1.success({ result });
-
 	}
 });

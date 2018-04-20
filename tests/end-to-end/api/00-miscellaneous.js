@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail, adminUsername, adminPassword, password} from '../../data/user.js';
+import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
+import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -172,7 +172,7 @@ describe('miscellaneous', function() {
 			const email = `${ username }@rocket.chat`;
 			request.post(api('users.create'))
 				.set(credentials)
-				.send({ email, name: username, username, password})
+				.send({ email, name: username, username, password })
 				.end((err, res) => {
 					user = res.body.user;
 					done();
