@@ -1,6 +1,24 @@
-/* globals renderEmoji renderMessageBody */
+/* globals pdfjsLib renderEmoji renderMessageBody */
 import _ from 'underscore';
 import moment from 'moment';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/packages/kb0304_pdfjs/build/pdf.worker.js';
+async function renderPdfToCanvas(canvasId, pdfLink) {
+	const canvas = document.getElementById(canvasId);
+	if (!canvas) { return; }
+	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const page = await pdf.getPage(1);
+	const scale = 0.75;
+	const viewport = page.getViewport(scale);
+	const context = canvas.getContext('2d');
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
+	page.render({
+		canvasContext: context,
+		viewport
+	});
+	canvas.style.display = 'block';
+}
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -336,7 +354,10 @@ Template.message.onCreated(function() {
 });
 
 Template.message.onViewRendered = function(context) {
-	return this._domrange.onAttached(function(domRange) {
+	return this._domrange.onAttached((domRange) => {
+		if (context.file && context.file.type === 'application/pdf') {
+			renderPdfToCanvas(context.file._id, context.attachments[0].title_link);
+		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
 		const getPreviousSentMessage = (currentNode) => {

@@ -18,7 +18,8 @@ Package.onUse(function(api) {
 		'tracker',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
-		'rocketchat:ui-vrecord'
+		'rocketchat:ui-vrecord',
+		'kb0304:pdfjs'
 	]);
 
 	api.addFiles('client/message.html', 'client');

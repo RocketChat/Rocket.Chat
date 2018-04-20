@@ -112,6 +112,9 @@
 				{{/unless}}
 			{{/if}}
 
+			{{#if isPDF}}
+				<canvas id="{{fileId}}" style="display:none"></canvas>
+			{{/if}}
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">

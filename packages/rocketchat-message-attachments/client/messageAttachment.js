@@ -74,5 +74,12 @@ Template.messageAttachment.helpers({
 
 	isFile() {
 		return this.type === 'file';
+	},
+	isPDF() {
+		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().file) {
+			this.fileId = Template.parentData().file._id;
+			return true;
+		}
+		return false;
 	}
 });
