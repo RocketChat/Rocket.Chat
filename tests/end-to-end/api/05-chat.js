@@ -199,7 +199,7 @@ describe('[Chat]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The \'rid\' param, must be provided');
+					expect(res.body).to.have.property('error', 'The \'rid\' property on the message object is missing.');
 				})
 				.end(done);
 		});

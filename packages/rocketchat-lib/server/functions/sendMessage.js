@@ -57,7 +57,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
-	const { _id, username, name } = message;
+	const { _id, username, name } = user;
 	message.u = {
 		_id,
 		username,
