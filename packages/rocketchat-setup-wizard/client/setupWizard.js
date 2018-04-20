@@ -65,7 +65,7 @@ Template.setupWizard.helpers({
 		if (Template.instance().state.get('currentStep') === 1) {
 			const state = Template.instance().state.all();
 
-			if (Object.entries(state).filter(e => /registration-/.test(e[0]) && !e[1]).length) {
+			if (Object.entries(state).filter(([key, value]) => /registration-/.test(key) && !value).length) {
 				return 'disabled';
 			}
 		}
