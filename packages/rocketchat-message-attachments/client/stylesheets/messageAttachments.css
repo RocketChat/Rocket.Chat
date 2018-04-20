@@ -137,4 +137,13 @@ html.rtl .attachment {
 		border-width: 1px;
 		border-radius: 5px;
 	}
+
+	& .attachment-canvas {
+		display: none;
+	}
+
+	& .attachment-pdf-loading {
+		font-size: 1.5rem;
+		display: none;
+	}
 }

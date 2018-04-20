@@ -113,7 +113,12 @@
 			{{/if}}
 
 			{{#if isPDF}}
-				<canvas id="{{fileId}}" style="display:none"></canvas>
+				{{#unless collapsed}}
+					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+						{{> icon block="rc-input__icon-svg" icon="loading"}}
+					</div>
+					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+				{{/unless}}
 			{{/if}}
 			{{#if fields}}
 				{{#unless collapsed}}
