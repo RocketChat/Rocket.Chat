@@ -26,9 +26,9 @@
 	&__arrow {
 		position: absolute;
 
-		/* z-index: -1; */
-
 		margin: 0 -5px;
+
+		pointer-events: none;
 
 		color: var(--color-gray-light);
 
@@ -37,6 +37,8 @@
 
 	&__element {
 		width: 100%;
+
+		width: 100%;
 		padding: 0.75rem 2rem 0.75rem 1rem;
 
 		text-transform: capitalize;
@@ -44,8 +46,6 @@
 		border: none;
 
 		appearance: none;
-
-		width: 100%;
 
 		&::-ms-expand {
 			display: none;

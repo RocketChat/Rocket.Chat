@@ -1,38 +1,18 @@
 <template name="setupWizard">
 	<div class="setup-wizard">
-		{{!--
-		<div class="setup-wizard-wrapper">
-			<header class="setup-wizard-header">
-				<img class="setup-wizard-header-logo" src="images/logo/logo-dark.svg">
-			</header>
-			<main class="setup-wizard-content">
-				{{> Template.dynamic template=currentStepTemplate}}
-			</main>
-			<footer class="setup-wizard-footer">
-				{{#if $neq currentStep 0}}
-					<button class="rc-button rc-button--secondary setup-wizard-button-back">
-						<span>Back</span>
-					</button>
-				{{/if}}
-				<button class="rc-button rc-button--primary setup-wizard-button-next">
-					<span>Next</span>
-				</button>
-			</footer>
-		</div>
-		--}}
 		<section class="setup-wizard-info">
 			<header class="setup-wizard-info__header">
 				<img class="setup-wizard-info__header-logo" src="images/logo/logo-black.svg">
-				<span class="setup-wizard-info__header-tag">Setup Wizard</span>
+				<span class="setup-wizard-info__header-tag">{{_ "Setup_Wizard"}}</span>
 			</header>
 			<main class="setup-wizard-info__content">
-				<h1 class="setup-wizard-info__content-title">Setup Wizard</h1>
-				<p class="setup-wizard-info__content-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a lacus hendrerit, sodales arcu vitae, dictum ex. In vestibulum odio non leo feugiat venenatis.</p>
+				<h1 class="setup-wizard-info__content-title">{{_ "Setup_Wizard"}}</h1>
+				<p class="setup-wizard-info__content-text">{{_ "Setup_Wizard_Info"}}</p>
 				<ol class="setup-wizard-info__steps">
-					<li class="setup-wizard-info__steps-item {{itemModifier 1}}">Admin Info</li>
-					<li class="setup-wizard-info__steps-item {{itemModifier 2}}">Organization Info<span class="setup-wizard-info__steps-item-bonding"></span></li>
-					<li class="setup-wizard-info__steps-item {{itemModifier 3}}">Server Info<span class="setup-wizard-info__steps-item-bonding"></span></li>
-					<li class="setup-wizard-info__steps-item {{itemModifier 4}}">Register Server<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 1}}">{{headerTitle 1}}</li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 2}}">{{headerTitle 2}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 3}}">{{headerTitle 3}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{itemModifier 4}}">{{headerTitle 4}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
 				</ol>
 			</main>
 		</section>
@@ -40,69 +20,125 @@
 			<div class="setup-wizard-forms__wrapper">
 				<div class="setup-wizard-forms__box">
 					<header class="setup-wizard-forms__header">
-						<span class="setup-wizard-forms__header-step">Step 1</span>
-						<h1 class="setup-wizard-forms__header-title">Admin Info</h1>
+						<span class="setup-wizard-forms__header-step">{{_ "Step"}} {{currentStep}}</span>
+						<h1 class="setup-wizard-forms__header-title">{{headerTitle}}</h1>
 					</header>
 					<main class="setup-wizard-forms__content">
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">Name</div>
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-sv" icon="user"}}
+						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 1}}setup-wizard-forms__content-step--active{{/if}}">
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Name"}}</div>
+									<div class="rc-input__wrapper">
+										<div class="rc-input__icon">
+											{{> icon block="rc-input__icon-sv" icon="user"}}
+										</div>
+										<input type="text" class="rc-input__element js-setting-data" name="registration-name" placeholder="{{_ 'Type_your_name'}}" value="{{getValue 'registration-name'}}">
 									</div>
-									<input type="text" class="rc-input__element" name="step1-name" placeholder="Type your name" data-step="1" value="{{getValue 'step1-name'}}">
-								</div>
-							</label>
+								</label>
+							</div>
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Username"}}</div>
+									<div class="rc-input__wrapper">
+										<div class="rc-input__icon">
+											{{> icon block="rc-input__icon-sv" icon="at"}}
+										</div>
+										<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{getValue 'registration-username'}}">
+									</div>
+								</label>
+							</div>
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Organization_Email"}}</div>
+									<div class="rc-input__wrapper">
+										<div class="rc-input__icon">
+											{{> icon block="rc-input__icon-sv" icon="mail"}}
+										</div>
+										<input type="email" class="rc-input__element js-setting-data" name="registration-email" placeholder="{{_ 'Type_your_email'}}" value="{{getValue 'registration-email'}}">
+									</div>
+								</label>
+							</div>
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Job_Title"}}</div>
+									<div class="rc-input__wrapper">
+										<div class="rc-input__icon">
+											{{> icon block="rc-input__icon-sv" icon="lock"}}
+										</div>
+										<input type="text" class="rc-input__element js-setting-data" name="registration-jobTitle" placeholder="{{_ 'Type_your_job_title'}}" value="{{getValue 'registration-jobTitle'}}">
+									</div>
+								</label>
+							</div>
+							<div class="rc-input">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "Password"}}</div>
+									<div class="rc-input__wrapper">
+										<div class="rc-input__icon">
+											{{> icon block="rc-input__icon-sv" icon="key"}}
+										</div>
+										<input type="password" class="rc-input__element js-setting-data" name="registration-password" placeholder="{{_ 'Type_your_password'}}">
+									</div>
+								</label>
+							</div>
 						</div>
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">Username</div>
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-sv" icon="at"}}
+						<div class="setup-wizard-forms__content-step {{showStep}}">
+							{{#each getSettings currentStep}}
+								{{#if $eq type 'select'}}
+									<div class="rc-input">
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ i18nLabel}}</div>
+											<div class="rc-select">
+												<select class="rc-select__element js-setting-data" name="{{_id}}">
+													{{#each values}}
+														<option class="rc-select__option" value="{{key}}" selected="{{selectedValue ../_id key}}">{{_ i18nLabel}}</option>
+													{{/each}}
+												</select>
+												{{> icon block="rc-select__arrow" icon="arrow-down" }}
+											</div>
+										</label>
 									</div>
-									<input type="text" class="rc-input__element" name="step1-username" placeholder="Type your username" data-step="1" value="{{getValue 'step1-username'}}">
-								</div>
-							</label>
+								{{/if}}
+
+								{{#if $eq type 'string'}}
+									<div class="rc-input">
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ i18nLabel}}</div>
+											<div class="rc-input__wrapper">
+												<input type="text" class="rc-input__element js-setting-data" name="{{_id}}" value="{{getValue _id}}">
+											</div>
+										</label>
+									</div>
+								{{/if}}
+
+								{{#if $eq type 'language'}}
+									<div class="rc-input">
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ i18nLabel}}</div>
+											<div class="rc-select">
+												<select class="rc-select__element js-setting-data" name="{{_id}}">
+													{{#each languages}}
+														<option class="rc-select__option" value="{{key}}" selected="{{selectedValue ../_id key}}" dir="auto">{{name}}</option>
+													{{/each}}
+												</select>
+												{{> icon block="rc-select__arrow" icon="arrow-down" }}
+											</div>
+										</label>
+									</div>
+								{{/if}}
+							{{/each}}
 						</div>
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">Organization Email</div>
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-sv" icon="mail"}}
-									</div>
-									<input type="email" class="rc-input__element" name="step1-email" placeholder="Type your email address" data-step="1" value="{{getValue 'step1-email'}}">
-								</div>
-							</label>
-						</div>
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">Job Title</div>
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-sv" icon="lock"}}
-									</div>
-									<input type="text" class="rc-input__element" name="step1-jobTitle" placeholder="Type your job title" data-step="1" value="{{getValue 'step1-jobTitle'}}">
-								</div>
-							</label>
-						</div>
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">Password</div>
-								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-sv" icon="key"}}
-									</div>
-									<input type="password" class="rc-input__element" name="step1-password" placeholder="Type your password" data-step="1">
-								</div>
-							</label>
+						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 4}}setup-wizard-forms__content-step--active{{/if}}">
+							WIP
 						</div>
 					</main>
 					<footer class="setup-wizard-forms__footer">
+						{{#if $neq currentStep 1}}
+							<button class="rc-button rc-button--secondary setup-wizard-forms__footer-back">
+								<span>{{_ "Back"}}</span>
+							</button>
+						{{/if}}
 						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next" {{isDisabled}}>
-							<span>Continue</span>
+							<span>{{_ "Continue"}}</span>
 						</button>
 					</footer>
 				</div>
