@@ -146,6 +146,22 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+	get() {
+		check(this.queryParams, {
+			query: String
+		});
+
+		const { query } = this.queryParams;
+
+		const result = Meteor.runAsUser(this.userId, () =>
+			Meteor.call('spotlight', query)
+		);
+
+		return RocketChat.API.v1.success(result);
+	}
+});
+
 RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
