@@ -470,6 +470,7 @@ Rocket.Chat will be free forever, but you can help us speed-up the development!
 
 [![Bitcoins](https://github.com/RocketChat/Rocket.Chat.Docs/blob/master/1.%20Contributing/Donating/coinbase.png?raw=true)](https://www.coinbase.com/checkouts/ac2fa967efca7f6fc1201d46bdccb875)
 
+## Countries Where We Have Presented
 LIVE from MEXICO!
 
 
