@@ -93,7 +93,9 @@ Template.setupWizard.helpers({
 		return '';
 	},
 	getSettings(step) {
-		return Template.instance().wizardSettings.get().filter(setting => setting.wizard.step === step).sort((a, b) => a.wizard.order - b.wizard.order);
+		return Template.instance().wizardSettings.get()
+			.filter(setting => setting.wizard.step === step)
+			.sort((a, b) => a.wizard.order - b.wizard.order);
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();

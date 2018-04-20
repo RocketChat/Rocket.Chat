@@ -1,5 +1,4 @@
 .setup-wizard {
-
 	display: flex;
 
 	width: 100%;
@@ -44,7 +43,6 @@
 
 		&__content {
 			&-title {
-
 				margin-bottom: 1rem;
 
 				letter-spacing: 0.03rem;
@@ -59,7 +57,6 @@
 			}
 
 			&-text {
-
 				margin-bottom: 3rem;
 
 				color: #9ea2a8;
@@ -171,7 +168,6 @@
 		flex: 1 1 auto;
 
 		&__wrapper {
-
 			display: flex;
 
 			width: calc(100% - 1rem);
@@ -187,7 +183,6 @@
 		}
 
 		&__box {
-
 			display: flex;
 			flex-direction: column;
 
@@ -198,7 +193,6 @@
 			margin-bottom: 2rem;
 
 			&-step {
-
 				display: block;
 
 				margin-bottom: 3px;
@@ -215,7 +209,6 @@
 			}
 
 			&-title {
-
 				letter-spacing: 0.05rem;
 
 				color: #1f2329;
@@ -277,6 +270,7 @@
 	& .rc-select {
 		&__element {
 			color: #030c1a;
+
 			font-size: 0.875rem;
 
 			font-weight: 500;
