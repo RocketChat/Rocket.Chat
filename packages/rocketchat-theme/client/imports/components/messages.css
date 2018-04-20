@@ -54,7 +54,7 @@
 			display: block;
 		}
 		& + .message--ignored.sequential {
-	    display: none;
+			display: none;
 		}
 	}
 
