@@ -4,6 +4,7 @@ Meteor.methods({
 	ignoreUser({rid, userId: ignoredUser, ignore = true}) {
 		check(ignoredUser, String);
 		check(rid, String);
+		check(ignore, Boolean);
 
 		const userId = Meteor.userId();
 		if (!userId) {
