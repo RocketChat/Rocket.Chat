@@ -402,7 +402,7 @@
   "Chatpal_HTTP_Headers": "Http Headers",
   "Chatpal_HTTP_Headers_Description": "Liste von HTTP Headers, ein header pro Zeile. Format: name:value",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "Sie haben noch keinen <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">Hier gehts zum Ky!</a>",
+  "Chatpal_API_Key_Description": "Sie haben noch keinen <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">Hier gehts zum Key!</a>",
   "Chatpal_no_search_results":"Kein Ergebnis",
   "Chatpal_one_search_result":"1 Ergebnis",
   "Chatpal_search_results":"%s Ergebnisse",
