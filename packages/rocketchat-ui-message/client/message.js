@@ -21,6 +21,8 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 		viewport
 	});
 	if (loader) { loader.style.display = 'none'; }
+	canvas.style.maxWidth = '-webkit-fill-available';
+	canvas.style.maxWidth = '-moz-available';
 	canvas.style.display = 'block';
 }
 
