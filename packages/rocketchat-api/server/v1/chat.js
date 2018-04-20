@@ -322,8 +322,8 @@ RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 	get() {
 		const { rid, userId } = this.queryParams;
 		let { ignore = false } = this.queryParams;
-
- 		ignore = typeof ignore === typeof '' ? /true|1/.test(ignore) : ignore;
+		
+		ignore = typeof ignore === typeof '' ? /true|1/.test(ignore) : ignore;
 
 		if (!rid || !rid.trim()) {
 			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
