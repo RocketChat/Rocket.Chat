@@ -1,5 +1,5 @@
 Meteor.methods({
-	getWizardSettings(step) {
+	getWizardSettings() {
 		if (RocketChat.models && RocketChat.models.Settings) {
 			return RocketChat.models.Settings.find({wizard: {'$exists': true, '$ne': null}}).fetch();
 		}
