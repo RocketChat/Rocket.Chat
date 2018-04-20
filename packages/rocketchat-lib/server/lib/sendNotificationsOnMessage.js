@@ -421,21 +421,21 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 					status: 1,
 					statusConnection: 1
 				}
-			}).forEach(function(user) {
-				if ((settings.dontNotifyUsersOnGenericMentions || []).includes(user._id)) {
+			}).forEach(function({ status, _id, username, statusConnection }) { // user
+				if (Array.isArray(settings.dontNotifyUsersOnGenericMentions) && settings.dontNotifyUsersOnGenericMentions.includes(_id)) {
 					return;
 				}
 
-				if (['online', 'away', 'busy'].includes(user.status) && !(settings.dontNotifyDesktopUsers || []).includes(user._id)) {
-					userIdsToNotify.push(user._id);
-					userIdsForAudio.push(user._id);
+				if (['online', 'away', 'busy'].includes(status) && !(settings.dontNotifyDesktopUsers || []).includes(_id)) {
+					userIdsToNotify.push(_id);
+					userIdsForAudio.push(_id);
 				}
-				if (toAll && user.statusConnection !== 'online' && !(settings.dontNotifyMobileUsers || []).includes(user._id)) {
-					pushUsernames[user._id] = user.username;
-					return userIdsToPushNotify.push(user._id);
+				if (toAll && statusConnection !== 'online' && !(settings.dontNotifyMobileUsers || []).includes(_id)) {
+					pushUsernames[_id] = username;
+					return userIdsToPushNotify.push(_id);
 				}
-				if (toAll && user.statusConnection !== 'online') {
-					userIdsForAudio.push(user._id);
+				if (toAll && statusConnection !== 'online') {
+					userIdsForAudio.push(_id);
 				}
 			});
 		}
