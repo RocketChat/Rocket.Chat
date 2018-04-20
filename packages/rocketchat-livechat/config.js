@@ -44,7 +44,7 @@ Meteor.startup(function() {
 		section: 'Offline',
 		i18nLabel: 'Color'
 	});
-	RocketChat.settings.add('Livechat_offline_message', 'We are not online right now. Please leave us a message:', {
+	RocketChat.settings.add('Livechat_offline_message', '', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
@@ -69,6 +69,14 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
 	RocketChat.settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	RocketChat.settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
+
+	RocketChat.settings.add('Livechat_conversation_finished_message', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Conversation_finished_message'
+	});
+
 	RocketChat.settings.add('Livechat_guest_count', 1, { type: 'int', group: 'Livechat' });
 
 	RocketChat.settings.add('Livechat_Room_Count', 1, {
@@ -129,6 +137,20 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_offline_messages'
+	});
+
+	RocketChat.settings.add('Livechat_webhook_on_visitor_message', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_visitor_message'
+	});
+
+	RocketChat.settings.add('Livechat_webhook_on_agent_message', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_agent_message'
 	});
 
 	RocketChat.settings.add('Livechat_webhook_on_capture', false, {
@@ -209,7 +231,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Transcript_Enabled'
 	});
 
-	RocketChat.settings.add('Livechat_transcript_message', 'Would you like a copy of this chat emailed?', {
+	RocketChat.settings.add('Livechat_transcript_message', '', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,

@@ -4,7 +4,11 @@
 	}
 
 	&--icon > svg {
-		margin: 0 5px;
+		margin: 0 5px 0 -5px;
+
+		.rtl & {
+			margin: 0 -5px 0 5px;
+		}
 
 		font-size: 20px;
 		fill: currentColor;
@@ -106,6 +110,9 @@
 		border-width: 2px;
 		border-style: solid;
 		background: transparent;
+	}
+	&--stack {
+		width: 100%;
 	}
 
 	&.loading {
