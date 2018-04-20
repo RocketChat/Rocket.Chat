@@ -112,10 +112,6 @@ const mountPopover = (e, i, outerContext) => {
 		],
 		instance: i,
 		data: outerContext,
-		mousePosition: {
-			x: e.clientX,
-			y: e.clientY
-		},
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
 	};
@@ -217,7 +213,7 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
+		return (roomData.announcement !== undefined) && (roomData.announcement.message !== '');
 	},
 
 	messageboxData() {
@@ -235,7 +231,13 @@ Template.room.helpers({
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomData.announcement;
+		return roomData.announcement && roomData.announcement.message;
+	},
+
+	getAnnouncementStyle() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		return roomData.announcement && roomData.announcement.style !== undefined ? roomData.announcement.style : '';
 	},
 
 	roomIcon() {
@@ -306,6 +308,13 @@ Template.room.helpers({
 
 	showToggleFavorite() {
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+	},
+
+	messageViewMode() {
+		const user = Meteor.user();
+		const viewMode = RocketChat.getUserPreference(user, 'messageViewMode');
+		const modes = ['', 'cozy', 'compact'];
+		return modes[viewMode] || modes[0];
 	},
 
 	selectable() {
@@ -576,10 +585,7 @@ Template.room.events({
 			],
 			instance: i,
 			data: this,
-			mousePosition: {
-				x: e.clientX,
-				y: e.clientY
-			},
+			currentTarget: e.currentTarget,
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item')
 		};
@@ -704,13 +710,21 @@ Template.room.events({
 		}
 	},
 	'click .announcement'(e) {
-		modal.open({
-			title: t('Announcement'),
-			text: $(e.target).attr('aria-label'),
-			showConfirmButton: false,
-			showCancelButton: true,
-			cancelButtonText: t('Close')
-		});
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcement !== undefined && roomData.announcement.callback !== undefined) {
+			return RocketChat.callbacks.run(roomData.announcement.callback, this._id);
+		} else {
+			modal.open({
+				title: t('Announcement'),
+				text: $(e.target).attr('aria-label'),
+				showConfirmButton: false,
+				showCancelButton: true,
+				cancelButtonText: t('Close')
+			});
+
+		}
+
 	}
 });
 
