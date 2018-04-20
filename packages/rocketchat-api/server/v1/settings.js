@@ -32,7 +32,7 @@ RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 	get() {
 		const mountOAuthServices = () => {
-			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}).fetch();
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 
 			return oAuthServicesEnabled.map((service) => {
 				if (service.custom) {
