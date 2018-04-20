@@ -12,17 +12,19 @@ RocketChat.Migrations.add({
 					'file._id' : file._id
 				};
 				const message = RocketChat.models.Messages.findOne(messageQuery);
-				const filter = {
-					_id: file._id
-				};
+				if (message) {
+					const filter = {
+						_id: file._id
+					};
 
-				const update = {
-					$set: {
-						userId: message.u._id
-					}
-				};
+					const update = {
+						$set: {
+							userId: message.u._id
+						}
+					};
 
-				RocketChat.models.Uploads.model.direct.update(filter, update);
+					RocketChat.models.Uploads.model.direct.update(filter, update);
+				}
 			});
 		}
 	}
