@@ -19,7 +19,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
 	}
-  
+
 	if (extraData.broadcast) {
 		readOnly = true;
 		delete extraData.reactWhenReadOnly;

@@ -246,13 +246,13 @@ Template.createChannel.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete Deps */
+/* global AutoComplete */
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
 	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
 	// this.onViewRead:??y(function() {
-	Deps.autorun(() => {
+	Tracker.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
 	});
 	this.extensions_validations = {};
@@ -270,7 +270,7 @@ Template.createChannel.onCreated(function() {
 		this.extensions_invalid.set(!valid);
 	}, 300);
 
-	Deps.autorun(() => {
+	Tracker.autorun(() => {
 		const broadcast = this.broadcast.get();
 		if (broadcast) {
 			this.readOnly.set(true);
