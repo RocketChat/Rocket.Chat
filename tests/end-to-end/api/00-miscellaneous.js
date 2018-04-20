@@ -3,7 +3,7 @@
 /* eslint no-unused-vars: 0 */
 
 import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail, adminUsername, adminPassword} from '../../data/user.js';
+import {adminEmail, adminUsername, adminPassword, password} from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -12,7 +12,7 @@ describe('miscellaneous', function() {
 	before(done => getCredentials(done));
 
 	describe('API default', () => {
-	// Required by mobile apps
+		// Required by mobile apps
 		it('/info', (done) => {
 			request.get('/api/info')
 				.expect('Content-Type', 'application/json')
@@ -73,29 +73,98 @@ describe('miscellaneous', function() {
 			.end(done);
 	});
 
-	describe('/settings.oauth', () => {
-		it('should have return list of available oauth services when user is not logged', (done) => {
-			request.get(api('settings.oauth'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
-		});
 
-		it('should have return list of available oauth services when user is logged', (done) => {
-			request.get(api('settings.oauth'))
+	describe('/directory', () => {
+		let user;
+		let testChannel;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
 				.set(credentials)
+				.send({email, name: username, username, password})
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+		after(done => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id
+			}).end(done);
+			user = undefined;
+		});
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('should return an array(result) when search by user and execute succesfully', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: user.username,
+						type: 'users'
+					})
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
+					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('createdAt');
+					expect(res.body.result[0]).to.have.property('username');
+					expect(res.body.result[0]).to.have.property('emails').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('name');
 				})
 				.end(done);
 		});
-	});
+		it('should return an array(result) when search by channel and execute succesfully', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: testChannel.name,
+						type: 'channels'
+					})
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('name');
+					expect(res.body.result[0]).to.have.property('usernames').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('ts');
+				})
+				.end(done);
+		});
 
+		it('should return an error when send invalid query', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: 'invalid channel',
+						type: 'invalid'
+					})
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+
+	});
 });

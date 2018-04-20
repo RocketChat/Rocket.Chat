@@ -6,10 +6,10 @@ export class AppHttpBridge {
 
 		console.log(`The App ${ info.appId } is requesting from the outter webs:`, info);
 
-		try {
-			return HTTP.call(info.method, info.url, info.request);
-		} catch (e) {
-			return e.response;
-		}
+		return new Promise((resolve, reject) => {
+			HTTP.call(info.method, info.url, info.request, (e, result) => {
+				return e ? reject(e.response) : resolve(result);
+			});
+		});
 	}
 }

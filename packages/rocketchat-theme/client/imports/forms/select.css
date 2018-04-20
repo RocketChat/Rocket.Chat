@@ -43,6 +43,8 @@
 
 		border: none;
 
+		line-height: 1rem !important;
+
 		appearance: none;
 
 		&::-ms-expand {
