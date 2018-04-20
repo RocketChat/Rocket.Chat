@@ -322,7 +322,7 @@ RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 	get() {
 		const { rid, userId } = this.queryParams;
 		let { ignore = false } = this.queryParams;
-		
+
 		ignore = typeof ignore === typeof '' ? /true|1/.test(ignore) : ignore;
 
 		if (!rid || !rid.trim()) {
