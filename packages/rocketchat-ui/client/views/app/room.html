@@ -20,7 +20,7 @@
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
+							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
 								{{{RocketChatMarkdown roomAnnouncement}}}
 							</div>
 							{{/if}}
@@ -68,7 +68,7 @@
 								</div>
 							{{/each}}
 						</div>
-						<div class="messages-box {{#if selectable}}selectable{{/if}} {{hasLeader}}">
+						<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
 							<div class="ticks-bar"></div>
 							<button class="new-message background-primary-action-color color-content-background-color not">
 								<i class="icon-down-big"></i>
