@@ -328,6 +328,7 @@
 				&-item {
 
 					display: flex;
+
 					margin: 0 -0.5rem 0.5rem;
 					align-items: center;
 
@@ -395,11 +396,19 @@
 }
 
 .rtl {
-	.setup-wizard-info {
+	& .setup-wizard-info {
 		margin: 55px 80px 0 65px;
 	}
 
-	.setup-wizard-forms__wrapper {
+	& .setup-wizard-forms__wrapper {
 		margin: 1rem 0 1rem 1rem;
+	}
+
+	& .setup-wizard-info__steps-item {
+		&:not(:last-child)::after,
+		&-bonding {
+			right: 1.2rem;
+			left: auto;
+		}
 	}
 }
