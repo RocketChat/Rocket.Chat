@@ -42,7 +42,7 @@ class ValidationService {
 					SearchLogger.debug(`user ${ uid } can access ${ msg.rid } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
 				} else {
 					SearchLogger.debug(`user ${ uid } can NOT access ${ msg.rid }`);
-				}console.log(msg);
+				}
 			});
 
 			result.message.docs.filter((msg) => {
