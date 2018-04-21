@@ -5,7 +5,8 @@ RocketChat.saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMess
 		throw new Meteor.Error('invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomAnnouncement' });
 	}
 
-	let message, announcementDetails;
+	let message;
+	let announcementDetails;
 	if (typeof roomAnnouncement === 'string') {
 		message = roomAnnouncement;
 	} else {
