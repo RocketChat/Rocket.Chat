@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages popover isRtl AudioRecorder chatMessages fileUploadHandler*/
+/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -449,8 +449,6 @@ Template.messageBox.events({
 	},
 	'click .rc-message-box__action-menu'(e) {
 		const groups = RocketChat.messageBox.actions.get();
-		const textArea = document.querySelector('.rc-message-box__textarea');
-
 		const config = {
 			popoverClass: 'message-box',
 			columns: [
@@ -472,13 +470,9 @@ Template.messageBox.events({
 					})
 				}
 			],
-			mousePosition: {
-				x: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().right + 40,
-				y: document.querySelector('.rc-message-box__textarea').getBoundingClientRect().top
-			},
-			customCSSProperties: {
-				left: isRtl() ? `${ textArea.getBoundingClientRect().left - 10 }px` : undefined
-			},
+			offsetVertical: 10,
+			direction: 'top-inverted',
+			currentTarget: e.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this._id
 			},
@@ -655,8 +649,6 @@ Template.messageBox.onRendered(function() {
 	}).on('autogrow', () => {
 		this.data && this.data.onResize && this.data.onResize();
 	}).focus()[0];
-
-	chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 });
 
 Template.messageBox.onCreated(function() {
@@ -691,6 +683,7 @@ Meteor.startup(function() {
 		setTimeout(()=> {
 			if (chatMessages[RocketChat.openedRoom].input) {
 				chatMessages[RocketChat.openedRoom].input.focus();
+				chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 			}
 		}, 200);
 	});
