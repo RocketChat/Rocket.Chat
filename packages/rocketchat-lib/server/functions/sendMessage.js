@@ -1,9 +1,65 @@
-import _ from 'underscore';
+const validateAttachmentsFields = attachmentFields => {
+	check(attachmentFields, Match.ObjectIncluding({
+		short: Match.Maybe(Boolean),
+		title: String,
+		value: String
+	}));
+};
+
+const validateAttachment = attachment => {
+	check(attachment, Match.ObjectIncluding({
+		color: Match.Maybe(String),
+		text: Match.Maybe(String),
+		ts: Match.Maybe(String),
+		thumb_url: Match.Maybe(String),
+		message_link: Match.Maybe(String),
+		collapsed: Match.Maybe(Boolean),
+		author_name: Match.Maybe(String),
+		author_link: Match.Maybe(String),
+		author_icon: Match.Maybe(String),
+		title: Match.Maybe(String),
+		title_link: Match.Maybe(String),
+		title_link_download: Match.Maybe(Boolean),
+		image_url: Match.Maybe(String),
+		audio_url: Match.Maybe(String),
+		video_url: Match.Maybe(String)
+	}));
+	if (attachment.fields.length) {
+		attachment.fields.map(validateAttachmentsFields);
+	}
+};
+
+const validateBodyAttachments = attachments => attachments.map(validateAttachment);
 
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
+
+	check(message, Match.ObjectIncluding({
+		_id: Match.Maybe(String),
+		msg: Match.Maybe(String),
+		text: Match.Maybe(String),
+		alias: Match.Maybe(String),
+		emoji: Match.Maybe(String),
+		avatar: Match.Maybe(String),
+		attachments: Match.Maybe(Array)
+	}));
+
+	if (Array.isArray(message.attachments) && message.attachments.length) {
+		validateBodyAttachments(message.attachments);
+	}
+
+	if (!message.ts) {
+		message.ts = new Date();
+	}
+	const { _id, username, name } = user;
+	message.u = {
+		_id,
+		username,
+		name
+	};
+	message.rid = room._id;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
@@ -12,9 +68,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message.ts == null) {
 		message.ts = new Date();
 	}
-
-	message.rid = room._id;
-	message.u = _.pick(user, ['_id', 'username', 'name']);
 
 	if (!room.usernames || room.usernames.length === 0) {
 		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
