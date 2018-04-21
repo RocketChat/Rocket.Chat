@@ -47,10 +47,18 @@ export class AppMessagesConverter {
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(message.room.id);
-		const user = RocketChat.models.Users.findOneById(message.sender.id);
 
-		if (!room || !user) {
-			throw new Error('Invalid user or room provided on the message.');
+		if (!room) {
+			throw new Error('Invalid room provided on the message.');
+		}
+
+		let u;
+		if (message.sender && message.sender.id) {
+			const user = RocketChat.models.Users.findOneById(message.sender.id);
+			u = {
+				_id: user._id,
+				username: user.username
+			};
 		}
 
 		let editedBy;
@@ -67,10 +75,7 @@ export class AppMessagesConverter {
 		return {
 			_id: message.id || Random.id(),
 			rid: room._id,
-			u: {
-				_id: user._id,
-				username: user.username
-			},
+			u,
 			msg: message.text,
 			ts: message.createdAt || new Date(),
 			_updatedAt: message.updatedAt || new Date(),
@@ -102,12 +107,20 @@ export class AppMessagesConverter {
 				author_icon: attachment.author ? attachment.author.icon : undefined,
 				title: attachment.title ? attachment.title.value : undefined,
 				title_link: attachment.title ? attachment.title.link : undefined,
-				title_link_download: attachment.title ? attachment.title.downloadLink : undefined,
+				title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
 				image_url: attachment.imageUrl,
 				audio_url: attachment.audioUrl,
 				video_url: attachment.videoUrl,
 				fields: attachment.fields
 			};
+		}).map((a) => {
+			Object.keys(a).forEach((k) => {
+				if (typeof a[k] === 'undefined') {
+					delete a[k];
+				}
+			});
+
+			return a;
 		});
 	}
 
@@ -131,7 +144,7 @@ export class AppMessagesConverter {
 				title = {
 					value: attachment.title,
 					link: attachment.title_link,
-					downloadLink: attachment.title_link_download
+					displayDownloadLink: attachment.title_link_download
 				};
 			}
 

@@ -3,7 +3,7 @@ export class AppMessageBridge {
 		this.orch = orch;
 	}
 
-	create(message, appId) {
+	async create(message, appId) {
 		console.log(`The App ${ appId } is creating a new message.`);
 
 		let msg = this.orch.getConverters().get('messages').convertAppMessage(message);
@@ -15,13 +15,13 @@ export class AppMessageBridge {
 		return msg._id;
 	}
 
-	getById(messageId, appId) {
+	async getById(messageId, appId) {
 		console.log(`The App ${ appId } is getting the message: "${ messageId }"`);
 
 		return this.orch.getConverters().get('messages').convertById(messageId);
 	}
 
-	update(message, appId) {
+	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
 
 		if (!message.editor) {
@@ -36,5 +36,24 @@ export class AppMessageBridge {
 		const editor = RocketChat.models.Users.findOneById(message.editor.id);
 
 		RocketChat.updateMessage(msg, editor);
+	}
+
+	async notifyUser(user, message, appId) {
+		console.log(`The App ${ appId } is notifying a user.`);
+
+		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+
+		RocketChat.Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+			_id: Random.id(),
+			ts: new Date(),
+			u: undefined,
+			editor: undefined
+		}));
+	}
+
+	async notifyRoom(room, message, appId) {
+		console.log(`The App ${ appId } is notifying a room's users.`);
+
+		throw new Error('Not implemented yet.');
 	}
 }

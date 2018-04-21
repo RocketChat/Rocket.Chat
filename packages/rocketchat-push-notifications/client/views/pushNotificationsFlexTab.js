@@ -28,6 +28,9 @@ Template.pushNotificationsFlexTab.helpers({
 	showUnreadStatus() {
 		return !Template.instance().form.hideUnreadStatus.get();
 	},
+	muteGroupMentions() {
+		return Template.instance().form.muteGroupMentions.get();
+	},
 	hideUnreadStatus() {
 		return Template.instance().form.hideUnreadStatus.get();
 	},
@@ -109,7 +112,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
 			desktopNotificationDuration: 1,
-			audioNotificationValue: 1
+			audioNotificationValue: 1,
+			muteGroupMentions: 1
 		}
 	}) || {};
 
@@ -121,7 +125,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
 		desktopNotificationDuration = 0,
-		audioNotificationValue = null
+		audioNotificationValue = null,
+		muteGroupMentions = false
 	} = sub;
 
 	this.original = {
@@ -132,7 +137,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
-		audioNotificationValue: new ReactiveVar(audioNotificationValue)
+		audioNotificationValue: new ReactiveVar(audioNotificationValue),
+		muteGroupMentions: new ReactiveVar(muteGroupMentions)
 	};
 
 	this.form = {
@@ -143,7 +149,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		mobilePushNotifications: new ReactiveVar(mobilePushNotifications),
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
-		audioNotificationValue: new ReactiveVar(audioNotificationValue)
+		audioNotificationValue: new ReactiveVar(audioNotificationValue),
+		muteGroupMentions: new ReactiveVar(muteGroupMentions)
 	};
 
 	this.saveSetting = async() => {
@@ -309,21 +316,15 @@ Template.pushNotificationsFlexTab.events({
 		const config = {
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().left,
-				y: e.currentTarget.getBoundingClientRect().bottom + 50
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-			}),
 			data: {
 				change : (value) => {
 					return instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value);
 				},
 				value: instance.form[key].get(),
 				options
-			}
+			},
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 10
 		};
 		popover.open(config);
 	}

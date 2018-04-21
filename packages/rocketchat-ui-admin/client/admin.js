@@ -191,6 +191,13 @@ Template.admin.helpers({
 			};
 		}
 	},
+	canAutocomplete() {
+		if (this.autocomplete === false) {
+			return {
+				autocomplete: 'off'
+			};
+		}
+	},
 	hasChanges(section) {
 		const group = FlowRouter.getParam('group');
 		const query = {
