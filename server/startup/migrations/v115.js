@@ -4,9 +4,7 @@ RocketChat.Migrations.add({
 		RocketChat.models.Rooms.update({
 			'announcement.message': { $exists: true }
 		}, {
-			$unset: {announcement: 1}
-		},
-		false,
-		true);
+			$unset: { announcement: 1 }
+		}, { multi: true });
 	}
 });
