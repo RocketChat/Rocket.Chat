@@ -12264,5 +12264,749 @@
         "graywolf336"
       ]
     }
+  ],
+  "0.64.0-rc.0": [
+    {
+      "pr": "10532",
+      "title": "Included missing lib for migrations",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10502",
+      "title": "[NEW] Option to mute group mentions (@all and @here)",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell",
+        "ggazzo",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "9906",
+      "title": "[NEW] GDPR - Right to access and Data Portability",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "9922",
+      "title": "[BREAK] Validate incoming message schema",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "9950",
+      "title": "[NEW] Broadcast Channels",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "sampaiodiego",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10480",
+      "title": "[FIX] Add user object to responses in /*.files Rest endpoints",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10517",
+      "title": "[NEW] Option to ignore users on channels",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "gdelavald",
+        "web-flow",
+        "karlprieb"
+      ]
+    },
+    {
+      "pr": "10110",
+      "title": "[NEW] Search Provider Framework",
+      "userLogin": "tkurz",
+      "milestone": "0.64.0",
+      "contributors": [
+        "tkurz",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10473",
+      "title": "[FIX] Missing user data on files uploaded through the API",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10498",
+      "title": "[FIX] Rename method to clean history of messages",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10410",
+      "title": "[FIX] REST spotlight API wasn't allowing searches with # and @",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10505",
+      "title": "Develop sync",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336",
+        "nsuchy",
+        "rodrigok",
+        "rafaelks",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10442",
+      "title": "[NEW] REST API endpoint `/directory`",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10482",
+      "title": "[FIX] Dropdown elements were using old styles",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii"
+      ]
+    },
+    {
+      "pr": "10513",
+      "title": "Fix: Remove \"secret\" from REST endpoint /settings.oauth response",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10403",
+      "title": "[FIX] Directory sort and column sizes were wrong",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "karlprieb"
+      ]
+    },
+    {
+      "pr": "10299",
+      "title": "[FIX] REST API OAuth services endpoint were missing fields and flag to indicate custom services",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10446",
+      "title": "[FIX] Error messages weren't been displayed when email verification fails",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10454",
+      "title": "[FIX] Wrong column positions in the directory search for users",
+      "userLogin": "sumedh123",
+      "milestone": "0.64.0",
+      "contributors": [
+        "sumedh123",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10463",
+      "title": "[FIX] Custom fields was misaligned in registration form",
+      "userLogin": "dschuan",
+      "milestone": "0.64.0",
+      "contributors": [
+        "dschuan",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10341",
+      "title": "[FIX] Unique identifier file not really being unique",
+      "userLogin": "abernix",
+      "milestone": "0.64.0",
+      "contributors": [
+        "abernix",
+        "web-flow",
+        "geekgonecrazy"
+      ]
+    },
+    {
+      "pr": "10335",
+      "title": "[OTHER] More Listeners for Apps & Utilize Promises inside Apps",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10404",
+      "title": "[FIX] Empty panel after changing a user's username",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10418",
+      "title": " [FIX] Russian translation of \"False\"",
+      "userLogin": "strangerintheq",
+      "contributors": [
+        "strangerintheq",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10496",
+      "title": "[FIX] Links being embedded inside of blockquotes",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10485",
+      "title": "[FIX] The 'channel.messages' REST API Endpoint error",
+      "userLogin": "rafaelks",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rafaelks",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10487",
+      "title": "[OTHER] Develop sync",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10358",
+      "title": "[FIX] Button on user info contextual bar scrolling with the content",
+      "userLogin": "okaybroda",
+      "milestone": "0.64.0",
+      "contributors": [
+        "okaybroda",
+        "ggazzo",
+        "web-flow",
+        "karlprieb",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "9824",
+      "title": "[FIX] \"Idle Time Limit\" using milliseconds instead of seconds",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii",
+        "web-flow",
+        "geekgonecrazy",
+        "sampaiodiego",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10259",
+      "title": "[NEW] Body of the payload on an incoming webhook is included on the request object",
+      "userLogin": "Hudell",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10387",
+      "title": "[FIX] Missing i18n translation key for \"Unread\"",
+      "userLogin": "Hudell",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "9729",
+      "title": "[FIX] Owner unable to delete channel or group from APIs",
+      "userLogin": "c0dzilla",
+      "milestone": "0.64.0",
+      "contributors": [
+        "c0dzilla",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10371",
+      "title": "[NEW] REST endpoint to recover forgotten password",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10354",
+      "title": "[NEW] REST endpoint to report messages",
+      "userLogin": "MarcosSpessatto",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10108",
+      "title": "[NEW] Livechat setting to customize ended conversation message",
+      "userLogin": "renatobecker",
+      "milestone": "0.64.0",
+      "contributors": [
+        "renatobecker"
+      ]
+    },
+    {
+      "pr": "10369",
+      "title": "[FIX] Livechat translation files being ignored",
+      "userLogin": "renatobecker",
+      "milestone": "0.64.0",
+      "contributors": [
+        "renatobecker",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "7964",
+      "title": "[NEW] Twilio MMS support for LiveChat integration",
+      "userLogin": "t3hchipmunk",
+      "milestone": "0.64.0",
+      "contributors": [
+        "t3hchipmunk",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "6673",
+      "title": "[FIX] Missing page \"not found\"",
+      "userLogin": "Prakharsvnit",
+      "milestone": "0.64.0",
+      "contributors": [
+        "Prakharsvnit",
+        "web-flow",
+        "geekgonecrazy",
+        "karlprieb"
+      ]
+    },
+    {
+      "pr": "10083",
+      "title": "[FIX] \"Highlight Words\" wasn't working with more than one word",
+      "userLogin": "nemaniarjun",
+      "milestone": "0.64.0",
+      "contributors": [
+        "nemaniarjun",
+        "gdelavald",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10171",
+      "title": "[FIX] Missing \"Administration\" menu for user with manage-emoji permission",
+      "userLogin": "c0dzilla",
+      "milestone": "0.64.0",
+      "contributors": [
+        "c0dzilla",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10395",
+      "title": "[FIX] Message view mode setting was missing at user's preferences ",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10399",
+      "title": "[FIX] Profile image was not being shown in user's directory search",
+      "userLogin": "sumedh123",
+      "milestone": "0.64.0",
+      "contributors": [
+        "sumedh123",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10342",
+      "title": "[NEW] REST API endpoint `rooms.favorite` to favorite and unfavorite rooms",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10428",
+      "title": "[FIX] Wrong positioning of popover when using RTL languages",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10472",
+      "title": "[FIX] Messages was grouping wrong some times when server is slow",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10225",
+      "title": "[FIX] GitLab authentication scope was too open, reduced to read only access",
+      "userLogin": "rafaelks",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rafaelks",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10344",
+      "title": "[FIX] Renaming agent's username within Livechat's department",
+      "userLogin": "renatobecker",
+      "milestone": "0.64.0",
+      "contributors": [
+        "renatobecker"
+      ]
+    },
+    {
+      "pr": "10394",
+      "title": "[FIX] Missing RocketApps input types",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "graywolf336",
+        "karlprieb"
+      ]
+    },
+    {
+      "pr": "10221",
+      "title": "[FIX] Livechat desktop notifications not being displayed",
+      "userLogin": "renatobecker",
+      "milestone": "0.64.0",
+      "contributors": [
+        "renatobecker",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10336",
+      "title": "Change Docker-Compose to use mmapv1 storage engine for mongo",
+      "userLogin": "geekgonecrazy",
+      "milestone": "0.64.0",
+      "contributors": [
+        "geekgonecrazy",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10396",
+      "title": "[NEW] Add internal API to handle room announcements",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10409",
+      "title": "[FIX] Autocomplete list when inviting a user was partial hidden",
+      "userLogin": "karlprieb",
+      "milestone": "0.64.0",
+      "contributors": [
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10423",
+      "title": "[FIX] Remove a user from the user's list when creating a new channel removes the wrong user",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10430",
+      "title": "[FIX] Room's name was cutting instead of having ellipses on sidebar",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10435",
+      "title": "Add some missing translations",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10437",
+      "title": "[NEW] Add message preview when quoting another message",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10438",
+      "title": "[FIX] Button to delete rooms by the owners wasn't appearing",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "karlprieb",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10439",
+      "title": "[NEW] Prevent the browser to autocomplete some setting fields",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10441",
+      "title": "[OTHER] Removed the developer warning on the rest api",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10444",
+      "title": "[NEW] Shows user's real name on autocomplete popup",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10414",
+      "title": "[NEW] Automatically trigger Redhat registry build when tagging new release",
+      "userLogin": "geekgonecrazy",
+      "milestone": "0.64.0",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    },
+    {
+      "pr": "10397",
+      "title": "Fix and improve vietnamese translation",
+      "userLogin": "tttt-conan",
+      "contributors": [
+        "tttt-conan",
+        "TDiNguyen",
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10411",
+      "title": "[BREAK] The property \"settings\" is no longer available to regular users via rest api",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "9946",
+      "title": "[FIX] Updated OpenShift Template to take an Image as a Param",
+      "userLogin": "christianh814",
+      "contributors": [
+        "christianh814",
+        "web-flow",
+        "geekgonecrazy"
+      ]
+    },
+    {
+      "pr": "10405",
+      "title": "Use Node 8.9 for CI build",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "9576",
+      "title": "[FIX] Incoming integrations being able to trigger an empty message with a GET",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10360",
+      "title": "Update allowed labels for bot",
+      "userLogin": "TwizzyDizzy",
+      "contributors": [
+        "TwizzyDizzy",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10384",
+      "title": "Remove @core team mention from Pull Request template",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10390",
+      "title": "[FIX] Snaps installations are breaking on avatar requests",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10234",
+      "title": "New issue template for *Release Process*",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok",
+        "geekgonecrazy",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10376",
+      "title": "Master into Develop Branch Sync",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok",
+        "web-flow",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10504",
+      "title": "Release 0.63.3",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "rafaelks",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10476",
+      "title": "Release 0.63.2",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10408",
+      "title": "add redhat dockerfile to master",
+      "userLogin": "geekgonecrazy",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    }
   ]
 }
