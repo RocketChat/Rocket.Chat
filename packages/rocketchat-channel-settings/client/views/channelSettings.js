@@ -119,7 +119,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'markdown',
 			label: 'Announcement',
 			getValue() {
-				return Template.instance().room.announcement && Template.instance().room.announcement.message;
+				return Template.instance().room.announcement;
 			},
 			canView() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
@@ -471,7 +471,7 @@ Template.channelSettingsInfo.helpers({
 		return Template.instance().room.broadcast;
 	},
 	announcement() {
-		return Template.instance().room.announcement ? Template.instance().room.announcement.message : '';
+		return Template.instance().room.announcement;
 	},
 	topic() {
 		return Template.instance().room.topic;
