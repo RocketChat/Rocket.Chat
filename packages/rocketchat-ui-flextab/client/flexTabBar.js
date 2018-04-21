@@ -188,6 +188,9 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
+		var removedButton = false;
+		const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
+		const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;
@@ -195,8 +198,19 @@ Template.RoomsActionTab.helpers({
 			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 				return false;
 			}
+			if (!canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === "addUsers") {
+				removedButton = true;
+				return false;
+			}
+			if (!canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === "addUsers") {
+				removedButton = true;
+				return false;
+			}
 			return true;
 		});
+		if (removedButton) {
+			return buttons.length <= 5 ? buttons : buttons.slice(0, 3);
+		}
 		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
 	},
 
