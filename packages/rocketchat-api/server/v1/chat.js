@@ -1,4 +1,5 @@
 /* global processWebhookMessage */
+
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
