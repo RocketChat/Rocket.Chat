@@ -9,7 +9,7 @@ Template.message.helpers({
 	broadcast() {
 		const instance = Template.instance();
 		return this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
-  },
+	},
 	isIgnored() {
 		return this.ignored;
 	},
