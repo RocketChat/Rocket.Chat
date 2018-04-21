@@ -1,6 +1,18 @@
 
 # 0.64.0 (Under Release Candidate Process)
 
+## 0.64.0-rc.1
+`2018-04-21  ·  3 🔍`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- LingoHub based on develop ([#10545](https://github.com/RocketChat/Rocket.Chat/pull/10545))
+- Regression: Revert announcement structure ([#10544](https://github.com/RocketChat/Rocket.Chat/pull/10544))
+- Regression: Upload was not working ([#10543](https://github.com/RocketChat/Rocket.Chat/pull/10543))
+
+</details>
+
 ## 0.64.0-rc.0
 `2018-04-21  ·  2 ️️️⚠️  ·  17 🎉  ·  38 🐛  ·  17 🔍  ·  16 👩‍💻👨‍💻`
 
