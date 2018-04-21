@@ -6,6 +6,10 @@ Template.message.helpers({
 	encodeURI(text) {
 		return encodeURI(text);
 	},
+	broadcast() {
+		const instance = Template.instance();
+		return this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
+	},
 	isIgnored() {
 		return this.ignored;
 	},
@@ -48,12 +52,12 @@ Template.message.helpers({
 		});
 	},
 	isGroupable() {
-		if (this.groupable === false) {
+		if (Template.instance().room.broadcast || this.groupable === false) {
 			return 'false';
 		}
 	},
 	isSequential() {
-		return this.groupable !== false;
+		return this.groupable !== false && !Template.instance().room.broadcast;
 	},
 	sequentialClass() {
 		if (this.groupable !== false) {
@@ -315,6 +319,14 @@ Template.message.onCreated(function() {
 	let msg = Template.currentData();
 
 	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
+
+	this.room = RocketChat.models.Rooms.findOne({
+		_id: msg.rid
+	}, {
+		fields: {
+			broadcast: 1
+		}
+	});
 
 	return this.body = (() => {
 		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
