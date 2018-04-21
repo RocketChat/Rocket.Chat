@@ -14,12 +14,13 @@
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label for="language">{{_ "Language"}}</label>
-								<div>
-									<select id="language" class="required rc-input__element">
+								<div class="rc-select">
+									<select id="language" class="required rc-select__element">
 										{{#each languages}}
 											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 						</div>
@@ -43,13 +44,14 @@
 									{{else}}
 										<input type="number" class="rc-input__element" name="idleTimeLimit" min="0" value="" placeholder="{{_ "Use_Global_Settings"}} ({{defaultIdleTimeLimit}})">
 									{{/if}}
+									<div class="info">{{_ "Idle_Time_Limit_Description"}}</div>
 								</div>
 							</div>
 						</div>
 
 					</div>
 					<div class="section">
-						<h1>{{_ "Messages"}}</h1>
+						<h1>{{_ "Notifications"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "Desktop_Notifications"}}</label>
@@ -78,26 +80,46 @@
 							</div>
 							<div class="input-line double-col" id="desktopNotifications">
 								<label>{{_ "Notification_Desktop_Default_For"}}</label>
-								<div>
-									<select class="input-monitor rc-input__element" name="desktopNotifications">
+								<div class="rc-select">
+									<select class="input-monitor rc-select__element" name="desktopNotifications">
 										<option value="default" selected="{{selected 'desktopNotifications' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultDesktopNotification}})</option>
 										<option value="all" selected="{{selected 'desktopNotifications' 'all' 'default'}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'desktopNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'desktopNotifications' 'nothing' 'default'}}">{{_ "Nothing"}}</option>
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col" id="mobileNotifications">
 								<label>{{_ "Notification_Mobile_Default_For"}}</label>
-								<div>
-									<select class="input-monitor rc-input__element" name="mobileNotifications">
+								<div class="rc-select">
+									<select class="input-monitor rc-select__element" name="mobileNotifications">
 										<option value="default" selected="{{selected 'mobileNotifications' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultMobileNotification}})</option>
 										<option value="all" selected="{{selected 'mobileNotifications' 'all' 'default'}}">{{_ "All_messages"}}</option>
 										<option value="mentions" selected="{{selected 'mobileNotifications' 'mentions' 'default'}}">{{_ "Mentions"}}</option>
 										<option value="nothing" selected="{{selected 'mobileNotifications' 'nothing' 'default'}}">{{_ "Nothing"}}</option>
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
+							<div class="input-line double-col" id="emailNotificationMode">
+								<label>{{_ "Email_Notification_Mode"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="emailNotificationMode">
+											<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+											<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Messages"}}</h1>
+						<div class="section-content border-component-color">
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 								<div>
@@ -190,26 +212,32 @@
 								</div>
 							</div>
 							{{/with}} -->
-
+							<div class="input-line double-col" id="messageViewMode">
+								<label>{{_ "View_mode"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="messageViewMode">
+											<option value="0" selected="{{selected 'messageViewMode' 0}}">{{_ "Normal"}}</option>
+											<option value="1" selected="{{selected 'messageViewMode' 1}}">{{_ "Cozy"}}</option>
+											<option value="2" selected="{{selected 'messageViewMode' 2}}">{{_ "Compact"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+									<div class="info">{{_ "Message_view_mode_info"}}</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="sendOnEnter">
 								<label>{{_ "Enter_Behaviour"}}</label>
 								<div>
-									<select class="input-monitor rc-input__element" name="sendOnEnter">
-										<option value="normal" selected="{{selected 'sendOnEnter' 'normal'}}">{{_ "Enter_Normal"}}</option>
-										<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
-										<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
-									</select>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="sendOnEnter">
+											<option value="normal" selected="{{selected 'sendOnEnter' 'normal'}}">{{_ "Enter_Normal"}}</option>
+											<option value="alternative" selected="{{selected 'sendOnEnter' 'alternative'}}">{{_ "Enter_Alternative"}}</option>
+											<option value="desktop" selected="{{selected 'sendOnEnter' 'desktop'}}">{{_ "Only_On_Desktop"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
 									<div class="info">{{_ "Enter_Behaviour_Description"}}</div>
-								</div>
-							</div>
-							<div class="input-line double-col" id="emailNotificationMode">
-								<label>{{_ "Email_Notification_Mode"}}</label>
-								<div>
-									<select class="input-monitor rc-input__element" name="emailNotificationMode">
-										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
-									</select>
-									<div class="info">{{_ "You_need_to_verifiy_your_email_address_to_get_notications"}}</div>
 								</div>
 							</div>
 						</div>
@@ -243,26 +271,28 @@
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
 								<label>{{_ "New_Room_Notification"}}</label>
-								<div>
-									<select name="newRoomNotification" class="audio rc-input__element">
+								<div class="rc-select">
+									<select name="newRoomNotification" class="audio rc-select__element">
 										<option value="none" selected="{{$eq newRoomNotification 'none'}}">{{_ "None"}}</option>
 										<option value="door" selected="{{$eq newRoomNotification 'door'}}">Door ({{_ "Default"}})</option>
 										{{#each audioAssets}}
 											<option value="{{_id}}" selected="{{$eq newRoomNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col">
 								<label>{{_ "New_Message_Notification"}}</label>
-								<div>
-									<select name="newMessageNotification" class="audio rc-input__element">
+								<div class="rc-select">
+									<select name="newMessageNotification" class="audio rc-select__element">
 										<option value="none" selected="{{$eq newMessageNotification 'none'}}">{{_ "None"}}</option>
 										<option value="chime" selected="{{$eq newMessageNotification 'chime'}}">Chime ({{_ "Default"}})</option>
 										{{#each audioAssets}}
 											<option value="{{_id}}" selected="{{$eq newMessageNotification _id}}">{{name}}</option>
 										{{/each}}
 									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
 								</div>
 							</div>
 							<div class="input-line double-col" id="muteFocusedConversations">
@@ -280,6 +310,19 @@
 							</div>
 						</div>
 					</div>
+
+					{{#if userDataDownloadEnabled}}
+						<div class="section">
+							<h1>{{_ "My Data"}}</h1>
+							<div class="section-content border-component-color">
+								<div class="input-line">
+									<label><button class="button download-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Download_My_Data"}}</span></button></label>
+									<label><button class="button export-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Export_My_Data"}}</span></button></label>
+								</div>
+								
+							</div>
+						</div>
+					{{/if}}
 				</fieldset>
 			</form>
 		</div>

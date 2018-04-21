@@ -83,6 +83,10 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 	}
 });
 
+/**
+ DEPRECATED
+ // TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
+ **/
 RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
@@ -107,7 +111,10 @@ RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
 			Meteor.call('cleanChannelHistory', { roomId: findResult._id, latest, oldest, inclusive });
 		});
 
-		return RocketChat.API.v1.success();
+		return RocketChat.API.v1.success(this.deprecationWarning({
+			endpoint: 'channels.cleanHistory',
+			versionWillBeRemove: 'v0.67'
+		}));
 	}
 });
 
@@ -229,6 +236,12 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('canAccessRoom', findResult._id, this.userId);
@@ -247,8 +260,9 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
-			count: files.length,
+			files: files.map(addUserObjectToEveryObject),
+			count:
+			files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
 		});
@@ -519,7 +533,11 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false,
+			returnUsernames: true
+		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
