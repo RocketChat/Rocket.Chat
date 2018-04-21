@@ -247,6 +247,7 @@ jobs:
             bash .circleci/update-releases.sh
             bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/redhat-registry.sh
 
 workflows:
   version: 2
