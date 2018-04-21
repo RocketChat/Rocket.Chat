@@ -28,8 +28,8 @@ Template.pushNotificationsFlexTab.helpers({
 	showUnreadStatus() {
 		return !Template.instance().form.hideUnreadStatus.get();
 	},
-	muteGenericMentions() {
-		return Template.instance().form.muteGenericMentions.get();
+	muteGroupMentions() {
+		return Template.instance().form.muteGroupMentions.get();
 	},
 	hideUnreadStatus() {
 		return Template.instance().form.hideUnreadStatus.get();
@@ -113,7 +113,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			emailNotifications: 1,
 			desktopNotificationDuration: 1,
 			audioNotificationValue: 1,
-			muteGenericMentions: 1
+			muteGroupMentions: 1
 		}
 	}) || {};
 
@@ -126,7 +126,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications = 'default',
 		desktopNotificationDuration = 0,
 		audioNotificationValue = null,
-		muteGenericMentions = false
+		muteGroupMentions = false
 	} = sub;
 
 	this.original = {
@@ -138,7 +138,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
-		muteGenericMentions: new ReactiveVar(muteGenericMentions)
+		muteGroupMentions: new ReactiveVar(muteGroupMentions)
 	};
 
 	this.form = {
@@ -150,7 +150,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
-		muteGenericMentions: new ReactiveVar(muteGenericMentions)
+		muteGroupMentions: new ReactiveVar(muteGroupMentions)
 	};
 
 	this.saveSetting = async() => {

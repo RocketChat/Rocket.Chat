@@ -130,14 +130,14 @@ RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideU
 	return this.update(query, update);
 };
 
-RocketChat.models.Subscriptions.updateMuteGenericMentions = function(_id, muteGenericMentions) {
+RocketChat.models.Subscriptions.updateMuteGroupMentions = function(_id, muteGroupMentions) {
 	const query = {
 		_id
 	};
 
 	const update = {
 		$set: {
-			muteGenericMentions
+			muteGroupMentions
 		}
 	};
 
@@ -203,11 +203,11 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 			{desktopNotificationDuration: {$exists: true}},
 			{mobilePushNotifications: {$exists: true}},
 			{disableNotifications: {$exists: true}},
-			{muteGenericMentions: {$exists: true}}
+			{muteGroupMentions: {$exists: true}}
 		];
 	}
 
-	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1, muteGenericMentions: 1 } });
+	return this.find(query, { fields: { 'u._id': 1, audioNotifications: 1, audioNotificationValue: 1, desktopNotificationDuration: 1, desktopNotifications: 1, mobilePushNotifications: 1, disableNotifications: 1, muteGroupMentions: 1 } });
 };
 
 RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {

@@ -29,8 +29,8 @@ Meteor.methods({
 			'hideUnreadStatus': {
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1')
 			},
-			'muteGenericMentions': {
-				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateMuteGenericMentions(subscription._id, value === '1')
+			'muteGroupMentions': {
+				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateMuteGroupMentions(subscription._id, value === '1')
 			},
 			'desktopNotificationDuration': {
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateDesktopNotificationDurationById(subscription._id, value)
