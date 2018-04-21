@@ -188,7 +188,7 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		var removedButton = false;
+		let removedButton = false;
 		const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
 		const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
@@ -198,11 +198,11 @@ Template.RoomsActionTab.helpers({
 			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 				return false;
 			}
-			if (!canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === "addUsers") {
+			if (!canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
 				removedButton = true;
 				return false;
 			}
-			if (!canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === "addUsers") {
+			if (!canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
 				removedButton = true;
 				return false;
 			}
