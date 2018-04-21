@@ -146,6 +146,7 @@ rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
+rocketchat:user-data-download
 rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
@@ -186,3 +187,5 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:version-check
 kb0304:pdfjs
+rocketchat:search
+chatpal:search
