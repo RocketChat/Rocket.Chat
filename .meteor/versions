@@ -44,7 +44,7 @@ ejson@1.1.0
 email@1.2.3
 emojione:emojione@2.2.6
 es5-shim@4.7.3
-facebook-oauth@1.4.0
+facebook-oauth@1.4.1
 fastclick@1.0.13
 francocatena:status@1.5.3
 geojson-utils@1.0.10
@@ -53,7 +53,7 @@ google-oauth@1.2.5
 hot-code-push@1.0.4
 html-tools@1.0.11
 htmljs@1.0.11
-http@1.4.0
+http@1.4.1
 id-map@1.1.0
 jalik:ufs@0.7.5
 jalik:ufs-gridfs@0.2.1
@@ -93,7 +93,7 @@ mobile-experience@1.0.5
 mobile-status-bar@1.0.14
 modules@0.11.6
 modules-runtime@0.9.2
-mongo@1.4.5
+mongo@1.4.7
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
 mongo-livedata@1.0.12
