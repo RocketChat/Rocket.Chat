@@ -13008,5 +13008,36 @@
         "geekgonecrazy"
       ]
     }
+  ],
+  "0.64.0-rc.1": [
+    {
+      "pr": "10545",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10544",
+      "title": "Regression: Revert announcement structure",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10543",
+      "title": "Regression: Upload was not working",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    }
   ]
 }
