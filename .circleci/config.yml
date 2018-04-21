@@ -91,11 +91,12 @@ jobs:
       - run:
           name: Prepare build
           command: |
+            sudo npm install -g npm@latest
             mkdir /tmp/build/
             cd /tmp/build-test
             tar czf /tmp/build/Rocket.Chat.tar.gz bundle
             cd /tmp/build-test/bundle/programs/server
-            npm install
+            npm ci
 
       # - save_cache:
       #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
@@ -164,9 +165,9 @@ jobs:
             mongo --eval 'rs.status()'
 
       - run:
-          name: NPM install
+          name: NPM ci
           command: |
-            npm install
+            npm ci
 
       - run:
           name: Run Tests
@@ -193,9 +194,9 @@ jobs:
       - checkout
 
       - run:
-          name: NPM install
+          name: NPM ci
           command: |
-            npm install
+            npm ci
 
       - run:
           name: Run Tests
