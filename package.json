@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.63.3",
+	"version": "0.64.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -61,6 +61,7 @@
 	],
 	"scripts": {
 		"start": "meteor npm i && meteor",
+		"debug": "meteor run --inspect",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint packages/**/*.css",
@@ -113,6 +114,7 @@
 		"@google-cloud/storage": "^1.6.0",
 		"@google-cloud/vision": "^0.15.2",
 		"adm-zip": "^0.4.7",
+		"archiver": "^2.1.1",
 		"atlassian-crowd": "^0.5.0",
 		"autolinker": "^1.6.2",
 		"aws-sdk": "^2.199.0",
