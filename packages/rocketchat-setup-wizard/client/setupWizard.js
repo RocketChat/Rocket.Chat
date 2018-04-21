@@ -1,5 +1,8 @@
+import s from 'underscore.string';
+
 Template.setupWizard.onCreated(function() {
 	this.state = new ReactiveDict();
+	this.finalStep = new ReactiveVar(false);
 	this.wizardSettings = new ReactiveVar([]);
 	Meteor.call('getWizardSettings', (error, result) => {
 		if (result) {
@@ -18,14 +21,61 @@ Template.setupWizard.onCreated(function() {
 
 	Tracker.autorun(() => {
 		const states = this.state.all();
-		states['registration-password'] = '';
+		states['registration-pass'] = '';
 		localStorage.setItem('wizard', JSON.stringify(states));
 	});
 });
 
 Template.setupWizard.events({
+	'click .go-home'() {
+		RocketChat.settings.set('Server_First_Access', false);
+	},
 	'click .setup-wizard-forms__footer-next'(e, t) {
-		t.state.set('currentStep', t.state.get('currentStep') + 1);
+		const currentStep = t.state.get('currentStep');
+
+		if (currentStep === 4) {
+			const state = Template.instance().state.all();
+			const registration = Object.entries(state).filter(key => /registration-/.test(key));
+			const registrationData = Object.assign(...registration.map(d => ({[d[0].replace('registration-', '')]: d[1]})));
+
+			Meteor.call('registerUser', registrationData, error => {
+				if (error) {
+					return handleError(error);
+				}
+
+				RocketChat.callbacks.run('userRegistered');
+
+				Meteor.loginWithPassword(s.trim(registrationData.email), registrationData.pass, error => {
+					if (error && error.error === 'error-invalid-email') {
+						toastr.success(t('We_have_sent_registration_email'));
+						return false;
+					}
+
+					Session.set('forceLogin', false);
+
+					Meteor.call('setUsername', registrationData.username, error => {
+						if (error) {
+							return handleError(error);
+						}
+
+						RocketChat.callbacks.run('usernameSet');
+
+						const settings = Object.entries(state).filter(key => !/registration-|registerServer|currentStep/.test(key));
+						settings.forEach(setting => {
+							RocketChat.settings.set(setting[0], setting[1]);
+						});
+
+						RocketChat.settings.set('Statistics_reporting', JSON.parse(t.state.get('registerServer')));
+
+						t.finalStep.set(true);
+					});
+				});
+			});
+
+			return false;
+		}
+
+		t.state.set('currentStep', currentStep + 1);
 	},
 	'click .setup-wizard-forms__footer-back'(e, t) {
 		t.state.set('currentStep', t.state.get('currentStep') - 1);
@@ -123,5 +173,8 @@ Template.setupWizard.helpers({
 		});
 
 		return result;
+	},
+	finalStep() {
+		return Template.instance().finalStep.get();
 	}
 });

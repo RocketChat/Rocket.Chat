@@ -1791,35 +1791,35 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			values: [
 				{
 					key: '0',
-					i18nLabel: '1-10 employees'
+					i18nLabel: '1-10 people'
 				},
 				{
 					key: '1',
-					i18nLabel: '11-50 employees'
+					i18nLabel: '11-50 people'
 				},
 				{
 					key: '2',
-					i18nLabel: '51-100 employees'
+					i18nLabel: '51-100 people'
 				},
 				{
 					key: '3',
-					i18nLabel: '101-250 employees'
+					i18nLabel: '101-250 people'
 				},
 				{
 					key: '4',
-					i18nLabel: '251-500 employees'
+					i18nLabel: '251-500 people'
 				},
 				{
 					key: '5',
-					i18nLabel: '501-1000 employees'
+					i18nLabel: '501-1000 people'
 				},
 				{
 					key: '6',
-					i18nLabel: '1001-4000 employees'
+					i18nLabel: '1001-4000 people'
 				},
 				{
 					key: '7',
-					i18nLabel: '4000 or more employees'
+					i18nLabel: '4000 or more people'
 				}
 			],
 			public: true,
