@@ -123,13 +123,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
-			const { emailNotifications } = sub;
+			const { emailNotifications, muteGroupMentions } = sub;
 
 			if (emailNotifications === 'nothing') {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
-			if (isMentionAll && sub.muteGroupMentions) {
+			if (isMentionAll && muteGroupMentions) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
