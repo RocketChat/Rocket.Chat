@@ -119,7 +119,7 @@
 		"autolinker": "^1.6.2",
 		"aws-sdk": "^2.199.0",
 		"bad-words": "^1.6.1",
-		"bcrypt": "^1.0.3",
+		"bcrypt": "^2.0.1",
 		"bson": "^1.0.4",
 		"bugsnag": "^2.1.3",
 		"bunyan": "^1.8.12",
