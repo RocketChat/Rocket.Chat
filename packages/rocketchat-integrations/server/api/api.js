@@ -184,6 +184,13 @@ function executeIntegrationRest() {
 	logger.incoming.debug('@urlParams:', this.urlParams);
 	logger.incoming.debug('@bodyParams:', this.bodyParams);
 
+	const url = this.request.url;
+	const integration = this.integration;
+	const data = this.bodyParams;
+	const isIncoming = true;
+
+	const historyId = RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, integration, data, url, step: 'start-execute-integration-rest' });
+
 	if (this.integration.enabled !== true) {
 		return {
 			statusCode: 503,
@@ -201,8 +208,11 @@ function executeIntegrationRest() {
 	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
 		let script;
 		try {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'before-get-integration-script' });
 			script = getIntegrationScript(this.integration);
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'after-get-integration-script' });
 		} catch (e) {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, error: true });
 			logger.incoming.warn(e);
 			return RocketChat.API.v1.failure(e.message);
 		}
@@ -232,6 +242,8 @@ function executeIntegrationRest() {
 		};
 
 		try {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'before-script-sandbox' });
+
 			const { sandbox } = buildSandbox(compiledScripts[this.integration._id].store);
 			sandbox.script = script;
 			sandbox.request = request;
@@ -241,9 +253,11 @@ function executeIntegrationRest() {
 			});
 
 			if (!result) {
+				RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'after-script-sandbox', finished: true });
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
 				return RocketChat.API.v1.success();
 			} else if (result && result.error) {
+				RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'after-script-sandbox', error: true });
 				return RocketChat.API.v1.failure(result.error);
 			}
 
@@ -255,11 +269,13 @@ function executeIntegrationRest() {
 
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'after-script', finished: true });
 		} catch ({stack}) {
 			logger.incoming.error('[Error running Script in Trigger', this.integration.name, ':]');
 			logger.incoming.error(this.integration.scriptCompiled.replace(/^/gm, '  '));
 			logger.incoming.error('[Stack:]');
 			logger.incoming.error(stack.replace(/^/gm, '  '));
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'after-script', error: true });
 			return RocketChat.API.v1.failure('error-running-script');
 		}
 	}
@@ -267,6 +283,7 @@ function executeIntegrationRest() {
 	// TODO: Turn this into an option on the integrations - no body means a success
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
+		RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'no-body-params', finished: true });
 		// return RocketChat.API.v1.failure('body-empty');
 		return RocketChat.API.v1.success();
 	}
@@ -274,8 +291,10 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'process-webhook-message' });
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues, false, historyId);
 		if (_.isEmpty(message)) {
+			RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'webhook-message-empty', error: true });
 			return RocketChat.API.v1.failure('unknown-error');
 		}
 
@@ -283,8 +302,10 @@ function executeIntegrationRest() {
 			logger.incoming.debug('response', this.scriptResponse);
 		}
 
+		RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'message-processed', finished: true });
 		return RocketChat.API.v1.success(this.scriptResponse);
 	} catch ({ error }) {
+		RocketChat.integrations.triggerHandler.updateHistory({ isIncoming, historyId, step: 'message-processed-with-error', error: true });
 		return RocketChat.API.v1.failure(error);
 	}
 }

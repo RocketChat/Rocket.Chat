@@ -39,6 +39,17 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 	}
 });
 
+FlowRouter.route('/admin/integrations/incoming/:id?/history', {
+	name: 'admin-integrations-incoming-history',
+	action(params) {
+		return BlazeLayout.render('main', {
+			center: 'integrationsIncomingHistory',
+			pageTitle: t('Integration_Incoming_WebHook_History'),
+			params
+		});
+	}
+});
+
 FlowRouter.route('/admin/integrations/outgoing/:id?', {
 	name: 'admin-integrations-outgoing',
 	action(params) {

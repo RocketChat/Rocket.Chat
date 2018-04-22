@@ -1,134 +1,140 @@
 <template name="integrationsIncoming">
-	<div class="permissions-manager">
-		{{#if hasPermission}}
-			<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
-			<div class="rocket-form">
-				<div class="section">
-					<div class="section-content">
-						<div class="input-line double-col">
-							<label>{{_ "Enabled"}}</label>
-							<div>
-								<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
-								<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Name"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" class="rc-input__element" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description secondary-font-color">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Post_to_Channel"}}</label>
-							<div>
-								<input type="text" class="rc-input__element" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
-								<div class="settings-description secondary-font-color">{{_ "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here"}}</div>
-								<div class="settings-description secondary-font-color">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Post_as"}}</label>
-							<div>
-								<input type="text" class="rc-input__element" name="username" value="{{data.username}}" />
-								<div class="settings-description secondary-font-color">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
-								<div class="settings-description secondary-font-color">{{_ "Should_exists_a_user_with_this_username"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Alias"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" class="rc-input__element" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description secondary-font-color">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="url" class="rc-input__element" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description secondary-font-color">{{_ "You_can_change_a_different_avatar_too"}}</div>
-								<div class="settings-description secondary-font-color">{{_ "Should_be_a_URL_of_an_image"}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
-							<div>
-								<input type="text" class="rc-input__element" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
-								<div class="settings-description secondary-font-color">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
-								<div class="settings-description secondary-font-color">{{{_ "Example_s" ":ghost:"}}}</div>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Script_Enabled"}}</label>
-							<div>
-								<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
-								<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
-							</div>
-						</div>
-						<div class="input-line double-col">
-							<label>{{_ "Script"}}</label>
-							<div>
-								<div class="code-mirror-box">
-									<div class="title">
-										{{_ "Script"}}
-									</div>
-									{{> CodeMirror name="script" options=editorOptions code=data.script }}
-									<div class="buttons">
-										<button class="button primary button-fullscreen">Full Screen</button>
-										<button class="button primary button-restore">Exit Full Screen</button>
-									</div>
+	<section class="page-container page-home page-static page-settings">
+		{{#header sectionName=pageTitle buttons=true}}
+		<div class="rc-header__section-button submit">
+				<button class="rc-button rc-button--secondary history" disabled="{{not showHistoryButton}}">{{_ "History"}}</button>
+				{{#if data.token}}
+					<button class="rc-button rc-button--cancel button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+				{{/if}}
+				<button class="rc-button rc-button--primary button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+		</div>
+		{{/header}}
+		
+		<div class="permissions-manager content background-transparent-dark">
+			{{#if hasPermission}}
+				<a href="{{pathFor "admin-integrations"}}"><i class="icon-angle-left"></i> {{_ "Back_to_integrations"}}</a><br><br>
+				<div class="rocket-form">
+					<div class="section">
+						<div class="section-content">
+							<div class="input-line double-col">
+								<label>{{_ "Enabled"}}</label>
+								<div>
+									<label><input type="radio" name="enabled" value="1" checked="{{$eq data.enabled true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="enabled" value="0" checked="{{$neq data.enabled true}}" /> {{_ "False"}}</label>
 								</div>
-								{{#if data.scriptError}}
-									<div class="code-error-box">
-										<div class="title color-content-background-color background-error-color">
-											{{data.scriptError.name}}
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Name"}} ({{_ "optional"}})</label>
+								<div>
+									<input type="text" class="rc-input__element" name="name" value="{{data.name}}" placeholder="{{_ 'Optional'}}" />
+									<div class="settings-description secondary-font-color">{{_ "You_should_name_it_to_easily_manage_your_integrations"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Post_to_Channel"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="channel" value="{{data.channel}}" placeholder="{{_ 'User_or_channel_name'}}" />
+									<div class="settings-description secondary-font-color">{{_ "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here"}}</div>
+									<div class="settings-description secondary-font-color">{{{_ "Start_with_s_for_user_or_s_for_channel_Eg_s_or_s" "@" "#" "@john" "#general"}}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Post_as"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="username" value="{{data.username}}" />
+									<div class="settings-description secondary-font-color">{{_ "Choose_the_username_that_this_integration_will_post_as"}}</div>
+									<div class="settings-description secondary-font-color">{{_ "Should_exists_a_user_with_this_username"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Alias"}} ({{_ "optional"}})</label>
+								<div>
+									<input type="text" class="rc-input__element" name="alias" value="{{data.alias}}" placeholder="{{_ 'Optional'}}" />
+									<div class="settings-description secondary-font-color">{{_ "Choose_the_alias_that_will_appear_before_the_username_in_messages"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Avatar_URL"}} ({{_ "optional"}})</label>
+								<div>
+									<input type="url" class="rc-input__element" name="avatar" value="{{data.avatar}}" placeholder="{{_ 'Optional'}}" />
+									<div class="settings-description secondary-font-color">{{_ "You_can_change_a_different_avatar_too"}}</div>
+									<div class="settings-description secondary-font-color">{{_ "Should_be_a_URL_of_an_image"}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Emoji"}} ({{_ "optional"}})</label>
+								<div>
+									<input type="text" class="rc-input__element" name="emoji" value="{{data.emoji}}" placeholder="{{_ 'Optional'}}" />
+									<div class="settings-description secondary-font-color">{{_ "You_can_use_an_emoji_as_avatar"}}</div>
+									<div class="settings-description secondary-font-color">{{{_ "Example_s" ":ghost:"}}}</div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Script_Enabled"}}</label>
+								<div>
+									<label><input type="radio" name="scriptEnabled" value="1" checked="{{$eq data.scriptEnabled true}}" /> {{_ "True"}}</label>
+									<label><input type="radio" name="scriptEnabled" value="0" checked="{{$neq data.scriptEnabled true}}" /> {{_ "False"}}</label>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Script"}}</label>
+								<div>
+									<div class="code-mirror-box">
+										<div class="title">
+											{{_ "Script"}}
 										</div>
-										<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
+										{{> CodeMirror name="script" options=editorOptions code=data.script }}
+										<div class="buttons">
+											<button class="button primary button-fullscreen">Full Screen</button>
+											<button class="button primary button-restore">Exit Full Screen</button>
+										</div>
 									</div>
-								{{/if}}
-							</div>
-						</div>
-						{{#if data.token}}
-							<div class="input-line double-col">
-								<label>Webhook URL</label>
-								<div>
-									<input type="text" class="rc-input__element" name="webhookurl" value="{{data.url}}" readonly="readonly" />
-									<div class="settings-description secondary-font-color">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									{{#if data.scriptError}}
+										<div class="code-error-box">
+											<div class="title color-content-background-color background-error-color">
+												{{data.scriptError.name}}
+											</div>
+											<pre class="script-error background-transparent-lightest error-color error-border">{{data.scriptError.message}}</pre>
+										</div>
+									{{/if}}
 								</div>
 							</div>
+							{{#if data.token}}
+								<div class="input-line double-col">
+									<label>Webhook URL</label>
+									<div>
+										<input type="text" class="rc-input__element" name="webhookurl" value="{{data.url}}" readonly="readonly" />
+										<div class="settings-description secondary-font-color">{{_ "Send_your_JSON_payloads_to_this_URL"}}</div>
+										<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=webhookurl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label>Token</label>
+									<div>
+										<input type="text" class="rc-input__element" name="completeToken" value="{{data.completeToken}}" readonly="readonly" />
+										<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									</div>
+								</div>
+							{{/if}}
 							<div class="input-line double-col">
-								<label>Token</label>
+								<label>{{_ "Example"}}</label>
 								<div>
-									<input type="text" class="rc-input__element" name="completeToken" value="{{data.completeToken}}" readonly="readonly" />
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=completeToken]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
+									{{#if curl}}
+										<input type="text" class="rc-input__element" name="curl" value="{{curl}}" readonly="readonly" />
+										<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+									{{/if}}
 								</div>
 							</div>
-						{{/if}}
-						<div class="input-line double-col">
-							<label>{{_ "Example"}}</label>
-							<div>
-								<pre><code class="code-colors hljs json json-example">{{{exampleJson}}}</code></pre>
-								{{#if curl}}
-									<input type="text" class="rc-input__element" name="curl" value="{{curl}}" readonly="readonly" />
-									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=curl]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
-								{{/if}}
+							<div class="input-line message-example">
+								{{#nrr nrrargs 'message' example}}{{/nrr}}
 							</div>
-						</div>
-						<div class="input-line message-example">
-							{{#nrr nrrargs 'message' example}}{{/nrr}}
 						</div>
 					</div>
 				</div>
-				<div class="submit">
-					{{#if data.token}}
-						<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
-					{{/if}}
-					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
-				</div>
-			</div>
-		{{else}}
-			{{_ "Not_authorized"}}
-		{{/if}}
-	</div>
+			{{else}}
+				{{_ "Not_authorized"}}
+			{{/if}}
+		</div>
+	</section>
 </template>

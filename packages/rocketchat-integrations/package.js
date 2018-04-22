@@ -33,6 +33,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsNew.js', 'client');
 	api.addFiles('client/views/integrationsIncoming.html', 'client');
 	api.addFiles('client/views/integrationsIncoming.js', 'client');
+	api.addFiles('client/views/integrationsIncomingHistory.html', 'client');
+	api.addFiles('client/views/integrationsIncomingHistory.js', 'client');
 	api.addFiles('client/views/integrationsOutgoing.html', 'client');
 	api.addFiles('client/views/integrationsOutgoing.js', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
@@ -55,6 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/incoming/addIncomingIntegration.js', 'server');
 	api.addFiles('server/methods/incoming/updateIncomingIntegration.js', 'server');
 	api.addFiles('server/methods/incoming/deleteIncomingIntegration.js', 'server');
+	api.addFiles('server/methods/incoming/replayIncomingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/addOutgoingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/updateOutgoingIntegration.js', 'server');
 	api.addFiles('server/methods/outgoing/replayOutgoingIntegration.js', 'server');

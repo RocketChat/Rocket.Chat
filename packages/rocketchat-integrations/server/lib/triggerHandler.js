@@ -67,9 +67,9 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		return false;
 	}
 
-	updateHistory({ historyId, step, integration, event, data, triggerWord, ranPrepareScript, prepareSentMessage, processSentMessage, resultMessage, finished, url, httpCallData, httpError, httpResult, error, errorStack }) {
+	updateHistory({ historyId, step, integration, event, data, triggerWord, ranPrepareScript, prepareSentMessage, processSentMessage, resultMessage, finished, url, httpCallData, httpError, httpResult, error, errorStack, isIncoming = false }) {
 		const history = {
-			type: 'outgoing-webhook',
+			type: isIncoming ? 'incoming-webhook' : 'outgoing-webhook',
 			step
 		};
 
