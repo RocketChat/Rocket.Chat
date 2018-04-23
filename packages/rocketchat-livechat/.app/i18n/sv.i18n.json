@@ -1,5 +1,5 @@
 {
-  "Additional_Feedback": "Ytterligare Feedback",
+  "Additional_Feedback": "Ytterligare feedback",
   "Appearance": "Utseende",
   "Are_you_sure_do_you_want_end_this_chat": "Är du säker på att du vill avsluta denna chatt?",
   "Are_you_sure_do_you_want_end_this_chat_and_switch_department": "Är du säker på att du vill avsluta denna chatt och byta avdelning?",
@@ -37,8 +37,9 @@
   "Type_your_email": "Skriv din e-post",
   "Type_your_message": "Skriv in ditt meddelande",
   "Type_your_name": "Skriv in ditt namn",
-  "User_joined": "Användare ansluter",
+  "User_joined": "Användare ansluten",
   "User_left": "Användare lämnade",
+  "We_are_not_online_right_now_please_leave_a_message": "Vi är inte online just nu. Snälla lämna ett medelande.",
   "We_are_offline_Sorry_for_the_inconvenience": "Vi är offline. Vi beklagar olägenheten.",
   "Yes": "Ja",
   "You": "Du",

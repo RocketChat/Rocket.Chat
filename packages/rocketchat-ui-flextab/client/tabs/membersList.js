@@ -1,8 +1,13 @@
-/* globals WebRTC popover */
+/* globals WebRTC popover isRtl */
 import _ from 'underscore';
 import {getActions} from './userActions';
 
 Template.membersList.helpers({
+	ignored() {
+		const {user} = this;
+		const sub = RocketChat.models.Subscriptions.findOne({rid: Session.get('openedRoom')});
+		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1 ? `(${ t('Ignored') })` : '';
+	},
 	tAddUsers() {
 		return t('Add_users');
 	},
@@ -63,7 +68,7 @@ Template.membersList.helpers({
 
 			return {
 				user,
-				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : undefined),
+				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset
 			};
@@ -76,7 +81,7 @@ Template.membersList.helpers({
 		}
 		// show online users first.
 		// sortBy is stable, so we can do this
-		users = _.sortBy(users, u => u.status == null);
+		users = _.sortBy(users, u => u.status === 'offline');
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
@@ -216,11 +221,21 @@ Template.membersList.events({
 		e.preventDefault();
 		const config = {
 			columns,
+			mousePosition: () => ({
+				x: e.currentTarget.getBoundingClientRect().right + 10,
+				y: e.currentTarget.getBoundingClientRect().bottom + 100
+			}),
+			customCSSProperties: () => ({
+				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
+				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
+			}),
 			data: {
 				rid: this._id,
 				username: instance.data.username,
 				instance
 			},
+			offsetHorizontal: 15,
+			activeElement: e.currentTarget,
 			currentTarget: e.currentTarget,
 			onDestroyed:() => {
 				e.currentTarget.parentElement.classList.remove('active');
@@ -256,6 +271,7 @@ Template.membersList.onCreated(function() {
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
 
+
 	this.users = new ReactiveVar([]);
 	this.total = new ReactiveVar;
 	this.loading = new ReactiveVar(true);
@@ -264,7 +280,6 @@ Template.membersList.onCreated(function() {
 
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
-
 		this.loading.set(true);
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {
 			this.users.set(users.records);

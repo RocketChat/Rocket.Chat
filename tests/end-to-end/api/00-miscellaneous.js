@@ -2,8 +2,8 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials} from '../../data/api-data.js';
-import {adminEmail, adminUsername, adminPassword, password} from '../../data/user.js';
+import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
+import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('miscellaneous', function() {
@@ -73,7 +73,6 @@ describe('miscellaneous', function() {
 			.end(done);
 	});
 
-
 	describe('/directory', () => {
 		let user;
 		let testChannel;
@@ -82,7 +81,7 @@ describe('miscellaneous', function() {
 			const email = `${ username }@rocket.chat`;
 			request.post(api('users.create'))
 				.set(credentials)
-				.send({email, name: username, username, password})
+				.send({ email, name: username, username, password })
 				.end((err, res) => {
 					user = res.body.user;
 					done();
@@ -165,6 +164,102 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
+	});
+	describe('[/spotlight]', () => {
+		let user;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
 
+		let userCredentials;
+		let testChannel;
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		after(done => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id
+			}).end(done);
+			user = undefined;
+		});
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(userCredentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('should fail when does not have query param', (done) => {
+			request.get(api('spotlight'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+		it('should return object inside users array when search by a valid user', (done) => {
+			request.get(api('spotlight'))
+				.query({
+					query: `@${ adminUsername }`
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body.users[0]).to.have.property('_id');
+					expect(res.body.users[0]).to.have.property('name');
+					expect(res.body.users[0]).to.have.property('username');
+					expect(res.body.users[0]).to.have.property('status');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', (done) => {
+			request.get(api('spotlight'))
+				.query({
+					query: `#${ testChannel.name }`
+				})
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').and.to.be.an('array');
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms[0]).to.have.property('_id');
+					expect(res.body.rooms[0]).to.have.property('name');
+					expect(res.body.rooms[0]).to.have.property('t');
+				})
+				.end(done);
+		});
 	});
 });

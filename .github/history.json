@@ -12225,5 +12225,44 @@
         "geekgonecrazy"
       ]
     }
+  ],
+  "0.63.3": [
+    {
+      "pr": "10485",
+      "title": "[FIX] The 'channel.messages' REST API Endpoint error",
+      "userLogin": "rafaelks",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rafaelks",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10218",
+      "title": "Added one2mail.info to default blocked domains list",
+      "userLogin": "nsuchy",
+      "milestone": "0.64.0",
+      "contributors": [
+        "nsuchy",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10476",
+      "title": "Release 0.63.2",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10475",
+      "title": "[FIX] Even TypeErrors with SAML",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336"
+      ]
+    }
   ]
 }

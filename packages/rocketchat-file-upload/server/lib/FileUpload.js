@@ -58,6 +58,25 @@ Object.assign(FileUpload, {
 		};
 	},
 
+	defaultUserDataFiles() {
+		return {
+			collection: RocketChat.models.UserDataFiles.model,
+			getPath(file) {
+				return `${ RocketChat.settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+			},
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			}
+		};
+	},
+
 	avatarsOnValidate(file) {
 		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return;
@@ -229,16 +248,30 @@ Object.assign(FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	copy(file, targetFile) {
+		const store = this.getStoreByName(file.store);
+		const out = fs.createWriteStream(targetFile);
+
+		file = FileUpload.addExtensionTo(file);
+
+		if (store.copy) {
+			store.copy(file, out);
+			return true;
+		}
+
+		return false;
 	}
 });
 
-
 export class FileUploadClass {
-	constructor({ name, model, store, get, insert, getStore }) {
+	constructor({ name, model, store, get, insert, getStore, copy }) {
 		this.name = name;
 		this.model = model || this.getModelFromName();
 		this._store = store || UploadFS.getStore(name);
 		this.get = get;
+		this.copy = copy;
 
 		if (insert) {
 			this.insert = insert;
