@@ -87,6 +87,9 @@ Template.accountPreferences.helpers({
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
 	},
+	userDataDownloadEnabled() {
+		return RocketChat.settings.get('UserData_EnableDownload') !== false;
+	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
 	}
@@ -202,6 +205,55 @@ Template.accountPreferences.onCreated(function() {
 			}
 		});
 	};
+
+	this.downloadMyData = function(fullExport = false) {
+		Meteor.call('requestDataDownload', {fullExport}, function(error, results) {
+			if (results) {
+				if (results.requested) {
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_Requested_Text'),
+						type: 'success'
+					});
+
+					return true;
+				}
+
+				if (results.exportOperation) {
+					if (results.exportOperation.status === 'completed') {
+						modal.open({
+							title: t('UserDataDownload_Requested'),
+							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							type: 'success'
+						});
+
+						return true;
+					}
+
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_RequestExisted_Text'),
+						type: 'success'
+					});
+					return true;
+				}
+
+				modal.open({
+					title: t('UserDataDownload_Requested'),
+					type: 'success'
+				});
+				return true;
+			}
+
+			if (error) {
+				return handleError(error);
+			}
+		});
+	};
+
+	this.exportMyData = function() {
+		this.downloadMyData(true);
+	};
 });
 
 Template.accountPreferences.onRendered(function() {
@@ -220,6 +272,14 @@ Template.accountPreferences.events({
 	},
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
+	},
+	'click .download-my-data'(e, t) {
+		e.preventDefault();
+		t.downloadMyData();
+	},
+	'click .export-my-data'(e, t) {
+		e.preventDefault();
+		t.exportMyData();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();
