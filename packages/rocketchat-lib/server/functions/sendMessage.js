@@ -22,9 +22,11 @@ const validateAttachment = attachment => {
 		title_link_download: Match.Maybe(Boolean),
 		image_url: Match.Maybe(String),
 		audio_url: Match.Maybe(String),
-		video_url: Match.Maybe(String)
+		video_url: Match.Maybe(String),
+		fields: Match.Maybe(Array)
 	}));
-	if (attachment.fields.length) {
+
+	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 };
