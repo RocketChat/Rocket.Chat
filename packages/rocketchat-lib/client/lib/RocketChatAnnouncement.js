@@ -22,9 +22,9 @@ export class RocketChatAnnouncement {
 		const roomData = Session.get(`roomData${ rid }`);
 		if (!roomData) { return null; }
 		this.room.set(rid);
-		this.message.set(roomData.announcement.message);
-		this.callback.set(roomData.announcement.callback);
-		this.style.set(roomData.announcement.style);
+		this.message.set(roomData.announcement);
+		this.callback.set(roomData.announcementDetails ? roomData.announcementDetails.callback : null);
+		this.style.set(roomData.announcementDetails ? roomData.announcementDetails.style : null);
 		return this;
 	}
 	clear() {
