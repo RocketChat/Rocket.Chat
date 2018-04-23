@@ -9,6 +9,10 @@
 
 		margin: 0 -0.5rem;
 
+
+		display: flex;
+		flex: 0 0 auto;
+
 		padding: var(--header-padding);
 
 		white-space: nowrap;
