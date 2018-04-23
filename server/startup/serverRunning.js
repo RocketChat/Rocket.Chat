@@ -13,12 +13,6 @@ Meteor.startup(function() {
 		}
 	}
 
-	var mongoOptionStr = process.env.MONGO_OPTIONS;
-	if (typeof(mongoOptionStr) !== 'undefined') {
-		mongoOptions = JSON.parse(mongoOptionStr);
-		Mongo.setConnectionOptions(mongoOptions);
-	}
-
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 

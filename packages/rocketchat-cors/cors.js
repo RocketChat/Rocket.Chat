@@ -11,9 +11,22 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 
 // Revert change from Meteor 1.6.1 who set ignoreUndefined: true
 // more information https://github.com/meteor/meteor/pull/9444
-Mongo.setConnectionOptions({
+let mongoOptions = {
 	ignoreUndefined: false
-});
+};
+
+let mongoOptionStr = process.env.MONGO_OPTIONS;
+if (typeof mongoOptionStr !== 'undefined') {
+	let jsonMongoOptions = JSON.parse(mongoOptionStr);
+
+	mongoOptions = Object.assign({}, mongoOptions, jsonMongoOptions);
+}
+
+if (RocketChat && RocketChat.debugLevel === 'debug') {
+	console.log('mongoOptions', mongoOptions);
+}
+
+Mongo.setConnectionOptions(mongoOptions);
 
 WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	if (req._body) {
