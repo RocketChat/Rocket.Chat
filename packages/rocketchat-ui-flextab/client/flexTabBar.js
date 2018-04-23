@@ -191,6 +191,7 @@ Template.RoomsActionTab.helpers({
 		let removedButton = false;
 		const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
 		const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
+		const canAddToJoinedRoom = RocketChat.authz.hasAllPermission('add-user-to-joined-room');
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;
@@ -198,11 +199,11 @@ Template.RoomsActionTab.helpers({
 			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 				return false;
 			}
-			if (!canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
+			if (!canAddToJoinedRoom && !canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
 				removedButton = true;
 				return false;
 			}
-			if (!canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
+			if (!canAddToJoinedRoom && !canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
 				removedButton = true;
 				return false;
 			}
