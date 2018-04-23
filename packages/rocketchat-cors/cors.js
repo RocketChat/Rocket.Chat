@@ -15,9 +15,9 @@ let mongoOptions = {
 	ignoreUndefined: false
 };
 
-let mongoOptionStr = process.env.MONGO_OPTIONS;
+const mongoOptionStr = process.env.MONGO_OPTIONS;
 if (typeof mongoOptionStr !== 'undefined') {
-	let jsonMongoOptions = JSON.parse(mongoOptionStr);
+	const jsonMongoOptions = JSON.parse(mongoOptionStr);
 
 	mongoOptions = Object.assign({}, mongoOptions, jsonMongoOptions);
 }
