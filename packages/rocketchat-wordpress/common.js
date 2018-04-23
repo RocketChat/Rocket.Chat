@@ -6,6 +6,7 @@ const config = {
 	identityTokenSentVia: 'header',
 	authorizePath: '/oauth2/authorize',
 	tokenPath: '/oauth2/token',
+	scope: 'auth',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wordpress'],
 		forOtherUsers: ['services.wordpress.user_login']
