@@ -18,8 +18,17 @@ const play = audio => {
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 
+		if (!RocketChat.settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
+			stop(audio);
+			return;
+		}
 
 		const subs = RocketChat.models.Subscriptions.find({ t: 'l', ls : { $exists: 0 } }).count();
+
+		if (subs === 0) {
+			stop(audio);
+			return;
+		}
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
@@ -29,22 +38,7 @@ Meteor.startup(function() {
 
 		const newRoomNotification = RocketChat.getUserPreference(user, 'newRoomNotification');
 
-		stop(audio);
-
-		if (!RocketChat.settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
-			return;
-		}
-
 		[audio] = $(`#${ newRoomNotification }`);
-
-		if (!audio || !audio.play || !audio.pause) {
-			return;
-		}
-
-		if (subs === 0) {
-			return;
-		}
-
 		play(audio);
 
 	});
