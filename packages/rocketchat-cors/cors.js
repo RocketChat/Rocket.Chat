@@ -22,10 +22,6 @@ if (typeof mongoOptionStr !== 'undefined') {
 	mongoOptions = Object.assign({}, mongoOptions, jsonMongoOptions);
 }
 
-if (RocketChat && RocketChat.debugLevel === 'debug') {
-	console.log('mongoOptions', mongoOptions);
-}
-
 Mongo.setConnectionOptions(mongoOptions);
 
 WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
