@@ -9,7 +9,7 @@ class SlackBridge {
 
 	constructor() {
 		this.util = util;
-		this.slackClient = require('slack-client');
+		this.slackClient = require('@slack/client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
 		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
