@@ -26,7 +26,7 @@
 					</div>
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="readOnly">
+							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -35,6 +35,20 @@
 							</span>
 						</label>
 						<span class="rc-switch__description">{{readOnlyDescription}}</span>
+					</div>
+					<div class="rc-switch">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input" name="broadcast">
+							<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+							<span class="rc-switch__text">
+								{{_"Broadcast_channel"}}
+							</span>
+						</label>
+						<span class="rc-switch__description">
+							{{_"Broadcast_channel_Description"}}
+						</span>
 					</div>
 				</div>
 				<div class="create-channel__inputs">

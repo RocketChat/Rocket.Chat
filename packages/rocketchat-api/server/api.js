@@ -1,5 +1,6 @@
 /* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
+const logger = new Logger('API', {});
 
 class API extends Restivus {
 	constructor(properties) {
@@ -68,10 +69,14 @@ class API extends Restivus {
 			result.success = true;
 		}
 
-		return {
+		result = {
 			statusCode: 200,
 			body: result
 		};
+
+		logger.debug('Success', result);
+
+		return result;
 	}
 
 	failure(result, errorType) {
@@ -88,10 +93,14 @@ class API extends Restivus {
 			}
 		}
 
-		return {
+		result = {
 			statusCode: 400,
 			body: result
 		};
+
+		logger.debug('Failure', result);
+
+		return result;
 	}
 
 	notFound(msg) {
@@ -146,20 +155,7 @@ class API extends Restivus {
 							return RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						result = result ? result : RocketChat.API.v1.success();
-
-						if (
-							/(channels|groups)\./.test(route)
-							&& result
-							&& result.body
-							&& result.body.success === true
-							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
-						) {
-							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
-						}
-
-						return result;
+						return result ? result : RocketChat.API.v1.success();
 					};
 
 					for (const [name, helperMethod] of this.getHelperMethods()) {
