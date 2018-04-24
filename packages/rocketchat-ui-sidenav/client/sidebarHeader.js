@@ -252,7 +252,7 @@ Template.sidebarHeader.events({
 			});
 
 			let statusText = user.statusText;
-			if (statusText === null) {
+			if (!statusText) {
 				const userStatus = t(user.status);
 				statusText = userStatus[0].toUpperCase() + userStatus.substr(1);
 			}
