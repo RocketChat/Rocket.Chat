@@ -187,11 +187,13 @@ this.ChatMessages = class ChatMessages {
 
 			let msg = '';
 			const reply = $(input).data('reply');
-			if (reply!==undefined) {
+			const mentionUser = $(input).data('mention-user') || false;
+
+			if (reply !== undefined) {
 				const url = RocketChat.MessageAction.getPermaLink(reply._id);
 				msg = `[ ](${ url }) `;
 				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username) {
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
 					msg += `@${ reply.u.username } `;
 				}
 			}
