@@ -54,6 +54,22 @@ export class AppMessageBridge {
 	async notifyRoom(room, message, appId) {
 		console.log(`The App ${ appId } is notifying a room's users.`);
 
-		throw new Error('Not implemented yet.');
+		if (room && room.usernames && Array.isArray(room.usernames)) {
+			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+			const rmsg = Object.assign(msg, {
+				_id: Random.id(),
+				rid: room.id,
+				ts: new Date(),
+				u: undefined,
+				editor: undefined
+			});
+
+			room.usernames.forEach((u) => {
+				const user = RocketChat.models.Users.findOneByUsername(u);
+				if (user) {
+					RocketChat.Notifications.notifyUser(user._id, 'message', rmsg);
+				}
+			});
+		}
 	}
 }
