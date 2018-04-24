@@ -85,6 +85,6 @@ Meteor.startup(function _appServerOrchestrator() {
 	global.Apps = new AppServerOrchestrator();
 
 	global.Apps.getManager().load()
-		.then(() => console.log('...done! :)'))
+		.then((affs) => console.log(`...done loading ${ affs.length }! ;)`))
 		.catch((err) => console.warn('...failed!', err));
 });
