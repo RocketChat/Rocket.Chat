@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 110,
+	version: 116,
 	up() {
 		if (RocketChat && RocketChat.models) {
 			if (RocketChat.models.Settings) {
