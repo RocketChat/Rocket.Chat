@@ -15,7 +15,11 @@ export class AppMessagesConverter {
 		}
 
 		const room = this.orch.getConverters().get('rooms').convertById(msgObj.rid);
-		const sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+
+		let sender;
+		if (msgObj.u && msgObj.u._id) {
+			sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+		}
 
 		let editor;
 		if (msgObj.editedBy) {

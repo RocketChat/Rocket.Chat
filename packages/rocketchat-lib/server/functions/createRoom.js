@@ -20,10 +20,15 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		members.push(owner.username);
 	}
 
+	if (extraData.broadcast) {
+		readOnly = true;
+		delete extraData.reactWhenReadOnly;
+	}
+
 	const now = new Date();
 	let room = Object.assign({
-		name,
-		fname: RocketChat.getValidRoomName(name),
+		name: RocketChat.getValidRoomName(name),
+		fname: name,
 		t: type,
 		msgs: 0,
 		usernames: members,

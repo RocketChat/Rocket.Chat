@@ -1,9 +1,87 @@
-import _ from 'underscore';
+const objectMaybeIncluding = (types) => {
+	return Match.Where((value) => {
+		Object.keys(types).forEach(field => {
+			if (value[field] != null) {
+				try {
+					check(value[field], types[field]);
+				} catch (error) {
+					error.path = field;
+					throw error;
+				}
+			}
+		});
+
+		return true;
+	});
+};
+
+const validateAttachmentsFields = attachmentFields => {
+	check(attachmentFields, objectMaybeIncluding({
+		short: Boolean
+	}));
+
+	check(attachmentFields, Match.ObjectIncluding({
+		title: String,
+		value: String
+	}));
+};
+
+const validateAttachment = attachment => {
+	check(attachment, objectMaybeIncluding({
+		color: String,
+		text: String,
+		ts: String,
+		thumb_url: String,
+		message_link: String,
+		collapsed: Boolean,
+		author_name: String,
+		author_link: String,
+		author_icon: String,
+		title: String,
+		title_link: String,
+		title_link_download: Boolean,
+		image_url: String,
+		audio_url: String,
+		video_url: String,
+		fields: Array
+	}));
+
+	if (attachment.fields && attachment.fields.length) {
+		attachment.fields.map(validateAttachmentsFields);
+	}
+};
+
+const validateBodyAttachments = attachments => attachments.map(validateAttachment);
 
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
+
+	check(message, objectMaybeIncluding({
+		_id: String,
+		msg: String,
+		text: String,
+		alias: String,
+		emoji: String,
+		avatar: String,
+		attachments: Array
+	}));
+
+	if (Array.isArray(message.attachments) && message.attachments.length) {
+		validateBodyAttachments(message.attachments);
+	}
+
+	if (!message.ts) {
+		message.ts = new Date();
+	}
+	const { _id, username, name } = user;
+	message.u = {
+		_id,
+		username,
+		name
+	};
+	message.rid = room._id;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
@@ -12,9 +90,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message.ts == null) {
 		message.ts = new Date();
 	}
-
-	message.rid = room._id;
-	message.u = _.pick(user, ['_id', 'username', 'name']);
 
 	if (!room.usernames || room.usernames.length === 0) {
 		const updated_room = RocketChat.models.Rooms.findOneById(room._id);

@@ -111,6 +111,7 @@ const mountPopover = (e, i, outerContext) => {
 			}
 		],
 		instance: i,
+		currentTarget: e.currentTarget,
 		data: outerContext,
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
@@ -214,7 +215,7 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		return (roomData.announcement !== undefined) && (roomData.announcement.message !== '');
+		return roomData.announcement != null && roomData.announcement !== '';
 	},
 
 	messageboxData() {
@@ -232,13 +233,13 @@ Template.room.helpers({
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomData.announcement && roomData.announcement.message;
+		return roomData.announcement;
 	},
 
 	getAnnouncementStyle() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return roomData.announcement && roomData.announcement.style !== undefined ? roomData.announcement.style : '';
+		return roomData.announcementDetails && roomData.announcementDetails.style !== undefined ? roomData.announcementDetails.style : '';
 	},
 
 	roomIcon() {
@@ -386,6 +387,10 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
+	'click .js-reply-broadcast'() {
+		const message = this._arguments[1];
+		RocketChat.roomTypes.openRouteLink('d', {name: this._arguments[1].u.username}, {...FlowRouter.current().queryParams, reply: message._id});
+	},
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
@@ -718,8 +723,8 @@ Template.room.events({
 	'click .announcement'(e) {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		if (roomData.announcement !== undefined && roomData.announcement.callback !== undefined) {
-			return RocketChat.callbacks.run(roomData.announcement.callback, this._id);
+		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+			return RocketChat.callbacks.run(roomData.announcementDetails.callback, this._id);
 		} else {
 			modal.open({
 				title: t('Announcement'),
@@ -728,9 +733,11 @@ Template.room.events({
 				showCancelButton: true,
 				cancelButtonText: t('Close')
 			});
-
 		}
-
+	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	}
 });
 
