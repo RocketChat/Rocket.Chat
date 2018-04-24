@@ -1,6 +1,24 @@
 
 # 0.64.0 (Under Release Candidate Process)
 
+## 0.64.0-rc.2
+`2018-04-23  ·  5 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Deps update ([#10549](https://github.com/RocketChat/Rocket.Chat/pull/10549))
+- Regression: /api/v1/settings.oauth not returning clientId for Twitter ([#10560](https://github.com/RocketChat/Rocket.Chat/pull/10560) by [@cardoso](https://github.com/cardoso))
+- Regression: Webhooks breaking due to restricted test ([#10555](https://github.com/RocketChat/Rocket.Chat/pull/10555))
+- Regression: Rooms and Apps weren't playing nice with each other ([#10559](https://github.com/RocketChat/Rocket.Chat/pull/10559))
+- Regression: Fix announcement bar being displayed without content ([#10554](https://github.com/RocketChat/Rocket.Chat/pull/10554))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@cardoso](https://github.com/cardoso)
+
 ## 0.64.0-rc.1
 `2018-04-21  ·  3 🔍`
 

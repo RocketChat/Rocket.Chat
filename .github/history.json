@@ -13039,5 +13039,54 @@
         "rodrigok"
       ]
     }
+  ],
+  "0.64.0-rc.2": [
+    {
+      "pr": "10549",
+      "title": "Deps update",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.0",
+      "contributors": [
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10560",
+      "title": "Regression: /api/v1/settings.oauth not returning clientId for Twitter",
+      "userLogin": "cardoso",
+      "milestone": "0.64.0",
+      "contributors": [
+        "cardoso",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10555",
+      "title": "Regression: Webhooks breaking due to restricted test",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10559",
+      "title": "Regression: Rooms and Apps weren't playing nice with each other",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10554",
+      "title": "Regression: Fix announcement bar being displayed without content",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    }
   ]
 }
