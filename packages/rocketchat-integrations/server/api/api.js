@@ -284,8 +284,8 @@ function executeIntegrationRest() {
 		}
 
 		return RocketChat.API.v1.success(this.scriptResponse);
-	} catch ({ error }) {
-		return RocketChat.API.v1.failure(error);
+	} catch ({ error, message }) {
+		return RocketChat.API.v1.failure(error || message);
 	}
 }
 

@@ -1,29 +1,49 @@
+const objectMaybeIncluding = (types) => {
+	return Match.Where((value) => {
+		Object.keys(types).forEach(field => {
+			if (value[field] != null) {
+				try {
+					check(value[field], types[field]);
+				} catch (error) {
+					error.path = field;
+					throw error;
+				}
+			}
+		});
+
+		return true;
+	});
+};
+
 const validateAttachmentsFields = attachmentFields => {
+	check(attachmentFields, objectMaybeIncluding({
+		short: Boolean
+	}));
+
 	check(attachmentFields, Match.ObjectIncluding({
-		short: Match.Maybe(Boolean),
 		title: String,
 		value: String
 	}));
 };
 
 const validateAttachment = attachment => {
-	check(attachment, Match.ObjectIncluding({
-		color: Match.Maybe(String),
-		text: Match.Maybe(String),
-		ts: Match.Maybe(String),
-		thumb_url: Match.Maybe(String),
-		message_link: Match.Maybe(String),
-		collapsed: Match.Maybe(Boolean),
-		author_name: Match.Maybe(String),
-		author_link: Match.Maybe(String),
-		author_icon: Match.Maybe(String),
-		title: Match.Maybe(String),
-		title_link: Match.Maybe(String),
-		title_link_download: Match.Maybe(Boolean),
-		image_url: Match.Maybe(String),
-		audio_url: Match.Maybe(String),
-		video_url: Match.Maybe(String),
-		fields: Match.Maybe(Array)
+	check(attachment, objectMaybeIncluding({
+		color: String,
+		text: String,
+		ts: String,
+		thumb_url: String,
+		message_link: String,
+		collapsed: Boolean,
+		author_name: String,
+		author_link: String,
+		author_icon: String,
+		title: String,
+		title_link: String,
+		title_link_download: Boolean,
+		image_url: String,
+		audio_url: String,
+		video_url: String,
+		fields: Array
 	}));
 
 	if (attachment.fields && attachment.fields.length) {
@@ -38,14 +58,14 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	check(message, Match.ObjectIncluding({
-		_id: Match.Maybe(String),
-		msg: Match.Maybe(String),
-		text: Match.Maybe(String),
-		alias: Match.Maybe(String),
-		emoji: Match.Maybe(String),
-		avatar: Match.Maybe(String),
-		attachments: Match.Maybe(Array)
+	check(message, objectMaybeIncluding({
+		_id: String,
+		msg: String,
+		text: String,
+		alias: String,
+		emoji: String,
+		avatar: String,
+		attachments: Array
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
