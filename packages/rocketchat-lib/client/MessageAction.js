@@ -114,9 +114,9 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			input.value = `@${ message.u.username } `;
 			$(input)
 				.focus()
+				.data('mention-user', true)
 				.data('reply', message)
 				.trigger('dataChange');
 		},
@@ -277,6 +277,7 @@ Meteor.startup(function() {
 			const {input} = chatMessages[message.rid];
 			$(input)
 				.focus()
+				.data('mention-user', false)
 				.data('reply', message)
 				.trigger('dataChange');
 		},
