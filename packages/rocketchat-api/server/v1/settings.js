@@ -39,9 +39,9 @@ RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 					return { ...service };
 				}
 				return {
-					id: service._id,
+					_id: service._id,
 					name: service.service,
-					clientId: service.appId || service.clientId,
+					clientId: service.appId || service.clientId || service.consumerKey,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',

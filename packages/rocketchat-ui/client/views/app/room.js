@@ -214,7 +214,7 @@ Template.room.helpers({
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		return roomData.announcement != null;
+		return roomData.announcement != null && roomData.announcement !== '';
 	},
 
 	messageboxData() {
