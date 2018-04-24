@@ -1,6 +1,26 @@
 
 # 0.64.0 (Under Release Candidate Process)
 
+## 0.64.0-rc.3
+`2018-04-24  ·  1 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Wordpress oAuth authentication wasn't behaving correctly ([#10550](https://github.com/RocketChat/Rocket.Chat/pull/10550) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Inconsistent response of settings.oauth endpoint ([#10553](https://github.com/RocketChat/Rocket.Chat/pull/10553))
+- Regression: Remove added mentions on quote/reply ([#10571](https://github.com/RocketChat/Rocket.Chat/pull/10571))
+- Regression: Attachments and fields incorrectly failing on validation ([#10573](https://github.com/RocketChat/Rocket.Chat/pull/10573))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+
 ## 0.64.0-rc.2
 `2018-04-23  ·  5 🔍  ·  1 👩‍💻👨‍💻`
 

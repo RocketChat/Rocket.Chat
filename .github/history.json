@@ -13088,5 +13088,44 @@
         "gdelavald"
       ]
     }
+  ],
+  "0.64.0-rc.3": [
+    {
+      "pr": "10550",
+      "title": "[FIX] Wordpress oAuth authentication wasn't behaving correctly",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii"
+      ]
+    },
+    {
+      "pr": "10553",
+      "title": "Regression: Inconsistent response of settings.oauth endpoint",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10571",
+      "title": "Regression: Remove added mentions on quote/reply",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.0",
+      "contributors": [
+        "gdelavald",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10573",
+      "title": "Regression: Attachments and fields incorrectly failing on validation",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    }
   ]
 }
