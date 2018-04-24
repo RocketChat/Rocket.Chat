@@ -5,9 +5,30 @@ import s from 'underscore.string';
 import hljs from 'highlight.js';
 import _marked from 'marked';
 
+// Ignore normal url. Entrust to AutoLinker.
+function noop() {}
+noop.exec = noop;
+_marked.InlineLexer.rules.gfm.url = noop;
+_marked.InlineLexer.rules.breaks.url = noop;
+
+
 const renderer = new _marked.Renderer();
 
 let msg = null;
+
+renderer.link = function(href, title, linkText) {
+	const out = _marked.Renderer.prototype.link.call(this, href, title, linkText);
+
+	const text = out.replace('<a', '<a target="_blank" rel="noopener noreferrer"');
+
+	const token = `=!=${ Random.id() }=!=`;
+	msg.tokens.push({
+		token,
+		text
+	});
+
+	return token;
+};
 
 renderer.code = function(code, lang, escaped) {
 	if (this.options.highlight) {
