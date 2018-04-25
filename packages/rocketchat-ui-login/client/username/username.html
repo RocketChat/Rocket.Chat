@@ -25,8 +25,7 @@
 					<div class='input-text active'>
 						{{#if username.ready}}
 							<span>
-								<label for="username">{{_ "Username"}}</label>
-								<input type="text" name='username' id="username" value="{{username.username}}" dir="auto"/>
+								<input type="text" name='username' id="username" value="{{username.username}}" dir="auto" class="rc-input__element" placeholder="{{_ 'Username'}}"/>
 							</span>
 							<i></i>
 						{{else}}

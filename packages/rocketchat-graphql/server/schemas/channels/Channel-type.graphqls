@@ -1,0 +1,16 @@
+type Channel {
+ 	id: String!
+	name: String
+	description: String
+	announcement: String
+	topic: String
+	members: [User]
+	owners: [User]
+	numberOfMembers: Int
+	numberOfMessages: Int
+	readOnly: Boolean
+	direct: Boolean
+	privateChannel: Boolean
+	favourite: Boolean
+	unseenMessages: Int
+}

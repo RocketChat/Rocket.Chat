@@ -2,10 +2,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+import vm from 'vm';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
-		this.vm = Npm.require('vm');
+		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};

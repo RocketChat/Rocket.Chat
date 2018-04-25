@@ -3,6 +3,11 @@ Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
 		event.preventDefault();
+
+		if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+			return false;
+		}
+
 		if (RocketChat.EmojiPicker.isOpened()) {
 			RocketChat.EmojiPicker.close();
 		} else {

@@ -1,5 +1,12 @@
 .toolbar {
-	padding: 0 var(--sidebar-default-padding) var(--sidebar-default-padding);
+	position: absolute;
+	left: 10px;
+
+	display: none;
+
+	width: 100%;
+	margin: 0 -10px;
+	padding: 0 calc(var(--sidebar-default-padding) + 10px);
 
 	&__wrapper {
 
@@ -69,6 +76,7 @@
 
 		&__icon {
 			left: 0.5rem;
+			fill: var(--rc-color-primary-light);
 
 			&--right {
 				right: 0.5rem;
@@ -90,6 +98,8 @@
 	}
 
 	& .rc-button {
+
+		min-height: 36px;
 		margin: 0 0.25rem;
 
 		color: var(--rc-color-primary-light);
@@ -104,7 +114,7 @@
 
 @media (width <= 400px) {
 	.toolbar {
-		padding: 0 calc(var(--sidebar-small-default-padding) - 8px) var(--sidebar-small-default-padding);
+		padding: 0 var(--sidebar-extra-small-default-padding) var(--sidebar-small-default-padding);
 	}
 }
 

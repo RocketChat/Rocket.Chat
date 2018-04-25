@@ -9,7 +9,7 @@ export class SlackUsersImporter extends Base {
 	constructor(info) {
 		super(info);
 
-		this.csvParser = Npm.require('csv-parse/lib/sync');
+		this.csvParser = require('csv-parse/lib/sync');
 		this.userMap = new Map();
 		this.admins = []; //Array of ids of the users which are admins
 	}

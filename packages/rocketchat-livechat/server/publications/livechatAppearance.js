@@ -19,7 +19,8 @@ Meteor.publish('livechat:appearance', function() {
 				'Livechat_offline_success_message',
 				'Livechat_offline_title',
 				'Livechat_offline_title_color',
-				'Livechat_offline_email'
+				'Livechat_offline_email',
+				'Livechat_conversation_finished_message'
 			]
 		}
 	};

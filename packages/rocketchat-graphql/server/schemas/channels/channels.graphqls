@@ -1,0 +1,7 @@
+type Query {
+	channels(filter: ChannelFilter = {
+		privacy: ALL,
+		joinedChannels: false,
+		sortBy: NAME
+	}): [Channel]
+}

@@ -3,6 +3,7 @@
 .rooms-list {
 	position: relative;
 
+	overflow-x: hidden;
 	overflow-y: scroll;
 
 	flex: 1 1 auto;
@@ -14,7 +15,7 @@
 	}
 
 	&__list:not(:last-child) {
-		margin-bottom: 32px;
+		margin-bottom: 22px;
 	}
 
 	&__type {
@@ -22,7 +23,7 @@
 
 		flex-direction: row;
 
-		padding: 0 var(--sidebar-default-padding) 0.5rem var(--sidebar-default-padding);
+		padding: 0 var(--sidebar-default-padding) 1rem var(--sidebar-default-padding);
 
 		color: var(--rooms-list-title-color);
 
@@ -47,12 +48,9 @@
 		position: absolute;
 		z-index: 1;
 
-		bottom: var(--sidebar-footer-height);
-		left: 0;
+		left: 10px;
 
 		overflow-y: scroll;
-
-		width: 100%;
 
 		background-color: var(--sidebar-background);
 	}
@@ -65,12 +63,6 @@
 		&__type,
 		&__empty-room {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
-		}
-
-		&__toolbar-search {
-			bottom: 0;
-
-			padding: 0 var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding)  var(--sidebar-small-default-padding);
 		}
 	}
 }

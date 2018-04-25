@@ -10,6 +10,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!message.rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
+		}
+
 		if (message.ts) {
 			const tsDiff = Math.abs(moment(message.ts).diff());
 			if (tsDiff > 60000) {
@@ -44,7 +48,7 @@ Meteor.methods({
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
-		if (subscription && subscription.blocked || subscription.blocker) {
+		if (subscription && (subscription.blocked || subscription.blocker)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
@@ -54,7 +58,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if ((room.muted||[]).includes(user.username)) {
+		if ((room.muted || []).includes(user.username)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,

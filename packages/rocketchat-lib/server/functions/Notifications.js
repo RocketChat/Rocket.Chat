@@ -25,10 +25,7 @@ RocketChat.Notifications = new class {
 		this.streamUser.allowWrite('logged');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('logged');
-		this.streamRoom.allowRead(function(eventName) {
-			if (this.userId == null) {
-				return false;
-			}
+		this.streamRoom.allowRead(function(eventName, extraData) {
 			const [roomId] = eventName.split('/');
 			const user = Meteor.users.findOne(this.userId, {
 				fields: {
@@ -40,8 +37,11 @@ RocketChat.Notifications = new class {
 				console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
 				return false;
 			}
-			if (room.t === 'l' && room.v._id === user._id) {
+			if (room.t === 'l' && extraData && extraData.token && room.v.token === extraData.token) {
 				return true;
+			}
+			if (this.userId == null) {
+				return false;
 			}
 			return room.usernames.indexOf(user.username) > -1;
 		});
@@ -117,12 +117,21 @@ RocketChat.Notifications = new class {
 	}
 };
 
-RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username) {
-	const [, e] = eventName.split('/');
+RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
+	const [roomId, e] = eventName.split('/');
 	if (e === 'webrtc') {
 		return true;
 	}
 	if (e === 'typing') {
+
+		// typing from livechat widget
+		if (extraData && extraData.token) {
+			const room = RocketChat.models.Rooms.findOneById(roomId);
+			if (room && room.t === 'l' && room.v.token === extraData.token) {
+				return true;
+			}
+		}
+
 		const user = Meteor.users.findOne(this.userId, {
 			fields: {
 				username: 1

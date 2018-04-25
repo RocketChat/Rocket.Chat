@@ -25,7 +25,7 @@ class LivechatRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'livechat',
+			// icon: 'livechat',
 			label: 'Livechat',
 			route: new LivechatRoomRoute()
 		});
@@ -57,19 +57,13 @@ class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(roomId) {
-		let guestName;
 		const room = Session.get(`roomData${ roomId }`);
-
 		if (room) {
-			guestName = room.v && room.v.username;
-		} else {
-			const inquiry = LivechatInquiry.findOne({rid: roomId});
-			guestName = inquiry && inquiry.v && inquiry.v.username;
+			return room.v && room.v.status;
 		}
 
-		if (guestName) {
-			return Session.get(`user_${ guestName }_status`);
-		}
+		const inquiry = LivechatInquiry.findOne({ rid: roomId });
+		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
 	allowRoomSettingChange(room, setting) {
