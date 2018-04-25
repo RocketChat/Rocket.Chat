@@ -43,7 +43,7 @@ const validateAttachment = attachment => {
 		image_url: String,
 		audio_url: String,
 		video_url: String,
-		fields: Array
+		fields: [Match.Any]
 	}));
 
 	if (attachment.fields && attachment.fields.length) {
@@ -65,7 +65,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		alias: String,
 		emoji: String,
 		avatar: String,
-		attachments: Array
+		attachments: [Match.Any]
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
