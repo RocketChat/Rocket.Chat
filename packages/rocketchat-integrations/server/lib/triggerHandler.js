@@ -84,7 +84,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (data) {
-			history.data = _.clone(data);
+			history.data = { ...data };
 
 			if (data.user) {
 				history.data.user = _.omit(data.user, ['meta', '$loki', 'services']);
