@@ -290,6 +290,8 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	//DEPRECATED
+	// TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
 	it('/channels.cleanHistory', (done) => {
 		request.post(api('channels.cleanHistory'))
 			.set(credentials)
@@ -409,6 +411,24 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.members', (done) => {
+		request.get(api('channels.members'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+			})
+			.end(done);
+	});
+
 	it('/channels.rename', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
@@ -501,44 +521,6 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			})
-			.end(done);
-	});
-
-	it('GET /channels.notifications', (done) => {
-		request.get(api('channels.notifications'))
-			.set(credentials)
-			.query({
-				roomId: channel._id
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('subscription').and.to.be.an('object');
-			})
-			.end(done);
-	});
-
-	it('POST /channels.notifications', (done) => {
-		request.post(api('channels.notifications'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				notifications: {
-					disableNotifications: '0',
-					emailNotifications: 'nothing',
-					audioNotificationValue: 'beep',
-					desktopNotifications: 'nothing',
-					desktopNotificationDuration: '2',
-					audioNotifications: 'all',
-					mobilePushNotifications: 'mentions'
-				}
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
 	});
