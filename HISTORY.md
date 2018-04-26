@@ -1,6 +1,30 @@
 
 # 0.64.0 (Under Release Candidate Process)
 
+## 0.64.0-rc.4
+`  ·  1 🎉  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Add information regarding Zapier and Bots to the integrations page ([#10574](https://github.com/RocketChat/Rocket.Chat/pull/10574))
+
+### 🐛 Bug fixes
+
+- Switch buttons were cutting in RTL mode ([#10558](https://github.com/RocketChat/Rocket.Chat/pull/10558))
+- Stop Firefox announcement overflowing viewport ([#10503](https://github.com/RocketChat/Rocket.Chat/pull/10503) by [@brendangadd](https://github.com/brendangadd))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Rocket.Chat App author link opens in same window ([#10575](https://github.com/RocketChat/Rocket.Chat/pull/10575) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@brendangadd](https://github.com/brendangadd)
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+
 ## 0.64.0-rc.3
 `2018-04-24  ·  1 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
 
