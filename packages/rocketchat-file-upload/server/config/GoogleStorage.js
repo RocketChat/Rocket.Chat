@@ -13,10 +13,12 @@ const get = function(file, req, res) {
 		}
 
 		if (fileUrl) {
-			if (RocketChat.settings.get('FileUpload_GoogleStorage_Proxy')) {
+			const storeType = file.store.split(':').pop();
+			if (RocketChat.settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
 				const request = /^https:/.test(fileUrl) ? https : http;
 				request.get(fileUrl, fileRes => fileRes.pipe(res));
 			} else {
+				res.removeHeader('Content-Length');
 				res.setHeader('Location', fileUrl);
 				res.writeHead(302);
 				res.end();
@@ -27,15 +29,39 @@ const get = function(file, req, res) {
 	});
 };
 
+const copy = function(file, out) {
+	this.store.getRedirectURL(file, (err, fileUrl) => {
+		if (err) {
+			console.error(err);
+		}
+
+		if (fileUrl) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+			request.get(fileUrl, fileRes => fileRes.pipe(out));
+		} else {
+			out.end();
+		}
+	});
+};
+
 const GoogleCloudStorageUploads = new FileUploadClass({
 	name: 'GoogleCloudStorage:Uploads',
-	get
+	get,
+	copy
 	// store setted bellow
 });
 
 const GoogleCloudStorageAvatars = new FileUploadClass({
 	name: 'GoogleCloudStorage:Avatars',
-	get
+	get,
+	copy
+	// store setted bellow
+});
+
+const GoogleCloudStorageUserDataFiles = new FileUploadClass({
+	name: 'GoogleCloudStorage:UserDataFiles',
+	get,
+	copy
 	// store setted bellow
 });
 
@@ -62,6 +88,7 @@ const configure = _.debounce(function() {
 
 	GoogleCloudStorageUploads.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUploads.name, config);
 	GoogleCloudStorageAvatars.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageAvatars.name, config);
+	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUserDataFiles.name, config);
 }, 500);
 
 RocketChat.settings.get(/^FileUpload_GoogleStorage_/, configure);

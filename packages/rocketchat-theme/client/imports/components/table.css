@@ -3,6 +3,10 @@
 	color: var(--rc-color-primary);
 	width: 100%;
 
+	&--fixed {
+		table-layout:fixed;
+	}
+
 	&-head {
 		color: var(--rc-color-primary-light);
 
@@ -24,31 +28,11 @@
 	}
 
 	&-td {
-		padding: 1.25rem 0;
+		padding: 1.25rem 1rem;
 		vertical-align: middle;
-
-		&:first-child {
-			padding-left: 1rem;
-		}
-
-		&:last-child {
-			padding-right: 1rem;
-		}
 
 		&--bold {
 			font-weight: 600;
 		}
-	}
-}
-
-.rtl .rc-table-td {
-	&:first-child {
-		padding-right: 1rem;
-		padding-left: 0;
-	}
-
-	&:last-child {
-		padding-right: 0;
-		padding-left: 1rem;
 	}
 }
