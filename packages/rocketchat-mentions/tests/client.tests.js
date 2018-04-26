@@ -222,7 +222,7 @@ describe('replace methods', function() {
 		});
 
 		const str2 = '@rocket.cat';
-		const str2Name = 'Rocket.Cat';
+		const str2Name = '@Rocket.Cat';
 		it(`should render for ${ str2 }`, () => {
 			const result = mention.replaceUsers('@rocket.cat', message, 'me');
 			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
@@ -238,7 +238,7 @@ describe('replace methods', function() {
 		});
 		it('should render for me', () => {
 			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="me">Me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="me">@Me</a>');
 		});
 	});
 
@@ -298,7 +298,7 @@ describe('replace methods', function() {
 		it('should render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
 			const result = mention.parse(message, 'me');
-			assert.equal('<a class="mention-link" data-channel="general">#general</a> and <a class="mention-link " data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>', result.html);
+			assert.equal('<a class="mention-link" data-channel="general">#general</a> and <a class="mention-link " data-username="rocket.cat" title="rocket.cat">@Rocket.Cat</a>', result.html);
 		});
 		it('should render for "', () => {
 			message.html = '';
