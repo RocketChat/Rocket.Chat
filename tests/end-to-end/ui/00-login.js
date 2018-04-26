@@ -4,6 +4,11 @@ import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
 
 describe('[Setup Wizard]', () => {
+	before(()=>{
+		setupWizard.open();
+		setupWizard.organizationType.waitForVisible(15000);
+	});
+
 	describe('[Render - Step 1]', () => {
 		it('it should show organization type', () => {
 			setupWizard.organizationType.isVisible().should.be.true;
@@ -59,6 +64,17 @@ describe('[Setup Wizard]', () => {
 
 		after(() => {
 			setupWizard.goToHome();
+		});
+	});
+
+	after(() => {
+		browser.execute(function() {
+			const user = Meteor.user();
+			Meteor.logout(() => {
+				RocketChat.callbacks.run('afterLogoutCleanUp', user);
+				Meteor.call('logoutCleanUp', user);
+				FlowRouter.go('home');
+			});
 		});
 	});
 });

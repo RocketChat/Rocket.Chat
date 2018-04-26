@@ -1,5 +1,6 @@
 import Page from './Page';
-import mainContent from './main-content.page';
+import {adminEmail, adminPassword} from '../data/user';
+
 
 class SetupWizard extends Page {
 	get nextButton() { return browser.element('.setup-wizard-forms__footer-next'); }
@@ -13,6 +14,13 @@ class SetupWizard extends Page {
 	get siteName() { return browser.element('input[name="Site_Name"]'); }
 	get language() { return browser.element('select[name="Language"]'); }
 	get serverType() { return browser.element('select[name="Server_Type"]'); }
+
+	open() {
+		super.open('setup-wizard');
+		browser.execute(function(email, password) {
+			Meteor.loginWithPassword(email, password, () => {});
+		}, adminEmail, adminPassword);
+	}
 
 	goNext() {
 		this.nextButton.waitForVisible(5000);
