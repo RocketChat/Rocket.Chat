@@ -13127,5 +13127,46 @@
         "graywolf336"
       ]
     }
+  ],
+  "0.64.0-rc.4": [
+    {
+      "pr": "10558",
+      "title": "[FIX] Switch buttons were cutting in RTL mode",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10574",
+      "title": "[NEW] Add information regarding Zapier and Bots to the integrations page",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10575",
+      "title": "Regression: Rocket.Chat App author link opens in same window",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10503",
+      "title": "[FIX] Stop Firefox announcement overflowing viewport",
+      "userLogin": "brendangadd",
+      "milestone": "0.64.0",
+      "contributors": [
+        "brendangadd",
+        "web-flow"
+      ]
+    }
   ]
 }
