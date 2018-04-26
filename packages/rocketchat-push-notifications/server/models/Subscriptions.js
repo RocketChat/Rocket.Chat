@@ -220,3 +220,51 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 
 	return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
 };
+
+
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom2 = function(roomId) {
+	const query = {
+		rid: roomId,
+		'u._id': {$exists: true}
+	};
+
+	return this.find(query, {
+		fields: {
+			'u._id': 1,
+			audioNotifications: 1,
+			audioNotificationValue: 1,
+			desktopNotificationDuration: 1,
+			desktopNotifications: 1,
+			mobilePushNotifications: 1,
+			disableNotifications: 1,
+			muteGroupMentions: 1
+		}
+	});
+};
+
+RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = function(roomId) {
+	const query = {
+		rid: roomId,
+		'u._id': {$exists: true},
+		$or: [
+			{audioNotifications: {$exists: true}},
+			{desktopNotifications: {$exists: true}},
+			{mobilePushNotifications: {$exists: true}},
+			{disableNotifications: {$exists: true}},
+			{muteGroupMentions: {$exists: true}}
+		]
+	};
+
+	return this.find(query, {
+		fields: {
+			'u._id': 1,
+			audioNotifications: 1,
+			audioNotificationValue: 1,
+			desktopNotificationDuration: 1,
+			desktopNotifications: 1,
+			mobilePushNotifications: 1,
+			disableNotifications: 1,
+			muteGroupMentions: 1
+		}
+	});
+};
