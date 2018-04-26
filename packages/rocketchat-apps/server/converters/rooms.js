@@ -8,13 +8,13 @@ export class AppRoomsConverter {
 	convertById(roomId) {
 		const room = RocketChat.models.Rooms.findOneById(roomId);
 
-		return this._convertToApp(room);
+		return this.convertRoom(room);
 	}
 
 	convertByName(roomName) {
 		const room = RocketChat.models.Rooms.findOneByName(roomName);
 
-		return this._convertToApp(room);
+		return this.convertRoom(room);
 	}
 
 	convertAppRoom(room) {
@@ -22,26 +22,33 @@ export class AppRoomsConverter {
 			return undefined;
 		}
 
-		const creator = RocketChat.models.Users.findOneById(room.creator.id);
+		let u;
+		if (room.creator) {
+			const creator = RocketChat.models.Users.findOneById(room.creator.id);
+			u = {
+				_id: creator._id,
+				username: creator.username
+			};
+		}
 
 		return {
 			_id: room.id,
-			u: {
-				_id: creator._id,
-				username: creator.username
-			},
-			ts: room.createdAt,
+			fname: room.displayName,
+			name: room.slugifiedName,
 			t: room.type,
-			name: room.name,
-			msgs: room.messageCount || 0,
+			u,
+			usernames: room.usernames,
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
+			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
+			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
+			msgs: room.messageCount || 0,
+			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
-			lm: room.lastModifiedAt,
-			usernames: room.usernames
+			lm: room.lastModifiedAt
 		};
 	}
 
-	_convertToApp(room) {
+	convertRoom(room) {
 		if (!room) {
 			return undefined;
 		}
@@ -53,15 +60,19 @@ export class AppRoomsConverter {
 
 		return {
 			id: room._id,
-			name: room.name,
+			displayName: room.fname,
+			slugifiedName: room.name,
 			type: this._convertTypeToApp(room.t),
 			creator,
 			usernames: room.usernames,
 			isDefault: typeof room.default === 'undefined' ? false : room.default,
+			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
+			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
 			messageCount: room.msgs,
 			createdAt: room.ts,
 			updatedAt: room._updatedAt,
-			lastModifiedAt: room.lm
+			lastModifiedAt: room.lm,
+			customFields: {}
 		};
 	}
 
@@ -76,7 +87,7 @@ export class AppRoomsConverter {
 			case 'lc':
 				return RoomType.LIVE_CHAT;
 			default:
-				throw new Error(`Unknown room type of: "${ typeChar }"`);
+				return typeChar;
 		}
 	}
 }

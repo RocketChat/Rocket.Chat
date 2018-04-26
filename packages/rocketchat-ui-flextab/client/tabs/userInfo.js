@@ -1,4 +1,4 @@
-/* globals RoomRoles, UserRoles*/
+/* globals RoomRoles UserRoles popover */
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -60,6 +60,12 @@ Template.userInfo.helpers({
 	username() {
 		const user = Template.instance().user.get();
 		return user && user.username;
+	},
+
+	userStatus() {
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus;
 	},
 
 	email() {
@@ -131,6 +137,7 @@ Template.userInfo.helpers({
 
 	userToEdit() {
 		const instance = Template.instance();
+		const data = Template.currentData();
 		return {
 			user: instance.user.get(),
 			back(username) {
@@ -139,6 +146,7 @@ Template.userInfo.helpers({
 				if (username != null) {
 					const user = instance.user.get();
 					if ((user != null ? user.username : undefined) !== username) {
+						data.username = username;
 						return instance.loadedUsername.set(username);
 					}
 				}
@@ -162,7 +170,7 @@ Template.userInfo.helpers({
 		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	}
 });
-/* globals isRtl popover */
+
 Template.userInfo.events({
 	'click .js-more'(e, instance) {
 		const actions = more.call(this);
@@ -187,20 +195,13 @@ Template.userInfo.events({
 		e.preventDefault();
 		const config = {
 			columns,
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().right + 10,
-				y: e.currentTarget.getBoundingClientRect().bottom + 100
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
-			}),
 			data: {
 				rid: this._id,
 				username: instance.data.username,
 				instance
 			},
-			activeElement: e.currentTarget
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 10
 		};
 		popover.open(config);
 	},

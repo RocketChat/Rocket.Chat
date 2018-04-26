@@ -541,6 +541,8 @@ describe('[Users]', function() {
 		});
 	});
 
+	//DEPRECATED
+	// TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
 	describe('[/user.roles]', () => {
 
 		it('should return id and name of user, and an array of roles', (done) => {
@@ -583,6 +585,34 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body.preferences).to.be.eql(preferences.data);
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/users.forgotPassword]', () => {
+		it('should send email to user (return success), when is a valid email', (done) => {
+			request.post(api('users.forgotPassword'))
+				.send({
+					email: adminEmail
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should not send email to user(return error), when is a invalid email', (done) => {
+			request.post(api('users.forgotPassword'))
+				.send({
+					email: 'invalidEmail'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
 		});

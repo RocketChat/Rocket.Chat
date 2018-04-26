@@ -41,6 +41,14 @@ Template.directory.helpers({
 	},
 	searchType() {
 		return Template.instance().searchType.get();
+	},
+	sortIcon(key) {
+		const {
+			sortDirection,
+			searchSortBy
+		} = Template.instance();
+
+		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
 	}
 });
 
@@ -101,22 +109,20 @@ Template.directory.events({
 	}
 });
 
-Template.directory.onCreated(function() {
-	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('channels');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
-	this.page = new ReactiveVar(0);
-	this.end = new ReactiveVar(false);
-
-	this.results = new ReactiveVar([]);
-
+Template.directory.onRendered(function() {
+	this.resize = () => {
+		const height = this.$('.rc-directory-content').height();
+		this.limit.set(Math.ceil((height / 100) + 5));
+	};
+	this.resize();
+	$(window).on('resize', this.resize);
 	Tracker.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
 			type: this.searchType.get(),
 			sortBy: this.searchSortBy.get(),
 			sortDirection: this.sortDirection.get(),
+			limit: this.limit.get(),
 			page: this.page.get()
 		};
 		if (this.end.get() || this.loading) {
@@ -134,6 +140,22 @@ Template.directory.onCreated(function() {
 			return this.results.set(result);
 		});
 	});
+});
+
+Template.directory.onDestroyed(function() {
+	$(window).on('off', this.resize);
+});
+
+Template.directory.onCreated(function() {
+	this.searchText = new ReactiveVar('');
+	this.searchType = new ReactiveVar('channels');
+	this.searchSortBy = new ReactiveVar('name');
+	this.sortDirection = new ReactiveVar('asc');
+	this.limit = new ReactiveVar(0);
+	this.page = new ReactiveVar(0);
+	this.end = new ReactiveVar(false);
+
+	this.results = new ReactiveVar([]);
 });
 
 Template.directory.onRendered(function() {
