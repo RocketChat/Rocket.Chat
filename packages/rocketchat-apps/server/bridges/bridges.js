@@ -1,9 +1,11 @@
 import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppActivationBridge } from './activation';
+import { AppDetailChangesBridge } from './details';
 import { AppCommandsBridge } from './commands';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
+import { AppListenerBridge } from './listeners';
 import { AppMessageBridge } from './messages';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoomBridge } from './rooms';
@@ -16,8 +18,10 @@ export class RealAppBridges extends AppBridges {
 
 		this._actBridge = new AppActivationBridge(orch);
 		this._cmdBridge = new AppCommandsBridge(orch);
+		this._detBridge = new AppDetailChangesBridge(orch);
 		this._envBridge = new AppEnvironmentalVariableBridge(orch);
 		this._httpBridge = new AppHttpBridge();
+		this._lisnBridge = new AppListenerBridge(orch);
 		this._msgBridge = new AppMessageBridge(orch);
 		this._persistBridge = new AppPersistenceBridge(orch);
 		this._roomBridge = new AppRoomBridge(orch);
@@ -37,6 +41,10 @@ export class RealAppBridges extends AppBridges {
 		return this._httpBridge;
 	}
 
+	getListenerBridge() {
+		return this._lisnBridge;
+	}
+
 	getMessageBridge() {
 		return this._msgBridge;
 	}
@@ -47,6 +55,10 @@ export class RealAppBridges extends AppBridges {
 
 	getAppActivationBridge() {
 		return this._actBridge;
+	}
+
+	getAppDetailChangesBridge() {
+		return this._detBridge;
 	}
 
 	getRoomBridge() {

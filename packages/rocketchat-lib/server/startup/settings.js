@@ -83,6 +83,14 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true
 	});
 
+	this.section('Two Factor Authentication', function() {
+		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
+			type: 'int',
+			public: true,
+			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta'
+		});
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string'
@@ -177,7 +185,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enable_Auto_Away'
 		});
-		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300000, {
+		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300, {
 			type: 'int',
 			'public': true,
 			i18nLabel: 'Idle_Time_Limit'
@@ -310,10 +318,39 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Sidebar_list_mode'
 		});
-		this.add('Accounts_Default_User_Preferences_mergeChannels', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
+			type: 'select',
+			values: [
+				{
+					key: 'extended',
+					i18nLabel: 'Extended'
+				},
+				{
+					key: 'medium',
+					i18nLabel: 'Medium'
+				},
+				{
+					key: 'condensed',
+					i18nLabel: 'Condensed'
+				}
+			],
+			'public': true,
+			i18nLabel: 'Sidebar_list_mode'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
 			type: 'boolean',
 			'public': true,
-			i18nLabel: 'UI_Merge_Channels_Groups'
+			i18nLabel: 'Hide_Avatars'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Unread_on_top'
+		});
+		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
+			type: 'boolean',
+			'public': true,
+			i18nLabel: 'Group_favorites'
 		});
 		this.add('Accounts_Default_User_Preferences_sendOnEnter', 'normal', {
 			type: 'select',
@@ -334,7 +371,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enter_Behaviour'
 		});
-		this.add('Accounts_Default_User_Preferences_viewMode', 0, {
+		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
 			type: 'select',
 			values: [
 				{
@@ -351,7 +388,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 				}
 			],
 			'public': true,
-			i18nLabel: 'View_mode'
+			i18nLabel: 'MessageBox_view_mode'
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
 			type: 'select',
@@ -988,12 +1025,14 @@ RocketChat.settings.addGroup('Email', function() {
 		this.add('SMTP_Username', '', {
 			type: 'string',
 			env: true,
-			i18nLabel: 'Username'
+			i18nLabel: 'Username',
+			autocomplete: false
 		});
 		this.add('SMTP_Password', '', {
 			type: 'password',
 			env: true,
-			i18nLabel: 'Password'
+			i18nLabel: 'Password',
+			autocomplete: false
 		});
 		this.add('From_Email', '', {
 			type: 'string',
@@ -1177,10 +1216,16 @@ RocketChat.settings.addGroup('Message', function() {
 			'public': true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription'
 		});
+	});
+	this.section('Message_Audio', function() {
 		this.add('Message_AudioRecorderEnabled', true, {
 			type: 'boolean',
 			'public': true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription'
+		});
+		this.add('Message_Audio_bitRate', 32, {
+			type: 'int',
+			'public': true
 		});
 	});
 	this.add('Message_AllowEditing', true, {
@@ -1324,10 +1369,21 @@ RocketChat.settings.addGroup('Message', function() {
 		'public': true
 	});
 
-	this.add('Message_GlobalSearch', false, {
-		type: 'boolean',
+	this.add('Message_ErasureType', 'Delete', {
+		type: 'select',
 		'public': true,
-		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
+		values: [
+			{
+				key: 'Keep',
+				i18nLabel: 'Message_ErasureType_Keep'
+			}, {
+				key: 'Delete',
+				i18nLabel: 'Message_ErasureType_Delete'
+			}, {
+				key: 'Unlink',
+				i18nLabel: 'Message_ErasureType_Unlink'
+			}
+		]
 	});
 });
 

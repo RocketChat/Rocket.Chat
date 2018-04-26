@@ -141,11 +141,17 @@ Meteor.methods({
 			return 'not-authorized';
 		}
 
-		if (!Meteor.StreamerCentral.instances[streamName]) {
+		const instance = Meteor.StreamerCentral.instances[streamName];
+		if (!instance) {
 			return 'stream-not-exists';
 		}
 
-		Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		if (instance.serverOnly) {
+			const scope = {};
+			instance.emitWithScope(eventName, scope, ...args);
+		} else {
+			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		}
 	}
 });
 

@@ -32,7 +32,7 @@ reactive-var@1.0.11
 accounts-password@1.5.0
 tap:i18n
 smoral:sweetalert
-ecmascript@0.10.0
+ecmascript@0.10.6
 es5-shim@4.7.0
 standard-minifier-css@1.4.0
 standard-minifier-js@2.3.1
