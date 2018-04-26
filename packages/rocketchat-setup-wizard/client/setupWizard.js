@@ -1,9 +1,39 @@
 import s from 'underscore.string';
 
+const setSettingsAndGo = (settings, registerServer) => {
+	const settingsFilter = Object.entries(settings)
+		.filter(key => !/registration-|registerServer|currentStep/.test(key))
+		.map(setting => {
+			return {
+				_id: setting[0],
+				value: setting[1]
+			};
+		});
+
+	settingsFilter.push({
+		_id: 'Statistics_reporting',
+		value: registerServer ? registerServer : true
+	});
+
+	RocketChat.settings.batchSet(settingsFilter, function(err) {
+		if (err) {
+			return handleError(err);
+		}
+	});
+
+	localStorage.setItem('wizardFinal', true);
+	FlowRouter.go('setup-wizard-final');
+};
+
 Template.setupWizard.onCreated(function() {
+	if (localStorage.getItem('wizardFinal')) {
+		FlowRouter.go('setup-wizard-final');
+	}
+
+	this.hasAdmin = new ReactiveVar(false);
 	this.state = new ReactiveDict();
-	this.finalStep = new ReactiveVar(false);
 	this.wizardSettings = new ReactiveVar([]);
+	this.invalidEmail = new ReactiveVar(false);
 	Meteor.call('getWizardSettings', (error, result) => {
 		if (result) {
 			this.wizardSettings.set(result);
@@ -17,24 +47,54 @@ Template.setupWizard.onCreated(function() {
 		});
 	}
 
-	this.state.set('currentStep', 1);
+	Meteor.call('serverHasAdminUser', (error, result) => {
+		if (result) {
+			this.state.set('currentStep', 2);
+		} else {
+			this.state.set('currentStep', 1);
+		}
+
+		this.hasAdmin.set(result);
+	});
 
 	Tracker.autorun(() => {
+		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
+			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
+				FlowRouter.go('home');
+			}
+		}
 		const states = this.state.all();
 		states['registration-pass'] = '';
 		localStorage.setItem('wizard', JSON.stringify(states));
 	});
 });
 
+Template.setupWizard.onRendered(function() {
+	$('#initial-page-loading').remove();
+});
+
 Template.setupWizard.events({
-	'click .go-home'() {
-		RocketChat.settings.set('Server_First_Access', false);
-	},
 	'click .setup-wizard-forms__footer-next'(e, t) {
 		const currentStep = t.state.get('currentStep');
+		const hasAdmin = t.hasAdmin.get();
+
+		if (!hasAdmin && currentStep === 1) {
+			const emailValue = t.state.get('registration-email');
+			const invalidEmail = !/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(emailValue);
+			t.invalidEmail.set(invalidEmail);
+
+			if (invalidEmail) {
+				return false;
+			}
+		}
+
+		if (hasAdmin && currentStep === 3) {
+			setSettingsAndGo(t.state.all());
+			return false;
+		}
 
 		if (currentStep === 4) {
-			const state = Template.instance().state.all();
+			const state = t.state.all();
 			const registration = Object.entries(state).filter(key => /registration-/.test(key));
 			const registrationData = Object.assign(...registration.map(d => ({[d[0].replace('registration-', '')]: d[1]})));
 
@@ -60,14 +120,8 @@ Template.setupWizard.events({
 
 						RocketChat.callbacks.run('usernameSet');
 
-						const settings = Object.entries(state).filter(key => !/registration-|registerServer|currentStep/.test(key));
-						settings.forEach(setting => {
-							RocketChat.settings.set(setting[0], setting[1]);
-						});
-
-						RocketChat.settings.set('Statistics_reporting', JSON.parse(t.state.get('registerServer')));
-
-						t.finalStep.set(true);
+						const register = t.state.get('registerServer') ? JSON.parse(t.state.get('registerServer')) : true;
+						setSettingsAndGo(state, register ? register : true);
 					});
 				});
 			});
@@ -86,9 +140,6 @@ Template.setupWizard.events({
 });
 
 Template.setupWizard.helpers({
-	currentStepTemplate() {
-		return `setup-wizard-step${ Template.instance().state.get('currentStep') }`;
-	},
 	currentStep() {
 		return Template.instance().state.get('currentStep');
 	},
@@ -174,7 +225,52 @@ Template.setupWizard.helpers({
 
 		return result;
 	},
-	finalStep() {
-		return Template.instance().finalStep.get();
+	siteUrl() {
+		return RocketChat.settings.get('Site_Url');
+	},
+	hasAdmin() {
+		return Template.instance().hasAdmin.get();
+	},
+	invalidEmail() {
+		return Template.instance().invalidEmail.get();
+	},
+	showBackButton() {
+		if (Template.instance().hasAdmin.get()) {
+			if (Template.instance().state.get('currentStep') > 2) {
+				return true;
+			}
+
+			return false;
+		}
+
+		if (Template.instance().state.get('currentStep') > 1) {
+			return true;
+		}
+
+		return false;
+	}
+});
+
+Template.setupWizardFinal.onCreated(function() {
+	Tracker.autorun(() => {
+		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
+			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
+				FlowRouter.go('home');
+			}
+		}
+	});
+});
+
+Template.setupWizardFinal.onRendered(function() {
+	$('#initial-page-loading').remove();
+});
+
+Template.setupWizardFinal.events({
+	'click .js-finish'() {
+		RocketChat.settings.set('Show_Setup_Wizard', false, function() {
+			localStorage.removeItem('wizard');
+			localStorage.removeItem('wizardFinal');
+			FlowRouter.go('home');
+		});
 	}
 });

@@ -6,6 +6,8 @@
 
 	background-color: #f7f8fa;
 
+	justify-content: center;
+
 	&-info {
 		flex: 0 0 350px;
 
@@ -356,6 +358,53 @@
 
 			& .rc-button {
 				margin: 0 0.5rem;
+			}
+		}
+	}
+
+	&-final {
+		width: 930px;
+		padding-top: 5rem;
+
+		&__header {
+			margin-bottom: 5rem;
+		}
+
+		&__box {
+			padding: 5rem 6rem;
+
+			border-radius: 2px;
+			background: #ffffff;
+			box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
+
+			&-title {
+				margin-bottom: 3.25rem;
+			}
+		}
+
+		&__link {
+			display: block;
+
+			margin-bottom: 1.5rem;
+
+			letter-spacing: 0;
+
+			color: #1d74f5;
+
+			font-size: 1rem;
+
+			line-height: 1.5rem;
+
+			&-text {
+				display:block;
+				letter-spacing: 0.03rem;
+
+				text-transform:uppercase;
+
+				color: #2f343d;
+
+				font-size: 0.625rem;
+				line-height: 1rem;
 			}
 		}
 	}

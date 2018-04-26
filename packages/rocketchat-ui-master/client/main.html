@@ -24,9 +24,7 @@
 
 <template name="main">
 	{{#if subsReady}}
-		{{#if serverFirstAccess}}
-			{{> setupWizard}}
-		{{else}}
+		{{#if $eq showSetupWizard false}}
 			{{#unless logged}}
 				<div class="rc-old connection-status">
 					{{> status}}

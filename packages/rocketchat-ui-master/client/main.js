@@ -147,9 +147,6 @@ Template.main.helpers({
 		});
 		return ready;
 	},
-	serverFirstAccess() {
-		return RocketChat.settings.get('Server_First_Access');
-	},
 	hasUsername() {
 		return (Meteor.userId() != null && Meteor.user().username != null) || (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	},
@@ -173,6 +170,9 @@ Template.main.helpers({
 		if (RocketChat.Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
+	},
+	showSetupWizard() {
+		return RocketChat.settings.get('Show_Setup_Wizard');
 	}
 });
 
@@ -194,6 +194,11 @@ Template.main.onRendered(function() {
 	});
 	return Tracker.autorun(function() {
 		const user = Meteor.user();
+
+		if (RocketChat.settings.get('Show_Setup_Wizard')) {
+			FlowRouter.go('setup-wizard');
+		}
+
 		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();

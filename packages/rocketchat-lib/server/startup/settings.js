@@ -628,10 +628,9 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
-	this.add('Server_First_Access', true, {
+	this.add('Show_Setup_Wizard', true, {
 		type: 'boolean',
-		public: true,
-		blocked: true
+		public: true
 	});
 	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
