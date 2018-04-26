@@ -4,7 +4,7 @@ import s from 'underscore.string';
 function getEmailContent({ messageContent, message, user, room }) {
 	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 
-	const roomName = `#${ (RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && room.fname) ? room.fname : RocketChat.roomTypes.getRoomName(room.t, room) }`;
+	const roomName = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
 
 	const userName = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 
