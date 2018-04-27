@@ -88,17 +88,7 @@ Template.admin.helpers({
 			const obj = language[1];
 			obj.key = language[0];
 			return obj;
-		}).sort((a, b) => {
-			if (a.key < b.key) {
-				return -1;
-			}
-
-			if (a.key > b.key) {
-				return 1;
-			}
-
-			return 0;
-		});
+		}).sort((a, b) => a.key - b.key);
 
 		result.unshift({
 			'name': 'Default',
