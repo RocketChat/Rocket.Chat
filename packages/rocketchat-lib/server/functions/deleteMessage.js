@@ -25,7 +25,7 @@ RocketChat.deleteMessage = function(message, user) {
 		}
 
 		Meteor.defer(function() {
-			RocketChat.callbacks.run('afterDeleteMessage', deletedMsg);
+			RocketChat.callbacks.run('afterDeleteMessage', deletedMsg || { _id: message.id });
 		});
 	}
 
