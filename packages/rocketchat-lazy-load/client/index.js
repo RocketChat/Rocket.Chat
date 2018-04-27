@@ -27,6 +27,7 @@ export const fixCordova = function(url) {
 const loadImage = el => {
 	const img = new Image();
 	const src = el.getAttribute('data-src');
+	el.className.replace('lazy-img', '');
 	img.onload = function() {
 		el.src = src;
 		el.removeAttribute('data-src');
@@ -35,22 +36,23 @@ const loadImage = el => {
 };
 
 const isVisible = el => {
-	const rect = el.getBoundingClientRect();
-	return (
-		rect.top >= -100 &&
-		rect.left >= 0 &&
-		rect.top <= (window.innerHeight || document.documentElement.clientHeight)
-	);
+	requestAnimationFrame(() => {
+		const rect = el.getBoundingClientRect();
+		if (rect.top >= -100 && rect.left >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight)) {
+			return loadImage(el);
+		}
+	});
+
 };
 
 window.addEventListener('resize', window.lazyloadtick);
 
 export const lazyloadtick = _.debounce(() => {
 	[...document.querySelectorAll('.lazy-img[data-src]')]
-		.filter(isVisible)
-		.forEach(loadImage);
+
+		.forEach(isVisible);
 }, 500);
 
 window.lazyloadtick = lazyloadtick;
 
-export const addImage = el => isVisible(el) && loadImage(el);
+export const addImage = el => isVisible(el);

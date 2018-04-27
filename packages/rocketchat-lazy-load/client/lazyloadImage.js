@@ -3,12 +3,12 @@ import { addImage, fixCordova } from './';
 
 Template.lazyloadImage.helpers({
 	lazy() {
-		const { preview, src } = this;
+		const { preview, src, placeholder } = this;
 
-		if (!preview) {
+		if (!preview && !placeholder) {
 			return fixCordova(src);
 		}
-		return `data:image/png;base64,${ preview }`;
+		return `data:image/png;base64,${ preview || 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==' }`;
 	}
 });
 
