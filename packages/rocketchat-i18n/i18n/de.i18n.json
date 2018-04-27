@@ -429,6 +429,7 @@
   "Chatpal_ERROR_username_already_exists": "Benutzername existiert bereits",
   "Chatpal_created_key_successfully": "API-Key erfolgreich erstellt",
   "Chatpal_run_search": "Suche",
+  "Chatpal_Get_more_information_about_chatpal_on_our_website": "Finden Sie mehr über Chatpal heraus, unter <a target=\"_blank\" href=\"http://chatpal.io\">http://chatpal.io</a>!",
   "CDN_PREFIX": "CDN-Präfix",
   "Certificates_and_Keys": "Zertifikate und Schlüssel",
   "Change_Room_Type": "Ändere den Typ des Raums",
