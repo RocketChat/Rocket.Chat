@@ -23,6 +23,7 @@ export class AppServerListener {
 		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
+		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
@@ -51,6 +52,15 @@ export class AppServerListener {
 
 		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
 		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
+	}
+
+	async onAppUpdated(appId) {
+		this.recieved.set(`${ AppEvents.APP_UPDATED }_${ appId }`, { appId, when: new Date() });
+
+		const storageItem = await this.orch.getStorage().retrieveOne(appId);
+
+		await this.orch.getManager().update(storageItem.zip);
+		this.clientStreamer.emit(AppEvents.APP_UPDATED, appId);
 	}
 
 	async onAppRemoved(appId) {
@@ -105,6 +115,11 @@ export class AppServerNotifier {
 	}
 
 	async appUpdated(appId) {
+		if (this.recieved.has(`${ AppEvents.APP_UPDATED }_${ appId }`)) {
+			this.recieved.delete(`${ AppEvents.APP_UPDATED }_${ appId }`);
+			return;
+		}
+
 		this.engineStreamer.emit(AppEvents.APP_UPDATED, appId);
 		this.clientStreamer.emit(AppEvents.APP_UPDATED, appId);
 	}
