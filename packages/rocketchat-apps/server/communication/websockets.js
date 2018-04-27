@@ -13,11 +13,11 @@ export const AppEvents = Object.freeze({
 });
 
 export class AppServerListener {
-	constructor(orch, engineStreamer, clientStreamer, recieved) {
+	constructor(orch, engineStreamer, clientStreamer, received) {
 		this.orch = orch;
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
-		this.recieved = recieved;
+		this.received = received;
 
 		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
 		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
@@ -36,7 +36,7 @@ export class AppServerListener {
 	}
 
 	async onAppStatusUpdated({ appId, status }) {
-		this.recieved.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
+		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
 
 		if (AppStatusUtils.isEnabled(status)) {
 			await this.orch.getManager().enable(appId);
@@ -48,14 +48,14 @@ export class AppServerListener {
 	}
 
 	async onAppSettingUpdated({ appId, setting }) {
-		this.recieved.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
+		this.received.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
 
 		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
 		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
 	async onAppUpdated(appId) {
-		this.recieved.set(`${ AppEvents.APP_UPDATED }_${ appId }`, { appId, when: new Date() });
+		this.received.set(`${ AppEvents.APP_UPDATED }_${ appId }`, { appId, when: new Date() });
 
 		const storageItem = await this.orch.getStorage().retrieveOne(appId);
 
@@ -100,8 +100,8 @@ export class AppServerNotifier {
 		this.clientStreamer.allowEmit('all');
 		this.clientStreamer.allowWrite('none');
 
-		this.recieved = new Map();
-		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.recieved);
+		this.received = new Map();
+		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
 	}
 
 	async appAdded(appId) {
@@ -115,8 +115,8 @@ export class AppServerNotifier {
 	}
 
 	async appUpdated(appId) {
-		if (this.recieved.has(`${ AppEvents.APP_UPDATED }_${ appId }`)) {
-			this.recieved.delete(`${ AppEvents.APP_UPDATED }_${ appId }`);
+		if (this.received.has(`${ AppEvents.APP_UPDATED }_${ appId }`)) {
+			this.received.delete(`${ AppEvents.APP_UPDATED }_${ appId }`);
 			return;
 		}
 
@@ -125,10 +125,10 @@ export class AppServerNotifier {
 	}
 
 	async appStatusUpdated(appId, status) {
-		if (this.recieved.has(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`)) {
-			const details = this.recieved.get(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+		if (this.received.has(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`)) {
+			const details = this.received.get(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
 			if (details.status === status) {
-				this.recieved.delete(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+				this.received.delete(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
 				return;
 			}
 		}
@@ -138,8 +138,8 @@ export class AppServerNotifier {
 	}
 
 	async appSettingsChange(appId, setting) {
-		if (this.recieved.has(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`)) {
-			this.recieved.delete(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`);
+		if (this.received.has(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`)) {
+			this.received.delete(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`);
 			return;
 		}
 
