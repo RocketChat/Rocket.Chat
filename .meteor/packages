@@ -67,7 +67,7 @@ rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
 rocketchat:gitlab
-rocketchat:google-natural-language
+#rocketchat:google-natural-language
 rocketchat:google-vision
 rocketchat:grant
 rocketchat:grant-facebook
