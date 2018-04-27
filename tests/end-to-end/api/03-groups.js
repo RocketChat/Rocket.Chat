@@ -465,4 +465,21 @@ describe('groups', function() {
 				.end(done);
 		});
 	});
+
+	describe('/groups.roles', () => {
+		it('should return an array of roles for a private group', (done) => {
+			request.get(api('groups.roles'))
+				.set(credentials)
+				.query({
+					roomId: group._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('roles').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });
