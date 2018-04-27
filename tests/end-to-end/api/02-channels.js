@@ -627,4 +627,21 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/channels.roles', () => {
+		it('should return an array of roles by channel', (done) => {
+			request.get(api('channels.roles'))
+				.set(credentials)
+				.query({
+					roomId: channel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('roles').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });
