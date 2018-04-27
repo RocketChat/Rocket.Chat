@@ -629,17 +629,72 @@ describe('[Channels]', function() {
 	});
 
 	describe('/channels.roles', () => {
-		it('should return an array of roles by channel', (done) => {
+		let testChannel;
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.roles.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('/channels.invite', async(done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/channels.addModerator', (done) => {
+			request.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/channels.addLeader', (done) => {
+			request.post(api('channels.addLeader'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('should return an array of role <-> user relationships in a channel', (done) => {
 			request.get(api('channels.roles'))
 				.set(credentials)
 				.query({
-					roomId: channel._id
+					roomId: testChannel._id
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('roles').and.to.be.an('array');
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
+
+					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0]).to.have.a.property('rid').that.is.equal(testChannel._id);
+					expect(res.body.roles[0]).to.have.a.property('roles').that.is.an('array').that.includes('moderator', 'leader');
+					expect(res.body.roles[0]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[0].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0].u).to.have.a.property('username').that.is.a('string');
+					expect(res.body.roles[0].u).to.have.a.property('name');
+
+					expect(res.body.roles[1]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1]).to.have.a.property('rid').that.is.equal(testChannel._id);
+					expect(res.body.roles[1]).to.have.a.property('roles').that.is.an('array').that.includes('owner');
+					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
+					expect(res.body.roles[1].u).to.have.a.property('name');
 				})
 				.end(done);
 		});

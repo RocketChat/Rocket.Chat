@@ -467,17 +467,72 @@ describe('groups', function() {
 	});
 
 	describe('/groups.roles', () => {
-		it('should return an array of roles for a private group', (done) => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.roles.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('/groups.invite', async(done) => {
+			request.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/groups.addModerator', (done) => {
+			request.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/groups.addLeader', (done) => {
+			request.post(api('groups.addLeader'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('should return an array of roles <-> user relationships in a private group', (done) => {
 			request.get(api('groups.roles'))
 				.set(credentials)
 				.query({
-					roomId: group._id
+					roomId: testGroup._id
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('roles').and.to.be.an('array');
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
+
+					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0]).to.have.a.property('rid').that.is.equal(testGroup._id);
+					expect(res.body.roles[0]).to.have.a.property('roles').that.is.an('array').that.includes('moderator', 'leader');
+					expect(res.body.roles[0]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[0].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0].u).to.have.a.property('username').that.is.a('string');
+					expect(res.body.roles[0].u).to.have.a.property('name');
+
+					expect(res.body.roles[1]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1]).to.have.a.property('rid').that.is.equal(testGroup._id);
+					expect(res.body.roles[1]).to.have.a.property('roles').that.is.an('array').that.includes('owner');
+					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
+					expect(res.body.roles[1].u).to.have.a.property('name');
 				})
 				.end(done);
 		});
