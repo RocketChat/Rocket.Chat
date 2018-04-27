@@ -189,3 +189,4 @@ rocketchat:version-check
 
 rocketchat:search
 chatpal:search
+rocketchat:lazy-load
