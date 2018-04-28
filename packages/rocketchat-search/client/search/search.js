@@ -67,7 +67,9 @@ Template.RocketSearch.onCreated(function() {
 				//TODO what should happen
 			} else {
 				this.suggestionActive.set(undefined);
-				this.suggestions.set(result);
+				if (value !== this.scope.text.get()) {
+					this.suggestions.set(result);
+				}
 			}
 		});
 	};
