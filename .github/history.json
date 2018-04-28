@@ -13168,5 +13168,75 @@
         "web-flow"
       ]
     }
+  ],
+  "0.64.0": [
+    {
+      "pr": "10591",
+      "title": "Regression: Various search provider fixes",
+      "userLogin": "tkurz",
+      "milestone": "0.64.0",
+      "contributors": [
+        "tkurz",
+        "web-flow",
+        "engelgabriel",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10596",
+      "title": "Regression: /api/v1/settings.oauth not sending needed info for SAML & CAS",
+      "userLogin": "cardoso",
+      "milestone": "0.64.0",
+      "contributors": [
+        "cardoso",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10598",
+      "title": "Regression: Apps and Livechats not getting along well with each other",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10551",
+      "title": " [FIX] Missing \"Administration\" menu for users with some administration permissions",
+      "userLogin": "kaiiiiiiiii",
+      "milestone": "0.64.0",
+      "contributors": [
+        "kaiiiiiiiii"
+      ]
+    },
+    {
+      "pr": "10599",
+      "title": "[FIX] Member list search with no results",
+      "userLogin": "ggazzo",
+      "milestone": "0.64.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10586",
+      "title": "Development: Add Visual Studio Code debugging configuration",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10576",
+      "title": "[FIX] Integrations with room data not having the usernames filled in",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.0",
+      "contributors": [
+        "graywolf336",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    }
   ]
 }
