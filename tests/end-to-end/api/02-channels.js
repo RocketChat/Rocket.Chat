@@ -290,6 +290,8 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	//DEPRECATED
+	// TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
 	it('/channels.cleanHistory', (done) => {
 		request.post(api('channels.cleanHistory'))
 			.set(credentials)

@@ -2,6 +2,9 @@
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+
+const reply = id => id && `[ ](${ RocketChat.MessageAction.getPermaLink(id) }) `;
+
 this.ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
@@ -184,11 +187,13 @@ this.ChatMessages = class ChatMessages {
 
 			let msg = '';
 			const reply = $(input).data('reply');
-			if (reply!==undefined) {
+			const mentionUser = $(input).data('mention-user') || false;
+
+			if (reply !== undefined) {
 				const url = RocketChat.MessageAction.getPermaLink(reply._id);
 				msg = `[ ](${ url }) `;
 				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username) {
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
 					msg += `@${ reply.u.username } `;
 				}
 			}
@@ -399,7 +404,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	restoreText(rid) {
-		const text = localStorage.getItem(`messagebox_${ rid }`);
+		const text = reply(FlowRouter.getQueryParam('reply')) || localStorage.getItem(`messagebox_${ rid }`);
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}

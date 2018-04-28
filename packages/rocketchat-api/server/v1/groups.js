@@ -159,6 +159,12 @@ RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.files', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
@@ -173,7 +179,7 @@ RocketChat.API.v1.addRoute('groups.files', { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
+			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
