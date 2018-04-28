@@ -1,82 +1,6 @@
 
-# 0.64.0 (Under Release Candidate Process)
-
-## 0.64.0-rc.4
-`  ·  1 🎉  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Add information regarding Zapier and Bots to the integrations page ([#10574](https://github.com/RocketChat/Rocket.Chat/pull/10574))
-
-### 🐛 Bug fixes
-
-- Switch buttons were cutting in RTL mode ([#10558](https://github.com/RocketChat/Rocket.Chat/pull/10558))
-- Stop Firefox announcement overflowing viewport ([#10503](https://github.com/RocketChat/Rocket.Chat/pull/10503) by [@brendangadd](https://github.com/brendangadd))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Rocket.Chat App author link opens in same window ([#10575](https://github.com/RocketChat/Rocket.Chat/pull/10575) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@brendangadd](https://github.com/brendangadd)
-- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
-
-## 0.64.0-rc.3
-`2018-04-24  ·  1 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Wordpress oAuth authentication wasn't behaving correctly ([#10550](https://github.com/RocketChat/Rocket.Chat/pull/10550) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Inconsistent response of settings.oauth endpoint ([#10553](https://github.com/RocketChat/Rocket.Chat/pull/10553))
-- Regression: Remove added mentions on quote/reply ([#10571](https://github.com/RocketChat/Rocket.Chat/pull/10571))
-- Regression: Attachments and fields incorrectly failing on validation ([#10573](https://github.com/RocketChat/Rocket.Chat/pull/10573))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
-
-## 0.64.0-rc.2
-`2018-04-23  ·  5 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Deps update ([#10549](https://github.com/RocketChat/Rocket.Chat/pull/10549))
-- Regression: /api/v1/settings.oauth not returning clientId for Twitter ([#10560](https://github.com/RocketChat/Rocket.Chat/pull/10560) by [@cardoso](https://github.com/cardoso))
-- Regression: Webhooks breaking due to restricted test ([#10555](https://github.com/RocketChat/Rocket.Chat/pull/10555))
-- Regression: Rooms and Apps weren't playing nice with each other ([#10559](https://github.com/RocketChat/Rocket.Chat/pull/10559))
-- Regression: Fix announcement bar being displayed without content ([#10554](https://github.com/RocketChat/Rocket.Chat/pull/10554))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@cardoso](https://github.com/cardoso)
-
-## 0.64.0-rc.1
-`2018-04-21  ·  3 🔍`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- LingoHub based on develop ([#10545](https://github.com/RocketChat/Rocket.Chat/pull/10545))
-- Regression: Revert announcement structure ([#10544](https://github.com/RocketChat/Rocket.Chat/pull/10544))
-- Regression: Upload was not working ([#10543](https://github.com/RocketChat/Rocket.Chat/pull/10543))
-
-</details>
-
-## 0.64.0-rc.0
-`2018-04-21  ·  2 ️️️⚠️  ·  17 🎉  ·  38 🐛  ·  17 🔍  ·  16 👩‍💻👨‍💻`
+# 0.64.0
+`  ·  2 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  33 🔍  ·  18 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -102,9 +26,13 @@
 - Prevent the browser to autocomplete some setting fields ([#10439](https://github.com/RocketChat/Rocket.Chat/pull/10439))
 - Shows user's real name on autocomplete popup ([#10444](https://github.com/RocketChat/Rocket.Chat/pull/10444))
 - Automatically trigger Redhat registry build when tagging new release ([#10414](https://github.com/RocketChat/Rocket.Chat/pull/10414))
+- Add information regarding Zapier and Bots to the integrations page ([#10574](https://github.com/RocketChat/Rocket.Chat/pull/10574))
 
 ### 🐛 Bug fixes
 
+- Missing "Administration" menu for users with some administration permissions ([#10551](https://github.com/RocketChat/Rocket.Chat/pull/10551) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Member list search with no results ([#10599](https://github.com/RocketChat/Rocket.Chat/pull/10599))
+- Integrations with room data not having the usernames filled in ([#10576](https://github.com/RocketChat/Rocket.Chat/pull/10576))
 - Add user object to responses in /*.files Rest endpoints ([#10480](https://github.com/RocketChat/Rocket.Chat/pull/10480))
 - Missing user data on files uploaded through the API ([#10473](https://github.com/RocketChat/Rocket.Chat/pull/10473))
 - Rename method to clean history of messages ([#10498](https://github.com/RocketChat/Rocket.Chat/pull/10498))
@@ -143,10 +71,17 @@
 - Updated OpenShift Template to take an Image as a Param ([#9946](https://github.com/RocketChat/Rocket.Chat/pull/9946) by [@christianh814](https://github.com/christianh814))
 - Incoming integrations being able to trigger an empty message with a GET ([#9576](https://github.com/RocketChat/Rocket.Chat/pull/9576))
 - Snaps installations are breaking on avatar requests ([#10390](https://github.com/RocketChat/Rocket.Chat/pull/10390))
+- Wordpress oAuth authentication wasn't behaving correctly ([#10550](https://github.com/RocketChat/Rocket.Chat/pull/10550) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Switch buttons were cutting in RTL mode ([#10558](https://github.com/RocketChat/Rocket.Chat/pull/10558))
+- Stop Firefox announcement overflowing viewport ([#10503](https://github.com/RocketChat/Rocket.Chat/pull/10503) by [@brendangadd](https://github.com/brendangadd))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Regression: Various search provider fixes ([#10591](https://github.com/RocketChat/Rocket.Chat/pull/10591) by [@tkurz](https://github.com/tkurz))
+- Regression: /api/v1/settings.oauth not sending needed info for SAML & CAS ([#10596](https://github.com/RocketChat/Rocket.Chat/pull/10596) by [@cardoso](https://github.com/cardoso))
+- Regression: Apps and Livechats not getting along well with each other ([#10598](https://github.com/RocketChat/Rocket.Chat/pull/10598))
+- Development: Add Visual Studio Code debugging configuration ([#10586](https://github.com/RocketChat/Rocket.Chat/pull/10586))
 - Included missing lib for migrations ([#10532](https://github.com/RocketChat/Rocket.Chat/pull/10532))
 - Develop sync ([#10505](https://github.com/RocketChat/Rocket.Chat/pull/10505) by [@nsuchy](https://github.com/nsuchy))
 - Fix: Remove "secret" from REST endpoint /settings.oauth response ([#10513](https://github.com/RocketChat/Rocket.Chat/pull/10513))
@@ -164,6 +99,18 @@
 - Release 0.63.3 ([#10504](https://github.com/RocketChat/Rocket.Chat/pull/10504))
 - Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
 - add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
+- LingoHub based on develop ([#10545](https://github.com/RocketChat/Rocket.Chat/pull/10545))
+- Regression: Revert announcement structure ([#10544](https://github.com/RocketChat/Rocket.Chat/pull/10544))
+- Regression: Upload was not working ([#10543](https://github.com/RocketChat/Rocket.Chat/pull/10543))
+- Deps update ([#10549](https://github.com/RocketChat/Rocket.Chat/pull/10549))
+- Regression: /api/v1/settings.oauth not returning clientId for Twitter ([#10560](https://github.com/RocketChat/Rocket.Chat/pull/10560) by [@cardoso](https://github.com/cardoso))
+- Regression: Webhooks breaking due to restricted test ([#10555](https://github.com/RocketChat/Rocket.Chat/pull/10555))
+- Regression: Rooms and Apps weren't playing nice with each other ([#10559](https://github.com/RocketChat/Rocket.Chat/pull/10559))
+- Regression: Fix announcement bar being displayed without content ([#10554](https://github.com/RocketChat/Rocket.Chat/pull/10554))
+- Regression: Inconsistent response of settings.oauth endpoint ([#10553](https://github.com/RocketChat/Rocket.Chat/pull/10553))
+- Regression: Remove added mentions on quote/reply ([#10571](https://github.com/RocketChat/Rocket.Chat/pull/10571))
+- Regression: Attachments and fields incorrectly failing on validation ([#10573](https://github.com/RocketChat/Rocket.Chat/pull/10573))
+- Regression: Rocket.Chat App author link opens in same window ([#10575](https://github.com/RocketChat/Rocket.Chat/pull/10575) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 
 </details>
 
@@ -173,7 +120,9 @@
 - [@TDiNguyen](https://github.com/TDiNguyen)
 - [@TwizzyDizzy](https://github.com/TwizzyDizzy)
 - [@abernix](https://github.com/abernix)
+- [@brendangadd](https://github.com/brendangadd)
 - [@c0dzilla](https://github.com/c0dzilla)
+- [@cardoso](https://github.com/cardoso)
 - [@christianh814](https://github.com/christianh814)
 - [@dschuan](https://github.com/dschuan)
 - [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
