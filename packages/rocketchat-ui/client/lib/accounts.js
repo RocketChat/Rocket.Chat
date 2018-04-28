@@ -4,6 +4,8 @@ Accounts.onEmailVerificationLink(function(token, done) {
 		if (error == null) {
 			toastr.success(t('Email_verified'));
 			Meteor.call('afterVerifyEmail');
+		} else {
+			toastr.error(error.message);
 		}
 		return done();
 	});

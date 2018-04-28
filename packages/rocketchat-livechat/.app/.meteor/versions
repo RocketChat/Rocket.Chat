@@ -33,7 +33,7 @@ es5-shim@4.7.3
 geojson-utils@1.0.10
 html-tools@1.0.11
 htmljs@1.0.11
-http@1.4.0
+http@1.4.1
 id-map@1.1.0
 jquery@1.11.11
 kadira:blaze-layout@2.3.0
@@ -53,8 +53,8 @@ minimongo@1.4.4
 mizzao:timesync@0.5.0
 modules@0.11.6
 modules-runtime@0.9.2
-momentjs:moment@2.22.0
-mongo@1.4.5
+momentjs:moment@2.22.1
+mongo@1.4.7
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
 nooitaf:colors@1.1.2_1

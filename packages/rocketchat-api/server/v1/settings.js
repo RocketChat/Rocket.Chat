@@ -29,6 +29,34 @@ RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
+	get() {
+		const mountOAuthServices = () => {
+			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+
+			return oAuthServicesEnabled.map((service) => {
+				if (service.custom || ['saml', 'cas'].includes(service.service)) {
+					return { ...service };
+				}
+
+				return {
+					_id: service._id,
+					name: service.service,
+					clientId: service.appId || service.clientId || service.consumerKey,
+					buttonLabelText: service.buttonLabelText || '',
+					buttonColor: service.buttonColor || '',
+					buttonLabelColor: service.buttonLabelColor || '',
+					custom: false
+				};
+			});
+		};
+
+		return RocketChat.API.v1.success({
+			services: mountOAuthServices()
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
@@ -90,7 +118,7 @@ RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
 
 		return RocketChat.API.v1.success({
-			configurations: ServiceConfiguration.configurations.find({}, {fields: {secret: 0}}).fetch()
+			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch()
 		});
 	}
 });
