@@ -231,7 +231,6 @@ Accounts.registerLoginHandler(function(options) {
 					if (!room) {
 						room = RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
 					}
-					RocketChat.models.Rooms.addUsernameByName(room_name, result.username);
 					RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 						ts: new Date(),
 						open: true,

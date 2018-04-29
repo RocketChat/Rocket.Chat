@@ -16,8 +16,8 @@ Meteor.methods({
 			});
 		}
 
-		const user = Meteor.user();
-		if (user && user.username && room.usernames.indexOf(user.username) !== -1) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId(), {fields: {_id: 1}});
+		if (subscription) {
 			return room.name;
 		}
 

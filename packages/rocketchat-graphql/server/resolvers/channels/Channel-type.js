@@ -14,8 +14,8 @@ const resolver = {
 			return root.name;
 		},
 		members: (root) => {
-			return root.usernames.map(
-				username => RocketChat.models.Users.findOneByUsername(username)
+			return RocketChat.models.Subscriptions.findByRoomId(root._id, {fields: {u: 1}}).fetch().filter(s => s.u && s.u._id).map(
+				s => RocketChat.models.Users.findOneById(s.u._id)
 			);
 		},
 		owners: (root) => {
@@ -26,7 +26,9 @@ const resolver = {
 
 			return [RocketChat.models.Users.findOneByUsername(root.u.username)];
 		},
-		numberOfMembers: (root) => (root.usernames || []).length,
+		numberOfMembers: (root) => {
+			return RocketChat.models.Subscriptions.findByRoomId(root._id).count();
+		},
 		numberOfMessages: property('msgs'),
 		readOnly: (root) => root.ro === true,
 		direct: (root) => root.t === 'd',

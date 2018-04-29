@@ -31,7 +31,6 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		fname: name,
 		t: type,
 		msgs: 0,
-		usernames: members,
 		u: {
 			_id: owner._id,
 			username: owner.username
@@ -41,6 +40,10 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
+
+	if (type === 'd') {
+		room.usernames = members;
+	}
 
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));

@@ -218,12 +218,9 @@ class IrcClient {
 		if (!room) {
 			return;
 		}
-		const oldMembers = room.usernames;
+		const oldMembers = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch().map(s => s.u && s.u.username);
 		const appendMembers = _.difference(newMembers, oldMembers);
-		const removeMembers = _.difference(oldMembers, newMembers);
 		appendMembers.forEach(member => this.createUserWhenNotExist(member));
-		RocketChat.models.Rooms.removeUsernamesById(room._id, removeMembers);
-		RocketChat.models.Rooms.addUsernamesById(room._id, appendMembers);
 
 		this.isJoiningRoom = false;
 		roomName = this.pendingJoinRoomBuf.shift();
@@ -266,7 +263,8 @@ class IrcClient {
 	}
 
 	initRoomList() {
-		const roomsCursor = RocketChat.models.Rooms.findByTypeContainingUsername('c', this.user.username, { fields: { name: 1, t: 1 }});
+		const roomIds = RocketChat.models.Subscriptions.findByUserIdAndType(this.user._id, 'c', {fields: {rid: 1}}).fetch().map(s => s.rid);
+		const roomsCursor = RocketChat.models.Rooms.findByIds(roomIds, { fields: { name: 1, t: 1 }});
 		const rooms = roomsCursor.fetch();
 		rooms.forEach(room => this.joinRoom(room));
 	}
@@ -308,17 +306,14 @@ class IrcClient {
 		}
 		console.log('[irc] onAddMemberToRoom -> '.yellow, 'roomName:', roomName, 'member:', member);
 		this.createUserWhenNotExist(member);
-		RocketChat.models.Rooms.addUsernameByName(roomName, member);
 	}
 
 	onRemoveMemberFromRoom(member, roomName) {
 		console.log('[irc] onRemoveMemberFromRoom -> '.yellow, 'roomName:', roomName, 'member:', member);
-		RocketChat.models.Rooms.removeUsernameByName(roomName, member);
 	}
 
 	onQuitMember(member) {
 		console.log('[irc] onQuitMember ->'.yellow, 'username:', member);
-		RocketChat.models.Rooms.removeUsernameFromAll(member);
 		Meteor.users.update({ name: member }, { $set: { status: 'offline' }});
 	}
 

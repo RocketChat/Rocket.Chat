@@ -32,7 +32,8 @@ function inviteAll(type) {
 				}, currentUser.language)
 			});
 		}
-		const users = baseChannel.usernames || [];
+
+		const users = RocketChat.models.Subscriptions.findByRoomId(baseChannel._id, {fields: {u: 1}}).fetch().map(s => s.u && s.u.username);
 
 		try {
 			if (users.length > RocketChat.settings.get('API_User_Limit')) {

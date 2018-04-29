@@ -103,7 +103,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (isMentionAll) {
 			const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
-			if (maxMembersForNotification !== 0 && room.usernames.length > maxMembersForNotification) {
+			const usernamesCount = RocketChat.models.Subscriptions.findByRoomId(room._id).count();
+			if (maxMembersForNotification !== 0 && usernamesCount > maxMembersForNotification) {
 				isMentionAll = undefined;
 			}
 		}
@@ -194,7 +195,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				// Checks if user is in the room he/she is mentioned (unless it's public channel)
-				if (room.t !== 'c' && room.usernames.indexOf(user.username) === -1) {
+				if (room.t !== 'c' && RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {fields: {_id: 1}})) {
 					return;
 				}
 

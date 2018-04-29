@@ -14,8 +14,11 @@ RocketChat.actionLinks = {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { function: 'actionLinks.getMessage' });
 		}
 
-		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		const subscription = RocketChat.models.Subscriptions.findOne({
+			rid: message.rid,
+			'u._id': Meteor.userId()
+		});
+		if (!subscription) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });
 		}
 

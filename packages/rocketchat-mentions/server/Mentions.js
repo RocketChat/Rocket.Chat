@@ -47,8 +47,8 @@ export default class MentionsServer extends Mentions {
 			}
 			if (mention === 'all') {
 				const messageMaxAll = this.messageMaxAll;
-				const allChannel = this.getChannel(rid);
-				if (messageMaxAll !== 0 && allChannel.usernames.length >= messageMaxAll) {
+				const usernamesCount = RocketChat.models.Subscriptions.findByRoomId(rid).count();
+				if (messageMaxAll !== 0 && usernamesCount >= messageMaxAll) {
 					return;
 				}
 			}

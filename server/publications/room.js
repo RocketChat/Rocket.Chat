@@ -88,9 +88,11 @@ Meteor.methods({
 			room = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
 		}
 
-		if (!room) {
+		if (!room || room.length === 0) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
 		}
+
+		room = room[0];
 
 		if (!Meteor.call('canAccessRoom', room._id, Meteor.userId())) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
@@ -104,6 +106,7 @@ Meteor.methods({
 	}
 });
 
+// TODO
 RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
 	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
 

@@ -5,13 +5,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		super(...arguments);
 
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'u.username': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'alert': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'roles': 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
-		this.tryEnsureIndex({ 'unread': 1 });
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });
 		this.tryEnsureIndex({ 'audioNotifications': 1 }, { sparse: 1 });
@@ -42,6 +42,15 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByRoomIdAndUsername(roomId, username, options) {
+		const query = {
+			rid: roomId,
+			'u.username': username
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByRoomNameAndUserId(roomName, userId) {
 		if (this.useCache) {
 			return this.cache.findByIndex('name,u._id', [roomName, userId]).fetch();
@@ -62,6 +71,30 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 		const query =
 			{ 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndType(userId, type, options) {
+		if (this.useCache) {
+			return this.cache.findByIndex('u._id', userId, options);
+		}
+
+		const query = {
+			'u._id': userId,
+			t: type
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndTypes(userId, types, options) {
+		const query = {
+			'u._id': userId,
+			t: {
+				$in: types
+			}
+		};
 
 		return this.find(query, options);
 	}
@@ -101,16 +134,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	findByTypeAndUserId(type, userId, options) {
 		const query = {
 			t: type,
-			'u._id': userId
-		};
-
-		return this.find(query, options);
-	}
-
-	findByTypeNameAndUserId(type, name, userId, options) {
-		const query = {
-			t: type,
-			name,
 			'u._id': userId
 		};
 

@@ -10,6 +10,7 @@ class ModelsBase {
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
 
+		useCache = false;
 		this._useCache = useCache === true;
 
 		this.cache = new ModelsBaseCache(this);

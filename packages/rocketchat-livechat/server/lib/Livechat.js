@@ -336,8 +336,6 @@ RocketChat.Livechat = {
 		const servedBy = room.servedBy;
 
 		if (agent && agent.agentId !== servedBy._id) {
-			room.usernames = _.without(room.usernames, servedBy.username).concat(agent.username);
-
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 
 			const subscriptionData = {

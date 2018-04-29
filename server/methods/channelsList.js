@@ -44,19 +44,22 @@ Meteor.methods({
 			}
 		}
 
-		const roomTypes = [];
+		let channels = [];
 
 		if (channelType !== 'private') {
 			if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room')) {
-				roomTypes.push({
-					type: 'c'
-				});
+				if (filter) {
+					channels = channels.concat(RocketChat.models.Rooms.findByType('c', options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+				}
 			} else if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-joined-room')) {
-				const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid');
-				roomTypes.push({
-					type: 'c',
-					ids: roomIds
-				});
+				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId(), {fields: {rid: 1}}).fetch().map(s => s.rid);
+				if (filter) {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('c', roomIds, options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+				}
 			}
 		}
 
@@ -67,27 +70,17 @@ Meteor.methods({
 			const mergeChannels = userPref !== undefined ? userPref : globalPref;
 
 			if (mergeChannels) {
-				roomTypes.push({
-					type: 'p',
-					username: user.username
-				});
+				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('p', Meteor.userId(), {fields: {rid: 1}}).fetch().map(s => s.rid);
+				if (filter) {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('p', roomIds, options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+				}
 			}
-		}
-
-		if (roomTypes.length) {
-			if (filter) {
-				return {
-					channels: RocketChat.models.Rooms.findByNameContainingTypesWithUsername(filter, roomTypes, options).fetch()
-				};
-			}
-
-			return {
-				channels: RocketChat.models.Rooms.findContainingTypesWithUsername(roomTypes, options).fetch()
-			};
 		}
 
 		return {
-			channels: []
+			channels
 		};
 	}
 });

@@ -203,9 +203,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		return (settings[types[type][0]].indexOf(id) === -1 || settings[types[type][1]].indexOf(id) !== -1);
 	}
 
+	const roomUsernames = RocketChat.models.Subscriptions.findByRoomId(room._id, {u: 1}).fetch()
+		.filter(s => s.u && s.u.username)
+		.map(s => s.u.username);
+
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
-	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+	const disableAllMessageNotifications = roomUsernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications) || [];
 	const userIds = [];
 	subscriptions.forEach(s => userIds.push(s.u._id));
@@ -260,7 +264,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	const mentions = [];
 	const alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
 
-	const usersWithHighlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch()
+	const usersWithHighlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(roomUsernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch()
 		.filter(user => messageContainsHighlight(message, user.settings.preferences.highlights));
 
 	let push_message = ' ';
@@ -344,7 +348,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			mentions.push(...usersOfDesktopMentions);
 			if (room.t !== 'c') {
 				usersOfDesktopMentions = _.reject(usersOfDesktopMentions, (usersOfMentionItem) => {
-					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
+					return roomUsernames.indexOf(usersOfMentionItem.username) === -1;
 				});
 			}
 
@@ -376,7 +380,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 			mentions.push(...usersOfMobileMentions);
 			if (room.t !== 'c') {
-				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !room.usernames.includes(usersOfMentionItem.username));
+				usersOfMobileMentions = _.reject(usersOfMobileMentions, usersOfMentionItem => !roomUsernames.includes(usersOfMentionItem.username));
 			}
 
 			userIdsToPushNotify = usersOfMobileMentions.map(userMobile => {
@@ -401,7 +405,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			mentions.push(...usersOfAudioMentions);
 			if (room.t !== 'c') {
 				usersOfAudioMentions = _.reject(usersOfAudioMentions, (usersOfMentionItem) => {
-					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
+					return roomUsernames.indexOf(usersOfMentionItem.username) === -1;
 				});
 			}
 
@@ -409,13 +413,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		}
 
 		if (room.t === 'c') {
-			mentions.filter(user => !room.usernames.includes(user.username))
+			mentions.filter(user => !roomUsernames.includes(user.username))
 				.forEach(user =>callJoin(user, room._id));
 		}
 
-		if ([toAll, toHere].some(e => e) && room.usernames && room.usernames.length > 0) {
+		if ([toAll, toHere].some(e => e) && roomUsernames.length > 0) {
 			RocketChat.models.Users.find({
-				username: { $in: room.usernames },
+				username: { $in: roomUsernames },
 				_id: { $ne: user._id }
 			}, {
 				fields: {

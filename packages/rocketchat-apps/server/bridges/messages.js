@@ -54,7 +54,7 @@ export class AppMessageBridge {
 	async notifyRoom(room, message, appId) {
 		console.log(`The App ${ appId } is notifying a room's users.`);
 
-		if (room && room.usernames && Array.isArray(room.usernames)) {
+		if (room) {
 			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 			const rmsg = Object.assign(msg, {
 				_id: Random.id(),
@@ -64,8 +64,9 @@ export class AppMessageBridge {
 				editor: undefined
 			});
 
-			room.usernames.forEach((u) => {
-				const user = RocketChat.models.Users.findOneByUsername(u);
+			const users = RocketChat.models.Subscriptions.findByRoomId(room._id, {fields: {u: 1}}).fetch().filter(s => s.u && s.u._id).map(s => s.u);
+			users.forEach((u) => {
+				const user = RocketChat.models.Users.findOneById(u._id);
 				if (user) {
 					RocketChat.Notifications.notifyUser(user._id, 'message', rmsg);
 				}

@@ -59,7 +59,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 	// FIND
 	findById(userId) {
-		const query =	{_id: userId};
+		const query = {_id: userId};
 
 		return this.find(query);
 	}
@@ -242,6 +242,35 @@ class ModelUsers extends RocketChat.models._Base {
 				$in: ids
 			}
 		};
+		return this.find(query, options);
+	}
+
+	findUsersWithUsernameByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			},
+			username: {
+				$exists: 1
+			}
+		};
+
+		return this.find(query, options);
+	}
+
+	findUsersWithUsernameByIdsNotOffline(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			},
+			username: {
+				$exists: 1
+			},
+			status: {
+				$in: ['online', 'away', 'busy']
+			}
+		};
+
 		return this.find(query, options);
 	}
 

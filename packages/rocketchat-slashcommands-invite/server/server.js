@@ -10,11 +10,11 @@ function Invite(command, params, item) {
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
-	let usernames = params.replace(/@/g, '').split(/[\s,]/).filter((a) => a !== '');
+	const usernames = params.replace(/@/g, '').split(/[\s,]/).filter((a) => a !== '');
 	if (usernames.length === 0) {
 		return;
 	}
-	const users = Meteor.users.find({
+	let users = Meteor.users.find({
 		username: {
 			$in: usernames
 		}
@@ -32,8 +32,9 @@ function Invite(command, params, item) {
 		});
 		return;
 	}
-	usernames = usernames.filter(function(username) {
-		if (RocketChat.models.Rooms.findOneByIdContainingUsername(item.rid, username) == null) {
+	users = users.filter(function(user) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {fields: {_id: 1}});
+		if (subscription == null) {
 			return true;
 		}
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
@@ -42,7 +43,7 @@ function Invite(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
-				sprintf: [username]
+				sprintf: [user.username]
 			}, currentUser.language)
 		});
 		return false;

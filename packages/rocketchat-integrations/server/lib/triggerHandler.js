@@ -87,12 +87,11 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			history.data = { ...data };
 
 			if (data.user) {
-				history.data.user = _.omit(data.user, ['meta', '$loki', 'services']);
+				history.data.user = _.omit(data.user, ['meta', 'services']);
 			}
 
 			if (data.room) {
-				history.data.room = _.omit(data.room, ['meta', '$loki', 'usernames']);
-				history.data.room.usernames = ['this_will_be_filled_in_with_usernames_when_replayed'];
+				history.data.room = _.omit(data.room, ['meta']);
 			}
 		}
 

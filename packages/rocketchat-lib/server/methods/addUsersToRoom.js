@@ -16,8 +16,8 @@ Meteor.methods({
 		// Get user and room details
 		const room = RocketChat.models.Rooms.findOneById(data.rid);
 		const userId = Meteor.userId();
-		const user = Meteor.user();
-		const userInRoom = Array.isArray(room.usernames) && room.usernames.includes(user.username);
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {fields: {_id: 1}});
+		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
 		if (room.t === 'd') {
@@ -59,6 +59,7 @@ Meteor.methods({
 				});
 			}
 
+			const user = Meteor.user();
 			RocketChat.addUserToRoom(data.rid, newUser, user);
 		});
 

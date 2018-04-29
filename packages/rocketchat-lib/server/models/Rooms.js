@@ -13,7 +13,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 		this.cache.ignoreUpdatedFields = ['msgs', 'lm'];
 		this.cache.ensureIndex(['t', 'name'], 'unique');
-		this.cache.options = {fields: {usernames: 0}};
+		// this.cache.options = {fields: {usernames: 0}};
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -64,28 +64,6 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdContainingUsername(_id, username, options) {
-		const query = {
-			_id,
-			usernames: username
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findOneByNameAndTypeNotContainingUsername(name, type, username, options) {
-		const query = {
-			name,
-			t: type,
-			usernames: {
-				$ne: username
-			}
-		};
-
-		return this.findOne(query, options);
-	}
-
-
 	// FIND
 
 	findById(roomId, options) {
@@ -98,6 +76,17 @@ class ModelRooms extends RocketChat.models._Base {
 
 	findByType(type, options) {
 		const query = {t: type};
+
+		return this.find(query, options);
+	}
+
+	findByTypeInIds(type, ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			},
+			t: type
+		};
 
 		return this.find(query, options);
 	}
@@ -119,21 +108,8 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		let data;
-		if (this.useCache) {
-			data = RocketChat.models.Subscriptions.findByUserId(userId).fetch();
-			data = data.map(function(item) {
-				if (item._room) {
-					return item._room;
-				}
-				console.log('Empty Room for Subscription', item);
-			});
-			data = data.filter(item => item);
-			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
-		}
-
-		data = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch();
-		data = data.map(item => item.rid);
+		const data = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+			.map(item => item.rid);
 
 		const query = {
 			_id: {
@@ -145,20 +121,8 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		if (this.useCache) {
-			let data = RocketChat.models.Subscriptions.findByUserId(userId).fetch();
-			data = data.map(function(item) {
-				if (item._room) {
-					return item._room;
-				}
-				console.log('Empty Room for Subscription', item);
-			});
-			data = data.filter(item => item && item._updatedAt > _updatedAt);
-			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
-		}
-
-		let ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch();
-		ids = ids.map(item => item.rid);
+		const ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+			.map(item => item.rid);
 
 		const query = {
 			_id: {
@@ -184,45 +148,6 @@ class ModelRooms extends RocketChat.models._Base {
 				}
 			]
 		};
-
-		return this.find(query, options);
-	}
-
-	findByNameContainingTypesWithUsername(name, types, options) {
-		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
-
-		const $or = [];
-		for (const type of Array.from(types)) {
-			const obj = {name: nameRegex, t: type.type};
-			if (type.username != null) {
-				obj.usernames = type.username;
-			}
-			if (type.ids != null) {
-				obj._id = {$in: type.ids};
-			}
-			$or.push(obj);
-		}
-
-		const query = {$or};
-
-		return this.find(query, options);
-	}
-
-	findContainingTypesWithUsername(types, options) {
-
-		const $or = [];
-		for (const type of Array.from(types)) {
-			const obj = {t: type.type};
-			if (type.username != null) {
-				obj.usernames = type.username;
-			}
-			if (type.ids != null) {
-				obj._id = {$in: type.ids};
-			}
-			$or.push(obj);
-		}
-
-		const query = {$or};
 
 		return this.find(query, options);
 	}
@@ -269,35 +194,29 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypesNotContainingUsername(name, types, username, options) {
+	findByNameAndTypesNotInIds(name, types, ids, options) {
 		const query = {
+			_id: {
+				$ne: ids
+			},
 			t: {
 				$in: types
 			},
-			name,
-			usernames: {
-				$ne: username
-			}
+			name
 		};
 
 		// do not use cache
 		return this._db.find(query, options);
 	}
 
-	findByNameStartingAndTypes(name, types, options) {
+	findChannelAndPrivateByNameStarting(name, options) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {
 			t: {
-				$in: types
+				$in: ['c', 'p']
 			},
-			$or: [
-				{name: nameRegex},
-				{
-					t: 'd',
-					usernames: nameRegex
-				}
-			]
+			name: nameRegex
 		};
 
 		return this.find(query, options);
@@ -314,40 +233,11 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findByTypeContainingUsername(type, username, options) {
+	findDirectRoomContainingUsername(username, options) {
 		const query = {
-			t: type,
+			t: 'd',
 			usernames: username
 		};
-
-		return this.find(query, options);
-	}
-
-	findByTypeContainingUsernames(type, username, options) {
-		const query = {
-			t: type,
-			usernames: { $all: [].concat(username) }
-		};
-
-		return this.find(query, options);
-	}
-
-	findByTypesAndNotUserIdContainingUsername(types, userId, username, options) {
-		const query = {
-			t: {
-				$in: types
-			},
-			uid: {
-				$ne: userId
-			},
-			usernames: username
-		};
-
-		return this.find(query, options);
-	}
-
-	findByContainingUsername(username, options) {
-		const query = {usernames: username};
 
 		return this.find(query, options);
 	}
@@ -365,11 +255,26 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findByTypeAndNameContainingUsername(type, name, username, options) {
+	findByTypeAndNameContaining(type, name, options) {
+		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+
 		const query = {
-			name,
-			t: type,
-			usernames: username
+			name: nameRegex,
+			t: type
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTypeInIdsAndNameContaining(type, ids, name, options) {
+		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+
+		const query = {
+			_id: {
+				$in: ids
+			},
+			name: nameRegex,
+			t: type
 		};
 
 		return this.find(query, options);
@@ -421,98 +326,6 @@ class ModelRooms extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				archived: false
-			}
-		};
-
-		return this.update(query, update);
-	}
-
-	addUsernameById(_id, username, muted) {
-		const query = {_id};
-
-		const update = {
-			$addToSet: {
-				usernames: username
-			}
-		};
-
-		if (muted) {
-			update.$addToSet.muted = username;
-		}
-
-		return this.update(query, update);
-	}
-
-	addUsernamesById(_id, usernames) {
-		const query = {_id};
-
-		const update = {
-			$addToSet: {
-				usernames: {
-					$each: usernames
-				}
-			}
-		};
-
-		return this.update(query, update);
-	}
-
-	addUsernameByName(name, username) {
-		const query = {name};
-
-		const update = {
-			$addToSet: {
-				usernames: username
-			}
-		};
-
-		return this.update(query, update);
-	}
-
-	removeUsernameById(_id, username) {
-		const query = {_id};
-
-		const update = {
-			$pull: {
-				usernames: username
-			}
-		};
-
-		return this.update(query, update);
-	}
-
-	removeUsernamesById(_id, usernames) {
-		const query = {_id};
-
-		const update = {
-			$pull: {
-				usernames: {
-					$in: usernames
-				}
-			}
-		};
-
-		return this.update(query, update);
-	}
-
-	removeUsernameFromAll(username) {
-		const query = {usernames: username};
-
-		const update = {
-			$pull: {
-				usernames: username
-			}
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
-	removeUsernameByName(name, username) {
-		const query = {name};
-
-		const update = {
-			$pull: {
-				usernames: username
 			}
 		};
 
@@ -816,9 +629,9 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.remove(query);
 	}
 
-	removeByTypeContainingUsername(type, username) {
+	removeDirectRoomContainingUsername(username) {
 		const query = {
-			t: type,
+			t: 'd',
 			usernames: username
 		};
 

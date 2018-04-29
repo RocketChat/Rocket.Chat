@@ -16,7 +16,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		if (!Array.from(room.usernames || []).includes(user.username)) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {fields: {_id: 1}});
+		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'You are not in this room', { method: 'leaveRoom' });
 		}
 

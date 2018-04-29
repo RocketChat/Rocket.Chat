@@ -142,7 +142,7 @@ describe('miscellaneous', function() {
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('name');
-					expect(res.body.result[0]).to.have.property('usernames').and.to.be.an('array');
+					// expect(res.body.result[0]).to.have.property('usernames').and.to.be.an('array'); // TODO should test the users count
 					expect(res.body.result[0]).to.have.property('ts');
 				})
 				.end(done);

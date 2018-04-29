@@ -151,7 +151,7 @@ RocketChat.API.v1.addRoute('groups.delete', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.processQueryOptionsOnResult([findResult._room], { fields: RocketChat.API.v1.defaultFieldsToExclude })[0]
+			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -383,15 +383,22 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
-		let sortFn = (a, b) => a > b;
-		if (Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1) {
-			sortFn = (a, b) => b < a;
+		let subscriptionSort = {};
+
+		if (!Match.test(sort, Object) || !Match.test(sort.username, Number)) {
+			subscriptionSort = {'u.username': 1};
+		} else {
+			subscriptionSort = {'u.username': sort.username};
 		}
 
-		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult._room.usernames).sort(sortFn), {
+		const members = RocketChat.models.Subscriptions.findByRoomId(findResult.rid, {
+			fields: {u: 1},
+			sort: subscriptionSort,
 			skip: offset,
 			limit: count
-		});
+		}).fetch()
+			.filter(s => s.u && s.u._id && s.u.username)
+			.map(s => s.u.username);
 
 		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
@@ -402,7 +409,7 @@ RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 			members: users,
 			count: members.length,
 			offset,
-			total: findResult._room.usernames.length
+			total: RocketChat.models.Subscriptions.findByRoomId(findResult.rid).count()
 		});
 	}
 });
@@ -450,7 +457,8 @@ RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-			if (room.usernames.indexOf(user.username) !== -1) {
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, {fields: {_id: 1}});
+			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
 					username: user.username

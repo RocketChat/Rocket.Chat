@@ -21,15 +21,15 @@ RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 	};
 	if (readOnly) {
 		RocketChat.models.Subscriptions.findByRoomId(_id).forEach(function(subscription) {
-			if (subscription._user == null) {
+			if (subscription.u == null || subscription.u._id == null || subscription.u.username == null) {
 				return;
 			}
-			const user = subscription._user;
-			if (RocketChat.authz.hasPermission(user._id, 'post-readonly') === false) {
+
+			if (RocketChat.authz.hasPermission(subscription.u._id, 'post-readonly') === false) {
 				if (!update.$set.muted) {
 					update.$set.muted = [];
 				}
-				return update.$set.muted.push(user.username);
+				return update.$set.muted.push(subscription.u.username);
 			}
 		});
 	} else {

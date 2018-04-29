@@ -9,32 +9,17 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const filter = (record) => {
-			if (!record._user) {
-				console.log('Subscription without user', record._id);
-				return false;
-			}
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(roomId, {fields: {u: 1}}).fetch().filter(s => s.u && s.u._id && s.u.username);
+		const userIds = subscriptions.map(s => s.u._id);
+		const options = {fields: {username: 1, name: 1}};
 
-			if (showAll === true) {
-				return true;
-			}
-
-			return record._user.status !== 'offline';
-		};
-
-		const map = (record) => {
-			return {
-				_id: record._user._id,
-				username: record._user.username,
-				name: record._user.name
-			};
-		};
-
-		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();
+		const users = showAll === true
+			? RocketChat.models.Users.findUsersWithUsernameByIds(userIds, options).fetch()
+			: RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(userIds, options).fetch();
 
 		return {
-			total: records.length,
-			records: records.filter(filter).map(map)
+			total: userIds.length,
+			records: users
 		};
 	}
 });

@@ -91,15 +91,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		message.ts = new Date();
 	}
 
-	if (!room.usernames || room.usernames.length === 0) {
-		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
-		if (updated_room) {
-			room = updated_room;
-		} else {
-			room.usernames = [];
-		}
-	}
-
 	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}

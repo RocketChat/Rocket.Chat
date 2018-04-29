@@ -17,7 +17,7 @@ function directorySearch(config, cb) {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: result.usernames.length,
+					users: result.usernames.length, //TODO create property to have the users count in room object
 					createdAt: timeAgo(result.ts),
 					description: result.description,
 					archived: result.archived

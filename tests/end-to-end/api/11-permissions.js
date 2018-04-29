@@ -21,11 +21,6 @@ describe('[Permissions]', function() {
 					expect(firstElement).to.have.property('_id');
 					expect(firstElement).to.have.property('roles').and.to.be.a('array');
 					expect(firstElement).to.have.property('_updatedAt');
-					expect(firstElement).to.have.property('meta');
-					expect(firstElement.meta).to.have.property('revision');
-					expect(firstElement.meta).to.have.property('created');
-					expect(firstElement.meta).to.have.property('version');
-					expect(firstElement).to.have.property('$loki');
 				})
 				.end(done);
 		});

@@ -1,15 +1,12 @@
 import _ from 'underscore';
 
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findChannelByIdOrName({ params, checkedArchived = true, returnUsernames = false }) {
+function findChannelByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const fields = { ...RocketChat.API.v1.defaultFieldsToExclude };
-	if (returnUsernames) {
-		delete fields.usernames;
-	}
 
 	let room;
 	if (params.roomId) {
@@ -443,8 +440,9 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			const ourQuery = Object.assign({}, query, { t: 'c' });
 
 			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !hasPermissionToSeeAllPublicChannels) {
-				ourQuery.usernames = {
-					$in: [this.user.username]
+				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndType(this.userId, 'c', {fields: {rid: 1}}).fetch().map(s => s.rid);
+				ourQuery._id = {
+					$in: roomIds
 				};
 			} else if (!hasPermissionToSeeAllPublicChannels) {
 				return RocketChat.API.v1.unauthorized();
@@ -499,34 +497,28 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
-			checkedArchived: false,
-			returnUsernames: true
+			checkedArchived: false
 		});
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
+		const { sort = {} } = this.parseJsonQuery();
 
-		const shouldBeOrderedDesc = Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1;
-
-		let members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames).sort(), {
+		const members = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
+			sort: {'u.username':  sort.username != null ? sort.username : 1},
 			skip: offset,
 			limit: count
-		});
-
-		if (shouldBeOrderedDesc) {
-			members = members.reverse();
-		}
+		}).fetch().map(s => s.u && s.u.username);
 
 		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: sort ? sort : { username: 1 }
+			sort: {username:  sort.username != null ? sort.username : 1}
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
 			count: users.length,
 			offset,
-			total: findResult.usernames.length
+			total: RocketChat.models.Subscriptions.findByRoomId(findResult._id).count()
 		});
 	}
 });
@@ -535,8 +527,7 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
-			checkedArchived: false,
-			returnUsernames: true
+			checkedArchived: false
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
@@ -544,7 +535,7 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
 		//Special check for the permissions
-		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !findResult.usernames.includes(this.user.username)) {
+		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, {fields: {_id: 1}})) {
 			return RocketChat.API.v1.unauthorized();
 		} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
 			return RocketChat.API.v1.unauthorized();
@@ -585,7 +576,8 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-			if (room.usernames.indexOf(user.username) !== -1) {
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, {fields: {_id: 1}});
+			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
 					username: user.username

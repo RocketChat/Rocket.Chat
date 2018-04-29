@@ -98,20 +98,32 @@ class ModelsBaseDb extends EventEmitter {
 		};
 	}
 
+	_doNotMixInclusionAndExclusionFields(options) {
+		if (options && options.fields) {
+			const keys = Object.keys(options.fields);
+			const removeKeys = keys.filter(key => options.fields[key] === 0);
+			if (keys.length > removeKeys.length) {
+				removeKeys.forEach(key => delete options.fields[key]);
+			}
+		}
+	}
+
 	find() {
+		this._doNotMixInclusionAndExclusionFields(arguments[1]);
 		return this.model.find(...arguments);
 	}
 
 	findOne() {
+		this._doNotMixInclusionAndExclusionFields(arguments[1]);
 		return this.model.findOne(...arguments);
 	}
 
 	findOneById(_id, options) {
-		return this.model.findOne({ _id }, options);
+		return this.findOne({ _id }, options);
 	}
 
 	findOneByIds(ids, options) {
-		return this.model.findOne({ _id: { $in: ids }}, options);
+		return this.findOne({ _id: { $in: ids }}, options);
 	}
 
 	defineSyncStrategy(query, modifier, options) {
