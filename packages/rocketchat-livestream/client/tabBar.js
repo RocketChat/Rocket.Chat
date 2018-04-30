@@ -7,7 +7,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Livestream',
 				icon: 'podcast',
 				template: 'liveStreamTab',
-				order: 1,
+				order: 3,
 				class: () => {
 					const roomWithStream = RocketChat.models.Rooms.findOne({_id: Session.get('openedRoom')}, { fields: { 'streamingOptions': 1 } });
 					return roomWithStream && roomWithStream.streamingOptions && roomWithStream.streamingOptions.id ? 'live' : '';
