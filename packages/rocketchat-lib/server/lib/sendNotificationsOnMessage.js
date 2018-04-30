@@ -526,7 +526,7 @@ const sendNotification = ({
 
 	// notifications disabled
 	if (subscription.disableNotifications) {
-		console.log('return; disableNotifications');
+		// console.log('return; disableNotifications');
 		return;
 	}
 
@@ -543,6 +543,11 @@ const sendNotification = ({
 	}
 
 	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
+
+	if (!receiver) {
+		console.log('no receiver ->', subscription.u._id);
+		return;
+	}
 
 	const hasHighlight = messageContainsHighlight(message, receiver.settings && receiver.settings.preferences && receiver.settings.preferences.highlights);
 
@@ -632,7 +637,7 @@ function notifyGroups(message, room, userId) {
 		return message;
 	}
 
-	if (room.t == null || room.t === 'd') {
+	if (!room || room.t == null) {
 		return message;
 	}
 
@@ -665,6 +670,10 @@ function notifyGroups(message, room, userId) {
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 
+	console.log('room.usernames.length ->', room.usernames.length);
+	console.log('maxMembersForNotification ->', maxMembersForNotification);
+	console.log('disableAllMessageNotifications ->', disableAllMessageNotifications);
+
 	// console.time('findSubscriptions');
 
 	// @TODO maybe should also force find mentioned people
@@ -673,8 +682,6 @@ function notifyGroups(message, room, userId) {
 		// @TODO get only preferences set to all (because they have precedence over `max_room_members`)
 		subscriptions = RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom(room._id) || [];
 	} else {
-
-		// @TODO get all subscriptions
 		subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id) || [];
 	}
 	// console.timeEnd('findSubscriptions');
@@ -704,6 +711,7 @@ function notifyGroups(message, room, userId) {
 
 	// @TODO mentions for a person that is not on the channel
 
+	console.log('count ->', subscriptions.count());
 
 	// console.time('eachSubscriptions');
 

@@ -11,7 +11,22 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
-		this.tryEnsureIndex({ 'unread': 1 });
+
+		// @TODO evalute find by this property if we can remove it
+		// this.tryEnsureIndex({ 'unread': 1 });
+
+		this.tryEnsureIndex({
+			rid: 1,
+			'u._id': 1,
+			alert: 1
+		});
+
+		this.tryEnsureIndex({
+			rid: 1,
+			'u._id': 1,
+			open: 1
+		});
+
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });
 		this.tryEnsureIndex({ 'audioNotifications': 1 }, { sparse: 1 });
@@ -26,6 +41,8 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.cache.ensureIndex('name', 'array');
 		this.cache.ensureIndex(['rid', 'u._id'], 'unique');
 		this.cache.ensureIndex(['name', 'u._id'], 'unique');
+
+		this.rawCollection = this.model.rawCollection();
 	}
 
 
@@ -407,7 +424,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(roomId, userId, incGroup = 1, incUnread = 1) {
@@ -429,7 +446,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
@@ -451,7 +468,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
 	}
 
 	ignoreUser({_id, ignoredUser : ignored, ignore = true}) {
@@ -475,19 +492,32 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': {
 				$ne: userId
 			},
-			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
-			]
+			alert: { $ne: true }
 		};
 
 		const update = {
 			$set: {
-				alert: true,
+				alert: true
+			}
+		};
+		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+	}
+
+	setOpenForRoomIdExcludingUserId(roomId, userId) {
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId
+			},
+			open: { $ne: true }
+		};
+
+		const update = {
+			$set: {
 				open: true
 			}
 		};
-		return this.update(query, update, { multi: true });
+		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
 	}
 
 	setBlockedByRoomId(rid, blocked, blocker) {

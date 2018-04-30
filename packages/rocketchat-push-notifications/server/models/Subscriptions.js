@@ -189,7 +189,7 @@ RocketChat.models.Subscriptions.findDontNotifyMobileUsersByRoomId = function(roo
 	return this.find(query);
 };
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId, explicit) {
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoomOld = function(roomId, explicit) {
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true}
@@ -222,13 +222,13 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 };
 
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom2 = function(roomId) {
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId) {
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true}
 	};
 
-	return this.find(query, {
+	return this._db.find(query, {
 		fields: {
 			'u._id': 1,
 			audioNotifications: 1,
@@ -255,7 +255,7 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 		]
 	};
 
-	return this.find(query, {
+	return this._db.find(query, {
 		fields: {
 			'u._id': 1,
 			audioNotifications: 1,

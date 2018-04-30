@@ -2,7 +2,30 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+/**
+ * Chechs if a messages contains a user highlight
+ *
+ * @param {string} message
+ * @param {array|undefined} highlights
+ *
+ * @returns {boolean}
+ */
+function messageContainsHighlight(message, highlights) {
+	if (! highlights || highlights.length === 0) { return false; }
+
+	let has = false;
+	highlights.some(function(highlight) {
+		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		if (regexp.test(message.msg)) {
+			has = true;
+			return true;
+		}
+	});
+
+	return has;
+}
+
+function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
 		//TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
@@ -22,28 +45,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	/**
-	 * Chechs if a messages contains a user highlight
-	 *
-	 * @param {string} message
-	 * @param {array|undefined} highlights
-	 *
-	 * @returns {boolean}
-     */
-	function messageContainsHighlight(message, highlights) {
-		if (! highlights || highlights.length === 0) { return false; }
-
-		let has = false;
-		highlights.some(function(highlight) {
-			const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
-			if (regexp.test(message.msg)) {
-				has = true;
-				return true;
-			}
-		});
-
-		return has;
-	}
 
 	if (room != null) {
 		let toAll = false;
@@ -79,11 +80,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			const unreadCountDM = RocketChat.settings.get('Unread_Count_DM');
 
 			if (unreadCountDM === 'all_messages') {
+				console.time('incUnreadForRoomIdExcludingUserId');
 				RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
+				console.timeEnd('incUnreadForRoomIdExcludingUserId');
 			} else if (toAll || toHere) {
+				console.time('incGroupMentionsAndUnreadForRoomIdExcludingUserId1');
 				RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, 1);
+				console.timeEnd('incGroupMentionsAndUnreadForRoomIdExcludingUserId1');
 			} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
+				console.time('incUserMentionsAndUnreadForRoomIdAndUserIds');
 				RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, 1);
+				console.timeEnd('incUserMentionsAndUnreadForRoomIdAndUserIds');
 			}
 		} else {
 			const unreadCount = RocketChat.settings.get('Unread_Count');
@@ -93,26 +100,77 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				if (['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
 					incUnread = 1;
 				}
-				RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread);
+				console.time('incGroupMentionsAndUnreadForRoomIdExcludingUserId2');
+				RocketChat.models.Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, incUnread)
+					.then(() => {
+						console.timeEnd('incGroupMentionsAndUnreadForRoomIdExcludingUserId2');
+					})
+					.catch(error => {
+						console.error('error ->', error);
+						console.timeEnd('incGroupMentionsAndUnreadForRoomIdExcludingUserId2');
+						throw error;
+					});
+
 			} else if ((mentionIds && mentionIds.length > 0) || (highlightsIds && highlightsIds.length > 0)) {
 				let incUnread = 0;
 				if (['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
 					incUnread = 1;
 				}
-				RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
+				console.time('incUserMentionsAndUnreadForRoomIdAndUserIds');
+				RocketChat.models.Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread)
+					.then(() => {
+						console.timeEnd('incUserMentionsAndUnreadForRoomIdAndUserIds');
+					})
+					.catch(error => {
+						console.error('error ->', error);
+						console.timeEnd('incUserMentionsAndUnreadForRoomIdAndUserIds');
+						throw error;
+					});
 			} else if (unreadCount === 'all_messages') {
-				RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
+				console.time('incUnreadForRoomIdExcludingUserId');
+				RocketChat.models.Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id)
+					.then(() => {
+						console.timeEnd('incUnreadForRoomIdExcludingUserId');
+					})
+					.catch(error => {
+						console.error('error ->', error);
+						console.timeEnd('incUnreadForRoomIdExcludingUserId');
+						throw error;
+					});
 			}
 		}
 	}
 
 	// Update all the room activity tracker fields
-	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
+	console.time('incMsgCountAndSetLastMessageById');
+	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message)
+		.then(() => {
+			console.timeEnd('incMsgCountAndSetLastMessageById');
+		})
+		.catch(error => {
+			console.error('error ->', error);
+			console.timeEnd('incMsgCountAndSetLastMessageById');
+			throw error;
+		});
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
-	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
+	console.time('setAlertForRoomIdExcludingUserId');
+	Promise.all([
+		RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
+		RocketChat.models.Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id)
+	])
+		.then(() => {
+			console.timeEnd('setAlertForRoomIdExcludingUserId');
+		})
+		.catch(error => {
+			console.error('error ->', error);
+			console.timeEnd('setAlertForRoomIdExcludingUserId');
+			throw error;
+		});
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW, 'notifyUsersOnMessage');
+}
+
+RocketChat.callbacks.add('afterSaveMessage', notifyUsersOnMessage, RocketChat.callbacks.priority.LOW, 'notifyUsersOnMessage');
