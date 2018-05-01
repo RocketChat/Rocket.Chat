@@ -45,22 +45,24 @@
 				</div>
 			{{/if}}
 
-			<div class="attachment-flex">
-				{{#if thumb_url}}
-					<div class="attachment-thumb">
-						<img src="{{fixCordova thumb_url}}">
-					</div>
-				{{/if}}
+			{{#unless collapsed}}
+				<div class="attachment-flex">
+					{{#if thumb_url}}
+						<div class="attachment-thumb">
+							<img src="{{fixCordova thumb_url}}">
+						</div>
+					{{/if}}
 
-				{{#if text}}
-					<div class="attachment-flex-column-grow attachment-text">
-						{{{parsedText}}}
-					</div>
-				{{/if}}
-			</div>
+					{{#if text}}
+						<div class="attachment-flex-column-grow attachment-text">
+							{{{parsedText}}}
+						</div>
+					{{/if}}
+				</div>
+			{{/unless}}
 
 			{{#if image_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-image">
 					{{#if loadImage}}
 						<figure>
@@ -89,7 +91,7 @@
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{fixCordova audio_url}}" type="{{audio_type}}" data-description="{{description}}">
@@ -100,7 +102,7 @@
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{fixCordova video_url}}" type="{{video_type}}" data-description="{{description}}">
