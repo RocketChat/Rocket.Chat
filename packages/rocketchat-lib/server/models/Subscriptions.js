@@ -626,6 +626,42 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateDesktopNotificationUserPreferences(userId, desktopNotifications) {
+		const query = {
+			'u._id': userId,
+			desktopPrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				desktopNotifications,
+				desktopPrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateMobileNotificationUserPreferences(userId, mobilePushNotifications) {
+		const query = {
+			'u._id': userId,
+			desktopPrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				mobilePushNotifications,
+				mobilePrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {

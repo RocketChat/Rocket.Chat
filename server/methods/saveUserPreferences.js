@@ -45,6 +45,11 @@ Meteor.methods({
 			return false;
 		}
 
+		const {
+			desktopNotifications: oldDesktopNotifications,
+			mobileNotifications: oldMobileNotifications
+		} = user.settings || {};
+
 		if (user.settings == null) {
 			RocketChat.models.Users.clearSettings(user._id);
 		}
@@ -57,13 +62,22 @@ Meteor.methods({
 			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
 		}
 
-
-
 		if (settings.roomsListExhibitionMode != null) {
 			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
 		RocketChat.models.Users.setPreferences(user._id, settings);
+
+		// propagate changed notification preferences
+		Meteor.defer(() => {
+			if (oldDesktopNotifications !== settings.desktopNotifications) {
+				RocketChat.models.Subscriptions.updateDesktopNotificationUserPreferences(user._id, settings.desktopNotifications);
+			}
+
+			if (oldMobileNotifications !== settings.mobileNotifications) {
+				RocketChat.models.Subscriptions.updateMobileNotificationUserPreferences(user._id, settings.mobileNotifications);
+			}
+		});
 
 		return true;
 	}

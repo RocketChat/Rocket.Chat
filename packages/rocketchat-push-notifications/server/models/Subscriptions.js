@@ -225,7 +225,9 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId) {
 	const query = {
 		rid: roomId,
-		'u._id': {$exists: true}
+		'u._id': {$exists: true},
+		desktopNotifications: { $ne: 'nothing' },
+		mobilePushNotifications: { $ne: 'nothing' }
 	};
 
 	return this._db.find(query, {
@@ -246,6 +248,8 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true},
+		desktopNotifications: { $ne: 'nothing' },
+		mobilePushNotifications: { $ne: 'nothing' },
 		$or: [
 			{audioNotifications: {$exists: true}},
 			{desktopNotifications: {$exists: true}},

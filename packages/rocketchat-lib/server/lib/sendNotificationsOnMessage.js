@@ -676,6 +676,11 @@ function notifyGroups(message, room, userId) {
 
 	// console.time('findSubscriptions');
 
+	// @TODO we should change the find based on default server preferences Mobile_Notifications_Default_Alert and Desktop_Notifications_Default_Alert
+	// if default is 'all' -> exclude only 'nothing'
+	// if default is 'mentions' -> idk
+	// if default is 'nothing' -> idk
+
 	// @TODO maybe should also force find mentioned people
 	let subscriptions = [];
 	if (disableAllMessageNotifications) {
@@ -736,7 +741,7 @@ function notifyGroups(message, room, userId) {
 
 	if (room.t === 'c') {
 		Promise.all(message.mentions
-			.filter(user => !room.usernames.includes(user.username))
+			.filter(({ _id, username }) => _id !== 'here' && _id !== 'all' && !room.usernames.includes(username))
 			.map(async(user) => {
 				await callJoin(user, room._id);
 
