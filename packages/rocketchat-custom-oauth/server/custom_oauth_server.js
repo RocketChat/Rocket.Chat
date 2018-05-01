@@ -223,6 +223,13 @@ export class CustomOAuth {
 					identity.id = identity.userid;
 				}
 
+				// Fix Nextcloud provider
+				if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+					identity.id = identity.ocs.data.id;
+					identity.name = identity.ocs.data.displayname;
+					identity.email = identity.ocs.data.email;
+				}
+
 				// Fix when authenticating from a meteor app with 'emails' field
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
