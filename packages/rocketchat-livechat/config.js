@@ -283,6 +283,15 @@ Meteor.startup(function() {
 		i18nLabel: 'RDStation_Token'
 	});
 
+	RocketChat.settings.add('Livechat_Routing_Bot_First', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Routing',
+		i18nLabel: 'Livechat_Routing_Bot_First',
+		i18nDescription: 'Initially_routes_the_visitor_to_a_bot_agent'
+	});
+
 	RocketChat.settings.add('Livechat_Routing_Method', 'Least_Amount', {
 		type: 'select',
 		group: 'Livechat',
