@@ -27,7 +27,7 @@ export const fixCordova = function(url) {
 const loadImage = el => {
 	const img = new Image();
 	const src = el.getAttribute('data-src');
-	el.className.replace('lazy-img', '');
+	el.className = el.className.replace('lazy-img', '');
 	img.onload = function() {
 		el.src = src;
 		el.removeAttribute('data-src');
