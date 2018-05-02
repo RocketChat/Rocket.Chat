@@ -140,10 +140,10 @@ const toolbarButtons = (user) => {
 	{
 		name: t('Options'),
 		icon: 'menu',
-		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting', 'manage-emoji' ]),
+		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ]),
 		action: (e) => {
 			let adminOption;
-			if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting', 'manage-emoji' ])) {
+			if (RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ])) {
 				adminOption = {
 					icon: 'customize',
 					name: t('Administration'),
