@@ -41,8 +41,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.cache.ensureIndex('name', 'array');
 		this.cache.ensureIndex(['rid', 'u._id'], 'unique');
 		this.cache.ensureIndex(['name', 'u._id'], 'unique');
-
-		this.rawCollection = this.model.rawCollection();
 	}
 
 
@@ -424,7 +422,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+		return this.update(query, update, { multi: true });
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(roomId, userId, incGroup = 1, incUnread = 1) {
@@ -446,7 +444,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+		return this.update(query, update, { multi: true });
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
@@ -468,7 +466,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			}
 		};
 
-		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+		return this.update(query, update, { multi: true });
 	}
 
 	ignoreUser({_id, ignoredUser : ignored, ignore = true}) {
@@ -500,7 +498,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				alert: true
 			}
 		};
-		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+		return this.update(query, update, { multi: true });
 	}
 
 	setOpenForRoomIdExcludingUserId(roomId, userId) {
@@ -517,7 +515,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				open: true
 			}
 		};
-		return this.rawCollection.update(query, this.setUpdatedAt(update), { multi: true });
+		return this.update(query, update, { multi: true });
 	}
 
 	setBlockedByRoomId(rid, blocked, blocker) {

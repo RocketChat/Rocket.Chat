@@ -14,8 +14,6 @@ class ModelRooms extends RocketChat.models._Base {
 		this.cache.ignoreUpdatedFields = ['msgs', 'lm'];
 		this.cache.ensureIndex(['t', 'name'], 'unique');
 		this.cache.options = {fields: {usernames: 0}};
-
-		this.rawCollection = this.model.rawCollection();
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -564,7 +562,7 @@ class ModelRooms extends RocketChat.models._Base {
 			update.$set.lastMessage = lastMessage;
 		}
 
-		return this.rawCollection.update(query, this.setUpdatedAt(update));
+		return this.update(query, update);
 	}
 
 	setLastMessageById(_id, lastMessage) {
