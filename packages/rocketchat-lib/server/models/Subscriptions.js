@@ -608,6 +608,37 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 
 
+	// INSERT
+	subscribeWithRoomAndUser(room, user, extraData) {
+		const subscription = {
+			open: true,
+			alert: true,
+			unread: 1,
+			userMentions: 1,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.label || room.name,
+			fname: room.fname,
+			customFields: room.customFields,
+			t: room.t,
+			code: room.code,
+			u: {
+				_id: user.agentId || user._id,
+				username: user.username,
+				name: user.name
+			},
+			desktopNotifications: 'all',
+			mobilePushNotifications: 'all',
+			emailNotifications: 'all'
+		};
+
+		_.extend(subscription, extraData);
+
+		return this.insert(subscription);
+	}
+
+
 	// REMOVE
 	removeByUserId(userId) {
 		const query =
