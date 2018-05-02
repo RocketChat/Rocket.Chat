@@ -4,6 +4,43 @@ import _ from 'underscore';
  * Gets visitor by token
  * @param {string} token - Visitor token
  */
+RocketChat.models.Rooms.create = function(rid, guest, roomInfo, agent) {
+	const roomCode = this.getNextLivechatRoomCode();
+
+	rid = rid || Random.id();
+	const room = _.extend({
+		_id: rid,
+		msgs: 1,
+		lm: new Date(),
+		code: roomCode,
+		label: guest.name || guest.username,
+		// usernames: [agent.username, guest.username],
+		t: 'l',
+		ts: new Date(),
+		v: {
+			_id: guest._id,
+			username: guest.username,
+			token: guest.token,
+			status: guest.status || 'online'
+		},
+		cl: false,
+		open: true,
+		waitingResponse: true
+	}, roomInfo);
+	if (agent) {
+		room.servedBy = {
+			_id: agent._id || agent.agentId,
+			username: agent.username
+		};
+	}
+	this.insert(room);
+	return room;
+};
+
+/**
+ * Gets visitor by token
+ * @param {string} token - Visitor token
+ */
 RocketChat.models.Rooms.updateSurveyFeedbackById = function(_id, surveyFeedback) {
 	const query = {
 		_id
@@ -182,7 +219,7 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 	const update = {
 		$set: {
 			servedBy: {
-				_id: newAgent.agentId,
+				_id: newAgent.agentId || newAgent._id,
 				username: newAgent.username
 			}
 		}
