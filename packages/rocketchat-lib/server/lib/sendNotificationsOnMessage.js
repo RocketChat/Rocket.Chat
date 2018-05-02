@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { parseMessageText, callJoinRoom, messageContainsHighlight } from '../functions/notifications/';
+import { callJoinRoom, messageContainsHighlight } from '../functions/notifications/';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
@@ -20,10 +20,6 @@ const sendNotification = ({
 	message,
 	room,
 	mentionIds,
-	alwaysNotifyMobileBoolean,
-	push_room,
-	push_username,
-	push_message,
 	disableAllMessageNotifications
 }) => {
 	totalSubs++;
@@ -94,7 +90,7 @@ const sendNotification = ({
 		// console.log('desktop ->', ++desktopNumber, toAll, toHere, isHighlighted, desktopNotifications === 'all', isMentioned);
 	}
 
-	if (shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, toAll, isHighlighted, isMentioned, alwaysNotifyMobileBoolean, statusConnection: receiver.statusConnection })) {
+	if (shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, toAll, isHighlighted, isMentioned, statusConnection: receiver.statusConnection })) {
 
 		// only offline users will receive a push notification
 		// userIdsToPushNotify.push(subscription.u._id);
@@ -104,19 +100,9 @@ const sendNotification = ({
 
 		sendSinglePush({
 			room,
-			roomId: message.rid,
-			roomName: push_room,
-			username: push_username,
-			message: push_message,
-			// badge: getBadgeCount(userIdToNotify),
-			payload: {
-				host: Meteor.absoluteUrl(),
-				rid: message.rid,
-				sender: message.u,
-				type: room.t,
-				name: room.name
-			},
+			message,
 			userId: subscription.u._id,
+			senderUsername: sender.username,
 			receiverUsername: receiver.username
 		});
 		pushNumber++;
@@ -141,7 +127,7 @@ const sendNotification = ({
 	}
 };
 
-function sendAllNotifications(message, room, userId) {
+function sendAllNotifications(message, room) {
 
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -186,24 +172,9 @@ function sendAllNotifications(message, room, userId) {
 	// const userIdsToNotify = [];
 	// const userIdsToPushNotify = [];
 
-	const alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
-
 	const mentionIds = (message.mentions || []).map(({_id}) => _id);
 	const toAll = mentionIds.includes('all');
 	const toHere = mentionIds.includes('here');
-
-	//Set variables depending on Push Notification settings
-	let push_message = ' ';
-	if (RocketChat.settings.get('Push_show_message')) {
-		push_message = parseMessageText(message, userId);
-	}
-
-	let push_username = '';
-	let push_room = '';
-	if (RocketChat.settings.get('Push_show_username_room')) {
-		push_username = sender.username;
-		push_room = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
-	}
 
 	console.log('count ->', subscriptions.count());
 
@@ -222,10 +193,6 @@ function sendAllNotifications(message, room, userId) {
 		message,
 		room,
 		mentionIds,
-		alwaysNotifyMobileBoolean,
-		push_room,
-		push_username,
-		push_message,
 		disableAllMessageNotifications
 	}));
 	// console.timeEnd('eachSubscriptions');
@@ -249,11 +216,7 @@ function sendAllNotifications(message, room, userId) {
 					toHere,
 					message,
 					room,
-					mentionIds,
-					alwaysNotifyMobileBoolean,
-					push_room,
-					push_username,
-					push_message
+					mentionIds
 				});
 			});
 		});
@@ -268,5 +231,5 @@ function sendAllNotifications(message, room, userId) {
 	return message;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationGroupsOnMessage');
+RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
 
