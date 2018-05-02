@@ -25,10 +25,12 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 		const visitorToken = this.bodyParams.visitor.token;
 
 		let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+		let room;
 		let rid;
 		if (visitor) {
 			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken).fetch();
 			if (rooms && rooms.length > 0) {
+				room = rooms[0];
 				rid = rooms[0]._id;
 			} else {
 				rid = Random.id();
@@ -49,7 +51,13 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					msg: message.msg
 				}
 			};
-			const sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
+			let sentMessage;
+			if (message.agentId) {
+				const user = RocketChat.models.Users.findOneById(message.agentId);
+				sentMessage = RocketChat.sendMessage(user, sendMessage.message, room);
+			} else {
+				sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
+			}
 			return {
 				username: sentMessage.u.username,
 				msg: sentMessage.msg,
