@@ -226,8 +226,9 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true},
-		desktopNotifications: { $ne: 'nothing' },
-		mobilePushNotifications: { $ne: 'nothing' }
+		desktopNotifications: { $ne: 'nothing' }, // also matches empty values
+		mobilePushNotifications: { $ne: 'nothing' },
+		emailNotifications: { $ne: 'nothing' }
 	};
 
 	return this._db.find(query, {
@@ -238,6 +239,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roo
 			desktopNotificationDuration: 1,
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
+			emailNotifications: 1,
 			disableNotifications: 1,
 			muteGroupMentions: 1
 		}
@@ -248,15 +250,9 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true},
-		desktopNotifications: { $ne: 'nothing' },
-		mobilePushNotifications: { $ne: 'nothing' },
-		$or: [
-			{audioNotifications: {$exists: true}},
-			{desktopNotifications: {$exists: true}},
-			{mobilePushNotifications: {$exists: true}},
-			{disableNotifications: {$exists: true}},
-			{muteGroupMentions: {$exists: true}}
-		]
+		desktopNotifications: { $in: ['all', 'mentions'] },
+		mobilePushNotifications: { $in: ['all', 'mentions'] },
+		emailNotifications: { $in: ['all', 'mentions'] }
 	};
 
 	return this._db.find(query, {
@@ -267,6 +263,7 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 			desktopNotificationDuration: 1,
 			desktopNotifications: 1,
 			mobilePushNotifications: 1,
+			emailNotifications: 1,
 			disableNotifications: 1,
 			muteGroupMentions: 1
 		}
