@@ -93,10 +93,25 @@ RocketChat.Livechat = {
 					guest.department = department._id;
 				}
 			}
+			room = RocketChat.models.Rooms.create(message.rid, guest, roomInfo, agent);
 
-			// delegate room creation to QueueMethods
-			const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
-			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo, agent);
+			if (!agent && RocketChat.settings.get('Livechat_Routing_Bot_First')) {
+				agent = RocketChat.models.Users.getBotAgent();
+				if (agent) {
+					RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
+					RocketChat.models.Subscriptions.subscribeWithRoomAndUser(room, agent);
+					RocketChat.Livechat.stream.emit(room._id, {
+						type: 'agentData',
+						data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+					});
+				}
+			}
+
+			if (agent == null) {
+				// delegate room creation to QueueMethods
+				const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
+				agent = RocketChat.QueueMethods[routingMethod](guest, message, room, agent);
+			}
 
 			newRoom = true;
 		}
