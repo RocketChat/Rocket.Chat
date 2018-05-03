@@ -137,7 +137,7 @@ describe('[Main Elements Render]', function() {
 				mainContent.favoriteStar.isVisible().should.be.true;
 			});
 
-			it('it should click the star', () => {
+			it.skip('it should click the star', () => {
 				mainContent.favoriteStar.click();
 			});
 

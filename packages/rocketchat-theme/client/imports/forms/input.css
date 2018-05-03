@@ -67,6 +67,10 @@
 		&::placeholder {
 			color: var(--input-placeholder-color);
 		}
+
+		&[type=color] {
+			height: 45px;
+		}
 	}
 
 	&__description {
@@ -108,6 +112,9 @@
 	}
 
 	&--error {
+		.rc-tags {
+			border-color: var(--input-error-color);
+		}
 		& .rc-input {
 			&__element {
 				border-color: var(--input-error-color);

@@ -2,7 +2,7 @@
 const config = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v3/user',
-	scope: 'api',
+	scope: 'read_user',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.gitlab'],
 		forOtherUsers: ['services.gitlab.username']
