@@ -121,6 +121,20 @@ RocketChat.models.Users.getNextAgent = function() {
 };
 
 /**
+* Get bot agent
+* @return {object} User from db
+*/
+RocketChat.models.Users.getBotAgent = function() {
+	const query = {
+		roles: {
+			$all: ['bot', 'livechat-agent']
+		}
+	};
+
+	return this.findOne(query);
+};
+
+/**
  * Change user's livechat status
  * @param {string} token - Visitor token
  */
