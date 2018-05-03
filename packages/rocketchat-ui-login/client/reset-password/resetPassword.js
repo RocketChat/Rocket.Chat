@@ -43,17 +43,10 @@ Template.resetPassword.events({
 			Accounts.resetPassword(FlowRouter.getParam('token'), instance.find('[name=newPassword]').value, function(error) {
 				RocketChat.Button.reset(button);
 				if (error) {
-					console.log(error);
-					if (error.error === 'totp-required') {
-						toastr.success(t('Password_changed_successfully'));
-						RocketChat.callbacks.run('userPasswordReset');
-						FlowRouter.go('login');
-					} else {
-						modal.open({
-							title: t('Error_changing_password'),
-							type: 'error'
-						});
-					}
+					modal.open({
+						title: t('Error_changing_password'),
+						type: 'error'
+					});
 				} else {
 					FlowRouter.go('home');
 					toastr.success(t('Password_changed_successfully'));

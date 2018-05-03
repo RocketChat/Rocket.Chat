@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/enable.js', 'server');
 	api.addFiles('server/methods/regenerateCodes.js', 'server');
 	api.addFiles('server/methods/validateTempToken.js', 'server');
+	api.addFiles('server/methods/resetPasswordWithTOTP.js', 'server');
 
 	api.addFiles('server/models/users.js', 'server');
 
