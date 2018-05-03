@@ -13238,5 +13238,69 @@
         "web-flow"
       ]
     }
+  ],
+  "0.64.1": [
+    {
+      "pr": "10597",
+      "title": "[NEW] Store the last sent message to show bellow the room's name by default",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.1",
+      "contributors": [
+        "graywolf336",
+        "engelgabriel",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10529",
+      "title": "Support passing extra connection options to the Mongo driver",
+      "userLogin": "saplla",
+      "milestone": "0.64.1",
+      "contributors": [
+        "saplla",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10615",
+      "title": "[FIX] E-mails were hidden some information",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10611",
+      "title": "Regression: Updating an App on multi-instance servers wasn't working",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.1",
+      "contributors": [
+        "graywolf336",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10627",
+      "title": "[FIX] Regression on 0.64.0 was freezing the application when posting some URLs",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10648",
+      "title": "Dependencies update",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.1",
+      "contributors": [
+        "engelgabriel"
+      ]
+    }
   ]
 }
