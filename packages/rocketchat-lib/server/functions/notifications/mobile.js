@@ -56,5 +56,14 @@ export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushN
 		return false;
 	}
 
+	if (!mobilePushNotifications) {
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+			return true;
+		}
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
+			return false;
+		}
+	}
+
 	return toAll || isHighlighted || mobilePushNotifications === 'all' || isMentioned;
 }

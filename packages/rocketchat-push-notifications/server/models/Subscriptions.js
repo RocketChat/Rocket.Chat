@@ -222,14 +222,18 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 };
 
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(roomId) {
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function({ roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }) {
 	const query = {
-		rid: roomId,
+		rid,
 		'u._id': {$exists: true},
-		desktopNotifications: { $ne: 'nothing' }, // also matches empty values
-		mobilePushNotifications: { $ne: 'nothing' },
-		emailNotifications: { $ne: 'nothing' }
+		$or: [
+			{ desktopNotifications },
+			{ mobilePushNotifications },
+			{ emailNotifications }
+		]
 	};
+
+	console.log('query ->', JSON.stringify(query, null, 2));
 
 	return this._db.find(query, {
 		fields: {
@@ -250,9 +254,11 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 	const query = {
 		rid: roomId,
 		'u._id': {$exists: true},
-		desktopNotifications: { $in: ['all', 'mentions'] },
-		mobilePushNotifications: { $in: ['all', 'mentions'] },
-		emailNotifications: { $in: ['all', 'mentions'] }
+		$or: [
+			{ desktopNotifications: { $in: ['all', 'mentions'] } },
+			{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
+			{ emailNotifications: { $in: ['all', 'mentions'] } }
+		]
 	};
 
 	return this._db.find(query, {

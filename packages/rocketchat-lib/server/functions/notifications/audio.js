@@ -7,6 +7,10 @@ export function shouldNotifyAudio({ disableAllMessageNotifications, status, audi
 		return false;
 	}
 
+	if (!audioNotifications && RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'all') {
+		return true;
+	}
+
 	return toAll || toHere || isHighlighted || audioNotifications === 'all' || isMentioned;
 }
 

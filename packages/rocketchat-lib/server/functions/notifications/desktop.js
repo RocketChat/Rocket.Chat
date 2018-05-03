@@ -64,5 +64,14 @@ export function shouldNotifyDesktop({ disableAllMessageNotifications, status, de
 		return false;
 	}
 
+	if (!desktopNotifications) {
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
+			return true;
+		}
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
+			return false;
+		}
+	}
+
 	return toAll || toHere || isHighlighted || desktopNotifications === 'all' || isMentioned;
 }

@@ -9,6 +9,8 @@ RocketChat.Migrations.add({
 			$set: {
 				desktopPrefOrigin: 'subscription'
 			}
+		}, {
+			multi: true
 		});
 		RocketChat.models.Subscriptions.update({
 			mobilePushNotifications: { $exists: true }
@@ -16,6 +18,8 @@ RocketChat.Migrations.add({
 			$set: {
 				mobilePrefOrigin: 'subscription'
 			}
+		}, {
+			multi: true
 		});
 		RocketChat.models.Subscriptions.update({
 			emailNotifications: { $exists: true }
@@ -23,6 +27,8 @@ RocketChat.Migrations.add({
 			$set: {
 				emailPrefOrigin: 'subscription'
 			}
+		}, {
+			multi: true
 		});
 
 		// set user preferences on subscriptions
@@ -42,6 +48,8 @@ RocketChat.Migrations.add({
 						desktopNotifications: user.settings.preferences.desktopNotifications,
 						desktopPrefOrigin: 'user'
 					}
+				}, {
+					multi: true
 				});
 			}
 
@@ -54,6 +62,8 @@ RocketChat.Migrations.add({
 						mobileNotifications: user.settings.preferences.mobileNotifications,
 						mobilePrefOrigin: 'user'
 					}
+				}, {
+					multi: true
 				});
 			}
 
@@ -66,6 +76,8 @@ RocketChat.Migrations.add({
 						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode,
 						emailPrefOrigin: 'user'
 					}
+				}, {
+					multi: true
 				});
 			}
 		});

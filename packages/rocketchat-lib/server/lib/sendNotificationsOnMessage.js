@@ -72,7 +72,6 @@ const sendNotification = ({
 	if (shouldNotifyAudio({ disableAllMessageNotifications, status: receiver.status, audioNotifications, toAll, toHere, isHighlighted, isMentioned})) {
 
 		// settings.alwaysNotifyAudioUsers.push(subscription.u._id);
-		// userIdsForAudio.push(subscription.u._id);
 		notifyAudioUser(subscription.u._id, message, room);
 
 		++audioNumber;
@@ -109,7 +108,7 @@ const sendNotification = ({
 		// console.log('push ->', ++pushNumber, toAll, isHighlighted, mobilePushNotifications === 'all', isMentioned);
 	}
 
-	if (shouldNotifyEmail({ disableAllMessageNotifications, statusConnection: receiver.statusConnection, emailNotifications, isHighlighted, isMentioned })) {
+	if (receiver.emails && shouldNotifyEmail({ disableAllMessageNotifications, statusConnection: receiver.statusConnection, emailNotifications, isHighlighted, isMentioned })) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });
@@ -142,8 +141,6 @@ function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	// const pushUsernames = {};
-
 	const sender = (room.t !== 'l') ? RocketChat.models.Users.findOneById(message.u._id) : room.v;
 	if (!sender) {
 		return message;
@@ -160,15 +157,22 @@ function sendAllNotifications(message, room) {
 	// console.time('findSubscriptions');
 
 	// @TODO maybe should also force find mentioned people
-	let subscriptions = [];
+	let subscriptions;
 	if (disableAllMessageNotifications) {
 		subscriptions = RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom(room._id);
 	} else {
-		subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
+		const mentionsFilter = { $in: ['all', 'mentions'] };
+		const excludesNothingFilter = { $ne: 'nothing' };
+
+		subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom({
+			roomId: room._id,
+			desktopFilter: RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing' ? mentionsFilter : excludesNothingFilter,
+			emailFilter: RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'disabled' ? mentionsFilter : excludesNothingFilter,
+			mobileFilter: RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing' ? mentionsFilter : excludesNothingFilter
+		});
 	}
 	// console.timeEnd('findSubscriptions');
 
-	// const userIdsForAudio = [];
 	// const userIdsToNotify = [];
 	// const userIdsToPushNotify = [];
 

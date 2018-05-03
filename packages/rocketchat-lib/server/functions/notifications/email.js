@@ -139,10 +139,26 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 }
 
 export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnection, emailNotifications, isHighlighted, isMentioned }) {
-	if (disableAllMessageNotifications && emailNotifications == null) {
+
+	// no user or room preference
+	if (emailNotifications == null) {
+
+		if (disableAllMessageNotifications) {
+			return false;
+		}
+
+		// default server preference is disabled
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'disabled') {
+			return false;
+		}
+	}
+
+	// user/room preference to nothing
+	if (emailNotifications === 'nothing') {
 		return false;
 	}
 
+	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {
 		return false;
 	}
