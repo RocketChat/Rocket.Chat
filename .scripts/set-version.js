@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const semver = require('semver');
 const inquirer = require('inquirer');
-const execSync = require('child_process').execSync;
+// const execSync = require('child_process').execSync;
 const git = require('simple-git/promise')(process.cwd());
 
 let pkgJson = {};
@@ -25,6 +25,7 @@ const files = [
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
+	'./.docker/Dockerfile.rhel',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
 const readFile = (file) => {
@@ -91,7 +92,7 @@ git.status()
 		}));
 	})
 	.then(() => {
-		execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
+		// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
 
 		return inquirer.prompt([{
 			type: 'confirm',
