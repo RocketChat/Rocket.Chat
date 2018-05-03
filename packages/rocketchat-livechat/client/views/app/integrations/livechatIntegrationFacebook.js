@@ -33,7 +33,20 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 
 	this.result = (successFn, errorFn = () => {}) => {
 		return (error, result) => {
-			if (result.success === false && (result.type === 'OAuthException' || typeof result.url !== 'undefined')) {
+			// fix the state where user it was enabled on admin
+			if (error && error.error) {
+				switch (error.error) {
+					case 'invalid-facebook-token':
+					case 'invalid-instance-url':
+					case 'integration-disabled':
+						return Meteor.call('livechat:facebook', { action: 'enable' }, this.result(() => {
+							this.enabled.set(true);
+							this.loadPages();
+						}, () => this.loadPages()));
+				}
+			}
+
+			if (result && result.success === false && (result.type === 'OAuthException' || typeof result.url !== 'undefined')) {
 				const oauthWindow = window.open(result.url, 'facebook-integration-oauth', 'width=600,height=400');
 
 				const checkInterval = setInterval(() => {
@@ -46,7 +59,7 @@ Template.livechatIntegrationFacebook.onCreated(function() {
 			}
 			if (error) {
 				errorFn(error);
-				return swal({
+				return modal.open({
 					title: t('Error_loading_pages'),
 					text: error.reason,
 					type: 'error'
@@ -91,7 +104,7 @@ Template.livechatIntegrationFacebook.events({
 	'click .disable'(event, instance) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Disable_Facebook_integration'),
 			text: t('Are_you_sure_you_want_to_disable_Facebook_integration'),
 			type: 'warning',
@@ -109,7 +122,7 @@ Template.livechatIntegrationFacebook.events({
 				instance.enabled.set(false);
 				instance.pages.set([]);
 
-				swal({
+				modal.open({
 					title: t('Disabled'),
 					text: t('Integration_disabled'),
 					type: 'success',

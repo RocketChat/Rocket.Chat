@@ -1,5 +1,5 @@
 /* globals DDPRateLimiter */
-const dns = Npm.require('dns');
+import dns from 'dns';
 
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {

@@ -6,7 +6,7 @@
 		},
 		"postcss-media-minmax": {},
 		"postcss-selector-not": {},
-		"postcss-nesting": {},
+		"postcss-nested": {},
 		"autoprefixer": {
 			"browsers": [
 				"ie > 10",

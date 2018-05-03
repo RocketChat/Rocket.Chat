@@ -164,7 +164,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 	const pushUsernames = {};
 
-	const user = RocketChat.models.Users.findOneById(message.u._id);
+	const user = (room.t !== 'l') ? RocketChat.models.Users.findOneById(message.u._id) : room.v;
+
+	if (!user) {
+		return message;
+	}
 
 	/*
 	Increment unread couter if direct messages
@@ -177,7 +181,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 		desktopNotificationDurations: {},
 		alwaysNotifyAudioUsers: [],
 		dontNotifyAudioUsers: [],
-		audioNotificationValues: {}
+		audioNotificationValues: {},
+		dontNotifyUsersOnGroupMentions: []
 	};
 
 	/**
@@ -201,14 +206,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
-	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications);
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id, disableAllMessageNotifications) || [];
 	const userIds = [];
-	subscriptions.forEach((s) => {
-		userIds.push(s.u._id);
-	});
-	const userSettings = {};
-	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences.audioNotifications': 1, 'settings.preferences.desktopNotifications': 1, 'settings.preferences.mobileNotifications': 1 } }).forEach((user) => {
-		userSettings[user._id] = user.settings;
+	subscriptions.forEach(s => userIds.push(s.u._id));
+	const users = {};
+
+	RocketChat.models.Users.findUsersByIds(userIds, { fields: { 'settings.preferences': 1 } }).forEach((user) => {
+		users[user._id] = user;
 	});
 
 	subscriptions.forEach(subscription => {
@@ -218,16 +222,17 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 			settings.dontNotifyAudioUsers.push(subscription.u._id);
 			return;
 		}
-		const preferences = userSettings[subscription.u._id] ? userSettings[subscription.u._id].preferences || {} : {};
-		const userAudioNotificationPreference = preferences.audioNotifications !== 'default' ? preferences.audioNotifications : undefined;
-		const userDesktopNotificationPreference = preferences.desktopNotifications !== 'default' ? preferences.desktopNotifications : undefined;
-		const userMobileNotificationPreference = preferences.mobileNotifications !== 'default' ? preferences.mobileNotifications : undefined;
-		// Set defaults if they don't exist
+
+		if (Array.isArray(subscription.ignored) && subscription.ignored.find(message.u._id)) {
+			return;
+		}
+
 		const {
-			audioNotifications = userAudioNotificationPreference || RocketChat.settings.get('Audio_Notifications_Default_Alert'),
-			desktopNotifications = userDesktopNotificationPreference || RocketChat.settings.get('Desktop_Notifications_Default_Alert'),
-			mobilePushNotifications = userMobileNotificationPreference || RocketChat.settings.get('Mobile_Notifications_Default_Alert')
+			audioNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'audioNotifications'),
+			desktopNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'desktopNotifications'),
+			mobilePushNotifications = RocketChat.getUserPreference(users[subscription.u._id], 'mobileNotifications')
 		} = subscription;
+
 		if (audioNotifications === 'all' && !disableAllMessageNotifications) {
 			settings.alwaysNotifyAudioUsers.push(subscription.u._id);
 		}
@@ -244,6 +249,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 
 		settings.audioNotificationValues[subscription.u._id] = subscription.audioNotificationValue;
 		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
+
+		if (subscription.muteGroupMentions) {
+			settings.dontNotifyUsersOnGroupMentions.push(subscription.u._id);
+		}
 	});
 	let userIdsForAudio = [];
 	let userIdsToNotify = [];
@@ -415,17 +424,21 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room, userId) {
 					status: 1,
 					statusConnection: 1
 				}
-			}).forEach(function(user) {
-				if (['online', 'away', 'busy'].includes(user.status) && !(settings.dontNotifyDesktopUsers || []).includes(user._id)) {
-					userIdsToNotify.push(user._id);
-					userIdsForAudio.push(user._id);
+			}).forEach(function({ status, _id, username, statusConnection }) { // user
+				if (Array.isArray(settings.dontNotifyUsersOnGroupMentions) && settings.dontNotifyUsersOnGroupMentions.includes(_id)) {
+					return;
 				}
-				if (toAll && user.statusConnection !== 'online' && !(settings.dontNotifyMobileUsers || []).includes(user._id)) {
-					pushUsernames[user._id] = user.username;
-					return userIdsToPushNotify.push(user._id);
+
+				if (['online', 'away', 'busy'].includes(status) && !(settings.dontNotifyDesktopUsers || []).includes(_id)) {
+					userIdsToNotify.push(_id);
+					userIdsForAudio.push(_id);
 				}
-				if (toAll && user.statusConnection !== 'online') {
-					userIdsForAudio.push(user._id);
+				if (toAll && statusConnection !== 'online' && !(settings.dontNotifyMobileUsers || []).includes(_id)) {
+					pushUsernames[_id] = username;
+					return userIdsToPushNotify.push(_id);
+				}
+				if (toAll && statusConnection !== 'online') {
+					userIdsForAudio.push(_id);
 				}
 			});
 		}

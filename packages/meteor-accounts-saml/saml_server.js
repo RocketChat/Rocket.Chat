@@ -12,8 +12,8 @@ if (!Accounts.saml) {
 	};
 }
 
-const fiber = Npm.require('fibers');
-const connect = Npm.require('connect');
+import fiber from 'fibers';
+import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -333,7 +333,7 @@ const middleware = function(req, res, next) {
 						throw new Error(`Unable to validate response url: ${ err }`);
 					}
 
-					const credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					const credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
 					if (!credentialToken) {
 						// No credentialToken in IdP-initiated SSO
 						const saml_idp_credentialToken = Random.id();

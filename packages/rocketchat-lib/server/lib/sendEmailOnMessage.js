@@ -118,14 +118,18 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			query = RocketChat.models.Subscriptions.findByRoomIdAndUserIdsOrAllMessages(room._id, userIds);
 		}
 
-		query.forEach((sub) => {
+		query.forEach(sub => {
 			if (sub.disableNotifications) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
-			const emailNotifications = sub.emailNotifications;
+			const { emailNotifications, muteGroupMentions } = sub;
 
 			if (emailNotifications === 'nothing') {
+				return delete usersToSendEmail[sub.u._id];
+			}
+
+			if (isMentionAll && muteGroupMentions) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
@@ -167,8 +171,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (usersOfMention && usersOfMention.length > 0) {
 			usersOfMention.forEach((user) => {
+				const emailNotificationMode = RocketChat.getUserPreference(user, 'emailNotificationMode');
 				if (usersToSendEmail[user._id] === 'default') {
-					if (!user.settings || !user.settings.preferences || !user.settings.preferences.emailNotificationMode || user.settings.preferences.emailNotificationMode === 'all') { //Mention/DM
+					if (emailNotificationMode === 'all') { //Mention/DM
 						usersToSendEmail[user._id] = 'mention';
 					} else {
 						return;
@@ -176,7 +181,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				if (usersToSendEmail[user._id] === 'direct') {
-					const userEmailPreferenceIsDisabled = user.settings && user.settings.preferences && user.settings.preferences.emailNotificationMode && (user.settings.preferences.emailNotificationMode === 'disabled');
+					const userEmailPreferenceIsDisabled = emailNotificationMode === 'disabled';
 					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
 
 					if (directMessageEmailPreference === 'nothing') {

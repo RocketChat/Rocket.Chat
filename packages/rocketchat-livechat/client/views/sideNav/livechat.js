@@ -22,10 +22,10 @@ Template.livechat.helpers({
 		};
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.unreadRoomsMode': 1 }
+			fields: { 'settings.preferences.roomsListExhibitionMode': 1 }
 		});
 
-		if (user && user.settings && user.settings.preferences && user.settings.preferences.unreadRoomsMode) {
+		if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
 			query.alert = { $ne: true };
 		}
 
@@ -100,7 +100,7 @@ Template.livechat.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		swal({
+		modal.open({
 			title: t('Livechat_Take_Confirm'),
 			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,

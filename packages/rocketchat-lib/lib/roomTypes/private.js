@@ -44,9 +44,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-
-		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
+		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		return !mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 
 	isGroupChat() {
@@ -61,6 +60,12 @@ export class PrivateRoomType extends RoomTypeConfig {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.BROADCAST:
+				return room.broadcast;
+			case RoomSettingsEnum.READ_ONLY:
+				return !room.broadcast;
+			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+				return !room.broadcast && room.ro;
 			default:
 				return true;
 		}

@@ -44,11 +44,16 @@ Meteor.methods({
 				}
 			}
 		} catch (e) {
-			if (e.response && e.response.data && e.response.data.error && e.response.data.error.response) {
-				throw new Meteor.Error('integration-error', e.response.data.error.response.error.message);
-			}
-			if (e.response && e.response.data && e.response.data.error && e.response.data.error.message) {
-				throw new Meteor.Error('integration-error', e.response.data.error.message);
+			if (e.response && e.response.data && e.response.data.error) {
+				if (e.response.data.error.error) {
+					throw new Meteor.Error(e.response.data.error.error, e.response.data.error.message);
+				}
+				if (e.response.data.error.response) {
+					throw new Meteor.Error('integration-error', e.response.data.error.response.error.message);
+				}
+				if (e.response.data.error.message) {
+					throw new Meteor.Error('integration-error', e.response.data.error.message);
+				}
 			}
 			console.error('Error contacting omni.rocket.chat:', e);
 			throw new Meteor.Error('integration-error', e.error);

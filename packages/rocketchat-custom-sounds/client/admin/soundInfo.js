@@ -39,7 +39,7 @@ Template.soundInfo.events({
 		const sound = instance.sound.get();
 		if (sound != null) {
 			const _id = sound._id;
-			swal({
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Sound_Delete_Warning'),
 				type: 'warning',
@@ -50,14 +50,11 @@ Template.soundInfo.events({
 				closeOnConfirm: false,
 				html: false
 			}, function() {
-				swal.disableButtons();
-
 				Meteor.call('deleteCustomSound', _id, (error/*, result*/) => {
 					if (error) {
 						handleError(error);
-						swal.enableButtons();
 					} else {
-						swal({
+						modal.open({
 							title: t('Deleted'),
 							text: t('Custom_Sound_Has_Been_Deleted'),
 							type: 'success',

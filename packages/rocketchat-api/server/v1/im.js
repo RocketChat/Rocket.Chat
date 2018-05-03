@@ -52,6 +52,12 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
@@ -66,7 +72,7 @@ RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
+			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
@@ -217,8 +223,13 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
-		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
+		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, {
+			t: 'd',
+			'u._id': this.userId
+		});
+
+		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {

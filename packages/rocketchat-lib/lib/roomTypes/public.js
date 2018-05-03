@@ -1,5 +1,5 @@
 /* globals openRoom */
-import {RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
+import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -42,8 +42,9 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	condition() {
 		const user = Meteor.user();
-		const preferences = (user && user.settings && user.settings.preferences && user.settings.preferences) || {};
-		return !preferences.roomsListExhibitionMode || ['unread', 'category'].includes(preferences.roomsListExhibitionMode) && !preferences.mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
+		// const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
+		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		return !mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	}
 
 	showJoinLink(roomId) {
@@ -62,12 +63,21 @@ export class PublicRoomType extends RoomTypeConfig {
 		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
 	}
 
-	allowRoomSettingChange() {
+	enableMembersListProfile() {
 		return true;
 	}
 
-	enableMembersListProfile() {
-		return true;
+	allowRoomSettingChange(room, setting) {
+		switch (setting) {
+			case RoomSettingsEnum.BROADCAST:
+				return room.broadcast;
+			case RoomSettingsEnum.READ_ONLY:
+				return !room.broadcast;
+			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+				return !room.broadcast && room.ro;
+			default:
+				return true;
+		}
 	}
 
 	getUiText(context) {

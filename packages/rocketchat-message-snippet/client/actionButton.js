@@ -13,20 +13,19 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 
-			swal({
+			modal.open({
 				title: 'Create a Snippet',
 				text: 'The name of your snippet (with file extension):',
 				type: 'input',
 				showCancelButton: true,
 				closeOnConfirm: false,
-				animation: 'slide-from-top',
 				inputPlaceholder: 'Snippet name'
 			}, function(filename) {
 				if (filename === false) {
 					return false;
 				}
 				if (filename === '') {
-					swal.showInputError('You need to write something!');
+					modal.showInputError('You need to write something!');
 					return false;
 				}
 				message.snippeted = true;
@@ -34,7 +33,12 @@ Meteor.startup(function() {
 					if (error) {
 						return handleError(error);
 					}
-					swal('Nice!', `Snippet '${ filename }' created.`, 'success');
+					modal.open({
+						title: t('Nice'),
+						text: `Snippet '${ filename }' created.`,
+						type: 'success',
+						timer: 2000
+					});
 				});
 			});
 

@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - checkout
@@ -134,7 +134,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -179,7 +179,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: circleci/mongo:3.4
 
     environment:
@@ -208,7 +208,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8.9
 
     steps:
       - attach_workspace:
@@ -247,26 +247,35 @@ jobs:
             bash .circleci/update-releases.sh
             bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/redhat-registry.sh
 
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - test-with-oplog:
           requires:
             - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - test-without-oplog:
           requires:
             - build
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
       - deploy:
           requires:
             - test-with-oplog
             - test-without-oplog
           filters:
             branches:
-              only:
-                - develop
+              only: develop
             tags:
-              only:
-                - "/^\\d+\\.\\d+\\.\\d+(-rc\\.\\d+)?$/"
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+
