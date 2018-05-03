@@ -1,6 +1,31 @@
 
+# 0.64.1
+`  ·  1 🎉  ·  2 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Store the last sent message to show bellow the room's name by default ([#10597](https://github.com/RocketChat/Rocket.Chat/pull/10597))
+
+### 🐛 Bug fixes
+
+- E-mails were hidden some information ([#10615](https://github.com/RocketChat/Rocket.Chat/pull/10615))
+- Regression on 0.64.0 was freezing the application when posting some URLs ([#10627](https://github.com/RocketChat/Rocket.Chat/pull/10627))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Support passing extra connection options to the Mongo driver ([#10529](https://github.com/RocketChat/Rocket.Chat/pull/10529) by [@saplla](https://github.com/saplla))
+- Regression: Updating an App on multi-instance servers wasn't working ([#10611](https://github.com/RocketChat/Rocket.Chat/pull/10611))
+- Dependencies update ([#10648](https://github.com/RocketChat/Rocket.Chat/pull/10648))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@saplla](https://github.com/saplla)
+
 # 0.64.0
-`  ·  2 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  33 🔍  ·  18 👩‍💻👨‍💻`
+`2018-04-28  ·  2 ️️️⚠️  ·  18 🎉  ·  44 🐛  ·  33 🔍  ·  18 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
