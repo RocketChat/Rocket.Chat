@@ -20,7 +20,7 @@ Template.appManage.onCreated(function() {
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
 			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value !== undefined ? settings[k].value : settings[k].packageValue;
+			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
 			settings[k].oldValue = settings[k].value;
 			settings[k].hasChanged = false;
 		});
@@ -74,6 +74,33 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	languages() {
+		const languages = TAPi18n.getLanguages();
+
+		let result = Object.keys(languages).map(key => {
+			const language = languages[key];
+			return _.extend(language, { key });
+		});
+
+		result = _.sortBy(result, 'key');
+		result.unshift({
+			'name': 'Default',
+			'en': 'Default',
+			'key': ''
+		});
+		return result;
+	},
+	appLanguage(key) {
+		const setting = RocketChat.settings.get('Language');
+		return setting && setting.split('-').shift().toLowerCase() === key;
+	},
+	selectedOption(_id, val) {
+		const settings = Template.instance().settings.get();
+		return settings[_id].value === val;
+	},
+	getColorVariable(color) {
+		return color.replace(/theme-color-/, '@');
+	},
 	disabled() {
 		const t = Template.instance();
 		const settings = t.settings.get();
@@ -181,7 +208,11 @@ Template.appManage.events({
 		}
 	},
 
-	'click .logs': (e, t) => {
+	'click .js-update': (e, t) => {
+		FlowRouter.go(`/admin/app/install?isUpdatingId=${ t.id.get() }`);
+	},
+
+	'click .js-view-logs': (e, t) => {
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 
@@ -240,7 +271,20 @@ Template.appManage.events({
 		}
 	},
 
-	'input input': _.throttle(function(e, t) {
+	'change .rc-select__element' : (e, t) => {
+		const labelFor = $(e.currentTarget).attr('name');
+		const value = $(e.currentTarget).val();
+
+		const setting = t.settings.get()[labelFor];
+
+		if (setting) {
+			setting.value = value;
+			t.settings.get()[labelFor].hasChanged = setting.oldValue !== setting.value;
+			t.settings.set(t.settings.get());
+		}
+	},
+
+	'input input, input textarea, change input[type="color"]': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
 		switch (this.type) {
 			case 'int':

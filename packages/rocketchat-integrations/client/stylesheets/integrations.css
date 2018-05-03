@@ -52,3 +52,14 @@
 		list-style: none;
 	}
 }
+
+.integrate-other-ways {
+	& p {
+		font-size: 1rem;
+		line-height: 1.5rem;
+
+		& a {
+			color: #175CC4 !important;
+		}
+	}
+}
