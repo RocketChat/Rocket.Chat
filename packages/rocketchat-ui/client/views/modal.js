@@ -1,0 +1,1 @@
+Template.modal.rendered = function() {};

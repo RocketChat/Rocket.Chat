@@ -1,0 +1,39 @@
+<template name="inputAutocomplete">
+    <input type="text" {{attributes}}>
+    {{> autocompleteContainer}}
+</template>
+
+<template name="textareaAutocomplete">
+    <textarea {{attributes}}>{{> UI.contentBlock}}</textarea>
+    {{> autocompleteContainer}}
+</template>
+
+<template name="_autocompleteContainer">
+    {{#if isShowing}}
+    <div class='-autocomplete-container'>
+        {{#if isLoaded}}
+            {{#unless empty}}
+            <ul class='-autocomplete-list'>
+                {{#each filteredList}}
+                <li class="-autocomplete-item">
+                    {{#with ../currentTemplate }}
+                        {{#with ..}}  {{! original 'data' context to itemTemplate}}
+                            {{> ..}}  {{! return value from itemTemplate }}
+                        {{/with}}
+                    {{/with}}
+                </li>
+                {{/each}}
+            </ul>
+            {{else}}
+                {{> noMatchTemplate }}
+            {{/unless}}
+        {{else}}
+            {{> loading}}
+        {{/if}}
+    </div>
+    {{/if}}
+</template>
+
+<template name="_noMatch">
+    (<i>no matches</i>)
+</template>

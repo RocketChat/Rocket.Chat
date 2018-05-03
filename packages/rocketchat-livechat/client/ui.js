@@ -1,44 +1,53 @@
-RocketChat.roomTypes.add('l', 5, {
-	template: 'livechat',
-	icon: 'icon-chat-empty',
-	route: {
-		name: 'live',
-		path: '/live/:name',
-		action: (params, queryParams) => {
-			Session.set('showUserInfo');
-			openRoom('l', params.name);
-			RocketChat.TabBar.showGroup('livechat', 'search');
-		},
-		link: (sub) => {
-			return {
-				name: sub.name
-			}
-		}
-	},
-	condition: () => {
-		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
-	}
-});
-
 AccountBox.addItem({
 	name: 'Livechat',
-	icon: 'icon-chat-empty',
-	href: 'livechat-users',
+	icon: 'livechat',
+	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
 	condition: () => {
 		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-livechat-manager');
-	},
+	}
 });
 
 RocketChat.TabBar.addButton({
-	groups: ['livechat'],
+	groups: ['live'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
-	icon: 'octicon octicon-info',
+	icon: 'info-circled',
 	template: 'visitorInfo',
 	order: 0
 });
 
-RocketChat.TabBar.addGroup('message-search', ['livechat']);
-RocketChat.TabBar.addGroup('starred-messages', ['livechat']);
-RocketChat.TabBar.addGroup('uploaded-files-list', ['livechat']);
+RocketChat.TabBar.addButton({
+	groups: ['live'],
+	id: 'visitor-history',
+	i18nTitle: 'Past_Chats',
+	icon: 'chat',
+	template: 'visitorHistory',
+	order: 11
+});
+
+RocketChat.TabBar.addGroup('message-search', ['live']);
+RocketChat.TabBar.addGroup('starred-messages', ['live']);
+RocketChat.TabBar.addGroup('uploaded-files-list', ['live']);
+RocketChat.TabBar.addGroup('push-notifications', ['live']);
+RocketChat.TabBar.addGroup('video', ['live']);
+
+RocketChat.TabBar.addButton({
+	groups: ['live'],
+	id: 'external-search',
+	i18nTitle: 'Knowledge_Base',
+	icon: 'lightbulb',
+	template: 'externalSearch',
+	order: 10
+});
+
+RocketChat.MessageTypes.registerType({
+	id: 'livechat-close',
+	system: true,
+	message: 'Conversation_closed',
+	data(message) {
+		return {
+			comment: message.msg
+		};
+	}
+});

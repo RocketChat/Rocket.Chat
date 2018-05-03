@@ -1,0 +1,45 @@
+Example configuration fragment for front-end nginx with round-robin multiple Rocket.Chat instances
+
+upstream open.rocket.chat {
+    server localhost:8080 weight=1;
+    server localhost:8081 weight=1;
+    server localhost:8082 weight=1;
+    server localhost:8083 weight=1;
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+    server_name open.rocket.chat;
+    return 301 https://open.rocket.chat$request_uri;
+}
+
+server {
+    listen 443 default_server;
+    listen [::]:443 default_server ipv6only=on;
+    server_name open.rocket.chat;
+    root /var/www/rocket.chat/bundle/programs/web.browser/app/;
+    ssl on;
+    ssl_certificate /var/www/rocket.chat/ssl/demo/open.rocket.chat.chained.crt;
+    ssl_certificate_key /var/www/rocket.chat/ssl/demo/open.rocket.chat.key;
+    ssl_ciphers         'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
+    ssl_prefer_server_ciphers on;
+    ssl_dhparam         /etc/nginx/dhparams.pem;
+    client_max_body_size 32m;
+    proxy_buffering off;
+    proxy_http_version 1.1;
+    proxy_read_timeout 600;
+    proxy_send_timeout 600;
+    proxy_set_header   Host              $host:$server_port;
+    proxy_set_header   Referer           $http_referer;
+    proxy_set_header   X-Real-IP         $remote_addr;
+    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Proto https;
+    proxy_set_header   Upgrade           $http_upgrade;
+    proxy_set_header   Connection        "upgrade";
+    proxy_set_header   X-Nginx-Proxy     true;
+    proxy_redirect     off;
+    location / {
+        proxy_pass     http://open.rocket.chat;
+    }
+}

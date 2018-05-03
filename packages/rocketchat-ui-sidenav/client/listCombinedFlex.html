@@ -1,0 +1,71 @@
+<template name="listCombinedFlex">
+	<header class="primary-background-color">
+		<div>
+			<h4>{{_ "Channels"}}</h4>
+		</div>
+	</header>
+	<div class="content primary-background-color">
+		<div class="wrapper">
+			<div class="flex-control">
+				<div class="search">
+					<form class="search-form" role="form">
+						<div class="input-line search">
+							<select class="c-select" id="show">
+								<option value="joined" selected="{{showSelected 'joined'}}" class="primary-background-color">{{_ "Joined"}}</option>
+								<option value="all" selected="{{showSelected 'all'}}" class="primary-background-color">{{_ "All"}}</option>
+							</select>
+							<i class="icon-comment secondary-font-color"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="sort-channels">
+								<option value="name" selected="{{sortChannelsSelected 'name'}}" class="primary-background-color">{{_ "Name"}}</option>
+								<option value="msgs" selected="{{sortChannelsSelected 'msgs'}}" class="primary-background-color">{{_ "Number_of_messages"}}</option>
+							</select>
+							<select class="c-select" id="sort-subscriptions" style="display: none">
+								<option value="name" selected="{{sortSubscriptionsSelected 'name'}}" class="primary-background-color">{{_ "Name"}}</option>
+								<option value="ls" selected="{{sortSubscriptionsSelected 'ls'}}" class="primary-background-color">{{_ "Last_seen"}}</option>
+							</select>
+							<i class="icon-sort-alt-up secondary-font-color"></i>
+						</div>
+						<div class="input-line search">
+							<select class="c-select" id="channel-type">
+								<option value="all" selected="{{channelTypeSelected 'all'}}" class="primary-background-color">{{_ "All"}}</option>
+								<option value="public" selected="{{channelTypeSelected 'public'}}" class="primary-background-color">{{_ "Public"}}</option>
+								<option value="private" selected="{{channelTypeSelected 'private'}}" class="primary-background-color">{{_ "Private"}}</option>
+							</select>
+							<i class="icon-lock secondary-font-color"></i>
+						</div>
+						<div class="input-line search">
+							<input type="text" id="channel-search" class="search" placeholder="{{_ "Search"}}" autocomplete="off" />
+							<i class="icon-search secondary-font-color"></i>
+						</div>
+					</form>
+				</div>
+			</div>
+			<h4>{{_ "List_of_Channels"}}</h4>
+			<ul>
+				{{#each channel}}
+					<li>
+						<a href="{{pathFor url name=name}}" class="channel-link">
+							<i class="{{roomIcon}}"></i>
+							{{name}}
+							<span class='opt fixed'>
+								{{#if member}}
+								<i class="icon-eye" title="{{_ "Open"}}" aria-label="{{_ "Open"}}"></i>
+								{{/if}}
+								{{#if hidden}}
+								<i class="icon-eye-off" title="{{_ "Hidden"}}" aria-label="{{_ "Hidden"}}"></i>
+								{{/if}}
+							</span>
+						</a>
+					</li>
+				{{/each}}
+			</ul>
+			{{#if hasMore}}
+				<div class="load-more">
+					{{> loading}}
+				</div>
+			{{/if}}
+		</div>
+	</div>
+</template>

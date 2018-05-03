@@ -6,31 +6,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'check',
 		'rocketchat:lib'
 	]);
 
-	api.addFiles('client.coffee', 'client');
-	api.addFiles('server.coffee', 'server');
-
-	// TAPi18n
 	api.use('templating', 'client');
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-slashcommands-kick/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-slashcommands-kick/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
-});
 
-Package.onTest(function(api) {
-
+	api.addFiles('client/client.js', 'client');
+	api.addFiles('server/server.js', 'server');
 });

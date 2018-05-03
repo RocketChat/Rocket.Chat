@@ -1,4 +1,6 @@
-var ManagerUsers;
+import _ from 'underscore';
+import toastr from 'toastr';
+let ManagerUsers;
 
 Meteor.startup(function() {
 	ManagerUsers = new Mongo.Collection('managerUsers');
@@ -15,14 +17,58 @@ Template.livechatUsers.helpers({
 		if (this.emails && this.emails.length > 0) {
 			return this.emails[0].address;
 		}
+	},
+	agentAutocompleteSettings() {
+		return {
+			limit: 10,
+			// inputDelay: 300
+			rules: [{
+				// @TODO maybe change this 'collection' and/or template
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				filter: {
+					exceptions: _.map(AgentUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
+				},
+				selector(match) {
+					return { term: match };
+				},
+				sort: 'username'
+			}]
+		};
+	},
+	managerAutocompleteSettings() {
+		return {
+			limit: 10,
+			// inputDelay: 300
+			rules: [{
+				// @TODO maybe change this 'collection' and/or template
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				filter: {
+					exceptions: _.map(ManagerUsers.find({}, { fields: { username: 1 } }).fetch(), user => { return user.username; })
+				},
+				selector(match) {
+					return { term: match };
+				},
+				sort: 'username'
+			}]
+		};
 	}
 });
 
 Template.livechatUsers.events({
-	'click .remove-manager' (e, instance) {
+	'click .remove-manager'(e/*, instance*/) {
 		e.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -32,24 +78,24 @@ Template.livechatUsers.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			Meteor.call('livechat:removeManager', this.username, function(error, result) {
+			Meteor.call('livechat:removeManager', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('Manager_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'click .remove-agent' (e, instance) {
+	'click .remove-agent'(e/*, instance*/) {
 		e.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -59,56 +105,56 @@ Template.livechatUsers.events({
 			closeOnConfirm: false,
 			html: false
 		}, () => {
-			Meteor.call('livechat:removeAgent', this.username, function(error, result) {
+			Meteor.call('livechat:removeAgent', this.username, function(error/*, result*/) {
 				if (error) {
-					return toastr.error(t(error.reason || error.error));
+					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('Agent_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false,
+					showConfirmButton: false
 				});
 			});
 		});
 	},
-	'submit #form-manager' (e, instance) {
+	'submit #form-manager'(e/*, instance*/) {
 		e.preventDefault();
 
-		if (e.currentTarget.elements['username'].value.trim() === '') {
+		if (e.currentTarget.elements.username.value.trim() === '') {
 			return toastr.error(t('Please_fill_a_username'));
 		}
 
-		var oldBtnValue = e.currentTarget.elements['add'].value;
+		const oldBtnValue = e.currentTarget.elements.add.value;
 
-		e.currentTarget.elements['add'].value = t('Saving');
+		e.currentTarget.elements.add.value = t('Saving');
 
-		Meteor.call('livechat:addManager', e.currentTarget.elements['username'].value, function(error, result) {
-			e.currentTarget.elements['add'].value = oldBtnValue;
+		Meteor.call('livechat:addManager', e.currentTarget.elements.username.value, function(error/*, result*/) {
+			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Manager_added'));
 			e.currentTarget.reset();
 		});
 	},
-	'submit #form-agent' (e, instance) {
+	'submit #form-agent'(e/*, instance*/) {
 		e.preventDefault();
 
-		if (e.currentTarget.elements['username'].value.trim() === '') {
+		if (e.currentTarget.elements.username.value.trim() === '') {
 			return toastr.error(t('Please_fill_a_username'));
 		}
 
-		var oldBtnValue = e.currentTarget.elements['add'].value;
+		const oldBtnValue = e.currentTarget.elements.add.value;
 
-		e.currentTarget.elements['add'].value = t('Saving');
+		e.currentTarget.elements.add.value = t('Saving');
 
-		Meteor.call('livechat:addAgent', e.currentTarget.elements['username'].value, function(error, result) {
-			e.currentTarget.elements['add'].value = oldBtnValue;
+		Meteor.call('livechat:addAgent', e.currentTarget.elements.username.value, function(error/*, result*/) {
+			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
-				return toastr.error(t(error.reason || error.error));
+				return handleError(error);
 			}
 
 			toastr.success(t('Agent_added'));

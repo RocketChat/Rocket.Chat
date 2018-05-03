@@ -1,9 +1,0 @@
-{
-  "Archive_Unarchive" : "Удалить / Восстановить",
-  "Save" : "Сохранить",
-  "Topic" : "Тема",
-  "Type" : "Тип",
-  "room_changed_privacy" : "Тип чата изменен на: <em>__room_type__</em> by <em>__user_by__</em>",
-  "Room_topic_changed_successfully" : "Тема чата успешно изменена",
-  "Room_type_changed_successfully" : "Тип чата успешно изменен"
-}

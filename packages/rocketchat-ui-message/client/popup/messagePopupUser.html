@@ -1,0 +1,7 @@
+<template name="messagePopupUser">
+	{{#unless system}}
+		<div class="popup-user-status border-transparent-dark popup-user-status-{{status}}"></div>
+		<div class="popup-user-avatar" style="background-image:url({{avatarUrlFromUsername username}});"></div>
+	{{/unless}}
+	<strong>{{username}}</strong> {{name}}
+</template>

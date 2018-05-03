@@ -1,0 +1,23 @@
+<template name="emojiInfo">
+	{{#if editingEmoji}}
+		{{> emojiEdit (emojiToEdit)}}
+	{{else}}
+		{{#with emoji}}
+		<div class="about clearfix">
+			<div class="thumb">
+				{{> emojiPreview name=name extension=extension}}
+			</div>
+			<div class="info">
+				<h3 title="{{name}}">{{name}}</h3>
+				<h3 title="{{aliases}}">{{aliases}}</h3>
+			</div>
+		</div>
+		{{/with}}
+		<nav>
+			{{#if hasPermission 'manage-emoji'}}
+			<button class='button button-block danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+			<button class='button button-block primary edit-emoji'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
+			{{/if}}
+		</nav>
+	{{/if}}
+</template>

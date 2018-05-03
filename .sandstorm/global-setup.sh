@@ -1,5 +1,7 @@
 #!/bin/bash
-set -euo pipefail
+set -x
+set -euvo pipefail
+
 echo localhost > /etc/hostname
 hostname localhost
 curl https://install.sandstorm.io/ > /host-dot-sandstorm/caches/install.sh
@@ -15,9 +17,7 @@ modprobe ip_tables
 # `spk dev` work.
 usermod -a -G 'sandstorm' 'vagrant'
 # Bind to all addresses, so the vagrant port-forward works.
-sudo sed --in-place='' \
-        --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' \
-        /opt/sandstorm/sandstorm.conf
+sudo sed --in-place='' --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' /opt/sandstorm/sandstorm.conf
 # TODO: update sandstorm installer script to ask about dev accounts, and
 # specify a value for this option in the default config?
 if ! grep --quiet --no-messages ALLOW_DEV_ACCOUNTS=true /opt/sandstorm/sandstorm.conf ; then

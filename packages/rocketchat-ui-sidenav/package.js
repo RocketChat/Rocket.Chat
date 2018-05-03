@@ -11,49 +11,35 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
-
 	api.use([
 		'ecmascript',
 		'templating',
-		'coffeescript',
-		'underscore',
 		'rocketchat:lib',
 		'rocketchat:ui'
 	]);
 
-	api.addFiles('side-nav/accountBox.html', 'client');
-	api.addFiles('side-nav/channels.html', 'client');
-	api.addFiles('side-nav/chatRoomItem.html', 'client');
-	api.addFiles('side-nav/createChannelFlex.html', 'client');
-	api.addFiles('side-nav/directMessages.html', 'client');
-	api.addFiles('side-nav/directMessagesFlex.html', 'client');
-	api.addFiles('side-nav/listChannelsFlex.html', 'client');
-	api.addFiles('side-nav/listPrivateGroupsFlex.html', 'client');
-	api.addFiles('side-nav/privateGroups.html', 'client');
-	api.addFiles('side-nav/privateGroupsFlex.html', 'client');
-	api.addFiles('side-nav/sideNav.html', 'client');
-	api.addFiles('side-nav/starredRooms.html', 'client');
-	api.addFiles('side-nav/unreadRooms.html', 'client');
-	api.addFiles('side-nav/userStatus.html', 'client');
+	api.addFiles('client/createCombinedFlex.html', 'client');
+	api.addFiles('client/chatRoomItem.html', 'client');
+	api.addFiles('client/listChannelsFlex.html', 'client');
+	api.addFiles('client/listCombinedFlex.html', 'client');
+	api.addFiles('client/listPrivateGroupsFlex.html', 'client');
+	api.addFiles('client/sidebarHeader.html', 'client');
+	api.addFiles('client/sidebarItem.html', 'client');
+	api.addFiles('client/sideNav.html', 'client');
+	api.addFiles('client/toolbar.html', 'client');
+	api.addFiles('client/roomList.html', 'client');
+	api.addFiles('client/sortlist.html', 'client');
+	api.addFiles('client/userStatus.html', 'client');
 
-	api.addFiles('side-nav/accountBox.coffee', 'client');
-	api.addFiles('side-nav/channels.coffee', 'client');
-	api.addFiles('side-nav/chatRoomItem.coffee', 'client');
-	api.addFiles('side-nav/createChannelFlex.coffee', 'client');
-	api.addFiles('side-nav/directMessages.coffee', 'client');
-	api.addFiles('side-nav/directMessagesFlex.coffee', 'client');
-	api.addFiles('side-nav/listChannelsFlex.coffee', 'client');
-	api.addFiles('side-nav/listPrivateGroupsFlex.coffee', 'client');
-	api.addFiles('side-nav/privateGroups.coffee', 'client');
-	api.addFiles('side-nav/privateGroupsFlex.coffee', 'client');
-	api.addFiles('side-nav/sideNav.coffee', 'client');
-	api.addFiles('side-nav/starredRooms.coffee', 'client');
-	api.addFiles('side-nav/unreadRooms.coffee', 'client');
-
-});
-
-Npm.depends({
-	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
-	'less-plugin-autoprefix': '1.4.2'
+	api.addFiles('client/createCombinedFlex.js', 'client');
+	api.addFiles('client/chatRoomItem.js', 'client');
+	api.addFiles('client/listChannelsFlex.js', 'client');
+	api.addFiles('client/listCombinedFlex.js', 'client');
+	api.addFiles('client/listPrivateGroupsFlex.js', 'client');
+	api.addFiles('client/sidebarHeader.js', 'client');
+	api.addFiles('client/sidebarItem.js', 'client');
+	api.addFiles('client/sideNav.js', 'client');
+	api.addFiles('client/roomList.js', 'client');
+	api.addFiles('client/sortlist.js', 'client');
+	api.addFiles('client/toolbar.js', 'client');
 });

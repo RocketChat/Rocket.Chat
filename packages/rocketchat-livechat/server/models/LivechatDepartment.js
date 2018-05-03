@@ -1,44 +1,50 @@
+import _ from 'underscore';
+
 /**
  * Livechat Department model
  */
 class LivechatDepartment extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_department');
+		super('livechat_department');
+
+		this.tryEnsureIndex({
+			numAgents: 1,
+			enabled: 1
+		});
 	}
 
 	// FIND
 	findOneById(_id, options) {
-		query = { _id: _id };
+		const query = { _id };
 
 		return this.findOne(query, options);
 	}
 
 	findByDepartmentId(_id, options) {
-		query = { _id: _id };
+		const query = { _id };
+
 		return this.find(query, options);
 	}
 
-	createOrUpdateDepartment(_id, enabled, name, description, agents, extraData) {
-		var agents = [].concat(agents);
+	createOrUpdateDepartment(_id, { enabled, name, description, showOnRegistration }, agents) {
+		agents = [].concat(agents);
 
-		var record = {
-			enabled: enabled,
-			name: name,
-			description: description,
-			numAgents: agents.length
+		const record = {
+			enabled,
+			name,
+			description,
+			numAgents: agents.length,
+			showOnRegistration
 		};
 
-		_.extend(record, extraData);
-
 		if (_id) {
-			this.update({ _id: _id }, { $set: record });
+			this.update({ _id }, { $set: record });
 		} else {
 			_id = this.insert(record);
 		}
 
-		var savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-		var agentsToSave = _.pluck(agents, 'agentId');
+		const savedAgents = _.pluck(RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
+		const agentsToSave = _.pluck(agents, 'agentId');
 
 		// remove other agents
 		_.difference(savedAgents, agentsToSave).forEach((agentId) => {
@@ -50,22 +56,23 @@ class LivechatDepartment extends RocketChat.models._Base {
 				agentId: agent.agentId,
 				departmentId: _id,
 				username: agent.username,
-				count: parseInt(agent.count),
-				order: parseInt(agent.order)
+				count: agent.count ? parseInt(agent.count) : 0,
+				order: agent.order ? parseInt(agent.order) : 0
 			});
 		});
 
-		return _.extend(record, { _id: _id });
+		return _.extend(record, { _id });
 	}
 
 	// REMOVE
 	removeById(_id) {
-		query = { _id: _id };
+		const query = { _id };
+
 		return this.remove(query);
 	}
 
 	findEnabledWithAgents() {
-		var query = {
+		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true
 		};

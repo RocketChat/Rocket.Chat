@@ -6,24 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
-		'underscore',
+		'ecmascript',
 		'webapp',
 		'rocketchat:file',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'webapp-hashing'
 	]);
 
-	api.addFiles('server/assets.coffee', 'server');
-});
-
-Npm.depends({
-	"image-size": "0.4.0",
-	"mime-types": "2.1.9"
-});
-
-Package.onTest(function(api) {
-
+	api.addFiles('server/assets.js', 'server');
 });

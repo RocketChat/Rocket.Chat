@@ -1,0 +1,65 @@
+<template name="survey">
+	<div id="survey">
+		<div class="overlay"></div>
+		<div class="wrapper">
+			<header title="{{_ 'Please_answer_survey'}}">
+				<b>{{_ 'Please_answer_survey'}}</b>
+			</header>
+			<div class="content">
+				<p class="instructions">{{_ 'Survey_instructions'}}</p>
+				<form id="survey" class="livechat-form">
+					<div class="survey-item">
+						<label class="question">
+							{{_ "How_satisfied_were_you_with_this_chat"}}
+						</label>
+						<label class="answer"><input type="radio" name="satisfaction" value="1" />1</label>
+						<label class="answer"><input type="radio" name="satisfaction" value="2" />2</label>
+						<label class="answer"><input type="radio" name="satisfaction" value="3" />3</label>
+						<label class="answer"><input type="radio" name="satisfaction" value="4" />4</label>
+						<label class="answer"><input type="radio" name="satisfaction" value="5" />5</label>
+					</div>
+					<div class="survey-item">
+						<label class="question">
+							{{_ "How_knowledgeable_was_the_chat_agent"}}
+						</label>
+						<label class="answer"><input type="radio" name="agentKnowledge" value="1" />1</label>
+						<label class="answer"><input type="radio" name="agentKnowledge" value="2" />2</label>
+						<label class="answer"><input type="radio" name="agentKnowledge" value="3" />3</label>
+						<label class="answer"><input type="radio" name="agentKnowledge" value="4" />4</label>
+						<label class="answer"><input type="radio" name="agentKnowledge" value="5" />5</label>
+					</div>
+					<div class="survey-item">
+						<label class="question">
+							{{_ "How_responsive_was_the_chat_agent"}}
+						</label>
+						<label class="answer"><input type="radio" name="agentResposiveness" value="1" />1</label>
+						<label class="answer"><input type="radio" name="agentResposiveness" value="2" />2</label>
+						<label class="answer"><input type="radio" name="agentResposiveness" value="3" />3</label>
+						<label class="answer"><input type="radio" name="agentResposiveness" value="4" />4</label>
+						<label class="answer"><input type="radio" name="agentResposiveness" value="5" />5</label>
+					</div>
+					<div class="survey-item">
+						<label class="question">
+							{{_ "How_friendly_was_the_chat_agent"}}
+						</label>
+						<label class="answer"><input type="radio" name="agentFriendliness" value="1" />1</label>
+						<label class="answer"><input type="radio" name="agentFriendliness" value="2" />2</label>
+						<label class="answer"><input type="radio" name="agentFriendliness" value="3" />3</label>
+						<label class="answer"><input type="radio" name="agentFriendliness" value="4" />4</label>
+						<label class="answer"><input type="radio" name="agentFriendliness" value="5" />5</label>
+					</div>
+					<div class="survey-item">
+						<label class="question">
+							{{_ "Additional_Feedback"}}
+						</label>
+						<textarea name="additionalFeedback" rows="5"></textarea>
+					</div>
+				</form>
+			</div>
+			<footer>
+				<button type="button" class="button secondary skip"><span>{{_ "Skip"}}</span></button>
+				<button type="button" class="button primary send"><span>{{_ "Send"}}</span></button>
+			</footer>
+		</div>
+	</div>
+</template>

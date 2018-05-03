@@ -1,4 +1,7 @@
 #!/bin/bash
+set -x
+set -euvo pipefail
+IFS=$'\n\t'
 
 ROOTPATH=/var/www/rocket.chat
 PM2FILE=pm2.json

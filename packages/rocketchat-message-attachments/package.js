@@ -6,23 +6,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
 		'templating',
-		'coffeescript',
-		'underscore',
+		'ecmascript',
 		'rocketchat:lib'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
-	api.addFiles('client/messageAttachment.coffee', 'client');
+	api.addFiles('client/messageAttachment.js', 'client');
 
 	// stylesheets
-	api.addAssets('client/stylesheets/messageAttachments.less', 'server');
-	api.addFiles('client/stylesheets/loader.coffee', 'server');
-});
-
-Package.onTest(function(api) {
-
+	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 });

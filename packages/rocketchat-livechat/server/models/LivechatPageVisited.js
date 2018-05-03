@@ -1,10 +1,9 @@
 /**
  * Livechat Page Visited model
  */
-class LivechatPageVisitied extends RocketChat.models._Base {
+class LivechatPageVisited extends RocketChat.models._Base {
 	constructor() {
-		super();
-		this._initModel('livechat_page_visited');
+		super('livechat_page_visited');
 
 		this.tryEnsureIndex({ 'token': 1 });
 		this.tryEnsureIndex({ 'ts': 1 });
@@ -15,10 +14,10 @@ class LivechatPageVisitied extends RocketChat.models._Base {
 
 	saveByToken(token, pageInfo) {
 		// keep history of unregistered visitors for 1 month
-		var keepHistoryMiliseconds = 2592000000;
+		const keepHistoryMiliseconds = 2592000000;
 
 		return this.insert({
-			token: token,
+			token,
 			page: pageInfo,
 			ts: new Date(),
 			expireAt: new Date().getTime() + keepHistoryMiliseconds
@@ -26,12 +25,12 @@ class LivechatPageVisitied extends RocketChat.models._Base {
 	}
 
 	findByToken(token) {
-		return this.find({ token: token }, { sort : { ts: -1 }, limit: 20 });
+		return this.find({ token }, { sort : { ts: -1 }, limit: 20 });
 	}
 
 	keepHistoryForToken(token) {
 		return this.update({
-			token: token,
+			token,
 			expireAt: {
 				$exists: true
 			}
@@ -45,4 +44,4 @@ class LivechatPageVisitied extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.LivechatPageVisitied = new LivechatPageVisitied();
+RocketChat.models.LivechatPageVisited = new LivechatPageVisited();

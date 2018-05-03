@@ -6,45 +6,25 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'templating',
 		'reactive-var',
-		'less@2.5.0',
+		'less',
 		'rocketchat:lib',
 		'rocketchat:channel-settings',
-		'momentjs:moment'
+		'mongo'
 	]);
 
 	api.addFiles([
-		'client/lib/startup.coffee',
-		'client/stylesheets/mail-messages.less',
-		'client/views/channelSettingsMailMessages.html',
-		'client/views/channelSettingsMailMessages.coffee',
+		'client/lib/startup.js',
 		'client/views/mailMessagesInstructions.html',
-		'client/views/mailMessagesInstructions.coffee'
+		'client/views/mailMessagesInstructions.js'
 	], 'client');
 
 
 	api.addFiles([
-		'server/lib/startup.coffee',
-		'server/methods/mailMessages.coffee'
+		'server/lib/startup.js',
+		'server/methods/mailMessages.js'
 	], 'server');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-channel-settings-mail-messages/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-channel-settings-mail-messages/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
-});
-
-Package.onTest(function(api) {
-
 });

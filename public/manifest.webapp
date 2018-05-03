@@ -3,7 +3,7 @@
     "description": "The Ultimate Open Source WebChat Platform",
     "launch_path": "/",
     "icons": {
-        "128": "/images/logo/favicon-128x128.png",
+        "192": "/images/logo/android-chrome-192x192.png",
         "512": "/images/logo/512x512.png"
     },
     "developer": {

@@ -1,26 +1,20 @@
 Package.describe({
 	name: 'rocketchat:irc',
-	version: '0.0.1',
+	version: '0.0.2',
 	summary: 'RocketChat libraries',
 	git: ''
 });
 
-Npm.depends({
-	'coffee-script': '1.9.3',
-	'lru-cache': '2.6.5',
-});
-
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
-		'underscore',
-		'rocketchat:lib',
+		'ecmascript',
+		'rocketchat:lib'
 	]);
 
-	api.addFiles('irc.server.coffee', 'server');
+	api.addFiles([
+		'server/settings.js',
+		'server/server.js'
+	], 'server');
+
 	api.export(['Irc'], ['server']);
 });
-
-Package.onTest(function(api) {});

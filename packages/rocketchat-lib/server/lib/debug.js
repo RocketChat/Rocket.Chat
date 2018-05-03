@@ -1,30 +1,27 @@
-RocketChat.debugLevel = 'debug';
+/* global InstanceStatus */
+import _ from 'underscore';
 
-Meteor.startup(function() {
-	RocketChat.settings.onload('Debug_Level', function(key, value, initialLoad) {
-		if (value) {
-			RocketChat.debugLevel = value;
+const logger = new Logger('Meteor', {
+	methods: {
+		method: {
+			type: 'debug'
+		},
+		publish: {
+			type: 'debug'
 		}
-	});
-
-	var value = RocketChat.settings.get('Debug_Level');
-	if (value) {
-		RocketChat.debugLevel = value;
 	}
 });
 
-var wrapMethods = function(name, originalHandler, methodsMap) {
+const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
-		if (RocketChat.debugLevel === 'debug') {
-			var args = name === "ufsWrite" ? Array.prototype.slice.call(arguments, 1) : arguments;
-			console.log('[methods]'.green, name, '-> userId:', Meteor.userId(), ', arguments: ', args);
-		}
+		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
+		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
 		return originalHandler.apply(this, arguments);
 	};
 };
 
-var originalMeteorMethods = Meteor.methods;
+const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function(methodMap) {
 	_.each(methodMap, function(handler, name) {
@@ -33,14 +30,17 @@ Meteor.methods = function(methodMap) {
 	originalMeteorMethods(methodMap);
 };
 
-var originalMeteorPublish = Meteor.publish;
+const originalMeteorPublish = Meteor.publish;
 
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
-		if (RocketChat.debugLevel === 'debug') {
-			console.log('[publish]'.green, name, '-> userId:', this.userId, ', arguments: ', arguments);
-		}
+		logger.publish(name, '-> userId:', this.userId, ', arguments: ', arguments);
 
 		return func.apply(this, arguments);
-	})
+	});
 };
+
+WebApp.rawConnectHandlers.use(function(req, res, next) {
+	res.setHeader('X-Instance-ID', InstanceStatus.id());
+	return next();
+});

@@ -5,46 +5,35 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use([
-		'coffeescript',
+		'ecmascript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
 		'rocketchat:lib',
-		'rocketchat:authorization@0.0.1'
+		'rocketchat:authorization'
 	]);
 
-	api.addFiles('lib/Mailer.coffee');
+	api.use('templating', 'client');
+
+	api.addFiles('lib/Mailer.js');
 
 	api.addFiles([
-		'client/startup.coffee',
-		'client/router.coffee',
+		'client/startup.js',
+		'client/router.js',
 		'client/views/mailer.html',
-		'client/views/mailer.coffee',
-		'client/views/mailerUnsubscribe.html'
+		'client/views/mailer.js',
+		'client/views/mailerUnsubscribe.html',
+		'client/views/mailerUnsubscribe.js'
 	], 'client');
 
 	api.addFiles([
-		'server/startup.coffee',
-		'server/models/Users.coffee',
-		'server/functions/sendMail.coffee',
-		'server/functions/unsubscribe.coffee',
-		'server/methods/sendMail.coffee',
-		'server/methods/unsubscribe.coffee'
+		'server/startup.js',
+		'server/models/Users.js',
+		'server/functions/sendMail.js',
+		'server/functions/unsubscribe.js',
+		'server/methods/sendMail.js',
+		'server/methods/unsubscribe.js'
 	], 'server');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
-	api.use('templating', 'client');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-mailer/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-mailer/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
 
 	api.export('Mailer');
 });

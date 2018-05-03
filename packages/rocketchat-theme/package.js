@@ -6,55 +6,37 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.0');
-
 	api.use('rocketchat:lib');
-	api.use('coffeescript');
-	api.use('underscore');
+	api.use('rocketchat:logger');
+	api.use('rocketchat:assets');
+	api.use('ecmascript');
+	api.use('less');
 	api.use('webapp');
 	api.use('webapp-hashing');
-
-
-	api.addFiles('server/server.coffee', 'server');
-	api.addFiles('server/variables.coffee', 'server');
-
-	api.addFiles('client/minicolors/jquery.minicolors.css', 'client');
-	api.addFiles('client/minicolors/jquery.minicolors.js', 'client');
-
-
-	api.addAssets('assets/stylesheets/global/_variables.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_colors.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_emojione.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_keyframes.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_lesshat.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_preloader.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_reset.import.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_octicons.less', 'server');
-	api.addAssets('assets/stylesheets/utils/_chatops.less', 'server');
-	api.addAssets('assets/stylesheets/animation.css', 'server');
-	api.addAssets('assets/stylesheets/base.less', 'server');
-	api.addAssets('assets/stylesheets/fontello.css', 'server');
-	api.addAssets('assets/stylesheets/rtl.less', 'server');
-	api.addAssets('assets/stylesheets/swipebox.min.css', 'server');
-
-	// TAPi18n
-	var _ = Npm.require('underscore');
-	var fs = Npm.require('fs');
 	api.use('templating', 'client');
-	tapi18nFiles = _.compact(_.map(fs.readdirSync('packages/rocketchat-theme/i18n'), function(filename) {
-		if (fs.statSync('packages/rocketchat-theme/i18n/' + filename).size > 16) {
-			return 'i18n/' + filename;
-		}
-	}));
-	api.use('tap:i18n');
-	api.addFiles(tapi18nFiles);
-});
 
-Npm.depends({
-	'less': 'https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6',
-	'less-plugin-autoprefix': '1.4.2'
-});
+	// Compiled stylesheets
+	api.addFiles('client/main.css', 'client');
 
-Package.onTest(function(api) {
+	// Server side files
+	api.addFiles('server/server.js', 'server');
+	api.addFiles('server/variables.js', 'server');
 
+	// Colorpicker
+	api.addFiles('client/vendor/jscolor.js', 'client');
+
+	// Photoswipe
+	api.addFiles('client/vendor/photoswipe.css', 'client');
+
+	api.addAssets('client/imports/general/variables.css', 'server');
+	// Fontello
+	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.svg', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.ttf', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff', 'client');
+	api.addAssets('client/vendor/fontello/font/fontello.woff2', 'client');
+
+	// Run-time stylesheets
+	api.addAssets('server/colors.less', 'server');
 });
