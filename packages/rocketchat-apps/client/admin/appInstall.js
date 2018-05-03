@@ -21,6 +21,11 @@ Template.appInstall.helpers({
 	disabled() {
 		const instance = Template.instance();
 		return !(instance.appUrl.get() || instance.file.get());
+	},
+	isUpdating() {
+		const instance = Template.instance();
+
+		return !!instance.isUpdatingId.get();
 	}
 });
 
