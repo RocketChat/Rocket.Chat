@@ -306,7 +306,7 @@ Meteor.startup(function() {
 		condition(message) {
 			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
 
-			return Meteor.userId() !== message.u._id && !(subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
+			return Meteor.userId() !== message.u._id && !(subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
 		},
 		order: 20,
 		group: 'menu'
@@ -324,7 +324,7 @@ Meteor.startup(function() {
 		},
 		condition(message) {
 			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
-			return Meteor.userId() !== message.u._id && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
+			return Meteor.userId() !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
 		},
 		order: 20,
 		group: 'menu'
