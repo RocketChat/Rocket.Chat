@@ -25,7 +25,7 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
 
 			return allDefaultUserSettings.reduce((accumulator, setting) => {
-				const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();console.log(settingWithoutPrefix)
+				const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();console.log(settingWithoutPrefix);
 				accumulator[settingWithoutPrefix] = RocketChat.getUserPreference(this.getLoggedInUser(), settingWithoutPrefix);
 				return accumulator;
 			}, {});
