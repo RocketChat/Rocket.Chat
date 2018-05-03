@@ -23,6 +23,7 @@ callback-hook@1.1.0
 cfs:http-methods@0.0.32
 chatpal:search@0.0.1
 check@1.3.1
+cmftadmin:cmjpush@0.0.2
 coffeescript@1.0.17
 dandv:caret-position@2.1.1
 ddp@1.4.0
