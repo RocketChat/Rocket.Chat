@@ -35,9 +35,10 @@ RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 
 			return oAuthServicesEnabled.map((service) => {
-				if (service.custom) {
+				if (service.custom || ['saml', 'cas'].includes(service.service)) {
 					return { ...service };
 				}
+
 				return {
 					_id: service._id,
 					name: service.service,
