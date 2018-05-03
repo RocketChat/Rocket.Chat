@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
@@ -50,6 +52,12 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
@@ -64,7 +72,7 @@ RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
+			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
@@ -215,8 +223,13 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
-		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('d', this.userId).fetch(), '_room');
+		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, {
+			t: 'd',
+			'u._id': this.userId
+		});
+
+		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
 		const totalCount = rooms.length;
 
 		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
@@ -266,13 +279,11 @@ RocketChat.API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 	post() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
-		if (findResult.subscription.open) {
-			return RocketChat.API.v1.failure(`The direct message room, ${ this.bodyParams.name }, is already open for the sender`);
+		if (!findResult.subscription.open) {
+			Meteor.runAsUser(this.userId, () => {
+				Meteor.call('openRoom', findResult.room._id);
+			});
 		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('openRoom', findResult.room._id);
-		});
 
 		return RocketChat.API.v1.success();
 	}

@@ -1,5 +1,6 @@
 /* globals UploadFS */
 
+import _ from 'underscore';
 import './AmazonS3.js';
 import './FileSystem.js';
 import './GoogleStorage.js';
@@ -13,6 +14,7 @@ const configStore = _.debounce(() => {
 		console.log('Setting default file store to', store);
 		UploadFS.getStores().Avatars = UploadFS.getStore(`${ store }:Avatars`);
 		UploadFS.getStores().Uploads = UploadFS.getStore(`${ store }:Uploads`);
+		UploadFS.getStores().UserDataFiles = UploadFS.getStore(`${ store }:UserDataFiles`);
 	}
 }, 1000);
 

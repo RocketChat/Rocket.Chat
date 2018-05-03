@@ -1,4 +1,5 @@
 /* globals WebApp:true */
+import _ from 'underscore';
 import url from 'url';
 
 WebApp = Package.webapp.WebApp;
@@ -28,17 +29,29 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 
 	const head = Assets.getText('public/head.html');
 
+	let baseUrl;
+	if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
+		baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+	} else {
+		baseUrl = '/';
+	}
+	if (/\/$/.test(baseUrl) === false) {
+		baseUrl += '/';
+	}
+
 	const html = `<html>
 		<head>
-			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="/livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
+			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="${ baseUrl }livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
 			<script type="text/javascript">
 				__meteor_runtime_config__ = ${ JSON.stringify(__meteor_runtime_config__) };
 			</script>
 
+			<base href="${ baseUrl }">
+
 			${ head }
 		</head>
 		<body>
-			<script type="text/javascript" src="/livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
+			<script type="text/javascript" src="${ baseUrl }livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
 		</body>
 	</html>`;
 

@@ -1,4 +1,5 @@
 /* globals Deps, getCaretCoordinates*/
+import _ from 'underscore';
 import AutoCompleteRecords from './collection';
 
 const isServerSearch = function(rule) {

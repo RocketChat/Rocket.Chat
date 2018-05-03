@@ -22,7 +22,7 @@ const fixCordova = function(url) {
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {
 		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
 	}
 };
 /*globals renderMessageBody*/
@@ -35,11 +35,11 @@ Template.messageAttachment.helpers({
 	},
 	loadImage() {
 		const user = Meteor.user();
-		if (user && user.settings && user.settings.preferences && this.downloadImages !== true) {
-			if (user.settings.preferences.autoImageLoad === false) {
+		if (this.downloadImages !== true) {
+			if (RocketChat.getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
-			if (Meteor.Device.isPhone() && user.settings.preferences.saveMobileBandwidth !== true) {
+			if (Meteor.Device.isPhone() && RocketChat.getUserPreference(user, 'saveMobileBandwidth') !== true) {
 				return false;
 			}
 		}
@@ -56,7 +56,7 @@ Template.messageAttachment.helpers({
 			return this.collapsed;
 		} else {
 			const user = Meteor.user();
-			return user && user.settings && user.settings.preferences && user.settings.preferences.collapseMediaByDefault === true;
+			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
 		}
 	},
 	time() {

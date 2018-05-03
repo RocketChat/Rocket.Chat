@@ -3,12 +3,12 @@ set -x
 set -euvo pipefail
 
 # Make meteor bundle
-export NODE_ENV=production
 sudo chown vagrant:vagrant /home/vagrant -R
 cd /opt/app
-meteor npm install --production
+meteor npm install
 meteor build --directory /home/vagrant/
 
+export NODE_ENV=production
 # Use npm and node from the Meteor dev bundle to install the bundle's dependencies.
 TOOL_VERSION=$(meteor show --ejson $(<.meteor/release) | grep '^ *"tool":' |
     sed -re 's/^.*"(meteor-tool@[^"]*)".*$/\1/g')

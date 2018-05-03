@@ -3,13 +3,13 @@
  * @param {Object} message - The message object
  */
 import { Random } from 'meteor/random';
-import { _ } from 'meteor/underscore';
+import s from 'underscore.string';
 import hljs from 'highlight.js';
 
 const inlinecode = (message) => {
 	// Support `text`
 	return message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {
-		const token = `=!=${ Random.id() }=!=`;
+		const token = ` =!=${ Random.id() }=!=`;
 
 		message.tokens.push({
 			token,
@@ -47,10 +47,10 @@ const codeblocks = (message) => {
 				const lang = !singleLine && Array.from(hljs.listLanguages()).includes(s.trim(codeMatch[1])) ? s.trim(codeMatch[1]) : '';
 				const code =
 					singleLine ?
-						_.unescapeHTML(codeMatch[1]) :
+						s.unescapeHTML(codeMatch[1]) :
 						lang === '' ?
-							_.unescapeHTML(codeMatch[1] + codeMatch[2]) :
-							_.unescapeHTML(codeMatch[2]);
+							s.unescapeHTML(codeMatch[1] + codeMatch[2]) :
+							s.unescapeHTML(codeMatch[2]);
 
 				const result = lang === '' ? hljs.highlightAuto((lang + code)) : hljs.highlight(lang, code);
 				const token = `=!=${ Random.id() }=!=`;

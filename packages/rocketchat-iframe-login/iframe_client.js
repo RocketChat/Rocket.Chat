@@ -1,5 +1,7 @@
 /* globals Accounts, Tracker, ReactiveVar, FlowRouter, Accounts, HTTP, facebookConnectPlugin, TwitterConnect, OAuth */
 
+import _ from 'underscore';
+
 const _unstoreLoginToken = Accounts._unstoreLoginToken;
 Accounts._unstoreLoginToken = function() {
 	RocketChat.iframeLogin.tryLogin();

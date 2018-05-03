@@ -14,11 +14,30 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes();
+		return RocketChat.roomTypes.getTypes().map((roomType) => {
+			return {
+				template: roomType.customTemplate || 'roomList',
+				data: {
+					header: roomType.header,
+					identifier: roomType.identifier,
+					isCombined: roomType.isCombined,
+					label: roomType.label
+				}
+			};
+		});
 	},
 
 	loggedInUser() {
 		return !!Meteor.userId();
+	},
+
+	sidebarViewMode() {
+		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
+		return viewMode ? viewMode : 'condensed';
+	},
+
+	sidebarHideAvatar() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
 	}
 });
 
@@ -29,14 +48,6 @@ Template.sideNav.events({
 
 	'click .arrow'() {
 		return SideNav.toggleCurrent();
-	},
-
-	'mouseenter .header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave .header'() {
-		return SideNav.leaveArrow();
 	},
 
 	'scroll .rooms-list'() {
@@ -71,11 +82,7 @@ Template.sideNav.onCreated(function() {
 				'settings.preferences.mergeChannels': 1
 			}
 		});
-		let userPref = null;
-		if (user && user.settings && user.settings.preferences) {
-			userPref = user.settings.preferences.roomsListExhibitionMode === 'category' && user.settings.preferences.mergeChannels;
-		}
-
-		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'mergeChannels');
+		this.mergedChannels.set(userPref ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
 	});
 });

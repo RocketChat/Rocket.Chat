@@ -22,8 +22,8 @@ describe('[Direct Messages]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'This message was sent using the API');
-				expect(res.body).to.have.deep.property('message.rid');
+				expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
+				expect(res.body).to.have.nested.property('message.rid');
 				directMessage._id = res.body.message.rid;
 			})
 			.end(done);
@@ -86,8 +86,8 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.close', (done) => {
-		request.post(api('im.close'))
+	it('/im.open', (done) => {
+		request.post(api('im.open'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
@@ -101,8 +101,8 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
-	it('/im.open', (done) => {
-		request.post(api('im.open'))
+	it('/im.close', (done) => {
+		request.post(api('im.close'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,

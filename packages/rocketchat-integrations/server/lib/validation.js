@@ -1,4 +1,6 @@
 /* global Babel */
+import _ from 'underscore';
+import s from 'underscore.string';
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
 
@@ -115,11 +117,11 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', { function: 'validateOutgoing' });
 		}
 
-		for (const [index, triggerWord] of integration.triggerWords) {
-			if (triggerWord.trim() === '') {
+		integration.triggerWords.forEach((word, index) => {
+			if (!word || word.trim() === '') {
 				delete integration.triggerWords[index];
 			}
-		}
+		});
 
 		integration.triggerWords = _.without(integration.triggerWords, [undefined]);
 	} else {

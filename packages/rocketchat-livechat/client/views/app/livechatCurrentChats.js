@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import moment from 'moment';
 
 const LivechatRoom = new Mongo.Collection('livechatRoom');

@@ -1,7 +1,9 @@
 /* globals Blaze, Template */
+import _ from 'underscore';
+
 RocketChat.EmojiPicker = {
-	width: 390,
-	height: 238,
+	width: 365,
+	height: 290,
 	initiated: false,
 	input: null,
 	source: null,
@@ -52,27 +54,23 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
+		const windowHeight = window.innerHeight;
+		const windowBorder = 10;
 		const sourcePos = $(this.source).offset();
 		const left = sourcePos.left;
-		const top = (sourcePos.top - this.height - 5);
-		const cssProperties = {
-			top,
-			left
-		};
+		const top = sourcePos.top;
+		const cssProperties = {top, left};
 
-		if (top < 0) {
-			cssProperties.top = 10;
+		if (top + this.height >= windowHeight) {
+			cssProperties.top = windowHeight - this.height - windowBorder;
 		}
 
-		if (left < 35) {
-			cssProperties.left = 0;
-		} else {
-			const windowSize = $(window).width();
-			const pickerWidth = $('.emoji-picker').width();
+		if (left < windowBorder) {
+			cssProperties.left = windowBorder;
+		}
 
-			if (left + pickerWidth > windowSize) {
-				cssProperties.left = left - pickerWidth;
-			}
+		if (left + this.width >= window.innerWidth) {
+			cssProperties.left = left - this.width - windowBorder;
 		}
 
 		return $('.emoji-picker').css(cssProperties);

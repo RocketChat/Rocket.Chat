@@ -1,4 +1,6 @@
 /* globals PinnedMessage */
+import _ from 'underscore';
+
 Template.pinnedMessages.helpers({
 	hasMessages() {
 		return PinnedMessage.find({

@@ -1,7 +1,19 @@
 /* globals chatMessages cordova */
 
+import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+
+const success = function success(fn) {
+	return function(error, result) {
+		if (error) {
+			return handleError(error);
+		}
+		if (result) {
+			fn.call(this, result);
+		}
+	};
+};
 
 RocketChat.MessageAction = new class {
 	/*
@@ -102,20 +114,11 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const roomInfo = RocketChat.models.Rooms.findOne(message.rid, { fields: { t: 1 } });
-			let text = `[ ](${ url }) `;
-
-			if (roomInfo.t !== 'd' && message.u.username !== Meteor.user().username) {
-				text += `@${ message.u.username } `;
-			}
-
-			if (input.value && !input.value.endsWith(' ')) {
-				input.value += ' ';
-			}
-			input.value += text;
-			input.focus();
-			$(input).trigger('change').trigger('input');
+			$(input)
+				.focus()
+				.data('mention-user', true)
+				.data('reply', message)
+				.trigger('dataChange');
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -272,14 +275,11 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			const url = RocketChat.MessageAction.getPermaLink(message._id);
-			const text = `[ ](${ url }) `;
-			if (input.value) {
-				input.value += input.value.endsWith(' ') ? '' : ' ';
-			}
-			input.value += text;
-			input.focus();
-			$(input).trigger('change').trigger('input');
+			$(input)
+				.focus()
+				.data('mention-user', false)
+				.data('reply', message)
+				.trigger('dataChange');
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -291,4 +291,45 @@ Meteor.startup(function() {
 		order: 6,
 		group: 'menu'
 	});
+
+
+
+	RocketChat.MessageAction.addButton({
+		id: 'ignore-user',
+		icon: 'ban',
+		label: t('Ignore'),
+		context: ['message', 'message-mobile'],
+		action() {
+			const [, {rid, u: {_id}}] = this._arguments;
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true}, success(() => toastr.success(t('User_has_been_ignored'))));
+		},
+		condition(message) {
+			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
+
+			return Meteor.userId() !== message.u._id && !(subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
+		},
+		order: 20,
+		group: 'menu'
+	});
+
+	RocketChat.MessageAction.addButton({
+		id: 'unignore-user',
+		icon: 'ban',
+		label: t('Unignore'),
+		context: ['message', 'message-mobile'],
+		action() {
+			const [, {rid, u: {_id}}] = this._arguments;
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false}, success(() => toastr.success(t('User_has_been_unignored'))));
+
+		},
+		condition(message) {
+			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
+			return Meteor.userId() !== message.u._id && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
+		},
+		order: 20,
+		group: 'menu'
+	});
+
+
+
 });

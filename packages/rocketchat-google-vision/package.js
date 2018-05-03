@@ -5,11 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'@google-cloud/storage': '1.2.1',
-	'@google-cloud/vision': '0.11.5'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',

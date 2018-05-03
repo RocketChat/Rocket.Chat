@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /* global SnippetedMessages */
 Template.snippetedMessages.helpers({
 	hasMessages() {
