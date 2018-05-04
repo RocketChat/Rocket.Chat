@@ -52,8 +52,11 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 				}
 			};
 			let sentMessage;
-			if (message.agentId) {
-				const user = RocketChat.models.Users.findOneById(message.agentId);
+			if (message.agentId || message.username) {
+				const user =
+					message.agentId ?
+						RocketChat.models.Users.findOneById(message.agentId) :
+						RocketChat.models.Users.findOneByUsername(message.username);
 				sentMessage = RocketChat.sendMessage(user, sendMessage.message, room);
 			} else {
 				sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
