@@ -52,7 +52,8 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room/transfer', { aut
 			transfered: RocketChat.Livechat.transfer(room, visitor, {
 				userId: this.bodyParams.userId,
 				username: this.bodyParams.username,
-				departmentId: this.bodyParams.departmentId
+				departmentId: this.bodyParams.departmentId,
+				receivedByAPI: true
 			})
 		});
 	}
