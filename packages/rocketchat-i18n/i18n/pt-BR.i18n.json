@@ -1729,6 +1729,7 @@
   "Send_request_on_offline_messages": "Enviar requisição para mensagens off-line",
   "Send_request_on_visitor_message": "Enviar requisição para mensagens do Visitante",
   "Send_request_on_agent_message": "Enviar requisição para mensagens do Agente",
+  "Send_request_on_visitor_transfer": "Enviar requisição quando o Visitante for transferido",
   "Send_Test": "Enviar teste",
   "Send_welcome_email": "Enviar e-mail de boas-vindas",
   "Send_your_JSON_payloads_to_this_URL": "Envie seu payload  JSON para esta URL.",
