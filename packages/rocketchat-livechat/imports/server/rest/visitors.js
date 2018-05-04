@@ -51,6 +51,7 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room/transfer', { aut
 		return RocketChat.API.v1.success({
 			transfered: RocketChat.Livechat.transfer(room, visitor, {
 				userId: this.bodyParams.userId,
+				username: this.bodyParams.username,
 				departmentId: this.bodyParams.departmentId
 			})
 		});

@@ -329,6 +329,12 @@ RocketChat.Livechat = {
 				agentId: user._id,
 				username: user.username
 			};
+		} else if (transferData.username) {
+			const user = RocketChat.models.Users.findOneByUsername(transferData.username);
+			agent = {
+				agentId: user._id,
+				username: user.username
+			};
 		} else {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		}
