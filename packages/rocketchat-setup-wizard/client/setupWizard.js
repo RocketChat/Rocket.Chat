@@ -1,6 +1,6 @@
 import s from 'underscore.string';
 
-const setSettingsAndGo = (settings, registerServer) => {
+const setSettingsAndGo = (settings, registerServer = true) => {
 	const settingsFilter = Object.entries(settings)
 		.filter(key => !/registration-|registerServer|currentStep/.test(key))
 		.map(setting => {
@@ -12,7 +12,7 @@ const setSettingsAndGo = (settings, registerServer) => {
 
 	settingsFilter.push({
 		_id: 'Statistics_reporting',
-		value: registerServer ? registerServer : true
+		value: registerServer
 	});
 
 	RocketChat.settings.batchSet(settingsFilter, function(err) {
@@ -128,8 +128,7 @@ Template.setupWizard.events({
 		}
 
 		if (currentStep === 4) {
-			const register = t.state.get('registerServer') ? JSON.parse(t.state.get('registerServer')) : true;
-			setSettingsAndGo(t.state.all(), register ? register : true);
+			setSettingsAndGo(t.state.all(), JSON.parse(t.state.get('registerServer') || true));
 
 			return false;
 		}
