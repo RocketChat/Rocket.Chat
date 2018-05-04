@@ -30,3 +30,29 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room', { authRequired
 		return RocketChat.API.v1.success({ rooms });
 	}
 });
+
+RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room/transfer', { authRequired: true }, {
+	post() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.visitorToken).fetch();
+		if (!rooms || rooms.length === 0) {
+			return RocketChat.API.v1.failure('Visitor dont have any opened room');
+		}
+		const room = rooms[0];
+
+		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.visitorToken);
+		if (!visitor) {
+			return RocketChat.API.v1.failure('Visitor not found');
+		}
+
+		return RocketChat.API.v1.success({
+			transfered: RocketChat.Livechat.transfer(room, visitor, {
+				userId: this.bodyParams.userId,
+				departmentId: this.bodyParams.departmentId
+			})
+		});
+	}
+});
