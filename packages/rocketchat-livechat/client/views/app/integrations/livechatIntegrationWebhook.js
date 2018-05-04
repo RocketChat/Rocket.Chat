@@ -75,16 +75,16 @@ Template.livechatIntegrationWebhook.events({
 		const webhookOnClose = LivechatIntegration.findOne('Livechat_webhook_on_close');
 		const webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
 		const webhookOnVisitorMessage = LivechatIntegration.findOne('Livechat_webhook_on_visitor_message');
-    const webhookOnAgentMessage = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
-    const webhookOnVisitorTransfer = LivechatIntegration.findOne('Livechat_webhook_on_visitor_transfer');
+		const webhookOnAgentMessage = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
+		const webhookOnVisitorTransfer = LivechatIntegration.findOne('Livechat_webhook_on_visitor_transfer');
 
 		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
 		instance.$('#secretToken').val(secretToken && secretToken.value);
 		instance.$('#sendOnClose').get(0).checked = webhookOnClose && webhookOnClose.value;
 		instance.$('#sendOnOffline').get(0).checked = webhookOnOfflineMsg && webhookOnOfflineMsg.value;
 		instance.$('#sendOnVisitorMessage').get(0).checked = webhookOnVisitorMessage && webhookOnVisitorMessage.value;
-    instance.$('#sendOnAgentMessage').get(0).checked = webhookOnAgentMessage && webhookOnAgentMessage.value;
-    instance.$('#sendOnVisitorTransfer').get(0).checked = webhookOnVisitorTransfer && webhookOnVisitorTransfer.value;
+		instance.$('#sendOnAgentMessage').get(0).checked = webhookOnAgentMessage && webhookOnAgentMessage.value;
+		instance.$('#sendOnVisitorTransfer').get(0).checked = webhookOnVisitorTransfer && webhookOnVisitorTransfer.value;
 
 		instance.disableTest.set(!webhookUrl || _.isEmpty(webhookUrl.value));
 	},
