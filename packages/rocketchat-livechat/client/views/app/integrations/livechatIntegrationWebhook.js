@@ -98,7 +98,7 @@ Template.livechatIntegrationWebhook.events({
 			'Livechat_webhook_on_offline_msg': instance.$('#sendOnOffline').get(0).checked,
 			'Livechat_webhook_on_visitor_message': instance.$('#sendOnVisitorMessage').get(0).checked,
 			'Livechat_webhook_on_agent_message': instance.$('#sendOnAgentMessage').get(0).checked,
-			'Livechat_webhook_on_visitor_message': instance.$('#sendOnVisitorTransfer').get(0).checked
+			'Livechat_webhook_on_visitor_transfer': instance.$('#sendOnVisitorTransfer').get(0).checked
 		};
 		Meteor.call('livechat:saveIntegration', settings, (err) => {
 			if (err) {
