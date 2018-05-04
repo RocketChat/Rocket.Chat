@@ -23,7 +23,7 @@ Template.livechatOfficeHours.helpers({
 
 	},
 	name(day) {
-		return day.day;
+		return TAPi18n.__(day.day);
 	},
 	open(day) {
 		return Template.instance().dayVars[day.day].open.get();

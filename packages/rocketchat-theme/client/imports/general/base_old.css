@@ -1691,7 +1691,8 @@
 }
 
 .rc-old .announcement {
-	display: block;
+	display: flex;
+	flex-flow: row nowrap;
 	overflow: hidden;
 
 	height: 40px;
@@ -1699,8 +1700,6 @@
 
 	cursor: pointer;
 	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 
 	color: var(--rc-color-content);
 
@@ -1715,6 +1714,14 @@
 		text-decoration: underline;
 
 		color: currentColor;
+	}
+
+	p {
+		width: 0; /* Grow via flex. */
+		flex: auto;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
@@ -5382,6 +5389,11 @@ body:not(.is-cordova) {
 
 .rc-old .collapse-switch {
 	cursor: pointer;
+}
+
+.toggle-hidden {
+	cursor: pointer;
+	font-style: italic;
 }
 
 /* kinda hacky, needed in oembedFrageWidget.html */

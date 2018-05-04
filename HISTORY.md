@@ -2,7 +2,39 @@
 # 0.64.0-develop (2018-04-07)
 
 
+# 0.63.3
+`2018-04-18  ·  2 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
+### 🐛 Bug fixes
+
+- The 'channel.messages' REST API Endpoint error ([#10485](https://github.com/RocketChat/Rocket.Chat/pull/10485))
+- Even TypeErrors with SAML ([#10475](https://github.com/RocketChat/Rocket.Chat/pull/10475))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Added one2mail.info to default blocked domains list ([#10218](https://github.com/RocketChat/Rocket.Chat/pull/10218) by [@nsuchy](https://github.com/nsuchy))
+- Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@nsuchy](https://github.com/nsuchy)
+
+# 0.63.2
+`2018-04-17  ·  1 🐛  ·  1 🔍`
+
+### 🐛 Bug fixes
+
+- Even TypeErrors with SAML ([#10475](https://github.com/RocketChat/Rocket.Chat/pull/10475))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
+
+</details>
 
 # 0.63.1
 `2018-04-07  ·  5 🐛  ·  3 👩‍💻👨‍💻`
