@@ -368,7 +368,16 @@ RocketChat.Livechat = {
 			RocketChat.Livechat.stream.emit(room._id, {
 				type: 'agentData',
 				data: RocketChat.models.Users.getAgentInfo(agent.agentId)
-			});
+      });
+      
+      Meteor.defer(() => {
+        RocketChat.callbacks.run('livechat.visitorTransfer', {
+          guest,
+          room,
+          transferData,
+          agent
+        });
+      });
 
 			return true;
 		}

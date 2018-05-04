@@ -89,3 +89,10 @@ RocketChat.callbacks.add('livechat.leadCapture', (room) => {
 	}
 	return sendToCRM('LeadCapture', room, false);
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-lead-capture');
+
+RocketChat.callbacks.add('livechat.visitorTransfer', function(data) {
+  if (!RocketChat.settings.get('Livechat_webhook_on_visitor_transfer')) {
+    return data.room;
+  }
+	return sendToCRM('VisitorTransfer', data.room, false);
+}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-transfer');
