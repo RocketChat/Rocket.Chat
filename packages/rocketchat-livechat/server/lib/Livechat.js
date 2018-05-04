@@ -371,12 +371,7 @@ RocketChat.Livechat = {
 			});
 
 			Meteor.defer(() => {
-				RocketChat.callbacks.run('livechat.visitorTransfer', {
-					guest,
-					room,
-					transferData,
-					agent
-				});
+				RocketChat.callbacks.run('livechat.visitorTransfer', room);
 			});
 
 			return true;
