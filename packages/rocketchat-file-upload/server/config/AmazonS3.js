@@ -69,7 +69,7 @@ const configure = _.debounce(function() {
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
 	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
-	if (!Bucket || !AWSAccessKeyId || !AWSSecretAccessKey) {
+	if (!Bucket) {
 		return;
 	}
 
