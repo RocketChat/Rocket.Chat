@@ -39,6 +39,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
@@ -52,6 +59,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
