@@ -172,7 +172,11 @@ Template.main.helpers({
 		}
 	},
 	showSetupWizard() {
-		return RocketChat.settings.get('Show_Setup_Wizard');
+		if (RocketChat.settings.get('Show_Setup_Wizard') === false) {
+			return false;
+		}
+
+		return true;
 	}
 });
 

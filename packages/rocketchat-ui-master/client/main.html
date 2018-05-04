@@ -24,7 +24,7 @@
 
 <template name="main">
 	{{#if subsReady}}
-		{{#if $eq showSetupWizard false}}
+		{{#unless showSetupWizard}}
 			{{#unless logged}}
 				<div class="rc-old connection-status">
 					{{> status}}
@@ -63,7 +63,7 @@
 				{{ CustomScriptLoggedIn }}
 				{{> photoswipe}}
 			{{/unless}}
-		{{/if}}
+		{{/unless}}
 	{{else}}
 		{{> loading}}
 	{{/if}}

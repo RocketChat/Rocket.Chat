@@ -19,10 +19,10 @@ const setSettingsAndGo = (settings, registerServer) => {
 		if (err) {
 			return handleError(err);
 		}
-	});
 
-	localStorage.setItem('wizardFinal', true);
-	FlowRouter.go('setup-wizard-final');
+		localStorage.setItem('wizardFinal', true);
+		FlowRouter.go('setup-wizard-final');
+	});
 };
 
 Template.setupWizard.onCreated(function() {
@@ -248,10 +248,8 @@ Template.setupWizard.helpers({
 
 Template.setupWizardFinal.onCreated(function() {
 	Tracker.autorun(() => {
-		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
-			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
-				FlowRouter.go('home');
-			}
+		if (RocketChat.settings.get('Show_Setup_Wizard') === false) {
+			FlowRouter.go('home');
 		}
 	});
 });

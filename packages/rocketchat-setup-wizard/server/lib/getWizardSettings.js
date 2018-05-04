@@ -1,6 +1,6 @@
 Meteor.methods({
 	getWizardSettings(user) {
-		if (!user && Meteor.userId()) {
+		if (!user && !Meteor.userId()) {
 			return false;
 		}
 
