@@ -180,7 +180,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 	});
 
 	this.section('Accounts_Default_User_Preferences', function() {
-		this.add('Accounts_Default_User_Preferences_enableAutoAway', false, {
+		this.add('Accounts_Default_User_Preferences_enableAutoAway', true, {
 			type: 'boolean',
 			'public': true,
 			i18nLabel: 'Enable_Auto_Away'
