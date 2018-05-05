@@ -15,7 +15,7 @@ const divisorMessage = '<hr style="margin: 20px auto; border: none; border-botto
 function getEmailContent({ message, user, room }) {
 	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 
-	const roomName = `#${ RocketChat.settings.get('UI_Allow_room_names_with_special_chars') ? room.fname || room.name : room.name }`;
+	const roomName = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
 	const userName = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 
 	const header = TAPi18n.__(room.t === 'd' ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
