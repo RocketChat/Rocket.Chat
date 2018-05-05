@@ -13,7 +13,6 @@ Meteor.methods({
 			},
 			'desktopNotifications': {
 				updateMethod: (subscription, value) => {
-					// @TODO if setting to 'default' should set user preferences
 					if (value === 'default') {
 						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'desktop');
 						RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
@@ -24,7 +23,6 @@ Meteor.methods({
 			},
 			'mobilePushNotifications': {
 				updateMethod: (subscription, value) => {
-
 					if (value === 'default') {
 						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'mobile');
 						RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
@@ -35,7 +33,6 @@ Meteor.methods({
 			},
 			'emailNotifications': {
 				updateMethod: (subscription, value) => {
-
 					if (value === 'default') {
 						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'email');
 						userPref.value = userPref.value === 'disabled' ? 'nothing' : userPref.value;

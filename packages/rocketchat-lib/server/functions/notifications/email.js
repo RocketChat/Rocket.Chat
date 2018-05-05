@@ -15,8 +15,8 @@ const divisorMessage = '<hr style="margin: 20px auto; border: none; border-botto
 function getEmailContent({ message, user, room }) {
 	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
 
-	const roomName = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
-	const userName = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
+	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
+	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
 	const header = TAPi18n.__(room.t === 'd' ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
@@ -43,10 +43,10 @@ function getEmailContent({ message, user, room }) {
 			lng
 		});
 
-		let content = `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ message.file.name }`;
+		let content = `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ s.escapeHTML(message.file.name) }`;
 
 		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
-			content += `<br/><br/>${ message.attachments[0].description }`;
+			content += `<br/><br/>${ s.escapeHTML(message.attachments[0].description) }`;
 		}
 
 		return `${ fileHeader }<br/><br/>${ content }`;
@@ -58,10 +58,10 @@ function getEmailContent({ message, user, room }) {
 		let content = '';
 
 		if (attachment.title) {
-			content += `${ attachment.title }<br/>`;
+			content += `${ s.escapeHTML(attachment.title) }<br/>`;
 		}
 		if (attachment.text) {
-			content += `${ attachment.text }<br/>`;
+			content += `${ s.escapeHTML(attachment.text) }<br/>`;
 		}
 
 		return `${ header }<br/><br/>${ content }`;
@@ -124,9 +124,9 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 
 	// using user full-name/channel name in from address
 	if (room.t === 'd') {
-		email.from = `${ message.u.name } <${ RocketChat.settings.get('From_Email') }>`;
+		email.from = `${ String(message.u.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
 	} else {
-		email.from = `${ room.name } <${ RocketChat.settings.get('From_Email') }>`;
+		email.from = `${ String(room.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
 	}
 	// If direct reply enabled, email content with headers
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
