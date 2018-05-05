@@ -12,9 +12,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
 
-		// @TODO evalute find by this property if we can remove it
-		// this.tryEnsureIndex({ 'unread': 1 });
-
 		this.tryEnsureIndex({
 			rid: 1,
 			'u._id': 1,
@@ -746,6 +743,27 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				name: user.name
 			}
 		};
+
+		const {
+			desktopNotifications,
+			mobileNotifications,
+			emailNotificationMode
+		} = (user.settings && user.settings.preferences) || {};
+
+		if (desktopNotifications && desktopNotifications !== 'default') {
+			subscription.desktopNotifications = desktopNotifications;
+			subscription.desktopPrefOrigin = 'user';
+		}
+
+		if (mobileNotifications && mobileNotifications !== 'default') {
+			subscription.mobilePushNotifications = mobileNotifications;
+			subscription.mobilePrefOrigin = 'user';
+		}
+
+		if (emailNotificationMode && emailNotificationMode !== 'default') {
+			subscription.emailNotifications = emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode;
+			subscription.emailPrefOrigin = 'user';
+		}
 
 		_.extend(subscription, extraData);
 
