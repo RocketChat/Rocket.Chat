@@ -1,12 +1,16 @@
 .main-content {
-	position: relative;
-	z-index: 0 !important;
-
 	flex: 1 1 100%;
 
 	width: 1vw;
 
 	height: 100%;
+
+	position: relative;
+
+	display: flex;
+	flex-direction: column;
+
+	margin-bottom: 25px;
 }
 
 .messages-container .room-icon {
@@ -24,14 +28,5 @@
 
 	&.offline {
 		color: var(--status-invisible);
-	}
-}
-
-@media (width <= 780px) {
-	.main-content {
-		position: fixed;
-
-		width: 100%;
-		height: 100%;
 	}
 }

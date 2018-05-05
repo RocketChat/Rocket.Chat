@@ -78,14 +78,6 @@ Template.createCombinedFlex.events({
 		return SideNav.closeFlex(() => instance.clearForm());
 	},
 
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'keydown input[type="text"]'() {
 		return Template.instance().error.set([]);
 	},
