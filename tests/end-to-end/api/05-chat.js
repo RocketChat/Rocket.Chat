@@ -5,15 +5,10 @@
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	message,
-	log,
-	apiPrivateChannelName
+	message
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -49,7 +44,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [{
+					attachments: [ {
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -66,7 +61,7 @@ describe('[Chat]', function() {
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
 						fields: ''
-					}]
+					} ]
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -86,7 +81,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [{
+					attachments: [ {
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -102,12 +97,12 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: [{
+						fields: [ {
 							short: true,
 							title: 12,
 							value: false
-						}]
-					}]
+						} ]
+					} ]
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -127,7 +122,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [{
+					attachments: [ {
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -143,7 +138,7 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: [{
+						fields: [ {
 							short: true,
 							title: 'Test',
 							value: 'Testing out something or other'
@@ -151,8 +146,8 @@ describe('[Chat]', function() {
 							short: true,
 							title: 'Another Test',
 							value: '[Link](https://google.com/) something and this and that.'
-						}]
-					}]
+						} ]
+					} ]
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -163,6 +158,7 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
 	});
 
 	describe('/chat.getMessage', () => {
@@ -214,7 +210,7 @@ describe('[Chat]', function() {
 						alias: 'Gruggy',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
-						attachments: [{
+						attachments: [ {
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
 							ts: '2016-12-09T16:53:06.761Z',
@@ -231,7 +227,7 @@ describe('[Chat]', function() {
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',
 							fields: ''
-						}]
+						} ]
 					}
 				})
 				.expect('Content-Type', 'application/json')
@@ -255,7 +251,7 @@ describe('[Chat]', function() {
 						alias: 'Gruggy',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
-						attachments: [{
+						attachments: [ {
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
 							ts: '2016-12-09T16:53:06.761Z',
@@ -271,7 +267,7 @@ describe('[Chat]', function() {
 							image_url: 'http://res.guggy.com/logo_128.png',
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: [{
+							fields: [ {
 								short: true,
 								title: 'Test',
 								value: 'Testing out something or other'
@@ -279,8 +275,8 @@ describe('[Chat]', function() {
 								short: true,
 								title: 'Another Test',
 								value: '[Link](https://google.com/) something and this and that.'
-							}]
-						}]
+							} ]
+						} ]
 					}
 				})
 				.expect('Content-Type', 'application/json')
@@ -291,6 +287,44 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
+		describe('Read only channel', () => {
+			let readOnlyChannel;
+
+			it('Creating a read-only channel', (done) => {
+				request.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `readonlychannel${ +new Date() }`,
+						readOnly: true
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						readOnlyChannel = res.body.channel;
+					})
+					.end(done);
+			});
+			it('should send a message when the user is the owner of a readonly channel', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample message'
+						}
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').and.to.be.an('object');
+					})
+					.end(done);
+			});
+		});
+
 	});
 
 	describe('/chat.update', () => {
