@@ -233,8 +233,6 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function({ r
 		]
 	};
 
-	console.log('query ->', JSON.stringify(query, null, 2));
-
 	return this._db.find(query, {
 		fields: {
 			'u._id': 1,

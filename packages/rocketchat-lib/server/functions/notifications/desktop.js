@@ -55,7 +55,7 @@ export function notifyDesktopUser(userId, user, message, room, duration) {
 	});
 }
 
-export function shouldNotifyDesktop({ disableAllMessageNotifications, status, desktopNotifications, toAll, toHere, isHighlighted, isMentioned}) {
+export function shouldNotifyDesktop({ disableAllMessageNotifications, status, desktopNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser}) {
 	if (disableAllMessageNotifications && desktopNotifications == null) {
 		return false;
 	}
@@ -73,5 +73,5 @@ export function shouldNotifyDesktop({ disableAllMessageNotifications, status, de
 		}
 	}
 
-	return toAll || toHere || isHighlighted || desktopNotifications === 'all' || isMentioned;
+	return hasMentionToAll || hasMentionToHere || isHighlighted || desktopNotifications === 'all' || hasMentionToUser;
 }

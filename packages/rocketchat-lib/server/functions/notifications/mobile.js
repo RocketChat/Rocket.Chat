@@ -4,9 +4,8 @@ const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
 let alwaysNotifyMobileBoolean;
-
-Meteor.startup(() => {
-	alwaysNotifyMobileBoolean = RocketChat.settings.get('Notifications_Always_Notify_Mobile');
+RocketChat.settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
+	alwaysNotifyMobileBoolean = value;
 });
 
 // function getBadgeCount(userId) {
@@ -24,7 +23,6 @@ function canSendMessageToRoom(room, username) {
 export function sendSinglePush({ room, message, userId, receiverUsername, senderUsername }) {
 	RocketChat.PushNotification.send({
 		roomId: message.rid,
-		// badge: getBadgeCount(userIdToNotify),
 		payload: {
 			host: Meteor.absoluteUrl(),
 			rid: message.rid,
@@ -43,7 +41,7 @@ export function sendSinglePush({ room, message, userId, receiverUsername, sender
 	});
 }
 
-export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, toAll, isHighlighted, isMentioned, statusConnection }) {
+export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, hasMentionToAll, isHighlighted, hasMentionToUser, statusConnection }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null) {
 		return false;
 	}
@@ -65,5 +63,5 @@ export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushN
 		}
 	}
 
-	return toAll || isHighlighted || mobilePushNotifications === 'all' || isMentioned;
+	return hasMentionToAll || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
 }

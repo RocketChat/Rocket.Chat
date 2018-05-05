@@ -624,6 +624,22 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	clearDesktopNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			desktopPrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				desktopNotifications: 1,
+				desktopPrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateDesktopNotificationUserPreferences(userId, desktopNotifications) {
 		const query = {
 			'u._id': userId,
@@ -642,10 +658,26 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	clearMobileNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			mobilePrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				mobilePushNotifications: 1,
+				mobilePrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateMobileNotificationUserPreferences(userId, mobilePushNotifications) {
 		const query = {
 			'u._id': userId,
-			desktopPrefOrigin: {
+			mobilePrefOrigin: {
 				$ne: 'subscription'
 			}
 		};
@@ -654,6 +686,40 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			$set: {
 				mobilePushNotifications,
 				mobilePrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	clearEmailNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			emailPrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				emailNotifications: 1,
+				emailPrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateEmailNotificationUserPreferences(userId, emailNotifications) {
+		const query = {
+			'u._id': userId,
+			emailPrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				emailNotifications,
+				emailPrefOrigin: 'user'
 			}
 		};
 

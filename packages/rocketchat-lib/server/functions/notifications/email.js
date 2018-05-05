@@ -1,7 +1,15 @@
 import s from 'underscore.string';
 
-const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-let footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+let contentHeader;
+RocketChat.settings.get('Email_Header', (key, value) => {
+	contentHeader = RocketChat.placeholders.replace(value || '');
+});
+
+let contentFooter;
+RocketChat.settings.get('Email_Footer', (key, value) => {
+	contentFooter = RocketChat.placeholders.replace(value || '');
+});
+
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
 function getEmailContent({ message, user, room }) {
@@ -16,9 +24,8 @@ function getEmailContent({ message, user, room }) {
 		lng
 	});
 
-	let messageContent;
 	if (message.msg !== '') {
-		messageContent = s.escapeHTML(message.msg);
+		let messageContent = s.escapeHTML(message.msg);
 		message = RocketChat.callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
@@ -26,11 +33,7 @@ function getEmailContent({ message, user, room }) {
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}
-		messageContent = messageContent.replace(/\n/gm, '<br/>');
-	}
-
-	if (messageContent) {
-		return `${ header }<br/><br/>${ messageContent }`;
+		return `${ header }<br/><br/>${ messageContent.replace(/\n/gm, '<br/>') }`;
 	}
 
 	if (message.file) {
@@ -110,13 +113,13 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	const link = getMessageLink(room, subscription);
 
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
+		contentFooter = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
 	}
 
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: header + content + divisorMessage + link + footer
+		html: contentHeader + content + divisorMessage + link + contentFooter
 	};
 
 	// using user full-name/channel name in from address
@@ -138,11 +141,10 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	});
 }
 
-export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnection, emailNotifications, isHighlighted, isMentioned }) {
+export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnection, emailNotifications, isHighlighted, hasMentionToUser }) {
 
 	// no user or room preference
 	if (emailNotifications == null) {
-
 		if (disableAllMessageNotifications) {
 			return false;
 		}
@@ -163,5 +165,5 @@ export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnec
 		return false;
 	}
 
-	return isHighlighted || emailNotifications === 'all' || isMentioned;
+	return isHighlighted || emailNotifications === 'all' || hasMentionToUser;
 }

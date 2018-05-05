@@ -6,58 +6,46 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-let pushNumber = 0;
-let desktopNumber = 0;
-let audioNumber = 0;
-let emailNumber = 0;
-let totalSubs = 0;
-
 const sendNotification = ({
 	subscription,
 	sender,
-	toAll,
-	toHere,
+	hasMentionToAll,
+	hasMentionToHere,
 	message,
 	room,
 	mentionIds,
 	disableAllMessageNotifications
 }) => {
-	totalSubs++;
 
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
-		console.log('return; sender');
 		return;
 	}
 
 	// notifications disabled
 	if (subscription.disableNotifications) {
-		// console.log('return; disableNotifications');
 		return;
 	}
 
 	// dont send notification to users who ignored the sender
 	if (Array.isArray(subscription.ignored) && subscription.ignored.find(sender._id)) {
-		console.log('return; ignored');
 		return;
 	}
 
 	// mute group notifications (@here and @all)
-	if (subscription.muteGroupMentions && (toAll || toHere)) {
-		console.log('return; muteGroupMentions');
+	if (subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
 	}
 
 	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
 
 	if (!receiver || !receiver.active) {
-		console.log('no receiver ->', subscription.u._id);
 		return;
 	}
 
 	const isHighlighted = messageContainsHighlight(message, receiver.settings && receiver.settings.preferences && receiver.settings.preferences.highlights);
 
-	const isMentioned = mentionIds.includes(subscription.u._id);
+	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	const {
 		audioNotifications,
@@ -69,32 +57,17 @@ const sendNotification = ({
 	let notificationSent = false;
 
 	// busy users don't receive audio notification
-	if (shouldNotifyAudio({ disableAllMessageNotifications, status: receiver.status, audioNotifications, toAll, toHere, isHighlighted, isMentioned})) {
-
-		// settings.alwaysNotifyAudioUsers.push(subscription.u._id);
+	if (shouldNotifyAudio({ disableAllMessageNotifications, status: receiver.status, audioNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser})) {
 		notifyAudioUser(subscription.u._id, message, room);
-
-		++audioNumber;
-		// console.log('audio ->', ++audioNumber);
 	}
 
 	// busy users don't receive desktop notification
-	if (shouldNotifyDesktop({ disableAllMessageNotifications, status: receiver.status, desktopNotifications, toAll, toHere, isHighlighted, isMentioned})) {
-		// userIdsToNotify.push(subscription.u._id);
-
+	if (shouldNotifyDesktop({ disableAllMessageNotifications, status: receiver.status, desktopNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser})) {
 		notificationSent = true;
-
-		++desktopNumber;
 		notifyDesktopUser(subscription.u._id, sender, message, room, subscription.desktopNotificationDuration);
-		// console.log('desktop ->', ++desktopNumber, toAll, toHere, isHighlighted, desktopNotifications === 'all', isMentioned);
 	}
 
-	if (shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, toAll, isHighlighted, isMentioned, statusConnection: receiver.statusConnection })) {
-
-		// only offline users will receive a push notification
-		// userIdsToPushNotify.push(subscription.u._id);
-		// pushUsernames[receiver._id] = receiver.username;
-
+	if (shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, hasMentionToAll, isHighlighted, hasMentionToUser, statusConnection: receiver.statusConnection })) {
 		notificationSent = true;
 
 		sendSinglePush({
@@ -104,11 +77,9 @@ const sendNotification = ({
 			senderUsername: sender.username,
 			receiverUsername: receiver.username
 		});
-		pushNumber++;
-		// console.log('push ->', ++pushNumber, toAll, isHighlighted, mobilePushNotifications === 'all', isMentioned);
 	}
 
-	if (receiver.emails && shouldNotifyEmail({ disableAllMessageNotifications, statusConnection: receiver.statusConnection, emailNotifications, isHighlighted, isMentioned })) {
+	if (receiver.emails && shouldNotifyEmail({ disableAllMessageNotifications, statusConnection: receiver.statusConnection, emailNotifications, isHighlighted, hasMentionToUser })) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });
@@ -116,12 +87,9 @@ const sendNotification = ({
 				return true;
 			}
 		});
-
-		emailNumber++;
 	}
 
 	if (notificationSent) {
-		// const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
 		RocketChat.Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
 	}
 };
@@ -150,13 +118,6 @@ function sendAllNotifications(message, room) {
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 
-	console.log('room.usernames.length ->', room.usernames.length);
-	console.log('maxMembersForNotification ->', maxMembersForNotification);
-	console.log('disableAllMessageNotifications ->', disableAllMessageNotifications);
-
-	// console.time('findSubscriptions');
-
-	// @TODO maybe should also force find mentioned people
 	let subscriptions;
 	if (disableAllMessageNotifications) {
 		subscriptions = RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom(room._id);
@@ -171,35 +132,21 @@ function sendAllNotifications(message, room) {
 			mobileFilter: RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing' ? mentionsFilter : excludesNothingFilter
 		});
 	}
-	// console.timeEnd('findSubscriptions');
-
-	// const userIdsToNotify = [];
-	// const userIdsToPushNotify = [];
 
 	const mentionIds = (message.mentions || []).map(({_id}) => _id);
-	const toAll = mentionIds.includes('all');
-	const toHere = mentionIds.includes('here');
+	const hasMentionToAll = mentionIds.includes('all');
+	const hasMentionToHere = mentionIds.includes('here');
 
-	console.log('count ->', subscriptions.count());
-
-	// console.time('eachSubscriptions');
-
-	pushNumber = 0;
-	desktopNumber = 0;
-	audioNumber = 0;
-	emailNumber = 0;
-	totalSubs = 0;
 	subscriptions.forEach((subscription) => sendNotification({
 		subscription,
 		sender,
-		toAll,
-		toHere,
+		hasMentionToAll,
+		hasMentionToHere,
 		message,
 		room,
 		mentionIds,
 		disableAllMessageNotifications
 	}));
-	// console.timeEnd('eachSubscriptions');
 
 	if (room.t === 'c') {
 		Promise.all(message.mentions
@@ -216,8 +163,8 @@ function sendAllNotifications(message, room) {
 				sendNotification({
 					subscription,
 					sender,
-					toAll,
-					toHere,
+					hasMentionToAll,
+					hasMentionToHere,
 					message,
 					room,
 					mentionIds
@@ -225,12 +172,6 @@ function sendAllNotifications(message, room) {
 			});
 		});
 	}
-
-	console.log('pushNumber ->',pushNumber);
-	console.log('desktopNumber ->',desktopNumber);
-	console.log('audioNumber ->',audioNumber);
-	console.log('emailNumber ->',emailNumber);
-	console.log('totalSubs ->',totalSubs);
 
 	return message;
 }
