@@ -171,8 +171,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
-	const data = RocketChat.models.CredentialTokens.findOneById(credentialToken);
-	return Boolean(data);
+	return RocketChat.models.CredentialTokens.findOneById(credentialToken) != null;
 };
 
 Accounts.saml.retrieveCredential = function(credentialToken) {
