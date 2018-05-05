@@ -708,7 +708,7 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
-	this.add('Store_Last_Message', false, {
+	this.add('Store_Last_Message', true, {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'Store_Last_Message_Sent_per_Room'
