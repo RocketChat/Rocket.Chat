@@ -93,7 +93,7 @@ Template.setupWizard.events({
 			}
 
 			const state = t.state.all();
-			const registration = Object.entries(state).filter(key => /registration-/.test(key));
+			const registration = Object.entries(state).filter(setting => /registration-/.test(setting));
 			const registrationData = Object.assign(...registration.map(d => ({[d[0].replace('registration-', '')]: d[1]})));
 
 			Meteor.call('registerUser', registrationData, error => {
