@@ -1,6 +1,9 @@
 RocketChat.Migrations.add({
 	version: 116,
 	up() {
+		RocketChat.models.Subscriptions.tryDropIndex({
+			unread: 1
+		});
 
 		// set pref origin to all existing preferences
 		RocketChat.models.Subscriptions.update({
