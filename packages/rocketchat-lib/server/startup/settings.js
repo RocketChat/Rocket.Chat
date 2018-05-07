@@ -1639,7 +1639,7 @@ RocketChat.settings.addGroup('Logs', function() {
 
 RocketChat.settings.addGroup('Setup_Wizard', function() {
 	this.section('Organization_Info', function() {
-		this.add('Organization_Type', 'nonprofit', {
+		this.add('Organization_Type', '', {
 			type: 'select',
 			values: [
 				{
@@ -1673,7 +1673,7 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				order: 1
 			}
 		});
-		this.add('Industry', 'blockchain', {
+		this.add('Industry', '', {
 			type: 'select',
 			values: [
 				{
@@ -1779,7 +1779,7 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				order: 2
 			}
 		});
-		this.add('Size', '0', {
+		this.add('Size', '', {
 			type: 'select',
 			values: [
 				{
@@ -1821,7 +1821,7 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				order: 3
 			}
 		});
-		this.add('Country', 'worldwide', {
+		this.add('Country', '', {
 			type: 'select',
 			values: [
 				{
@@ -2799,7 +2799,7 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				order: 5
 			}
 		});
-		this.add('Server_Type', 'privateTeam', {
+		this.add('Server_Type', '', {
 			type: 'select',
 			values: [
 				{
