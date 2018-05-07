@@ -23,11 +23,11 @@ RocketChat.deleteMessage = function(message, user) {
 		if (message.file && message.file._id) {
 			FileUpload.getStore('Uploads').deleteById(message.file._id);
 		}
-
-		Meteor.defer(function() {
-			RocketChat.callbacks.run('afterDeleteMessage', deletedMsg);
-		});
 	}
+
+	Meteor.defer(function() {
+		RocketChat.callbacks.run('afterDeleteMessage', deletedMsg || { _id: message._id });
+	});
 
 	// update last message
 	if (RocketChat.settings.get('Store_Last_Message')) {
