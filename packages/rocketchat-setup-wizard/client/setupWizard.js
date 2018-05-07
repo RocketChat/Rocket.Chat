@@ -2,7 +2,7 @@ import s from 'underscore.string';
 
 const setSettingsAndGo = (settings, registerServer = true) => {
 	const settingsFilter = Object.entries(settings)
-		.filter(setting => !/registration-|registerServer|currentStep/.test(setting))
+		.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
 		.map(setting => {
 			return {
 				_id: setting[0],
@@ -95,7 +95,7 @@ Template.setupWizard.events({
 			}
 
 			const state = t.state.all();
-			const registration = Object.entries(state).filter(setting => /registration-/.test(setting));
+			const registration = Object.entries(state).filter(([key]) => /registration-/.test(key));
 			const registrationData = Object.assign(...registration.map(d => ({[d[0].replace('registration-', '')]: d[1]})));
 
 			Meteor.call('registerUser', registrationData, error => {
