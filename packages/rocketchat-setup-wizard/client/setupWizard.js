@@ -3,12 +3,7 @@ import s from 'underscore.string';
 const setSettingsAndGo = (settings, registerServer = true) => {
 	const settingsFilter = Object.entries(settings)
 		.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
-		.map(setting => {
-			return {
-				_id: setting[0],
-				value: setting[1]
-			};
-		});
+		.map(([_id, value]) => ({_id, value}));
 
 	settingsFilter.push({
 		_id: 'Statistics_reporting',
@@ -53,6 +48,7 @@ Template.setupWizard.onCreated(function() {
 	});
 
 	Tracker.autorun(() => {
+		console.log(this.state.all());
 		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
 			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
 				FlowRouter.go('home');
