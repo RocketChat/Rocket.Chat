@@ -12,17 +12,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
 
-		this.tryEnsureIndex({
-			rid: 1,
-			'u._id': 1,
-			alert: 1
-		});
-
-		this.tryEnsureIndex({
-			rid: 1,
-			'u._id': 1,
-			open: 1
-		});
+		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
 
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });

@@ -112,6 +112,7 @@ function notifyUsersOnMessage(message, room) {
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
+	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
 	RocketChat.models.Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id);
 	RocketChat.models.Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id);
 
