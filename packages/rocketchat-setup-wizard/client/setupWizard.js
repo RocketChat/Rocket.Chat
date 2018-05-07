@@ -61,10 +61,12 @@ Template.setupWizard.onCreated(function() {
 
 		const user = Meteor.userId();
 		if (user) {
-			Meteor.call('getWizardSettings', user, (error, result) => {
-				if (result) {
-					this.wizardSettings.set(result);
+			Meteor.call('getWizardSettings', (error, result) => {
+				if (error) {
+					return handleError(error);
 				}
+
+				this.wizardSettings.set(result);
 			});
 		}
 
