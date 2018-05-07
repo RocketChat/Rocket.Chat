@@ -68,7 +68,7 @@ Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 };
 
 Accounts.urls.resetPassword = function(token) {
-	return Meteor.absoluteUrl('reset-password/${token}');
+	return Meteor.absoluteUrl(`reset-password/${token}`);
 };
 
 Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
