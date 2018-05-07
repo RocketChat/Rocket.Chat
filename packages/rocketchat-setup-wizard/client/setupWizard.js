@@ -2,7 +2,7 @@ import s from 'underscore.string';
 
 const setSettingsAndGo = (settings, registerServer = true) => {
 	const settingsFilter = Object.entries(settings)
-		.filter(key => !/registration-|registerServer|currentStep/.test(key))
+		.filter(setting => !/registration-|registerServer|currentStep/.test(setting))
 		.map(setting => {
 			return {
 				_id: setting[0],
