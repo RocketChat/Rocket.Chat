@@ -37,18 +37,18 @@ Template.setupWizard.onCreated(function() {
 		});
 	}
 
-	Meteor.call('serverHasAdminUser', (error, result) => {
-		if (result) {
+	if (Meteor.user()) {
+		if (Meteor.user().roles.includes('admin')) {
 			this.state.set('currentStep', 2);
+			this.hasAdmin.set(true);
 		} else {
-			this.state.set('currentStep', 1);
+			this.hasAdmin.set(false);
 		}
-
-		this.hasAdmin.set(result);
-	});
+	} else {
+		this.state.set('currentStep', 1);
+	}
 
 	Tracker.autorun(() => {
-		console.log(this.state.all());
 		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
 			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
 				FlowRouter.go('home');
@@ -165,6 +165,10 @@ Template.setupWizard.helpers({
 		return Template.instance().state.get(setting) === optionValue;
 	},
 	isDisabled() {
+		if (Meteor.user() && !Meteor.user().roles.includes('admin')) {
+			return 'disabled';
+		}
+
 		if (Template.instance().state.get('currentStep') === 1) {
 			const state = Template.instance().state.all();
 

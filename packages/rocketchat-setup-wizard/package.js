@@ -14,5 +14,4 @@ Package.onUse(function(api) {
 	api.addFiles('client/setupWizard.js', 'client');
 
 	api.addFiles('server/lib/getWizardSettings.js', 'server');
-	api.addFiles('server/lib/serverHasAdminUser.js', 'server');
 });
