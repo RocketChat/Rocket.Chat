@@ -32,8 +32,10 @@ const sendNotification = ({
 		return;
 	}
 
-	// mute group notifications (@here and @all)
-	if (subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
+	const hasMentionToUser = mentionIds.includes(subscription.u._id);
+
+	// mute group notifications (@here and @all) if not directly mentioned as well
+	if (!hasMentionToUser && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
 	}
 
@@ -45,8 +47,6 @@ const sendNotification = ({
 
 	const isHighlighted = messageContainsHighlight(message, receiver.settings && receiver.settings.preferences && receiver.settings.preferences.highlights);
 
-	const hasMentionToUser = mentionIds.includes(subscription.u._id);
-
 	const {
 		audioNotifications,
 		desktopNotifications,
@@ -57,17 +57,40 @@ const sendNotification = ({
 	let notificationSent = false;
 
 	// busy users don't receive audio notification
-	if (shouldNotifyAudio({ disableAllMessageNotifications, status: receiver.status, audioNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser})) {
+	if (shouldNotifyAudio({
+		disableAllMessageNotifications,
+		status: receiver.status,
+		audioNotifications,
+		hasMentionToAll,
+		hasMentionToHere,
+		isHighlighted,
+		hasMentionToUser
+	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
 
 	// busy users don't receive desktop notification
-	if (shouldNotifyDesktop({ disableAllMessageNotifications, status: receiver.status, desktopNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser})) {
+	if (shouldNotifyDesktop({
+		disableAllMessageNotifications,
+		status: receiver.status,
+		desktopNotifications,
+		hasMentionToAll,
+		hasMentionToHere,
+		isHighlighted,
+		hasMentionToUser
+	})) {
 		notificationSent = true;
 		notifyDesktopUser(subscription.u._id, sender, message, room, subscription.desktopNotificationDuration);
 	}
 
-	if (shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, hasMentionToAll, isHighlighted, hasMentionToUser, statusConnection: receiver.statusConnection })) {
+	if (shouldNotifyMobile({
+		disableAllMessageNotifications,
+		mobilePushNotifications,
+		hasMentionToAll,
+		isHighlighted,
+		hasMentionToUser,
+		statusConnection: receiver.statusConnection
+	})) {
 		notificationSent = true;
 
 		sendSinglePush({
@@ -79,7 +102,14 @@ const sendNotification = ({
 		});
 	}
 
-	if (receiver.emails && shouldNotifyEmail({ disableAllMessageNotifications, statusConnection: receiver.statusConnection, emailNotifications, isHighlighted, hasMentionToUser })) {
+	if (receiver.emails && shouldNotifyEmail({
+		disableAllMessageNotifications,
+		statusConnection: receiver.statusConnection,
+		emailNotifications,
+		isHighlighted,
+		hasMentionToUser,
+		hasMentionToAll
+	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });

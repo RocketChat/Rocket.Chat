@@ -63,5 +63,5 @@ export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushN
 		}
 	}
 
-	return hasMentionToAll || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
+	return (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
 }

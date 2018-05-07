@@ -141,7 +141,14 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	});
 }
 
-export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnection, emailNotifications, isHighlighted, hasMentionToUser }) {
+export function shouldNotifyEmail({
+	disableAllMessageNotifications,
+	statusConnection,
+	emailNotifications,
+	isHighlighted,
+	hasMentionToUser,
+	hasMentionToAll
+}) {
 
 	// no user or room preference
 	if (emailNotifications == null) {
@@ -165,5 +172,5 @@ export function shouldNotifyEmail({ disableAllMessageNotifications, statusConnec
 		return false;
 	}
 
-	return isHighlighted || emailNotifications === 'all' || hasMentionToUser;
+	return isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
 }

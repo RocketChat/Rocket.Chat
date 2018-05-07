@@ -1,4 +1,12 @@
-export function shouldNotifyAudio({ disableAllMessageNotifications, status, audioNotifications, hasMentionToAll, hasMentionToHere, isHighlighted, hasMentionToUser}) {
+export function shouldNotifyAudio({
+	disableAllMessageNotifications,
+	status,
+	audioNotifications,
+	hasMentionToAll,
+	hasMentionToHere,
+	isHighlighted,
+	hasMentionToUser
+}) {
 	if (disableAllMessageNotifications && audioNotifications == null) {
 		return false;
 	}
@@ -11,7 +19,7 @@ export function shouldNotifyAudio({ disableAllMessageNotifications, status, audi
 		return true;
 	}
 
-	return hasMentionToAll || hasMentionToHere || isHighlighted || audioNotifications === 'all' || hasMentionToUser;
+	return (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser;
 }
 
 export function notifyAudioUser(userId, message, room) {
