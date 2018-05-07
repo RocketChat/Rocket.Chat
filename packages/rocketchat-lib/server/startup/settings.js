@@ -1677,6 +1677,10 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
+					key: 'advocacy',
+					i18nLabel: 'Advocacy'
+				},
+				{
 					key: 'blockchain',
 					i18nLabel: 'Blockchain'
 				},
