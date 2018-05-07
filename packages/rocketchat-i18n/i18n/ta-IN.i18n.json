@@ -696,8 +696,6 @@
   "Enter_to": "க்கு சேர்க்கவும்",
   "Error": "பிழை",
   "Error_404": "பிழை: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "பிழை: பல நிகழ்வுகளில் இயங்கும் போது ராக்கெட்",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "தயவுசெய்து உங்கள் மோங்கோ DB என்பது ReplicaSet முறைமை மற்றும் MONGO_OPLOG_URL சூழல் மாறி பயன்பாட்டு சேவையகத்தில் சரியாக வரையறுக்கப்பட்டுள்ளது",
   "error-action-not-allowed": "__action__ அனுமதி இல்லை",
   "error-application-not-found": "விண்ணப்ப காணவில்லை",
   "error-archived-duplicate-name": "பெயர் '__room_name__' கொண்டு ஒரு ஆவண சேனல் இல்லை",

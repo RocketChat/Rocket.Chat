@@ -696,8 +696,6 @@
   "Enter_to": "Ga binnen bij",
   "Error": "Fout",
   "Error_404": "Foutmelding 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fout: Rocket.Chat vereist oplog-tailing bij uitvoering in meerdere instanties",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Zorg ervoor dat uw MongoDB in de ReplicaSet-modus staat en de omgevingsvariabele MONGO_OPLOG_URL correct is gedefinieerd op de toepassingsserver",
   "error-action-not-allowed": "__action__ is niet toegestaan",
   "error-application-not-found": "Applicatie niet gevonden",
   "error-archived-duplicate-name": "Er is een gearchiveerd kanaal met de naam '__room_name__'",
