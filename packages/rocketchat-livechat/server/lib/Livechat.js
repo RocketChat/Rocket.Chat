@@ -171,6 +171,10 @@ RocketChat.Livechat = {
 			updateUser.$set.name = name;
 		}
 
+		if (department) {
+			updateUser.$set.department = department;
+		}
+
 		LivechatVisitors.updateById(userId, updateUser);
 
 		return userId;

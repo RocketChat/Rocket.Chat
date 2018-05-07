@@ -125,6 +125,7 @@ Template.messages.events({
 				}
 
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 				LivechatVideoCall.request();
 			});
 		} else {

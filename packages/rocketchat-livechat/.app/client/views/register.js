@@ -47,11 +47,13 @@ Template.register.events({
 				}
 			}
 
+			Livechat.department = departmentId;
+
 			const guest = {
 				token: visitor.getToken(),
 				name: $name.val(),
 				email: $email.val(),
-				department: Livechat.department || departmentId
+				department: Livechat.department
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
@@ -59,6 +61,7 @@ Template.register.events({
 				}
 				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 				start();
 			});
 		}

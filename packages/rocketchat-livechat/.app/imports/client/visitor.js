@@ -38,6 +38,11 @@ export default {
 		return this.token.get();
 	},
 
+	getDepartment() {
+		const data = this.getData();
+		return data ? data.department : null; 
+	},
+
 	setRoom(rid) {
 		this.room.set(rid);
 	},
