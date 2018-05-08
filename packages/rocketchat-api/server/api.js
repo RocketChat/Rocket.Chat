@@ -239,7 +239,7 @@ class API extends Restivus {
 					if (error.reason === 'User not found') {
 						e = {
 							error: 'Unauthorized',
-							reason: 'Unauthorized'
+							reason: 'Login attempt failed. Please make sure your username and password are correct.'
 						};
 					}
 
