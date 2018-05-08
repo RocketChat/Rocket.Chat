@@ -236,6 +236,12 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('canAccessRoom', findResult._id, this.userId);
@@ -254,8 +260,9 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
-			count: files.length,
+			files: files.map(addUserObjectToEveryObject),
+			count:
+			files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
 		});
