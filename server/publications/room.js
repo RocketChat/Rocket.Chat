@@ -10,6 +10,7 @@ const fields = {
 	// usernames: 1,
 	topic: 1,
 	announcement: 1,
+	announcementDetails: 1,
 	muted: 1,
 	_updatedAt: 1,
 	archived: 1,
