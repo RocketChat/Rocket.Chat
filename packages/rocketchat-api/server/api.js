@@ -1,5 +1,6 @@
 /* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
+const logger = new Logger('API', {});
 
 class API extends Restivus {
 	constructor(properties) {
@@ -68,10 +69,14 @@ class API extends Restivus {
 			result.success = true;
 		}
 
-		return {
+		result = {
 			statusCode: 200,
 			body: result
 		};
+
+		logger.debug('Success', result);
+
+		return result;
 	}
 
 	failure(result, errorType) {
@@ -88,10 +93,14 @@ class API extends Restivus {
 			}
 		}
 
-		return {
+		result = {
 			statusCode: 400,
 			body: result
 		};
+
+		logger.debug('Failure', result);
+
+		return result;
 	}
 
 	notFound(msg) {
