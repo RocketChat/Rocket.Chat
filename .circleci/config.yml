@@ -142,6 +142,7 @@ jobs:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
       MONGO_OPLOG_URL: mongodb://localhost:27017/local
+      USE_UNRELEASED_ROCKETAPPS_FRAMEWORK: "false"
 
     steps:
       - attach_workspace:
@@ -185,6 +186,83 @@ jobs:
     environment:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
+      USE_UNRELEASED_ROCKETAPPS_FRAMEWORK: "false"
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: NPM install
+          command: |
+            npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - store_artifacts:
+          path: .screenshots/
+
+  test-with-oplog-and-apps:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8.9-browsers
+      - image: mongo:3.4
+        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_OPLOG_URL: mongodb://localhost:27017/local
+      USE_UNRELEASED_ROCKETAPPS_FRAMEWORK: "true"
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org-shell
+
+      - run:
+          name: Configure Replica Set
+          command: |
+            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+            mongo --eval 'rs.status()'
+
+      - run:
+          name: NPM install
+          command: |
+            npm install
+
+      - run:
+          name: Run Tests
+          command: |
+            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+      - store_artifacts:
+          path: .screenshots/
+
+  test-with-apps:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8.9-browsers
+      - image: circleci/mongo:3.4
+
+    environment:
+      TEST_MODE: "true"
+      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      USE_UNRELEASED_ROCKETAPPS_FRAMEWORK: "true"
 
     steps:
       - attach_workspace:
