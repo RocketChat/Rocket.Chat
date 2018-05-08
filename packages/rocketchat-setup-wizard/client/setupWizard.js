@@ -220,9 +220,6 @@ Template.setupWizard.helpers({
 
 		return result;
 	},
-	siteUrl() {
-		return RocketChat.settings.get('Site_Url');
-	},
 	hasAdmin() {
 		return Template.instance().hasAdmin.get();
 	},
@@ -265,5 +262,11 @@ Template.setupWizardFinal.events({
 			localStorage.removeItem('wizardFinal');
 			FlowRouter.go('home');
 		});
+	}
+});
+
+Template.setupWizardFinal.helpers({
+	siteUrl() {
+		return RocketChat.settings.get('Site_Url');
 	}
 });
