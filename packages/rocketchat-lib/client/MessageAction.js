@@ -4,6 +4,17 @@ import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
 
+const success = function success(fn) {
+	return function(error, result) {
+		if (error) {
+			return handleError(error);
+		}
+		if (result) {
+			fn.call(this, result);
+		}
+	};
+};
+
 RocketChat.MessageAction = new class {
 	/*
   	config expects the following keys (only id is mandatory):
@@ -103,9 +114,9 @@ Meteor.startup(function() {
 		action() {
 			const message = this._arguments[1];
 			const {input} = chatMessages[message.rid];
-			input.value = `@${ message.u.username } `;
 			$(input)
 				.focus()
+				.data('mention-user', true)
 				.data('reply', message)
 				.trigger('dataChange');
 		},
@@ -266,6 +277,7 @@ Meteor.startup(function() {
 			const {input} = chatMessages[message.rid];
 			$(input)
 				.focus()
+				.data('mention-user', false)
 				.data('reply', message)
 				.trigger('dataChange');
 		},
@@ -279,4 +291,45 @@ Meteor.startup(function() {
 		order: 6,
 		group: 'menu'
 	});
+
+
+
+	RocketChat.MessageAction.addButton({
+		id: 'ignore-user',
+		icon: 'ban',
+		label: t('Ignore'),
+		context: ['message', 'message-mobile'],
+		action() {
+			const [, {rid, u: {_id}}] = this._arguments;
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true}, success(() => toastr.success(t('User_has_been_ignored'))));
+		},
+		condition(message) {
+			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
+
+			return Meteor.userId() !== message.u._id && !(subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
+		},
+		order: 20,
+		group: 'menu'
+	});
+
+	RocketChat.MessageAction.addButton({
+		id: 'unignore-user',
+		icon: 'ban',
+		label: t('Unignore'),
+		context: ['message', 'message-mobile'],
+		action() {
+			const [, {rid, u: {_id}}] = this._arguments;
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false}, success(() => toastr.success(t('User_has_been_unignored'))));
+
+		},
+		condition(message) {
+			const subscription = RocketChat.models.Subscriptions.findOne({rid: message.rid});
+			return Meteor.userId() !== message.u._id && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
+		},
+		order: 20,
+		group: 'menu'
+	});
+
+
+
 });
