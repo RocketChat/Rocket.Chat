@@ -1,4 +1,4 @@
-/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
+/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder AudioRecorderOgg AudioRecorderMp3 chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -488,6 +488,8 @@ Template.messageBox.events({
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 
 		chatMessages[RocketChat.openedRoom].recording = true;
+		const audioFormat = RocketChat.settings.get('Message_AudioRecorderFormat');
+		AudioRecorder = (audioFormat === 'ogg' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? AudioRecorderOgg : AudioRecorderMp3;
 		AudioRecorder.start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
@@ -537,14 +539,14 @@ Template.messageBox.events({
 
 		chatMessages[RocketChat.openedRoom].recording = false;
 		AudioRecorder.stop(function(blob) {
-
 			loader.classList.remove('active');
 			mic.classList.add('active');
+			const audioFormat = blob.type.replace(/.*\//, '');
 			const roomId = Session.get('openedRoom');
 			const record = {
-				name: `${ TAPi18n.__('Audio record') }.mp3`,
+				name: `${ TAPi18n.__('Audio record') }.${ audioFormat }`,
 				size: blob.size,
-				type: 'audio/mp3',
+				type: blob.type,
 				rid: roomId,
 				description: ''
 			};

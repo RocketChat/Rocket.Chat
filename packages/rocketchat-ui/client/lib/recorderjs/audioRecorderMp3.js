@@ -1,5 +1,5 @@
 /* globals Recorder */
-this.AudioRecorder = new class {
+this.AudioRecorderMp3 = new class {
 	start(cb) {
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

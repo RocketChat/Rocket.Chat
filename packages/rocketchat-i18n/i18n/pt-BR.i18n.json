@@ -1350,6 +1350,8 @@
   "Message_Audio_bitRate": "Taxa de bit da mensagem de áudio",
   "Message_AudioRecorderEnabled": "Gravação de Áudio Habilitada",
   "Message_AudioRecorderEnabled_Description": "Requer arquivos 'audio / mp3' para ser um tipo de mídia aceito dentro das configurações 'Upload de arquivo'.",
+  "Message_AudioRecorderFormat": "Formato da mensagem de áudio",
+  "Message_AudioRecorderFormat_Description": "O formato ogg requer capacidades específicas do navegador. O formato mp3 será utilizado caso os requisitos não sejam atendidos. Detalhes podem ser encontrados <a target=\"_blank\" href=\"https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia\">aqui</a>.",
   "Message_BadWordsFilterList": "Adicione palavrões para a lista negra",
   "Message_BadWordsFilterListDescription": "Adicione palavrões separados por vírgula para filtrar",
   "Message_DateFormat": "Formato de Data",

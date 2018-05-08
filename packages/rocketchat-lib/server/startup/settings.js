@@ -1223,9 +1223,37 @@ RocketChat.settings.addGroup('Message', function() {
 			'public': true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription'
 		});
+		this.add('Message_AudioRecorderFormat', 'mp3', {
+			type: 'select',
+			values: [
+				{
+					key: 'mp3',
+					i18nLabel: 'Message_AudioRecorderFormat_mp3'
+				},
+				{
+					key: 'ogg',
+					i18nLabel: 'Message_AudioRecorderFormat_ogg'
+				}
+			],
+			public: true,
+			enableQuery: {
+				_id: 'Message_AudioRecorderEnabled',
+				value: true
+			}
+		});
 		this.add('Message_Audio_bitRate', 32, {
 			type: 'int',
-			'public': true
+			'public': true,
+			enableQuery: [
+				{
+					_id: 'Message_AudioRecorderEnabled',
+					value: true
+				},
+				{
+					_id: 'Message_AudioRecorderFormat',
+					value: 'mp3'
+				}
+			]
 		});
 	});
 	this.add('Message_AllowEditing', true, {
