@@ -10,19 +10,14 @@ import moment from 'moment';
  *
  * @returns {boolean}
  */
-function messageContainsHighlight(message, highlights) {
+
+export function messageContainsHighlight(message, highlights) {
 	if (! highlights || highlights.length === 0) { return false; }
 
-	let has = false;
-	highlights.some(function(highlight) {
+	return highlights.some(function(highlight) {
 		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
-		if (regexp.test(message.msg)) {
-			has = true;
-			return true;
-		}
+		return regexp.test(message.msg);
 	});
-
-	return has;
 }
 
 function notifyUsersOnMessage(message, room) {

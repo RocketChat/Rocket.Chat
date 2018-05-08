@@ -41,7 +41,14 @@ export function sendSinglePush({ room, message, userId, receiverUsername, sender
 	});
 }
 
-export function shouldNotifyMobile({ disableAllMessageNotifications, mobilePushNotifications, hasMentionToAll, isHighlighted, hasMentionToUser, statusConnection }) {
+export function shouldNotifyMobile({
+	disableAllMessageNotifications,
+	mobilePushNotifications,
+	hasMentionToAll,
+	isHighlighted,
+	hasMentionToUser,
+	statusConnection
+}) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null) {
 		return false;
 	}

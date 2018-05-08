@@ -10,8 +10,7 @@ RocketChat.getUserNotificationPreference = function _getUserNotificationPreferen
 		case 'email': preferenceKey = 'emailNotificationMode'; break;
 	}
 
-	if (user && user.settings && user.settings.preferences &&
-		user.settings.preferences.hasOwnProperty(preferenceKey) && user.settings.preferences[preferenceKey] !== 'default') {
+	if (user && user.settings && user.settings.preferences && user.settings.preferences[preferenceKey] !== 'default') {
 		return {
 			value: user.settings.preferences[preferenceKey],
 			origin: 'user'

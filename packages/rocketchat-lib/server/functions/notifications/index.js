@@ -30,9 +30,7 @@ export function messageContainsHighlight(message, highlights) {
 
 	return highlights.some(function(highlight) {
 		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
-		if (regexp.test(message.msg)) {
-			return true;
-		}
+		return regexp.test(message.msg);
 	});
 }
 

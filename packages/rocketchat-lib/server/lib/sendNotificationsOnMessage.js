@@ -157,6 +157,7 @@ function sendAllNotifications(message, room) {
 		const mentionsFilter = { $in: ['all', 'mentions'] };
 		const excludesNothingFilter = { $ne: 'nothing' };
 
+		// evaluate if doing three specific finds is better than evaluting all results
 		subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom({
 			roomId: room._id,
 			desktopFilter: RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing' ? mentionsFilter : excludesNothingFilter,

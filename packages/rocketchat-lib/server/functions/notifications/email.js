@@ -150,6 +150,16 @@ export function shouldNotifyEmail({
 	hasMentionToAll
 }) {
 
+	// use connected (don't need to send him an email)
+	if (statusConnection === 'online') {
+		return false;
+	}
+
+	// user/room preference to nothing
+	if (emailNotifications === 'nothing') {
+		return false;
+	}
+
 	// no user or room preference
 	if (emailNotifications == null) {
 		if (disableAllMessageNotifications) {
@@ -160,16 +170,6 @@ export function shouldNotifyEmail({
 		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'disabled') {
 			return false;
 		}
-	}
-
-	// user/room preference to nothing
-	if (emailNotifications === 'nothing') {
-		return false;
-	}
-
-	// use connected (don't need to send him an email)
-	if (statusConnection === 'online') {
-		return false;
 	}
 
 	return isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
