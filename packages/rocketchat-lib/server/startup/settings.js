@@ -708,7 +708,7 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'action',
 		actionText: 'Restart_the_server'
 	});
-	this.add('Store_Last_Message', false, {
+	this.add('Store_Last_Message', true, {
 		type: 'boolean',
 		public: true,
 		i18nDescription: 'Store_Last_Message_Sent_per_Room'
@@ -1367,12 +1367,6 @@ RocketChat.settings.addGroup('Message', function() {
 	this.add('Message_HideType_mute_unmute', false, {
 		type: 'boolean',
 		'public': true
-	});
-
-	this.add('Message_GlobalSearch', false, {
-		type: 'boolean',
-		'public': true,
-		alert: 'This feature is currently in beta and could decrease the application performance! Please report bugs to github.com/RocketChat/Rocket.Chat/issues'
 	});
 
 	this.add('Message_ErasureType', 'Delete', {
