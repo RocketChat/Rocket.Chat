@@ -1,5 +1,7 @@
 /* globals RocketChat */
 import { UiTextContext } from 'meteor/rocketchat:lib';
+import _ from 'underscore';
+
 Template.roomList.helpers({
 	rooms() {
 		/*
@@ -23,7 +25,7 @@ Template.roomList.helpers({
 		if (sortBy === 'activity') {
 			sort.lm = -1;
 		} else { // alphabetical
-			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'fname' : 'name'] = /descending/.test(sortBy) ? -1 : 1;
+			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {
@@ -97,8 +99,16 @@ Template.roomList.helpers({
 		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	}
 });
+
+const getLowerCaseNames = (room) => {
+	const lowerCaseNamesRoom = {};
+	lowerCaseNamesRoom.lowerCaseName = _.isUndefined(room.name) ? undefined : room.name.toLowerCase();
+	lowerCaseNamesRoom.lowerCaseFName = _.isUndefined(room.name) ? undefined : room.fname.toLowerCase();
+	return lowerCaseNamesRoom;
+};
+
 RocketChat.Notifications['onUser']('rooms-changed', (t, room) => {
-	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt};
+	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room)};
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
 });
 
@@ -109,7 +119,7 @@ const mergeSubRoom = (record/*, t*/) => {
 	}
 	record.lastMessage = room.lastMessage;
 	record.lm = room._updatedAt;
-	return record;
+	return _.extend(record, getLowerCaseNames(record));
 };
 
 RocketChat.callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
