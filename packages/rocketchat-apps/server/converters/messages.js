@@ -15,7 +15,15 @@ export class AppMessagesConverter {
 		}
 
 		const room = this.orch.getConverters().get('rooms').convertById(msgObj.rid);
-		const sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+
+		let sender;
+		if (msgObj.u && msgObj.u._id) {
+			sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+
+			if (!sender) {
+				sender = this.orch.getConverters().get('users').convertToApp(msgObj.u);
+			}
+		}
 
 		let editor;
 		if (msgObj.editedBy) {
@@ -55,10 +63,20 @@ export class AppMessagesConverter {
 		let u;
 		if (message.sender && message.sender.id) {
 			const user = RocketChat.models.Users.findOneById(message.sender.id);
-			u = {
-				_id: user._id,
-				username: user.username
-			};
+
+			if (user) {
+				u = {
+					_id: user._id,
+					username: user.username,
+					name: user.name
+				};
+			} else {
+				u = {
+					_id: message.sender.id,
+					username: message.sender.username,
+					name: message.sender.name
+				};
+			}
 		}
 
 		let editedBy;

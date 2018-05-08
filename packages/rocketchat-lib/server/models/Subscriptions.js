@@ -454,6 +454,21 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	ignoreUser({_id, ignoredUser : ignored, ignore = true}) {
+		const query = {
+			_id
+		};
+		const update = {
+		};
+		if (ignore) {
+			update.$addToSet = { ignored };
+		} else {
+			update.$pull = { ignored };
+		}
+
+		return this.update(query, update);
+	}
+
 	setAlertForRoomIdExcludingUserId(roomId, userId) {
 		const query = {
 			rid: roomId,
