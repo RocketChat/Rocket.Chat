@@ -171,6 +171,7 @@
 
 		&__wrapper {
 			display: flex;
+			overflow-y: auto;
 
 			width: calc(100% - 1rem);
 			height: calc(100% - 2rem);
@@ -397,6 +398,7 @@
 
 			&-text {
 				display:block;
+
 				letter-spacing: 0.03rem;
 
 				text-transform:uppercase;

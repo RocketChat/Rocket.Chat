@@ -3,7 +3,7 @@ import {adminEmail, adminPassword} from '../data/user';
 
 
 class SetupWizard extends Page {
-	get nextButton() { return browser.element('.setup-wizard-forms__footer-next'); }
+	get nextButton() { return browser.element('.setup-wizard-forms__footer-next:enabled'); }
 	get goToWorkspace() { return browser.element('button.js-finish'); }
 	get organizationType() { return browser.element('select[name="Organization_Type"]'); }
 	get organizationName() { return browser.element('input[name="Organization_Name"]'); }

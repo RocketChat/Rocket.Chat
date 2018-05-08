@@ -37,26 +37,18 @@ Template.setupWizard.onCreated(function() {
 		});
 	}
 
-	if (Meteor.user()) {
-		if (Meteor.user().roles.includes('admin')) {
-			this.state.set('currentStep', 2);
-			this.hasAdmin.set(true);
-		} else {
-			this.hasAdmin.set(false);
-		}
-	} else {
-		this.state.set('currentStep', 1);
-	}
-
 	Tracker.autorun(() => {
-		if (RocketChat.settings.get('Show_Setup_Wizard') !== undefined) {
-			if (!RocketChat.settings.get('Show_Setup_Wizard')) {
-				FlowRouter.go('home');
-			}
-		}
-
-		const user = Meteor.userId();
+		const user = Meteor.user();
 		if (user) {
+			if (!this.hasAdmin.get()) {
+				if (user.roles && user.roles.includes('admin')) {
+					this.state.set('currentStep', 2);
+					this.hasAdmin.set(true);
+				} else {
+					this.hasAdmin.set(false);
+				}
+			}
+
 			Meteor.call('getWizardSettings', (error, result) => {
 				if (error) {
 					return handleError(error);
@@ -64,6 +56,12 @@ Template.setupWizard.onCreated(function() {
 
 				this.wizardSettings.set(result);
 			});
+		} else {
+			this.state.set('currentStep', 1);
+		}
+
+		if (RocketChat.settings.get('Show_Setup_Wizard') === false) {
+			FlowRouter.go('home');
 		}
 
 		const states = this.state.all();
@@ -165,7 +163,8 @@ Template.setupWizard.helpers({
 		return Template.instance().state.get(setting) === optionValue;
 	},
 	isDisabled() {
-		if (Meteor.user() && !Meteor.user().roles.includes('admin')) {
+		const user = Meteor.user();
+		if (user && user.roles && !user.roles.includes('admin')) {
 			return 'disabled';
 		}
 
