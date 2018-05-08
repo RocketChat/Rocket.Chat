@@ -102,8 +102,8 @@ Template.roomList.helpers({
 
 const getLowerCaseNames = (room) => {
 	const lowerCaseNamesRoom = {};
-	lowerCaseNamesRoom.lowerCaseName = _.isUndefined(room.name) ? undefined : room.name.toLowerCase();
-	lowerCaseNamesRoom.lowerCaseFName = _.isUndefined(room.name) ? undefined : room.fname.toLowerCase();
+	lowerCaseNamesRoom.lowerCaseName = room.name ? room.name.toLowerCase() : undefined;
+	lowerCaseNamesRoom.lowerCaseFName = room.fname ? room.fname.toLowerCase() : undefined;
 	return lowerCaseNamesRoom;
 };
 
