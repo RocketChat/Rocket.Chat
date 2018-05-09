@@ -713,6 +713,20 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateUserHighlights(userId, userHighlights) {
+		const query = {
+			'u._id': userId
+		};
+
+		const update = {
+			$set: {
+				userHighlights
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
@@ -737,7 +751,8 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		const {
 			desktopNotifications,
 			mobileNotifications,
-			emailNotificationMode
+			emailNotificationMode,
+			highlights
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (desktopNotifications && desktopNotifications !== 'default') {
@@ -753,6 +768,10 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		if (emailNotificationMode && emailNotificationMode !== 'default') {
 			subscription.emailNotifications = emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode;
 			subscription.emailPrefOrigin = 'user';
+		}
+
+		if (Array.isArray(highlights) && highlights.length) {
+			subscription.userHighlights = highlights;
 		}
 
 		_.extend(subscription, extraData);

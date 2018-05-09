@@ -94,6 +94,10 @@ Meteor.methods({
 					RocketChat.models.Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode === 'disabled' ? 'nothing' : settings.emailNotificationMode);
 				}
 			}
+
+			if (Array.isArray(settings.highlights)) {
+				RocketChat.models.Subscriptions.updateUserHighlights(user._id, settings.highlights);
+			}
 		});
 
 		return true;
