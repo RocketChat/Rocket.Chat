@@ -731,8 +731,8 @@ describe('[Administration]', () => {
 					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
 				});
 				it('the enable auto away field value should be true', () => {
-					admin.accountsEnableAutoAwayTrue.isSelected().should.be.false;
-					admin.accountsEnableAutoAwayFalse.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayTrue.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayFalse.isSelected().should.be.false;
 				});
 
 				it('it should show the idle timeout limit field', () => {
