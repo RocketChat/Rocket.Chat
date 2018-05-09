@@ -696,8 +696,6 @@
   "Enter_to": "Руу оруулна уу",
   "Error": "Алдаа",
   "Error_404": "Алдаа: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Алдаа: Rocket.Chat олон тохиолдол дээр ажиллаж байхдаа oplog tailing шаарддаг",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDB нь ReplicaSet горимд байгаа эсэхийг шалгаарай, мөн MONGO_OPLOG_URL орчны хувьсагч нь програмын сервер дээр зөвөөр тодорхойлогдсон эсэхийг шалгана уу.",
   "error-action-not-allowed": "__action__ зөвшөөрөгдөөгүй",
   "error-application-not-found": "Програм байхгүй байна",
   "error-archived-duplicate-name": "'__room_name__' нэртэй архивлагдсан суваг байна.",
