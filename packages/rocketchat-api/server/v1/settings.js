@@ -1,23 +1,23 @@
 import _ from 'underscore';
 
 // settings endpoints
-RocketChat.API.v1.addRoute('settings.public', {authRequired: false}, {
+RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 	get() {
-		const {offset, count} = this.getPaginationItems();
-		const {sort, fields, query} = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
 
 		let ourQuery = {
-			hidden: {$ne: true},
+			hidden: { $ne: true },
 			'public': true
 		};
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const settings = RocketChat.models.Settings.find(ourQuery, {
-			sort: sort ? sort : {_id: 1},
+			sort: sort ? sort : { _id: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({_id: 1, value: 1}, fields)
+			fields: Object.assign({ _id: 1, value: 1 }, fields)
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -29,13 +29,13 @@ RocketChat.API.v1.addRoute('settings.public', {authRequired: false}, {
 	}
 });
 
-RocketChat.API.v1.addRoute('settings', {authRequired: true}, {
+RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 	get() {
-		const {offset, count} = this.getPaginationItems();
-		const {sort, fields, query} = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
 
 		let ourQuery = {
-			hidden: {$ne: true}
+			hidden: { $ne: true }
 		};
 
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting')) {
@@ -45,10 +45,10 @@ RocketChat.API.v1.addRoute('settings', {authRequired: true}, {
 		ourQuery = Object.assign({}, query, ourQuery);
 
 		const settings = RocketChat.models.Settings.find(ourQuery, {
-			sort: sort ? sort : {_id: 1},
+			sort: sort ? sort : { _id: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({_id: 1, value: 1}, fields)
+			fields: Object.assign({ _id: 1, value: 1 }, fields)
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -60,7 +60,7 @@ RocketChat.API.v1.addRoute('settings', {authRequired: true}, {
 	}
 });
 
-RocketChat.API.v1.addRoute('settings/:_id', {authRequired: true}, {
+RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting')) {
 			return RocketChat.API.v1.unauthorized();
@@ -77,13 +77,14 @@ RocketChat.API.v1.addRoute('settings/:_id', {authRequired: true}, {
 		const setting = RocketChat.models.Settings.findOneNotHiddenById(this.urlParams._id);
 		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
 			//execute the configured method
-			Meteor.defer(() => Meteor.call(setting.value));
-
-			return RocketChat.API.v1.success(); // we triggered the method - we won't wait for completion
+			Meteor.defer(() => {
+				Meteor.call(setting.value);
+				return RocketChat.API.v1.success();
+			});
 		}
 
 		if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
-			RocketChat.models.Settings.updateOptionsById(this.urlParams._id, {editor: this.bodyParams.editor});
+			RocketChat.models.Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
 			RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
 			return RocketChat.API.v1.success();
 		}
@@ -99,12 +100,12 @@ RocketChat.API.v1.addRoute('settings/:_id', {authRequired: true}, {
 	}
 });
 
-RocketChat.API.v1.addRoute('service.configurations', {authRequired: false}, {
+RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 	get() {
 		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
 
 		return RocketChat.API.v1.success({
-			configurations: ServiceConfiguration.configurations.find({}, {fields: {secret: 0}}).fetch()
+			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch()
 		});
 	}
 });
