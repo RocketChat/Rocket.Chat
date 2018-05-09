@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 Meteor.methods({
-	sendMessage(message) {
+	sendMessage(message, origin) {
 		check(message, Object);
 
 		if (!Meteor.userId()) {
@@ -55,6 +55,9 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('room_is_blocked', {}, user.language)
 			});
+			if (origin && origin === 'RESTAPI') {
+				throw new Meteor.Error('You can\'t send messages because you are blocked');
+			}
 			return false;
 		}
 
@@ -65,6 +68,9 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
+			if (origin && origin === 'RESTAPI') {
+				throw new Meteor.Error('You can\'t send messages because you have been muted');
+			}
 			return false;
 		}
 
