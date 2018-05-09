@@ -75,8 +75,6 @@ const configure = _.debounce(function() {
 
 	const config = {
 		connection: {
-			accessKeyId: AWSAccessKeyId,
-			secretAccessKey: AWSSecretAccessKey,
 			signatureVersion: SignatureVersion,
 			s3ForcePathStyle: ForcePathStyle,
 			params: {
@@ -87,6 +85,14 @@ const configure = _.debounce(function() {
 		},
 		URLExpiryTimeSpan
 	};
+
+	if (AWSAccessKeyId) {
+		config.connection.accessKeyId = AWSAccessKeyId;
+	}
+
+	if (AWSSecretAccessKey) {
+		config.connection.secretAccessKey = AWSSecretAccessKey;
+	}
 
 	if (BucketURL) {
 		config.connection.endpoint = BucketURL;
