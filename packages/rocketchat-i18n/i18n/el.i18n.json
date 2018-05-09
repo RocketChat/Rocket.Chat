@@ -696,8 +696,6 @@
   "Enter_to": "Enter για να",
   "Error": "Λάθος",
   "Error_404": "Σφάλμα 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Σφάλμα: Το Rocket.Chat απαιτεί oplog tailing όταν εκτελείται σε πολλαπλές περιπτώσεις",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Βεβαιωθείτε ότι το MongoDB βρίσκεται στη λειτουργία ReplicaSet και ότι η μεταβλητή περιβάλλοντος MONGO_OPLOG_URL ορίζεται σωστά στον διακομιστή εφαρμογών",
   "error-action-not-allowed": "__action__ δεν επιτρέπεται",
   "error-application-not-found": "Η εφαρμογή δεν βρέθηκε",
   "error-archived-duplicate-name": "Υπάρχει ένα αρχειοθετημένο κανάλι με το όνομα «__room_name__»",

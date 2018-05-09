@@ -696,8 +696,6 @@
   "Enter_to": "Astu sisään",
   "Error": "Virhe",
   "Error_404": "Virhe: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Virhe: Rocket.Chat vaatii oplog tailing -toimintoa useissa tapauksissa",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Varmista, että MongoDB on ReplicaSet-tilassa ja että MONGO_OPLOG_URL ympäristömuuttuja määritetään oikein sovelluspalvelimella",
   "error-action-not-allowed": "__action__ ei ole sallittu",
   "error-application-not-found": "Sovellusta ei löytynyt",
   "error-archived-duplicate-name": "Kanavan nimi \"__room_name__\" on arkistoitu",
