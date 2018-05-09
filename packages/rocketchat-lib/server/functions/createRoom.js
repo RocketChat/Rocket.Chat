@@ -64,7 +64,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	room = RocketChat.models.Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 }});
 		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
