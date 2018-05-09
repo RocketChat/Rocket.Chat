@@ -496,6 +496,8 @@
   "CAS_Sync_User_Data_FieldMap_Description": "Use this JSON input to build internal attributes (key) from external attributes (value). External attribute names enclosed with '%' will interpolated in value strings.<br/>Example, `{\"email\":\"%email%\", \"name\":\"%firstname%, %lastname%\"}`<br/><br/>The attribute map is always interpolated. In CAS 1.0 only the `username` attribute is available. Available internal attributes are: username, name, email, rooms; rooms is a comma separated list of rooms to join upon user creation e.g: {\"rooms\": \"%team%,%department%\"} would join CAS users on creation to their team and department channel.",
   "CAS_version": "CAS Version",
   "CAS_version_Description": "Only use a supported CAS version supported by your CAS SSO service.",
+  "CAS_Use_LDAP_Account": "Use existing LDAP account",
+  "CAS_Use_LDAP_Account_Description": "If LDAP is enabled, try to connect with a LDAP account with the same CAS identifier",
   "Categories": "Categories",
   "CDN_PREFIX": "CDN Prefix",
   "CDN_PREFIX_ALL": "Use CDN Prefix for all assets",

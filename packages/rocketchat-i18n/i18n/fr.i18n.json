@@ -434,6 +434,8 @@
   "CAS_Sync_User_Data_FieldMap_Description": "Utilisez cette entrée JSON pour créer des attributs internes (clé) à partir d'attributs externes (valeur).<br/>Exemple: `{\" email \":\"% email% \",\" name \":\"% prénom%,% nom% \"}`<br/><br/> La carte d'attributs est toujours interpolée. Dans CAS 1.0, seul l'attribut `username` est disponible. Les attributs internes disponibles sont: nom d'utilisateur, nom, adresse e-mail, chambres; rooms est une liste de pièces séparées par des virgules à joindre lors de la création de l'utilisateur, par exemple: {\"rooms\": \"% team%,% department%\"} rejoindrait les utilisateurs CAS lors de la création de leur équipe et canal départemental.",
   "CAS_version": "Version CAS",
   "CAS_version_Description": "Utiliser seulement une version de CAS supportée par votre service CAS SSO",
+  "CAS_Use_LDAP_Account": "Utiliser un compte LDAP existant",
+  "CAS_Use_LDAP_Account_Description": "Si LDAP est activé, essayer de se connecter avec un compte LDAP qui a le même identifiant CAS",
   "CDN_PREFIX": "Préfixe CDN",
   "Certificates_and_Keys": "Certificats et clés",
   "Change_Room_Type": "Modification du type de salon",

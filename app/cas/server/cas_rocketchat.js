@@ -10,6 +10,7 @@ Meteor.startup(function() {
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0' }, { key: '2.0', i18nLabel: '2.0' }], group: 'CAS' });
+		this.add('CAS_Use_LDAP_Account', false, { type: 'boolean', group: 'CAS', public: true });
 
 		this.section('Attribute_handling', function() {
 			// Enable/disable sync
