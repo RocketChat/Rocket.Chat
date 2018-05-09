@@ -11,7 +11,9 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
-		this.tryEnsureIndex({ 'unread': 1 });
+
+		this.tryEnsureIndex({ rid: 1, 'u._id': 1, open: 1 });
+
 		this.tryEnsureIndex({ 'ts': 1 });
 		this.tryEnsureIndex({ 'ls': 1 });
 		this.tryEnsureIndex({ 'audioNotifications': 1 }, { sparse: 1 });
@@ -475,15 +477,28 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': {
 				$ne: userId
 			},
-			$or: [
-				{ alert: { $ne: true } },
-				{ open: { $ne: true } }
-			]
+			alert: { $ne: true }
 		};
 
 		const update = {
 			$set: {
-				alert: true,
+				alert: true
+			}
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	setOpenForRoomIdExcludingUserId(roomId, userId) {
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId
+			},
+			open: { $ne: true }
+		};
+
+		const update = {
+			$set: {
 				open: true
 			}
 		};
@@ -596,6 +611,108 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	clearDesktopNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			desktopPrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				desktopNotifications: 1,
+				desktopPrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateDesktopNotificationUserPreferences(userId, desktopNotifications) {
+		const query = {
+			'u._id': userId,
+			desktopPrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				desktopNotifications,
+				desktopPrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	clearMobileNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			mobilePrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				mobilePushNotifications: 1,
+				mobilePrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateMobileNotificationUserPreferences(userId, mobilePushNotifications) {
+		const query = {
+			'u._id': userId,
+			mobilePrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				mobilePushNotifications,
+				mobilePrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	clearEmailNotificationUserPreferences(userId) {
+		const query = {
+			'u._id': userId,
+			emailPrefOrigin: 'user'
+		};
+
+		const update = {
+			$unset: {
+				emailNotifications: 1,
+				emailPrefOrigin: 1
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateEmailNotificationUserPreferences(userId, emailNotifications) {
+		const query = {
+			'u._id': userId,
+			emailPrefOrigin: {
+				$ne: 'subscription'
+			}
+		};
+
+		const update = {
+			$set: {
+				emailNotifications,
+				emailPrefOrigin: 'user'
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
@@ -616,6 +733,27 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				name: user.name
 			}
 		};
+
+		const {
+			desktopNotifications,
+			mobileNotifications,
+			emailNotificationMode
+		} = (user.settings && user.settings.preferences) || {};
+
+		if (desktopNotifications && desktopNotifications !== 'default') {
+			subscription.desktopNotifications = desktopNotifications;
+			subscription.desktopPrefOrigin = 'user';
+		}
+
+		if (mobileNotifications && mobileNotifications !== 'default') {
+			subscription.mobilePushNotifications = mobileNotifications;
+			subscription.mobilePrefOrigin = 'user';
+		}
+
+		if (emailNotificationMode && emailNotificationMode !== 'default') {
+			subscription.emailNotifications = emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode;
+			subscription.emailPrefOrigin = 'user';
+		}
 
 		_.extend(subscription, extraData);
 

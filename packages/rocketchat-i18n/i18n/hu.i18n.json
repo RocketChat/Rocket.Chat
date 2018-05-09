@@ -696,8 +696,6 @@
   "Enter_to": "az Enter",
   "Error": "Hiba",
   "Error_404": "404-es hibakód",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hiba: A Rocket.Chat több példányban történő futáskor kényelmesen követel",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Győződjön meg róla, hogy a MongoDB ReplicaSet módban van és a MONGO_OPLOG_URL környezeti változó helyesen van definiálva az alkalmazáskiszolgálón",
   "error-action-not-allowed": "__action__ nem engedélyezett",
   "error-application-not-found": "Alkalmazás nem található",
   "error-archived-duplicate-name": "Van egy archivált csatorna neve '__room_name__ \"",
