@@ -84,17 +84,18 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
-			const language = languages[key];
-			return _.extend(language, { key });
-		});
+		const result = Object.entries(languages).map(language => {
+			const obj = language[1];
+			obj.key = language[0];
+			return obj;
+		}).sort((a, b) => a.key - b.key);
 
-		result = _.sortBy(result, 'key');
 		result.unshift({
 			'name': 'Default',
 			'en': 'Default',
 			'key': ''
 		});
+
 		return result;
 	},
 	appLanguage(key) {
