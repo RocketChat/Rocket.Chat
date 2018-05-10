@@ -76,7 +76,7 @@ RocketChat.Migrations.add({
 					emailPrefOrigin: { $exists: false }
 				}, {
 					$set: {
-						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode,
+						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' ? 'nothing' : 'mentions',
 						emailPrefOrigin: 'user'
 					}
 				}, {
