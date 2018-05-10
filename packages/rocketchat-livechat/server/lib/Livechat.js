@@ -307,7 +307,7 @@ RocketChat.Livechat = {
 
 	forwardOpenChats(userId) {
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
-			const guest = RocketChat.models.Users.findOneById(room.v._id);
+			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
 	},
@@ -329,8 +329,21 @@ RocketChat.Livechat = {
 				agentId: user._id,
 				username: user.username
 			};
-		} else {
+		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
+		} else {
+			const returnInq = Meteor.call('livechat:returnAsInquiry', room._id, transferData.departmentId);
+
+			if (returnInq) {
+				RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: room.servedBy._id, username: room.servedBy.username });
+
+				RocketChat.Livechat.stream.emit(room._id, {
+					type: 'agentData',
+					data: null
+				});
+			}
+
+			return returnInq;
 		}
 
 		const servedBy = room.servedBy;
