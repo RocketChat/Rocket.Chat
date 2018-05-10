@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { callJoinRoom, messageContainsHighlight } from '../functions/notifications/';
+import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
@@ -13,6 +13,7 @@ const sendNotification = ({
 	hasMentionToAll,
 	hasMentionToHere,
 	message,
+	notificationMessage,
 	room,
 	mentionIds,
 	disableAllMessageNotifications
@@ -45,6 +46,8 @@ const sendNotification = ({
 	if (!receiver || !receiver.active) {
 		return;
 	}
+
+	notificationMessage = parseMessageTextPerUser(notificationMessage, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
@@ -81,7 +84,14 @@ const sendNotification = ({
 		hasMentionToUser
 	})) {
 		notificationSent = true;
-		notifyDesktopUser(subscription.u._id, sender, message, room, subscription.desktopNotificationDuration);
+		notifyDesktopUser({
+			notificationMessage,
+			userId: subscription.u._id,
+			user: sender,
+			message,
+			room,
+			duration: subscription.desktopNotificationDuration
+		});
 	}
 
 	if (kind === 'mobile' && shouldNotifyMobile({
@@ -95,6 +105,7 @@ const sendNotification = ({
 		notificationSent = true;
 
 		sendSinglePush({
+			notificationMessage,
 			room,
 			message,
 			userId: subscription.u._id,
@@ -150,6 +161,12 @@ function sendAllNotifications(message, room) {
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
 
+	// @TODO rename callback
+	let notificationMessage = RocketChat.callbacks.run('beforeNotifyUser', message.msg);
+	if (mentionIds.length > 0 && RocketChat.settings.get('UI_Use_Real_Name')) {
+		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+	}
+
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
@@ -200,6 +217,7 @@ function sendAllNotifications(message, room) {
 			hasMentionToAll,
 			hasMentionToHere,
 			message,
+			notificationMessage,
 			room,
 			mentionIds,
 			disableAllMessageNotifications
@@ -225,6 +243,7 @@ function sendAllNotifications(message, room) {
 					hasMentionToAll,
 					hasMentionToHere,
 					message,
+					notificationMessage,
 					room,
 					mentionIds
 				});
