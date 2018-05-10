@@ -77,10 +77,8 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 		const setting = RocketChat.models.Settings.findOneNotHiddenById(this.urlParams._id);
 		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
 			//execute the configured method
-			Meteor.defer(() => {
-				Meteor.call(setting.value);
-				return RocketChat.API.v1.success();
-			});
+			Meteor.call(setting.value);
+			return RocketChat.API.v1.success();
 		}
 
 		if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
