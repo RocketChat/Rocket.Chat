@@ -167,7 +167,7 @@ export function shouldNotifyEmail({
 		}
 
 		// default server preference is disabled
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'disabled') {
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'nothing') {
 			return false;
 		}
 	}

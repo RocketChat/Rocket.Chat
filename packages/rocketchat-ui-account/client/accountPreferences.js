@@ -10,8 +10,8 @@ const notificationLabels = {
 };
 
 const emailLabels = {
-	disabled: 'Email_Notification_Mode_Disabled',
-	all: 'Email_Notification_Mode_All'
+	nothing: 'Email_Notification_Mode_Disabled',
+	mentions: 'Email_Notification_Mode_All'
 };
 
 function checkedSelected(property, value, defaultValue=undefined) {
