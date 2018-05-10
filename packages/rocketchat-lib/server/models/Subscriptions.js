@@ -80,7 +80,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	// FIND
 	findByRoomIdAndRoles(roomId, roles, options) {
 		roles = [].concat(roles);
 		const query = {
@@ -137,6 +136,15 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': {
 				$ne: userId
 			}
+		};
+
+		return this.find(query, options);
+	}
+
+	findByRoomWithUserHighlights(roomId, options) {
+		const query = {
+			rid: roomId,
+			'userHighlights.0': { $exists: true }
 		};
 
 		return this.find(query, options);
