@@ -95,7 +95,7 @@ RocketChat.Livechat = {
 			}
 			room = RocketChat.models.Rooms.create(message.rid, guest, roomInfo, agent);
 
-			if (!agent && RocketChat.settings.get('Livechat_Routing_Bot_First')) {
+			if (!agent && message.noBot !== true && RocketChat.settings.get('Livechat_Routing_Bot_First')) {
 				agent = RocketChat.models.Users.getBotAgent();
 				if (agent) {
 					RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);

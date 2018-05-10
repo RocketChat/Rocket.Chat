@@ -45,6 +45,7 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 				message: {
 					_id: Random.id(),
 					rid,
+					noBot: this.bodyParams.noBot,
 					token: visitorToken,
 					msg: message.msg
 				}
