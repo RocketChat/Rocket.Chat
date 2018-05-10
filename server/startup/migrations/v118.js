@@ -6,10 +6,48 @@ RocketChat.Migrations.add({
 			emailPrefOrigin: 'user'
 		}, {
 			$set: {
-				emailNotifications:'mentions'
+				emailNotifications: 'mentions'
 			}
 		}, {
 			multi:true
+		});
+
+		RocketChat.models.Users.update({
+			'settings.preferences.emailNotificationMode': 'disabled'
+		}, {
+			$set: {
+				'settings.preferences.emailNotificationMode': 'nothing'
+			}
+		}, {
+			multi:true
+		});
+
+		RocketChat.models.Users.update({
+			'settings.preferences.emailNotificationMode': 'all'
+		}, {
+			$set: {
+				'settings.preferences.emailNotificationMode': 'mentions'
+			}
+		}, {
+			multi:true
+		});
+
+		RocketChat.models.Settings.update({
+			_id: 'Accounts_Default_User_Preferences_emailNotificationMode',
+			value: 'disabled'
+		}, {
+			$set: {
+				value: 'nothing'
+			}
+		});
+
+		RocketChat.models.Settings.update({
+			_id: 'Accounts_Default_User_Preferences_emailNotificationMode',
+			value: 'all'
+		}, {
+			$set: {
+				value: 'mentions'
+			}
 		});
 
 		// set user highlights on subscriptions

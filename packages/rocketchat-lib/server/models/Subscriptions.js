@@ -766,7 +766,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		}
 
 		if (emailNotificationMode && emailNotificationMode !== 'default') {
-			subscription.emailNotifications = emailNotificationMode === 'disabled' ? 'nothing' : user.settings.preferences.emailNotificationMode;
+			subscription.emailNotifications = emailNotificationMode;
 			subscription.emailPrefOrigin = 'user';
 		}
 
