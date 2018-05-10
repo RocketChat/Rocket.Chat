@@ -28,11 +28,8 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
 		return message;
 	}
 	mentions.forEach((mention) => {
-		// @TODO use one find before calling this function
-		const user = RocketChat.models.Users.findOneById(mention._id);
-		if (user && user.name) {
-			// @TODO change to regex to replace multiples mentions for same user
-			message = message.replace(`@${ mention.username }`, user.name);
+		if (mention.name) {
+			message = message.replace(new RegExp(s.escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
 		}
 	});
 	return message;

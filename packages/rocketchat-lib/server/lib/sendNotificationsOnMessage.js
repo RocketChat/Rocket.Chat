@@ -7,7 +7,6 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notificatio
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
 const sendNotification = ({
-	kind,
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -61,7 +60,7 @@ const sendNotification = ({
 	let notificationSent = false;
 
 	// busy users don't receive audio notification
-	if (kind === 'audio' && shouldNotifyAudio({
+	if (shouldNotifyAudio({
 		disableAllMessageNotifications,
 		status: receiver.status,
 		audioNotifications,
@@ -74,7 +73,7 @@ const sendNotification = ({
 	}
 
 	// busy users don't receive desktop notification
-	if (kind === 'desktop' && shouldNotifyDesktop({
+	if (shouldNotifyDesktop({
 		disableAllMessageNotifications,
 		status: receiver.status,
 		desktopNotifications,
@@ -94,7 +93,7 @@ const sendNotification = ({
 		});
 	}
 
-	if (kind === 'mobile' && shouldNotifyMobile({
+	if (shouldNotifyMobile({
 		disableAllMessageNotifications,
 		mobilePushNotifications,
 		hasMentionToAll,
@@ -114,7 +113,7 @@ const sendNotification = ({
 		});
 	}
 
-	if (kind === 'email' && receiver.emails && shouldNotifyEmail({
+	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
 		statusConnection: receiver.statusConnection,
 		emailNotifications,
@@ -161,8 +160,7 @@ function sendAllNotifications(message, room) {
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
 
-	// @TODO rename callback
-	let notificationMessage = RocketChat.callbacks.run('beforeNotifyUser', message.msg);
+	let notificationMessage = RocketChat.callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && RocketChat.settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
@@ -171,15 +169,15 @@ function sendAllNotifications(message, room) {
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
 	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 
-	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
-		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
+	const query = {
+		rid: room._id,
+		$or: [{
+			'userHighlights.0': { $exists: 1 }
+		}]
+	};
 
-		const query = {
-			rid: room._id,
-			$or: [
-				// { userHighlights: { $exists: 1 } }
-			]
-		};
+	['audio', 'desktop', 'mobile', 'email'].map((kind) => {
+		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
 
 		const filter = { [notificationField]: 'all' };
 
@@ -206,23 +204,22 @@ function sendAllNotifications(message, room) {
 				'u._id': { $in: mentionIdsWithoutGroups }
 			});
 		}
-
-		// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
-		// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
-		const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
-		subscriptions.forEach((subscription) => sendNotification({
-			kind,
-			subscription,
-			sender,
-			hasMentionToAll,
-			hasMentionToHere,
-			message,
-			notificationMessage,
-			room,
-			mentionIds,
-			disableAllMessageNotifications
-		}));
 	});
+
+	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
+	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+	subscriptions.forEach((subscription) => sendNotification({
+		subscription,
+		sender,
+		hasMentionToAll,
+		hasMentionToHere,
+		message,
+		notificationMessage,
+		room,
+		mentionIds,
+		disableAllMessageNotifications
+	}));
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {
@@ -255,4 +252,3 @@ function sendAllNotifications(message, room) {
 }
 
 RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
-
