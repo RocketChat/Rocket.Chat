@@ -686,7 +686,6 @@ describe('[Channels]', function() {
 					expect(res.body.roles[0]).to.have.a.property('u').that.is.an('object');
 					expect(res.body.roles[0].u).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[0].u).to.have.a.property('username').that.is.a('string');
-					expect(res.body.roles[0].u).to.have.a.property('name');
 
 					expect(res.body.roles[1]).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[1]).to.have.a.property('rid').that.is.equal(testChannel._id);
@@ -694,7 +693,6 @@ describe('[Channels]', function() {
 					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
 					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
-					expect(res.body.roles[1].u).to.have.a.property('name');
 				})
 				.end(done);
 		});
