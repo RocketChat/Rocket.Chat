@@ -202,6 +202,7 @@ rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:sandstorm@0.0.1
 rocketchat:search@0.0.1
+rocketchat:setup-wizard@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
