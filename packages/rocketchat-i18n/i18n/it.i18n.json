@@ -696,8 +696,6 @@
   "Enter_to": "Invio per",
   "Error": "Errore",
   "Error_404": "Errore 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Errore: Rocket.Chat richiede la coda oplog quando in esecuzione su diverse instanze",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Verifica che il tuo MongoDB è in modalità ReplicaSet e la variabile di sistema MONGO_OPLOG_URL è definita correttamente sul server dell'applicativo",
   "error-action-not-allowed": "__action__ non è permesso",
   "error-application-not-found": "Applicazione non trovata",
   "error-archived-duplicate-name": "C'è un canale archiviato con il nome '__room_name__'",

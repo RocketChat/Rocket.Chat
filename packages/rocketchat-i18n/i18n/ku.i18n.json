@@ -696,8 +696,6 @@
   "Enter_to": "binivîse",
   "Error": "Şaşî",
   "Error_404": "Çewt: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Çewtiya: Rocket. Dema ku di gelek rewşan de diçin dema hewlkirina oplogê hewce dike",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Ji kerema xwe re bisekinin ku MongoDB di modela ReplicaSet de ye û mongo_OPLOG_URL pîvana hawirdora rasteqîn li ser serverê pirtûk hatiye diyarkirin.",
   "error-action-not-allowed": "__action__ nayê ne bi destûr",
   "error-application-not-found": "Application not found",
   "error-archived-duplicate-name": "ye kanala trendê bi navê '__room_name__' hene",
