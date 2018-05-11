@@ -714,7 +714,7 @@ Template.room.events({
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	},
-	'click .announcement'(e) {
+	'click .announcement'() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
@@ -722,7 +722,7 @@ Template.room.events({
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: $(e.target).attr('aria-label'),
+				text: roomData.announcement,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: t('Close')
