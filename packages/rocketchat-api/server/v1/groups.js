@@ -649,3 +649,15 @@ RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('groups.roles', { authRequired: true }, {
+	get() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult.rid));
+
+		return RocketChat.API.v1.success({
+			roles
+		});
+	}
+});
