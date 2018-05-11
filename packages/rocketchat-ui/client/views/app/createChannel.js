@@ -92,8 +92,11 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
-	canCreateBothTypes() {
-		return RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+	cantCreateBothTypes() {
+		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+	},
+	roomTypeIsP() {
+		return Template.instance().type.get() === 'p';
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
