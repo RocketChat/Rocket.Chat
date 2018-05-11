@@ -15,7 +15,7 @@ export const preferences = {
 		saveMobileBandwidth: true,
 		collapseMediaByDefault: false,
 		autoImageLoad: true,
-		emailNotificationMode: 'all',
+		emailNotificationMode: 'mentions',
 		roomsListExhibitionMode: 'category',
 		unreadAlert: true,
 		notificationsSoundVolume: 100,
