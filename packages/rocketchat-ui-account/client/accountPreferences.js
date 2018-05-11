@@ -9,6 +9,11 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+const emailLabels = {
+	nothing: 'Email_Notification_Mode_Disabled',
+	mentions: 'Email_Notification_Mode_All'
+};
+
 function checkedSelected(property, value, defaultValue=undefined) {
 	if (defaultValue && defaultValue.hash) {
 		defaultValue = undefined;
@@ -83,6 +88,9 @@ Template.accountPreferences.helpers({
 	},
 	defaultMobileNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications')];
+	},
+	defaultEmailNotification() {
+		return emailLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode')];
 	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');

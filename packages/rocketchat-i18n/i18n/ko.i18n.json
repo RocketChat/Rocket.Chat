@@ -696,8 +696,6 @@
   "Enter_to": "Enter to",
   "Error": "오류",
   "Error_404": "오류 : 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "오류 : 여러 인스턴스에서 실행할 때 Rocket.Chat에서 oplog tailing이 필요합니다.",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "MongoDB가 ReplicaSet 모드에 있고 MONGO_OPLOG_URL 환경 변수가 응용 프로그램 서버에 올바르게 정의되어 있는지 확인하십시오.",
   "error-action-not-allowed": "__action__ 허용되지 않습니다",
   "error-application-not-found": "응용 프로그램을 찾을 수 없습니다",
   "error-archived-duplicate-name": "보관된 '__room_name__' 채널이 있습니다.",
