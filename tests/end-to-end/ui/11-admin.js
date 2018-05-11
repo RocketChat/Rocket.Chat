@@ -904,7 +904,7 @@ describe('[Administration]', () => {
 					admin.accountsEmailNotificationMode.isVisible().should.be.true;
 				});
 				it('the offline email notification field value should be all', () => {
-					admin.accountsEmailNotificationMode.getValue().should.equal('all');
+					admin.accountsEmailNotificationMode.getValue().should.equal('mentions');
 				});
 
 				it('it should show the room counter sidebar field', () => {
