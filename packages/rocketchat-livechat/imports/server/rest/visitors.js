@@ -48,7 +48,10 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room/close', { authRe
 		}
 		const room = rooms[0];
 
-		const user = RocketChat.models.Users.findOneById(this.userId);
+		const user =
+			this.bodyParams.username ?
+				RocketChat.models.Users.findOneByUsername(this.bodyParams.username):
+				RocketChat.models.Users.findOneById(this.userId);
 
 		return RocketChat.API.v1.success({
 			closed: RocketChat.Livechat.closeRoom({
