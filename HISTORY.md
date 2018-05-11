@@ -1,6 +1,45 @@
 
+# 0.64.2 (Under Release Candidate Process)
+
+## 0.64.2-rc.0
+`2018-05-11  ·  4 🎉  ·  7 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
+- Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
+- Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523))
+- Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
+
+### 🐛 Bug fixes
+
+- Send a message when muted returns inconsistent result in chat.sendMessage ([#10720](https://github.com/RocketChat/Rocket.Chat/pull/10720))
+- Regression: Empty content on announcement modal ([#10733](https://github.com/RocketChat/Rocket.Chat/pull/10733))
+- Missing attachment description when Rocket.Chat Apps were enabled ([#10705](https://github.com/RocketChat/Rocket.Chat/pull/10705))
+- Improve desktop notification formatting ([#10445](https://github.com/RocketChat/Rocket.Chat/pull/10445) by [@Sameesunkaria](https://github.com/Sameesunkaria))
+- Message box emoji icon was flickering when typing a text ([#10678](https://github.com/RocketChat/Rocket.Chat/pull/10678))
+- Channel owner was being set as muted when creating a read-only channel ([#10665](https://github.com/RocketChat/Rocket.Chat/pull/10665))
+- SAML wasn't working correctly when running multiple instances ([#10681](https://github.com/RocketChat/Rocket.Chat/pull/10681))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- More improvements on send notifications logic ([#10736](https://github.com/RocketChat/Rocket.Chat/pull/10736))
+- LingoHub based on develop ([#10691](https://github.com/RocketChat/Rocket.Chat/pull/10691))
+- Add `npm run postinstall` into example build script ([#10524](https://github.com/RocketChat/Rocket.Chat/pull/10524) by [@peccu](https://github.com/peccu))
+- Correct links in README file ([#10674](https://github.com/RocketChat/Rocket.Chat/pull/10674) by [@winterstefan](https://github.com/winterstefan))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Sameesunkaria](https://github.com/Sameesunkaria)
+- [@cardoso](https://github.com/cardoso)
+- [@peccu](https://github.com/peccu)
+- [@winterstefan](https://github.com/winterstefan)
+
 # 0.64.1
-`  ·  1 🎉  ·  2 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
+`2018-05-03  ·  1 🎉  ·  2 🐛  ·  3 🔍  ·  1 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
