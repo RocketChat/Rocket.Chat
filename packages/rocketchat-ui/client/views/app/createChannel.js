@@ -264,7 +264,7 @@ Template.createChannel.onCreated(function() {
 	this.extensions_validations = {};
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c')
+	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
