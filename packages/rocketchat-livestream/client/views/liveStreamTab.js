@@ -41,6 +41,9 @@ function optionsFromUrl(url) {
 }
 
 Template.liveStreamTab.helpers({
+	broadcastEnabled() {
+		return !!RocketChat.settings.get('Broadcasting_enabled');
+	},
 	streamingSource() {
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
 	},

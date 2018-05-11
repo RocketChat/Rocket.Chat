@@ -24,7 +24,9 @@
 		{{/if}}
 		{{#if canEdit}}
 			{{#if editing}}
-				{{ > liveStreamBroadcast}}
+				{{#if broadcastEnabled}}
+					{{ > liveStreamBroadcast}}
+				{{/if}}
 				<form class="liveStreamTab__form">
 					<label class="rc-input__label">
 						<p> Livestream not available message: </p>
