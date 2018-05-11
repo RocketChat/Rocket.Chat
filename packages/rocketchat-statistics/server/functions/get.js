@@ -5,6 +5,44 @@ import os from 'os';
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
 
+	// Setup Wizard
+	statistics.wizard = {};
+	if (RocketChat.models.Settings.findOne('Organization_Type')) {
+		statistics.wizard.organizationType = RocketChat.models.Settings.findOne('Organization_Type').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Organization_Name')) {
+		statistics.wizard.organizationName = RocketChat.models.Settings.findOne('Organization_Name').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Industry')) {
+		statistics.wizard.industry = RocketChat.models.Settings.findOne('Industry').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Size')) {
+		statistics.wizard.size = RocketChat.models.Settings.findOne('Size').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Country')) {
+		statistics.wizard.country = RocketChat.models.Settings.findOne('Country').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Website')) {
+		statistics.wizard.website = RocketChat.models.Settings.findOne('Website').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Site_Name')) {
+		statistics.wizard.siteName = RocketChat.models.Settings.findOne('Site_Name').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Language')) {
+		statistics.wizard.siteName = RocketChat.models.Settings.findOne('Site_Name').value;
+	}
+
+	if (RocketChat.models.Settings.findOne('Server_Type')) {
+		statistics.wizard.serverType = RocketChat.models.Settings.findOne('Server_Type').value;
+	}
+
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');
 	if (RocketChat.models.Settings.findOne('uniqueID')) {
