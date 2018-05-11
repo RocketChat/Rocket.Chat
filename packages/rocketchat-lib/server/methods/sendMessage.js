@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 Meteor.methods({
-	sendMessage(message, origin) {
+	sendMessage(message) {
 		check(message, Object);
 
 		if (!Meteor.userId()) {
@@ -55,10 +55,7 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('room_is_blocked', {}, user.language)
 			});
-			if (origin && origin === 'RESTAPI') {
-				throw new Meteor.Error('You can\'t send messages because you are blocked');
-			}
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
 		if ((room.muted || []).includes(user.username)) {
@@ -68,10 +65,7 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
-			if (origin && origin === 'RESTAPI') {
-				throw new Meteor.Error('You can\'t send messages because you have been muted');
-			}
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {

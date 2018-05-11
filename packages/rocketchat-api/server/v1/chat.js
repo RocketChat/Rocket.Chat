@@ -156,7 +156,7 @@ RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 		}
 
 		let message;
-		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message, 'RESTAPI'));
+		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
 
 		return RocketChat.API.v1.success({
 			message
