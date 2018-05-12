@@ -39,10 +39,9 @@ const fields = {
 };
 
 const roomMap = (record) => {
-	if (record._room) {
-		return _.pick(record._room, ...Object.keys(fields));
+	if (record) {
+		return _.pick(record, ...Object.keys(fields));
 	}
-	console.log('Empty Room for Subscription', record);
 	return {};
 };
 
@@ -102,25 +101,46 @@ Meteor.methods({
 			delete room.lastMessage;
 		}
 
-		return roomMap({ _room: room });
+		return roomMap(room);
 	}
 });
 
 // TODO
-RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
-	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
+// RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
+// 	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
 
-	const _room = roomMap({_room: room});
-	for (const record of records) {
-		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, _room);
+// 	const _room = roomMap({_room: room});
+// 	for (const record of records) {
+// 		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, _room);
+// 	}
+// });
+
+// RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
+// 	if (type === 'inserted' || type === 'removed') {
+// 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
+// 		if (room) {
+// 			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
+// 		}
+// 	}
+// });
+
+RocketChat.models.Rooms.on('change', ({action, id}) => {
+	let room;
+
+	if (action === 'update:record' || action === 'update:diff') {
+		action = 'updated';
+		room = RocketChat.models.Rooms.findOneById(id, { fields });
+	} else if (action === 'insert') {
+		action = 'inserted';
+		room = RocketChat.models.Rooms.findOneById(id, { fields });
+	} else if (action === 'remove') {
+		action = 'removed';
+		room = { _id: id };
 	}
-});
 
-RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
-	if (type === 'inserted' || type === 'removed') {
-		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
-		if (room) {
-			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
-		}
+	if (room) {
+		RocketChat.models.Subscriptions.findByRoomId(id, {fields: {'u._id': 1}}).forEach(({u}) => {
+			RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', action, room);
+		});
 	}
 });

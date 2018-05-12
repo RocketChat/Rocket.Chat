@@ -33,6 +33,7 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
  * Listen to user and room changes via cursor
  */
 
+// @TODO replace by `change`
 RocketChat.models.Users.on('changed', (type, user)=>{
 	if (type === 'inserted' || type === 'updated') {
 		eventService.promoteEvent('user.save', user._id, user);
@@ -42,6 +43,7 @@ RocketChat.models.Users.on('changed', (type, user)=>{
 	}
 });
 
+// @TODO replace by `change`
 RocketChat.models.Rooms.on('changed', (type, room)=>{
 	if (type === 'inserted' || type === 'updated') {
 		eventService.promoteEvent('room.save', room._id, room);

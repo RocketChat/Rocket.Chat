@@ -17,7 +17,7 @@ Meteor.methods({
 	}
 });
 
-
+// @TODO replace by `change`
 RocketChat.models.Permissions.on('changed', (type, permission) => {
 	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
 });

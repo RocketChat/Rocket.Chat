@@ -65,17 +65,29 @@ Meteor.methods({
 	}
 });
 
-RocketChat.models.Subscriptions.on('changed', function(type, subscription) {
-	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
-		fields
-	}));
-});
+// RocketChat.models.Subscriptions.on('changed', function(type, subscription) {
+// 	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
+// 		fields
+// 	}));
+// });
 
-// TODO needs improvement
-// We are sending the record again cuz any update on subscription will send the record without the fname (join)
-// Then we need to sent it again listening to the join event.
-RocketChat.models.Subscriptions.on('join:fname:inserted', function(subscription/*, user*/) {
-	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'changed', RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
-		fields
-	}));
+// // TODO needs improvement
+// // We are sending the record again cuz any update on subscription will send the record without the fname (join)
+// // Then we need to sent it again listening to the join event.
+// RocketChat.models.Subscriptions.on('join:fname:inserted', function(subscription/*, user*/) {
+// 	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'changed', RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
+// 		fields
+// 	}));
+// });
+
+RocketChat.models.Subscriptions.on('change', ({action, id, data}) => {
+	if (action === 'update:record' || action === 'update:diff') {
+		const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
+		RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'updated', subscription);
+	} else if (action === 'insert') {
+		const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
+		RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'inserted', subscription);
+	} else if (action === 'remove') {
+		RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', 'removed', {_id: id });
+	}
 });

@@ -36,9 +36,11 @@ class ModelsBaseDb extends EventEmitter {
 
 		this.wrapModel();
 
+		let alreadyListeningToOplog = false;
 		// When someone start listening for changes we start oplog if available
-		this.once('newListener', (event/*, listener*/) => {
-			if (event === 'change') {
+		this.on('newListener', (event/*, listener*/) => {
+			if (event === 'change' && alreadyListeningToOplog === false) {
+				alreadyListeningToOplog = true;
 				if (isOplogEnabled) {
 					const query = {
 						collection: this.collectionName

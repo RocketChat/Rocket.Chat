@@ -15,8 +15,8 @@ class ModelsBase {
 
 		this.cache = new ModelsBaseCache(this);
 		// TODO_CACHE: remove
-		this.on = this.cache.on.bind(this.cache);
-		this.emit = this.cache.emit.bind(this.cache);
+		this.on = this._db.on.bind(this._db);
+		this.emit = this._db.emit.bind(this._db);
 		this.getDynamicView = this.cache.getDynamicView.bind(this.cache);
 		this.processQueryOptionsOnResult = this.cache.processQueryOptionsOnResult.bind(this.cache);
 		// END_TODO_CACHE
