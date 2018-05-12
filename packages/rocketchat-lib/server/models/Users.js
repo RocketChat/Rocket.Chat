@@ -84,32 +84,6 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findUsersByUsernamesWithHighlights(usernames, options) {
-		if (this.useCache) {
-			const result = {
-				fetch() {
-					return RocketChat.models.Users.getDynamicView('highlights').data().filter(record => usernames.indexOf(record.username) > -1);
-				},
-				count() {
-					return result.fetch().length;
-				},
-				forEach(fn) {
-					return result.fetch().forEach(fn);
-				}
-			};
-			return result;
-		}
-
-		const query = {
-			username: { $in: usernames },
-			'settings.preferences.highlights.0': {
-				$exists: true
-			}
-		};
-
-		return this.find(query, options);
-	}
-
 	findActiveByUsernameOrNameRegexWithExceptions(searchTerm, exceptions, options) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }

@@ -60,14 +60,3 @@
 // RocketChat.models.Subscriptions.cache.load();
 // RocketChat.models.Settings.cache.load();
 
-
-// RocketChat.models.Users.cache.addDynamicView('highlights').applyFind({
-// 	'settings.preferences.highlights': {$size: {$gt: 0}}
-// });
-
-// RocketChat.models.Subscriptions.cache.addDynamicView('notifications').applyFind({
-// 	$or: [
-// 		{desktopNotifications: {$in: ['all', 'nothing']}},
-// 		{mobilePushNotifications: {$in: ['all', 'nothing']}}
-// 	]
-// });

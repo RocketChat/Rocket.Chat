@@ -727,14 +727,6 @@ class ModelsBaseCache extends EventEmitter {
 		return this.processQueryOptionsOnResult(this.collection.findWhere(query), options);
 	}
 
-	addDynamicView() {
-		return this.collection.addDynamicView(...arguments);
-	}
-
-	getDynamicView() {
-		return this.collection.getDynamicView(...arguments);
-	}
-
 	insert(record) {
 		if (Array.isArray(record)) {
 			for (const item of record) {

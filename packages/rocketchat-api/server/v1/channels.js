@@ -474,6 +474,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			'u._id': this.userId
 		});
 
+		// TODO _room will be removed
 		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
 		const totalCount = rooms.length;
 
