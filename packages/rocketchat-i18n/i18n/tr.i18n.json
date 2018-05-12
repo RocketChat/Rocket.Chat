@@ -696,8 +696,6 @@
   "Enter_to": "için Enter",
   "Error": "Hata",
   "Error_404": "Hata 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hata: Rocket.Chat, birden çok örnekte çalışırken oplog tailing gerektirir",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Lütfen MongoDB'nizin ReplicaSet modunda olduğundan ve MONGO_OPLOG_URL ortam değişkeninin uygulama sunucusunda doğru tanımlandığından emin olun",
   "error-action-not-allowed": "__action__ izin verilmez",
   "error-application-not-found": "Uygulama bulunamadı",
   "error-archived-duplicate-name": "Adı '__room_name__' ile arşivlenmiş bir kanal var",

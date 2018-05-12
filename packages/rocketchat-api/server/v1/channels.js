@@ -858,3 +858,14 @@ RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequire
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
+
+		return RocketChat.API.v1.success({
+			roles
+		});
+	}
+});
