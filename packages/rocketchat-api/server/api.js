@@ -79,13 +79,14 @@ class API extends Restivus {
 		return result;
 	}
 
-	failure(result, errorType) {
+	failure(result, errorType, stack) {
 		if (_.isObject(result)) {
 			result.success = false;
 		} else {
 			result = {
 				success: false,
-				error: result
+				error: result,
+				stack
 			};
 
 			if (errorType) {
@@ -152,7 +153,7 @@ class API extends Restivus {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							return RocketChat.API.v1.failure(e.message, e.error, e.stack);
 						}
 
 						return result ? result : RocketChat.API.v1.success();

@@ -24,20 +24,11 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'autoTranslate': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'autoTranslateLanguage': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
-
-		this.cache.ensureIndex('rid', 'array');
-		this.cache.ensureIndex('u._id', 'array');
-		this.cache.ensureIndex('name', 'array');
-		this.cache.ensureIndex(['rid', 'u._id'], 'unique');
-		this.cache.ensureIndex(['name', 'u._id'], 'unique');
 	}
 
 
 	// FIND ONE
 	findOneByRoomIdAndUserId(roomId, userId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('rid,u._id', [roomId, userId], options).fetch();
-		}
 		const query = {
 			rid: roomId,
 			'u._id': userId
@@ -56,9 +47,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 
 	findOneByRoomNameAndUserId(roomName, userId) {
-		if (this.useCache) {
-			return this.cache.findByIndex('name,u._id', [roomName, userId]).fetch();
-		}
 		const query = {
 			name: roomName,
 			'u._id': userId
@@ -69,10 +57,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('u._id', userId, options);
-		}
-
 		const query =
 			{ 'u._id': userId };
 
@@ -80,10 +64,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 
 	findByUserIdAndType(userId, type, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('u._id', userId, options);
-		}
-
 		const query = {
 			'u._id': userId,
 			t: type
@@ -144,10 +124,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 
 	findByRoomId(roomId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('rid', roomId, options);
-		}
-
 		const query =
 			{ rid: roomId };
 

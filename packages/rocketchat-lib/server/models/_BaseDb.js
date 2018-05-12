@@ -128,49 +128,8 @@ class ModelsBaseDb extends EventEmitter {
 		return this.findOne({ _id: { $in: ids }}, options);
 	}
 
-	defineSyncStrategy(query, modifier, options) {
-		if (this.baseModel.useCache === false) {
-			return 'db';
-		}
-
-		if (options.upsert === true) {
-			return 'db';
-		}
-
-		// const dbModifiers = [
-		// 	'$currentDate',
-		// 	'$bit',
-		// 	'$pull',
-		// 	'$pushAll',
-		// 	'$push',
-		// 	'$setOnInsert'
-		// ];
-
-		const cacheAllowedModifiers = [
-			'$set',
-			'$unset',
-			'$min',
-			'$max',
-			'$inc',
-			'$mul',
-			'$rename',
-			'$pullAll',
-			'$pop',
-			'$addToSet'
-		];
-
-		const notAllowedModifiers = Object.keys(modifier).filter(i => i.startsWith('$') && cacheAllowedModifiers.includes(i) === false);
-
-		if (notAllowedModifiers.length > 0) {
-			return 'db';
-		}
-
-		const placeholderFields = Object.keys(query).filter(item => item.indexOf('$') > -1);
-		if (placeholderFields.length > 0) {
-			return 'db';
-		}
-
-		return 'cache';
+	defineSyncStrategy() {
+		return 'db';
 	}
 
 	updateHasPositionalOperator(update) {

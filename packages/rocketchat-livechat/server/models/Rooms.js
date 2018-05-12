@@ -57,10 +57,6 @@ RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
 		options.fields = fields;
 	}
 
-	// if (this.useCache) {
-	// 	return this.cache.findByIndex('t,code', ['l', code], options).fetch();
-	// }
-
 	const query = {
 		t: 'l',
 		code
