@@ -1,5 +1,6 @@
 import ModelsBaseDb from './_BaseDb';
 import objectPath from 'object-path';
+import _ from 'underscore';
 
 class ModelsBase {
 	constructor(nameOrModel) {

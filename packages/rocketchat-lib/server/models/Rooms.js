@@ -116,6 +116,20 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findBySubscriptionTypeAndUserId(type, userId, options) {
+		const data = RocketChat.models.Subscriptions.findByUserIdAndType(userId, type, {fields: {rid: 1}}).fetch()
+			.map(item => item.rid);
+
+		const query = {
+			t: type,
+			_id: {
+				$in: data
+			}
+		};
+
+		return this.find(query, options);
+	}
+
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
 		const ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
 			.map(item => item.rid);

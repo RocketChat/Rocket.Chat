@@ -105,25 +105,6 @@ Meteor.methods({
 	}
 });
 
-// TODO
-// RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
-// 	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
-
-// 	const _room = roomMap({_room: room});
-// 	for (const record of records) {
-// 		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, _room);
-// 	}
-// });
-
-// RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
-// 	if (type === 'inserted' || type === 'removed') {
-// 		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
-// 		if (room) {
-// 			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
-// 		}
-// 	}
-// });
-
 RocketChat.models.Rooms.on('change', ({action, id}) => {
 	let room;
 

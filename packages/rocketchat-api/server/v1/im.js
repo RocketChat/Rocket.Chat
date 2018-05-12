@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
@@ -225,22 +223,21 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, {
-			t: 'd',
-			'u._id': this.userId
-		});
+		const { sort, fields } = this.parseJsonQuery();
+		// const ourQuery = Object.assign({}, query, {
+		// 	t: 'd',
+		// 	'u._id': this.userId
+		// });
 
-		// TODO _room will be removed
-		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
-		const totalCount = rooms.length;
-
-		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+		// TODO and the query?
+		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
 			fields
-		});
+		}).fetch();
+
+		const totalCount = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId).count();
 
 		return RocketChat.API.v1.success({
 			ims: rooms,

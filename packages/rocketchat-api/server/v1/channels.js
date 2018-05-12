@@ -468,22 +468,21 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, {
-			t: 'c',
-			'u._id': this.userId
-		});
+		const { sort, fields } = this.parseJsonQuery();
+		// const ourQuery = Object.assign({}, query, {
+		// 	t: 'c',
+		// 	'u._id': this.userId
+		// });
 
-		// TODO _room will be removed
-		let rooms = _.pluck(RocketChat.models.Subscriptions.find(ourQuery).fetch(), '_room');
-		const totalCount = rooms.length;
-
-		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+		// TODO and the query?
+		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
 			fields
-		});
+		}).fetch();
+
+		const totalCount = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('c', this.userId).count();
 
 		return RocketChat.API.v1.success({
 			channels: rooms,

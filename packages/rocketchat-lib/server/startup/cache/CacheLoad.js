@@ -1,37 +1,4 @@
-// RocketChat.models.Rooms.cache.hasMany('Subscriptions', {
-// 	field: 'usernames',
-// 	link: {
-// 		local: '_id',
-// 		remote: 'rid',
-// 		transform(room, subscription) {
-// 			return subscription.u.username;
-// 		},
-// 		remove(arr, subscription) {
-// 			if (arr.indexOf(subscription.u.username) > -1) {
-// 				arr.splice(arr.indexOf(subscription.u.username), 1);
-// 			}
-// 		}
-// 	}
-// });
-
-
-// RocketChat.models.Subscriptions.cache.hasOne('Rooms', {
-// 	field: '_room',
-// 	link: {
-// 		local: 'rid',
-// 		remote: '_id'
-// 	}
-// });
-
-
-// RocketChat.models.Subscriptions.cache.hasOne('Users', {
-// 	field: '_user',
-// 	link: {
-// 		local: 'u._id',
-// 		remote: '_id'
-// 	}
-// });
-
+// TODO resolve the fname
 // RocketChat.models.Subscriptions.cache.hasOne('Users', {
 // 	field: 'fname',
 // 	link: {
@@ -54,9 +21,3 @@
 // 		}
 // 	}
 // });
-
-// RocketChat.models.Users.cache.load();
-// RocketChat.models.Rooms.cache.load();
-// RocketChat.models.Subscriptions.cache.load();
-// RocketChat.models.Settings.cache.load();
-

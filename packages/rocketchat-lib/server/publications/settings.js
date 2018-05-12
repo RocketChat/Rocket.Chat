@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
