@@ -33,7 +33,7 @@ RocketChat.TabBar.addButton({
 			return true;
 		}
 
-		return RocketChat.authz.hasAllPermission('view-broadcast-member-list');
+		return RocketChat.authz.hasAllPermission('view-broadcast-member-list', rid);
 	}
 });
 
