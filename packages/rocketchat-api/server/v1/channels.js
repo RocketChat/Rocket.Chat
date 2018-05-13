@@ -503,6 +503,10 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 			returnUsernames: true
 		});
 
+		if (findResult.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
+			return RocketChat.API.v1.unauthorized();
+		} 
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
@@ -865,4 +869,3 @@ RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequire
 		});
 	}
 });
-
