@@ -187,6 +187,7 @@ this.ChatMessages = class ChatMessages {
 
 			let msg = '';
 			const reply = $(input).data('reply');
+			const linkPreview = $(input).data('linkPreview');
 			const mentionUser = $(input).data('mention-user') || false;
 
 			if (reply !== undefined) {
@@ -202,7 +203,7 @@ this.ChatMessages = class ChatMessages {
 				.removeData('reply')
 				.trigger('dataChange');
 
-			const msgObject = { _id: Random.id(), rid, msg};
+			const msgObject = { _id: Random.id(), rid, msg, lp: linkPreview};
 
 			if (msg.slice(0, 2) === '+:') {
 				const reaction = msg.slice(1).trim();

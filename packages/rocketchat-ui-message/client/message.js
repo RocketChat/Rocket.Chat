@@ -206,6 +206,11 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
+		// if link preview is disabled for this message
+		if (this.lp !== undefined && this.lp === false) {
+			return false;
+		}
+
 		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
 		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
 			return false;

@@ -284,6 +284,9 @@ Template.messageBox.helpers({
 			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
 			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
+	linkPreviewOn() {
+		return Template.instance().linkPreview.get();
+	},
 	hasOembed() {
 		const message = {
 			input: Template.instance().textInput.get()
@@ -292,7 +295,6 @@ Template.messageBox.helpers({
 		if (urls) {
 			message.urls = urls.map((url) => { return { url }; });
 		}
-		console.log(message);
 		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
 		if (!(message.urls && message.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
 			return false;
@@ -409,6 +411,8 @@ Template.messageBox.events({
 		event.preventDefault();
 		const embedOff = document.querySelector('.rc-message-box__icon.embed-off');
 		const embedOn = document.querySelector('.rc-message-box__icon.embed-on');
+		const input = instance.find('.js-input-message');
+		$(input).data('linkPreview', false);
 
 		embedOn.classList.remove('active');
 		embedOff.classList.add('active');
@@ -417,6 +421,8 @@ Template.messageBox.events({
 		event.preventDefault();
 		const embedOff = document.querySelector('.rc-message-box__icon.embed-off');
 		const embedOn = document.querySelector('.rc-message-box__icon.embed-on');
+		const input = instance.find('.js-input-message');
+		$(input).data('linkPreview', true);
 
 		embedOn.classList.add('active');
 		embedOff.classList.remove('active');
@@ -675,9 +681,12 @@ Template.messageBox.events({
 Template.messageBox.onRendered(function() {
 	const input = this.find('.js-input-message'); //mssg box
 	const self = this;
+	$(input).data('linkPreview', true);
 	$(input).on('dataChange', () => {
 		const reply = $(input).data('reply');
+		const linkPreview = $(input).data('linkPreview');
 		self.dataReply.set(reply);
+		self.linkPreview.set(linkPreview);
 	});
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
 	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
@@ -693,6 +702,7 @@ Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
 	this.textInput = new ReactiveVar('');
+	this.linkPreview = new ReactiveVar(true);
 });
 
 Meteor.startup(function() {

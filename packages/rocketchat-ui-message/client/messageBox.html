@@ -39,10 +39,10 @@
 					{{#unless disableSendIcon}}
 						{{#if hasOembed}}
 							<div class="rc-message-box__embed">
-								<div class="rc-message-box__icon embed-on active js-embed-on">
+								<div class="rc-message-box__icon embed-on {{#if linkPreviewOn}}active{{/if}} js-embed-on">
 									{{> icon block="rc-input__icon-svg" icon="eye-on"}}
 								</div>
-								<div class="rc-message-box__icon embed-off js-embed-off">
+								<div class="rc-message-box__icon embed-off {{#unless linkPreviewOn}}active{{/unless}} js-embed-off">
 									{{> icon block="rc-input__icon-svg" icon="eye-off"}}
 								</div>
 							</div>
