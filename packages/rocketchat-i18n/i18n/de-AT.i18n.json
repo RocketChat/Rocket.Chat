@@ -696,8 +696,6 @@
   "Enter_to": "Enter-Taste: ",
   "Error": "Fehler",
   "Error_404": "Fehler 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fehler: Rocket.Chat erfordert einen oplog-Tailing, wenn er in mehreren Instanzen ausgeführt wird",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Stellen Sie sicher, dass sich Ihre MongoDB im ReplicaSet-Modus befindet und die Umgebungsvariable MONGO_OPLOG_URL auf dem Anwendungsserver korrekt definiert ist",
   "error-action-not-allowed": "__action__ ist nicht erlaubt",
   "error-application-not-found": "Anwendung nicht gefunden",
   "error-archived-duplicate-name": "Es gibt einen archivierten Raum mit dem Namen '__room_name__'",
