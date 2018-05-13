@@ -283,6 +283,26 @@ Template.messageBox.helpers({
 			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
 			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
 			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+	},
+	hasOembed() {
+		const message = {
+			input: Template.instance().textInput.get()
+		};
+		const urls = message.input.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+		if (urls) {
+			message.urls = urls.map((url) => { return { url }; });
+		}
+		console.log(message);
+		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
+		if (!(message.urls && message.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
+			return false;
+		}
+
+		// check if oembed is disabled for message's sender
+		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+			return false;
+		}
+		return true;
 	}
 });
 
@@ -385,6 +405,22 @@ Template.messageBox.events({
 			return input.focus();
 		});
 	},
+	'click .js-embed-on'(event, instance) {
+		event.preventDefault();
+		const embedOff = document.querySelector('.rc-message-box__icon.embed-off');
+		const embedOn = document.querySelector('.rc-message-box__icon.embed-on');
+
+		embedOn.classList.remove('active');
+		embedOff.classList.add('active');
+	},
+	'click .js-embed-off'(event, instance) {
+		event.preventDefault();
+		const embedOff = document.querySelector('.rc-message-box__icon.embed-off');
+		const embedOn = document.querySelector('.rc-message-box__icon.embed-on');
+
+		embedOn.classList.add('active');
+		embedOff.classList.remove('active');
+	},
 	'click .cancel-reply'(event, instance) {
 		const input = instance.find('.js-input-message');
 		$(input)
@@ -431,6 +467,7 @@ Template.messageBox.events({
 	}),
 	'input .js-input-message'(event, instance) {
 		instance.sendIcon.set(event.target.value !== '');
+		instance.textInput.set(event.target.value);
 		return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 	},
 	'propertychange .js-input-message'(event) {
@@ -655,6 +692,7 @@ Template.messageBox.onCreated(function() {
 	this.dataReply = new ReactiveVar(''); //if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
+	this.textInput = new ReactiveVar('');
 });
 
 Meteor.startup(function() {

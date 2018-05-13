@@ -171,6 +171,20 @@
 			}
 		}
 
+		&.embed-on {
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.embed-off {
+			display: none;
+			&.active {
+				display: flex;
+			}
+		}
+
 	}
 
 	&__action-menu {

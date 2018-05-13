@@ -37,6 +37,16 @@
 					</div>
 					<textarea autofocus name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
 					{{#unless disableSendIcon}}
+						{{#if hasOembed}}
+							<div class="rc-message-box__embed">
+								<div class="rc-message-box__icon embed-on active js-embed-on">
+									{{> icon block="rc-input__icon-svg" icon="eye-on"}}
+								</div>
+								<div class="rc-message-box__icon embed-off js-embed-off">
+									{{> icon block="rc-input__icon-svg" icon="eye-off"}}
+								</div>
+							</div>
+						{{/if}}
 						<div class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</div>
