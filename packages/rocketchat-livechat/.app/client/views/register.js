@@ -59,6 +59,7 @@ Template.register.events({
 				}
 				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 				start();
 			});
 		}
