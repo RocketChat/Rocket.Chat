@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -50,6 +50,14 @@
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 		</span>
+		{{#if fromSearch}}
+			<span class="user color-info-font-color">
+				{{>icon icon=roomIcon}}{{channelName}}
+			</span>
+		{{/if}}
+		{{#if isIgnored}}
+			<span class="toggle-hidden icon-right-dir" data-message="{{_id}}"> {{_ "Message_Ignored"}} </span>
+		{{/if}}
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
@@ -64,6 +72,11 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
+		{{#with readReceipt}}
+		<div class="read-receipt {{readByEveryone}}">
+			{{> icon icon="check" }}
+		</div>
+		{{/with}}
 		{{#unless system}}
 			<div class="message-actions">
 				{{#if messageActions 'message'}}
@@ -98,6 +111,11 @@
 				</li>
 			{{/each}}
 		</ul>
+		{{# if broadcast}}
+			{{#with u}}
+				<button type="button" class="rc-button rc-button--outline rc-button--primary rc-button-broadcast js-reply-broadcast" name="button">{{> icon block="rc-button-broadcast__icon" icon="reply"}} {{_'Reply'}} </button>
+			{{/with}}
+		{{/if}}
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>

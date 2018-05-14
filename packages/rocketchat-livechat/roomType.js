@@ -25,7 +25,7 @@ class LivechatRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'l',
 			order: 5,
-			icon: 'livechat',
+			// icon: 'livechat',
 			label: 'Livechat',
 			route: new LivechatRoomRoute()
 		});

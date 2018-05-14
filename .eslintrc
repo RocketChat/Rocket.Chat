@@ -77,7 +77,7 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.OneOf", "Match.Where", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
@@ -94,6 +94,7 @@
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
 		"AgentUsers"                  : false,
+		"Apps"                        : false,
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
@@ -131,7 +132,9 @@
 		"parentCall"                  : false,
 		"Promise"                     : false,
 		"Random"                      : false,
+		"ReactiveDict"                : false,
 		"ReactiveVar"                 : false,
+		"Reload"                      : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
 		"RoomHistoryManager"          : false,

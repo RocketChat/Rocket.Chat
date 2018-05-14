@@ -141,7 +141,7 @@ RocketChat.QueueMethods = {
 
 		return room;
 	},
-	'External'(guest, message, roomInfo) {
-		return this['Least_Amount'](guest, message, roomInfo); // eslint-disable-line
+	'External'(guest, message, roomInfo, agent) {
+		return this['Least_Amount'](guest, message, roomInfo, agent); // eslint-disable-line
 	}
 };

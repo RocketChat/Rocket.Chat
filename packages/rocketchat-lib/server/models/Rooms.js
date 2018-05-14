@@ -131,8 +131,8 @@ class ModelRooms extends RocketChat.models._Base {
 					return item._room;
 				}
 				console.log('Empty Room for Subscription', item);
-				return {};
 			});
+			data = data.filter(item => item);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -156,9 +156,8 @@ class ModelRooms extends RocketChat.models._Base {
 					return item._room;
 				}
 				console.log('Empty Room for Subscription', item);
-				return {};
 			});
-			data = data.filter(item => item._updatedAt > _updatedAt);
+			data = data.filter(item => item && item._updatedAt > _updatedAt);
 			return this.arrayToCursor(this.processQueryOptionsOnResult(data, options));
 		}
 
@@ -249,6 +248,16 @@ class ModelRooms extends RocketChat.models._Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findByNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			name
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findByNameAndTypeNotDefault(name, type, options) {
@@ -674,12 +683,13 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setAnnouncementById(_id, announcement) {
+	setAnnouncementById(_id, announcement, announcementDetails) {
 		const query = {_id};
 
 		const update = {
 			$set: {
-				announcement
+				announcement,
+				announcementDetails
 			}
 		};
 
@@ -792,6 +802,13 @@ class ModelRooms extends RocketChat.models._Base {
 		_.extend(room, extraData);
 
 		this.insert(room);
+		return room;
+	}
+
+	createWithFullRoomData(room) {
+		delete room._id;
+
+		room._id = this.insert(room);
 		return room;
 	}
 

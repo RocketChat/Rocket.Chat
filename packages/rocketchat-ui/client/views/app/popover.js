@@ -1,7 +1,7 @@
 /* globals popover isRtl */
 import _ from 'underscore';
 
-import {UiTextContext} from 'meteor/rocketchat:lib';
+import { hide, leave } from 'meteor/rocketchat:lib';
 
 this.popover = {
 	renderedPopover: null,
@@ -38,40 +38,62 @@ Template.popover.onRendered(function() {
 			popover.close();
 		}
 	});
+	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const activeElement = this.data.activeElement;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-		const position = typeof this.data.position === 'function'? this.data.position() : this.data.position;
+
+		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
+
+		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
+		const horizontalDirection = /left/.test(direction) ? 'left' : /right/.test(direction) ? 'right' : isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+
+		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
+
+		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
+			x: this.data.currentTarget.getBoundingClientRect()[horizontalDirection === 'left'? 'right' : 'left'],
+			y: this.data.currentTarget.getBoundingClientRect()[verticalDirection]
+		};
+		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
+		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
+
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;
 		} else {
+			const clientHeight = this.data.currentTarget.clientHeight;
 			const popoverWidth = popoverContent.offsetWidth;
 			const popoverHeight = popoverContent.offsetHeight;
-			const popoverHeightHalf = popoverHeight / 2;
 			const windowWidth = window.innerWidth;
 			const windowHeight = window.innerHeight;
 
-			let top;
-			if (mousePosition.y <= popoverHeightHalf) {
-				top = 10;
-			} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
-				top = windowHeight - popoverHeight - 10;
-			} else {
-				top = mousePosition.y - popoverHeightHalf;
+			let top = mousePosition.y - clientHeight + offsetHeight;
+
+			if (verticalDirection === 'top') {
+				top = mousePosition.y - popoverHeight + offsetHeight;
+
+				if (top < 0) {
+					top = 10 + offsetHeight;
+				}
 			}
 
-			let left;
-			if (mousePosition.x + popoverWidth >= windowWidth) {
-				left = mousePosition.x - popoverWidth;
-			} else if (mousePosition.x <= popoverWidth) {
-				left = isRtl() ? mousePosition.x + 10 : 10;
-			} else if (mousePosition.x <= windowWidth / 2) {
-				left = mousePosition.x;
-			} else {
-				left = mousePosition.x - popoverWidth;
+			if (top + popoverHeight > windowHeight) {
+				top = windowHeight - 10 - popoverHeight - offsetHeight;
+			}
+
+			let left = mousePosition.x - popoverWidth + offsetWidth;
+
+			if (horizontalDirection === 'right') {
+				left = mousePosition.x + offsetWidth;
+			}
+
+			if (left + popoverWidth >= windowWidth) {
+				left = mousePosition.x - popoverWidth + offsetWidth;
+			}
+
+			if (left <= 0) {
+				left = mousePosition.x + offsetWidth;
 			}
 
 			popoverContent.style.top = `${ top }px`;
@@ -82,6 +104,13 @@ Template.popover.onRendered(function() {
 			Object.keys(customCSSProperties).forEach(function(property) {
 				popoverContent.style[property] = customCSSProperties[property];
 			});
+		}
+
+		const realTop = Number(popoverContent.style.top.replace('px', ''));
+		if (realTop + popoverContent.offsetHeight > window.innerHeight) {
+			popoverContent.style.overflow = 'scroll';
+			popoverContent.style.bottom = 0;
+			popoverContent.className = 'rc-popover__content rc-popover__content-scroll';
 		}
 
 		if (activeElement) {
@@ -114,7 +143,7 @@ Template.popover.events({
 		const id = event.currentTarget.dataset.id;
 		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
-			action[0].action({rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event});
+			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
 			if (id !== 'audio-message') {
 				popover.close();
 			}
@@ -164,123 +193,17 @@ Template.popover.events({
 			popover.close();
 		}
 	},
-	'click [data-type="set-state"]'(e) {
-		AccountBox.setStatus(e.currentTarget.dataset.id);
-		RocketChat.callbacks.run('userStatusManuallySet', e.currentTarget.dataset.status);
-		popover.close();
-	},
-	'click [data-type="open"]'(e) {
-		const data = e.currentTarget.dataset;
-
-		switch (data.id) {
-			case 'account':
-				SideNav.setFlex('accountFlex');
-				SideNav.openFlex();
-				FlowRouter.go('account');
-				break;
-			case 'logout':
-				const user = Meteor.user();
-				Meteor.logout(() => {
-					RocketChat.callbacks.run('afterLogoutCleanUp', user);
-					Meteor.call('logoutCleanUp', user);
-					FlowRouter.go('home');
-				});
-				break;
-			case 'administration':
-				SideNav.setFlex('adminFlex');
-				SideNav.openFlex();
-				FlowRouter.go('admin-info');
-				break;
-		}
-
-		if (data.href) {
-			FlowRouter.go(data.href);
-		}
-
-		if (data.sideNav) {
-			SideNav.setFlex(data.sideNav);
-			SideNav.openFlex();
-		}
-
-		popover.close();
-	},
 	'click [data-type="sidebar-item"]'(e, instance) {
 		popover.close();
 		const { rid, name, template } = instance.data.data;
 		const action = e.currentTarget.dataset.id;
 
 		if (action === 'hide') {
-			const warnText = RocketChat.roomTypes.roomTypes[template].getUiText(UiTextContext.HIDE_WARNING);
-
-			modal.open({
-				title: t('Are_you_sure'),
-				text: warnText ? t(warnText, name) : '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_hide_it'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: true,
-				html: false
-			}, function() {
-				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-					FlowRouter.go('home');
-				}
-
-				Meteor.call('hideRoom', rid, function(err) {
-					if (err) {
-						handleError(err);
-					} else if (rid === Session.get('openedRoom')) {
-						Session.delete('openedRoom');
-					}
-				});
-			});
-
-			return false;
+			hide(template, rid, name);
 		}
 
 		if (action === 'leave') {
-			let warnText;
-			switch (template) {
-				case 'c': warnText = 'Leave_Room_Warning'; break;
-				case 'p': warnText = 'Leave_Group_Warning'; break;
-				case 'd': warnText = 'Leave_Private_Warning'; break;
-				case 'l': warnText = 'Hide_Livechat_Warning'; break;
-			}
-
-			modal.open({
-				title: t('Are_you_sure'),
-				text: warnText ? t(warnText, name) : '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes_leave_it'),
-				cancelButtonText: t('Cancel'),
-				closeOnConfirm: false,
-				html: false
-			}, function(isConfirm) {
-				if (isConfirm) {
-					Meteor.call('leaveRoom', rid, function(err) {
-						if (err) {
-							modal.open({
-								title: t('Warning'),
-								text: handleError(err, false),
-								type: 'warning',
-								html: false
-							});
-						} else {
-							modal.close();
-							if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-								FlowRouter.go('home');
-							}
-
-							RoomManager.close(rid);
-						}
-					});
-				}
-			});
-
-			return false;
+			leave(template, rid, name);
 		}
 
 		if (action === 'read') {
@@ -294,7 +217,7 @@ Template.popover.events({
 					return handleError(error);
 				}
 
-				const subscription = ChatSubscription.findOne({rid});
+				const subscription = ChatSubscription.findOne({ rid });
 				if (subscription == null) {
 					return;
 				}

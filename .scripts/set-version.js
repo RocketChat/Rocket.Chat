@@ -25,6 +25,7 @@ const files = [
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
+	'./.docker/Dockerfile.rhel',
 	'./packages/rocketchat-lib/rocketchat.info'
 ];
 const readFile = (file) => {
@@ -35,8 +36,8 @@ const readFile = (file) => {
 			}
 			resolve(result);
 		});
-	})
-}
+	});
+};
 const writeFile = (file, data) => {
 	return new Promise((resolve, reject) => {
 		fs.writeFile(file, data, 'utf8', (error, result) => {
@@ -45,81 +46,81 @@ const writeFile = (file, data) => {
 			}
 			resolve(result);
 		});
-	})
-}
+	});
+};
 
 let selectedVersion;
 
 git.status()
-.then(status => {
-	if (status.current === 'release-candidate') {
-		return semver.inc(pkgJson.version, 'prerelease', 'rc');
-	}
-	if (/release-\d+\.\d+\.\d+/.test(status.current)) {
-		return semver.inc(pkgJson.version, 'patch');
-	}
-	if (status.current === 'develop-sync') {
-		return semver.inc(pkgJson.version, 'minor') + '-develop';
-	}
-	return Promise.reject(`No release action for branch ${ status.current }`);
-})
-.then(nextVersion => inquirer.prompt([{
-	type: 'list',
-	message: `The current version is ${ pkgJson.version }. Update to version:`,
-	name: 'version',
-	choices: [
-		nextVersion,
-		'custom'
-	]
-}]))
-.then(answers => {
-	if (answers.version === 'custom') {
+	.then(status => {
+		if (status.current === 'release-candidate') {
+			return semver.inc(pkgJson.version, 'prerelease', 'rc');
+		}
+		if (/release-\d+\.\d+\.\d+/.test(status.current)) {
+			return semver.inc(pkgJson.version, 'patch');
+		}
+		if (status.current === 'develop-sync') {
+			return semver.inc(pkgJson.version, 'minor') + '-develop';
+		}
+		return Promise.reject(`No release action for branch ${ status.current }`);
+	})
+	.then(nextVersion => inquirer.prompt([{
+		type: 'list',
+		message: `The current version is ${ pkgJson.version }. Update to version:`,
+		name: 'version',
+		choices: [
+			nextVersion,
+			'custom'
+		]
+	}]))
+	.then(answers => {
+		if (answers.version === 'custom') {
+			return inquirer.prompt([{
+				name: 'version',
+				message: 'Enter your custom version:'
+			}]);
+		}
+		return answers;
+	})
+	.then(({ version }) => {
+		selectedVersion = version;
+		return Promise.all(files.map(file => {
+			return readFile(file)
+				.then(data => {
+					return writeFile(file, data.replace(pkgJson.version, version));
+				});
+		}));
+	})
+	.then(() => {
+		execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
+
 		return inquirer.prompt([{
-			name: 'version',
-			message: 'Enter your custom version:'
+			type: 'confirm',
+			message: 'Commit files?',
+			name: 'commit'
 		}]);
-	}
-	return answers;
-})
-.then(({ version }) => {
-	selectedVersion = version;
-	return Promise.all(files.map(file => {
-		return readFile(file)
-			.then(data => {
-				return writeFile(file, data.replace(pkgJson.version, version));
-			});
-	}));
-})
-.then(() => {
-	execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
+	})
+	.then(answers => {
+		if (!answers.commit) {
+			return Promise.reject(answers);
+		}
 
-	return inquirer.prompt([{
-		type: 'confirm',
-		message: 'Commit files?',
-		name: 'commit'
-	}])
-})
-.then(answers => {
-	if (!answers.commit) {
-		return Promise.reject(answers);
-	}
-
-	return git.status();
-})
-.then(status => inquirer.prompt([{
+		return git.status();
+	})
+	.then(status => inquirer.prompt([{
 		type: 'checkbox',
 		message: 'Select files to commit?',
 		name: 'files',
 		choices: status.files.map(file => { return {name: `${ file.working_dir } ${ file.path }`, checked: true}; })
-}]))
-.then(answers => answers.files.length && git.add(answers.files.map(file => file.slice(2))))
-.then(() => git.commit(`Bump version to ${ selectedVersion }`))
-.then(() => inquirer.prompt([{
+	}]))
+	.then(answers => answers.files.length && git.add(answers.files.map(file => file.slice(2))))
+	.then(() => git.commit(`Bump version to ${ selectedVersion }`))
+	.then(() => inquirer.prompt([{
 		type: 'confirm',
 		message: `Add tag ${ selectedVersion }?`,
 		name: 'tag'
-}]))
-.then(answers => answers.tag && git.addTag(selectedVersion))
-.catch((error) => {
-	console.error(error);
-});
+	}]))
+	.then(answers => answers.tag && git.addTag(selectedVersion))
+	.catch((error) => {
+		console.error(error);
+	});
