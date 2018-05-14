@@ -390,15 +390,15 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'MessageBox_view_mode'
 		});
-		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'all', {
+		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
 			values: [
 				{
-					key: 'disabled',
+					key: 'nothing',
 					i18nLabel: 'Email_Notification_Mode_Disabled'
 				},
 				{
-					key: 'all',
+					key: 'mentions',
 					i18nLabel: 'Email_Notification_Mode_All'
 				}
 			],

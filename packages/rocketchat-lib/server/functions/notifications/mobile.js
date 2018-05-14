@@ -1,5 +1,3 @@
-import { parseMessageText } from './index';
-
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
@@ -20,7 +18,7 @@ function canSendMessageToRoom(room, username) {
 	return !((room.muted || []).includes(username));
 }
 
-export function sendSinglePush({ room, message, userId, receiverUsername, senderUsername }) {
+export function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, notificationMessage }) {
 	RocketChat.PushNotification.send({
 		roomId: message.rid,
 		payload: {
@@ -32,7 +30,7 @@ export function sendSinglePush({ room, message, userId, receiverUsername, sender
 		},
 		roomName: RocketChat.settings.get('Push_show_username_room') ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
 		username: RocketChat.settings.get('Push_show_username_room') ? senderUsername : '',
-		message: RocketChat.settings.get('Push_show_message') ? parseMessageText(message, userId) : ' ',
+		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
 		// badge: getBadgeCount(userIdToNotify),
 		usersTo: {
 			userId
