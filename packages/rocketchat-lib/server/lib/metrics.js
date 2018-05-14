@@ -12,21 +12,28 @@ RocketChat.metrics = {};
 
 RocketChat.metrics.meteorMethods = new client.Summary({
 	name: 'meteor_methods',
-	help: 'metric_help',
+	help: 'summary of meteor methods count and time',
 	labelNames: ['method']
 });
 RocketChat.metrics.meteorMethods.observe(10);
 
 RocketChat.metrics.rocketchatCallbacks = new client.Summary({
 	name: 'rocketchat_callbacks',
-	help: 'metric_help',
+	help: 'summary of rocketchat callbacks count and time',
 	labelNames: ['hook', 'callback']
+});
+RocketChat.metrics.meteorMethods.observe(10);
+
+RocketChat.metrics.rocketchatRestApi = new client.Summary({
+	name: 'rocketchat_rest_api',
+	help: 'summary of rocketchat rest api count and time',
+	labelNames: ['method', 'entrypoint', 'status']
 });
 RocketChat.metrics.meteorMethods.observe(10);
 
 RocketChat.metrics.meteorSubscriptions = new client.Counter({
 	name: 'meteor_subscriptions',
-	help: 'metric_help',
+	help: 'summary of meteor subscriptions count and time',
 	labelNames: ['subscription']
 });
 
