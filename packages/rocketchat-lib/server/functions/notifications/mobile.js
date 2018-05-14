@@ -28,7 +28,7 @@ export function sendSinglePush({ room, message, userId, receiverUsername, sender
 			type: room.t,
 			name: room.name
 		},
-		roomName: RocketChat.settings.get('Push_show_username_room') ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
+		roomName: RocketChat.settings.get('Push_show_username_room') ? `${ room.t === 'd' ? '' : '#' }${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
 		username: RocketChat.settings.get('Push_show_username_room') ? senderUsername : '',
 		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
 		// badge: getBadgeCount(userIdToNotify),
@@ -45,7 +45,8 @@ export function shouldNotifyMobile({
 	hasMentionToAll,
 	isHighlighted,
 	hasMentionToUser,
-	statusConnection
+	statusConnection,
+	roomType
 }) {
 	if (disableAllMessageNotifications && mobilePushNotifications == null) {
 		return false;
@@ -68,5 +69,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
 }
