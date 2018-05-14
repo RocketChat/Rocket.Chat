@@ -10,6 +10,26 @@ RocketChat.metrics = {};
 
 // one sample metrics only - a counter
 
+RocketChat.metrics.meteorMethods = new client.Summary({
+	name: 'meteor_methods',
+	help: 'metric_help',
+	labelNames: ['method']
+});
+RocketChat.metrics.meteorMethods.observe(10);
+
+RocketChat.metrics.rocketchatCallbacks = new client.Summary({
+	name: 'rocketchat_callbacks',
+	help: 'metric_help',
+	labelNames: ['hook', 'callback']
+});
+RocketChat.metrics.meteorMethods.observe(10);
+
+RocketChat.metrics.meteorSubscriptions = new client.Counter({
+	name: 'meteor_subscriptions',
+	help: 'metric_help',
+	labelNames: ['subscription']
+});
+
 RocketChat.metrics.messagesSent = new client.Counter({'name': 'message_sent', 'help': 'cumulated number of messages sent'});
 RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'ddp_sessions_count', 'help': 'number of open ddp sessions'});
 RocketChat.metrics.ddpConnectedUsers = new client.Gauge({'name': 'ddp_connected_users', 'help': 'number of connected users'});
@@ -47,46 +67,48 @@ client.register.setDefaultLabels({
 });
 
 const setPrometheusData = () => {
+	const date = new Date();
+
 	client.register.setDefaultLabels({
 		unique_id: RocketChat.settings.get('uniqueID'),
 		site_url: RocketChat.settings.get('Site_Url'),
 		version: RocketChat.Info.version
 	});
 
-	RocketChat.metrics.ddpSessions.set(Object.keys(Meteor.server.sessions).length);
-	RocketChat.metrics.ddpConnectedUsers.set(_.compact(_.unique(Object.values(Meteor.server.sessions).map(s => s.userId))).length);
+	RocketChat.metrics.ddpSessions.set(Object.keys(Meteor.server.sessions).length, date);
+	RocketChat.metrics.ddpConnectedUsers.set(_.compact(_.unique(Object.values(Meteor.server.sessions).map(s => s.userId))).length, date);
 
 	const statistics = RocketChat.models.Statistics.findLast();
 	if (!statistics) {
 		return;
 	}
 
-	RocketChat.metrics.version.set({version: statistics.version}, 1);
-	RocketChat.metrics.migration.set(RocketChat.Migrations._getControl().version);
-	RocketChat.metrics.instanceCount.set(statistics.instanceCount);
-	RocketChat.metrics.oplogEnabled.set({enabled: statistics.oplogEnabled}, 1);
+	RocketChat.metrics.version.set({version: statistics.version}, 1, date);
+	RocketChat.metrics.migration.set(RocketChat.Migrations._getControl().version, date);
+	RocketChat.metrics.instanceCount.set(statistics.instanceCount, date);
+	RocketChat.metrics.oplogEnabled.set({enabled: statistics.oplogEnabled}, 1, date);
 
 	// User statistics
-	RocketChat.metrics.totalUsers.set(statistics.totalUsers);
-	RocketChat.metrics.activeUsers.set(statistics.activeUsers);
-	RocketChat.metrics.nonActiveUsers.set(statistics.nonActiveUsers);
-	RocketChat.metrics.onlineUsers.set(statistics.onlineUsers);
-	RocketChat.metrics.awayUsers.set(statistics.awayUsers);
-	RocketChat.metrics.offlineUsers.set(statistics.offlineUsers);
+	RocketChat.metrics.totalUsers.set(statistics.totalUsers, date);
+	RocketChat.metrics.activeUsers.set(statistics.activeUsers, date);
+	RocketChat.metrics.nonActiveUsers.set(statistics.nonActiveUsers, date);
+	RocketChat.metrics.onlineUsers.set(statistics.onlineUsers, date);
+	RocketChat.metrics.awayUsers.set(statistics.awayUsers, date);
+	RocketChat.metrics.offlineUsers.set(statistics.offlineUsers, date);
 
 	// Room statistics
-	RocketChat.metrics.totalRooms.set(statistics.totalRooms);
-	RocketChat.metrics.totalChannels.set(statistics.totalChannels);
-	RocketChat.metrics.totalPrivateGroups.set(statistics.totalPrivateGroups);
-	RocketChat.metrics.totalDirect.set(statistics.totalDirect);
-	RocketChat.metrics.totalLivechat.set(statistics.totlalLivechat);
+	RocketChat.metrics.totalRooms.set(statistics.totalRooms, date);
+	RocketChat.metrics.totalChannels.set(statistics.totalChannels, date);
+	RocketChat.metrics.totalPrivateGroups.set(statistics.totalPrivateGroups, date);
+	RocketChat.metrics.totalDirect.set(statistics.totalDirect, date);
+	RocketChat.metrics.totalLivechat.set(statistics.totlalLivechat, date);
 
 	// Message statistics
-	RocketChat.metrics.totalMessages.set(statistics.totalMessages);
-	RocketChat.metrics.totalChannelMessages.set(statistics.totalChannelMessages);
-	RocketChat.metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages);
-	RocketChat.metrics.totalDirectMessages.set(statistics.totalDirectMessages);
-	RocketChat.metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
+	RocketChat.metrics.totalMessages.set(statistics.totalMessages, date);
+	RocketChat.metrics.totalChannelMessages.set(statistics.totalChannelMessages, date);
+	RocketChat.metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages, date);
+	RocketChat.metrics.totalDirectMessages.set(statistics.totalDirectMessages, date);
+	RocketChat.metrics.totalLivechatMessages.set(statistics.totalLivechatMessages, date);
 };
 
 const app = connect();
