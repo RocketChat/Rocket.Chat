@@ -138,6 +138,9 @@ Template.RoomsActionTab.events({
 			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 				return false;
 			}
+			if (!canShowAddUsersButton(button)) {
+				return false;
+			}
 			return true;
 		});
 		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
@@ -176,6 +179,19 @@ Template.RoomsActionTab.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
 
+function canShowAddUsersButton(button) {
+	const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
+	const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
+	const canAddToJoinedRoom = RocketChat.authz.hasAllPermission('add-user-to-joined-room');
+	if (!canAddToJoinedRoom && !canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
+		return false;
+	}
+	if (!canAddToJoinedRoom && !canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
+		return false;
+	}
+	return true;
+}
+
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
 	active() {
@@ -188,10 +204,6 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		let removedButton = false;
-		const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
-		const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
-		const canAddToJoinedRoom = RocketChat.authz.hasAllPermission('add-user-to-joined-room');
 		const buttons = RocketChat.TabBar.getButtons().filter(button => {
 			if (!Meteor.userId() && !this.anonymous) {
 				return false;
@@ -199,19 +211,11 @@ Template.RoomsActionTab.helpers({
 			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 				return false;
 			}
-			if (!canAddToJoinedRoom && !canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
-				removedButton = true;
-				return false;
-			}
-			if (!canAddToJoinedRoom && !canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
-				removedButton = true;
+			if (!canShowAddUsersButton(button)) {
 				return false;
 			}
 			return true;
 		});
-		if (removedButton) {
-			return buttons.length <= 5 ? buttons : buttons.slice(0, 3);
-		}
 		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
 	},
 
