@@ -137,6 +137,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	}
 
 	Meteor.defer(() => {
+		RocketChat.metrics.emailNotificationsSent.inc();
 		Email.send(email);
 	});
 }
