@@ -731,16 +731,16 @@ describe('[Administration]', () => {
 					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
 				});
 				it('the enable auto away field value should be true', () => {
-					admin.accountsEnableAutoAwayTrue.isSelected().should.be.false;
-					admin.accountsEnableAutoAwayFalse.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayTrue.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayFalse.isSelected().should.be.false;
 				});
 
 				it('it should show the idle timeout limit field', () => {
 					admin.accountsIdleTimeoutLimit.click();
 					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
 				});
-				it('the idle timeout limit field value should be 0', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				it('the idle timeout limit field value should be 300', () => {
+					admin.accountsIdleTimeoutLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
@@ -891,12 +891,20 @@ describe('[Administration]', () => {
 					admin.accountsSendOnEnter.getValue().should.equal('normal');
 				});
 
+				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.click();
+					admin.accountsMessageViewMode.isVisible().should.be.true;
+				});
+				it('the view mode field value should be 0', () => {
+					admin.accountsMessageViewMode.getValue().should.equal('0');
+				});
+
 				it('it should show the offline email notification field', () => {
 					admin.accountsEmailNotificationMode.click();
 					admin.accountsEmailNotificationMode.isVisible().should.be.true;
 				});
 				it('the offline email notification field value should be all', () => {
-					admin.accountsEmailNotificationMode.getValue().should.equal('all');
+					admin.accountsEmailNotificationMode.getValue().should.equal('mentions');
 				});
 
 				it('it should show the room counter sidebar field', () => {
