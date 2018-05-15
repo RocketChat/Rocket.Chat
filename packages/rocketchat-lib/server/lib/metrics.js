@@ -31,7 +31,7 @@ RocketChat.metrics.rocketchatRestApi = new client.Summary({
 });
 RocketChat.metrics.meteorMethods.observe(10);
 
-RocketChat.metrics.meteorSubscriptions = new client.Counter({
+RocketChat.metrics.meteorSubscriptions = new client.Summary({
 	name: 'meteor_subscriptions',
 	help: 'summary of meteor subscriptions count and time',
 	labelNames: ['subscription']

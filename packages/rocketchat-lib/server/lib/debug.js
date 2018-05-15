@@ -38,7 +38,13 @@ const originalMeteorPublish = Meteor.publish;
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
 		logger.publish(name, '-> userId:', this.userId, ', arguments: ', arguments);
-		RocketChat.metrics.meteorSubscriptions.inc({subscription: name}, 1, new Date());
+		const end = RocketChat.metrics.meteorSubscriptions.startTimer({subscription: name});
+
+		const originalReady = this.ready;
+		this.ready = function() {
+			end();
+			return originalReady.apply(this, arguments);
+		};
 
 		return func.apply(this, arguments);
 	});

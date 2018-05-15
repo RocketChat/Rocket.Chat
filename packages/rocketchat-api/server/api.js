@@ -156,10 +156,10 @@ class API extends Restivus {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						result = result ? result : RocketChat.API.v1.success();
+						result = result || RocketChat.API.v1.success();
 
 						rocketchatRestApiEnd({
 							status: result.statusCode
