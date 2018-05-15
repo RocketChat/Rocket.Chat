@@ -39,7 +39,7 @@ export default {
 				identifier: 'userRegistered',
 				args: {
 					nick: parsedMessage.args[0],
-					username: parsedMessage.args[2].substring(1),
+					username: parsedMessage.args[2],
 					host: parsedMessage.args[3],
 					name: parsedMessage.args[6]
 				}
