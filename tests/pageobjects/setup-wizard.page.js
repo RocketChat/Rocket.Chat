@@ -15,8 +15,7 @@ class SetupWizard extends Page {
 	get language() { return browser.element('select[name="Language"]'); }
 	get serverType() { return browser.element('select[name="Server_Type"]'); }
 
-	open() {
-		super.open('setup-wizard');
+	login() {
 		browser.execute(function(email, password) {
 			Meteor.loginWithPassword(email, password, () => {});
 		}, adminEmail, adminPassword);
