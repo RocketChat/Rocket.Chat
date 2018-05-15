@@ -126,6 +126,19 @@ Template.RoomsActionMore.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
 
+function canShowAddUsersButton(button) {
+	const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
+	const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
+	const canAddToJoinedRoom = RocketChat.authz.hasAllPermission('add-user-to-joined-room');
+	if (!canAddToJoinedRoom && !canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
+		return false;
+	}
+	if (!canAddToJoinedRoom && !canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
+		return false;
+	}
+	return true;
+}
+
 Template.RoomsActionTab.events({
 	...commonEvents,
 	'click .js-more'(e, instance) {
@@ -178,19 +191,6 @@ Template.RoomsActionTab.onCreated(function() {
 	$(window).on('resize', this.refresh);
 	this.tabBar = Template.currentData().tabBar;
 });
-
-function canShowAddUsersButton(button) {
-	const canAddToChannel = RocketChat.authz.hasAllPermission('add-user-to-any-c-room');
-	const canAddToGroup = RocketChat.authz.hasAllPermission('add-user-to-any-p-room');
-	const canAddToJoinedRoom = RocketChat.authz.hasAllPermission('add-user-to-joined-room');
-	if (!canAddToJoinedRoom && !canAddToChannel && Template.instance().tabBar.currentGroup() === 'channel' && button.id === 'addUsers') {
-		return false;
-	}
-	if (!canAddToJoinedRoom && !canAddToGroup && Template.instance().tabBar.currentGroup() === 'group' && button.id === 'addUsers') {
-		return false;
-	}
-	return true;
-}
 
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
