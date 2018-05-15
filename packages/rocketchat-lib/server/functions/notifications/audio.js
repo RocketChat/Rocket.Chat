@@ -23,6 +23,7 @@ export function shouldNotifyAudio({
 }
 
 export function notifyAudioUser(userId, message, room) {
+	RocketChat.metrics.audioNotificationsSent.inc();
 	RocketChat.Notifications.notifyUser(userId, 'audioNotification', {
 		payload: {
 			_id: message._id,

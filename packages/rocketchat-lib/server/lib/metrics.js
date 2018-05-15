@@ -38,6 +38,11 @@ RocketChat.metrics.meteorSubscriptions = new client.Summary({
 });
 
 RocketChat.metrics.messagesSent = new client.Counter({'name': 'message_sent', 'help': 'cumulated number of messages sent'});
+RocketChat.metrics.audioNotificationsSent = new client.Counter({'name': 'audio_sent', 'help': 'cumulated number of audio notifications sent'});
+RocketChat.metrics.desktopNotificationsSent = new client.Counter({'name': 'desktop_sent', 'help': 'cumulated number of desktop notifications sent'});
+RocketChat.metrics.mobileNotificationsSent = new client.Counter({'name': 'mobile_sent', 'help': 'cumulated number of mobile notifications sent'});
+RocketChat.metrics.emailNotificationsSent = new client.Counter({'name': 'email_sent', 'help': 'cumulated number of email notifications sent'});
+
 RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'ddp_sessions_count', 'help': 'number of open ddp sessions'});
 RocketChat.metrics.ddpConnectedUsers = new client.Gauge({'name': 'ddp_connected_users', 'help': 'number of connected users'});
 
