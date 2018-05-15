@@ -628,9 +628,21 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
-	this.add('Show_Setup_Wizard', true, {
-		type: 'boolean',
-		public: true
+	this.add('Show_Setup_Wizard', 'pending', {
+		type: 'select',
+		public: true,
+		values: [
+			{
+				key: 'pending',
+				i18nLabel: 'Pending'
+			}, {
+				key: 'in_progress',
+				i18nLabel: 'In_progress'
+			}, {
+				key: 'completed',
+				i18nLabel: 'Completed'
+			}
+		]
 	});
 	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
@@ -639,7 +651,6 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
-		'public': true,
 		wizard: {
 			step: 3,
 			order: 0
@@ -647,7 +658,6 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Language', '', {
 		type: 'language',
-		'public': true,
 		wizard: {
 			step: 3,
 			order: 1
@@ -1659,7 +1669,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Community'
 				}
 			],
-			public: true,
 			wizard: {
 				step: 2,
 				order: 0
@@ -1667,7 +1676,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		});
 		this.add('Organization_Name', '', {
 			type: 'string',
-			public: true,
 			wizard: {
 				step: 2,
 				order: 1
@@ -1777,7 +1785,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Other'
 				}
 			],
-			public: true,
 			wizard: {
 				step: 2,
 				order: 2
@@ -1819,7 +1826,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: '4000 or more people'
 				}
 			],
-			public: true,
 			wizard: {
 				step: 2,
 				order: 3
@@ -2789,7 +2795,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Country_Zimbabwe'
 				}
 			],
-			public: true,
 			wizard: {
 				step: 2,
 				order: 4
@@ -2797,7 +2802,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		});
 		this.add('Website', '', {
 			type: 'string',
-			public: true,
 			wizard: {
 				step: 2,
 				order: 5
@@ -2815,7 +2819,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Public_Community'
 				}
 			],
-			public: true,
 			wizard: {
 				step: 3,
 				order: 2
