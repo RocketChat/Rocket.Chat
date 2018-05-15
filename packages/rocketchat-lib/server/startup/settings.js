@@ -1632,8 +1632,15 @@ RocketChat.settings.addGroup('Logs', function() {
 		type: 'boolean',
 		'public': true
 	});
-	return this.add('Log_View_Limit', 1000, {
+	this.add('Log_View_Limit', 1000, {
 		type: 'int'
+	});
+
+	this.section('Prometheus', function() {
+		this.add('Prometheus_Enabled', false, {
+			type: 'boolean',
+			i18nLabel: 'Enabled'
+		});
 	});
 });
 
