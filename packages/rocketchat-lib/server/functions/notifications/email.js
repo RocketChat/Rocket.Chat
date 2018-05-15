@@ -147,7 +147,8 @@ export function shouldNotifyEmail({
 	emailNotifications,
 	isHighlighted,
 	hasMentionToUser,
-	hasMentionToAll
+	hasMentionToAll,
+	roomType
 }) {
 
 	// use connected (don't need to send him an email)
@@ -172,5 +173,5 @@ export function shouldNotifyEmail({
 		}
 	}
 
-	return isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
+	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
 }
