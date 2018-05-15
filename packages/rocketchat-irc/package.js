@@ -5,7 +5,7 @@ Package.describe({
 	git: ''
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',

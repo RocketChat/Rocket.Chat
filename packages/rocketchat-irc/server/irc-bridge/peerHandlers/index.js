@@ -1,6 +1,8 @@
-export disconnected from './disconnected'
-export joinedChannel from './joinedChannel'
-export leftChannel from './leftChannel'
-export nickChanged from './nickChanged'
-export sentMessage from './sentMessage'
-export userRegistered from './userRegistered'
+import disconnected from './disconnected';
+import joinedChannel from './joinedChannel';
+import leftChannel from './leftChannel';
+import nickChanged from './nickChanged';
+import sentMessage from './sentMessage';
+import userRegistered from './userRegistered';
+
+export { disconnected, joinedChannel, leftChannel, nickChanged, sentMessage, userRegistered };

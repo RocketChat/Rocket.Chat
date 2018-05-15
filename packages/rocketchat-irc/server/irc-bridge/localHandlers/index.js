@@ -1,6 +1,8 @@
-export onCreateRoom from './onCreateRoom'
-export onJoinRoom from './onJoinRoom'
-export onLeaveRoom from './onLeaveRoom'
-export onLogin from './onLogin'
-export onLogout from './onLogout'
-export onSaveMessage from './onSaveMessage'
+import onCreateRoom from './onCreateRoom';
+import onJoinRoom from './onJoinRoom';
+import onLeaveRoom from './onLeaveRoom';
+import onLogin from './onLogin';
+import onLogout from './onLogout';
+import onSaveMessage from './onSaveMessage';
+
+export { onCreateRoom, onJoinRoom, onLeaveRoom, onLogin, onLogout, onSaveMessage };

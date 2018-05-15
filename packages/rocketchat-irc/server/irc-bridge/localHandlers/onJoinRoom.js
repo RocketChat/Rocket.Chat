@@ -1,3 +1,3 @@
 export default function handleOnJoinRoom(user, room) {
-  this.sendCommand('joinedChannel', { room, user })
+	this.sendCommand('joinedChannel', { room, user });
 }
