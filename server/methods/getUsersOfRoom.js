@@ -10,9 +10,7 @@ Meteor.methods({
 		}
 
 		if (room.broadcast && !RocketChat.authz.hasPermission(Meteor.userId(), 'view-broadcast-member-list', roomId)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'getUsersOfRoom'
-			});
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
 		const filter = (record) => {
