@@ -292,6 +292,56 @@ Meteor.startup(function() {
 		group: 'menu'
 	});
 
+	RocketChat.MessageAction.addButton({
+		id: 'toggle-link-preview',
+		icon: 'permalink',
+		label: t('Toggle_link_preview'),
+		context: ['message', 'message-mobile'],
+		action() {
+			const message = this._arguments[1];
+			message.lp = (message.lp !== undefined ? !message.lp : false);
+			chatMessages[Session.get('openedRoom')].update(message._id, message.rid, message.msg, undefined, message.lp);
+		},
+		condition(message) {
+			if (RocketChat.models.Subscriptions.findOne({
+				rid: message.rid
+			}) == null) {
+				return false;
+			}
+			if (!(message.urls && message.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
+				return false;
+			}
+
+			// check if oembed is disabled for message's sender
+			if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+				return false;
+			}
+
+			const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid);
+			const isEditAllowed = RocketChat.settings.get('Message_AllowEditing');
+			const editOwn = message.u && message.u._id === Meteor.userId();
+			if (!(hasPermission || (isEditAllowed && editOwn))) {
+				return;
+			}
+			const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+			if (blockEditInMinutes) {
+				let msgTs;
+				if (message.ts != null) {
+					msgTs = moment(message.ts);
+				}
+				let currentTsDiff;
+				if (msgTs != null) {
+					currentTsDiff = moment().diff(msgTs, 'minutes');
+				}
+				return currentTsDiff < blockEditInMinutes;
+			} else {
+				return true;
+			}
+		},
+		order: 7,
+		group: 'menu'
+	});
+
 
 
 	RocketChat.MessageAction.addButton({
