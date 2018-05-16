@@ -15,6 +15,7 @@ class AppClientOrchestrator {
 
 	_addAdminMenuOption() {
 		RocketChat.AdminBox.addOption({
+			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
 			permissionGranted() {

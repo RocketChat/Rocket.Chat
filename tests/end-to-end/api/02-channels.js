@@ -2,8 +2,20 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, apiEmail, apiUsername, targetUser, log, apiPublicChannelName, channel } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
+import {
+	getCredentials,
+	api,
+	login,
+	request,
+	credentials,
+	apiEmail,
+	apiUsername,
+	targetUser,
+	log,
+	apiPublicChannelName,
+	channel
+} from '../../data/api-data.js';
+import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 function getRoomInfo(roomId) {
@@ -231,6 +243,22 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.setAnnouncement', (done) => {
+		request.post(api('channels.setAnnouncement'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				announcement: 'this is an announcement of a channel for api tests'
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
+			})
+			.end(done);
+	});
+
 	it('/channels.setPurpose', (done) => {
 		request.post(api('channels.setPurpose'))
 			.set(credentials)
@@ -262,6 +290,8 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	//DEPRECATED
+	// TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
 	it('/channels.cleanHistory', (done) => {
 		request.post(api('channels.cleanHistory'))
 			.set(credentials)
@@ -377,6 +407,24 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+			})
+			.end(done);
+	});
+
+	it('/channels.members', (done) => {
+		request.get(api('channels.members'))
+			.set(credentials)
+			.query({
+				roomId: channel._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
 			})
 			.end(done);
 	});
@@ -555,6 +603,96 @@ describe('[Channels]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/channels.getAllUserMentionsByChannel', () => {
+		it('should return and array of mentions by channel', (done) => {
+			request.get(api('channels.getAllUserMentionsByChannel'))
+				.set(credentials)
+				.query({
+					roomId: channel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('mentions').and.to.be.an('array');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/channels.roles', () => {
+		let testChannel;
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.roles.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('/channels.invite', async(done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/channels.addModerator', (done) => {
+			request.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('/channels.addLeader', (done) => {
+			request.post(api('channels.addLeader'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat'
+				})
+				.end(done);
+		});
+		it('should return an array of role <-> user relationships in a channel', (done) => {
+			request.get(api('channels.roles'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('roles').that.is.an('array').that.has.lengthOf(2);
+
+					expect(res.body.roles[0]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0]).to.have.a.property('rid').that.is.equal(testChannel._id);
+					expect(res.body.roles[0]).to.have.a.property('roles').that.is.an('array').that.includes('moderator', 'leader');
+					expect(res.body.roles[0]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[0].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[0].u).to.have.a.property('username').that.is.a('string');
+
+					expect(res.body.roles[1]).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1]).to.have.a.property('rid').that.is.equal(testChannel._id);
+					expect(res.body.roles[1]).to.have.a.property('roles').that.is.an('array').that.includes('owner');
+					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
+					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
+					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
 				})
 				.end(done);
 		});
