@@ -47,7 +47,7 @@ class PushNotification {
 			};
 		}
 
-		RocketChat.metrics.mobileNotificationsSent.inc();
+		RocketChat.metrics.notificationsSent.inc({ type: 'mobile' }, 1, new Date());
 		return Push.send(config);
 	}
 }
