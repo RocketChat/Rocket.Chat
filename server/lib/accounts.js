@@ -220,6 +220,9 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 			roles.push('user');
 		} else {
 			roles.push('admin');
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 		}
 	}
 
