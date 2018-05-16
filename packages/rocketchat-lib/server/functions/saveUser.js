@@ -108,6 +108,10 @@ RocketChat.saveUser = function(userId, userData) {
 			}
 		};
 
+		if (userData.roles && userData.roles.includes('bot')) {
+			updateUser.$set.type = 'bot';
+		}
+
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
 		}
@@ -197,6 +201,12 @@ RocketChat.saveUser = function(userId, userData) {
 
 		if (userData.roles) {
 			updateUser.$set.roles = userData.roles;
+
+			if (userData.roles.includes('bot')) {
+				updateUser.$set.type = 'bot';
+			} else {
+				updateUser.$set.type = 'user';
+			}
 		}
 
 		if (userData.settings) {
