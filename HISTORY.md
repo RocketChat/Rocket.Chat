@@ -1,6 +1,22 @@
 
 # 0.64.2 (Under Release Candidate Process)
 
+## 0.64.2-rc.1
+`  ·  7 🔍`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Prometheus: Improve metric names ([#10789](https://github.com/RocketChat/Rocket.Chat/pull/10789))
+- Improvement to push notifications on direct messages ([#10788](https://github.com/RocketChat/Rocket.Chat/pull/10788))
+- Better metric for notifications ([#10786](https://github.com/RocketChat/Rocket.Chat/pull/10786))
+- Add badge back to push notifications ([#10779](https://github.com/RocketChat/Rocket.Chat/pull/10779))
+- Wizard improvements ([#10776](https://github.com/RocketChat/Rocket.Chat/pull/10776))
+- Add setting and expose prometheus on port 9100 ([#10766](https://github.com/RocketChat/Rocket.Chat/pull/10766))
+- Regression: Fix notifications for direct messages ([#10760](https://github.com/RocketChat/Rocket.Chat/pull/10760))
+
+</details>
+
 ## 0.64.2-rc.0
 `2018-05-11  ·  4 🎉  ·  7 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
 
