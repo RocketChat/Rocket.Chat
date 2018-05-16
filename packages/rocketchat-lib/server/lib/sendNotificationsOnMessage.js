@@ -114,6 +114,7 @@ const sendNotification = ({
 			message,
 			userId: subscription.u._id,
 			senderUsername: sender.username,
+			senderName: sender.name,
 			receiverUsername: receiver.username
 		});
 	}
