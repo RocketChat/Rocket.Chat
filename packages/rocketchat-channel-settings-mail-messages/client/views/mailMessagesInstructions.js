@@ -161,16 +161,8 @@ Template.mailMessagesInstructions.events({
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
-	'click .rc-input--usernames .rc-tags__tag-icon'(e, t) {
-		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
-	},
 	'click .rc-input--emails .rc-tags__tag'({target}, t) {
 		const {text} = Blaze.getData(target);
-		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
-	},
-	'click .rc-input--emails .rc-tags__tag-icon'(e, t) {
-		const {text} = Blaze.getData(t.find('.rc-tags__tag-text'));
 		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
 	},
 	'click .rc-popup-list__item'(e, t) {

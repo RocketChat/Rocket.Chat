@@ -118,14 +118,18 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			query = RocketChat.models.Subscriptions.findByRoomIdAndUserIdsOrAllMessages(room._id, userIds);
 		}
 
-		query.forEach((sub) => {
+		query.forEach(sub => {
 			if (sub.disableNotifications) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 
-			const emailNotifications = sub.emailNotifications;
+			const { emailNotifications, muteGroupMentions } = sub;
 
 			if (emailNotifications === 'nothing') {
+				return delete usersToSendEmail[sub.u._id];
+			}
+
+			if (isMentionAll && muteGroupMentions) {
 				return delete usersToSendEmail[sub.u._id];
 			}
 

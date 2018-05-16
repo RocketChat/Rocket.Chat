@@ -739,8 +739,8 @@ describe('[Administration]', () => {
 					admin.accountsIdleTimeoutLimit.click();
 					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
 				});
-				it('the idle timeout limit field value should be 0', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				it('the idle timeout limit field value should be 300', () => {
+					admin.accountsIdleTimeoutLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
@@ -883,16 +883,6 @@ describe('[Administration]', () => {
 					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
 				});
 
-				it('it should show the merge channels field', () => {
-					admin.accountsMergeChannelsTrue.scroll();
-					admin.accountsMergeChannelsTrue.isVisible().should.be.true;
-					admin.accountsMergeChannelsFalse.isVisible().should.be.true;
-				});
-				it('the merge channels field value should be false', () => {
-					admin.accountsMergeChannelsTrue.isSelected().should.be.false;
-					admin.accountsMergeChannelsFalse.isSelected().should.be.true;
-				});
-
 				it('it should show the enter key behavior field', () => {
 					admin.accountsSendOnEnter.click();
 					admin.accountsSendOnEnter.isVisible().should.be.true;
@@ -901,12 +891,12 @@ describe('[Administration]', () => {
 					admin.accountsSendOnEnter.getValue().should.equal('normal');
 				});
 
-				it('it should show the view mode field', () => {
-					admin.accountsViewMode.click();
-					admin.accountsViewMode.isVisible().should.be.true;
+				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.click();
+					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});
 				it('the view mode field value should be 0', () => {
-					admin.accountsViewMode.getValue().should.equal('0');
+					admin.accountsMessageViewMode.getValue().should.equal('0');
 				});
 
 				it('it should show the offline email notification field', () => {
