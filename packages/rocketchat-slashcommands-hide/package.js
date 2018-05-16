@@ -12,4 +12,5 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('client/hide.js', 'client');
+	api.addFiles('server/hide.js', 'server');
 });
