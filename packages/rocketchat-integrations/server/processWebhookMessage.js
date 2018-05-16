@@ -1,10 +1,35 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import moment from 'moment';
 
 this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
-
+	if (!user._id) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'processWebhookMessage'
+		});
+	}
+	if (messageObj.ts) {
+		const tsDiff = Math.abs(moment(messageObj.ts).diff());
+		if (tsDiff > 60000) {
+			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+				method: 'sendMessage',
+				message_ts: messageObj.ts,
+				server_ts: new Date().getTime()
+			});
+		} else if (tsDiff > 10000) {
+			messageObj.ts = new Date();
+		}
+	} else {
+		messageObj.ts = new Date();
+	}
+	if ((messageObj.msg && messageObj.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) ||
+		(messageObj.text && messageObj.text.length > RocketChat.settings.get('Message_MaxAllowedSize'))) {
+		throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+			method: 'processWebhookMessage'
+		});
+	}
 	for (const channel of channels) {
 		const channelType = channel[0];
 
@@ -35,6 +60,18 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 
 				//No room, so throw an error
 				throw new Meteor.Error('invalid-channel');
+		}
+		const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
+		if (!canAccess) {
+			return false;
+		}
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription && (subscription.blocked || subscription.blocker)) {
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
+		}
+
+		if ((room.muted || []).includes(user.username)) {
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (mustBeJoined && !room.usernames.includes(user.username)) {
