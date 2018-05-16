@@ -11,7 +11,7 @@ RocketChat.metrics = {};
 // one sample metrics only - a counter
 
 RocketChat.metrics.meteorMethods = new client.Summary({
-	name: 'meteor_methods',
+	name: 'rocketchat_meteor_methods',
 	help: 'summary of meteor methods count and time',
 	labelNames: ['method']
 });
@@ -27,48 +27,49 @@ RocketChat.metrics.meteorMethods.observe(10);
 RocketChat.metrics.rocketchatRestApi = new client.Summary({
 	name: 'rocketchat_rest_api',
 	help: 'summary of rocketchat rest api count and time',
-	labelNames: ['method', 'entrypoint', 'status']
+	labelNames: ['method', 'entrypoint', 'status', 'version']
 });
 RocketChat.metrics.meteorMethods.observe(10);
 
 RocketChat.metrics.meteorSubscriptions = new client.Summary({
-	name: 'meteor_subscriptions',
+	name: 'rocketchat_meteor_subscriptions',
 	help: 'summary of meteor subscriptions count and time',
 	labelNames: ['subscription']
 });
 
-RocketChat.metrics.messagesSent = new client.Counter({'name': 'message_sent', 'help': 'cumulated number of messages sent'});
-RocketChat.metrics.notificationsSent = new client.Counter({'name': 'notification_sent', labelNames: ['type'], 'help': 'cumulated number of notifications sent'});
+RocketChat.metrics.messagesSent = new client.Counter({'name': 'rocketchat_message_sent', 'help': 'cumulated number of messages sent'});
+RocketChat.metrics.notificationsSent = new client.Counter({'name': 'rocketchat_notification_sent', labelNames: ['type'], 'help': 'cumulated number of notifications sent'});
 
-RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'ddp_sessions_count', 'help': 'number of open ddp sessions'});
-RocketChat.metrics.ddpConnectedUsers = new client.Gauge({'name': 'ddp_connected_users', 'help': 'number of connected users'});
+RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_count', 'help': 'number of open ddp sessions'});
+RocketChat.metrics.ddpAthenticatedSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_auth', 'help': 'number of authenticated open ddp sessions'});
+RocketChat.metrics.ddpConnectedUsers = new client.Gauge({'name': 'rocketchat_ddp_connected_users', 'help': 'number of unique connected users'});
 
-RocketChat.metrics.version = new client.Gauge({'name': 'version', labelNames: ['version'], 'help': 'Rocket.Chat version'});
-RocketChat.metrics.migration = new client.Gauge({'name': 'migration', 'help': 'migration versoin'});
-RocketChat.metrics.instanceCount = new client.Gauge({'name': 'instance_count', 'help': 'instances running'});
-RocketChat.metrics.oplogEnabled = new client.Gauge({'name': 'oplog_enabled', labelNames: ['enabled'], 'help': 'oplog enabled'});
+RocketChat.metrics.version = new client.Gauge({'name': 'rocketchat_version', labelNames: ['version'], 'help': 'Rocket.Chat version'});
+RocketChat.metrics.migration = new client.Gauge({'name': 'rocketchat_migration', 'help': 'migration versoin'});
+RocketChat.metrics.instanceCount = new client.Gauge({'name': 'rocketchat_instance_count', 'help': 'instances running'});
+RocketChat.metrics.oplogEnabled = new client.Gauge({'name': 'rocketchat_oplog_enabled', labelNames: ['enabled'], 'help': 'oplog enabled'});
 
 // User statistics
-RocketChat.metrics.totalUsers = new client.Gauge({'name': 'users_total', 'help': 'total of users'});
-RocketChat.metrics.activeUsers = new client.Gauge({'name': 'users_active', 'help': 'total of active users'});
-RocketChat.metrics.nonActiveUsers = new client.Gauge({'name': 'users_non_active', 'help': 'total of non active users'});
-RocketChat.metrics.onlineUsers = new client.Gauge({'name': 'users_online', 'help': 'total of users online'});
-RocketChat.metrics.awayUsers = new client.Gauge({'name': 'users_away', 'help': 'total of users away'});
-RocketChat.metrics.offlineUsers = new client.Gauge({'name': 'users_offline', 'help': 'total of users offline'});
+RocketChat.metrics.totalUsers = new client.Gauge({'name': 'rocketchat_users_total', 'help': 'total of users'});
+RocketChat.metrics.activeUsers = new client.Gauge({'name': 'rocketchat_users_active', 'help': 'total of active users'});
+RocketChat.metrics.nonActiveUsers = new client.Gauge({'name': 'rocketchat_users_non_active', 'help': 'total of non active users'});
+RocketChat.metrics.onlineUsers = new client.Gauge({'name': 'rocketchat_users_online', 'help': 'total of users online'});
+RocketChat.metrics.awayUsers = new client.Gauge({'name': 'rocketchat_users_away', 'help': 'total of users away'});
+RocketChat.metrics.offlineUsers = new client.Gauge({'name': 'rocketchat_users_offline', 'help': 'total of users offline'});
 
 // Room statistics
-RocketChat.metrics.totalRooms = new client.Gauge({'name': 'rooms_total', 'help': 'total of rooms'});
-RocketChat.metrics.totalChannels = new client.Gauge({'name': 'channels_total', 'help': 'total of public rooms/channels'});
-RocketChat.metrics.totalPrivateGroups = new client.Gauge({'name': 'private_groups_total', 'help': 'total of private rooms'});
-RocketChat.metrics.totalDirect = new client.Gauge({'name': 'direct_total', 'help': 'total of direct rooms'});
-RocketChat.metrics.totalLivechat = new client.Gauge({'name': 'livechat_total', 'help': 'total of livechat rooms'});
+RocketChat.metrics.totalRooms = new client.Gauge({'name': 'rocketchat_rooms_total', 'help': 'total of rooms'});
+RocketChat.metrics.totalChannels = new client.Gauge({'name': 'rocketchat_channels_total', 'help': 'total of public rooms/channels'});
+RocketChat.metrics.totalPrivateGroups = new client.Gauge({'name': 'rocketchat_private_groups_total', 'help': 'total of private rooms'});
+RocketChat.metrics.totalDirect = new client.Gauge({'name': 'rocketchat_direct_total', 'help': 'total of direct rooms'});
+RocketChat.metrics.totalLivechat = new client.Gauge({'name': 'rocketchat_livechat_total', 'help': 'total of livechat rooms'});
 
 // Message statistics
-RocketChat.metrics.totalMessages = new client.Gauge({'name': 'messages_total', 'help': 'total of messages'});
-RocketChat.metrics.totalChannelMessages = new client.Gauge({'name': 'channel_messages_total', 'help': 'total of messages in public rooms'});
-RocketChat.metrics.totalPrivateGroupMessages = new client.Gauge({'name': 'private_group_messages_total', 'help': 'total of messages in private rooms'});
-RocketChat.metrics.totalDirectMessages = new client.Gauge({'name': 'direct_messages_total', 'help': 'total of messages in direct rooms'});
-RocketChat.metrics.totalLivechatMessages = new client.Gauge({'name': 'livechat_messages_total', 'help': 'total of messages in livechat rooms'});
+RocketChat.metrics.totalMessages = new client.Gauge({'name': 'rocketchat_messages_total', 'help': 'total of messages'});
+RocketChat.metrics.totalChannelMessages = new client.Gauge({'name': 'rocketchat_channel_messages_total', 'help': 'total of messages in public rooms'});
+RocketChat.metrics.totalPrivateGroupMessages = new client.Gauge({'name': 'rocketchat_private_group_messages_total', 'help': 'total of messages in private rooms'});
+RocketChat.metrics.totalDirectMessages = new client.Gauge({'name': 'rocketchat_direct_messages_total', 'help': 'total of messages in direct rooms'});
+RocketChat.metrics.totalLivechatMessages = new client.Gauge({'name': 'rocketchat_livechat_messages_total', 'help': 'total of messages in livechat rooms'});
 
 client.register.setDefaultLabels({
 	uniqueId: RocketChat.settings.get('uniqueID'),
@@ -84,8 +85,11 @@ const setPrometheusData = () => {
 		version: RocketChat.Info.version
 	});
 
-	RocketChat.metrics.ddpSessions.set(Object.keys(Meteor.server.sessions).length, date);
-	RocketChat.metrics.ddpConnectedUsers.set(_.compact(_.unique(Object.values(Meteor.server.sessions).map(s => s.userId))).length, date);
+	const sessions = Object.values(Meteor.server.sessions);
+	const authenticatedSessions = sessions.filter(s => s.userId);
+	RocketChat.metrics.ddpSessions.set(sessions.length, date);
+	RocketChat.metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
+	RocketChat.metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map(s => s.userId)).length, date);
 
 	const statistics = RocketChat.models.Statistics.findLast();
 	if (!statistics) {
