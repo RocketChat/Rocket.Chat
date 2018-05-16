@@ -141,7 +141,8 @@ this.ChatMessages = class ChatMessages {
 		} else {
 			this.input.value = msg;
 		}
-		$(this.input).trigger('change').trigger('input');
+		$(this.input).data('linkPreview', (message.lp !== undefined ? message.lp : true));
+		$(this.input).trigger('change').trigger('input').trigger('dataChange');
 
 		const cursor_pos = editingNext ? 0 : -1;
 		this.$input.setCursorPosition(cursor_pos);
@@ -226,7 +227,7 @@ this.ChatMessages = class ChatMessages {
 
 				this.clearCurrentDraft();
 				if (this.editing.id) {
-					this.update(this.editing.id, rid, msgObject.msg);
+					this.update(this.editing.id, rid, msgObject.msg, undefined, linkPreview);
 					return;
 				}
 
@@ -368,9 +369,9 @@ this.ChatMessages = class ChatMessages {
 		});
 	}
 
-	update(id, rid, msg, isDescription) {
+	update(id, rid, msg, isDescription, lp) {
 		if ((s.trim(msg) !== '') || (isDescription === true)) {
-			Meteor.call('updateMessage', { _id: id, msg, rid });
+			Meteor.call('updateMessage', { _id: id, msg, rid, lp });
 			this.clearEditing();
 			return this.stopTyping(rid);
 		}
