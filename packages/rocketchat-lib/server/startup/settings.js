@@ -940,6 +940,12 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Password'
 		});
+		this.add('Direct_Reply_ReplyTo', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'ReplyTo',
+			placeholder: 'email@domain'
+		});
 	});
 	this.section('SMTP', function() {
 		this.add('SMTP_Protocol', 'smtp', {
