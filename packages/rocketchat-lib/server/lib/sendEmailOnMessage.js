@@ -245,7 +245,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 						if (RocketChat.settings.get('Direct_Reply_Enable')) {
 							email.headers = {
 								// Reply-To header with format "username+messageId@domain"
-								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
+								'Reply-To': `${ RocketChat.settings.get('Direct_Reply_ReplyTo').split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_ReplyTo').split('@')[1] }`
 							};
 						}
 

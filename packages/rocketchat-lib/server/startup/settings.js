@@ -950,10 +950,16 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Username',
 			placeholder: 'email@domain'
 		});
-		return this.add('Direct_Reply_Password', '', {
+		this.add('Direct_Reply_Password', '', {
 			type: 'password',
 			env: true,
 			i18nLabel: 'Password'
+		});
+		return this.add('Direct_Reply_ReplyTo', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'ReplyTo',
+			placeholder: 'email@domain'
 		});
 	});
 	this.section('SMTP', function() {
