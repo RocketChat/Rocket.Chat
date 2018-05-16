@@ -6,9 +6,14 @@ whitelist:
     - theorenck
     - JSzaszvari
   labels:
+    - "Contributions: welcome"
+    - "Contributions: only core team"
+    - "Feature: Request"
+    - "Feature: Planned"
+    - "type: bug"
+    - "help wanted"    
     - duplicate
     - enhancement
-    - "help wanted"
     - invalid
     - question
     - wontfix
