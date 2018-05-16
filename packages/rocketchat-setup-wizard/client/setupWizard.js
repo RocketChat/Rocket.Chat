@@ -21,6 +21,13 @@ const setSettingsAndGo = (settings, registerServer = true) => {
 };
 
 Template.setupWizard.onCreated(function() {
+	const userId = Meteor.userId();
+	const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+	if (!userId || Show_Setup_Wizard === 'completed' || !RocketChat.authz.hasRole(userId, 'admin')) {
+		FlowRouter.go('home');
+	}
+
 	if (localStorage.getItem('wizardFinal')) {
 		FlowRouter.go('setup-wizard-final');
 	}
@@ -60,7 +67,7 @@ Template.setupWizard.onCreated(function() {
 			this.state.set('currentStep', 1);
 		}
 
-		if (RocketChat.settings.get('Show_Setup_Wizard') === false) {
+		if (RocketChat.settings.get('Show_Setup_Wizard') === 'completed') {
 			FlowRouter.go('home');
 		}
 
@@ -245,7 +252,10 @@ Template.setupWizard.helpers({
 
 Template.setupWizardFinal.onCreated(function() {
 	Tracker.autorun(() => {
-		if (RocketChat.settings.get('Show_Setup_Wizard') === false) {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		if (!userId || Show_Setup_Wizard === 'completed' || !RocketChat.authz.hasRole(userId, 'admin')) {
 			FlowRouter.go('home');
 		}
 	});
@@ -257,7 +267,7 @@ Template.setupWizardFinal.onRendered(function() {
 
 Template.setupWizardFinal.events({
 	'click .js-finish'() {
-		RocketChat.settings.set('Show_Setup_Wizard', false, function() {
+		RocketChat.settings.set('Show_Setup_Wizard', 'completed', function() {
 			localStorage.removeItem('wizard');
 			localStorage.removeItem('wizardFinal');
 			FlowRouter.go('home');
