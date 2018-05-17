@@ -215,10 +215,6 @@ RocketChat.Livechat = {
 		const now = new Date();
 
 		const closeData = {
-			user: {
-				_id: user._id,
-				username: user.username
-			},
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000
 		};
@@ -251,7 +247,7 @@ RocketChat.Livechat = {
 		if (room.servedBy) {
 			RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
 		}
-		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.user);
+		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.closeRoom', room);
@@ -279,7 +275,8 @@ RocketChat.Livechat = {
 			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
-			'Livechat_transcript_message'
+			'Livechat_transcript_message',
+			'Livechat_conversation_finished_message'
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -419,6 +416,7 @@ RocketChat.Livechat = {
 			customFields: room.livechatData,
 			visitor: {
 				_id: visitor._id,
+				token: visitor.token,
 				name: visitor.name,
 				username: visitor.username,
 				email: null,

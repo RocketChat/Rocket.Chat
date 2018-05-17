@@ -80,6 +80,10 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 		const result = _.sortBy(callbacks, function(callback) {
 			return callback.priority || RocketChat.callbacks.priority.MEDIUM;
 		}).reduce(function(result, callback) {
+			let rocketchatCallbacksEnd;
+			if (Meteor.isServer) {
+				rocketchatCallbacksEnd = RocketChat.metrics.rocketchatCallbacks.startTimer({hook, callback: callback.id});
+			}
 			let time = 0;
 			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
 				time = Date.now();
@@ -90,6 +94,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 				totalTime += currentTime;
 				if (RocketChat.callbacks.showTime === true) {
 					if (Meteor.isServer) {
+						rocketchatCallbacksEnd();
 						RocketChat.statsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
 					} else {
 						let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');

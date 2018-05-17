@@ -7,9 +7,15 @@
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
+	margin: 0 -25px;
+
 	&__wrapper {
 		overflow-x: hidden;
 		overflow-y: auto;
+
+		padding: 0 25px;
+
+		height: 100%;
 	}
 
 	&__header,
