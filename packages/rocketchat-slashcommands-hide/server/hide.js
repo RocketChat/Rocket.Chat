@@ -8,24 +8,29 @@ function Hide(command, params, item) {
 		return;
 	}
 	const room = params.trim();
+	const user = Meteor.user();
 	let rid;
+
+	// if there is not a param, hide the current room
 	if (room === '') {
 		rid = item.rid;
 	} else {
 		const strippedRoom = room.replace(/#|@/, '');
-		const user = Meteor.users.findOne(Meteor.userId());
 		let roomObject;
 
+		// find channel or direct message room
 		if (room[0] === '#') {
 			roomObject = RocketChat.models.Rooms.findOneByName(strippedRoom);
 		} else if (room[0] === '@') {
 			roomObject = RocketChat.models.Rooms.findOne({
 				t: 'd',
-				usernames: { $all: [Meteor.user().username, strippedRoom] }
+				usernames: { $all: [user.username, strippedRoom] }
 			});
 		}
 
-		if (!roomObject) {
+		if (roomObject) {
+			rid = roomObject._id;
+		} else {
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: item.rid,
@@ -35,8 +40,6 @@ function Hide(command, params, item) {
 					sprintf: [room]
 				}, user.language)
 			});
-		} else {
-			rid = roomObject._id;
 		}
 
 		if (!roomObject.usernames.includes(user.username)) {
@@ -47,7 +50,7 @@ function Hide(command, params, item) {
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
 					sprintf: [room]
-				}, Meteor.user().language)
+				}, user.language)
 			});
 		}
 	}
@@ -58,7 +61,7 @@ function Hide(command, params, item) {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
-				msg: TAPi18n.__(error, null, Meteor.user().language)
+				msg: TAPi18n.__(error, null, user.language)
 			});
 		}
 	});
