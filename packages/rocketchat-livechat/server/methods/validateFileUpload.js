@@ -1,8 +1,16 @@
 import filesize from 'filesize';
 
 Meteor.methods({
-	'livechat:checkSizeFileUpload'(size) {
+	'livechat:validateFileUpload'(type, size) {
+		check(type, String);
 		check(size, Number);
+
+		if (!RocketChat.fileUploadIsValidContentType(type)) {
+			return {
+				result: false,
+				reason: 'typeNotAllowed'
+			};
+		}
 
 		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
 			try {
@@ -16,6 +24,7 @@ Meteor.methods({
 		if (maxFileSize >= -1 && size > maxFileSize) {
 			return {
 				result: false,
+				reason: 'sizeNotAllowed',
 				sizeAllowed: filesize(maxFileSize)
 			};
 		}

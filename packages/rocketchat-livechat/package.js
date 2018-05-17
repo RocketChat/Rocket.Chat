@@ -178,8 +178,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
 	api.addFiles('server/methods/sendTranscript.js', 'server');
-	api.addFiles('server/methods/checkTypeFileUpload.js', 'server');
-	api.addFiles('server/methods/checkSizeFileUpload.js', 'server');
+	api.addFiles('server/methods/validateFileUpload.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');

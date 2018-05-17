@@ -544,7 +544,12 @@ input:focus {
 
 			.input-wrapper {
 				flex-grow: 1;
-				padding-left: 6px;
+				border-width: 1px;
+				border-radius: 4px;
+				margin-left: 6px;
+				border-color: @input-border-color;
+				display: flex;
+				align-items: center;
 
 				textarea {
 					display: block;
@@ -559,8 +564,26 @@ input:focus {
 					-webkit-appearance: none;
 					height: 28px;
 					line-height: normal;
-					background-color: #ffffff;
+					background-color: transparent;
 					position: relative;
+					border: 0;
+				}
+
+				.upload-button-box {
+					display: flex;
+					padding: 0 5px;
+
+					svg {
+						width: 15px;
+						height: 15px;
+						cursor: pointer;
+						color: @secondary-font-color;
+						fill: @secondary-font-color;
+	
+						&:hover {
+							fill: @primary-font-color;
+						}
+					}						
 				}
 			}
 

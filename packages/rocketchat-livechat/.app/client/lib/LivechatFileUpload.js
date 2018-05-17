@@ -13,17 +13,17 @@ function sendFileRequest(file, roomId, visitorToken) {
 	request.open("POST", url);
 	request.setRequestHeader("X-Visitor-Token", visitorToken);
 
-	request.onload = function () {
+	request.onload = () => {
 		if (request.status !== 200) {	
 			showError(request.statusText);					
 		}
 	};
 	/*
-	request.onprogress = function () {
+	request.onprogress = () => {
 		console.log('LOADING', request.status);
 	};
 	*/
-	request.onerror = function () {
+	request.onerror = () => {
 		showError(request.statusText);
 	};
 
@@ -74,39 +74,79 @@ function formatBytes(bytes, decimals) {
 }
 
 function sendFileMessage(file, roomId) {
-	if (!visitor.isSubscribed(roomId)) {	
-		Meteor.call('livechat:startFileUploadRoom', roomId, visitor.getToken(), (error, result) => {
-			if (error) {
-				return showError(error.message);
-			}
-
-			visitor.subscribeToRoom(result.room._id);
-			visitor.setRoom(result.room._id);
-			sendFileRequest(file, roomId, visitor.getToken());
-			parentCall('callback', 'chat-started');
-		});
-	} else {
-		sendFileRequest(file, roomId, visitor.getToken());
-	}
-}
-
-fileUpload = function(file) {
-	Meteor.call('livechat:checkTypeFileUpload', file.file.type, (error, result) => {
+	if (visitor.isSubscribed(roomId)) {
+		return sendFileRequest(file, roomId, visitor.getToken());
+	}	
+	
+	Meteor.call('livechat:startFileUploadRoom', roomId, visitor.getToken(), (error, result) => {
 		if (error) {
-			return;
+			return showError(error.message);
 		}
 
-		if (!result) {
-			swal({
-				title: t('FileUpload_MediaType_NotAccepted'),
-				text: file.type || `*.${ s.strRightBack(file.name, '.') }`,
-				type: 'error',
-				timer: 4000
-			});
-		}	
-		return;
+		visitor.subscribeToRoom(result.room._id);
+		visitor.setRoom(result.room._id);
+		sendFileRequest(file, roomId, visitor.getToken());
+		parentCall('callback', 'chat-started');
 	});
-	
+}
+
+sendFileUpload = file => {
+
+	return getUploadPreview(file, function(file, preview) {
+		let text = '';
+		if (file.type === 'audio') {
+			text = `<div class='upload-preview'><audio  style="width: 100%;" controls="controls"><source src="${ preview }" type="audio/wav">Your browser does not support the audio element.</audio></div>`;
+		} else if (file.type === 'video') {
+			text = `<div class='upload-preview'><video  style="width: 100%;" controls="controls"><source src="${ preview }" type="video/webm">Your browser does not support the video element.</video></div>`;
+		} else if (file.type === 'image') {
+			text = `<div class='upload-preview'><div class='upload-preview-file' style='background-image: url(${ preview })'></div></div>`;
+		} else {
+			const fileSize = formatBytes(file.file.size);
+			text = `<div class='upload-preview'><div>${ Handlebars._escape(file.name) } - ${ fileSize }</div></div>`;
+		}
+
+		swal({
+			title: t('Upload_file_question'),
+			text,
+			html: true,
+			showCancelButton: true,
+			cancelButtonText: t('No'),
+			confirmButtonText: t('Yes'),
+			closeOnCancel: true,
+			closeOnConfirm: true
+		}, (isConfirm) => {
+			if (!isConfirm) {
+				return;
+			}	
+				
+			const roomId = visitor.getRoom(true);
+
+			if (visitor.getId()) {
+				return sendFileMessage(file.file, roomId);
+			}	
+				
+			const guest = {
+				token: visitor.getToken()
+			};
+
+			if (Livechat.department) {
+				guest.department = Livechat.department;
+			}
+
+			Meteor.call('livechat:registerGuest', guest, (error, result) => {
+				if (error) {
+					return showError(error.reason);
+				}
+
+				visitor.setId(result.userId);
+				sendFileMessage(file.file, roomId);
+			});
+		});
+	});			
+}
+
+fileUpload = file => {
+
 	if (file.file.size === 0) {
 		swal({
 			title: t('FileUpload_File_Empty'),
@@ -118,70 +158,30 @@ fileUpload = function(file) {
 		return;
 	}
 
-	Meteor.call('livechat:checkSizeFileUpload', file.file.size, (error, result) => {
+	Meteor.call('livechat:validateFileUpload', file.file.type, file.file.size, (error, result) => {
 		if (error) {
 			return;
 		}
 
 		if (!result.result) {
+			let reason = t('FileUpload_Error');
+			switch (result.reason) {
+				case 'typeNotAllowed':
+				reason = t('FileUpload_MediaType_NotAccepted');
+					break;
+				case 'sizeNotAllowed':
+				reason = t('File_exceeds_allowed_size_of_bytes', {size: result.sizeAllowed});
+			}
+				
 			swal({
-				title: t('File_exceeds_allowed_size_of_bytes', {size: result.sizeAllowed}),
+				title: reason,
 				type: 'error',
 				timer: 4000
 			});
+
+			return;
 		}
-		return;
+
+		return sendFileUpload(file);
 	});
-	
-	return getUploadPreview(file, function(file, preview) {
-		let text = '';
-		if (file.type === 'audio') {
-			text = `\
-			<div class='upload-preview'><audio  style="width: 100%;" controls="controls"><source src="${ preview }" type="audio/wav">Your browser does not support the audio element.</audio></div>`;
-		} else if (file.type === 'video') {
-			text = `\
-			<div class='upload-preview'><video  style="width: 100%;" controls="controls"><source src="${ preview }" type="video/webm">Your browser does not support the video element.</video></div>`;
-		} else if (file.type === 'image') {
-			text = `\
-			<div class='upload-preview'><div class='upload-preview-file' style='background-image: url(${ preview })'></div></div>`;
-		} else {
-			const fileSize = formatBytes(file.file.size);
-			text = `\<div class='upload-preview'><div>${ Handlebars._escape(file.name) } - ${ fileSize }</div></div>`;
-		}
-
-		swal({
-			title: t('Upload_file_question'),
-			text,
-			html: true,
-			showCancelButton: true,
-			cancelButtonText: t('Cancel'),
-			confirmButtonText: t('Send'),
-			closeOnCancel: true,
-			closeOnConfirm: true
-		}, (isConfirm) => {		
-			if (isConfirm) {
-				const roomId = visitor.getRoom(true);
-				if (!visitor.getId()) {
-					const guest = {
-						token: visitor.getToken()
-					};
-
-					if (Livechat.department) {
-						guest.department = Livechat.department;
-					}
-
-					Meteor.call('livechat:registerGuest', guest, (error, result) => {
-						if (error) {
-							return showError(error.reason);
-						}
-
-						visitor.setId(result.userId);
-						sendFileMessage(file.file, roomId);
-					});
-				} else {
-					sendFileMessage(file.file, roomId);
-				}	
-			}		
-		});
-	});			
 };

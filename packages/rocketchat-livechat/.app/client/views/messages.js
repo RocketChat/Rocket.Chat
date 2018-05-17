@@ -1,4 +1,4 @@
-/* globals Livechat, LivechatFileUpload, LivechatVideoCall, MsgTyping */
+/* globals Livechat, LivechatVideoCall, MsgTyping */
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';
@@ -34,7 +34,7 @@ Template.messages.helpers({
 		return Livechat.videoCall;
 	},
 	fileUploadEnabled() {
-		return Livechat.fileUpload;
+		return Livechat.fileUpload && Template.instance().isMessageFieldEmpty.get();
 	},
 	showConnecting() {
 		return Livechat.connecting;
@@ -97,6 +97,7 @@ Template.messages.events({
 	'keyup .input-message'(event, instance) {
 		instance.chatMessages.keyup(visitor.getRoom(), event, instance);
 		instance.updateMessageInputHeight(event.currentTarget);
+		instance.isMessageFieldEmpty.set(event.target.value == '');
 	},
 	'keydown .input-message'(event, instance) {
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
@@ -106,6 +107,7 @@ Template.messages.events({
 		const sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
 		instance.updateMessageInputHeight(input);
+		instance.isMessageFieldEmpty.set(input.value == '');
 
 		return sent;
 	},
@@ -169,7 +171,7 @@ Template.messages.events({
 
 Template.messages.onCreated(function() {
 	this.atBottom = true;
-
+	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.showOptions = new ReactiveVar(false);
 
 	this.updateMessageInputHeight = function(input) {

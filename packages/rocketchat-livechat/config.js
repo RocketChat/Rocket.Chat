@@ -224,7 +224,7 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Jitsi_Enabled', value: true }
 	});
 
-	RocketChat.settings.add('Livechat_fileupload_enabled', false, {
+	RocketChat.settings.add('Livechat_fileupload_enabled', true, {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,

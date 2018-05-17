@@ -21,7 +21,7 @@ Meteor.startup(() => {
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
-		return room && room.t === 'l' && file && file.visitorToken && room.v && room.v.token === file.visitorToken;
+		return room && room.t === 'l' && room.v && room.v.token === file.visitorToken;
 	});
 
 	RocketChat.callbacks.add('beforeLeaveRoom', function(user, room) {

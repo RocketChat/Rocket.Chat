@@ -16,12 +16,12 @@ const fixLivechatUpload = function(url) {
 			livechatUrl = `${ livechatUrl }&${ query }`;
 		}
 
-		return Meteor.absoluteUrl().replace(/\/$/, '') + livechatUrl;
+		return Meteor.absoluteUrl(livechatUrl);
 	}
 };
 
 Template.messageAttachment.helpers({
-    fixLivechatUpload,
+	fixLivechatUpload,
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
 	},
