@@ -67,6 +67,13 @@ Meteor.methods({
 			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
+		// Keep compatibility with old values
+		if (settings.emailNotificationMode === 'all') {
+			settings.emailNotificationMode = 'mentions';
+		} else if (settings.emailNotificationMode === 'disabled') {
+			settings.emailNotificationMode = 'nothing';
+		}
+
 		RocketChat.models.Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences
@@ -91,8 +98,12 @@ Meteor.methods({
 				if (settings.emailNotificationMode === 'default') {
 					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
 				} else {
-					RocketChat.models.Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode === 'disabled' ? 'nothing' : settings.emailNotificationMode);
+					RocketChat.models.Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode);
 				}
+			}
+
+			if (Array.isArray(settings.highlights)) {
+				RocketChat.models.Subscriptions.updateUserHighlights(user._id, settings.highlights);
 			}
 		});
 

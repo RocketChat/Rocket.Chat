@@ -135,6 +135,8 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
+		const version = this._config.version;
+
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			if (this.hasHelperMethods()) {
@@ -146,16 +148,27 @@ class API extends Restivus {
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function _internalRouteActionHandler() {
+						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+							method,
+							version,
+							entrypoint: route
+						});
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						return result ? result : RocketChat.API.v1.success();
+						result = result || RocketChat.API.v1.success();
+
+						rocketchatRestApiEnd({
+							status: result.statusCode
+						});
+
+						return result;
 					};
 
 					for (const [name, helperMethod] of this.getHelperMethods()) {

@@ -143,6 +143,9 @@ Meteor.startup(function() {
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
+				if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+					RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+				}
 				console.log(`No admins are found. Set ${ oldestUser.username } as admin for being the oldest user`);
 			}
 		}
@@ -187,6 +190,10 @@ Meteor.startup(function() {
 			Accounts.setPassword(adminUser._id, adminUser._id);
 
 			RocketChat.authz.addUserRoles(adminUser._id, 'admin');
+
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 
 			return RocketChat.addUserToDefaultChannels(adminUser, true);
 		}

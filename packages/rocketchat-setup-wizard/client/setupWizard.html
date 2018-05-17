@@ -18,6 +18,9 @@
 </template>
 
 <template name="setupWizard">
+	<div class="rc-old connection-status">
+		{{> status}}
+	</div>
 	<div class="setup-wizard">
 		<section class="setup-wizard-info">
 			<header class="setup-wizard-info__header">
@@ -105,6 +108,7 @@
 											<div class="rc-input__title">{{_ i18nLabel}}</div>
 											<div class="rc-select">
 												<select class="rc-select__element js-setting-data" name="{{_id}}">
+													<option value="" disabled selected="{{selectedValue _id undefined}}">{{_ "Select_an_option"}}</option>
 													{{#each values}}
 														<option class="rc-select__option" value="{{key}}" selected="{{selectedValue ../_id key}}">{{_ i18nLabel}}</option>
 													{{/each}}

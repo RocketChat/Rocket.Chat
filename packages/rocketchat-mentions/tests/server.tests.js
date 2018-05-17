@@ -20,25 +20,15 @@ beforeEach(function() {
 				username: 'jon'
 			}].filter(user => usernames.includes(user.username));//Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		},
-		getChannel: () => {
-			return {
-				usernames: [{
-					_id: 1,
-					username: 'rocket.cat'
-				}, {
-					_id: 2,
-					username: 'jon'
-				}]
-			};
-			// RocketChat.models.Rooms.findOneById(message.rid);,
-		},
 		getChannels(channels) {
 			return [{
 				_id: 1,
 				name: 'general'
 			}].filter(channel => channels.includes(channel.name));
 			// return RocketChat.models.Rooms.find({ name: {$in: _.unique(channels)}, t: 'c'	}, { fields: {_id: 1, name: 1 }}).fetch();
-		}
+		},
+		getUser: (userId) => ({ _id: userId, language: 'en' }),
+		getTotalChannelMembers: (/*rid*/) => 2
 	});
 });
 
@@ -46,27 +36,7 @@ describe('Mention Server', () => {
 	describe('getUsersByMentions', () => {
 		describe('for @all but the number of users is greater than messageMaxAll', () => {
 			beforeEach(() => {
-				mention.getChannel = () => {
-					return {
-						usernames:[{
-							_id: 1,
-							username: 'rocket.cat'
-						}, {
-							_id: 2,
-							username: 'jon'
-						}, {
-							_id: 3,
-							username: 'jon1'
-						}, {
-							_id: 4,
-							username: 'jon2'
-						}, {
-							_id: 5,
-							username: 'jon3'
-						}]
-					};
-					//Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
-				};
+				mention.getTotalChannelMembers = () => 5;
 			});
 			it('should return nothing', () => {
 				const message = {
