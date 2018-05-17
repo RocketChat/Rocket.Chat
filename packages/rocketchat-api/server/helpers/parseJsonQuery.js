@@ -1,4 +1,7 @@
 RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
+	const VIEW_FULL_USER_FIELDS_TO_EXCLUDE = {
+		services: 0
+	};
 	let sort;
 	if (this.queryParams.sort) {
 		try {
@@ -23,7 +26,11 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			nonSelectableFields = nonSelectableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+			if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
+				nonSelectableFields = nonSelectableFields.concat(Object.keys(VIEW_FULL_USER_FIELDS_TO_EXCLUDE));
+			} else {
+				nonSelectableFields = nonSelectableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+			}
 		}
 
 		Object.keys(fields).forEach((k) => {
@@ -36,7 +43,11 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	// Limit the fields by default
 	fields = Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude);
 	if (this.request.route.includes('/v1/users.')) {
-		fields = Object.assign(fields, RocketChat.API.v1.limitedUserFieldsToExclude);
+		if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
+			fields = Object.assign(fields, VIEW_FULL_USER_FIELDS_TO_EXCLUDE);
+		} else {
+			fields = Object.assign(fields, RocketChat.API.v1.limitedUserFieldsToExclude);
+		}
 	}
 
 	let query;
@@ -53,7 +64,11 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (typeof query === 'object') {
 		let nonQuerableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			nonQuerableFields = nonQuerableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+			if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
+				nonQuerableFields = nonQuerableFields.concat(Object.keys(VIEW_FULL_USER_FIELDS_TO_EXCLUDE));
+			} else {
+				nonQuerableFields = nonQuerableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+			}
 		}
 
 		Object.keys(query).forEach((k) => {
