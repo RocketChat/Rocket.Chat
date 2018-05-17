@@ -2,6 +2,9 @@
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+
+const reply = id => id && `[ ](${ RocketChat.MessageAction.getPermaLink(id) }) `;
+
 this.ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
@@ -182,7 +185,23 @@ this.ChatMessages = class ChatMessages {
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			const msg = input.value;
+			let msg = '';
+			const reply = $(input).data('reply');
+			const mentionUser = $(input).data('mention-user') || false;
+
+			if (reply !== undefined) {
+				const url = RocketChat.MessageAction.getPermaLink(reply._id);
+				msg = `[ ](${ url }) `;
+				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+					msg += `@${ reply.u.username } `;
+				}
+			}
+			msg += input.value;
+			$(input)
+				.removeData('reply')
+				.trigger('dataChange');
+
 			const msgObject = { _id: Random.id(), rid, msg};
 
 			if (msg.slice(0, 2) === '+:') {
@@ -229,12 +248,16 @@ this.ChatMessages = class ChatMessages {
 							const commandOptions = RocketChat.slashCommands.commands[match[1]];
 							command = match[1];
 							const param = match[2] || '';
-							if (commandOptions.clientOnly) {
-								commandOptions.callback(command, param, msgObject);
-							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+
+							if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
+								if (commandOptions.clientOnly) {
+									commandOptions.callback(command, param, msgObject);
+								} else {
+									Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+								}
+
+								return;
 							}
-							return;
 						}
 
 						if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
@@ -248,6 +271,7 @@ this.ChatMessages = class ChatMessages {
 								},
 								private: true
 							};
+
 							ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
 							return;
 						}
@@ -380,7 +404,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	restoreText(rid) {
-		const text = localStorage.getItem(`messagebox_${ rid }`);
+		const text = reply(FlowRouter.getQueryParam('reply')) || localStorage.getItem(`messagebox_${ rid }`);
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}

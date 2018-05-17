@@ -71,6 +71,8 @@ Template.livechatWindow.events({
 Template.livechatWindow.onCreated(function() {
 	Session.set({sound: true});
 
+	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
+
 	const availableLanguages = TAPi18n.getLanguages();
 
 	const defaultAppLanguage = () => {
@@ -109,6 +111,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.online = true;
 				Livechat.transcript = result.transcript;
 				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;

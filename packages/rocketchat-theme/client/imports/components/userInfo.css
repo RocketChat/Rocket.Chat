@@ -34,8 +34,6 @@
 		overflow-y: auto;
 
 		flex: 1 1;
-
-		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
@@ -81,6 +79,7 @@
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 28px;
+		width: 100%;
 	}
 
 	&__username {
@@ -141,6 +140,10 @@
 			& > .rc-switch__label > .rc-switch__text {
 				flex: 1;
 			}
+		}
+
+		& .rc-switch-double__label {
+			color: #a1a1a1;
 		}
 
 		&--separator {
@@ -311,7 +314,7 @@
 		}
 
 		&.disabled {
-			color: #a1a1a1;
+			color: inherit;
 		}
 	}
 

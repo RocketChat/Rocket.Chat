@@ -7,13 +7,20 @@
 */
 
 import { RocketChatTabBar } from './RocketChatTabBar';
+import { RocketChatAnnouncement } from './RocketChatAnnouncement';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
-
+import { hide, leave, erase } from './ChannelActions';
+import { call } from './callMethod';
 
 export {
+	call,
+	erase,
+	hide,
+	leave,
 	RocketChatTabBar,
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
-	UiTextContext
+	UiTextContext,
+	RocketChatAnnouncement
 };
