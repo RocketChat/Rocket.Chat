@@ -49,9 +49,67 @@ RocketChat.API.v1.addRoute(['dm.close', 'im.close'], { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true }, {
+	get() {
+		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
+		const ruserId = this.requestParams().userId;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+		let lm = null;
+
+		if (ruserId) {
+			if (!access) {
+				return RocketChat.API.v1.unauthorized();
+			}
+			user = ruserId;
+		}
+		const rs = findDirectMessageRoom(this.requestParams(), {'_id': user});
+		const room = rs.room;
+		const dm = rs.subscription;
+		lm = room.lm ? room.lm : room._updatedAt;
+
+		if (typeof dm !== 'undefined' && dm.open) {
+			if (dm.ls && room.msgs) {
+				unreads = dm.unread;
+				unreadsFrom = dm.ls;
+			}
+			userMentions = dm.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = room.usernames.length;
+		}
+
+		return RocketChat.API.v1.success({
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 	get() {
 		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
@@ -66,7 +124,7 @@ RocketChat.API.v1.addRoute(['dm.files', 'im.files'], { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
+			files: files.map(addUserObjectToEveryObject),
 			count: files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()

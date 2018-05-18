@@ -20,6 +20,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
 	}
 
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			ts: {
+				$gte: afterTimestamp,
+				$lte: beforeTimestamp
+			}
+		};
+
+		return this.find(query, options).count();
+	}
+
 	// FIND
 	findByMention(username, options) {
 		const query =	{'mentions.username': username};
@@ -295,6 +310,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByRoomId(roomId, options) {
+		const query = {
+			rid: roomId
+		};
+
+		return this.find(query, options);
+	}
+
 	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
 		const query = {
 			rid,
@@ -511,6 +534,22 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	unlinkUserId(userId, newUserId, newUsername, newNameAlias) {
+		const query = {
+			'u._id': userId
+		};
+
+		const update = {
+			$set: {
+				'alias': newNameAlias,
+				'u._id': newUserId,
+				'u.username' : newUsername,
+				'u.name' : undefined
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {

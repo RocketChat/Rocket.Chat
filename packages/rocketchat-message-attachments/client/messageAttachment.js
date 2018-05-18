@@ -22,7 +22,7 @@ const fixCordova = function(url) {
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {
 		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
 	}
 };
 /*globals renderMessageBody*/
@@ -52,6 +52,12 @@ Template.messageAttachment.helpers({
 		return colors[this.color] || this.color;
 	},
 	collapsed() {
+		if (this.collapsed != null) {
+			return this.collapsed;
+		}
+		return false;
+	},
+	mediaCollapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {

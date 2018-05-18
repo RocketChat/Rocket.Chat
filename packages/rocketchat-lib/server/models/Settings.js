@@ -92,6 +92,10 @@ class ModelSettings extends RocketChat.models._Base {
 		});
 	}
 
+	findSetupWizardSettings() {
+		return this.find({ wizard: { '$exists': true, '$ne': null } });
+	}
+
 	// UPDATE
 	updateValueById(_id, value) {
 		const query = {

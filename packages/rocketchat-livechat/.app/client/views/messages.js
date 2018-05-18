@@ -79,7 +79,9 @@ Template.messages.helpers({
 			agentData.email = agent.emails[0].address;
 		}
 
-		if (agent.customFields && agent.customFields.phone) {
+		if (agent.phone && agent.phone.length > 0) {
+			agentData.phone = agent.phone[0].phoneNumber;
+		} else if (agent.customFields && agent.customFields.phone) {
 			agentData.phone = agent.customFields.phone;
 		}
 
