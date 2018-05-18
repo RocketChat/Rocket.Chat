@@ -49,6 +49,9 @@ Template.directory.helpers({
 		} = Template.instance();
 
 		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
+	},
+	createChannelOrGroup() {
+		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	}
 });
 
