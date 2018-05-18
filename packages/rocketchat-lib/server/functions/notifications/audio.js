@@ -5,7 +5,8 @@ export function shouldNotifyAudio({
 	hasMentionToAll,
 	hasMentionToHere,
 	isHighlighted,
-	hasMentionToUser
+	hasMentionToUser,
+	roomType
 }) {
 	if (disableAllMessageNotifications && audioNotifications == null) {
 		return false;
@@ -19,10 +20,11 @@ export function shouldNotifyAudio({
 		return true;
 	}
 
-	return (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser;
 }
 
 export function notifyAudioUser(userId, message, room) {
+	RocketChat.metrics.notificationsSent.inc({ notification_type: 'audio' }, 1, new Date());
 	RocketChat.Notifications.notifyUser(userId, 'audioNotification', {
 		payload: {
 			_id: message._id,
