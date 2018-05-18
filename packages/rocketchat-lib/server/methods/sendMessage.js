@@ -55,7 +55,7 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('room_is_blocked', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
 		if ((room.muted || []).includes(user.username)) {
@@ -65,7 +65,7 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {
