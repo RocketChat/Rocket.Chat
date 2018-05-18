@@ -13518,5 +13518,53 @@
         "sampaiodiego"
       ]
     }
+  ],
+  "0.64.2-rc.2": [
+    {
+      "pr": "10798",
+      "title": "Prometheus: Add metric to track hooks time",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10802",
+      "title": "Regression: Autorun of wizard was not destroyed after completion",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10803",
+      "title": "Prometheus: Fix notification metric",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10804",
+      "title": "Regression: Fix wrong wizard field name",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10793",
+      "title": "[FIX] Not escaping special chars on mentions",
+      "userLogin": "erhan-",
+      "milestone": "0.64.2",
+      "contributors": [
+        "erhan-",
+        "sampaiodiego"
+      ]
+    }
   ]
 }

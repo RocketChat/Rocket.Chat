@@ -1,8 +1,29 @@
 
 # 0.64.2 (Under Release Candidate Process)
 
+## 0.64.2-rc.2
+`2018-05-17  ·  1 🐛  ·  4 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Not escaping special chars on mentions ([#10793](https://github.com/RocketChat/Rocket.Chat/pull/10793) by [@erhan-](https://github.com/erhan-))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
+- Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
+- Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
+- Regression: Fix wrong wizard field name ([#10804](https://github.com/RocketChat/Rocket.Chat/pull/10804))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@erhan-](https://github.com/erhan-)
+
 ## 0.64.2-rc.1
-`  ·  7 🔍`
+`2018-05-16  ·  7 🔍`
 
 <details>
 <summary>🔍 Minor changes</summary>
