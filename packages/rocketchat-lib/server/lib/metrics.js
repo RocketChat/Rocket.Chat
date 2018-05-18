@@ -31,7 +31,7 @@ RocketChat.metrics.rocketchatHooks = new client.Summary({
 RocketChat.metrics.rocketchatRestApi = new client.Summary({
 	name: 'rocketchat_rest_api',
 	help: 'summary of rocketchat rest api count and time',
-	labelNames: ['method', 'entrypoint', 'status', 'version']
+	labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version']
 });
 
 RocketChat.metrics.meteorSubscriptions = new client.Summary({
