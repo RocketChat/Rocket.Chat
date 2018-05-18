@@ -1026,7 +1026,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Папка для загрузки скриптов",
   "InternalHubot_reload": "Перезагрузить скрипты",
   "InternalHubot_ScriptsToLoad": "Скрипты для загрузки",
-  "InternalHubot_ScriptsToLoad_Description": "Пожалуйста, введите разделенный запятыми список скриптов для загрузки из вашей папки. Скрипты можно скачать здесь: https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Должно быть действительным логином бота, зарегистрированным на сервере.",
   "InternalHubot_EnableForChannels": "Включить для публичных каналов",
   "InternalHubot_EnableForDirectMessages": "Включить для личных сообщений",
