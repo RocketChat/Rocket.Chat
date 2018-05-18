@@ -54,7 +54,7 @@ Template.adminBots.onCreated(function() {
 		groups: ['admin-bots'],
 		id: 'admin-bot-info',
 		i18nTitle: 'Bot_Info',
-		icon: 'bot',
+		icon: 'hubot',
 		template: 'adminBotInfo',
 		order: 2
 	});
@@ -106,7 +106,7 @@ Template.adminBots.events({
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));
-		instance.tabBar.open('admin-user-info');
+		instance.tabBar.open('admin-bot-info');
 	},
 	'click .info-tabs button'(e) {
 		e.preventDefault();
