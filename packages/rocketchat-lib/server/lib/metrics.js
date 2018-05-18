@@ -31,7 +31,7 @@ RocketChat.metrics.rocketchatHooks = new client.Summary({
 RocketChat.metrics.rocketchatRestApi = new client.Summary({
 	name: 'rocketchat_rest_api',
 	help: 'summary of rocketchat rest api count and time',
-	labelNames: ['method', 'entrypoint', 'status', 'version']
+	labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version']
 });
 
 RocketChat.metrics.meteorSubscriptions = new client.Summary({
@@ -41,7 +41,7 @@ RocketChat.metrics.meteorSubscriptions = new client.Summary({
 });
 
 RocketChat.metrics.messagesSent = new client.Counter({'name': 'rocketchat_message_sent', 'help': 'cumulated number of messages sent'});
-RocketChat.metrics.notificationsSent = new client.Counter({'name': 'rocketchat_notification_sent', labelNames: ['type'], 'help': 'cumulated number of notifications sent'});
+RocketChat.metrics.notificationsSent = new client.Counter({'name': 'rocketchat_notification_sent', labelNames: ['notification_type'], 'help': 'cumulated number of notifications sent'});
 
 RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_count', 'help': 'number of open ddp sessions'});
 RocketChat.metrics.ddpAthenticatedSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_auth', 'help': 'number of authenticated open ddp sessions'});
