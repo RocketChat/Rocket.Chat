@@ -1,4 +1,3 @@
-import _ from 'underscore';
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
@@ -20,37 +19,7 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		const getUserPreferences = () => {
-			const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-			const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
-
-			return allDefaultUserSettings.reduce((accumulator, setting) => {
-				const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
-				accumulator[settingWithoutPrefix] = RocketChat.getUserPreference(this.getLoggedInUser(), settingWithoutPrefix);
-				return accumulator;
-			}, {});
-		};
-		const me = _.pick(this.user, [
-			'_id',
-			'name',
-			'emails',
-			'status',
-			'statusConnection',
-			'username',
-			'utcOffset',
-			'active',
-			'language',
-			'roles'
-		]);
-
-		const verifiedEmail = me.emails.find((email) => email.verified);
-
-		me.email = verifiedEmail ? verifiedEmail.address : undefined;
-		me.settings = {
-			preferences: getUserPreferences()
-		};
-
-		return RocketChat.API.v1.success(me);
+		return RocketChat.API.v1.success(this.getUserInfo(RocketChat.models.Users.findOneById(this.userId)));
 	}
 });
 
