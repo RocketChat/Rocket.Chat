@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/helpers/requestParams.js', 'server');
 	api.addFiles('server/helpers/getPaginationItems.js', 'server');
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
+	api.addFiles('server/helpers/getUserInfo.js', 'server');
 	api.addFiles('server/helpers/isUserFromParams.js', 'server');
 	api.addFiles('server/helpers/parseJsonQuery.js', 'server');
 	api.addFiles('server/helpers/deprecationWarning.js', 'server');
