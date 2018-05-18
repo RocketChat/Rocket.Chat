@@ -1077,7 +1077,7 @@
   "IssueLinks_LinkTemplate": "Vorlage für die Ausgabe von Links",
   "IssueLinks_LinkTemplate_Description": "Vorlage für die Ausgabe von Links; % s wird durch die Ausgabenummer ersetzt.",
   "It_works": "Funktioniert!",
-  "Idle_Time_Limit": "Abwesend nach Inaktivität (in ms)",
+  "Idle_Time_Limit": "Abwesend nach Inaktivität",
   "Idle_Time_Limit_Description": "Zeitraum bis sich der Status in away ändert. Der Wert muss in Sekunden angegeben werden.",
   "italics": "kursiv",
   "Jitsi_Chrome_Extension": "Chrome-Erweiterungs-ID",
