@@ -13302,5 +13302,281 @@
         "engelgabriel"
       ]
     }
+  ],
+  "0.64.2-rc.0": [
+    {
+      "pr": "10736",
+      "title": "More improvements on send notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10720",
+      "title": "[FIX] Send a message when muted returns inconsistent result in chat.sendMessage",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10733",
+      "title": "[FIX] Regression: Empty content on announcement modal",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10607",
+      "title": "[NEW] Add REST endpoints `channels.roles` & `groups.roles`",
+      "userLogin": "cardoso",
+      "milestone": "0.64.2",
+      "contributors": [
+        "cardoso",
+        "web-flow",
+        "rafaelks"
+      ]
+    },
+    {
+      "pr": "10724",
+      "title": "[NEW] Add more options for Wordpress OAuth configuration",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10523",
+      "title": "[NEW] Setup Wizard",
+      "userLogin": "karlprieb",
+      "milestone": "0.64.2",
+      "contributors": [
+        "karlprieb",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10691",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10686",
+      "title": "[NEW] Improvements to notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10705",
+      "title": "[FIX] Missing attachment description when Rocket.Chat Apps were enabled",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10445",
+      "title": "[FIX] Improve desktop notification formatting",
+      "userLogin": "Sameesunkaria",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Sameesunkaria",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10524",
+      "title": "Add `npm run postinstall` into example build script",
+      "userLogin": "peccu",
+      "milestone": "0.64.2",
+      "contributors": [
+        "peccu",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10678",
+      "title": "[FIX] Message box emoji icon was flickering when typing a text",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10674",
+      "title": "Correct links in README file",
+      "userLogin": "winterstefan",
+      "milestone": "0.64.2",
+      "contributors": [
+        "winterstefan"
+      ]
+    },
+    {
+      "pr": "10665",
+      "title": "[FIX] Channel owner was being set as muted when creating a read-only channel",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10681",
+      "title": "[FIX] SAML wasn't working correctly when running multiple instances",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow"
+      ]
+    }
+  ],
+  "0.64.2-rc.1": [
+    {
+      "pr": "10789",
+      "title": "Prometheus: Improve metric names",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10788",
+      "title": "Improvement to push notifications on direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10786",
+      "title": "Better metric for notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10779",
+      "title": "Add badge back to push notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10776",
+      "title": "Wizard improvements",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10766",
+      "title": "Add setting and expose prometheus on port 9100",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10760",
+      "title": "Regression: Fix notifications for direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    }
+  ],
+  "0.64.2-rc.2": [
+    {
+      "pr": "10798",
+      "title": "Prometheus: Add metric to track hooks time",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10802",
+      "title": "Regression: Autorun of wizard was not destroyed after completion",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10803",
+      "title": "Prometheus: Fix notification metric",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10804",
+      "title": "Regression: Fix wrong wizard field name",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10793",
+      "title": "[FIX] Not escaping special chars on mentions",
+      "userLogin": "erhan-",
+      "milestone": "0.64.2",
+      "contributors": [
+        "erhan-",
+        "sampaiodiego"
+      ]
+    }
+  ],
+  "0.64.2": [
+    {
+      "pr": "10811",
+      "title": "Prevent setup wizard redirects",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    }
   ]
 }
