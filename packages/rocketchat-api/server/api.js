@@ -135,6 +135,8 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
+		const version = this._config.version;
+
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			if (this.hasHelperMethods()) {
@@ -148,6 +150,7 @@ class API extends Restivus {
 					endpoints[method].action = function _internalRouteActionHandler() {
 						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
 							method,
+							version,
 							entrypoint: route
 						});
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);

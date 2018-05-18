@@ -44,7 +44,7 @@ Template.setupWizard.onCreated(function() {
 		});
 	}
 
-	Tracker.autorun(() => {
+	this.autorun(() => {
 		const user = Meteor.user();
 		if (user) {
 			if (!this.hasAdmin.get()) {
@@ -251,7 +251,7 @@ Template.setupWizard.helpers({
 });
 
 Template.setupWizardFinal.onCreated(function() {
-	Tracker.autorun(() => {
+	this.autorun(() => {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
 
