@@ -151,8 +151,10 @@ class API extends Restivus {
 						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
 							method,
 							version,
+							user_agent: this.request.headers['user-agent'],
 							entrypoint: route
 						});
+
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
