@@ -20,6 +20,16 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
+		const getUserPreferences = () => {
+			const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
+			const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
+
+			return allDefaultUserSettings.reduce((accumulator, setting) => {
+				const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
+				accumulator[settingWithoutPrefix] = RocketChat.getUserPreference(this.getLoggedInUser(), settingWithoutPrefix);
+				return accumulator;
+			}, {});
+		};
 		const me = _.pick(this.user, [
 			'_id',
 			'name',
@@ -30,17 +40,15 @@ RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 			'utcOffset',
 			'active',
 			'language',
-			'roles',
-			'settings'
+			'roles'
 		]);
 
 		const verifiedEmail = me.emails.find((email) => email.verified);
-		const userHasNotSetPreferencesYet = !me.settings || !me.settings.preferences;
 
 		me.email = verifiedEmail ? verifiedEmail.address : undefined;
-		if (userHasNotSetPreferencesYet) {
-			me.settings = { preferences: {} };
-		}
+		me.settings = {
+			preferences: getUserPreferences()
+		};
 
 		return RocketChat.API.v1.success(me);
 	}
@@ -143,5 +151,44 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				</svg>
 			`.trim().replace(/\>[\s]+\</gm, '><')
 		};
+	}
+});
+
+RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+	get() {
+		check(this.queryParams, {
+			query: String
+		});
+
+		const { query } = this.queryParams;
+
+		const result = Meteor.runAsUser(this.userId, () =>
+			Meteor.call('spotlight', query)
+		);
+
+		return RocketChat.API.v1.success(result);
+	}
+});
+
+RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		const { text, type } = query;
+		const sortDirection = sort && sort === 1 ? 'asc' : 'desc';
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
+			text,
+			type,
+			sort: sortDirection,
+			page: offset,
+			limit: count
+		}));
+
+		if (!result) {
+			return RocketChat.API.v1.failure('Please verify the parameters');
+		}
+		return RocketChat.API.v1.success({ result });
 	}
 });

@@ -1,20 +1,31 @@
 RocketChat.Migrations.add({
 	version: 113,
 	up() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+		if (RocketChat && RocketChat.models && RocketChat.models.Uploads && RocketChat.models.Messages) {
+			const fileQuery = {
+				userId: null
+			};
 
-			const newPermission = RocketChat.models.Permissions.findOne('view-livechat-manager');
-			if (newPermission && newPermission.roles.length) {
-				RocketChat.models.Permissions.upsert({ _id: 'remove-closed-livechat-rooms' }, { $set: { roles: newPermission.roles } });
-			}
-		}
-	},
+			const filesToUpdate = RocketChat.models.Uploads.find(fileQuery);
+			filesToUpdate.forEach((file) => {
+				const messageQuery = {
+					'file._id' : file._id
+				};
+				const message = RocketChat.models.Messages.findOne(messageQuery);
+				if (message) {
+					const filter = {
+						_id: file._id
+					};
 
-	down() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+					const update = {
+						$set: {
+							userId: message.u._id
+						}
+					};
 
-			// Revert permission
-			RocketChat.models.Permissions.remove({ _id: 'remove-closed-livechat-rooms' });
+					RocketChat.models.Uploads.model.direct.update(filter, update);
+				}
+			});
 		}
 	}
 });
