@@ -1,7 +1,11 @@
 RocketChat.Migrations.add({
 	version: 108,
 	up() {
-		RocketChat.models.Subscriptions.tryDropIndex('u._id_1_name_1_t_1_code_1');
-		console.log('Fixing ChatSubscription u._id_1_name_1_t_1_code_1');
+		const roles = RocketChat.models.Roles.find({
+			_id: { $ne: 'guest' },
+			scope: 'Users'
+		}).fetch().map((role)=>{ return role._id; });
+		RocketChat.models.Permissions.createOrUpdate('leave-c', roles);
+		RocketChat.models.Permissions.createOrUpdate('leave-d', roles);
 	}
 });
