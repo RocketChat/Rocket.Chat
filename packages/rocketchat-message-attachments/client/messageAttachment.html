@@ -62,7 +62,7 @@
 			{{/unless}}
 
 			{{#if image_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-image">
 					{{#if loadImage}}
 						<figure>
@@ -89,7 +89,7 @@
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{fixCordova audio_url}}" type="{{audio_type}}" data-description="{{description}}">
@@ -100,7 +100,7 @@
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{fixCordova video_url}}" type="{{video_type}}" data-description="{{description}}">
