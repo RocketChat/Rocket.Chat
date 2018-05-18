@@ -13566,5 +13566,17 @@
         "sampaiodiego"
       ]
     }
+  ],
+  "0.64.2": [
+    {
+      "pr": "10811",
+      "title": "Prevent setup wizard redirects",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    }
   ]
 }

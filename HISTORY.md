@@ -1,45 +1,6 @@
 
-# 0.64.2 (Under Release Candidate Process)
-
-## 0.64.2-rc.2
-`2018-05-17  ·  1 🐛  ·  4 🔍  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Not escaping special chars on mentions ([#10793](https://github.com/RocketChat/Rocket.Chat/pull/10793) by [@erhan-](https://github.com/erhan-))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
-- Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
-- Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
-- Regression: Fix wrong wizard field name ([#10804](https://github.com/RocketChat/Rocket.Chat/pull/10804))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@erhan-](https://github.com/erhan-)
-
-## 0.64.2-rc.1
-`2018-05-16  ·  7 🔍`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Prometheus: Improve metric names ([#10789](https://github.com/RocketChat/Rocket.Chat/pull/10789))
-- Improvement to push notifications on direct messages ([#10788](https://github.com/RocketChat/Rocket.Chat/pull/10788))
-- Better metric for notifications ([#10786](https://github.com/RocketChat/Rocket.Chat/pull/10786))
-- Add badge back to push notifications ([#10779](https://github.com/RocketChat/Rocket.Chat/pull/10779))
-- Wizard improvements ([#10776](https://github.com/RocketChat/Rocket.Chat/pull/10776))
-- Add setting and expose prometheus on port 9100 ([#10766](https://github.com/RocketChat/Rocket.Chat/pull/10766))
-- Regression: Fix notifications for direct messages ([#10760](https://github.com/RocketChat/Rocket.Chat/pull/10760))
-
-</details>
-
-## 0.64.2-rc.0
-`2018-05-11  ·  4 🎉  ·  7 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+# 0.64.2
+`2018-05-18  ·  4 🎉  ·  8 🐛  ·  16 🔍  ·  5 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -57,14 +18,27 @@
 - Message box emoji icon was flickering when typing a text ([#10678](https://github.com/RocketChat/Rocket.Chat/pull/10678))
 - Channel owner was being set as muted when creating a read-only channel ([#10665](https://github.com/RocketChat/Rocket.Chat/pull/10665))
 - SAML wasn't working correctly when running multiple instances ([#10681](https://github.com/RocketChat/Rocket.Chat/pull/10681))
+- Not escaping special chars on mentions ([#10793](https://github.com/RocketChat/Rocket.Chat/pull/10793) by [@erhan-](https://github.com/erhan-))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Prevent setup wizard redirects ([#10811](https://github.com/RocketChat/Rocket.Chat/pull/10811))
 - More improvements on send notifications logic ([#10736](https://github.com/RocketChat/Rocket.Chat/pull/10736))
 - LingoHub based on develop ([#10691](https://github.com/RocketChat/Rocket.Chat/pull/10691))
 - Add `npm run postinstall` into example build script ([#10524](https://github.com/RocketChat/Rocket.Chat/pull/10524) by [@peccu](https://github.com/peccu))
 - Correct links in README file ([#10674](https://github.com/RocketChat/Rocket.Chat/pull/10674) by [@winterstefan](https://github.com/winterstefan))
+- Prometheus: Improve metric names ([#10789](https://github.com/RocketChat/Rocket.Chat/pull/10789))
+- Improvement to push notifications on direct messages ([#10788](https://github.com/RocketChat/Rocket.Chat/pull/10788))
+- Better metric for notifications ([#10786](https://github.com/RocketChat/Rocket.Chat/pull/10786))
+- Add badge back to push notifications ([#10779](https://github.com/RocketChat/Rocket.Chat/pull/10779))
+- Wizard improvements ([#10776](https://github.com/RocketChat/Rocket.Chat/pull/10776))
+- Add setting and expose prometheus on port 9100 ([#10766](https://github.com/RocketChat/Rocket.Chat/pull/10766))
+- Regression: Fix notifications for direct messages ([#10760](https://github.com/RocketChat/Rocket.Chat/pull/10760))
+- Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
+- Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
+- Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
+- Regression: Fix wrong wizard field name ([#10804](https://github.com/RocketChat/Rocket.Chat/pull/10804))
 
 </details>
 
@@ -72,6 +46,7 @@
 
 - [@Sameesunkaria](https://github.com/Sameesunkaria)
 - [@cardoso](https://github.com/cardoso)
+- [@erhan-](https://github.com/erhan-)
 - [@peccu](https://github.com/peccu)
 - [@winterstefan](https://github.com/winterstefan)
 
