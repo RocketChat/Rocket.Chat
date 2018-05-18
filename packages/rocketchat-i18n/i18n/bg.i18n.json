@@ -696,8 +696,6 @@
   "Enter_to": "Влезте в",
   "Error": "Грешка",
   "Error_404": "Грешка: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Грешка: Rocket.Chat изисква oplog tailing, когато се изпълнява в няколко случая",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Моля, уверете се, че вашият MongoDB е в режим ReplicaSet и че променливата на средата MONGO_OPLOG_URL е дефинирана правилно на сървъра на приложения",
   "error-action-not-allowed": "__action__ не е разрешено",
   "error-application-not-found": "Приложението не е намерено",
   "error-archived-duplicate-name": "Има архивиран канал с име \"__ room_name__\"",
