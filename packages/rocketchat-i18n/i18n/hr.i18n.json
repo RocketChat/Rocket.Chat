@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Mapa za učitavanje skripti",
   "InternalHubot_reload": "Ponovno učitajte skripte",
   "InternalHubot_ScriptsToLoad": "Skripte za učitavanje",
-  "InternalHubot_ScriptsToLoad_Description": "Unesite zarezom odvojen popis skripti za učitavanje s https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Ovo mora biti valjana korisničko ime bota registriranog na vašem poslužitelju.",
   "InternalHubot_EnableForChannels": "Omogućite za javne kanale",
   "InternalHubot_EnableForDirectMessages": "Omogućite za izravne poruke",
