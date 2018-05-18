@@ -617,4 +617,54 @@ describe('[Users]', function() {
 				.end(done);
 		});
 	});
+
+	describe('[/users.getUsernameSuggestion]', () => {
+		const testUsername = `test${ +new Date() }`;
+		let targetUser;
+		let userCredentials;
+		it('register a new user...', (done) => {
+			request.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
+					name: testUsername,
+					pass: password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		it('Login...', (done) => {
+			request.post(api('login'))
+				.send({
+					user: targetUser.username,
+					password
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('should return an username suggestion', (done) => {
+			request.get(api('users.getUsernameSuggestion'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.be.equal(testUsername);
+				})
+				.end(done);
+		});
+
+	});
 });
