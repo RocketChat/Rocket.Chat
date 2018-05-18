@@ -54,6 +54,12 @@ Template.messageAttachment.helpers({
 	collapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
+		}
+		return false;
+	},
+	mediaCollapsed() {
+		if (this.collapsed != null) {
+			return this.collapsed;
 		} else {
 			const user = Meteor.user();
 			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
