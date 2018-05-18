@@ -231,8 +231,6 @@ const nested = {
 	'> some quote\n`window.location.reload();`': `${ quoteWrapper(' some quote') }${ inlinecodeWrapper('window.location.reload();') }`,
 };
 
-const defaultObjectTest = (result, object, objectKey) => assert.equal(result.html, object[objectKey]);
-
 /*
 * Markdown Filters
 */
@@ -311,8 +309,8 @@ const quoteFiltered = {
 	'&lt;Hello': '&lt;Hello',
 	' &gt;Hello': ' &gt;Hello',
 	'Hello &gt; there': 'Hello &gt; there',
-	'>Hello': '>Hello',
-	'> Hello': '> Hello'
+	'>Hello': 'Hello',
+	'> Hello': ' Hello'
 };
 
 const linkFiltered = {
@@ -342,29 +340,7 @@ const blockcodeFiltered = {
 	'Here```code```lies': 'Herecodelies'
 };
 
-const defaultObjectTest = (result, object, objectKey) => {
-	if (result.html) {
-		return assert.equal(result.html, object[objectKey]);
-	}
-	return assert.equal(result, object[objectKey]);
-};
-
-const testObject = (object, parser, test = defaultObjectTest) => {
-	Object.keys(object).forEach((objectKey) => {
-		describe(objectKey, () => {
-			const result = (parser === original) ? parser({html: objectKey}) : parser(object[objectKey]);
-			if (parser === original) {
-				result.tokens.forEach((token) => {
-					result.html = result.html.replace(token.token, token.text);
-				});
-			}
-
-			it(`should be equal to ${ object[objectKey] }`, () => {
-				test(result, object, objectKey);
-			});
-		});
-	});
-};
+const defaultObjectTest = (result, object, objectKey) => assert.equal(result.html, object[objectKey]);
 
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
