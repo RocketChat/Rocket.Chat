@@ -696,8 +696,6 @@
   "Enter_to": "Eniri al",
   "Error": "Eraro",
   "Error_404": "Eraro: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Eraro: Rocket.Chat postulas oplog-fiksi kiam kurante en multaj petskriboj",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Bonvolu certigi, ke via MongoDB estas en ReplicaSet mode kaj MONGO_OPLOG_URL-medio-variablo estas difinita ĝuste en la servilo de aplikaĵoj",
   "error-action-not-allowed": "__action__ ne estas permesata",
   "error-application-not-found": "Apliko ne trovita",
   "error-archived-duplicate-name": "Estas arkivita kanalo kun nomo '__room_name__'",

@@ -695,8 +695,6 @@
   "Enter_to": "Enter za",
   "Error": "Napaka",
   "Error_404": "Napaka: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Napaka: Rocket.Chat zahteva oplog tailing, ko teče na več primerih",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Poskrbite, da je naš MongoDB v načinu ReplicaSet in da je spremenljivka okolja MONGO_OPLOG_URL pravilno definirana na programskem strežniku",
   "error-action-not-allowed": "_action_ ni dovoljeno",
   "error-application-not-found": "Aplikacija ni bila najdena",
   "error-archived-duplicate-name": "Obstaja arhiviran kanal z imenom '__room_name__'",
