@@ -101,10 +101,23 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 			return RocketChat.API.v1.unauthorized();
 		}
 
+		// allow special handling of particular setting types
+		const setting = RocketChat.models.Settings.findOneNotHiddenById(this.urlParams._id);
+		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
+			//execute the configured method
+			Meteor.call(setting.value);
+			return RocketChat.API.v1.success();
+		}
+
+		if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
+			RocketChat.models.Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
+			RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+			return RocketChat.API.v1.success();
+		}
+
 		check(this.bodyParams, {
 			value: Match.Any
 		});
-
 		if (RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
 			return RocketChat.API.v1.success();
 		}
