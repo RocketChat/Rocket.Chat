@@ -30,7 +30,7 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalChannels = RocketChat.models.Rooms.findByType('c').count();
 	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count();
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
-	statistics.totlalLivechat = RocketChat.models.Rooms.findByType('l').count();
+	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();
