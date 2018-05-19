@@ -159,6 +159,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/createPrivateGroup.js', 'server');
 	api.addFiles('server/methods/deleteMessage.js', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/executeSlashCommandPreview.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/filterATHereTag.js', 'server');
@@ -168,6 +169,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
+	api.addFiles('server/methods/getSlashCommandPreviews.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');

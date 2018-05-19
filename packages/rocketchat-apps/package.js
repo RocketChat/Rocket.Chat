@@ -87,6 +87,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'@rocket.chat/apps-engine': '0.6.4',
+	'@rocket.chat/apps-engine': '0.6.7',
 	'@rocket.chat/apps-ts-definition': '0.9.13'
 });
