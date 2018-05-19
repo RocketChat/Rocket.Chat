@@ -696,8 +696,6 @@
   "Enter_to": "Įeiti į",
   "Error": "Klaida",
   "Error_404": "Klaida: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Klaida: \"Rocket.Chat\" reikalauja \"oplog tailing\" paleidžiant kelis kartus",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Įsitikinkite, kad jūsų MongoDB yra \"ReplicaSet\" režime, o aplinkos kintamasis MONGO_OPLOG_URL yra tinkamai apibrėžtas programų serveryje",
   "error-action-not-allowed": "__action__ neleidžiama",
   "error-application-not-found": "Paraiška nerasta",
   "error-archived-duplicate-name": "Yra archyvuotas kanalas su pavadinimu \"__room_name__\"",
