@@ -172,7 +172,7 @@ class API extends Restivus {
 
 						const lang = this.request.headers['accept-language'];
 						const errorType = result.body.errorType;
-						if(errorType && lang) {
+						if (errorType && lang) {
 							result.body.error = TAPi18n.__(errorType, { }, lang);
 						}
 
