@@ -15,21 +15,24 @@ RocketChat.metrics.meteorMethods = new client.Summary({
 	help: 'summary of meteor methods count and time',
 	labelNames: ['method']
 });
-RocketChat.metrics.meteorMethods.observe(10);
 
 RocketChat.metrics.rocketchatCallbacks = new client.Summary({
 	name: 'rocketchat_callbacks',
 	help: 'summary of rocketchat callbacks count and time',
 	labelNames: ['hook', 'callback']
 });
-RocketChat.metrics.meteorMethods.observe(10);
+
+RocketChat.metrics.rocketchatHooks = new client.Summary({
+	name: 'rocketchat_hooks',
+	help: 'summary of rocketchat hooks count and time',
+	labelNames: ['hook', 'callbacks_length']
+});
 
 RocketChat.metrics.rocketchatRestApi = new client.Summary({
 	name: 'rocketchat_rest_api',
 	help: 'summary of rocketchat rest api count and time',
-	labelNames: ['method', 'entrypoint', 'status', 'version']
+	labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version']
 });
-RocketChat.metrics.meteorMethods.observe(10);
 
 RocketChat.metrics.meteorSubscriptions = new client.Summary({
 	name: 'rocketchat_meteor_subscriptions',
@@ -38,7 +41,7 @@ RocketChat.metrics.meteorSubscriptions = new client.Summary({
 });
 
 RocketChat.metrics.messagesSent = new client.Counter({'name': 'rocketchat_message_sent', 'help': 'cumulated number of messages sent'});
-RocketChat.metrics.notificationsSent = new client.Counter({'name': 'rocketchat_notification_sent', labelNames: ['type'], 'help': 'cumulated number of notifications sent'});
+RocketChat.metrics.notificationsSent = new client.Counter({'name': 'rocketchat_notification_sent', labelNames: ['notification_type'], 'help': 'cumulated number of notifications sent'});
 
 RocketChat.metrics.ddpSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_count', 'help': 'number of open ddp sessions'});
 RocketChat.metrics.ddpAthenticatedSessions = new client.Gauge({'name': 'rocketchat_ddp_sessions_auth', 'help': 'number of authenticated open ddp sessions'});

@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Folder pentru încărcarea scripturilor",
   "InternalHubot_reload": "Reîncarcă scripturile",
   "InternalHubot_ScriptsToLoad": "Script-uri pentru a încărca",
-  "InternalHubot_ScriptsToLoad_Description": "Vă rugăm să introduceți o listă separată prin virgulă de script-uri pentru a încărca de la https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Acest lucru trebuie să fie un nume de utilizator valid al unui bot înregistrat pe server.",
   "InternalHubot_EnableForChannels": "Activați pentru canale publice",
   "InternalHubot_EnableForDirectMessages": "Activați pentru mesaje directe",
