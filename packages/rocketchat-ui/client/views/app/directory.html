@@ -14,7 +14,9 @@
 					</div>
 				</label>
 			</div>
-			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
+			{{#if createChannelOrGroup}}
+				<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
+			{{/if}}
 		</div>
 		{{/header}}
 		<div class="rc-directory-content">
