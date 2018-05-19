@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "ថតដើម្បីផ្ទុកស្គ្រីប",
   "InternalHubot_reload": "ផ្ទុកស្គ្រីបឡើងវិញ",
   "InternalHubot_ScriptsToLoad": "ស្គ្រីបដើម្បីផ្ទុក",
-  "InternalHubot_ScriptsToLoad_Description": "សូមបញ្ចូលបញ្ជីបំបែកដោយសញ្ញាក្បៀសរបស់ស្គ្រីបដើម្បីផ្ទុកពី https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "នេះត្រូវតែជាឈ្មោះអ្នកប្រើត្រឹមត្រូវនៃការ Bot ដែលបានចុះបញ្ជីនៅលើម៉ាស៊ីនបម្រើរបស់អ្នក។",
   "InternalHubot_EnableForChannels": "អនុញ្ញាត​សម្រាប់​ឆា​នែ​ល​ជា​សាធារណៈ",
   "InternalHubot_EnableForDirectMessages": "អនុញ្ញាត​សម្រាប់​សារ​ដោយ​ផ្ទាល់",
