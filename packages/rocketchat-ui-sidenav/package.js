@@ -15,7 +15,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
-		'rocketchat:ui'
+		'rocketchat:ui',
+		'rocketchat:lazy-load'
 	]);
 
 	api.addFiles('client/createCombinedFlex.html', 'client');

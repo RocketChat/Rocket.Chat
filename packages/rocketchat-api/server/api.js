@@ -60,6 +60,10 @@ class API extends Restivus {
 		return RocketChat.API.helperMethods;
 	}
 
+	getHelperMethod(name) {
+		return RocketChat.API.helperMethods.get(name);
+	}
+
 	addAuthMethod(method) {
 		this.authMethods.push(method);
 	}
@@ -135,6 +139,8 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
+		const version = this._config.version;
+
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			if (this.hasHelperMethods()) {
@@ -146,16 +152,29 @@ class API extends Restivus {
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function _internalRouteActionHandler() {
+						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+							method,
+							version,
+							user_agent: this.request.headers['user-agent'],
+							entrypoint: route
+						});
+
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						return result ? result : RocketChat.API.v1.success();
+						result = result || RocketChat.API.v1.success();
+
+						rocketchatRestApiEnd({
+							status: result.statusCode
+						});
+
+						return result;
 					};
 
 					for (const [name, helperMethod] of this.getHelperMethods()) {
@@ -224,6 +243,7 @@ class API extends Restivus {
 		this.addRoute('login', {authRequired: false}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
+				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
@@ -273,7 +293,8 @@ class API extends Restivus {
 					status: 'success',
 					data: {
 						userId: this.userId,
-						authToken: auth.token
+						authToken: auth.token,
+						me: getUserInfo(this.user)
 					}
 				};
 

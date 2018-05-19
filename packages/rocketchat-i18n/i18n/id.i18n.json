@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Folder untuk Load Scripts",
   "InternalHubot_reload": "Muat ulang skrip",
   "InternalHubot_ScriptsToLoad": "Script untuk memuat",
-  "InternalHubot_ScriptsToLoad_Description": "Masukkan daftar dipisahkan koma script untuk memuat dari https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Ini harus menjadi nama pengguna yang valid dari bot terdaftar pada server Anda.",
   "InternalHubot_EnableForChannels": "Aktifkan untuk Saluran Umum",
   "InternalHubot_EnableForDirectMessages": "Aktifkan untuk Pesan Langsung",

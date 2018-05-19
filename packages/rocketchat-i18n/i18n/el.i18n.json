@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Φάκελος για τη φόρτωση των σεναρίων",
   "InternalHubot_reload": "Επαναφόρτωση των σεναρίων",
   "InternalHubot_ScriptsToLoad": "Σενάρια για να φορτώσει",
-  "InternalHubot_ScriptsToLoad_Description": "Παρακαλώ εισάγετε μια λίστα χωρισμένη με κόμμα των σεναρίων για να φορτώσει από https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Αυτό πρέπει να είναι ένα έγκυρο όνομα χρήστη ενός bot καταχωρηθεί στο διακομιστή σας.",
   "InternalHubot_EnableForChannels": "Ενεργοποίηση για δημόσια κανάλια",
   "InternalHubot_EnableForDirectMessages": "Ενεργοποίηση για απευθείας μηνύματα",
