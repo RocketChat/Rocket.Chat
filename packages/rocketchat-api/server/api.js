@@ -38,7 +38,7 @@ class API extends Restivus {
 				if (RocketChat.settings.get('API_Enable_CORS') === true) {
 					this.response.writeHead(200, {
 						'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
-						'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token'
+						'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, Accept-Language'
 					});
 				} else {
 					this.response.writeHead(405);
@@ -169,6 +169,12 @@ class API extends Restivus {
 						}
 
 						result = result || RocketChat.API.v1.success();
+
+						const lang = this.request.headers['accept-language'];
+						const errorType = result.body.errorType;
+						if(errorType && lang) {
+							result.body.error = TAPi18n.__(errorType, { }, lang);
+						}
 
 						rocketchatRestApiEnd({
 							status: result.statusCode
