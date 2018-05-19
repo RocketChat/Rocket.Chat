@@ -115,7 +115,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
-	api.addFiles('server/lib/validatePasswordPolicy.js', 'server');
+	api.addFiles('server/lib/passwordPolicy.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
