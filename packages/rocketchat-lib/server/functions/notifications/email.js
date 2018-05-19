@@ -137,6 +137,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	}
 
 	Meteor.defer(() => {
+		RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
 		Email.send(email);
 	});
 }
@@ -147,7 +148,8 @@ export function shouldNotifyEmail({
 	emailNotifications,
 	isHighlighted,
 	hasMentionToUser,
-	hasMentionToAll
+	hasMentionToAll,
+	roomType
 }) {
 
 	// use connected (don't need to send him an email)
@@ -167,10 +169,10 @@ export function shouldNotifyEmail({
 		}
 
 		// default server preference is disabled
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'disabled') {
+		if (RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode') === 'nothing') {
 			return false;
 		}
 	}
 
-	return isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
+	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
 }

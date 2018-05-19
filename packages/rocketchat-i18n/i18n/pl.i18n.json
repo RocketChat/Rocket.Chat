@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Folder do wczytywania skryptów",
   "InternalHubot_reload": "Załaduj ponownie skrypty",
   "InternalHubot_ScriptsToLoad": "Skrypty do załadowania",
-  "InternalHubot_ScriptsToLoad_Description": "Wpisz oddzielone przecinkami listę skryptów załadować z https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "To musi być prawidłowa nazwa użytkownika z botem zarejestrowany na serwerze.",
   "InternalHubot_EnableForChannels": "Zezwolenie na kanałach publicznych",
   "InternalHubot_EnableForDirectMessages": "Włącz do wiadomości bezpośrednie",

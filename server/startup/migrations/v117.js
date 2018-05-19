@@ -1,14 +1,16 @@
 RocketChat.Migrations.add({
 	version: 117,
 	up() {
-		if (RocketChat &&
-		RocketChat.authz &&
-		RocketChat.authz.getUsersInRole('admin').count() &&
+		if (RocketChat.authz &&
 		RocketChat.models &&
-		RocketChat.models.Settings) {
+		RocketChat.models.Settings &&
+		RocketChat.authz.getUsersInRole('admin').count()) {
 			RocketChat.models.Settings.upsert(
-				{ _id: 'Show_Setup_Wizard' },
-				{ $set: { value: false }}
+				{
+					_id: 'Show_Setup_Wizard'
+				}, {
+					$set: { value: 'completed' }
+				}
 			);
 		}
 	}

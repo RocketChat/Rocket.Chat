@@ -45,8 +45,7 @@ function notifyUsersOnMessage(message, room) {
 		let toHere = false;
 		const mentionIds = [];
 		const highlightsIds = [];
-		const highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
-
+		const highlights = RocketChat.models.Subscriptions.findByRoomWithUserHighlights(room._id, { fields: {'userHighlights': 1, 'u._id': 1 }}).fetch();
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
 				if (!toAll && mention._id === 'all') {
@@ -61,11 +60,10 @@ function notifyUsersOnMessage(message, room) {
 			});
 		}
 
-		highlights.forEach(function(user) {
-			const userHighlights = RocketChat.getUserPreference(user, 'highlights');
-			if (userHighlights && messageContainsHighlight(message, userHighlights)) {
-				if (user._id !== message.u._id) {
-					highlightsIds.push(user._id);
+		highlights.forEach(function(subscription) {
+			if (subscription.userHighlights && messageContainsHighlight(message, subscription.userHighlights)) {
+				if (subscription.u._id !== message.u._id) {
+					highlightsIds.push(subscription.u._id);
 				}
 			}
 		});
@@ -103,8 +101,8 @@ function notifyUsersOnMessage(message, room) {
 	}
 
 	// Update all the room activity tracker fields
+	// This method take so long to execute on gient rooms cuz it will trugger the cache rebuild for the releations of that room
 	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
-
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
