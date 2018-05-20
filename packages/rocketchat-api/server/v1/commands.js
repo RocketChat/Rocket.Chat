@@ -104,7 +104,7 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 		}
 
 		const cmd = query.command.toLowerCase();
-		if (!RocketChat.slashCommands.commands[query.command.toLowerCase()]) {
+		if (!RocketChat.slashCommands.commands[cmd]) {
 			return RocketChat.API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
@@ -146,7 +146,7 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 		}
 
 		const cmd = body.command.toLowerCase();
-		if (!RocketChat.slashCommands.commands[body.command.toLowerCase()]) {
+		if (!RocketChat.slashCommands.commands[cmd]) {
 			return RocketChat.API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
