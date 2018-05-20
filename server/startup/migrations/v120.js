@@ -2,7 +2,7 @@ RocketChat.Migrations.add({
 	version: 120,
 	up() {
 		RocketChat.models.Users.update({
-			'settings.settings.preferences.roomsListExhibitionMode': 'activity'
+			'settings.preferences.roomsListExhibitionMode': 'activity'
 		}, {
 			$unset: {
 				'settings.preferences.roomsListExhibitionMode': 1
