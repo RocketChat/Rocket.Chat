@@ -99,7 +99,8 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			name: file.filename,
 			size: file.fileBuffer.length,
 			type: file.mimetype,
-			rid: this.urlParams.rid
+			rid: this.urlParams.rid,
+			userId: this.userId
 		};
 
 		Meteor.runAsUser(this.userId, () => {
@@ -150,6 +151,34 @@ RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
 		const room = findRoomByIdOrName({ params: this.bodyParams });
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', room._id, favorite));
+
+		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
+	post() {
+		const findResult = findRoomByIdOrName({ params: this.bodyParams });
+
+		if (!this.bodyParams.latest) {
+			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
+		}
+
+		if (!this.bodyParams.oldest) {
+			return RocketChat.API.v1.failure('Body parameter "oldest" is required.');
+		}
+
+		const latest = new Date(this.bodyParams.latest);
+		const oldest = new Date(this.bodyParams.oldest);
+
+		let inclusive = false;
+		if (typeof this.bodyParams.inclusive !== 'undefined') {
+			inclusive = this.bodyParams.inclusive;
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('cleanRoomHistory', { roomId: findResult._id, latest, oldest, inclusive });
+		});
 
 		return RocketChat.API.v1.success();
 	}
