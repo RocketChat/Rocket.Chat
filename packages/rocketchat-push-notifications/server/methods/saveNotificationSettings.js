@@ -12,13 +12,40 @@ Meteor.methods({
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, value)
 			},
 			'desktopNotifications': {
-				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, value)
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'desktop');
+						RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				}
 			},
 			'mobilePushNotifications': {
-				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, value)
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'mobile');
+						RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				}
 			},
 			'emailNotifications': {
-				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, value)
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'email');
+						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						// Keep compatibility with old values
+						if (value === 'all') {
+							value = 'mentions';
+						} else if (value === 'disabled') {
+							value = 'nothing';
+						}
+						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				}
 			},
 			'unreadAlert': {
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateUnreadAlertById(subscription._id, value)
@@ -28,6 +55,9 @@ Meteor.methods({
 			},
 			'hideUnreadStatus': {
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1')
+			},
+			'muteGroupMentions': {
+				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateMuteGroupMentions(subscription._id, value === '1')
 			},
 			'desktopNotificationDuration': {
 				updateMethod: (subscription, value) => RocketChat.models.Subscriptions.updateDesktopNotificationDurationById(subscription._id, value)
