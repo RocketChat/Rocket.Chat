@@ -370,7 +370,7 @@ describe('[Api Settings Change]', () => {
 		after(() => {
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.avatar.waitForVisible(5000, true);
+			sideNav.sidebarUserMenu.waitForVisible(5000);
 			// sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
 		});
