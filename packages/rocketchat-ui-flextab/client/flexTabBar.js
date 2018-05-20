@@ -55,7 +55,7 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
+		return RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data && this.data.rid));
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
@@ -160,7 +160,7 @@ Template.RoomsActionTab.events({
 	'click .js-more'(e, instance) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, instance.anonymous, instance.data.rid));
+		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, instance.anonymous, instance.data && instance.data.rid));
 		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
 			item.name = TAPi18n.__(item.i18nTitle);
 			item.action = action;
@@ -209,7 +209,7 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
+		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data && this.data.rid));
 		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
 	},
 
@@ -218,7 +218,7 @@ Template.RoomsActionTab.helpers({
 			return true;
 		}
 		const buttons = RocketChat.TabBar.getButtons().filter(button =>
-			filterButtons(button, this.anonymous, this.data.rid)
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
 		);
 		return buttons.length > 5;
 	}
