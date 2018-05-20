@@ -2,11 +2,11 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import PasswordPoliceClass from '../server/lib/PasswordPolicyClass';
+import PasswordPolicyClass from '../server/lib/PasswordPolicyClass';
 
-describe('PasswordPoliceClass', () => {
+describe('PasswordPolicyClass', () => {
 	describe('Default options', () => {
-		const passwordPolice = new PasswordPoliceClass();
+		const passwordPolice = new PasswordPolicyClass();
 		it('should be disabled', () => {
 			assert.equal(passwordPolice.enabled, false);
 		});
@@ -37,7 +37,7 @@ describe('PasswordPoliceClass', () => {
 
 		describe('Password tests with default options', () => {
 			it('should allow all passwords', () => {
-				const passwordPolice = new PasswordPoliceClass();
+				const passwordPolice = new PasswordPolicyClass();
 				assert.equal(passwordPolice.validate(), true);
 				assert.equal(passwordPolice.validate(''), true);
 				assert.equal(passwordPolice.validate('a'), true);
@@ -49,7 +49,7 @@ describe('PasswordPoliceClass', () => {
 
 	describe('Password tests with options', () => {
 		it('should not allow non string or empty', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				throwError: false
 			});
@@ -63,7 +63,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should restrict by minLength', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				minLength: 5,
 				throwError: false
@@ -76,7 +76,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should restrict by maxLength', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				maxLength: 5,
 				throwError: false
@@ -89,7 +89,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should allow repeated characters', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				forbidRepeatingCharacters: false,
 				throwError: false
@@ -103,7 +103,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should restrict repeated characters', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				forbidRepeatingCharacters: true,
 				forbidRepeatingCharactersCount: 3,
@@ -119,7 +119,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should restrict repeated characters customized', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				forbidRepeatingCharacters: true,
 				forbidRepeatingCharactersCount: 5,
@@ -137,7 +137,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should contain one lowercase', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				mustContainAtLeastOneLowercase: true,
 				throwError: false
@@ -153,7 +153,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should contain one uppercase', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				mustContainAtLeastOneUppercase: true,
 				throwError: false
@@ -169,7 +169,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should contain one uppercase', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				mustContainAtLeastOneNumber: true,
 				throwError: false
@@ -186,7 +186,7 @@ describe('PasswordPoliceClass', () => {
 		});
 
 		it('should contain one uppercase', () => {
-			const passwordPolice = new PasswordPoliceClass({
+			const passwordPolice = new PasswordPolicyClass({
 				enabled: true,
 				mustContainAtLeastOneSpecialCharacter: true,
 				throwError: false
