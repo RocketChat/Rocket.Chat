@@ -50,9 +50,9 @@ class SideNav extends Page {
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		browser.waitForVisible(`.sidebar-item__ellipsis=${ channelName }`, 5000);
+		browser.waitForVisible(`.sidebar-item__link[title=${ channelName }]`, 5000);
 		browser.pause(100);
-		browser.click(`.sidebar-item__ellipsis=${ channelName }`);
+		browser.click(`.sidebar-item__link[title=${ channelName }]`);
 		browser.waitForVisible('.rc-message-box__container textarea', 5000);
 		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
