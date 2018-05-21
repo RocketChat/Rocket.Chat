@@ -139,6 +139,9 @@ describe('miscellaneous', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('createdAt');
 					expect(res.body.result[0]).to.have.property('username');
@@ -160,6 +163,9 @@ describe('miscellaneous', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('name');
