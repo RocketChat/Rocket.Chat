@@ -140,7 +140,7 @@ jobs:
 
     environment:
       TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_URL: mongodb://localhost:27017/empty
       MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
     steps:
@@ -171,7 +171,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
@@ -184,13 +184,21 @@ jobs:
 
     environment:
       TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_URL: mongodb://localhost:27017/empty
 
     steps:
       - attach_workspace:
           at: /tmp
 
       - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org-shell
 
       - run:
           name: NPM install
@@ -200,7 +208,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
