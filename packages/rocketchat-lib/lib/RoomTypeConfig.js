@@ -7,7 +7,8 @@ export const RoomSettingsEnum = {
 	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
-	BROADCAST: 'broadcast'
+	BROADCAST: 'broadcast',
+	SYSTEM_MESSAGES: 'systemMessages'
 };
 
 export const UiTextContext = {

@@ -1,3 +1,5 @@
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 /* globals menu*/
 
 Template.sideNav.helpers({
@@ -51,6 +53,7 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
+		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -62,7 +65,7 @@ Template.sideNav.events({
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-
+	lazyloadtick();
 	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
 	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
 	if (room !== undefined && room._id !== '') {
