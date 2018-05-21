@@ -90,6 +90,7 @@ class MainContent extends Page {
 	// Clear and sets the text to the input
 	setTextToInput(text) {
 		this.messageInput.waitForVisible(5000);
+		browser.pause(200);
 		this.messageInput.clearElement();
 		this.messageInput.addValue(text);
 	}

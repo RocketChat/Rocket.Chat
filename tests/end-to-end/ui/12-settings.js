@@ -368,11 +368,12 @@ describe('[Api Settings Change]', () => {
 		});
 
 		after(() => {
+			browser.pause(500);
 			sideNav.preferencesClose.waitForVisible(5000);
 			sideNav.preferencesClose.click();
-			sideNav.sidebarUserMenu.waitForVisible(5000);
+			sideNav.preferencesClose.waitForVisible(5000, true);
 			// sideNav.spotlightSearch.waitForVisible(10000);
-			sideNav.searchChannel('general');
+			// sideNav.searchChannel('general');
 		});
 		describe('block profile change', () => {
 			it('it should change the allow user profile change via api', (done) => {

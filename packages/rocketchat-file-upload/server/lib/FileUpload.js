@@ -92,6 +92,11 @@ Object.assign(FileUpload, {
 		// Get metadata to resize the image the first time to keep "inside" the dimensions
 		// then resize again to create the canvas around
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			if (err) {
+				console.error('[avatarsOnValidate] Error getting metadata of avatar file', {file, tempFilePath, err});
+				return future.return();
+			}
+
 			s.toFormat(sharp.format.jpeg)
 				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
 				.pipe(sharp()
