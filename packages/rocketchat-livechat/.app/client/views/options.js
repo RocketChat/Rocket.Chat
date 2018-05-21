@@ -1,4 +1,5 @@
-/* globals Department, Livechat, swal */
+/* globals Department, Livechat */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 Template.options.helpers({

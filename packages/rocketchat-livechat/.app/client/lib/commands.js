@@ -1,4 +1,5 @@
-/* globals LivechatVideoCall, Livechat, swal */
+/* globals LivechatVideoCall, Livechat */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 // Functions to call on messages of type 'command'

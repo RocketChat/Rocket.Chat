@@ -26,6 +26,7 @@
     "core-js": "^2.5.5",
     "jquery": "^3.3.1",
     "moment": "^2.22.1",
+    "sweetalert2": "^7.20.7",
     "toastr": "^2.1.4",
     "underscore": "^1.9.0",
     "underscore.string": "^3.3.4"
