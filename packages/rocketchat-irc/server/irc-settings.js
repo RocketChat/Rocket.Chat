@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('IRC', function() {
+	RocketChat.settings.addGroup('IRC Federation', function() {
 		this.add('IRC_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
@@ -52,6 +52,12 @@ Meteor.startup(function() {
 			type: 'string',
 			i18nLabel: 'Peer_Password',
 			i18nDescription: 'IRC_Peer_Password'
+		});
+
+		this.add('IRC_Reset_Connection', 'resetIrcConnection', {
+			type: 'action',
+			actionText: 'Reset_Connection',
+			i18nLabel: 'Reset_Connection'
 		});
 	});
 });

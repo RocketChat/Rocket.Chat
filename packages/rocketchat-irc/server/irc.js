@@ -16,9 +16,9 @@ if (!!RocketChat.settings.get('IRC_Enabled') === true) {
 		}
 	};
 
-	const bridge = new Bridge(config);
+	Meteor.ircBridge = new Bridge(config);
 
 	Meteor.startup(() => {
-		bridge.init();
+		Meteor.ircBridge.init();
 	});
 }

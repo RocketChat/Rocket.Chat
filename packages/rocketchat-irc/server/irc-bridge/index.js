@@ -25,6 +25,7 @@ class Bridge {
 	}
 
 	init() {
+		this.loggedInUsers = [];
 		this.server.register();
 
 		this.server.on('registered', () => {
@@ -32,6 +33,10 @@ class Bridge {
 
 			this.runQueue();
 		});
+	}
+
+	stop() {
+		this.server.disconnect();
 	}
 
 	/**

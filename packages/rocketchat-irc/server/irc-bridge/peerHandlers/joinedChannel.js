@@ -10,6 +10,7 @@ export default function handleJoinedChannel(args) {
 	let room = RocketChat.models.Rooms.findOneByName(args.roomName);
 
 	if (!room) {
+		console.log(args);
 		const createdRoom = RocketChat.createRoom('c', args.roomName, user.username, [ /* usernames of the participants here */]);
 		room = RocketChat.models.Rooms.findOne({ _id: createdRoom.rid });
 

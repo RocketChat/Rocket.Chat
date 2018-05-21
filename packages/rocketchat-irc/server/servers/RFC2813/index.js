@@ -21,6 +21,12 @@ class RFC2813 {
 		// Hold the buffer while receiving
 		this.receiveBuffer = new Buffer('');
 
+	}
+
+	/**
+	 * Setup socket
+	 */
+	setupSocket() {
 		// Setup socket
 		this.socket = new net.Socket();
 		this.socket.setNoDelay();
@@ -29,13 +35,11 @@ class RFC2813 {
 		this.socket.setTimeout(90000);
 
 		this.socket.on('data', this.onReceiveFromPeer.bind(this));
-		// this.socket.on('close', this.onClose)
-		// this.socket.on('timeout', this.onTimeout)
-		// this.socket.on('error', this.onError)
 
 		this.socket.on('connect', this.onConnect.bind(this));
 		this.socket.on('error', (err) => console.log('[irc][server][err]', err));
-
+		this.socket.on('timeout', () => this.log('Timeout'));
+		this.socket.on('close', () => this.log('Connection Closed'));
 		// Setup local
 		this.on('onReceiveFromLocal', this.onReceiveFromLocal.bind(this));
 	}
@@ -53,7 +57,25 @@ class RFC2813 {
 	register() {
 		this.log(`Connecting to @${ this.config.server.host }:${ this.config.server.port }`);
 
+		if (!this.socket) {
+			this.setupSocket();
+		}
+
 		this.socket.connect(this.config.server.port, this.config.server.host);
+	}
+
+	/**
+	 * Disconnect
+	 */
+	disconnect() {
+		this.log('Disconnecting from server.');
+
+		if (this.socket) {
+			this.socket.destroy();
+			this.socket = undefined;
+		}
+		this.isRegistered = false;
+		this.registerSteps = [];
 	}
 
 	/**

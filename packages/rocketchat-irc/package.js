@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.addFiles('server/irc.js', 'server');
+	api.addFiles('server/methods/resetIrcConnection.js', 'server');
 	api.addFiles('server/irc-settings.js', 'server');
 });
 
