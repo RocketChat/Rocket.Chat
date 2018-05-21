@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Dosja për të ngarkuar skriptet",
   "InternalHubot_reload": "Rifresko skriptet",
   "InternalHubot_ScriptsToLoad": "Scripts për të ngarkuar",
-  "InternalHubot_ScriptsToLoad_Description": "Ju lutem shkruani një presje të ndara listë të Scripts për të ngarkuar nga https://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "Kjo duhet të jetë një emër përdoruesi i vlefshëm i një bot të regjistruar në serverin tuaj.",
   "InternalHubot_EnableForChannels": "Aktivizo për kanalet publike",
   "InternalHubot_EnableForDirectMessages": "Aktivizo për Mesazhet e Drejtpërdrejta",

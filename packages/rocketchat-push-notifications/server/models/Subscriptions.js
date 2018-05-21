@@ -221,16 +221,7 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 };
 
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function({ roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }) {
-	const query = {
-		rid,
-		'u._id': {$exists: true},
-		$or: [
-			{ desktopNotifications },
-			{ mobilePushNotifications },
-			{ emailNotifications }
-		]
-	};
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(query/*{ roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
 
 	return this._db.find(query, {
 		fields: {
@@ -242,7 +233,8 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function({ r
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
 			disableNotifications: 1,
-			muteGroupMentions: 1
+			muteGroupMentions: 1,
+			userHighlights: 1
 		}
 	});
 };
