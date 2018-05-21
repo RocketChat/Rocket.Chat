@@ -43,11 +43,9 @@ function startProcess(opts, callback) {
 		proc.stderr.pipe(logStream);
 	}
 
-	proc.on('close', function(code) {
+	proc.on('exit', function(code) {
 		console.log(opts.name, `exited with code ${ code }`);
-		for (let i = 0; i < processes.length; i += 1) {
-			processes[i].kill();
-		}
+		processes.forEach(p => p.kill('SIGKILL'));
 		process.exit(code);
 	});
 	processes.push(proc);
