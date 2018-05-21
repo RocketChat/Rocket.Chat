@@ -179,7 +179,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {Element} input DOM element
 		* * @param {function?} done callback
 		*/
-	send(rid, input, done = function() {}) {
+	async send(rid, input, done = function() {}) {
 		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
@@ -190,7 +190,7 @@ this.ChatMessages = class ChatMessages {
 			const mentionUser = $(input).data('mention-user') || false;
 
 			if (reply !== undefined) {
-				const url = RocketChat.MessageAction.getPermaLink(reply._id);
+				const url = await RocketChat.MessageAction.getPermaLink(reply._id);
 				msg = `[ ](${ url }) `;
 				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
 				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
