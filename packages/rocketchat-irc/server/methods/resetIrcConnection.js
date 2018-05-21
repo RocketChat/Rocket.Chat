@@ -5,7 +5,10 @@ Meteor.methods({
 		if (!!RocketChat.settings.get('IRC_Enabled') === true) {
 			if (Meteor.ircBridge) {
 				Meteor.ircBridge.init();
-				return true;
+				return {
+					message: 'Connection_Reset',
+					params: []
+				};
 			}
 
 			// Normalize the config values
@@ -25,12 +28,19 @@ Meteor.methods({
 
 			Meteor.ircBridge = new Bridge(config);
 			Meteor.ircBridge.init();
-			return true;
+
+			return {
+				message: 'Connection_Reset',
+				params: []
+			};
 		} else if (Meteor.ircBridge) {
 			Meteor.ircBridge.stop();
-			return true;
+			return {
+				message: 'Connection_Closed',
+				params: []
+			};
 		}
 
-		return false;
+		throw new Meteor.Error(t('IRC_Federation_Disabled'));
 	}
 });
