@@ -171,7 +171,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 3; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
@@ -208,7 +208,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo --eval "db.dropDatabase()" empty && npm test && s=0 && break || s=$? && sleep 3; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
