@@ -47,7 +47,7 @@ Template.adminBots.onCreated(function() {
 		id: 'add-bot',
 		i18nTitle: 'Add_Bot',
 		icon: 'plus',
-		template: 'adminBotEdit',
+		template: 'adminBotCreate',
 		order: 1
 	});
 	RocketChat.TabBar.addButton({

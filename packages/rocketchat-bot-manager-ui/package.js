@@ -25,6 +25,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/adminBots.js', 'client');
 	api.addFiles('client/views/adminBotInfo.html', 'client');
 	api.addFiles('client/views/adminBotInfo.js', 'client');
+	api.addFiles('client/views/adminBotCreate.html', 'client');
+	api.addFiles('client/views/adminBotCreate.js', 'client');
 
 
 	api.addFiles('server/startup.js', 'server');
