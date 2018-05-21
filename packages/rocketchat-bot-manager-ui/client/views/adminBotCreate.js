@@ -75,7 +75,7 @@ Template.adminBotCreate.onCreated(function() {
 
 	const { tabBar } = Template.currentData();
 
-	this.cancel = (form, username) => {
+	this.cancel = (form) => {
 		form.reset();
 		this.$('input[type=checkbox]').prop('checked', true);
 		tabBar.close();
@@ -126,7 +126,7 @@ Template.adminBotCreate.onCreated(function() {
 		}
 		const botData = this.getBotData();
 
-		Meteor.call('insertOrUpdateUser', botData, (error) => {
+		Meteor.call('insertOrUpdateBot', botData, (error) => {
 			if (error) {
 				console.log(error);
 				return handleError(error);
