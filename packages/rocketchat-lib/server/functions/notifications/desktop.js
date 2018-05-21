@@ -30,7 +30,7 @@ export function notifyDesktopUser({
 		return;
 	}
 
-	RocketChat.metrics.desktopNotificationsSent.inc();
+	RocketChat.metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	RocketChat.Notifications.notifyUser(userId, 'notification', {
 		title,
 		text,

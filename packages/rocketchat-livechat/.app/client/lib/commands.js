@@ -17,7 +17,7 @@ this.Commands = {
 		if (Livechat.transcript) {
 			const visitorData = visitor.getData();
 			const email = visitorData && visitorData.visitorEmails && visitorData.visitorEmails.length > 0 ? visitorData.visitorEmails[0].address : '';
-			const transcriptMessage = (!_.isEmpty(Livechat.transcriptMessage)) ? Livechat.transcriptMessage : (TAPi18n.__('Would_you_like_a_copy_if_this_chat_emailed'));
+			const transcriptMessage = (Livechat.transcriptMessage) ? Livechat.transcriptMessage : (TAPi18n.__('Would_you_like_a_copy_if_this_chat_emailed'));
 
 			swal({
 				title: t('Chat_ended'),

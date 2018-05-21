@@ -30,7 +30,12 @@ function canSendMessageToRoom(room, username) {
 	return !((room.muted || []).includes(username));
 }
 
-export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, notificationMessage }) {
+export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+	let username = '';
+	if (RocketChat.settings.get('Push_show_username_room')) {
+		username = RocketChat.settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
+	}
+
 	RocketChat.PushNotification.send({
 		roomId: message.rid,
 		payload: {
@@ -40,8 +45,8 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			type: room.t,
 			name: room.name
 		},
-		roomName: RocketChat.settings.get('Push_show_username_room') ? `${ room.t === 'd' ? '' : '#' }${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
-		username: RocketChat.settings.get('Push_show_username_room') ? senderUsername : '',
+		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
+		username,
 		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
 		usersTo: {
