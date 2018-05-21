@@ -47,6 +47,7 @@ class PushNotification {
 			};
 		}
 
+		RocketChat.metrics.mobileNotificationsSent.inc();
 		return Push.send(config);
 	}
 }
