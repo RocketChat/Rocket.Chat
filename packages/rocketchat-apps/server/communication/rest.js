@@ -73,7 +73,13 @@ export class AppsRestApi {
 
 				const aff = Promise.await(manager.add(buff.toString('base64'), false));
 				const info = aff.getAppInfo();
-				info.status = aff.getApp().getStatus();
+
+				// If there are compiler errors, there won't be an App to get the status of
+				if (aff.getApp()) {
+					info.status = aff.getApp().getStatus();
+				} else {
+					info.status = 'compiler_error';
+				}
 
 				return RocketChat.API.v1.success({
 					app: info,
@@ -134,7 +140,13 @@ export class AppsRestApi {
 
 				const aff = Promise.await(manager.update(buff.toString('base64')));
 				const info = aff.getAppInfo();
-				info.status = aff.getApp().getStatus();
+
+				// Should the updated version have compiler errors, no App will be returned
+				if (aff.getApp()) {
+					info.status = aff.getApp().getStatus();
+				} else {
+					info.status = 'compiler_error';
+				}
 
 				return RocketChat.API.v1.success({
 					app: info,
