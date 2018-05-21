@@ -48,4 +48,16 @@ export class AppRealLogsStorage extends AppLogStorage {
 			resolve(docs);
 		});
 	}
+
+	removeEntriesFor(appId) {
+		return new Promise((resolve, reject) => {
+			try {
+				this.db.remove({ appId });
+			} catch (e) {
+				return reject(e);
+			}
+
+			resolve();
+		});
+	}
 }
