@@ -78,19 +78,25 @@
 												{{/if}}
 
 												{{#if $eq type 'select'}}
-													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
-														{{#each values}}
-															<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
-														{{/each}}
-													</select>
+													<div class="rc-select">
+														<select class="input-monitor rc-select__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
+															{{#each values}}
+																<option value="{{key}}" selected="{{selectedOption ../_id key}}">{{_ i18nLabel}}</option>
+															{{/each}}
+														</select>
+														{{> icon block="rc-select__arrow" icon="arrow-down" }}
+													</div>
 												{{/if}}
 
 												{{#if $eq type 'language'}}
-													<select class="input-monitor rc-input__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
-														{{#each languages}}
-														<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
-														{{/each}}
-													</select>
+													<div class="rc-select">
+														<select class="input-monitor rc-select__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
+															{{#each languages}}
+															<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
+															{{/each}}
+														</select>
+														{{> icon block="rc-select__arrow" icon="arrow-down" }}
+													</div>
 												{{/if}}
 
 												{{#if $eq type 'color'}}

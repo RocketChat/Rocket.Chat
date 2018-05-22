@@ -20,7 +20,7 @@ Template.appManage.onCreated(function() {
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
 			settings[k].i18nPlaceholder = settings[k].i18nPlaceholder || ' ';
-			settings[k].value = settings[k].value !== undefined ? settings[k].value : settings[k].packageValue;
+			settings[k].value = settings[k].value !== undefined && settings[k].value !== null ? settings[k].value : settings[k].packageValue;
 			settings[k].oldValue = settings[k].value;
 			settings[k].hasChanged = false;
 		});
@@ -208,7 +208,11 @@ Template.appManage.events({
 		}
 	},
 
-	'click .logs': (e, t) => {
+	'click .js-update': (e, t) => {
+		FlowRouter.go(`/admin/app/install?isUpdatingId=${ t.id.get() }`);
+	},
+
+	'click .js-view-logs': (e, t) => {
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
 	},
 
@@ -291,11 +295,14 @@ Template.appManage.events({
 		}
 
 		const setting = t.settings.get()[this.id];
-		setting.value = value;
 
-		if (setting.oldValue !== setting.value) {
-			t.settings.get()[this.id].hasChanged = true;
-			t.settings.set(t.settings.get());
+		if (setting) {
+			setting.value = value;
+
+			if (setting.oldValue !== setting.value) {
+				t.settings.get()[this.id].hasChanged = true;
+				t.settings.set(t.settings.get());
+			}
 		}
 	}, 500)
 });

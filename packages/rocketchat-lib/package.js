@@ -68,6 +68,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
 
+	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
@@ -112,9 +113,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/notifyUsersOnMessage.js', 'server');
 	api.addFiles('server/lib/processDirectEmail.js', 'server');
 	api.addFiles('server/lib/roomTypes.js', 'server');
-	api.addFiles('server/lib/sendEmailOnMessage.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
+	api.addFiles('server/lib/passwordPolicy.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
@@ -126,6 +127,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Subscriptions.js', 'server');
 	api.addFiles('server/models/Uploads.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
+	api.addFiles('server/models/ExportOperations.js', 'server');
+	api.addFiles('server/models/UserDataFiles.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
@@ -151,11 +154,13 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
 	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
+	api.addFiles('server/methods/cleanRoomHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
 	api.addFiles('server/methods/createPrivateGroup.js', 'server');
 	api.addFiles('server/methods/deleteMessage.js', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/executeSlashCommandPreview.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/filterATHereTag.js', 'server');
@@ -165,6 +170,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
+	api.addFiles('server/methods/getSlashCommandPreviews.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');

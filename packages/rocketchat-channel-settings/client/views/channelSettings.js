@@ -119,7 +119,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'markdown',
 			label: 'Announcement',
 			getValue() {
-				return Template.instance().room.announcement && Template.instance().room.announcement.message;
+				return Template.instance().room.announcement;
 			},
 			canView() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
@@ -225,7 +225,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-readonly', room._id);
+				return !room.broadcast && RocketChat.authz.hasAllPermission('set-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(TAPi18n.__('Read_only_changed_successfully')));
@@ -237,15 +237,42 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY) && room.ro;
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
+				return !room.broadcast && RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'reactWhenReadOnly', value).then(() => {
 					toastr.success(TAPi18n.__('React_when_read_only_changed_successfully'));
 				});
+			}
+		},
+		sysMes: {
+			type: 'boolean',
+			label: 'System_messages',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(
+					room,
+					RoomSettingsEnum.SYSTEM_MESSAGES
+				);
+			},
+			getValue() {
+				return room.sysMes !== false;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('System_messages_setting_changed_successfully')
+						);
+					}
+				);
 			}
 		},
 		archived: {
@@ -287,6 +314,21 @@ Template.channelSettingsEditing.onCreated(function() {
 						return reject();
 					});
 				});
+			}
+		},
+		broadcast: {
+			type: 'boolean',
+			label: 'Broadcast_channel',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.BROADCAST);
+			},
+			canEdit() {
+				return false;
+			},
+			save() {
+				return Promise.resolve();
 			}
 		},
 		joinCode: {
@@ -452,8 +494,11 @@ Template.channelSettingsInfo.helpers({
 	description() {
 		return Template.instance().room.description;
 	},
+	broadcast() {
+		return Template.instance().room.broadcast;
+	},
 	announcement() {
-		return Template.instance().room.announcement ? Template.instance().room.announcement.message : '';
+		return Template.instance().room.announcement;
 	},
 	topic() {
 		return Template.instance().room.topic;
