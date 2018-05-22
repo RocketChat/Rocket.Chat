@@ -7,3 +7,14 @@ FlowRouter.route('/admin/bots', {
 		});
 	}
 });
+
+FlowRouter.route('/admin/bots/:username', {
+	name: 'admin-bots-username',
+	action(params) {
+		return BlazeLayout.render('main', {
+			center: 'adminBotDetails',
+			pageTitle: t('Bots_details'),
+			params
+		});
+	}
+});

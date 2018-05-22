@@ -78,7 +78,11 @@ Template.adminBotInfo.helpers({
 Template.adminBotInfo.events({
 	'click .js-more-details'(e) {
 		e.preventDefault();
-		FlowRouter.go('/home');
+		const bot = Template.instance().bot.get();
+		if (!bot || !bot._id) {
+			return;
+		}
+		FlowRouter.go(`/admin/bots/${ bot.username }`);
 	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();

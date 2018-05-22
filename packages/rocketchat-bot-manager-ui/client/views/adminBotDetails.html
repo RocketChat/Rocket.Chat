@@ -1,0 +1,87 @@
+<template name="adminBotDetails">
+	<section class="page-container page-home page-static page-settings">
+		{{#header sectionName=pageTitle buttons=true}}
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--primary save" disabled="{{not hasTypeSelected}}"><span>{{_ "Save_changes"}}</span></button>
+			</div>
+		{{/header}}
+
+		<div class="content background-transparent-dark">
+			<a href="{{pathFor "admin-bots"}}"><i class="icon-angle-left"></i> {{_ "Back_to_bots"}}</a><br><br>
+			{{#unless hasPermission}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+			{{else}}
+				<div class="rocket-form">
+					<div class="section">
+						<div class="section-title">
+							<div class="section-title-text">{{_ "Bot_details"}}</div>
+							<div class="section-title-right">
+								<button class="button primary collapse"><span>{{_ "Collapse"}}</span></button>
+							</div>
+						</div>
+						<div class="section-content">
+              <div class="input-line double-col">
+                <label>{{_ "Enabled"}}</label>
+                <div>
+                  <label><input type="radio" name="enabled" value="1" checked="{{$eq bot.enabled true}}" /> {{_ "True"}}</label>
+                  <label><input type="radio" name="enabled" value="0" checked="{{$neq bot.enabled true}}" /> {{_ "False"}}</label>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Name"}}</label>
+                <div>
+                  <input type="text" class="rc-input__element" name="name" value="{{bot.name}}" />
+                  <div class="settings-description">{{_ "Bot_name"}}</div>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Username"}}</label>
+                <div>
+                  <input type="text" class="rc-input__element" name="username" value="{{bot.username}}" />
+                  <div class="settings-description">{{_ "Bot_username"}}</div>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Framework"}}</label>
+                <div>
+                  <input type="text" class="rc-input__element" name="name" value="{{bot.bot.framework}}" />
+                  <div class="settings-description">{{_ "Bot_framework"}}</div>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Connection_status"}}</label>
+                <div>
+                  <div class="settings-description">{{ipAddress}}</div>
+                  <div class="settings-description">{{ping}}</div>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Uptime"}}</label>
+                <div>
+                  <div class="settings-description">{{connectedUptime}}</div>
+                  <div class="settings-description">{{activeUptime}}</div>
+                </div>
+              </div>
+              <div class="input-line double-col">
+                <label>{{_ "Roles"}}</label>
+                <div>
+                  <div class="settings-description">{{getRoles}}</div>
+                </div>
+              </div>
+						</div>
+					</div>
+          <div class="section section-collapsed">
+            <div class="section-title">
+              <div class="section-title-text">{{_ "Bot_statistics"}}</div>
+              <div class="section-title-right">
+                <button class="button primary expand"><span>{{_ "Expand"}}</span></button>
+              </div>
+            </div>
+            <div class="section-content">
+            </div>
+          </div>
+				</div>
+			{{/unless}}
+		</div>
+	</section>
+</template>

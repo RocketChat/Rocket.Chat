@@ -87,9 +87,7 @@ Template.adminUsers.onCreated(function() {
 		} else {
 			query = {};
 		}
-		query.type = {
-			$in: ['user', 'bot']
-		};
+		query.type = 'user';
 
 		const limit = instance.limit && instance.limit.get();
 		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
