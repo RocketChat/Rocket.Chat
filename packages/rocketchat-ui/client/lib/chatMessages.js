@@ -1,4 +1,5 @@
 /* globals MsgTyping, emojione */
+import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -564,7 +565,7 @@ this.ChatMessages = class ChatMessages {
 			return match;
 		});
 
-		return message && adjustedMessage.length > this.messageMaxSize;
+		return message && _.toArray(adjustedMessage).length > this.messageMaxSize;
 	}
 
 	isEmpty() {

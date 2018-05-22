@@ -1,4 +1,5 @@
 /* globals emojione */
+import _ from 'underscore';
 import moment from 'moment';
 
 Meteor.methods({
@@ -41,7 +42,7 @@ Meteor.methods({
 				return match;
 			});
 
-			if (adjustedMessage.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
+			if (_.toArray(adjustedMessage).length > RocketChat.settings.get('Message_MaxAllowedSize')) {
 				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 					method: 'sendMessage'
 				});
