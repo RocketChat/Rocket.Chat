@@ -79,9 +79,9 @@ Meteor.startup(function() {
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['pinned'],
-		action(event) {
+		async action(event) {
 			const message = this._arguments[1];
-			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			$(event.currentTarget).attr('data-clipboard-text', await RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {

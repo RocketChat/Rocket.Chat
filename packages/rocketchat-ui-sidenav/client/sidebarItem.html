@@ -11,7 +11,7 @@
 						{{/if}}
 					{{else}}
 						<div class="sidebar-item__user-thumb">
-							{{> avatar username=username roomIcon=icon}}
+							{{> avatar username=username roomIcon=icon lazy=true}}
 						</div>
 					{{/if}}
 				</div>
@@ -30,10 +30,12 @@
 									</div>
 								{{/if}}
 							{{/unless}}
-							{{name}}
-							{{#if mySelf}}
-								<span class="sidebar-item__me">({{_ "You"}})</span>
-							{{/if}}
+							<div class="sidebar-item__ellipsis">
+								{{name}}
+								{{#if mySelf}}
+									<span class="sidebar-item__me">({{_ "You"}})</span>
+								{{/if}}
+							</div>
 						</div>
 						{{#if isExtendedViewMode}}
 							{{#if lastMessageTs}}
