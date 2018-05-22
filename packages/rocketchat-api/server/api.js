@@ -60,6 +60,10 @@ class API extends Restivus {
 		return RocketChat.API.helperMethods;
 	}
 
+	getHelperMethod(name) {
+		return RocketChat.API.helperMethods.get(name);
+	}
+
 	addAuthMethod(method) {
 		this.authMethods.push(method);
 	}
@@ -151,8 +155,10 @@ class API extends Restivus {
 						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
 							method,
 							version,
+							user_agent: this.request.headers['user-agent'],
 							entrypoint: route
 						});
+
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
@@ -237,6 +243,7 @@ class API extends Restivus {
 		this.addRoute('login', {authRequired: false}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
+				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
@@ -286,7 +293,8 @@ class API extends Restivus {
 					status: 'success',
 					data: {
 						userId: this.userId,
-						authToken: auth.token
+						authToken: auth.token,
+						me: getUserInfo(this.user)
 					}
 				};
 

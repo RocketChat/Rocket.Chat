@@ -39,6 +39,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
@@ -52,6 +59,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
@@ -61,6 +75,12 @@ describe('miscellaneous', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
+				const allUserPreferencesKeys = ['enableAutoAway', 'idleTimeoutLimit', 'desktopNotificationDuration', 'audioNotifications',
+					'desktopNotifications', 'mobileNotifications', 'unreadAlert', 'useEmojis', 'convertAsciiEmoji', 'autoImageLoad',
+					'saveMobileBandwidth', 'collapseMediaByDefault', 'hideUsernames', 'hideRoles', 'hideFlexTab', 'hideAvatars',
+					'roomsListExhibitionMode', 'sidebarViewMode', 'sidebarHideAvatar', 'sidebarShowUnread', 'sidebarShowFavorites',
+					'sendOnEnter', 'messageViewMode', 'emailNotificationMode', 'roomCounterSidebar', 'newRoomNotification', 'newMessageNotification',
+					'muteFocusedConversations', 'notificationsSoundVolume'];
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 				expect(res.body).to.have.property('username', login.user);
@@ -69,6 +89,7 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.property('roles').and.to.be.an('array');
 				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
 				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
+				expect(res.body.settings.preferences).to.have.all.keys(allUserPreferencesKeys);
 			})
 			.end(done);
 	});
