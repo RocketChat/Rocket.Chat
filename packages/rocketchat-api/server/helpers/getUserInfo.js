@@ -30,7 +30,12 @@ const getInfoFromUserObject = (user) => {
 
 RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 	const me = getInfoFromUserObject(user);
-	const verifiedEmail = me.emails.find((email) => email.verified);
+	const isVerifiedEmail = () => {
+		if (me && me.emails && Array.isArray(me.emails)) {
+			return me.emails.find((email) => email.verified);
+		}
+		return false;
+	};
 	const getUserPreferences = () => {
 		const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
 		const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
@@ -41,7 +46,7 @@ RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 			return accumulator;
 		}, {});
 	};
-
+	const verifiedEmail = isVerifiedEmail();
 	me.email = verifiedEmail ? verifiedEmail.address : undefined;
 	me.settings = {
 		preferences: getUserPreferences()
