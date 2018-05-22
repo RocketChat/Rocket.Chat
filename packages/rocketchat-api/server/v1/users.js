@@ -335,6 +335,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
+				messageViewMode: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),
@@ -360,6 +361,13 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
 		} else {
 			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
+		}
+
+		// Keep compatibility with old values
+		if (preferences.emailNotificationMode === 'all') {
+			preferences.emailNotificationMode = 'mentions';
+		} else if (preferences.emailNotificationMode === 'disabled') {
+			preferences.emailNotificationMode = 'nothing';
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
@@ -391,5 +399,28 @@ RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
 			versionWillBeRemove: 'v0.66',
 			response: currentUserRoles
 		}));
+	}
+});
+
+RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
+	post() {
+		const { email } = this.bodyParams;
+		if (!email) {
+			return RocketChat.API.v1.failure('The \'email\' param is required');
+		}
+
+		const emailSent = Meteor.call('sendForgotPasswordEmail', email);
+		if (emailSent) {
+			return RocketChat.API.v1.success();
+		}
+		return RocketChat.API.v1.failure('User not found');
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
+	get() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+
+		return RocketChat.API.v1.success({ result });
 	}
 });

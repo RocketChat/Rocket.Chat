@@ -163,15 +163,13 @@ Template.messagePopupConfig.helpers({
 					const user = Meteor.user();
 					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
 						const usernames = RocketChat.models.Subscriptions.find({$or :[{'name': exp}, { fname: exp}]}).fetch().map(({name}) =>name);
-						items.push(...
-							RocketChat.models.Users.find({username:{$in:usernames}}, {fields:{
-								username: 1,
-								name: 1,
-								status: 1
-							}}, {
-								limit: 5 - messageUsers.length
-							}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 }))
-						);
+						items.push(...RocketChat.models.Users.find({username:{$in:usernames}}, {fields:{
+							username: 1,
+							name: 1,
+							status: 1
+						}}, {
+							limit: 5 - messageUsers.length
+						}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 })));
 					} else {
 						items.push(...Meteor.users.find({
 							$and: [

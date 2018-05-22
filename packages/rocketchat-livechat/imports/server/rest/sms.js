@@ -46,6 +46,27 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		sendMessage.message.msg = sms.body;
 		sendMessage.guest = visitor;
 
+		sendMessage.message.attachments = sms.media.map(curr => {
+			const attachment = {
+				message_link: curr.url
+			};
+
+			const contentType = curr.contentType;
+			switch (contentType.substr(0, contentType.indexOf('/'))) {
+				case 'image':
+					attachment.image_url = curr.url;
+					break;
+				case 'video':
+					attachment.video_url = curr.url;
+					break;
+				case 'audio':
+					attachment.audio_url = curr.url;
+					break;
+			}
+
+			return attachment;
+		});
+
 		try {
 			const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
 

@@ -1,5 +1,5 @@
 import _ from 'underscore';
-
+import { upsertMessage } from './RoomHistoryManager';
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -27,7 +27,6 @@ const RoomManager = new function() {
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
-
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 
 						if (openedRooms[typeName].streamActive !== true) {
@@ -41,12 +40,8 @@ const RoomManager = new function() {
 
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
-											const roles = [
-												(msg.u && msg.u._id && UserRoles.findOne(msg.u._id, { fields: { roles: 1 }})) || {},
-												(msg.u && msg.u._id && RoomRoles.findOne({rid: msg.rid, 'u._id': msg.u._id})) || {}
-											].map(e => e.roles);
-											msg.roles = _.union.apply(_.union, roles);
-											ChatMessage.upsert({ _id: msg._id }, msg);
+											const subscription = ChatSubscription.findOne({rid: openedRooms[typeName].rid});
+											upsertMessage({msg, subscription});
 											msg.room = {
 												type,
 												name
@@ -223,22 +218,13 @@ const RoomManager = new function() {
 };
 
 const loadMissedMessages = function(rid) {
-	const lastMessage = ChatMessage.findOne({rid}, {sort: {ts: -1}, limit: 1});
+	const lastMessage = ChatMessage.findOne({rid, temp: { $exists: false } }, {sort: {ts: -1}, limit: 1});
 	if (lastMessage == null) {
 		return;
 	}
-
+	const subscription = ChatSubscription.findOne({rid});
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map((item) =>
-			RocketChat.promises.run('onClientMessageReceived', item).then(function(item) {
-				/* globals UserRoles RoomRoles*/
-				const roles = [
-					(item.u && item.u._id && UserRoles.findOne(item.u._id)) || {},
-					(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-				].map(({roles}) => roles);
-				item.roles = _.union.apply(_, roles);
-				return ChatMessage.upsert({_id: item._id}, item);
-			}))
+		Array.from(result).map(item => RocketChat.promises.run('onClientMessageReceived', item).then(msg => upsertMessage({msg, subscription})))
 	);
 };
 
@@ -311,3 +297,11 @@ Tracker.autorun(function() {
 export { RoomManager };
 this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
+
+
+RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
+	ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
+	if (sub && sub.ignored) {
+		ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
+	}
+});

@@ -5,10 +5,19 @@ RocketChat.saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMess
 		throw new Meteor.Error('invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomAnnouncement' });
 	}
 
-	roomAnnouncement = s.escapeHTML(roomAnnouncement);
-	const updated = RocketChat.models.Rooms.setAnnouncementById(rid, roomAnnouncement);
+	let message;
+	let announcementDetails;
+	if (typeof roomAnnouncement === 'string') {
+		message = roomAnnouncement;
+	} else {
+		({message, ...announcementDetails} = roomAnnouncement);
+	}
+
+	const escapedMessage = s.escapeHTML(message);
+
+	const updated = RocketChat.models.Rooms.setAnnouncementById(rid, escapedMessage, announcementDetails);
 	if (updated && sendMessage) {
-		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_announcement', rid, roomAnnouncement, user);
+		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_announcement', rid, escapedMessage, user);
 	}
 
 	return updated;

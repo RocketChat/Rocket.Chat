@@ -54,6 +54,9 @@ Template.apps.helpers({
 	},
 	apps() {
 		return Template.instance().apps.get();
+	},
+	parseStatus(status) {
+		return t(`App_status_${ status }`);
 	}
 });
 
