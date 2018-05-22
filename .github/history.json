@@ -14419,5 +14419,66 @@
         "geekgonecrazy"
       ]
     }
+  ],
+  "0.65.0-rc.1": [
+    {
+      "pr": "10837",
+      "title": "[FIX] Internal Error when requesting user data download",
+      "userLogin": "Hudell",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10835",
+      "title": "[FIX] Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10833",
+      "title": "Fix: Regression in REST API endpoint `/me` ",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10734",
+      "title": "[FIX] User's preference `Unread on Top` wasn't working for LiveChat rooms",
+      "userLogin": "renatobecker",
+      "milestone": "0.65.0",
+      "contributors": [
+        "renatobecker",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10753",
+      "title": "[NEW] Add permission `view-broadcast-member-list`",
+      "userLogin": "cardoso",
+      "milestone": "0.65.0",
+      "contributors": [
+        "cardoso",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10715",
+      "title": "[FIX] Cancel button wasn't working while uploading file",
+      "userLogin": "Mr-Gryphon",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Mr-Gryphon",
+        "web-flow",
+        "karlprieb"
+      ]
+    }
   ]
 }
