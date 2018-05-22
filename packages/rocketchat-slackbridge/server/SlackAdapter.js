@@ -10,7 +10,7 @@ export default class SlackAdapter {
 	constructor(slackBridge) {
 		logger.slack.debug('constructor');
 		this.slackBridge = slackBridge;
-		this.slackClient = Npm.require('@slack/client');
+		this.slackClient = require('@slack/client');
 		this.rtm = {};	//slack-client Real Time Messaging API
 		this.apiToken = {};	//Slack API Token passed in via Connect
 		//On Slack, a rocket integration bot will be added to slack channels, this is the list of those channels, key is Rocket Ch ID
