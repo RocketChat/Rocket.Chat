@@ -8,7 +8,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 
 ## Before Release - Preparation - 1 business day before the day 20th
 - [x] Create the issue to track the release progress
-- [ ] Define the highlights from release PRs as suggestion to be included on Blog Post (as a new comment to this issue with links to the PRs)
+- [ ] Define the highlights from release PRs as suggestion to be included on Blog Post <!-- link to the website's issue -->
 - [ ] Talk to the Marketing Team about starting the release Blog Post
 - [ ] Talk to the Documentation Team about ensuring the Docs are up to date and all pull requests are merged
 - [ ] Sync translations from [LingoHub](https://translate.lingohub.com/rocketchat/rocket-dot-chat/dashboard)
