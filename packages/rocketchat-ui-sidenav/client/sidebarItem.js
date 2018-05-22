@@ -159,15 +159,13 @@ Template.sidebarItem.events({
 					]
 				}
 			],
-			mousePosition: {
-				x: e.clientX,
-				y: e.clientY
-			},
 			data: {
 				template: this.t,
 				rid: this.rid,
 				name: this.name
-			}
+			},
+			currentTarget: e.currentTarget,
+			offsetHorizontal: -e.currentTarget.clientWidth
 		};
 
 		popover.open(config);

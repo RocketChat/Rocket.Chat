@@ -1,6 +1,5 @@
 .rc-apps {
 	&-settings {
-		padding: 25px;
 		flex-direction: column;
 
 		&__item {
@@ -10,6 +9,7 @@
 	}
 
 	&-container {
+		padding: 25px 0;
 		max-width: 705px;
 		margin: auto;
     width: 100%;
@@ -73,6 +73,8 @@
 @media (width <= 500px) {
 	.rc-apps {
 		&-container {
+			padding: 25px;
+
 			flex-direction: column;
 			align-items: center;
 		}
