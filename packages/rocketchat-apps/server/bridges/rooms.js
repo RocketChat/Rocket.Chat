@@ -43,6 +43,30 @@ export class AppRoomBridge {
 		return this.orch.getConverters().get('rooms').convertByName(roomName);
 	}
 
+	async getCreatorById(roomId, appId) {
+		console.log(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
+
+		const room = RocketChat.models.Rooms.findOneById(roomId);
+
+		if (!room || !room.u || !room.u._id) {
+			return undefined;
+		}
+
+		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async getCreatorByName(roomName, appId) {
+		console.log(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
+
+		const room = RocketChat.models.Rooms.findOneByName(roomName);
+
+		if (!room || !room.u || !room.u._id) {
+			return undefined;
+		}
+
+		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
 	async update(room, appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
