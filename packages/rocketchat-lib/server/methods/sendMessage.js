@@ -11,6 +11,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!message.rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
+		}
+
 		if (message.ts) {
 			const tsDiff = Math.abs(moment(message.ts).diff());
 			if (tsDiff > 60000) {
@@ -64,17 +68,17 @@ Meteor.methods({
 				ts: new Date,
 				msg: TAPi18n.__('room_is_blocked', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
-		if ((room.muted||[]).includes(user.username)) {
+		if ((room.muted || []).includes(user.username)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date,
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {

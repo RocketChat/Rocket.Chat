@@ -223,6 +223,7 @@ function executeIntegrationRest() {
 			content: this.bodyParams,
 			content_raw,
 			headers: this.request.headers,
+			body: this.request.body,
 			user: {
 				_id: this.user._id,
 				name: this.user.name,
@@ -283,8 +284,8 @@ function executeIntegrationRest() {
 		}
 
 		return RocketChat.API.v1.success(this.scriptResponse);
-	} catch ({ error }) {
-		return RocketChat.API.v1.failure(error);
+	} catch ({ error, message }) {
+		return RocketChat.API.v1.failure(error || message);
 	}
 }
 

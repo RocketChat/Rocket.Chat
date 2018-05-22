@@ -219,6 +219,10 @@ this.menu.on('clickOut', function() {
 });
 
 this.menu.on('close', function() {
+	if (!this.sidebar) {
+		return;
+	}
+
 	this.sidebar.css('transition', '');
 	this.sidebarWrap.css('transition', '');
 	if (passClosePopover) {
