@@ -1,6 +1,32 @@
 
 # 0.65.0 (Under Release Candidate Process)
 
+## 0.65.0-rc.1
+`2018-05-21  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753) by [@cardoso](https://github.com/cardoso))
+
+### 🐛 Bug fixes
+
+- Internal Error when requesting user data download ([#10837](https://github.com/RocketChat/Rocket.Chat/pull/10837))
+- Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times ([#10835](https://github.com/RocketChat/Rocket.Chat/pull/10835))
+- User's preference `Unread on Top` wasn't working for LiveChat rooms ([#10734](https://github.com/RocketChat/Rocket.Chat/pull/10734))
+- Cancel button wasn't working while uploading file ([#10715](https://github.com/RocketChat/Rocket.Chat/pull/10715) by [@Mr-Gryphon](https://github.com/Mr-Gryphon))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Regression in REST API endpoint `/me`  ([#10833](https://github.com/RocketChat/Rocket.Chat/pull/10833))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Mr-Gryphon](https://github.com/Mr-Gryphon)
+- [@cardoso](https://github.com/cardoso)
+
 ## 0.65.0-rc.0
 `2018-05-20  ·  16 🎉  ·  15 🐛  ·  25 🔍  ·  15 👩‍💻👨‍💻`
 
