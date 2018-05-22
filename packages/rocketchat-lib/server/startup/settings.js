@@ -702,6 +702,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 0
@@ -709,6 +710,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Language', '', {
 		type: 'language',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 1
