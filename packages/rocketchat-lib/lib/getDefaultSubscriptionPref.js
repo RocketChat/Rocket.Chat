@@ -28,4 +28,4 @@ RocketChat.getDefaultSubscriptionPref = function _getDefaultSubscriptionPref(use
 	}
 
 	return subscription;
-}
+};
