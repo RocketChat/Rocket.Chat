@@ -1,6 +1,29 @@
 
 # 0.65.0 (Under Release Candidate Process)
 
+## 0.65.0-rc.2
+`2018-05-23  ·  2 🐛  ·  5 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Missing pagination fields in the response of REST /directory endpoint ([#10840](https://github.com/RocketChat/Rocket.Chat/pull/10840))
+- Layout badge cutting on unread messages for long names ([#10846](https://github.com/RocketChat/Rocket.Chat/pull/10846) by [@kos4live](https://github.com/kos4live))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Fix email notification preference not showing correct selected value ([#10847](https://github.com/RocketChat/Rocket.Chat/pull/10847))
+- Apps: Command previews are clickable & Apps Framework is controlled via a setting ([#10853](https://github.com/RocketChat/Rocket.Chat/pull/10853))
+- Regression: Make settings `Site_Name` and `Language` public again ([#10848](https://github.com/RocketChat/Rocket.Chat/pull/10848))
+- Fix: Clarify the wording of the release issue template ([#10520](https://github.com/RocketChat/Rocket.Chat/pull/10520))
+- Fix: Regression on users avatar in admin pages ([#10836](https://github.com/RocketChat/Rocket.Chat/pull/10836))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kos4live](https://github.com/kos4live)
+
 ## 0.65.0-rc.1
 `2018-05-21  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 

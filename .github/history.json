@@ -14480,5 +14480,73 @@
         "karlprieb"
       ]
     }
+  ],
+  "0.65.0-rc.2": [
+    {
+      "pr": "10847",
+      "title": "Regression: Fix email notification preference not showing correct selected value",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.0",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10853",
+      "title": "Apps: Command previews are clickable & Apps Framework is controlled via a setting",
+      "userLogin": "graywolf336",
+      "milestone": "0.65.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10840",
+      "title": "[FIX] Missing pagination fields in the response of REST /directory endpoint",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10846",
+      "title": "[FIX] Layout badge cutting on unread messages for long names",
+      "userLogin": "kos4live",
+      "milestone": "0.65.0",
+      "contributors": [
+        "kos4live"
+      ]
+    },
+    {
+      "pr": "10848",
+      "title": "Regression: Make settings `Site_Name` and `Language` public again",
+      "userLogin": "rodrigok",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10520",
+      "title": "Fix: Clarify the wording of the release issue template",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10836",
+      "title": "Fix: Regression on users avatar in admin pages",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo",
+        "rodrigok",
+        "web-flow"
+      ]
+    }
   ]
 }
