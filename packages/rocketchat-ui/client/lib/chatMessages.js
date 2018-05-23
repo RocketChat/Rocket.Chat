@@ -1,8 +1,10 @@
-/* globals MsgTyping, emojione */
-import _ from 'underscore';
+/* globals MsgTyping */
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+import GraphemeSplitter from 'grapheme-splitter';
+
+const splitter = new GraphemeSplitter();
 
 this.ChatMessages = class ChatMessages {
 	init(node) {
@@ -555,17 +557,14 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		// converting emoji unicodes to shortnames if present
-		let adjustedMessage = emojione.toShort(message);
-
-		adjustedMessage = adjustedMessage.replace(/:\w+:/gm, (match) => {
+		const adjustedMessage = message.replace(/:\w+:/gm, (match) => {
 			if (RocketChat.emoji.list[match] !== undefined) {
 				return ' ';
 			}
 			return match;
 		});
 
-		return message && _.toArray(adjustedMessage).length > this.messageMaxSize;
+		return message && splitter.countGraphemes(adjustedMessage) > this.messageMaxSize;
 	}
 
 	isEmpty() {

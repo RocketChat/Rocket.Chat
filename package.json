@@ -136,6 +136,7 @@
 		"emailreplyparser": "^0.0.5",
 		"file-type": "^7.7.1",
 		"filesize": "^3.6.1",
+		"grapheme-splitter": "^1.0.2",
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.1.1",
 		"highlight.js": "^9.12.0",
