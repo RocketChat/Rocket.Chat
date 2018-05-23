@@ -295,7 +295,7 @@ Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'toggle-link-preview',
 		icon: 'permalink',
-		label: t('Toggle_link_preview'),
+		label: 'Toggle_link_preview',
 		context: ['message', 'message-mobile'],
 		action() {
 			const message = this._arguments[1];
