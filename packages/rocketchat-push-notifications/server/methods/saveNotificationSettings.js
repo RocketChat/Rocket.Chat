@@ -37,12 +37,6 @@ Meteor.methods({
 						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'email');
 						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
 					} else {
-						// Keep compatibility with old values
-						if (value === 'all') {
-							value = 'mentions';
-						} else if (value === 'disabled') {
-							value = 'nothing';
-						}
 						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, { value, origin: 'subscription' });
 					}
 				}
