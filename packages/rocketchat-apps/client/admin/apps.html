@@ -28,7 +28,7 @@
 											{{#if description}}
 												<span class="rc-directory-channel-description">{{description}}</span>
 											{{/if}}
-									</div>
+										</div>
 									</div>
 								</td>
 								<td class="rc-table-td rc-table-td--users">{{version}}</td>
@@ -42,11 +42,11 @@
 								</td>
 							</tr>
 						{{else}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td rc-table-td--name">
-								{{_ "There_are_no_applications_installed"}}
-							</td>
-						</tr>
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									{{_ "There_are_no_applications_installed"}}
+								</td>
+							</tr>
 						{{/each}}
 					</tbody>
 				</table>
