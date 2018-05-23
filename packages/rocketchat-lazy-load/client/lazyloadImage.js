@@ -12,7 +12,7 @@ Template.lazyloadImage.helpers({
 	}
 });
 
-Template.lazyloadImage.onCreated(function() {
+Template.lazyloadImage.onRendered(function() {
 	const element = Template.instance().firstNode;
 	if (!element) {
 		return;
