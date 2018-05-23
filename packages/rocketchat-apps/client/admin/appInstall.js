@@ -9,39 +9,81 @@
 // over the passed in body, so if both are found it will only use the url.
 
 Template.appInstall.helpers({
+	appFile() {
+		return Template.instance().file.get();
+	},
 	isInstalling() {
 		return Template.instance().isInstalling.get();
 	},
 	appUrl() {
 		return Template.instance().appUrl.get();
+	},
+	disabled() {
+		const instance = Template.instance();
+		return !(instance.appUrl.get() || instance.file.get());
+	},
+	isUpdating() {
+		const instance = Template.instance();
+
+		return !!instance.isUpdatingId.get();
 	}
 });
 
 Template.appInstall.onCreated(function() {
 	const instance = this;
+	instance.file = new ReactiveVar('');
 	instance.isInstalling = new ReactiveVar(false);
 	instance.appUrl = new ReactiveVar('');
+	instance.isUpdatingId = new ReactiveVar('');
 
 	// Allow passing in a url as a query param to show installation of
 	if (FlowRouter.getQueryParam('url')) {
 		instance.appUrl.set(FlowRouter.getQueryParam('url'));
 		FlowRouter.setQueryParams({ url: null });
 	}
+
+	if (FlowRouter.getQueryParam('isUpdatingId')) {
+		instance.isUpdatingId.set(FlowRouter.getQueryParam('isUpdatingId'));
+	}
 });
 
 Template.appInstall.events({
-	'click .install'(e, t) {
+	'input #appPackage'(e, i) {
+		i.appUrl.set(e.currentTarget.value);
+	},
+	'change #upload-app'(e, i) {
+		const file = e.currentTarget.files[0];
+		i.file.set(file.name);
+	},
+	'click .js-cancel'() {
+		FlowRouter.go('/admin/apps');
+	},
+	async 'click .js-install'(e, t) {
 		const url = $('#appPackage').val().trim();
 
 		// Handle url installations
 		if (url) {
-			t.isInstalling.set(true);
-			RocketChat.API.post('apps', { url }).then((result) => {
-				FlowRouter.go(`/admin/apps/${ result.app.id }`);
-			}).catch((err) => {
+			try {
+				t.isInstalling.set(true);
+				const isUpdating = t.isUpdatingId.get();
+				let result;
+
+				if (isUpdating) {
+					result = await RocketChat.API.post(`apps/${ t.isUpdatingId.get() }`, { url });
+				} else {
+					result = await RocketChat.API.post('apps', { url });
+				}
+
+				if (result.compilerErrors.length !== 0 || result.app.status === 'compiler_error') {
+					console.warn(`The App contains errors and could not be ${ isUpdating ? 'updated' : 'installed' }.`);
+				} else {
+					FlowRouter.go(`/admin/apps/${ result.app.id }`);
+				}
+			} catch (err) {
 				console.warn('err', err);
-				t.isInstalling.set(false);
-			});
+			}
+
+			t.isInstalling.set(false);
 
 			return;
 		}
@@ -65,11 +107,27 @@ Template.appInstall.events({
 		}
 
 		t.isInstalling.set(true);
-		RocketChat.API.upload('apps', data).then((result) => {
-			FlowRouter.go(`/admin/apps/${ result.app.id }`);
-		}).catch((err) => {
+		try {
+			const isUpdating = t.isUpdatingId.get();
+			let result;
+
+			if (isUpdating) {
+				result = await RocketChat.API.upload(`apps/${ t.isUpdatingId.get() }`, data);
+			} else {
+				result = await RocketChat.API.upload('apps', data);
+			}
+
+			console.log('install result', result);
+
+			if (result.compilerErrors.length !== 0 || result.app.status === 'compiler_error') {
+				console.warn(`The App contains errors and could not be ${ isUpdating ? 'updated' : 'installed' }.`);
+			} else {
+				FlowRouter.go(`/admin/apps/${ result.app.id }`);
+			}
+		} catch (err) {
 			console.warn('err', err);
-			t.isInstalling.set(false);
-		});
+		}
+
+		t.isInstalling.set(false);
 	}
 });
