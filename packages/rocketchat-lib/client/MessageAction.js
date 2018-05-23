@@ -3,6 +3,14 @@
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+const call = (method, ...args) => new Promise((resolve, reject) => {
+	Meteor.call(method, ...args, function(err, data) {
+		if (err) {
+			return reject(err);
+		}
+		resolve(data);
+	});
+});
 
 const success = function success(fn) {
 	return function(error, result) {
@@ -93,14 +101,23 @@ RocketChat.MessageAction = new class {
 		return this.buttons.set({});
 	}
 
-	getPermaLink(msgId) {
-		const roomData = ChatSubscription.findOne({
-			rid: Session.get('openedRoom')
-		});
-		let routePath = document.location.pathname;
-		if (roomData) {
-			routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData);
+	async getPermaLink(msgId) {
+		if (!msgId) {
+			throw new Error('invalid-parameter');
 		}
+
+		const msg = RocketChat.models.Messages.findOne(msgId) || await call('getSingleMessage', msgId);
+		if (!msg) {
+			throw new Error('message-not-found');
+		}
+		const roomData = RocketChat.models.Rooms.findOne({
+			_id: msg.rid
+		});
+
+		if (!roomData) {
+			throw new Error('room-not-found');
+		}
+		const routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData);
 		return `${ Meteor.absoluteUrl().replace(/\/$/, '') + routePath }?msg=${ msgId }`;
 	}
 };
@@ -220,9 +237,9 @@ Meteor.startup(function() {
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
-		action(event) {
+		async action(event) {
 			const message = this._arguments[1];
-			const permalink = RocketChat.MessageAction.getPermaLink(message._id);
+			const permalink = await RocketChat.MessageAction.getPermaLink(message._id);
 			if (Meteor.isCordova) {
 				cordova.plugins.clipboard.copy(permalink);
 			} else {
