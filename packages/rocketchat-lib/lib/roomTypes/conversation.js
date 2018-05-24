@@ -10,7 +10,6 @@ export class ConversationRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'mergeChannels');
+		return RocketChat.getUserPreference(Meteor.userId(), 'mergeChannels');
 	}
 }

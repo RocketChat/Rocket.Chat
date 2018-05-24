@@ -43,8 +43,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		const mergeChannels = RocketChat.getUserPreference(Meteor.userId(), 'mergeChannels');
 		return !mergeChannels && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 

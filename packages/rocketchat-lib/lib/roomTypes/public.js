@@ -41,9 +41,8 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
 		// const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
-		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
+		const mergeChannels = RocketChat.getUserPreference(Meteor.userId(), 'mergeChannels');
 		return !mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	}
 
