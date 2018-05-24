@@ -511,7 +511,6 @@
   "Integrations": "توپلاشتۇرۇش",
   "InternalHubot": "ئىچكى Hubot",
   "InternalHubot_ScriptsToLoad": "ئىسكىرپت تېخى يۈكلەنمىدى",
-  "InternalHubot_ScriptsToLoad_Description": "لىق ئايرىپ تۇرىدىغان ئىسكرىپت تىزىملىكىنى كىرگۈزۈڭ دىن يۈكلەڭhttps://github.com/github/hubot-scripts/tree/master/src/scripts",
   "InternalHubot_Username_Description": "بۇ چوقۇم سىزنىڭ مۇلازىمىتېردە تىزىملاتقان بىر ئىناۋەتلىك ئەزا بولۇشى كېرەك.",
   "Invalid_confirm_pass": "ئىككىنچى قېتىم كىرگۈزۈلگەن مەخپىي نومۇر بىلەن بىرىنچى قېتىم كىرگۈزۈلگىنى بىلەن ماس كەلمىدى.",
   "Invalid_email": "كىرگۈزۈلگەن ئىلخەت ئادرېسى ئىناۋەتسىز",

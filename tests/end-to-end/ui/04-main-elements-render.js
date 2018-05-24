@@ -276,11 +276,19 @@ describe('[Main Elements Render]', function() {
 
 			describe('Files Tab:', () => {
 				before(()=> {
+					if (flexTab.filesTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.filesTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('files', true);
 				});
 
 				after(()=> {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('files', false);
 				});
@@ -292,12 +300,21 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Mentions Tab:', () => {
+
 				before(()=> {
+					if (flexTab.mentionsTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.mentionsTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('mentions', true);
 				});
 
 				after(()=> {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('mentions', false);
 				});
@@ -309,11 +326,19 @@ describe('[Main Elements Render]', function() {
 
 			describe('Starred Messages Tab:', () => {
 				before(()=> {
+					if (flexTab.starredTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.starredTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('starred', true);
 				});
 
 				after(()=> {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('starred', false);
 				});
@@ -325,11 +350,19 @@ describe('[Main Elements Render]', function() {
 
 			describe('Pinned Messages Tab:', () => {
 				before(()=> {
+					if (flexTab.pinnedTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.pinnedTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('pinned', true);
 				});
 
 				after(()=> {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('pinned', false);
 				});
