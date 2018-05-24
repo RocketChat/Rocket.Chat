@@ -20,6 +20,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
 	}
 
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			ts: {
+				$gte: afterTimestamp,
+				$lte: beforeTimestamp
+			}
+		};
+
+		return this.find(query, options).count();
+	}
+
 	// FIND
 	findByMention(username, options) {
 		const query =	{'mentions.username': username};

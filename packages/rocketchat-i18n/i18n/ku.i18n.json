@@ -1024,7 +1024,6 @@
   "InternalHubot_PathToLoadCustomScripts": "Peldanka Bi Lifşên Load Bikin",
   "InternalHubot_reload": "Rûpelê nû bike",
   "InternalHubot_ScriptsToLoad": "Nivîsandina ji bo barkirina",
-  "InternalHubot_ScriptsToLoad_Description": "Ji kerema xwe ve lîsteya bêhnok ji hev cuda yên li Skrîpta ji bo barkirina ji https://github.com/github/hubot-scripts/tree/master/src/scripts binivîse",
   "InternalHubot_Username_Description": "Ev, divê navê bikarhêner derbasdar ji bot qeydkirî li ser server te re be.",
   "InternalHubot_EnableForChannels": "Ji bo Channelsên Giştî Çalak bikin",
   "InternalHubot_EnableForDirectMessages": "Ji bo Direct Messages for Enable",
