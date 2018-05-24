@@ -90,7 +90,7 @@ const debug = false;
 
 const nullLog = function() {};
 
-const log =	function(...args) {
+const log = function(...args) {
 	console.log(`CachedCollection ${ this.name } =>`, ...args);
 };
 
