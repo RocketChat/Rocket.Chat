@@ -46,7 +46,7 @@ const sendNotification = ({
 		return;
 	}
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, receiver);
+	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
