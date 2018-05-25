@@ -1112,6 +1112,7 @@
   "IRC_Channel_Users_End": "End of output of the NAMES command.",
   "IRC_Description": "Internet Relay Chat (IRC) is a text-based group communication tool. Users join uniquely named channels, or rooms, for open discussion. IRC also supports private messages between individual users and file sharing capabilities. This package integrates these layers of functionality with Rocket.Chat.",
   "IRC_Enabled": "Attempt to integrate IRC support. Changing this value requires restarting Rocket.Chat.",
+  "IRC_Enabled_Alert": "IRC Support is a work in progress. Use on a production system is not recommended at this time.",
   "IRC_Federation": "IRC Federation",
   "IRC_Federation_Disabled": "IRC Federation is disabled.",
   "IRC_Hostname": "The IRC host server to connect to.",
