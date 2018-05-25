@@ -225,31 +225,6 @@ Template.messageBox.helpers({
 			}
 		};
 	},
-	/* globals MsgTyping*/
-	usersTyping() {
-		const users = MsgTyping.get(this._id);
-		if (users.length === 0) {
-			return;
-		}
-		if (users.length === 1) {
-			return {
-				multi: false,
-				selfTyping: MsgTyping.selfTyping.get(),
-				users: users[0]
-			};
-		}
-		let last = users.pop();
-		if (users.length > 4) {
-			last = t('others');
-		}
-		let usernames = users.join(', ');
-		usernames = [usernames, last];
-		return {
-			multi: true,
-			selfTyping: MsgTyping.selfTyping.get(),
-			users: usernames.join(` ${ t('and') } `)
-		};
-	},
 	groupAttachHidden() {
 		if (RocketChat.settings.get('Message_Attachments_GroupAttach')) {
 			return 'hidden';

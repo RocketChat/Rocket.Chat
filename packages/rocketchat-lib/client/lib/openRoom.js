@@ -60,7 +60,7 @@ function openRoom(type, name) {
 				const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
 				mainNode.appendChild(roomDom);
 				if (roomDom.classList.contains('room-container')) {
-					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
+					roomDom.querySelector('.messages-box > .wrapper > ul').scrollTop = roomDom.oldScrollTop;
 				}
 			}
 

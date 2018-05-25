@@ -41,7 +41,6 @@
 }
 
 .message {
-
 	& .toggle-hidden {
 		display: none;
 	}
@@ -50,9 +49,11 @@
 		& .body {
 			display: none;
 		}
+
 		& .toggle-hidden {
 			display: block;
 		}
+
 		& + .message--ignored.sequential {
 			display: none;
 		}
@@ -96,8 +97,62 @@
 	}
 }
 
-.messages-box .rc-popover__list {
-	padding: 0;
+.rtl .messages-box .user-typing {
+	right: 0;
+
+	margin-right: 24px;
+}
+
+.messages-box {
+	& .user-typing {
+		height: 24px;
+
+		padding-left: 24px;
+
+		color: var(--message-box-user-typing-color);
+
+		font-size: var(--message-box-user-typing-text-size);
+
+		line-height: 24px;
+
+		& .user-typing-wrapper::after {
+			display: inline-block;
+			overflow: hidden;
+
+			width: 0;
+
+			content: "\2026"; /* ascii code for the ellipsis character */
+			animation: ellipsis steps(4, end) 1.5s infinite;
+			vertical-align: bottom;
+		}
+
+		&__user {
+			color: var(--message-box-user-typing-user-color);
+		}
+	}
+
+	& .rc-popover__list {
+		padding: 0;
+	}
+}
+
+.messages-container .wrapper {
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	bottom: 0;
+	left: 0;
+
+	display: flex;
+
+	word-wrap: break-word;
+	flex-flow: column wrap;
+	justify-content: flex-end;
+
+	& > ul {
+		overflow-y: auto;
+	}
 }
 
 .rtl .message-actions {

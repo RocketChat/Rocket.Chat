@@ -1,4 +1,4 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device, MsgTyping */
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';
@@ -123,6 +123,30 @@ const mountPopover = (e, i, outerContext) => {
 };
 
 Template.room.helpers({
+	usersTyping() {
+		const users = MsgTyping.get(this._id);
+		if (users.length === 0) {
+			return;
+		}
+		if (users.length === 1) {
+			return {
+				multi: false,
+				selfTyping: MsgTyping.selfTyping.get(),
+				users: users[0]
+			};
+		}
+		let last = users.pop();
+		if (users.length > 4) {
+			last = t('others');
+		}
+		let usernames = users.join(', ');
+		usernames = [usernames, last];
+		return {
+			multi: true,
+			selfTyping: MsgTyping.selfTyping.get(),
+			users: usernames.join(` ${ t('and') } `)
+		};
+	},
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
@@ -872,7 +896,7 @@ Template.room.onRendered(function() {
 	window.chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
-	const wrapper = this.find('.wrapper');
+	const wrapper = this.find('.wrapper > ul');
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
 
@@ -955,7 +979,7 @@ Template.room.onRendered(function() {
 	$('.flex-tab-bar').on('click', (/*e, t*/) =>
 		Meteor.setTimeout(() => template.sendToBottomIfNecessaryDebounced(), 50)
 	);
-	lastScrollTop = $('.messages-box .wrapper').scrollTop();
+	lastScrollTop = $('.messages-box .wrapper > ul').scrollTop();
 
 	const rtl = $('html').hasClass('rtl');
 

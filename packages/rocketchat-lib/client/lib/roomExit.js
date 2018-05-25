@@ -25,7 +25,7 @@ this.roomExit = function() {
 			return;
 		}
 		if (child.classList.contains('room-container')) {
-			const wrapper = child.querySelector('.messages-box > .wrapper');
+			const wrapper = child.querySelector('.messages-box > .wrapper > ul');
 			if (wrapper) {
 				if (wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight) {
 					child.oldScrollTop = 10e10;

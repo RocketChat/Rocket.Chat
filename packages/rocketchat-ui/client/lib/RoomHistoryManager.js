@@ -76,7 +76,7 @@ export const RoomHistoryManager = new class {
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
 			room.firstUnread.set(result.firstUnread);
 
-			const wrapper = $('.messages-box .wrapper').get(0);
+			const wrapper = $('.messages-box .wrapper > ul').get(0);
 			if (wrapper != null) {
 				previousHeight = wrapper.scrollHeight;
 			}
@@ -109,7 +109,7 @@ export const RoomHistoryManager = new class {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper > ul')[0]).templateInstance();
 		instance.atBottom = false;
 
 		room.isLoading.set(true);
@@ -156,10 +156,10 @@ export const RoomHistoryManager = new class {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const instance = Blaze.getView($('.messages-box .wrapper > ul')[0]).templateInstance();
 
 		if (ChatMessage.findOne(message._id)) {
-			const wrapper = $('.messages-box .wrapper');
+			const wrapper = $('.messages-box .wrapper > ul');
 			const msgElement = $(`#${ message._id }`, wrapper);
 			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
 			wrapper.animate({
@@ -199,7 +199,7 @@ export const RoomHistoryManager = new class {
 				Meteor.defer(function() {
 					readMessage.refreshUnreadMark(message.rid, true);
 					RoomManager.updateMentionsMarksOfRoom(typeName);
-					const wrapper = $('.messages-box .wrapper');
+					const wrapper = $('.messages-box .wrapper > ul');
 					const msgElement = $(`#${ message._id }`, wrapper);
 					const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
 					wrapper.animate({

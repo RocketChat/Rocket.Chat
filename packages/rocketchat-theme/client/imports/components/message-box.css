@@ -2,7 +2,7 @@
 	position: relative;
 
 	width: 100%;
-	padding: 24px;
+	padding: 0 24px 24px;
 
 	font-size: var(--message-box-text-size);
 
@@ -51,32 +51,6 @@
 		}
 	}
 
-	&__typing {
-		position: absolute;
-		top: 4px;
-		left: 0;
-
-		margin-left: 24px;
-
-		color: var(--message-box-user-typing-color);
-
-		font-size: var(--message-box-user-typing-text-size);
-
-		&__user {
-			color: var(--message-box-user-typing-user-color);
-		}
-
-		&::after {
-			display: inline-block;
-			overflow: hidden;
-
-			width: 0;
-
-			content: "\2026"; /* ascii code for the ellipsis character */
-			animation: ellipsis steps(4, end) 1.5s infinite;
-			vertical-align: bottom;
-		}
-	}
 
 	&__container {
 		display: flex;
@@ -141,24 +115,30 @@
 		}
 
 		&.check {
-			color: red;
 			display: none;
+
+			color: red;
+
 			&.active {
 				display: flex;
 			}
 		}
 
 		&.cross {
-			color: red;
 			display: none;
+
+			color: red;
+
 			&.active {
 				display: flex;
 			}
 		}
 
 		&.loading {
-			cursor: pointer;
 			display: none;
+
+			cursor: pointer;
+
 			&.active {
 				display: flex;
 			}
@@ -166,6 +146,7 @@
 
 		&.mic {
 			display: none;
+
 			&.active {
 				display: flex;
 			}
@@ -191,118 +172,116 @@
 
 	&__timer-box{
 		display: none;
+
 		width: 50px;
+
 		&.active {
 			display: flex;
 		}
 	}
 
 	&__timer-dot{
-		font-size: 1.5em;
 		color: #d60000;
+
+		font-size: 1.5em;
+
 		line-height: 0.8em;
 	}
-}
 
-@media (width <= 500px) {
-	.rc-message-box {
-		margin-top: 1rem;
-		padding: 0;
+	@media (width <= 500px) {
+		.rc-message-box {
+			margin-top: 1rem;
+			padding: 0;
 
-		&__typing {
-			top: -1rem;
+			&__typing {
+				top: -1rem;
 
-			margin-left: 1rem;
+				margin-left: 1rem;
+			}
+
+			&__toolbar-markdown {
+				display: none;
+			}
+
+			&__container {
+				display: flex;
+
+				padding: var(--default-small-padding);
+				padding-bottom: calc(var(--default-small-padding) - 8px);
+
+				border-width: 0;
+				border-top-width: 1px;
+				flex-wrap: wrap;
+			}
+
+			& [data-desktop] {
+				display: none;
+			}
+
+			& [data-small] {
+				display: flex;
+			}
+
+			&__textarea {
+				flex: 1 0 100%;
+
+				margin-bottom: 10px;
+				order: 1;
+			}
+
+			&__action {
+				margin: 5px 10px;
+
+				font-size: 20px;
+			}
+
+			& [disabled] {
+				opacity: 0.4;
+			}
+
+			& .emoji-picker-icon {
+				width: initial;
+				padding-right: 10px;
+				order: 2;
+			}
+
+			&__action-label {
+				display: flex;
+				flex-direction: row;
+				flex: 1 1 auto;
+
+				font-size: 20px;
+				order: 3;
+			}
+
+			&__audio-message {
+				order: 4;
+			}
+
+			&__send {
+				flex: 0;
+
+				font-size: 20px;
+				order: 5;
+			}
 		}
+	}
 
-		&__toolbar-markdown {
+	.rc-popover--message-box {
+		& .rc-popover__divider {
 			display: none;
 		}
 
-		&__container {
-			display: flex;
+		& .rc-popover__title {
+			text-transform: none;
 
-			padding: var(--default-small-padding);
-			padding-bottom: calc(var(--default-small-padding) - 8px);
+			color: var(--message-box-popover-title-text-color);
 
-			border-width: 0;
-			border-top-width: 1px;
-			flex-wrap: wrap;
-		}
+			font-size: var(--message-box-popover-title-text-size);
 
-		& [data-desktop] {
-			display: none;
-		}
-
-		& [data-small] {
-			display: flex;
-		}
-
-		&__textarea {
-			flex: 1 0 100%;
-
-			margin-bottom: 10px;
-			order: 1;
-		}
-
-		&__action {
-			margin: 5px 10px;
-
-			font-size: 20px;
-		}
-
-		& [disabled] {
-			opacity: 0.4;
-		}
-
-		& .emoji-picker-icon {
-			width: initial;
-			padding-right: 10px;
-			order: 2;
-		}
-
-		&__action-label {
-			display: flex;
-			flex-direction: row;
-			flex: 1 1 auto;
-
-			font-size: 20px;
-			order: 3;
-		}
-
-		&__audio-message {
-			order: 4;
-		}
-
-		&__send {
-			flex: 0;
-
-			font-size: 20px;
-			order: 5;
+			&:not(:first-child) {
+				margin-top: var(--popover-column-padding);
+			}
 		}
 	}
-}
-
-.rc-popover--message-box {
-	& .rc-popover__divider {
-		display: none;
-	}
-
-	& .rc-popover__title {
-		text-transform: none;
-
-		color: var(--message-box-popover-title-text-color);
-
-		font-size: var(--message-box-popover-title-text-size);
-
-		&:not(:first-child) {
-			margin-top: var(--popover-column-padding);
-		}
-	}
-}
-
-.rtl .rc-message-box__typing {
-	right: 0;
-
-	margin-right: 24px;
 }

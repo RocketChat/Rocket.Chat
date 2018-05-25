@@ -113,6 +113,26 @@
 										{{/if}}
 									{{/if}}
 									{{#each messagesHistory}}{{#nrr nrrargs 'message' .}}{{/nrr}}{{/each}}
+									<li class="user-typing">
+										{{#with usersTyping}}
+											<span class="user-typing-wrapper">
+												<b class="user-typing__user">{{users}}</b>
+												{{#if multi}}
+													{{#if selfTyping}}
+														{{_ "are_also_typing"}}
+													{{else}}
+														{{_ "are_typing"}}
+													{{/if}}
+												{{else}}
+													{{#if selfTyping}}
+														{{_ "is_also_typing" context="male"}}
+													{{else}}
+														{{_ "is_typing" context="male"}}
+													{{/if}}
+												{{/if}}
+											</span>
+										{{/with}}
+									</li>
 									{{#if hasMoreNext}}
 										<li class="load-more">
 											{{#if isLoading}}

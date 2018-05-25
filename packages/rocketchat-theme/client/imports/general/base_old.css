@@ -1692,7 +1692,7 @@
 
 .rc-old .announcement {
 	display: flex;
-	flex-flow: row nowrap;
+
 	overflow: hidden;
 
 	height: 40px;
@@ -1705,6 +1705,7 @@
 
 	font-size: 1.2em;
 	line-height: 40px;
+	flex-flow: row nowrap;
 
 	& ~ .container-bars {
 		top: 45px;
@@ -1717,9 +1718,11 @@
 	}
 
 	p {
-		width: 0; /* Grow via flex. */
-		flex: auto;
 		overflow: hidden;
+		flex: auto;
+
+		width: 0; /* Grow via flex. */
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
@@ -2247,8 +2250,9 @@
 .rc-old .flex-tab-main-content {
 	position: relative;
 	z-index: 1;
-	flex-grow: 1;
+
 	overflow: auto;
+	flex-grow: 1;
 }
 
 .rc-old .room-container {
@@ -2617,14 +2621,17 @@
 }
 
 .rc-old .rc-message-box .reply-preview {
-	display: flex;
+
 	position: relative;
-	background-color:#fff;
+	display: flex;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+
 	padding-left: 15px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    align-items: center;
-    justify-content: space-between;
+
+	background-color:#ffffff;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .rc-old .rc-message-box .reply-preview-with-popup {
@@ -2640,18 +2647,18 @@
 }
 
 .rc-old .reply-preview .mention-link.mention-link-all {
-    color: #fff;
+	color: #ffffff;
 }
 
 .rc-old .reply-preview .mention-link.mention-link-me {
-    color: #fff;
+	color: #ffffff;
 }
 
 .rc-old .message-popup.popup-with-reply-preview {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
-	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
 }
 
 .rc-old .message-popup {
@@ -2782,7 +2789,7 @@
 	}
 
 	& ul {
-		padding: 21px 0 10px;
+		padding: 21px 0 0;
 	}
 
 	& .start {
@@ -2915,16 +2922,16 @@
 			content: attr(data-date);
 			text-align: center;
 
+			pointer-events: none;
+
 			font-size: 12px;
 			font-weight: 600;
-
-			pointer-events: none;
 		}
 
 		&::after {
 			position: absolute;
-			top: -20px;
 			z-index: -1;
+			top: -20px;
 			left: 0;
 
 			display: block;
@@ -2933,9 +2940,9 @@
 
 			content: " ";
 
-			border-width: 1px 0 0;
-
 			pointer-events: none;
+
+			border-width: 1px 0 0;
 		}
 	}
 
@@ -3741,10 +3748,10 @@ body:not(.is-cordova) {
 	}
 
 	&.uploaded-files-list {
-	  	& ul {
-		  & li {
-			margin-bottom: 10px;
-		  }
+		& ul {
+			& li {
+				margin-bottom: 10px;
+			}
 		}
 
 		& .file-name {
@@ -3772,6 +3779,7 @@ body:not(.is-cordova) {
 
 		& i {
 			float: left;
+
 			margin-right: 10px;
 
 			&.file-delete {
@@ -4522,8 +4530,9 @@ body:not(.is-cordova) {
 
 		& input,
 		& select {
-			width: 100%;
+
 			position: relative;
+			width: 100%;
 
 			padding: 4px 8px;
 
@@ -5391,6 +5400,7 @@ body:not(.is-cordova) {
 
 .toggle-hidden {
 	cursor: pointer;
+
 	font-style: italic;
 }
 
@@ -5519,6 +5529,7 @@ body:not(.is-cordova) {
 		z-index: 100;
 
 		right: 40px;
+
 		height: 100%;
 
 		border-width: 0 0 0 1px;
