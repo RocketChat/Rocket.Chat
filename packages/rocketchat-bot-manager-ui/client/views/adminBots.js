@@ -23,8 +23,8 @@ Template.adminBots.helpers({
 			return instance.limit.get() === bots.length;
 		}
 	},
-	framework() {
-		return 'Placeholder';
+	framework(username) {
+		return Template.instance().getFramework(username);
 	},
 	flexData() {
 		return {
@@ -61,8 +61,9 @@ Template.adminBots.onCreated(function() {
 	this.autorun(function() {
 		const filter = instance.filter.get();
 		const limit = instance.limit.get();
-		const subscription = instance.subscribe('fullUserData', filter, limit);
-		instance.ready.set(subscription.ready());
+		const accSubscription = instance.subscribe('fullUserData', filter, limit);
+		const botSubscription = instance.subscribe('fullBotData', filter, limit);
+		instance.ready.set(accSubscription.ready() && botSubscription.ready());
 	});
 	this.bots = function() {
 		let filter;
@@ -81,6 +82,15 @@ Template.adminBots.onCreated(function() {
 
 		const limit = instance.limit && instance.limit.get();
 		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
+	};
+	this.getFramework = function(username) {
+		console.log(username);
+		const botData = RocketChat.models.Bots.findOneByUsername(username);
+		console.log(botData);
+		if (botData) {
+			return botData.framework;
+		}
+		return 'Undefined';
 	};
 });
 
