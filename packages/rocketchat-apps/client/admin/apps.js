@@ -1,9 +1,22 @@
 import { AppEvents } from '../communication';
 
+const sortByStatus = (a, b) => {
+	if (a.status === 'auto_enabled' || a.status === 'manually_enabled') {
+		if (b.status === 'auto_enabled' || b.status === 'manually_enabled') {
+			return a.name > b.name;
+		} else {
+			return -1;
+		}
+	} else {
+		return 1;
+	}
+};
+
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
+	this.filter = new ReactiveVar('');
 
 	RocketChat.API.get('apps').then((result) => {
 		instance.apps.set(result.apps);
@@ -53,10 +66,13 @@ Template.apps.helpers({
 		return false;
 	},
 	apps() {
-		return Template.instance().apps.get();
+		return Template.instance().apps.get().sort(sortByStatus).filter(({name}) => name.toLowerCase().includes(Template.instance().filter.get().toLowerCase()));
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
+	},
+	activeClass(status) {
+		return status === 'auto_enabled' || status === 'manually_enabled'? 'active' : '';
 	}
 });
 
@@ -70,8 +86,10 @@ Template.apps.events({
 			// show an error ? I don't think this should ever happen
 		}
 	},
-
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
+	},
+	'keyup #app-filter'(e, t) {
+		t.filter.set(e.currentTarget.value);
 	}
 });
