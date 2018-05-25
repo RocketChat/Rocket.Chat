@@ -86,6 +86,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
+	api.addFiles('server/functions/getFullBotData.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
 	api.addFiles('server/functions/loadMessageHistory.js', 'server');
