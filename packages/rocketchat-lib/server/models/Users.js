@@ -51,6 +51,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneById(userId) {
+		const query =	{_id: userId};
+
+		return this.findOne(query);
+	}
 
 	// FIND
 	findById(userId) {
@@ -429,6 +434,16 @@ class ModelUsers extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				'settings.profile': profile
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	clearSettings(_id) {
+		const update = {
+			$set: {
+				settings: {}
 			}
 		};
 
