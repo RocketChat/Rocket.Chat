@@ -58,6 +58,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/getAvatarColor.js');
+	api.addFiles('lib/getDefaultSubscriptionPref.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
