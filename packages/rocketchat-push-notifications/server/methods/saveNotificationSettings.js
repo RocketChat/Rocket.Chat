@@ -35,7 +35,6 @@ Meteor.methods({
 				updateMethod: (subscription, value) => {
 					if (value === 'default') {
 						const userPref = RocketChat.getUserNotificationPreference(Meteor.userId(), 'email');
-						userPref.value = userPref.value === 'disabled' ? 'nothing' : userPref.value;
 						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
 					} else {
 						RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, { value, origin: 'subscription' });

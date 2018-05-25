@@ -3167,8 +3167,6 @@
 				max-height: 200px;
 
 				cursor: pointer;
-
-				opacity: 0;
 			}
 		}
 
@@ -4069,7 +4067,7 @@ body:not(.is-cordova) {
 .rc-old .user-image {
 	position: relative;
 
-	display: inline-table;
+	display: inline-block;
 
 	width: var(--user-image-square);
 	height: var(--user-image-square);
