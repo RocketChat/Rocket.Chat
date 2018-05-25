@@ -112,6 +112,7 @@ rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:apps
 rocketchat:sandstorm
+rocketchat:setup-wizard
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
@@ -189,3 +190,4 @@ rocketchat:version-check
 
 rocketchat:search
 chatpal:search
+rocketchat:lazy-load
