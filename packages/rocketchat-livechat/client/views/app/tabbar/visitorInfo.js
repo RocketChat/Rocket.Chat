@@ -20,8 +20,10 @@ Template.visitorInfo.helpers({
 			}
 			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
 			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
-		}
 
+			const room = ChatRoom.findOne(this.rid);
+			user.status = room ? RocketChat.roomTypes.getUserStatus(room.t, room._id) || 'offline' : 'offline';
+		}
 		return user;
 	},
 
