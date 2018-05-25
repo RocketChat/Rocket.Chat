@@ -45,6 +45,14 @@ class ModelBots extends RocketChat.models._Base {
 
 		return this.find(query, options);
 	}
+
+	// INSERT
+	createWithFullBotData(botData) {
+		delete botData._id;
+
+		botData._id = this.insert(botData);
+		return botData;
+	}
 }
 
-RocketChat.models.Users = new ModelBots('bot', true);
+RocketChat.models.Bots = new ModelBots('bot', true);

@@ -2,7 +2,6 @@
 import s from 'underscore.string';
 
 RocketChat.getFullBotData = function({userId, filter, limit}) {
-
 	if (!RocketChat.authz.hasPermission(userId, 'view-bot-administration')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Viewing bots is not allowed', {
 			method: 'getFullBotData',
@@ -33,5 +32,5 @@ RocketChat.getFullBotData = function({userId, filter, limit}) {
 		return RocketChat.models.Bots.findByUsername(filter, options);
 	}
 
-	return RocketChat.models.Users.find({}, options);
+	return RocketChat.models.Bots.find({}, options);
 };
