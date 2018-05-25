@@ -48,7 +48,7 @@ rocketchat:authorization
 rocketchat:autolinker
 rocketchat:autotranslate
 rocketchat:bot-helpers
-rocketchat:bot-manager-ui
+rocketchat:bot-manager
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages

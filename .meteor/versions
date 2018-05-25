@@ -135,7 +135,7 @@ rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:autotranslate@0.0.1
 rocketchat:bot-helpers@0.0.1
-rocketchat:bot-manager-ui@0.0.1
+rocketchat:bot-manager@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1

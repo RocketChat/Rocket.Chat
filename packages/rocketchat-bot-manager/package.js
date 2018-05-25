@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:bot-manager-ui',
+	name: 'rocketchat:bot-manager',
 	version: '0.0.1',
-	summary: 'AdminBox with options to monitor and manage bots',
+	summary: 'Package to monitor and manage bot accounts',
 	git: '',
 	documentation: 'README.md'
 });
