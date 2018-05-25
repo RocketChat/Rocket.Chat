@@ -61,4 +61,7 @@ function Archive(command, params, item) {
 	return Archive;
 }
 
-RocketChat.slashCommands.add('archive', Archive);
+RocketChat.slashCommands.add('archive', Archive, {
+	description: 'Archive',
+	params: '#channel'
+});
