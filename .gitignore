@@ -2,6 +2,7 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/.id
 **/.meteor/dev_bundle
 **/.meteor/local*
 **/.meteor/meteorite
@@ -73,3 +74,4 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+packages/rocketchat-i18n/i18n/livechat.*
