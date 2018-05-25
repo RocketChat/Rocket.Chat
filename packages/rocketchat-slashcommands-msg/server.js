@@ -43,4 +43,7 @@ function Msg(command, params, item) {
 	Meteor.call('sendMessage', msgObject);
 }
 
-RocketChat.slashCommands.add('msg', Msg);
+RocketChat.slashCommands.add('msg', Msg, {
+	description: 'Direct_message_someone',
+	params: '@username <message>'
+});
