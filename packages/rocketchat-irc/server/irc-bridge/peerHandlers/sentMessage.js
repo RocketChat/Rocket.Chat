@@ -32,6 +32,20 @@ const getDirectRoom = (source, target) => {
 		}
 	});
 
+	RocketChat.models.Subscriptions.upsert({rid, 'u._id': source._id}, {
+		$setOnInsert: {
+			name: target.username,
+			t: 'd',
+			open: false,
+			alert: false,
+			unread: 0,
+			u: {
+				_id: source._id,
+				username: source.username
+			}
+		}
+	});
+
 	return {
 		_id: rid,
 		t: 'd'

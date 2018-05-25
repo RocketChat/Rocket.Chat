@@ -1,6 +1,12 @@
 export default function handleOnLogin(login) {
-	if (login.user === null || this.loggedInUsers.indexOf(login.user._id) !== -1) {
-		return this.log('Invalid or duplicate handleOnLogin call');
+	if (login.user === null) {
+		return this.log('Invalid handleOnLogin call');
+	}
+	if (!login.user.username) {
+		return this.log('Invalid handleOnLogin call (Missing username)');
+	}
+	if (this.loggedInUsers.indexOf(login.user._id) !== -1) {
+		return this.log('Duplicate handleOnLogin call');
 	}
 
 	this.loggedInUsers.push(login.user._id);

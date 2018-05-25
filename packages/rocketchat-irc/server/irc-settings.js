@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('IRC Federation', function() {
+	RocketChat.settings.addGroup('IRC', function() {
 		this.add('IRC_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',

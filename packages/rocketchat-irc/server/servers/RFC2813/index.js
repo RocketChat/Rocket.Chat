@@ -129,7 +129,7 @@ class RFC2813 {
 			this.receiveBuffer = Buffer.concat([this.receiveBuffer, chunk]);
 		}
 
-		const lines = this.receiveBuffer.toString().split(/\r\n|\r|\n/);
+		const lines = this.receiveBuffer.toString().split(/\r\n|\r|\n|\u0007/);
 
 		// If the buffer does not end with \r\n, more chunks are coming
 		if (lines.pop()) {
@@ -140,7 +140,7 @@ class RFC2813 {
 		this.receiveBuffer = new Buffer('');
 
 		lines.forEach((line) => {
-			if (line.length) {
+			if (line.length && !line.startsWith('\a')) {
 				const parsedMessage = parseMessage(line);
 
 				if (peerCommandHandlers[parsedMessage.command]) {
@@ -150,10 +150,8 @@ class RFC2813 {
 
 					if (command) {
 						this.log(`Emitting peer command to local: ${ JSON.stringify(command) }`);
-
 						this.emit('peerCommand', command);
 					}
-
 				} else {
 					this.log(`Unhandled peer message: ${ JSON.stringify(parsedMessage) }`);
 				}

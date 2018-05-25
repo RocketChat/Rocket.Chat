@@ -1,13 +1,27 @@
-import _ from 'underscore';
-
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
-
 	// Direct message
 	if (to.t === 'd') {
-		const recipientUser = RocketChat.models.Users.findOne({ username: _.without(to.usernames, to.username)[0] });
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(to._id);
+		subscriptions.forEach((subscription) => {
+			if (subscription.u.username !== to.username) {
+				const userData = RocketChat.models.Users.findOne({ username: subscription.u.username });
+				if (userData) {
+					if (userData.profile && userData.profile.irc && userData.profile.irc.nick) {
+						toIdentification = userData.profile.irc.nick;
+					} else {
+						toIdentification = userData.username;
+					}
+				} else {
+					toIdentification = subscription.u.username;
+				}
+			}
+		});
 
-		toIdentification = recipientUser.profile.irc.nick;
+		if (!toIdentification) {
+			console.error('[irc][server] Target user not found');
+			return;
+		}
 	} else {
 		toIdentification = `#${ to.name }`;
 	}

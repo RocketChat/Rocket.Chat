@@ -2,7 +2,19 @@ import Bridge from '../irc-bridge';
 
 Meteor.methods({
 	resetIrcConnection() {
-		if (!!RocketChat.settings.get('IRC_Enabled') === true) {
+		const ircEnabled = (!!RocketChat.settings.get('IRC_Enabled')) === true;
+
+		if (Meteor.ircBridge) {
+			Meteor.ircBridge.stop();
+			if (!ircEnabled) {
+				return {
+					message: 'Connection_Closed',
+					params: []
+				};
+			}
+		}
+
+		if (ircEnabled) {
 			if (Meteor.ircBridge) {
 				Meteor.ircBridge.init();
 				return {
@@ -31,12 +43,6 @@ Meteor.methods({
 
 			return {
 				message: 'Connection_Reset',
-				params: []
-			};
-		} else if (Meteor.ircBridge) {
-			Meteor.ircBridge.stop();
-			return {
-				message: 'Connection_Closed',
 				params: []
 			};
 		}

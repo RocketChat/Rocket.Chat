@@ -117,6 +117,7 @@ class Bridge {
 	setupLocalHandlers() {
 		// Auth
 		RocketChat.callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), RocketChat.callbacks.priority.LOW, 'irc-on-login');
+		RocketChat.callbacks.add('afterCreateUser', this.onMessageReceived.bind(this, 'local', 'onCreateUser'), RocketChat.callbacks.priority.LOW, 'irc-on-create-user');
 		// Joining rooms or channels
 		RocketChat.callbacks.add('afterCreateChannel', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-create-channel');
 		RocketChat.callbacks.add('afterCreateRoom', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-create-room');
