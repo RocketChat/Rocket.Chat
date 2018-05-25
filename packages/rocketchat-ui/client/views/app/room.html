@@ -21,7 +21,7 @@
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
 							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
-								{{{RocketChatMarkdown roomAnnouncement}}}
+								<p>{{{RocketChatMarkdown roomAnnouncement}}}</p>
 							</div>
 							{{/if}}
 						{{/unless}}
@@ -61,7 +61,7 @@
 										<div class="upload-progress-text">
 											[{{percentage}}%] {{name}}
 										</div>
-										<button>
+										<button class="upload-progress-close">
 											{{_ "Cancel"}}
 										</button>
 									{{/if}}

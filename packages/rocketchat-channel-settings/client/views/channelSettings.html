@@ -65,7 +65,7 @@
 		{{#with settings.t}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 						{{_ "Public"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
 							{{_ "Everyone_can_access_this_channel"}}
@@ -79,7 +79,7 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "Private"}}
 						<div class="rc-switch-double__description">
 							{{_ "Just_invited_people_can_access_this_channel"}}
@@ -93,7 +93,7 @@
 		{{#with settings.ro}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 						{{_ "Colaborative"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
 							{{_ "All_users_in_the_channel_can_write_new_messages"}}
@@ -107,7 +107,7 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "Read_only"}}
 						<div class="rc-switch-double__description">
 							{{_ "Only_authorized_users_can_write_new_messages"}}
@@ -163,6 +163,25 @@
 			</div>
 			{{/if}}
 		{{/with}}
+
+		 {{#with settings.sysMes}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+
 		{{#with settings.broadcast}}
 			{{#if canView}}
 			<div class="rc-user-info__row">
