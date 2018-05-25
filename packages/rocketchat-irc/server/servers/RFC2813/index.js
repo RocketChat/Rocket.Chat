@@ -129,7 +129,7 @@ class RFC2813 {
 			this.receiveBuffer = Buffer.concat([this.receiveBuffer, chunk]);
 		}
 
-		const lines = this.receiveBuffer.toString().split(/\r\n|\r|\n|\u0007/);
+		const lines = this.receiveBuffer.toString().split(/\r\n|\r|\n|\u0007/); // eslint-disable-line no-control-regex
 
 		// If the buffer does not end with \r\n, more chunks are coming
 		if (lines.pop()) {
