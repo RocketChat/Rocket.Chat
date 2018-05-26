@@ -275,7 +275,11 @@ RocketChat.Livechat = {
 			'Jitsi_Enabled',
 			'Language',
 			'Livechat_enable_transcript',
-			'Livechat_transcript_message'
+			'Livechat_transcript_message',
+			'Livechat_conversation_finished_message',
+			'Livechat_name_field_registration_form',
+			'Livechat_email_field_registration_form'
+
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -415,6 +419,7 @@ RocketChat.Livechat = {
 			customFields: room.livechatData,
 			visitor: {
 				_id: visitor._id,
+				token: visitor.token,
 				name: visitor.name,
 				username: visitor.username,
 				email: null,
