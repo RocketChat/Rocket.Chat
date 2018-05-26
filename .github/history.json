@@ -14548,5 +14548,74 @@
         "web-flow"
       ]
     }
+  ],
+  "0.65.0-rc.3": [
+    {
+      "pr": "10875",
+      "title": "[FIX] Slack-Bridge bug when migrating to 0.64.1",
+      "userLogin": "iliaal",
+      "milestone": "0.65.0",
+      "contributors": [
+        null
+      ]
+    },
+    {
+      "pr": "10882",
+      "title": "Fix: Manage apps layout was a bit confuse",
+      "userLogin": "gdelavald",
+      "milestone": "0.65.0",
+      "contributors": [
+        "gdelavald",
+        "ggazzo",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10886",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10887",
+      "title": "Fix: Regression Lazyload fix shuffle avatars",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10883",
+      "title": "[FIX] Horizontally align items in preview message",
+      "userLogin": "gdelavald",
+      "milestone": "0.65.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10857",
+      "title": "Fix: typo on error message for push token API",
+      "userLogin": "rafaelks",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rafaelks",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10878",
+      "title": "[FIX] The first users was not set as admin some times",
+      "userLogin": "rodrigok",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    }
   ]
 }
