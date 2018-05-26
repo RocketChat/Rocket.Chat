@@ -1,5 +1,5 @@
 import { AppEvents } from '../communication';
-const ENABLED_STATUS = ['auto_enabled','manually_enabled'];
+const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const enabled = ({status}) => ENABLED_STATUS.includes(status);
 const sortByStatus = (a, b) => {
 	if (enabled(a)) {
