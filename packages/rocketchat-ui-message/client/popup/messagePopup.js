@@ -280,16 +280,14 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		const current = template.find('.popup-item.selected');
 		if (current != null) {
-			current.className = current.className
-				.replace(/\sselected/, '')
-				.replace('sidebar-item__popup-active', '');
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 		}
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
 		const template = Template.instance();
-		return (template.clickingItem = true);
+		return template.clickingItem = true;
 	},
 	'mouseup .popup-item, touchend .popup-item'() {
 		const template = Template.instance();
