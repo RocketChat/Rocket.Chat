@@ -1,15 +1,14 @@
 import { AppEvents } from '../communication';
-
+const ENABLED_STATUS = ['auto_enabled','manually_enabled'];
+const enabled = ({status}) => ENABLED_STATUS.includes(status);
 const sortByStatus = (a, b) => {
-	if (a.status === 'auto_enabled' || a.status === 'manually_enabled') {
-		if (b.status === 'auto_enabled' || b.status === 'manually_enabled') {
+	if (enabled(a)) {
+		if (enabled(b)) {
 			return a.name > b.name;
-		} else {
-			return -1;
 		}
-	} else {
-		return 1;
+		return -1;
 	}
+	return 1;
 };
 
 Template.apps.onCreated(function() {
