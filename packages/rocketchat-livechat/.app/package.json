@@ -20,14 +20,14 @@
     "email": "support@rocket.chat"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.40",
+    "@babel/runtime": "^7.0.0-beta.46",
     "autolinker": "^1.6.2",
-    "bcrypt": "^1.0.3",
-    "core-js": "^2.5.3",
+    "bcrypt": "^2.0.1",
+    "core-js": "^2.5.5",
     "jquery": "^3.3.1",
-    "moment": "^2.20.1",
+    "moment": "^2.22.1",
     "toastr": "^2.1.4",
-    "underscore": "^1.8.3",
+    "underscore": "^1.9.0",
     "underscore.string": "^3.3.4"
   }
 }

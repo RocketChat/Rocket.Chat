@@ -19,7 +19,7 @@ export class AppSettingBridge {
 		];
 	}
 
-	getAll(appId) {
+	async getAll(appId) {
 		console.log(`The App ${ appId } is getting all the settings.`);
 
 		return RocketChat.models.Settings.find({ _id: { $nin: this.disallowedSettings } }).fetch().map((s) => {
@@ -27,7 +27,7 @@ export class AppSettingBridge {
 		});
 	}
 
-	getOneById(id, appId) {
+	async getOneById(id, appId) {
 		console.log(`The App ${ appId } is getting the setting by id ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
@@ -37,13 +37,13 @@ export class AppSettingBridge {
 		return this.orch.getConverters().get('settings').convertById(id);
 	}
 
-	hideGroup(name, appId) {
+	async hideGroup(name, appId) {
 		console.log(`The App ${ appId } is hidding the group ${ name }.`);
 
 		throw new Error('Method not implemented.');
 	}
 
-	hideSetting(id, appId) {
+	async hideSetting(id, appId) {
 		console.log(`The App ${ appId } is hidding the setting ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
@@ -53,13 +53,13 @@ export class AppSettingBridge {
 		throw new Error('Method not implemented.');
 	}
 
-	isReadableById(id, appId) {
+	async isReadableById(id, appId) {
 		console.log(`The App ${ appId } is checking if they can read the setting ${ id }.`);
 
 		return !this.disallowedSettings.includes(id);
 	}
 
-	updateOne(setting, appId) {
+	async updateOne(setting, appId) {
 		console.log(`The App ${ appId } is updating the setting ${ setting.id } .`);
 
 		if (!this.isReadableById(setting.id, appId)) {

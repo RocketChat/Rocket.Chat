@@ -8,6 +8,9 @@ Template.offlineForm.helpers({
 	messageSent() {
 		return Template.instance().messageSent.get();
 	},
+	offlineMessage() {
+		return (!_.isEmpty(this.offlineMessage)) ? this.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2') : TAPi18n.__('We_are_not_online_right_now_please_leave_a_message');
+	},
 	offlineSuccessMessage() {
 		if (!_.isEmpty(this.offlineSuccessMessage)) {
 			return this.offlineSuccessMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
