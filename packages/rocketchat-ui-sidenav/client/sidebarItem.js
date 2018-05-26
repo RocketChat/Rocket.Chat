@@ -62,7 +62,7 @@ Template.sidebarItem.onCreated(function() {
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
-		if (!currentData.xlastMessage || RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+		if (!currentData.lastMessage || RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
 		}
 
