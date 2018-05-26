@@ -65,13 +65,15 @@ Template.apps.helpers({
 		return false;
 	},
 	apps() {
-		return Template.instance().apps.get().sort(sortByStatus).filter(({name}) => name.toLowerCase().includes(Template.instance().filter.get().toLowerCase()));
+		const instance = Template.instance();
+		const filter = instance.filter.get().toLowerCase();
+		return instance.apps.get().filter(({name}) => name.toLowerCase().includes(filter)).sort(sortByStatus);
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
 	},
 	activeClass(status) {
-		return status === 'auto_enabled' || status === 'manually_enabled'? 'active' : '';
+		return enabled({status}) ? 'active' : '';
 	}
 });
 
