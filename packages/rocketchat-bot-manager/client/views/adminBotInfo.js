@@ -22,8 +22,8 @@ Template.adminBotInfo.helpers({
 	},
 
 	framework() {
-		const bot = Template.instance().bot.get();
-		return 'Stub Adapter v2.4.2-develop' || (bot && bot.bot.framework);
+		const botData = Template.instance().botData.get();
+		return botData.framework;
 	},
 
 	utc() {
@@ -95,6 +95,7 @@ Template.adminBotInfo.events({
 Template.adminBotInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
 	this.bot = new ReactiveVar;
+	this.botData = new ReactiveVar;
 	this.loadingBotInfo = new ReactiveVar(true);
 	this.loadedBotUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
@@ -112,7 +113,9 @@ Template.adminBotInfo.onCreated(function() {
 		this.loadingBotInfo.set(true);
 
 		return this.subscribe('fullUserData', username, 1, () => {
-			return this.loadingBotInfo.set(false);
+			return this.subscribe('fullBotData', username, 1, () => {
+				return this.loadingBotInfo.set(false);
+			});
 		});
 	});
 
@@ -138,7 +141,9 @@ Template.adminBotInfo.onCreated(function() {
 			filter = { _id: data._id };
 		}
 		const bot = Meteor.users.findOne(filter);
+		const botData = RocketChat.models.Bots.findOneByUsername(bot.username);
 
+		this.botData.set(botData);
 		return this.bot.set(bot);
 	});
 });

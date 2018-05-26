@@ -24,7 +24,7 @@ RocketChat.updateBotData = function(user, botData) {
 			updateBotData.$set.framework = botData.framework;
 		}
 
-		RocketChat.models.Bots.update({ _id: botData._id }, updateBotData);
+		RocketChat.models.Bots.update({ _id: bot._id }, updateBotData);
 
 		return true;
 	}
