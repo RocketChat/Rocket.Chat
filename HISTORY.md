@@ -1,6 +1,25 @@
 
 # 0.65.0 (Under Release Candidate Process)
 
+## 0.65.0-rc.3
+`2018-05-26  ·  3 🐛  ·  4 🔍`
+
+### 🐛 Bug fixes
+
+- Slack-Bridge bug when migrating to 0.64.1 ([#10875](https://github.com/RocketChat/Rocket.Chat/pull/10875))
+- Horizontally align items in preview message ([#10883](https://github.com/RocketChat/Rocket.Chat/pull/10883))
+- The first users was not set as admin some times ([#10878](https://github.com/RocketChat/Rocket.Chat/pull/10878))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Manage apps layout was a bit confuse ([#10882](https://github.com/RocketChat/Rocket.Chat/pull/10882))
+- LingoHub based on develop ([#10886](https://github.com/RocketChat/Rocket.Chat/pull/10886))
+- Fix: Regression Lazyload fix shuffle avatars ([#10887](https://github.com/RocketChat/Rocket.Chat/pull/10887))
+- Fix: typo on error message for push token API ([#10857](https://github.com/RocketChat/Rocket.Chat/pull/10857))
+
+</details>
+
 ## 0.65.0-rc.2
 `2018-05-23  ·  2 🐛  ·  5 🔍  ·  1 👩‍💻👨‍💻`
 
