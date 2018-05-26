@@ -71,7 +71,6 @@ Template.sidebarItem.onCreated(function() {
 		}
 
 		const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
-		console.log('will.renderMessageBody');
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
