@@ -34,14 +34,14 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			name: identifier
 		};
 
-		const subscription = ChatSubscription.findOne(query);
+		const subscription = RocketChat.models.Subscriptions.findOne(query);
 		if (subscription && subscription.rid) {
 			return ChatRoom.findOne(subscription.rid);
 		}
 	}
 
 	roomName(roomData) {
-		const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1, fname: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomData._id}, {fields: {name: 1, fname: 1}});
 		if (!subscription) {
 			return '';
 		}
@@ -55,7 +55,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	secondaryRoomName(roomData) {
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			const subscription = ChatSubscription.findOne({rid: roomData._id}, {fields: {name: 1}});
+			const subscription = RocketChat.models.Subscriptions.findOne({rid: roomData._id}, {fields: {name: 1}});
 			return subscription && subscription.name;
 		}
 	}
@@ -82,6 +82,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
 			case RoomSettingsEnum.NAME:
+			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.DESCRIPTION:
 			case RoomSettingsEnum.READ_ONLY:
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:

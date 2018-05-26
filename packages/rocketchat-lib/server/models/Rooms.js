@@ -679,12 +679,25 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setAnnouncementById(_id, announcement) {
+	setAnnouncementById(_id, announcement, announcementDetails) {
 		const query = {_id};
 
 		const update = {
 			$set: {
-				announcement
+				announcement,
+				announcementDetails
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	setCustomFieldsById(_id, customFields) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				customFields
 			}
 		};
 
@@ -797,6 +810,13 @@ class ModelRooms extends RocketChat.models._Base {
 		_.extend(room, extraData);
 
 		this.insert(room);
+		return room;
+	}
+
+	createWithFullRoomData(room) {
+		delete room._id;
+
+		room._id = this.insert(room);
 		return room;
 	}
 
