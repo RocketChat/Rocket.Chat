@@ -34,7 +34,7 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 	if (sCustomFields) {
 		_.each(sCustomFields, (el, key) => {
 			if (el.public || RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
-				fields["customFields." + key] = 1;
+				fields[`customFields.${key}`] = 1;
 			}
 		});
 	}
