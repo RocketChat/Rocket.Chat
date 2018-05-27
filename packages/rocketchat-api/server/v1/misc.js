@@ -1,4 +1,3 @@
-import _ from 'underscore';
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
@@ -20,37 +19,7 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		const getUserPreferences = () => {
-			const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-			const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
-
-			return allDefaultUserSettings.reduce((accumulator, setting) => {
-				const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
-				accumulator[settingWithoutPrefix] = RocketChat.getUserPreference(this.getLoggedInUser(), settingWithoutPrefix);
-				return accumulator;
-			}, {});
-		};
-		const me = _.pick(this.user, [
-			'_id',
-			'name',
-			'emails',
-			'status',
-			'statusConnection',
-			'username',
-			'utcOffset',
-			'active',
-			'language',
-			'roles'
-		]);
-
-		const verifiedEmail = me.emails.find((email) => email.verified);
-
-		me.email = verifiedEmail ? verifiedEmail.address : undefined;
-		me.settings = {
-			preferences: getUserPreferences()
-		};
-
-		return RocketChat.API.v1.success(me);
+		return RocketChat.API.v1.success(this.getUserInfo(RocketChat.models.Users.findOneById(this.userId)));
 	}
 });
 
@@ -176,12 +145,17 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		const { sort, query } = this.parseJsonQuery();
 
 		const { text, type } = query;
-		const sortDirection = sort && sort === 1 ? 'asc' : 'desc';
+		if (sort && Object.keys(sort).length > 1) {
+			return RocketChat.API.v1.failure('This method support only one "sort" parameter');
+		}
+		const sortBy = sort ? Object.keys(sort)[0] : undefined;
+		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
 			text,
 			type,
-			sort: sortDirection,
+			sortBy,
+			sortDirection,
 			page: offset,
 			limit: count
 		}));
@@ -189,6 +163,11 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		if (!result) {
 			return RocketChat.API.v1.failure('Please verify the parameters');
 		}
-		return RocketChat.API.v1.success({ result });
+		return RocketChat.API.v1.success({
+			result: result.results,
+			count: result.results.length,
+			offset,
+			total: result.total
+		});
 	}
 });

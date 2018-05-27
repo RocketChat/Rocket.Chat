@@ -39,6 +39,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
@@ -52,6 +59,13 @@ describe('miscellaneous', function() {
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
 			.end(done);
 	});
 
@@ -125,6 +139,9 @@ describe('miscellaneous', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('createdAt');
 					expect(res.body.result[0]).to.have.property('username');
@@ -146,6 +163,9 @@ describe('miscellaneous', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('result').and.to.be.an('array');
 					expect(res.body.result[0]).to.have.property('_id');
 					expect(res.body.result[0]).to.have.property('name');
@@ -154,7 +174,33 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
-
+		it('should return an array(result) when search by channel with sort params correctly and execute succesfully', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: testChannel.name,
+						type: 'channels'
+					}),
+					sort: JSON.stringify(({
+						name: 1
+					}))
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('result').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('_id');
+					expect(res.body.result[0]).to.have.property('name');
+					expect(res.body.result[0]).to.have.property('usernames').and.to.be.an('array');
+					expect(res.body.result[0]).to.have.property('ts');
+				})
+				.end(done);
+		});
 		it('should return an error when send invalid query', (done) => {
 			request.get(api('directory'))
 				.set(credentials)
@@ -163,6 +209,26 @@ describe('miscellaneous', function() {
 						text: 'invalid channel',
 						type: 'invalid'
 					})
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should return an error when have more than one sort parameter', (done) => {
+			request.get(api('directory'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({
+						text: testChannel.name,
+						type: 'channels'
+					}),
+					sort: JSON.stringify(({
+						name: 1,
+						test: 1
+					}))
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
