@@ -31,19 +31,22 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 
 	const metaCustomFields = RocketChat.settings.get('Accounts_CustomFields').trim();
 	let sCustomFields;
-	try {
-		sCustomFields = JSON.parse(metaCustomFields);
 
-		if (sCustomFields) {
-			_.each(sCustomFields, (el, key) => {
-				if (el.public || RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
-					fields[`customFields.${ key }`] = 1;
-				}
-			});
-		}
-	} catch (e) {
-		if (metaCustomFields !== '') {
-			console.log('Invalid custom account fields!');
+	if (metaCustomFields !== '') {
+		try {
+			sCustomFields = JSON.parse(metaCustomFields);
+
+			if (sCustomFields) {
+				Object.keys(sCustomFields).forEach((key) => {
+					const el = sCustomFields[key];
+
+					if (el.public || RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
+						fields[`customFields.${ key }`] = 1;
+					}
+				});
+			}
+		} catch (e) {
+			console.log(`Invalid custom account fields: ${ e }`);
 		}
 	}
 
