@@ -1,20 +1,16 @@
 RocketChat.Migrations.add({
 	version: 109,
 	up() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+		const FileUpload_GoogleStorage_Proxy = (RocketChat.models.Settings.findOne({_id: 'FileUpload_GoogleStorage_Proxy'}) || {}).value === true;
+		const FileUpload_S3_Proxy = (RocketChat.models.Settings.findOne({_id: 'FileUpload_S3_Proxy'}) || {}).value === true;
 
-			const newPermission = RocketChat.models.Permissions.findOne('view-livechat-manager');
-			if (newPermission && newPermission.roles.length) {
-				RocketChat.models.Permissions.upsert({ _id: 'remove-closed-livechat-rooms' }, { $set: { roles: newPermission.roles } });
-			}
-		}
-	},
+		RocketChat.models.Settings.update({_id: 'FileUpload_GoogleStorage_Proxy_Avatars'}, {$set: {value: FileUpload_GoogleStorage_Proxy}});
+		RocketChat.models.Settings.update({_id: 'FileUpload_GoogleStorage_Proxy_Uploads'}, {$set: {value: FileUpload_GoogleStorage_Proxy}});
 
-	down() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+		RocketChat.models.Settings.update({_id: 'FileUpload_S3_Proxy_Avatars'}, {$set: {value: FileUpload_S3_Proxy}});
+		RocketChat.models.Settings.update({_id: 'FileUpload_S3_Proxy_Uploads'}, {$set: {value: FileUpload_S3_Proxy}});
 
-			// Revert permission
-			RocketChat.models.Permissions.remove({ _id: 'remove-closed-livechat-rooms' });
-		}
+		RocketChat.models.Settings.remove({_id: 'FileUpload_GoogleStorage_Proxy'});
+		RocketChat.models.Settings.remove({_id: 'FileUpload_S3_Proxy'});
 	}
 });
