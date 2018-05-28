@@ -468,6 +468,57 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'boolean'
 		});
 	});
+
+	this.section('Password_Policy', function() {
+		this.add('Accounts_Password_Policy_Enabled', false, {
+			type: 'boolean'
+		});
+
+		const enableQuery = {
+			_id: 'Accounts_Password_Policy_Enabled',
+			value: true
+		};
+
+		this.add('Accounts_Password_Policy_MinLength', 7, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_MaxLength', -1, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
+			type: 'boolean',
+			enableQuery
+		});
+	});
 });
 
 RocketChat.settings.addGroup('OAuth', function() {
@@ -651,6 +702,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 0
@@ -658,6 +710,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Language', '', {
 		type: 'language',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 1
