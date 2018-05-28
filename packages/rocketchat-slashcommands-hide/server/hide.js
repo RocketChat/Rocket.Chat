@@ -3,39 +3,29 @@
 * Hide is a named function that will replace /hide commands
 * @param {Object} message - The message object
 */
-function Hide(command, params, item) {
-	if (command !== 'hide' || !Match.test(params, String)) {
+function Hide(command, param, item) {
+	if (command !== 'hide' || !Match.test(param, String)) {
 		return;
 	}
-	const room = params.trim();
+	const room = param.trim();
 	const user = Meteor.user();
-	let rid;
-
 	// if there is not a param, hide the current room
-	if (room === '') {
-		rid = item.rid;
-	} else {
-		const strippedRoom = room.replace(/#|@/, '');
-		let roomObject;
+	let {rid} = item;
+	if (room !== '') {
+		const [strippedRoom] = room.replace(/#|@/, '').split(' ');
+		const [type] = room;
 
-		// find channel or direct message room
-		if (room[0] === '#') {
-			roomObject = RocketChat.models.Rooms.findOneByName(strippedRoom);
-		} else if (room[0] === '@') {
-			roomObject = RocketChat.models.Rooms.findOne({
-				t: 'd',
-				usernames: { $all: [user.username, strippedRoom] }
-			});
-		}
+		const roomObject = type === '#' ? RocketChat.models.Rooms.findOneByName(strippedRoom) : RocketChat.models.Rooms.findOne({
+			t: 'd',
+			usernames: { $all: [user.username, strippedRoom] }
+		});
 
-		if (roomObject) {
-			rid = roomObject._id;
-		} else {
-			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		if (!roomObject) {
+			return RocketChat.Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
-				msg: TAPi18n.__('Room_doesnt_exist', {
+				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [room]
 				}, user.language)
@@ -43,7 +33,7 @@ function Hide(command, params, item) {
 		}
 
 		if (!roomObject.usernames.includes(user.username)) {
-			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			return RocketChat.Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
@@ -53,11 +43,12 @@ function Hide(command, params, item) {
 				}, user.language)
 			});
 		}
+		rid = roomObject._id;
 	}
 
 	Meteor.call('hideRoom', rid, error => {
 		if (error) {
-			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			return RocketChat.Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
@@ -67,4 +58,4 @@ function Hide(command, params, item) {
 	});
 }
 
-RocketChat.slashCommands.add('hide', Hide, { description: 'Hide_given_room', params: '#room' });
+RocketChat.slashCommands.add('hide', Hide, { description: 'Hide_room', params: '#room' });
