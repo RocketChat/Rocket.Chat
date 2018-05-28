@@ -137,6 +137,7 @@
 		"file-type": "^8.0.0",
 		"filesize": "^3.6.1",
 		"grapheme-splitter": "^1.0.2",
+		"googleapis": "^27.0.0",
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.1.1",
 		"highlight.js": "^9.12.0",

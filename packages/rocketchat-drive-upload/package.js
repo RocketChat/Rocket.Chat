@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:api');
+	api.use('rocketchat:grant');
 
-	api.addFiles('server/drive-upload.js', 'server');
+	api.addFiles('drive-upload.js');
 });
