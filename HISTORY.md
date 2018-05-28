@@ -1,9 +1,91 @@
 
-# 0.64.2
-`2018-05-18  ·  4 🎉  ·  8 🐛  ·  16 🔍  ·  5 👩‍💻👨‍💻`
+# 0.65.0 (Under Release Candidate Process)
+
+## 0.65.0-rc.3
+`2018-05-26  ·  3 🐛  ·  4 🔍`
+
+### 🐛 Bug fixes
+
+- Slack-Bridge bug when migrating to 0.64.1 ([#10875](https://github.com/RocketChat/Rocket.Chat/pull/10875))
+- Horizontally align items in preview message ([#10883](https://github.com/RocketChat/Rocket.Chat/pull/10883))
+- The first users was not set as admin some times ([#10878](https://github.com/RocketChat/Rocket.Chat/pull/10878))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Manage apps layout was a bit confuse ([#10882](https://github.com/RocketChat/Rocket.Chat/pull/10882))
+- LingoHub based on develop ([#10886](https://github.com/RocketChat/Rocket.Chat/pull/10886))
+- Fix: Regression Lazyload fix shuffle avatars ([#10887](https://github.com/RocketChat/Rocket.Chat/pull/10887))
+- Fix: typo on error message for push token API ([#10857](https://github.com/RocketChat/Rocket.Chat/pull/10857))
+
+</details>
+
+## 0.65.0-rc.2
+`2018-05-23  ·  2 🐛  ·  5 🔍  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Missing pagination fields in the response of REST /directory endpoint ([#10840](https://github.com/RocketChat/Rocket.Chat/pull/10840))
+- Layout badge cutting on unread messages for long names ([#10846](https://github.com/RocketChat/Rocket.Chat/pull/10846) by [@kos4live](https://github.com/kos4live))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Fix email notification preference not showing correct selected value ([#10847](https://github.com/RocketChat/Rocket.Chat/pull/10847))
+- Apps: Command previews are clickable & Apps Framework is controlled via a setting ([#10853](https://github.com/RocketChat/Rocket.Chat/pull/10853))
+- Regression: Make settings `Site_Name` and `Language` public again ([#10848](https://github.com/RocketChat/Rocket.Chat/pull/10848))
+- Fix: Clarify the wording of the release issue template ([#10520](https://github.com/RocketChat/Rocket.Chat/pull/10520))
+- Fix: Regression on users avatar in admin pages ([#10836](https://github.com/RocketChat/Rocket.Chat/pull/10836))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kos4live](https://github.com/kos4live)
+
+## 0.65.0-rc.1
+`2018-05-21  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
+- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753) by [@cardoso](https://github.com/cardoso))
+
+### 🐛 Bug fixes
+
+- Internal Error when requesting user data download ([#10837](https://github.com/RocketChat/Rocket.Chat/pull/10837))
+- Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times ([#10835](https://github.com/RocketChat/Rocket.Chat/pull/10835))
+- User's preference `Unread on Top` wasn't working for LiveChat rooms ([#10734](https://github.com/RocketChat/Rocket.Chat/pull/10734))
+- Cancel button wasn't working while uploading file ([#10715](https://github.com/RocketChat/Rocket.Chat/pull/10715) by [@Mr-Gryphon](https://github.com/Mr-Gryphon))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Regression in REST API endpoint `/me`  ([#10833](https://github.com/RocketChat/Rocket.Chat/pull/10833))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Mr-Gryphon](https://github.com/Mr-Gryphon)
+- [@cardoso](https://github.com/cardoso)
+
+## 0.65.0-rc.0
+`2018-05-20  ·  16 🎉  ·  15 🐛  ·  25 🔍  ·  15 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Implement a local password policy ([#9857](https://github.com/RocketChat/Rocket.Chat/pull/9857))
+- Options to enable/disable each Livechat registration form field ([#10584](https://github.com/RocketChat/Rocket.Chat/pull/10584))
+- Return the result of the `/me` endpoint within the result of the `/login` endpoint ([#10677](https://github.com/RocketChat/Rocket.Chat/pull/10677))
+- Lazy load image attachments ([#10608](https://github.com/RocketChat/Rocket.Chat/pull/10608))
+- View pinned message's attachment ([#10214](https://github.com/RocketChat/Rocket.Chat/pull/10214) by [@c0dzilla](https://github.com/c0dzilla))
+- Add REST API endpoint `users.getUsernameSuggestion` to get username suggestion ([#10702](https://github.com/RocketChat/Rocket.Chat/pull/10702))
+- REST API endpoint `settings` now allow set colors and trigger actions ([#10488](https://github.com/RocketChat/Rocket.Chat/pull/10488) by [@ThomasRoehl](https://github.com/ThomasRoehl))
+- Add REST endpoint `subscriptions.unread` to mark messages as unread ([#10778](https://github.com/RocketChat/Rocket.Chat/pull/10778))
+- REST API endpoint `/me` now returns all the settings, including the default values ([#10662](https://github.com/RocketChat/Rocket.Chat/pull/10662))
+- Now is possible to access files using header authorization (`x-user-id` and `x-auth-token`) ([#10741](https://github.com/RocketChat/Rocket.Chat/pull/10741))
+- Add REST API endpoints `channels.counters`, `groups.counters and `im.counters` ([#9679](https://github.com/RocketChat/Rocket.Chat/pull/9679) by [@xbolshe](https://github.com/xbolshe))
+- Add REST API endpoints `channels.setCustomFields` and `groups.setCustomFields` ([#9733](https://github.com/RocketChat/Rocket.Chat/pull/9733) by [@xbolshe](https://github.com/xbolshe))
 - Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
 - Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
 - Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523))
@@ -11,6 +93,95 @@
 
 ### 🐛 Bug fixes
 
+- Livechat managers were not being able to send messages in some cases ([#10663](https://github.com/RocketChat/Rocket.Chat/pull/10663))
+- Livechat settings not appearing correctly ([#10612](https://github.com/RocketChat/Rocket.Chat/pull/10612))
+- Enabling `Collapse Embedded Media by Default` was hiding replies and quotes ([#10427](https://github.com/RocketChat/Rocket.Chat/pull/10427) by [@c0dzilla](https://github.com/c0dzilla))
+- Missing option to disable/enable System Messages ([#10704](https://github.com/RocketChat/Rocket.Chat/pull/10704))
+- Remove outdated translations of Internal Hubot's description of Scripts to Load that were pointing to a non existent address ([#10448](https://github.com/RocketChat/Rocket.Chat/pull/10448))
+- UI was not disabling the actions when users has had no permissions to create channels or add users to rooms ([#10564](https://github.com/RocketChat/Rocket.Chat/pull/10564) by [@cfunkles](https://github.com/cfunkles) & [@chuckAtCataworx](https://github.com/chuckAtCataworx))
+- Private settings were not being cleared from client cache in some cases ([#10625](https://github.com/RocketChat/Rocket.Chat/pull/10625))
+- Not escaping special chars on mentions ([#10793](https://github.com/RocketChat/Rocket.Chat/pull/10793) by [@erhan-](https://github.com/erhan-))
+- Send a message when muted returns inconsistent result in chat.sendMessage ([#10720](https://github.com/RocketChat/Rocket.Chat/pull/10720))
+- Regression: Empty content on announcement modal ([#10733](https://github.com/RocketChat/Rocket.Chat/pull/10733))
+- Missing attachment description when Rocket.Chat Apps were enabled ([#10705](https://github.com/RocketChat/Rocket.Chat/pull/10705))
+- Improve desktop notification formatting ([#10445](https://github.com/RocketChat/Rocket.Chat/pull/10445) by [@Sameesunkaria](https://github.com/Sameesunkaria))
+- Message box emoji icon was flickering when typing a text ([#10678](https://github.com/RocketChat/Rocket.Chat/pull/10678))
+- Channel owner was being set as muted when creating a read-only channel ([#10665](https://github.com/RocketChat/Rocket.Chat/pull/10665))
+- SAML wasn't working correctly when running multiple instances ([#10681](https://github.com/RocketChat/Rocket.Chat/pull/10681))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Apps: Command Previews, Message and Room Removal Events ([#10822](https://github.com/RocketChat/Rocket.Chat/pull/10822))
+- Develop sync ([#10815](https://github.com/RocketChat/Rocket.Chat/pull/10815) by [@nsuchy](https://github.com/nsuchy))
+- Major dependencies update ([#10661](https://github.com/RocketChat/Rocket.Chat/pull/10661))
+- Prevent setup wizard redirects ([#10811](https://github.com/RocketChat/Rocket.Chat/pull/10811))
+- Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
+- Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
+- Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
+- Regression: Fix wrong wizard field name ([#10804](https://github.com/RocketChat/Rocket.Chat/pull/10804))
+- Prometheus: Improve metric names ([#10789](https://github.com/RocketChat/Rocket.Chat/pull/10789))
+- Improvement to push notifications on direct messages ([#10788](https://github.com/RocketChat/Rocket.Chat/pull/10788))
+- Better metric for notifications ([#10786](https://github.com/RocketChat/Rocket.Chat/pull/10786))
+- Add badge back to push notifications ([#10779](https://github.com/RocketChat/Rocket.Chat/pull/10779))
+- Wizard improvements ([#10776](https://github.com/RocketChat/Rocket.Chat/pull/10776))
+- Add setting and expose prometheus on port 9100 ([#10766](https://github.com/RocketChat/Rocket.Chat/pull/10766))
+- Regression: Fix notifications for direct messages ([#10760](https://github.com/RocketChat/Rocket.Chat/pull/10760))
+- More improvements on send notifications logic ([#10736](https://github.com/RocketChat/Rocket.Chat/pull/10736))
+- LingoHub based on develop ([#10691](https://github.com/RocketChat/Rocket.Chat/pull/10691))
+- Add `npm run postinstall` into example build script ([#10524](https://github.com/RocketChat/Rocket.Chat/pull/10524) by [@peccu](https://github.com/peccu))
+- Correct links in README file ([#10674](https://github.com/RocketChat/Rocket.Chat/pull/10674) by [@winterstefan](https://github.com/winterstefan))
+- Release 0.64.2 ([#10812](https://github.com/RocketChat/Rocket.Chat/pull/10812) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@cardoso](https://github.com/cardoso) & [@erhan-](https://github.com/erhan-) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
+- Release 0.64.1 ([#10660](https://github.com/RocketChat/Rocket.Chat/pull/10660) by [@saplla](https://github.com/saplla))
+- Release 0.64.0 ([#10613](https://github.com/RocketChat/Rocket.Chat/pull/10613) by [@TwizzyDizzy](https://github.com/TwizzyDizzy) & [@christianh814](https://github.com/christianh814) & [@tttt-conan](https://github.com/tttt-conan))
+- Release 0.63.3 ([#10504](https://github.com/RocketChat/Rocket.Chat/pull/10504))
+- Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
+- add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Sameesunkaria](https://github.com/Sameesunkaria)
+- [@ThomasRoehl](https://github.com/ThomasRoehl)
+- [@TwizzyDizzy](https://github.com/TwizzyDizzy)
+- [@c0dzilla](https://github.com/c0dzilla)
+- [@cardoso](https://github.com/cardoso)
+- [@cfunkles](https://github.com/cfunkles)
+- [@christianh814](https://github.com/christianh814)
+- [@chuckAtCataworx](https://github.com/chuckAtCataworx)
+- [@erhan-](https://github.com/erhan-)
+- [@nsuchy](https://github.com/nsuchy)
+- [@peccu](https://github.com/peccu)
+- [@saplla](https://github.com/saplla)
+- [@tttt-conan](https://github.com/tttt-conan)
+- [@winterstefan](https://github.com/winterstefan)
+- [@xbolshe](https://github.com/xbolshe)
+
+# 0.64.2
+`2018-05-18  ·  8 🎉  ·  16 🐛  ·  31 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
+- Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
+- Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523))
+- Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
+- Add REST endpoints `channels.roles` & `groups.roles` ([#10607](https://github.com/RocketChat/Rocket.Chat/pull/10607) by [@cardoso](https://github.com/cardoso))
+- Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
+- Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523))
+- Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
+
+### 🐛 Bug fixes
+
+- Not escaping special chars on mentions ([#10793](https://github.com/RocketChat/Rocket.Chat/pull/10793) by [@erhan-](https://github.com/erhan-))
+- Send a message when muted returns inconsistent result in chat.sendMessage ([#10720](https://github.com/RocketChat/Rocket.Chat/pull/10720))
+- Regression: Empty content on announcement modal ([#10733](https://github.com/RocketChat/Rocket.Chat/pull/10733))
+- Missing attachment description when Rocket.Chat Apps were enabled ([#10705](https://github.com/RocketChat/Rocket.Chat/pull/10705))
+- Improve desktop notification formatting ([#10445](https://github.com/RocketChat/Rocket.Chat/pull/10445) by [@Sameesunkaria](https://github.com/Sameesunkaria))
+- Message box emoji icon was flickering when typing a text ([#10678](https://github.com/RocketChat/Rocket.Chat/pull/10678))
+- Channel owner was being set as muted when creating a read-only channel ([#10665](https://github.com/RocketChat/Rocket.Chat/pull/10665))
+- SAML wasn't working correctly when running multiple instances ([#10681](https://github.com/RocketChat/Rocket.Chat/pull/10681))
 - Send a message when muted returns inconsistent result in chat.sendMessage ([#10720](https://github.com/RocketChat/Rocket.Chat/pull/10720))
 - Regression: Empty content on announcement modal ([#10733](https://github.com/RocketChat/Rocket.Chat/pull/10733))
 - Missing attachment description when Rocket.Chat Apps were enabled ([#10705](https://github.com/RocketChat/Rocket.Chat/pull/10705))
@@ -23,7 +194,22 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Prevent setup wizard redirects ([#10811](https://github.com/RocketChat/Rocket.Chat/pull/10811))
+- Release 0.64.2 ([#10812](https://github.com/RocketChat/Rocket.Chat/pull/10812) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@cardoso](https://github.com/cardoso) & [@erhan-](https://github.com/erhan-) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
+- Prometheus: Add metric to track hooks time ([#10798](https://github.com/RocketChat/Rocket.Chat/pull/10798))
+- Regression: Autorun of wizard was not destroyed after completion ([#10802](https://github.com/RocketChat/Rocket.Chat/pull/10802))
+- Prometheus: Fix notification metric ([#10803](https://github.com/RocketChat/Rocket.Chat/pull/10803))
+- Regression: Fix wrong wizard field name ([#10804](https://github.com/RocketChat/Rocket.Chat/pull/10804))
+- Prometheus: Improve metric names ([#10789](https://github.com/RocketChat/Rocket.Chat/pull/10789))
+- Improvement to push notifications on direct messages ([#10788](https://github.com/RocketChat/Rocket.Chat/pull/10788))
+- Better metric for notifications ([#10786](https://github.com/RocketChat/Rocket.Chat/pull/10786))
+- Add badge back to push notifications ([#10779](https://github.com/RocketChat/Rocket.Chat/pull/10779))
+- Wizard improvements ([#10776](https://github.com/RocketChat/Rocket.Chat/pull/10776))
+- Add setting and expose prometheus on port 9100 ([#10766](https://github.com/RocketChat/Rocket.Chat/pull/10766))
+- Regression: Fix notifications for direct messages ([#10760](https://github.com/RocketChat/Rocket.Chat/pull/10760))
+- More improvements on send notifications logic ([#10736](https://github.com/RocketChat/Rocket.Chat/pull/10736))
+- LingoHub based on develop ([#10691](https://github.com/RocketChat/Rocket.Chat/pull/10691))
+- Add `npm run postinstall` into example build script ([#10524](https://github.com/RocketChat/Rocket.Chat/pull/10524) by [@peccu](https://github.com/peccu))
+- Correct links in README file ([#10674](https://github.com/RocketChat/Rocket.Chat/pull/10674) by [@winterstefan](https://github.com/winterstefan))
 - More improvements on send notifications logic ([#10736](https://github.com/RocketChat/Rocket.Chat/pull/10736))
 - LingoHub based on develop ([#10691](https://github.com/RocketChat/Rocket.Chat/pull/10691))
 - Add `npm run postinstall` into example build script ([#10524](https://github.com/RocketChat/Rocket.Chat/pull/10524) by [@peccu](https://github.com/peccu))
