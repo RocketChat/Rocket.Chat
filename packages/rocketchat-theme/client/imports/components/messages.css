@@ -99,15 +99,13 @@
 
 .rtl .messages-box .user-typing {
 	right: 0;
-
-	margin-right: 24px;
 }
 
 .messages-box {
 	& .user-typing {
 		height: 24px;
 
-		padding-left: 24px;
+		padding: 0 24px;
 
 		color: var(--message-box-user-typing-color);
 
