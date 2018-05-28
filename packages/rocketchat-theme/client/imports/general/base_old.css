@@ -2620,6 +2620,16 @@
 	position: relative;
 }
 
+.rc-old .message-popup-items.preview-items {
+	display: flex;
+	overflow-y: auto;
+}
+
+.rc-old .preview-items .popup-item {
+	padding: 5px;
+	line-height: unset;
+}
+
 .rc-old .rc-message-box .reply-preview {
 
 	position: relative;
