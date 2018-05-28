@@ -1,76 +1,6 @@
 
-# 0.65.0 (Under Release Candidate Process)
-
-## 0.65.0-rc.3
-`2018-05-26  ·  3 🐛  ·  4 🔍`
-
-### 🐛 Bug fixes
-
-- Slack-Bridge bug when migrating to 0.64.1 ([#10875](https://github.com/RocketChat/Rocket.Chat/pull/10875))
-- Horizontally align items in preview message ([#10883](https://github.com/RocketChat/Rocket.Chat/pull/10883))
-- The first users was not set as admin some times ([#10878](https://github.com/RocketChat/Rocket.Chat/pull/10878))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix: Manage apps layout was a bit confuse ([#10882](https://github.com/RocketChat/Rocket.Chat/pull/10882))
-- LingoHub based on develop ([#10886](https://github.com/RocketChat/Rocket.Chat/pull/10886))
-- Fix: Regression Lazyload fix shuffle avatars ([#10887](https://github.com/RocketChat/Rocket.Chat/pull/10887))
-- Fix: typo on error message for push token API ([#10857](https://github.com/RocketChat/Rocket.Chat/pull/10857))
-
-</details>
-
-## 0.65.0-rc.2
-`2018-05-23  ·  2 🐛  ·  5 🔍  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Missing pagination fields in the response of REST /directory endpoint ([#10840](https://github.com/RocketChat/Rocket.Chat/pull/10840))
-- Layout badge cutting on unread messages for long names ([#10846](https://github.com/RocketChat/Rocket.Chat/pull/10846) by [@kos4live](https://github.com/kos4live))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix email notification preference not showing correct selected value ([#10847](https://github.com/RocketChat/Rocket.Chat/pull/10847))
-- Apps: Command previews are clickable & Apps Framework is controlled via a setting ([#10853](https://github.com/RocketChat/Rocket.Chat/pull/10853))
-- Regression: Make settings `Site_Name` and `Language` public again ([#10848](https://github.com/RocketChat/Rocket.Chat/pull/10848))
-- Fix: Clarify the wording of the release issue template ([#10520](https://github.com/RocketChat/Rocket.Chat/pull/10520))
-- Fix: Regression on users avatar in admin pages ([#10836](https://github.com/RocketChat/Rocket.Chat/pull/10836))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@kos4live](https://github.com/kos4live)
-
-## 0.65.0-rc.1
-`2018-05-21  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753) by [@cardoso](https://github.com/cardoso))
-
-### 🐛 Bug fixes
-
-- Internal Error when requesting user data download ([#10837](https://github.com/RocketChat/Rocket.Chat/pull/10837))
-- Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times ([#10835](https://github.com/RocketChat/Rocket.Chat/pull/10835))
-- User's preference `Unread on Top` wasn't working for LiveChat rooms ([#10734](https://github.com/RocketChat/Rocket.Chat/pull/10734))
-- Cancel button wasn't working while uploading file ([#10715](https://github.com/RocketChat/Rocket.Chat/pull/10715) by [@Mr-Gryphon](https://github.com/Mr-Gryphon))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix: Regression in REST API endpoint `/me`  ([#10833](https://github.com/RocketChat/Rocket.Chat/pull/10833))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@Mr-Gryphon](https://github.com/Mr-Gryphon)
-- [@cardoso](https://github.com/cardoso)
-
-## 0.65.0-rc.0
-`2018-05-20  ·  16 🎉  ·  15 🐛  ·  25 🔍  ·  15 👩‍💻👨‍💻`
+# 0.65.0
+`2018-05-27  ·  17 🎉  ·  24 🐛  ·  41 🔍  ·  17 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -90,6 +20,7 @@
 - Add more options for Wordpress OAuth configuration ([#10724](https://github.com/RocketChat/Rocket.Chat/pull/10724))
 - Setup Wizard ([#10523](https://github.com/RocketChat/Rocket.Chat/pull/10523))
 - Improvements to notifications logic ([#10686](https://github.com/RocketChat/Rocket.Chat/pull/10686))
+- Add permission `view-broadcast-member-list` ([#10753](https://github.com/RocketChat/Rocket.Chat/pull/10753) by [@cardoso](https://github.com/cardoso))
 
 ### 🐛 Bug fixes
 
@@ -108,10 +39,25 @@
 - Message box emoji icon was flickering when typing a text ([#10678](https://github.com/RocketChat/Rocket.Chat/pull/10678))
 - Channel owner was being set as muted when creating a read-only channel ([#10665](https://github.com/RocketChat/Rocket.Chat/pull/10665))
 - SAML wasn't working correctly when running multiple instances ([#10681](https://github.com/RocketChat/Rocket.Chat/pull/10681))
+- Internal Error when requesting user data download ([#10837](https://github.com/RocketChat/Rocket.Chat/pull/10837))
+- Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times ([#10835](https://github.com/RocketChat/Rocket.Chat/pull/10835))
+- User's preference `Unread on Top` wasn't working for LiveChat rooms ([#10734](https://github.com/RocketChat/Rocket.Chat/pull/10734))
+- Cancel button wasn't working while uploading file ([#10715](https://github.com/RocketChat/Rocket.Chat/pull/10715) by [@Mr-Gryphon](https://github.com/Mr-Gryphon))
+- Missing pagination fields in the response of REST /directory endpoint ([#10840](https://github.com/RocketChat/Rocket.Chat/pull/10840))
+- Layout badge cutting on unread messages for long names ([#10846](https://github.com/RocketChat/Rocket.Chat/pull/10846) by [@kos4live](https://github.com/kos4live))
+- Slack-Bridge bug when migrating to 0.64.1 ([#10875](https://github.com/RocketChat/Rocket.Chat/pull/10875))
+- Horizontally align items in preview message ([#10883](https://github.com/RocketChat/Rocket.Chat/pull/10883))
+- The first users was not set as admin some times ([#10878](https://github.com/RocketChat/Rocket.Chat/pull/10878))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 0.64.2 ([#10812](https://github.com/RocketChat/Rocket.Chat/pull/10812) by [@Sameesunkaria](https://github.com/Sameesunkaria) & [@cardoso](https://github.com/cardoso) & [@erhan-](https://github.com/erhan-) & [@peccu](https://github.com/peccu) & [@winterstefan](https://github.com/winterstefan))
+- Release 0.64.1 ([#10660](https://github.com/RocketChat/Rocket.Chat/pull/10660) by [@saplla](https://github.com/saplla))
+- Release 0.64.0 ([#10613](https://github.com/RocketChat/Rocket.Chat/pull/10613) by [@TwizzyDizzy](https://github.com/TwizzyDizzy) & [@christianh814](https://github.com/christianh814) & [@tttt-conan](https://github.com/tttt-conan))
+- Release 0.63.3 ([#10504](https://github.com/RocketChat/Rocket.Chat/pull/10504))
+- Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
+- add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
 - Apps: Command Previews, Message and Room Removal Events ([#10822](https://github.com/RocketChat/Rocket.Chat/pull/10822))
 - Develop sync ([#10815](https://github.com/RocketChat/Rocket.Chat/pull/10815) by [@nsuchy](https://github.com/nsuchy))
 - Major dependencies update ([#10661](https://github.com/RocketChat/Rocket.Chat/pull/10661))
@@ -137,11 +83,22 @@
 - Release 0.63.3 ([#10504](https://github.com/RocketChat/Rocket.Chat/pull/10504))
 - Release 0.63.2 ([#10476](https://github.com/RocketChat/Rocket.Chat/pull/10476))
 - add redhat dockerfile to master ([#10408](https://github.com/RocketChat/Rocket.Chat/pull/10408))
+- Fix: Regression in REST API endpoint `/me`  ([#10833](https://github.com/RocketChat/Rocket.Chat/pull/10833))
+- Regression: Fix email notification preference not showing correct selected value ([#10847](https://github.com/RocketChat/Rocket.Chat/pull/10847))
+- Apps: Command previews are clickable & Apps Framework is controlled via a setting ([#10853](https://github.com/RocketChat/Rocket.Chat/pull/10853))
+- Regression: Make settings `Site_Name` and `Language` public again ([#10848](https://github.com/RocketChat/Rocket.Chat/pull/10848))
+- Fix: Clarify the wording of the release issue template ([#10520](https://github.com/RocketChat/Rocket.Chat/pull/10520))
+- Fix: Regression on users avatar in admin pages ([#10836](https://github.com/RocketChat/Rocket.Chat/pull/10836))
+- Fix: Manage apps layout was a bit confuse ([#10882](https://github.com/RocketChat/Rocket.Chat/pull/10882))
+- LingoHub based on develop ([#10886](https://github.com/RocketChat/Rocket.Chat/pull/10886))
+- Fix: Regression Lazyload fix shuffle avatars ([#10887](https://github.com/RocketChat/Rocket.Chat/pull/10887))
+- Fix: typo on error message for push token API ([#10857](https://github.com/RocketChat/Rocket.Chat/pull/10857))
 
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
+- [@Mr-Gryphon](https://github.com/Mr-Gryphon)
 - [@Sameesunkaria](https://github.com/Sameesunkaria)
 - [@ThomasRoehl](https://github.com/ThomasRoehl)
 - [@TwizzyDizzy](https://github.com/TwizzyDizzy)
@@ -151,6 +108,7 @@
 - [@christianh814](https://github.com/christianh814)
 - [@chuckAtCataworx](https://github.com/chuckAtCataworx)
 - [@erhan-](https://github.com/erhan-)
+- [@kos4live](https://github.com/kos4live)
 - [@nsuchy](https://github.com/nsuchy)
 - [@peccu](https://github.com/peccu)
 - [@saplla](https://github.com/saplla)
