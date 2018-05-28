@@ -1,4 +1,4 @@
-/* globals Commands */
+/* globals Commands, Livechat */
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -16,6 +16,16 @@ export default {
 		}
 
 		this.token.set(localStorage.getItem('visitorToken'));
+	},
+
+	reset() {
+		this.id.set(null);
+		this.token.set(null);
+		this.room.set(null);
+		this.data.set(null);
+		this.roomToSubscribe.set(null);
+		this.roomSubscribed = null;
+		this.connected = false;
 	},
 
 	getId() {
@@ -36,6 +46,34 @@ export default {
 
 	getToken() {
 		return this.token.get();
+	},
+
+	setToken(token) {
+		if ((!token) || (token == this.token.get())) {
+			return;
+		}
+
+		this.reset();
+		Livechat.room = null;
+
+		localStorage.setItem('visitorToken', token);
+		this.token.set(token);
+
+		Meteor.call('livechat:loginByToken', token, (err, result) => {
+			console.log(result);
+
+			if (!result) {
+				return;
+			}
+			
+			if (result._id) {
+				this.setId(result._id);
+			}
+
+			if (result.roomId) {
+				Livechat.room = roomId;
+			}
+		});
 	},
 
 	setRoom(rid) {
@@ -62,7 +100,7 @@ export default {
 		}
 
 		this.roomSubscribed = roomId;
-
+		console.log(roomId);
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();

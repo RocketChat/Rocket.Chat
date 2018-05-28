@@ -624,6 +624,22 @@
 		callHook('clearDepartment');
 	};
 
+	var setGuestToken = function(token) {
+		callHook('setGuestToken', token);
+	};
+
+	var setGuestName = function(name) {
+		callHook('setGuestName', name);
+	};
+
+	var setGuestEmail = function(email) {
+		callHook('setGuestEmail', email);
+	};
+
+	var registerGuest = function(guest) {
+		callHook('registerGuest', guest);
+	};
+
 	var currentPage = {
 		href: null,
 		title: null
@@ -722,6 +738,10 @@
 		setTheme: setTheme,
 		setDepartment: setDepartment,
 		clearDepartment: clearDepartment,
+		setGuestToken: setGuestToken,
+		setGuestName: setGuestName,
+		setGuestEmail: setGuestEmail,
+		registerGuest: registerGuest,
 
 		// callbacks
 		onChatMaximized: function(fn) { registerCallback('chat-maximized', fn); },

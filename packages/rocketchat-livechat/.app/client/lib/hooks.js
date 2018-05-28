@@ -37,7 +37,23 @@ const api = {
 
 	widgetClosed() {
 		Livechat.setWidgetClosed();
-	}
+	},
+
+	setGuestToken(token) {
+		visitor.setToken(token);
+	},
+
+	setGuestName(name) {
+
+	},
+
+	setGuestEmail(email) {
+
+	},
+
+	registerGuest(guest) {
+		//aplicar visitor.setId e visitor.setData apos o register
+	}	
 };
 
 window.addEventListener('message', function(msg) {
