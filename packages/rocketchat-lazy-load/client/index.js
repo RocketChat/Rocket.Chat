@@ -37,7 +37,7 @@ const loadImage = (el, instance) => {
 			element.className = element.className.replace('lazy-img', '');
 			element.src = src;
 		}
-		el.removeAttribute('data-src');
+		element.removeAttribute('data-src');
 	};
 	img.src = fixCordova(src);
 };
@@ -58,8 +58,8 @@ export const lazyloadtick = _.debounce(() => {
 	[...document.querySelectorAll('.lazy-img[data-src]')].forEach(el =>
 		isVisible(el, Blaze.getView(el)._templateInstance)
 	);
-}, 500);
+}, 300);
 
 window.lazyloadtick = lazyloadtick;
 
-export const addImage = instance => isVisible(instance);
+export const addImage = instance => isVisible(instance.firstNode, instance);
