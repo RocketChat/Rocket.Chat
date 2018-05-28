@@ -62,7 +62,7 @@ Template.messages.helpers({
 		};
 	},
 	agentData() {
-		const agent = Livechat.agent;
+		const agent = Template.instance().agentData.get();
 		if (!agent) {
 			return null;
 		}
@@ -137,6 +137,12 @@ Template.messages.onCreated(function() {
 	this.atBottom = true;
 
 	this.showOptions = new ReactiveVar(false);
+	this.agentData = new ReactiveVar(null);
+
+	this.autorun(() => {
+		const agentData = Livechat.agent;
+		this.agentData.set(agentData);
+	});
 
 	this.updateMessageInputHeight = function(input) {
 		// Inital height is 28. If the scrollHeight is greater than that( we have more text than area ),

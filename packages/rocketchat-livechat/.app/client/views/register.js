@@ -43,8 +43,8 @@ Template.register.events({
 		const form = e.currentTarget;
 		
 		const fields = [];
-		let name;
-		let email;
+		let name = Livechat.guestName;
+		let email = Livechat.guestEmail;
 
 		if (Livechat.nameFieldRegistrationForm) {
 			fields.push('name');

@@ -44,15 +44,22 @@ const api = {
 	},
 
 	setGuestName(name) {
-
+		visitor.setName(name);
 	},
 
 	setGuestEmail(email) {
-
+		visitor.setEmail(email);
 	},
 
-	registerGuest(guest) {
-		//aplicar visitor.setId e visitor.setData apos o register
+	registerGuest(data) {
+		if (!((typeof data === 'object') && (data.token))) {
+			return;
+		}	
+		Meteor.call('livechat:registerGuest', data, function(error, result) {
+			if (!error) {
+				visitor.setToken(data.token);
+			}	
+		});
 	}	
 };
 

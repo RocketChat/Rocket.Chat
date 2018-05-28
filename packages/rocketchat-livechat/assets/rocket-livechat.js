@@ -620,10 +620,6 @@
 		callHook('setDepartment', department);
 	};
 
-	var clearDepartment = function() {
-		callHook('clearDepartment');
-	};
-
 	var setGuestToken = function(token) {
 		callHook('setGuestToken', token);
 	};
@@ -638,6 +634,10 @@
 
 	var registerGuest = function(guest) {
 		callHook('registerGuest', guest);
+	};
+
+	var clearDepartment = function() {
+		callHook('clearDepartment');
 	};
 
 	var currentPage = {

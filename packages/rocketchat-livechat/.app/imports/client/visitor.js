@@ -25,7 +25,14 @@ export default {
 		this.data.set(null);
 		this.roomToSubscribe.set(null);
 		this.roomSubscribed = null;
-		this.connected = false;
+
+		Livechat.room = null;
+		Livechat.department = null;
+		Livechat.agent = null;
+		Livechat.guestName = null;
+		Livechat.guestEmail = null;
+		
+		msgStream.unsubscribe('room-messages');		
 	},
 
 	getId() {
@@ -52,15 +59,13 @@ export default {
 		if ((!token) || (token == this.token.get())) {
 			return;
 		}
-
+		
 		this.reset();
-		Livechat.room = null;
-
+		
 		localStorage.setItem('visitorToken', token);
 		this.token.set(token);
-
+		
 		Meteor.call('livechat:loginByToken', token, (err, result) => {
-			console.log(result);
 
 			if (!result) {
 				return;
@@ -68,12 +73,39 @@ export default {
 			
 			if (result._id) {
 				this.setId(result._id);
-			}
-
-			if (result.roomId) {
-				Livechat.room = roomId;
+				return result._id;
 			}
 		});
+	},
+
+	setName(name) {
+		Livechat.guestName = name;
+		
+		if (!this.getId()) {
+			return;
+		}
+
+		const data = {
+			token: this.getToken(),
+			name
+		};
+			
+		Meteor.call('livechat:registerGuest', data);
+	},
+
+	setEmail(email) {
+		Livechat.guestEmail = email;
+
+		if (!this.getId()) {
+			return;
+		}
+
+		const data = {
+			token: this.getToken(),
+			email
+		};
+			
+		Meteor.call('livechat:registerGuest', data);
 	},
 
 	setRoom(rid) {
@@ -100,7 +132,7 @@ export default {
 		}
 
 		this.roomSubscribed = roomId;
-		console.log(roomId);
+		
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
