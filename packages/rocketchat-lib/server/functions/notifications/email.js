@@ -83,11 +83,11 @@ function getMessageLink(room, sub) {
 	const message = TAPi18n.__('Offline_Link_Message');
 	let linkSuffix;
 	if (room.t === 'd') {
-		messageSuffix = `/${ room.username }`;
+		linkSuffix = `/${ room.username }`;
 	} else if (room.t === 'c') {
-		messageSuffix = `/${ room.name }`;
+		linkSuffix = `/${ room.name }`;
 	}
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }${ messageSuffix }">${ message }</a>`;
+	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }${ linkSuffix }">${ message }</a>`;
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, toAll }) {
