@@ -84,9 +84,7 @@ Template.adminBots.onCreated(function() {
 		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
 	};
 	this.getFramework = function(username) {
-		console.log(username);
 		const botData = RocketChat.models.Bots.findOneByUsername(username);
-		console.log(botData);
 		if (botData) {
 			return botData.framework;
 		}

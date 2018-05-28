@@ -23,17 +23,10 @@ Template.adminBotInfo.helpers({
 
 	framework() {
 		const botData = Template.instance().botData.get();
-		return botData.framework;
-	},
-
-	utc() {
-		const bot = Template.instance().bot.get();
-		if (bot && bot.utcOffset != null) {
-			if (bot.utcOffset > 0) {
-				return false && `+${ bot.utcOffset }`;
-			}
-			return false && bot.utcOffset;
+		if (botData) {
+			return botData.framework;
 		}
+		return 'Undefined';
 	},
 
 	lastLogin() {

@@ -10,6 +10,7 @@ RocketChat.updateBotData = function(user, botData) {
 				username: user.username
 			},
 			framework: botData.framework,
+			ipAddress: botData.ipAddress,
 			paused: false
 		};
 
@@ -17,12 +18,11 @@ RocketChat.updateBotData = function(user, botData) {
 	} else {
 
 		const updateBotData = {
-			$set: {}
+			$set: {
+				ipAddress: botData.ipAddress,
+				framework: botData.framework
+			}
 		};
-
-		if (botData.framework) {
-			updateBotData.$set.framework = botData.framework;
-		}
 
 		RocketChat.models.Bots.update({ _id: bot._id }, updateBotData);
 

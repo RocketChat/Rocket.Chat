@@ -12,6 +12,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user, not bot type', { method: 'updateBotData' });
 		}
 
+		if (botData.framework === undefined) {
+			throw new Meteor.Error('error-invalid-bot-data', 'Missing framework property', { method: 'updateBotData' });
+		}
+
+		botData.ipAddress = this.connection.clientAddress;
+
 		return RocketChat.updateBotData(user, botData);
 	}
 });
