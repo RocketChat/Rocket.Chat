@@ -3,8 +3,6 @@ import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
-const reply = id => id && `[ ](${ RocketChat.MessageAction.getPermaLink(id) }) `;
-
 this.ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
@@ -179,7 +177,7 @@ this.ChatMessages = class ChatMessages {
 		* * @param {Element} input DOM element
 		* * @param {function?} done callback
 		*/
-	send(rid, input, done = function() {}) {
+	async send(rid, input, done = function() {}) {
 		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
@@ -190,8 +188,7 @@ this.ChatMessages = class ChatMessages {
 			const mentionUser = $(input).data('mention-user') || false;
 
 			if (reply !== undefined) {
-				const url = RocketChat.MessageAction.getPermaLink(reply._id);
-				msg = `[ ](${ url }) `;
+				msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
 				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
 				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
 					msg += `@${ reply.u.username } `;
@@ -404,10 +401,21 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	restoreText(rid) {
-		const text = reply(FlowRouter.getQueryParam('reply')) || localStorage.getItem(`messagebox_${ rid }`);
+		const text = localStorage.getItem(`messagebox_${ rid }`);
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}
+		const msgId = FlowRouter.getQueryParam('reply');
+		if (!msgId) {
+			return;
+		}
+		const message = RocketChat.models.Messages.findOne(msgId);
+		if (message) {
+			return this.$input.data('reply', message).trigger('dataChange');
+		}
+		Meteor.call('getSingleMessage', msgId, (err, msg) => {
+			return !err && this.$input.data('reply', msg).trigger('dataChange');
+		});
 	}
 
 	keyup(rid, event) {
