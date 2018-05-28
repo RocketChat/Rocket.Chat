@@ -24,15 +24,15 @@ class MainContent extends Page {
 	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	// Messages
-	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
-	get lastMessage() { return browser.element('.message:last-child .body'); }
-	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
-	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
-	get beforeLastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
-	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
-	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
-	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
+	get lastMessageUser() { return browser.element('.message:nth-last-child(2) .user-card-message:nth-of-type(2)'); }
+	get lastMessage() { return browser.element('.message:nth-last-child(2) .body'); }
+	get lastMessageDesc() { return browser.element('.message:nth-last-child(2) .body .attachment-description'); }
+	get lastMessageRoleAdded() { return browser.element('.message:nth-last-child(2).subscription-role-added .body'); }
+	get beforeLastMessage() { return browser.element('.message:nth-last-child(3) .body'); }
+	get lastMessageUserTag() { return browser.element('.message:nth-last-child(2) .role-tag'); }
+	get lastMessageImg() { return browser.element('.message:nth-last-child(2) .attachment-image img'); }
+	get lastMessageTextAttachment() { return browser.element('.message:nth-last-child(2) .attachment-text'); }
+	get messageOptionsBtn() { return browser.element('.message:nth-last-child(2) .message-actions__menu'); }
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
