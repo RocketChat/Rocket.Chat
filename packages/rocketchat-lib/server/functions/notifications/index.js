@@ -5,14 +5,14 @@ import s from 'underscore.string';
 *
 * @param {object} message the message to be parsed
 */
-export function parseMessageTextPerUser(message, receiver) {
+export function parseMessageTextPerUser(messageText, message, receiver) {
 	if (!message.msg && message.attachments && message.attachments[0]) {
 		const lng = receiver.language || RocketChat.settings.get('language') || 'en';
 
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', {lng}) : TAPi18n.__('User_uploaded_file', {lng});
 	}
 
-	return message;
+	return messageText;
 }
 
 /**
