@@ -1,12 +1,12 @@
 /* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
+const logger = new Logger('API', {});
 
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
 		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
-		this.helperMethods = new Map();
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
@@ -29,7 +29,8 @@ class API extends Restivus {
 			roles: 0,
 			statusDefault: 0,
 			_updatedAt: 0,
-			customFields: 0
+			customFields: 0,
+			settings: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
@@ -51,6 +52,18 @@ class API extends Restivus {
 		};
 	}
 
+	hasHelperMethods() {
+		return RocketChat.API.helperMethods.size !== 0;
+	}
+
+	getHelperMethods() {
+		return RocketChat.API.helperMethods;
+	}
+
+	getHelperMethod(name) {
+		return RocketChat.API.helperMethods.get(name);
+	}
+
 	addAuthMethod(method) {
 		this.authMethods.push(method);
 	}
@@ -60,10 +73,14 @@ class API extends Restivus {
 			result.success = true;
 		}
 
-		return {
+		result = {
 			statusCode: 200,
 			body: result
 		};
+
+		logger.debug('Success', result);
+
+		return result;
 	}
 
 	failure(result, errorType) {
@@ -80,21 +97,14 @@ class API extends Restivus {
 			}
 		}
 
-		return {
+		result = {
 			statusCode: 400,
 			body: result
 		};
-	}
 
+		logger.debug('Failure', result);
 
-	unauthorized(msg) {
-		return {
-			statusCode: 403,
-			body: {
-				success: false,
-				error: msg ? msg : 'unauthorized'
-			}
-		};
+		return result;
 	}
 
 	notFound(msg) {
@@ -102,7 +112,17 @@ class API extends Restivus {
 			statusCode: 404,
 			body: {
 				success: false,
-				error: msg ? msg : 'Nothing was found'
+				error: msg ? msg : 'Resource not found'
+			}
+		};
+	}
+
+	unauthorized(msg) {
+		return {
+			statusCode: 403,
+			body: {
+				success: false,
+				error: msg ? msg : 'unauthorized'
 			}
 		};
 	}
@@ -119,9 +139,11 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
+		const version = this._config.version;
+
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.helperMethods) {
+			if (this.hasHelperMethods()) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
 						endpoints[method] = {action: endpoints[method]};
@@ -129,33 +151,33 @@ class API extends Restivus {
 
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
-					endpoints[method].action = function() {
+					endpoints[method].action = function _internalRouteActionHandler() {
+						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+							method,
+							version,
+							user_agent: this.request.headers['user-agent'],
+							entrypoint: route
+						});
+
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						result = result ? result : RocketChat.API.v1.success();
+						result = result || RocketChat.API.v1.success();
 
-						if (
-							/(channels|groups)\./.test(route)
-							&& result
-							&& result.body
-							&& result.body.success === true
-							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
-						) {
-							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
-						}
+						rocketchatRestApiEnd({
+							status: result.statusCode
+						});
 
 						return result;
 					};
 
-					for (const [name, helperMethod] of this.helperMethods) {
+					for (const [name, helperMethod] of this.getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
 
@@ -221,6 +243,7 @@ class API extends Restivus {
 		this.addRoute('login', {authRequired: false}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
+				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
@@ -270,7 +293,8 @@ class API extends Restivus {
 					status: 'success',
 					data: {
 						userId: this.userId,
-						authToken: auth.token
+						authToken: auth.token,
+						me: getUserInfo(this.user)
 					}
 				};
 
@@ -321,9 +345,9 @@ class API extends Restivus {
 		};
 
 		/*
-		Add a logout endpoint to the API
-		After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
-		adding hook).
+			Add a logout endpoint to the API
+			After the user is logged out, the onLoggedOut hook is called (see Restfully.configure() for
+			adding hook).
 		*/
 		return this.addRoute('logout', {
 			authRequired: true
@@ -337,9 +361,6 @@ class API extends Restivus {
 		});
 	}
 }
-
-
-RocketChat.API = {};
 
 const getUserAuth = function _getUserAuth() {
 	const invalidResults = [undefined, null, false];
@@ -374,7 +395,13 @@ const getUserAuth = function _getUserAuth() {
 	};
 };
 
-const createApi = function(enableCors) {
+RocketChat.API = {
+	helperMethods: new Map(),
+	getUserAuth,
+	ApiClass: API
+};
+
+const createApi = function _createApi(enableCors) {
 	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
 		RocketChat.API.v1 = new API({
 			version: 'v1',

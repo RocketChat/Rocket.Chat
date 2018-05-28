@@ -1,4 +1,4 @@
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		if (!Meteor.userId()) {
@@ -31,8 +31,15 @@ Meteor.methods({
 			});
 		}
 
-
 		const room = RocketChat.models.Rooms.findOneById(rid);
+
+		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room'
+			});
+		}
+
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'saveRoomSettings'
@@ -77,6 +84,11 @@ Meteor.methods({
 				case 'roomAnnouncement':
 					if (value !== room.announcement) {
 						RocketChat.saveRoomAnnouncement(rid, value, user);
+					}
+					break;
+				case 'roomCustomFields':
+					if (value !== room.customFields) {
+						RocketChat.saveRoomCustomFields(rid, value);
 					}
 					break;
 				case 'roomDescription':
