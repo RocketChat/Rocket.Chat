@@ -373,7 +373,6 @@ Template.messageBox.events({
 	},
 	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		chatMessages[this._id].input = instance.find('.js-input-message');
 	},
 	'click .js-send'(event, instance) {
 		const input = instance.find('.js-input-message');
