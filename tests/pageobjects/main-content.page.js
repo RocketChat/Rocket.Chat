@@ -73,8 +73,8 @@ class MainContent extends Page {
 		this.setTextToInput(text);
 		this.sendBtn.click();
 		browser.waitUntil(function() {
-			browser.waitForVisible('.message:last-child .body', 5000);
-			return browser.getText('.message:last-child .body') === text;
+			browser.waitForVisible('.message:nth-last-child(2) .body', 5000);
+			return browser.getText('.message:nth-last-child(2) .body') === text;
 		}, 5000);
 	}
 
@@ -99,23 +99,23 @@ class MainContent extends Page {
 
 	waitForLastMessageEqualsText(text) {
 		browser.waitUntil(function() {
-			browser.waitForVisible('.message:last-child .body', 5000);
-			return browser.getText('.message:last-child .body') === text;
+			browser.waitForVisible('.message:nth-last-child(2) .body', 5000);
+			return browser.getText('.message:nth-last-child(2) .body') === text;
 		}, 5000);
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
 		browser.waitUntil(function() {
-			browser.waitForVisible('.message:last-child .attachment-text', 5000);
-			return browser.getText('.message:last-child .attachment-text') === text;
+			browser.waitForVisible('.message:nth-last-child(2) .attachment-text', 5000);
+			return browser.getText('.message:nth-last-child(2) .attachment-text') === text;
 		}, 5000);
 	}
 
 	// Wait for the last message author username to equal the provided text
 	waitForLastMessageUserEqualsText(text) {
 		browser.waitUntil(function() {
-			browser.waitForVisible('.message:last-child .user-card-message:nth-of-type(2)', 5000);
-			return browser.getText('.message:last-child .user-card-message:nth-of-type(2)') === text;
+			browser.waitForVisible('.message:nth-last-child(2) .user-card-message:nth-of-type(2)', 5000);
+			return browser.getText('.message:nth-last-child(2) .user-card-message:nth-of-type(2)') === text;
 		}, 5000);
 	}
 
