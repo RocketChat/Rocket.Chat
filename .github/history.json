@@ -14617,5 +14617,85 @@
         "rodrigok"
       ]
     }
+  ],
+  "0.65.0": [
+    {
+      "pr": "10812",
+      "title": "Release 0.64.2",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow",
+        "MarcosSpessatto",
+        "winterstefan",
+        "gdelavald",
+        "peccu",
+        "Sameesunkaria",
+        "sampaiodiego",
+        "engelgabriel",
+        "karlprieb",
+        "cardoso",
+        "erhan-"
+      ]
+    },
+    {
+      "pr": "10660",
+      "title": "Release 0.64.1",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "saplla",
+        "web-flow",
+        "engelgabriel",
+        "graywolf336",
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10613",
+      "title": "Release 0.64.0",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok",
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336",
+        "TwizzyDizzy",
+        "christianh814",
+        "tttt-conan",
+        "gdelavald",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10504",
+      "title": "Release 0.63.3",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "rafaelks",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10476",
+      "title": "Release 0.63.2",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10408",
+      "title": "add redhat dockerfile to master",
+      "userLogin": "geekgonecrazy",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    }
   ]
 }
