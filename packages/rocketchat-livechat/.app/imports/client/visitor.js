@@ -132,7 +132,7 @@ export default {
 		}
 
 		this.roomSubscribed = roomId;
-		
+
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
