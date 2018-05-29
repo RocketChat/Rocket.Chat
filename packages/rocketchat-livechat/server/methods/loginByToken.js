@@ -7,7 +7,7 @@ Meteor.methods({
 		if (!visitor) {
 			return;
 		}
-		
+
 		return {
 			_id: visitor._id
 		};
