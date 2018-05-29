@@ -347,6 +347,29 @@ Meteor.startup(function() {
 		group: 'menu'
 	});
 
+	RocketChat.MessageAction.addButton({
+		id: 'drive-upload',
+		// icon to be added
+		icon: 'drive',
+		label: 'Upload To Drive',
+		async action(event) {
+			const message = this._arguments[1];
+			Meteor.call('uploadFileToDrive', message.file, (() => {toastr.success("Successfully uploaded file to Drive");}));
+		},
+		condition(message) {
+			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
+				return false;
+			}
+			if (!message.file) {
+				return false;
+			}
+			console.log(message);
+			return true;
+		},
+		order: 7,
+		group: 'menu'
+	});
+
 
 
 });
