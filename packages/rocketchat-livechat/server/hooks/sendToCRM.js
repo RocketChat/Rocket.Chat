@@ -3,8 +3,8 @@ const msgNavType = 'livechat_navigation_history';
 const sendMessageType = (msgType) => {
 	const sendNavHistory = RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message') && RocketChat.settings.get('Send_visitor_navigation_history_livechat_webhook_request');
 
-	return sendNavHistory && msgType == msgNavType;
-}
+	return sendNavHistory && msgType === msgNavType;
+};
 
 function sendToCRM(type, room, includeMessages = true) {
 	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
@@ -37,8 +37,8 @@ function sendToCRM(type, room, includeMessages = true) {
 				msg.agentId = message.u._id;
 			}
 
-			if (message.t == msgNavType) {
-				msg.navigation = message.navigation
+			if (message.t === msgNavType) {
+				msg.navigation = message.navigation;
 			}
 
 			postData.messages.push(msg);
@@ -72,7 +72,7 @@ RocketChat.callbacks.add('livechat.saveInfo', (room) => {
 }, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	// only call webhook if it is a livechat room	
+	// only call webhook if it is a livechat room
 	if (room.t !== 'l' || room.v == null || room.v.token == null) {
 		return message;
 	}
