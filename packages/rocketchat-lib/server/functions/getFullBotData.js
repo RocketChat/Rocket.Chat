@@ -12,7 +12,7 @@ RocketChat.getFullBotData = function({userId, filter, limit}) {
 	const fields = {
 		account: 1,
 		framework: 1,
-		running: 1,
+		paused: 1,
 		ipAddress: 1
 	};
 

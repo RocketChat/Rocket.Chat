@@ -47,4 +47,23 @@ RocketChat.models.Bots = new class extends RocketChat.models._Base {
 		botData._id = this.insert(botData);
 		return botData;
 	}
+
+	// UPDATE
+	updateBotStatusById(userId, paused) {
+		const update = {
+			$set: {
+				paused
+			}
+		};
+		return this.update({ 'account._id': userId }, update);
+	}
+
+	updateBotStatusByUsername(username, paused) {
+		const update = {
+			$set: {
+				paused
+			}
+		};
+		return this.update({ 'account.username': username }, update);
+	}
 };

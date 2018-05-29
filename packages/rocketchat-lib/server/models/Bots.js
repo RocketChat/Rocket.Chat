@@ -5,7 +5,7 @@ class ModelBots extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'account._id': 1 });
 		this.tryEnsureIndex({ 'account.username': 1 });
 		this.tryEnsureIndex({ 'framework': 1 });
-		this.tryEnsureIndex({ 'running': 1 });
+		this.tryEnsureIndex({ 'paused': 1 });
 
 		this.cache.ensureIndex('account._id', 'unique');
 		this.cache.ensureIndex('account.username', 'unique');
@@ -52,6 +52,25 @@ class ModelBots extends RocketChat.models._Base {
 
 		botData._id = this.insert(botData);
 		return botData;
+	}
+
+	// UPDATE
+	updateBotStatusById(userId, paused) {
+		const update = {
+			$set: {
+				paused
+			}
+		};
+		return this.update({ 'account._id': userId }, update);
+	}
+
+	updateBotStatusByUsername(username, paused) {
+		const update = {
+			$set: {
+				paused
+			}
+		};
+		return this.update({ 'account.username': username }, update);
 	}
 }
 

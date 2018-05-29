@@ -82,6 +82,11 @@ Template.adminBotDetails.helpers({
 		return bot.roles;
 	},
 
+	isPaused() {
+		const botData = Template.instance().botData.get();
+		return botData.paused;
+	},
+
 	ipAddress() {
 		const botData = Template.instance().botData.get();
 		return `IP Address: ${ botData.ipAddress }`;
@@ -100,6 +105,16 @@ Template.adminBotDetails.helpers({
 Template.adminBotDetails.events({
 	'blur input': (e, t) => {
 		t.updateBot();
+	},
+
+	'click .resume': (e, t) => {
+		const bot = t.bot.get();
+		Meteor.call('resumeBot', bot);
+	},
+
+	'click .pause': (e, t) => {
+		const bot = t.bot.get();
+		Meteor.call('pauseBot', bot);
 	},
 
 	'click input[type=radio]': (e, t) => {

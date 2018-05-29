@@ -21,6 +21,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/startup.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
+	api.addFiles('client/stylesheets/bots.css', 'client');
+
 	api.addFiles('client/views/adminBots.html', 'client');
 	api.addFiles('client/views/adminBots.js', 'client');
 	api.addFiles('client/views/adminBotInfo.html', 'client');
@@ -30,6 +32,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/adminBotDetails.html', 'client');
 	api.addFiles('client/views/adminBotDetails.js', 'client');
 
+	api.addFiles('server/methods/pauseBot.js', 'server');
+	api.addFiles('server/methods/resumeBot.js', 'server');
 
 	api.addFiles('server/startup.js', 'server');
 });

@@ -21,10 +21,10 @@
 						</div>
 						<div class="section-content">
               <div class="input-line double-col">
-                <label>{{_ "Enabled"}}</label>
+                <label>{{_ "Status"}}</label>
                 <div>
-                  <label><input type="radio" name="enabled" value="1" checked="{{$eq bot.enabled true}}" /> {{_ "True"}}</label>
-                  <label><input type="radio" name="enabled" value="0" checked="{{$neq bot.enabled true}}" /> {{_ "False"}}</label>
+                  <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
+                  <button class="button primary pause" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
                 </div>
               </div>
               <div class="input-line double-col">
