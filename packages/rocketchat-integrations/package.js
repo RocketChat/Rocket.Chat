@@ -38,7 +38,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
 	api.addFiles('client/views/additional/zapier.html', 'client');
-	api.addFiles('client/views/additional/zapier.js', 'client');
 
 	// stylesheets
 	api.addFiles('client/stylesheets/integrations.css', 'client');
