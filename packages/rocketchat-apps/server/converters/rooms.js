@@ -37,7 +37,7 @@ export class AppRoomsConverter {
 			name: room.slugifiedName,
 			t: room.type,
 			u,
-			usernames: room.usernames,
+			usernames: room.usernames, // TODO: remove cache
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
@@ -64,7 +64,7 @@ export class AppRoomsConverter {
 			slugifiedName: room.name,
 			type: this._convertTypeToApp(room.t),
 			creator,
-			usernames: room.usernames,
+			usernames: room.usernames, // TODO: remove cache
 			isDefault: typeof room.default === 'undefined' ? false : room.default,
 			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
 			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
