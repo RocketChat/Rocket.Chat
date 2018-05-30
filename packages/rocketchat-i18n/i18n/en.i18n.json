@@ -730,6 +730,8 @@
   "error-avatar-invalid-url": "Invalid avatar URL: __url__",
   "error-avatar-url-handling": "Error while handling avatar setting from a URL (__url__) for __username__",
   "error-cant-invite-for-direct-room": "Can't invite user to direct rooms",
+  "error-channels-setdefault-is-same": "The channel default setting is the same as what it would be changed to.",
+  "error-channels-setdefault-missing-default-param": "The bodyParam 'default' is required",
   "error-could-not-change-email": "Could not change email",
   "error-could-not-change-name": "Could not change name",
   "error-could-not-change-username": "Could not change username",

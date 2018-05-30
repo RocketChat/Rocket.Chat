@@ -750,13 +750,13 @@ RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 	post() {
 		if (typeof this.bodyParams.default === 'undefined') {
-			return RocketChat.API.v1.failure('The bodyParam "default" is required');
+			return RocketChat.API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
 		}
 
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 		if (findResult.default === this.bodyParams.default) {
-			return RocketChat.API.v1.failure('The channel default setting is the same as what it would be changed to.');
+			return RocketChat.API.v1.failure('The channel default setting is the same as what it would be changed to.', 'error-channels-setdefault-missing-default-param');
 		}
 
 		Meteor.runAsUser(this.userId, () => {
