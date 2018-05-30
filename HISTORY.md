@@ -1,6 +1,17 @@
 
+# 0.65.1
+`2018-05-30  ·  5 🐛`
+
+### 🐛 Bug fixes
+
+- Livechat not loading ([#10940](https://github.com/RocketChat/Rocket.Chat/pull/10940))
+- Application crashing on startup when trying to log errors to `exceptions` channel ([#10934](https://github.com/RocketChat/Rocket.Chat/pull/10934))
+- Incomplete email notification link ([#10928](https://github.com/RocketChat/Rocket.Chat/pull/10928))
+- Image lazy load was breaking attachments ([#10904](https://github.com/RocketChat/Rocket.Chat/pull/10904))
+- Leave room wasn't working as expected ([#10851](https://github.com/RocketChat/Rocket.Chat/pull/10851))
+
 # 0.65.0
-`2018-05-27  ·  17 🎉  ·  24 🐛  ·  41 🔍  ·  17 👩‍💻👨‍💻`
+`2018-05-28  ·  17 🎉  ·  24 🐛  ·  41 🔍  ·  17 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
