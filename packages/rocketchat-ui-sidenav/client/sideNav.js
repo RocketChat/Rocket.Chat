@@ -86,6 +86,6 @@ Template.sideNav.onCreated(function() {
 			}
 		});
 		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'groupByType');
-		this.groupedByType.set(userPref ? userPref : !RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));
 	});
 });
