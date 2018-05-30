@@ -74,14 +74,18 @@ Meteor.methods({
 // 	}));
 // });
 
-RocketChat.models.Subscriptions.on('change', ({action, id, data}) => {
-	if (action === 'update:record' || action === 'update:diff') {
-		const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
-		RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'updated', subscription);
-	} else if (action === 'insert') {
-		const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
-		RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'inserted', subscription);
-	} else if (action === 'remove') {
-		RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', 'removed', {_id: id });
+RocketChat.models.Subscriptions.on('change', ({action, id}) => {
+	switch (action) {
+		case 'update:record':
+		case 'update:diff':
+		case 'insert':
+			const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
+			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', (action === 'insert' ? 'inserted' : 'updated'), subscription);
+			break;
+
+		case 'remove':
+			const removedSubscription = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: {u: 1} });
+			RocketChat.Notifications.notifyUserInThisInstance(removedSubscription.u._id, 'subscriptions-changed', 'removed', {_id: id });
+			break;
 	}
 });

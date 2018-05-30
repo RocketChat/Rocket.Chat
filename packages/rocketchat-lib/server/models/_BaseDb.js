@@ -378,6 +378,15 @@ class ModelsBaseDb extends EventEmitter {
 		return trash.find(query, options);
 	}
 
+	trashFindOneById(_id, options) {
+		const query = {
+			_id,
+			__collection__: this.name
+		};
+
+		return trash.findOne(query, options);
+	}
+
 	trashFindDeletedAfter(deletedAt, query = {}, options) {
 		query.__collection__ = this.name;
 		query._deletedAt = {

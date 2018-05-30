@@ -119,6 +119,10 @@ class ModelsBase {
 		return this._db.trashFind(...arguments);
 	}
 
+	trashFindOneById(/*_id, options*/) {
+		return this._db.trashFindOneById(...arguments);
+	}
+
 	trashFindDeletedAfter(/*deletedAt, query, options*/) {
 		return this._db.trashFindDeletedAfter(...arguments);
 	}
