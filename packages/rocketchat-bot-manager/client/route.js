@@ -13,7 +13,7 @@ FlowRouter.route('/admin/bots/:username', {
 	action(params) {
 		return BlazeLayout.render('main', {
 			center: 'adminBotDetails',
-			pageTitle: t('Bots_details'),
+			pageTitle: t('Bot_details'),
 			params
 		});
 	}

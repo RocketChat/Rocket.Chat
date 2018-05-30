@@ -27,8 +27,8 @@
 								<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
 								{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
 								<span class="rc-header__status">
-								<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-								<div class="rc-header__visual-status">{{userStatus}}</div>
+								<div class="rc-header__status-bullet rc-header__status-bullet--{{botStatus}}" title="{{botStatus}}"></div>
+								<div class="rc-header__visual-status">{{botStatus}}</div>
 							</span>
 							</div>
 
@@ -50,12 +50,6 @@
 										</ul>
 									</div>
 								{{/if}}
-								{{#if createdAt}}
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label	">{{_ "Created_at"}}</label>
-										<p class="rc-user-info-details__info">{{createdAt}}</p>
-									</div>
-								{{/if}}
 								{{#if lastLogin}}
 									<div class="rc-user-info-details__item">
 										<label class="rc-user-info-details__label	">{{_ "Last_login"}}</label>
@@ -68,23 +62,14 @@
 										<p class="rc-user-info-details__info">{{framework}}</p>
 									</div>
 								{{/if}}
-								{{#if utc}}
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label">Timezone</label>
-										<p class="rc-user-info-details__info">{{userTime}} (UTC {{utc}})</p>
-									</div>
-								{{/if}}
 							</div>
 						</div>
-						{{#if ../showAll}}
-							<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
-						{{/if}}
 					</main>
 				{{/with}}
 			{{/if}}
 		{{else}}
 			<div class="edit-form">
-				<div>{{_ "Please_select_an_user"}}</div>
+				<div>{{_ "Please_select_a_bot"}}</div>
 			</div>
 		{{/if}}
 

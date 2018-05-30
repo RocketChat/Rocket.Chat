@@ -1,9 +1,6 @@
 <template name="adminBotDetails">
 	<section class="page-container page-home page-static page-settings">
-		{{#header sectionName=pageTitle buttons=true}}
-			<div class="rc-header__section-button">
-				<button class="rc-button rc-button--primary save" disabled="{{not hasTypeSelected}}"><span>{{_ "Save_changes"}}</span></button>
-			</div>
+		{{#header sectionName=pageTitle}}
 		{{/header}}
 
 		<div class="content background-transparent-dark">
@@ -14,7 +11,7 @@
 				<div class="rocket-form">
 					<div class="section">
 						<div class="section-title">
-							<div class="section-title-text">{{_ "Bot_details"}}</div>
+							<div class="section-title-text">{{_ "Bot_details"}} - {{getName}}</div>
 							<div class="section-title-right">
 								<button class="button primary collapse"><span>{{_ "Collapse"}}</span></button>
 							</div>
