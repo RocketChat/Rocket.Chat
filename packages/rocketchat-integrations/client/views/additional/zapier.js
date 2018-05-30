@@ -1,0 +1,2 @@
+Template.integrationsAdditionalZapier.helpers({
+});
