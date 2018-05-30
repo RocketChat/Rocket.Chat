@@ -2,9 +2,6 @@
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
-import GraphemeSplitter from 'grapheme-splitter';
-
-const splitter = new GraphemeSplitter();
 
 this.ChatMessages = class ChatMessages {
 	init(node) {
@@ -563,8 +560,7 @@ this.ChatMessages = class ChatMessages {
 			}
 			return match;
 		});
-
-		return message && splitter.countGraphemes(adjustedMessage) > this.messageMaxSize;
+		return message && RocketChat.messageProperties(adjustedMessage).length > this.messageMaxSize;
 	}
 
 	isEmpty() {

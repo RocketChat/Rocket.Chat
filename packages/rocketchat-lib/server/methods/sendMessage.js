@@ -1,7 +1,4 @@
 import moment from 'moment';
-import GraphemeSplitter from 'grapheme-splitter';
-
-const splitter = new GraphemeSplitter();
 
 Meteor.methods({
 	sendMessage(message) {
@@ -40,7 +37,7 @@ Meteor.methods({
 				return match;
 			});
 
-			if (splitter.countGraphemes(adjustedMessage) > RocketChat.settings.get('Message_MaxAllowedSize')) {
+			if (RocketChat.messageProperties(adjustedMessage).length > RocketChat.settings.get('Message_MaxAllowedSize')) {
 				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 					method: 'sendMessage'
 				});
