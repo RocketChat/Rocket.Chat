@@ -32,6 +32,7 @@
   "Accounts_AllowRealNameChange": "Allow Name Change",
   "Accounts_AllowUsernameChange": "Allow Username Change",
   "Accounts_AllowUserProfileChange": "Allow User Profile Change",
+  "Accounts_AvatarCacheTime": "Avatar cache time(by http protocol)",
   "Accounts_AvatarResize": "Resize Avatars",
   "Accounts_AvatarSize": "Avatar Size",
   "Accounts_BlockedDomainsList": "Blocked Domains List",
