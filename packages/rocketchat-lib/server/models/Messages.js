@@ -569,6 +569,39 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return record;
 	}
 
+	createWithTypeRoomIdMessageAndUserTo(type, roomId, message, user, userTo, extraData) {
+		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 }});
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date,
+			msg: message,
+			to: {
+				_id: userTo._id,
+				username: userTo.username
+			},
+			u: {
+				_id: user._id,
+				username: user.username
+			},
+			private: true,
+			groupable: false
+		};
+
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
+		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		RocketChat.models.Rooms.incMsgCountById(room._id, 1);
+		return record;
+	}
+
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
@@ -611,6 +644,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	createModeratorRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, extraData);
+	}
+
+	createMentionedUserIsNotInTheRoom(roomId, user, to, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUserTo('mentioned-user-not-in-the-room', roomId, message, user, to, extraData);
 	}
 
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {

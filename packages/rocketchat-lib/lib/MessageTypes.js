@@ -164,4 +164,14 @@ Meteor.startup(function() {
 			};
 		}
 	});
+	RocketChat.MessageTypes.registerType({
+		id: 'mentioned-user-not-in-the-room',
+		system: true,
+		message: 'Mentioned_user_is_not_in_the_room',
+		data(message) {
+			return {
+				username: message.u.username
+			};
+		}
+	});
 });
