@@ -3,5 +3,5 @@ Meteor.publish('clientCommands', function() {
 		return this.ready();
 	}
 
-	return RocketChat.models.ClientCommand.findById(this.userId);
+	return RocketChat.models.ClientCommands.findById(this.userId);
 });
