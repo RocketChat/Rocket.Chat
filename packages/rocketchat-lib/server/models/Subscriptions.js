@@ -769,23 +769,43 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			...extraData
 		};
 
-		return this.insert(subscription);
+		const result = this.insert(subscription);
+
+		RocketChat.models.Rooms.incUserCountById(room._id);
+
+		return result;
 	}
 
 
 	// REMOVE
 	removeByUserId(userId) {
-		const query =
-			{ 'u._id': userId };
+		const query = {
+			'u._id': userId
+		};
 
-		return this.remove(query);
+		const roomIds = this.findByUserId(userId).map(s => s.rid);
+
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountByIds(roomIds, -1);
+		}
+
+		return result;
 	}
 
 	removeByRoomId(roomId) {
-		const query =
-			{ rid: roomId };
+		const query = {
+			rid: roomId
+		};
 
-		return this.remove(query);
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+		}
+
+		return result;
 	}
 
 	removeByRoomIdAndUserId(roomId, userId) {
@@ -794,7 +814,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': userId
 		};
 
-		return this.remove(query);
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+		}
+
+		return result;
 	}
 }
 

@@ -384,6 +384,34 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	incUsersCountById(_id, inc = 1) {
+		const query = { _id };
+
+		const update = {
+			$inc: {
+				usersCount: inc
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc
+			}
+		};
+
+		return this.update(query, update, {multi: true});
+	}
+
 	setLastMessageById(_id, lastMessage) {
 		const query = {_id};
 
@@ -604,6 +632,7 @@ class ModelRooms extends RocketChat.models._Base {
 			t: type,
 			usernames,
 			msgs: 0,
+			usersCount: 0,
 			u: {
 				_id: user._id,
 				username: user.username
@@ -623,7 +652,8 @@ class ModelRooms extends RocketChat.models._Base {
 			t: type,
 			name,
 			usernames: [],
-			msgs: 0
+			msgs: 0,
+			usersCount: 0
 		};
 
 		_.extend(room, extraData);
