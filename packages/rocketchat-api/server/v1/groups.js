@@ -119,7 +119,7 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 		let joined = false;
 		let msgs = null;
 		let latest = null;
-		let members = null;
+		const members = null;
 		let lm = null;
 
 		if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -146,22 +146,22 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 			}
 			user = params.userId;
 		}
-		const group = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-		lm = group._room.lm ? group._room.lm : group._room._updatedAt;
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		lm = room.lm ? room.lm : room._updatedAt;
 
-		if (typeof group !== 'undefined' && group.open) {
-			if (group.ls) {
-				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(group.rid, group.ls, lm);
-				unreadsFrom = group.ls;
+		if (typeof subscription !== 'undefined' && subscription.open) {
+			if (subscription.ls) {
+				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreadsFrom = subscription.ls;
 			}
-			userMentions = group.userMentions;
+			userMentions = subscription.userMentions;
 			joined = true;
 		}
 
 		if (access || joined) {
 			msgs = room.msgs;
 			latest = lm;
-			members = room.usernames.length;
+			// members = room.usernames.length; // TODO: should return the users count
 		}
 
 		return RocketChat.API.v1.success({
@@ -398,7 +398,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 		// 	'u._id': this.userId
 		// });
 
-		// TODO and the query?
+		// TODO: and the query?
 		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
@@ -449,8 +449,9 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+		const room = RocketChat.models.Rooms.findOneById(findResult.rid, {fields: {broadcast: 1}});
 
-		if (findResult._room.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
+		if (room.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 

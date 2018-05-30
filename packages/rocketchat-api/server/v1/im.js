@@ -58,7 +58,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		let joined = false;
 		let msgs = null;
 		let latest = null;
-		let members = null;
+		const members = null;
 		let lm = null;
 
 		if (ruserId) {
@@ -84,7 +84,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		if (access || joined) {
 			msgs = room.msgs;
 			latest = lm;
-			members = room.usernames.length;
+			// members = room.usernames.length; // TODO: should return the users count
 		}
 
 		return RocketChat.API.v1.success({
@@ -281,7 +281,7 @@ RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 		// 	'u._id': this.userId
 		// });
 
-		// TODO and the query?
+		// TODO: and the query?
 		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,

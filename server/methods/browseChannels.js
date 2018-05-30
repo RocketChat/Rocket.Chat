@@ -81,7 +81,7 @@ Meteor.methods({
 				...options,
 				sort,
 				fields: {
-					username: 1, // TODO should return the users count
+					username: 1, // TODO: should return the users count
 					name: 1,
 					createdAt: 1,
 					emails: 1

@@ -148,7 +148,7 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		let joined = false;
 		let msgs = null;
 		let latest = null;
-		let members = null;
+		const members = null;
 		let lm = null;
 
 		if (ruserId) {
@@ -161,22 +161,22 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 			params: this.requestParams(),
 			returnUsernames: true
 		});
-		const channel = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-		lm = channel._room.lm ? channel._room.lm : channel._room._updatedAt;
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		lm = room.lm ? room.lm : room._updatedAt;
 
-		if (typeof channel !== 'undefined' && channel.open) {
-			if (channel.ls) {
-				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(channel.rid, channel.ls, lm);
-				unreadsFrom = channel.ls;
+		if (typeof subscription !== 'undefined' && subscription.open) {
+			if (subscription.ls) {
+				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreadsFrom = subscription.ls;
 			}
-			userMentions = channel.userMentions;
+			userMentions = subscription.userMentions;
 			joined = true;
 		}
 
 		if (access || joined) {
 			msgs = room.msgs;
 			latest = lm;
-			members = room.usernames.length;
+			// members = room.usernames.length; // TODO: should return the users count
 		}
 
 		return RocketChat.API.v1.success({
@@ -528,7 +528,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 		// 	'u._id': this.userId
 		// });
 
-		// TODO and the query?
+		// TODO: and the query?
 		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,

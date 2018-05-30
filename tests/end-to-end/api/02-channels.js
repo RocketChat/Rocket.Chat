@@ -417,6 +417,7 @@ describe('[Channels]', function() {
 				roomId: channel._id
 			})
 			.expect('Content-Type', 'application/json')
+			.expect(console.log.bind(console))
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
