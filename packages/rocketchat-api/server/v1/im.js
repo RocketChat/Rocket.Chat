@@ -58,7 +58,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		let joined = false;
 		let msgs = null;
 		let latest = null;
-		const members = null;
+		let members = null;
 		let lm = null;
 
 		if (ruserId) {
@@ -84,7 +84,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 		if (access || joined) {
 			msgs = room.msgs;
 			latest = lm;
-			// members = room.usernames.length; // TODO: should return the users count
+			members = room.usersCount;
 		}
 
 		return RocketChat.API.v1.success({

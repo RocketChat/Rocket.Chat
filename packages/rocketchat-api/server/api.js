@@ -10,10 +10,7 @@ class API extends Restivus {
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
-			$loki: 0,
-			meta: 0,
 			members: 0,
-			usernames: 0, // Please use the `channel/dm/group.members` endpoint. This is disabled for performance reasons
 			importIds: 0
 		};
 		this.limitedUserFieldsToExclude = {

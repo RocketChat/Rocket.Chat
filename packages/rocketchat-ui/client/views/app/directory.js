@@ -1,6 +1,10 @@
 import moment from 'moment';
 
 function timeAgo(time) {
+	if (!time) {
+		return;
+	}
+
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
@@ -17,7 +21,7 @@ function directorySearch(config, cb) {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: result.usernames.length, //TODO: create property to have the users count in room object
+					users: result.usersCount,
 					createdAt: timeAgo(result.ts),
 					description: result.description,
 					archived: result.archived
@@ -152,8 +156,8 @@ Template.directory.onDestroyed(function() {
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
 	this.searchType = new ReactiveVar('channels');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
+	this.searchSortBy = new ReactiveVar('usersCount');
+	this.sortDirection = new ReactiveVar('desc');
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);

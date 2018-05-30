@@ -35,7 +35,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', ...type === 'channels' ? ['usersCount'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -64,7 +64,7 @@ Meteor.methods({
 						name: 1,
 						ts: 1,
 						archived: 1,
-						usernames: 1
+						usersCount: 1
 					}
 				}).fetch(),
 				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count()
@@ -81,7 +81,7 @@ Meteor.methods({
 				...options,
 				sort,
 				fields: {
-					username: 1, // TODO: should return the users count
+					usersCount: 1,
 					name: 1,
 					createdAt: 1,
 					emails: 1

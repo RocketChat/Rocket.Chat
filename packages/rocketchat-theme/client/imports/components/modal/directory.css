@@ -104,7 +104,7 @@
 }
 
 .rc-table-td--users {
-	width: 80px;
+	width: 100px;
 }
 
 @media (width <= 500px) {
