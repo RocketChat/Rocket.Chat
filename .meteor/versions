@@ -9,7 +9,7 @@ accounts-twitter@1.4.1
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 autoupdate@1.4.0
-babel-compiler@7.0.8
+babel-compiler@7.0.9
 babel-runtime@1.2.2
 base64@1.0.11
 binary-heap@1.0.10
@@ -35,7 +35,7 @@ deps@1.0.12
 diff-sequence@1.1.0
 dispatch:run-as-user@1.1.1
 dynamic-import@0.3.0
-ecmascript@0.10.8
+ecmascript@0.10.9
 ecmascript-runtime@0.5.0
 ecmascript-runtime-client@0.6.2
 ecmascript-runtime-server@0.5.0
@@ -91,7 +91,7 @@ mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.5
 mobile-status-bar@1.0.14
-modules@0.11.6
+modules@0.11.8
 modules-runtime@0.9.2
 mongo@1.4.7
 mongo-dev-server@1.1.0
