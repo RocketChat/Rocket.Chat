@@ -23,8 +23,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		const subs = RocketChat.models.Subscriptions.find({ t: 'l', ls : { $exists: 0 } }).count();
-
+		const subs = RocketChat.models.Subscriptions.find({ t: 'l', ls : { $exists: 0 }, open: true }).count();
 		if (subs === 0) {
 			stop(audio);
 			return;
