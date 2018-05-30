@@ -15,6 +15,10 @@
 @import 'imports/forms/select-avatar.css';
 @import 'imports/forms/switch.css';
 @import 'imports/forms/tags.css';
+@import 'imports/forms/checkbox.css';
+
+/* Typography */
+@import 'imports/general/typography.css';
 
 /* Sidebar */
 @import 'imports/components/sidebar/sidebar.css';
@@ -53,6 +57,7 @@
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 @import 'imports/components/modal/directory.css';
+
 /* User Info */
 @import 'imports/components/userInfo.css';
 
