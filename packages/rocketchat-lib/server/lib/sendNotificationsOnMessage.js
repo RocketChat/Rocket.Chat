@@ -46,7 +46,7 @@ const sendNotification = ({
 		return;
 	}
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, receiver);
+	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
@@ -114,6 +114,7 @@ const sendNotification = ({
 			message,
 			userId: subscription.u._id,
 			senderUsername: sender.username,
+			senderName: sender.name,
 			receiverUsername: receiver.username
 		});
 	}

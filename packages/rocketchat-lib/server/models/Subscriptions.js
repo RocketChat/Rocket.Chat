@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 class ModelSubscriptions extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -566,6 +564,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update) && this.update(query2, update2);
 	}
 
+	updateCustomFieldsByRoomId(rid, cfields) {
+		const query = {rid};
+		const customFields = cfields || {};
+		const update = {
+			$set: {
+				customFields
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateTypeByRoomId(roomId, type) {
 		const query =
 			{ rid: roomId };
@@ -754,36 +764,10 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				_id: user._id,
 				username: user.username,
 				name: user.name
-			}
+			},
+			...RocketChat.getDefaultSubscriptionPref(user),
+			...extraData
 		};
-
-		const {
-			desktopNotifications,
-			mobileNotifications,
-			emailNotificationMode,
-			highlights
-		} = (user.settings && user.settings.preferences) || {};
-
-		if (desktopNotifications && desktopNotifications !== 'default') {
-			subscription.desktopNotifications = desktopNotifications;
-			subscription.desktopPrefOrigin = 'user';
-		}
-
-		if (mobileNotifications && mobileNotifications !== 'default') {
-			subscription.mobilePushNotifications = mobileNotifications;
-			subscription.mobilePrefOrigin = 'user';
-		}
-
-		if (emailNotificationMode && emailNotificationMode !== 'default') {
-			subscription.emailNotifications = emailNotificationMode;
-			subscription.emailPrefOrigin = 'user';
-		}
-
-		if (Array.isArray(highlights) && highlights.length) {
-			subscription.userHighlights = highlights;
-		}
-
-		_.extend(subscription, extraData);
 
 		return this.insert(subscription);
 	}
