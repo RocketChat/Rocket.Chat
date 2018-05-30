@@ -354,13 +354,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateNameByRoomId(roomId, name) {
+	updateDisplayNameByRoomId(roomId, fname) {
 		const query =
 			{ rid: roomId };
 
 		const update = {
 			$set: {
-				name
+				fname
 			}
 		};
 
