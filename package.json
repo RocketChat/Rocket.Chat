@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.65.0",
+	"version": "0.65.1",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -110,7 +110,7 @@
 		"supertest": "^3.0.0"
 	},
 	"dependencies": {
-		"@babel/runtime": "^7.0.0-beta.46",
+		"@babel/runtime": "^7.0.0-beta.48",
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^1.6.0",
 		"@google-cloud/vision": "^0.19.0",
