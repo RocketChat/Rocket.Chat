@@ -56,7 +56,7 @@ Meteor.methods({
 	}
 });
 
-// @TODO: replace by `change`
+// TODO: CACHE: replace by `change`
 // RocketChat.models.Settings.cache.on('changed', function(type, setting) {
 // 	if (setting['public'] === true) {
 // 		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value', 'editor', 'properties'));

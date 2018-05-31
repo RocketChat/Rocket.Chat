@@ -24,7 +24,7 @@ export class AppRoomBridge {
 
 		let rid;
 		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call(method, rcRoom.usernames); // TODO: remove cache
+			const info = Meteor.call(method, rcRoom.usernames); // TODO: CACHE: remove cache
 			rid = info.rid;
 		});
 

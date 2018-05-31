@@ -398,7 +398,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 		// 	'u._id': this.userId
 		// });
 
-		// TODO: and the query?
+		// TODO: CACHE: and the query?
 		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,

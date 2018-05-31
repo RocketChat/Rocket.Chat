@@ -1,4 +1,4 @@
-// TODO: resolve the fname
+// TODO: CACHE: resolve the fname
 // RocketChat.models.Subscriptions.cache.hasOne('Users', {
 // 	field: 'fname',
 // 	link: {
