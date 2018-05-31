@@ -348,9 +348,11 @@ class IrcClient {
 			$setOnInsert: {
 				t: 'd',
 				msgs: 0,
+				usersCount: 0,
 				ts: now
 			}
 		});
+		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.upsert({ rid, $and: [{ 'u._id': target._id}]}, {
 			$setOnInsert: {
 				name: source.username,

@@ -361,6 +361,7 @@ RocketChat.Livechat = {
 			};
 			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
+			// TODO: CACHE: Inc rooms's usersCount
 			RocketChat.models.Subscriptions.insert(subscriptionData);
 
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });

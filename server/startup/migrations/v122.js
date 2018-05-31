@@ -26,5 +26,29 @@ RocketChat.Migrations.add({
 				}
 			});
 		});
+
+		RocketChat.models.Subscriptions.find({
+			t: 'd',
+			name: { $exists: true },
+			fname: { $exists: false }
+		}, {
+			fields: {
+				name: 1
+			}
+		}).forEach(({_id, name}) => {
+			const user = RocketChat.models.Users.findOneByUsername(name, {fields: {name: 1}});
+
+			if (!user) {
+				return;
+			}
+
+			RocketChat.models.Subscriptions.update({
+				_id
+			}, {
+				$set: {
+					fname: user.name
+				}
+			});
+		});
 	}
 });

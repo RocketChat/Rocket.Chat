@@ -65,15 +65,6 @@ Meteor.methods({
 	}
 });
 
-// TODO: CACHE: fname needs improvement
-// We are sending the record again cuz any update on subscription will send the record without the fname (join)
-// Then we need to sent it again listening to the join event.
-// RocketChat.models.Subscriptions.on('join:fname:inserted', function(subscription/*, user*/) {
-// 	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'changed', RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
-// 		fields
-// 	}));
-// });
-
 RocketChat.models.Subscriptions.on('change', ({action, id}) => {
 	switch (action) {
 		case 'update:record':

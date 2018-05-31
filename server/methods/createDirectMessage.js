@@ -50,7 +50,8 @@ Meteor.methods({
 			$setOnInsert: {
 				t: 'd',
 				msgs: 0,
-				ts: now
+				ts: now,
+				usersCount: 0
 			}
 		});
 
@@ -64,6 +65,7 @@ Meteor.methods({
 				open: true
 			},
 			$setOnInsert: {
+				fname: to.name,
 				name: to.username,
 				t: 'd',
 				alert: false,
@@ -83,6 +85,7 @@ Meteor.methods({
 			upsertSubscription.$set.archived = true;
 		}
 
+		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.upsert({
 			rid,
 			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
@@ -90,11 +93,13 @@ Meteor.methods({
 
 		const toNotificationPref = RocketChat.getDefaultSubscriptionPref(to);
 
+		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.upsert({
 			rid,
 			$and: [{'u._id': to._id}] // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
+				fname: me.username,
 				name: me.username,
 				t: 'd',
 				open: false,

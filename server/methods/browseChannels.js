@@ -81,7 +81,7 @@ Meteor.methods({
 				...options,
 				sort,
 				fields: {
-					usersCount: 1,
+					username: 1,
 					name: 1,
 					createdAt: 1,
 					emails: 1

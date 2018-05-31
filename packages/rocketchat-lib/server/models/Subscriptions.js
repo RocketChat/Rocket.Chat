@@ -746,6 +746,21 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateDirectFNameByName(name, fname) {
+		const query = {
+			t: 'd',
+			name
+		};
+
+		const update = {
+			$set: {
+				fname
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
@@ -771,7 +786,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 		const result = this.insert(subscription);
 
-		RocketChat.models.Rooms.incUserCountById(room._id);
+		RocketChat.models.Rooms.incUsersCountById(room._id);
 
 		return result;
 	}

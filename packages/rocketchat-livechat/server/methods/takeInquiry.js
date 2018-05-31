@@ -36,6 +36,7 @@ Meteor.methods({
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all'
 		};
+		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
 		// update room
