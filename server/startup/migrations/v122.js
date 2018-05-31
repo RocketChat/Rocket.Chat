@@ -1,3 +1,5 @@
+import Future from 'fibers/future';
+
 RocketChat.Migrations.add({
 	version: 122,
 	up() {
@@ -27,7 +29,9 @@ RocketChat.Migrations.add({
 			});
 		});
 
-		RocketChat.models.Subscriptions.find({
+		// Getting all subscriptions and users to memory allow us to process in batches,
+		// all other solutions takes hundreds or thousands times more to process.
+		const subscriptions = RocketChat.models.Subscriptions.find({
 			t: 'd',
 			name: { $exists: true },
 			fname: { $exists: false }
@@ -35,20 +39,55 @@ RocketChat.Migrations.add({
 			fields: {
 				name: 1
 			}
-		}).forEach(({_id, name}) => {
-			const user = RocketChat.models.Users.findOneByUsername(name, {fields: {name: 1}});
+		}).fetch();
 
-			if (!user) {
-				return;
-			}
+		const users = RocketChat.models.Users.find({username: {$exists: true}, name: {$exists: true}}, {fields: {username: 1, name: 1}}).fetch();
+		const usersByUsername = users.reduce((obj, user) => {
+			obj[user.username] = user.name;
+			return obj;
+		}, {});
 
-			RocketChat.models.Subscriptions.update({
-				_id
-			}, {
-				$set: {
-					fname: user.name
-				}
+		const updateSubscription = (subscription) => {
+			return new Promise((resolve) => {
+				Meteor.defer(() => {
+					const name = usersByUsername[subscription.name];
+
+					if (!name) {
+						return resolve();
+					}
+
+					RocketChat.models.Subscriptions.update({
+						_id: subscription._id
+					}, {
+						$set: {
+							fname: name
+						}
+					});
+
+					resolve();
+				});
 			});
-		});
+		};
+
+		// Use FUTURE to process itens in batchs and wait the final one
+		const fut = new Future();
+
+		const processBatch = () => {
+			const itens = subscriptions.splice(0, 1000);
+
+			console.log('Migrating', itens.length, 'of', subscriptions.length, 'subscriptions');
+
+			if (itens.length) {
+				Promise.all(itens.map(s => updateSubscription(s))).then(() => {
+					processBatch();
+				});
+			} else {
+				fut.return();
+			}
+		};
+
+		processBatch();
+
+		fut.wait();
 	}
 });
