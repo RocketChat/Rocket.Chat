@@ -1,8 +1,8 @@
 /* globals chatMessages cordova */
-
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
 		if (err) {
@@ -354,7 +354,19 @@ Meteor.startup(function() {
 		label: 'Upload To Drive',
 		async action(event) {
 			const message = this._arguments[1];
-			Meteor.call('uploadFileToDrive', message.file, (() => {toastr.success("Successfully uploaded file to Drive");}));
+			const attachment = message.attachments[0];
+			const file = message.file;
+			const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
+			const metaData = {
+				name: attachment.title,
+				type: file.type
+			};
+
+			if (!Meteor.call('validateDriveAccess', Meteor.userId())) {
+				Meteor.loginWithGoogle({}, function(error) {
+					Meteor.call('uploadFileToDrive', file, metaData, (() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
+				});
+			}
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
@@ -363,7 +375,6 @@ Meteor.startup(function() {
 			if (!message.file) {
 				return false;
 			}
-			console.log(message);
 			return true;
 		},
 		order: 7,
