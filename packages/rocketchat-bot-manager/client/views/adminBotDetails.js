@@ -2,7 +2,6 @@ import toastr from 'toastr';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
-	this.botData = new ReactiveVar({});
 
 	this.updateBot = () => {
 	};
@@ -11,22 +10,16 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		const username = this.data && this.data.params && this.data.params().username;
 
 		if (username) {
-			const subBot = this.subscribe('fullUserData', username, 1);
-			const subData = this.subscribe('fullBotData', username, 1);
-			if (subBot.ready() && subData.ready()) {
+			const sub = this.subscribe('fullUserData', username, 1);
+			if (sub.ready()) {
 				let bot;
-				let botData;
 
 				if (RocketChat.authz.hasAllPermission('edit-bot-account')) {
 					bot = Meteor.users.findOne({ username });
-					botData = RocketChat.models.Bots.findOneByUsername(username);
 				}
 
 				if (bot) {
 					this.bot.set(bot);
-					if (botData) {
-						this.botData.set(botData);
-					}
 				} else {
 					toastr.error(TAPi18n.__('No_bot_found'));
 					FlowRouter.go('admin-bots');
@@ -73,8 +66,11 @@ Template.adminBotDetails.helpers({
 	},
 
 	getFramework() {
-		const botData = Template.instance().botData.get();
-		return botData.framework;
+		const bot = Template.instance().bot.get();
+		if (bot.botData && bot.botData.framework) {
+			return bot.botData.framework;
+		}
+		return 'Undefined';
 	},
 
 	getRoles() {
@@ -83,13 +79,17 @@ Template.adminBotDetails.helpers({
 	},
 
 	isPaused() {
-		const botData = Template.instance().botData.get();
-		return botData.paused;
+		const bot = Template.instance().bot.get();
+		if (bot.botData) {
+			return bot.botData.paused;
+		}
 	},
 
 	ipAddress() {
-		const botData = Template.instance().botData.get();
-		return `IP Address: ${ botData.ipAddress }`;
+		const bot = Template.instance().bot.get();
+		if (bot.botData) {
+			return bot.botData.ipAddress;
+		}
 	},
 
 	connectedUptime() {

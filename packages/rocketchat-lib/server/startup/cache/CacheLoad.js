@@ -55,7 +55,6 @@ RocketChat.models.Subscriptions.cache.hasOne('Users', {
 	}
 });
 
-RocketChat.models.Bots.cache.load();
 RocketChat.models.Users.cache.load();
 RocketChat.models.Rooms.cache.load();
 RocketChat.models.Subscriptions.cache.load();
