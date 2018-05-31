@@ -17,7 +17,17 @@ Meteor.methods({
 	}
 });
 
-// TODO: CACHE: replace by `change`
-RocketChat.models.Permissions.on('changed', (type, permission) => {
-	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
+RocketChat.models.Permissions.on('change', ({action, id}) => {
+	switch (action) {
+		case 'update:record':
+		case 'update:diff':
+		case 'insert':
+			const permission = RocketChat.models.Permissions.findOneById(id);
+			RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', (action === 'insert' ? 'inserted' : 'updated'), permission);
+			break;
+
+		case 'remove':
+			RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', 'removed', { _id: id });
+			break;
+	}
 });

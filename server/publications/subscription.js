@@ -65,9 +65,9 @@ Meteor.methods({
 	}
 });
 
-// // TODO: CACHE: needs improvement
-// // We are sending the record again cuz any update on subscription will send the record without the fname (join)
-// // Then we need to sent it again listening to the join event.
+// TODO: CACHE: fname needs improvement
+// We are sending the record again cuz any update on subscription will send the record without the fname (join)
+// Then we need to sent it again listening to the join event.
 // RocketChat.models.Subscriptions.on('join:fname:inserted', function(subscription/*, user*/) {
 // 	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'changed', RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
 // 		fields
@@ -84,8 +84,8 @@ RocketChat.models.Subscriptions.on('change', ({action, id}) => {
 			break;
 
 		case 'remove':
-			const removedSubscription = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: {u: 1} });
-			RocketChat.Notifications.notifyUserInThisInstance(removedSubscription.u._id, 'subscriptions-changed', 'removed', {_id: id });
+			const removedSubscription = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1 } });
+			RocketChat.Notifications.notifyUserInThisInstance(removedSubscription.u._id, 'subscriptions-changed', 'removed', { _id: id });
 			break;
 	}
 });

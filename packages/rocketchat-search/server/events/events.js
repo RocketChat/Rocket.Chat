@@ -33,22 +33,33 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
  * Listen to user and room changes via cursor
  */
 
-// TODO: CACHE: replace by `change`
-RocketChat.models.Users.on('changed', (type, user)=>{
-	if (type === 'inserted' || type === 'updated') {
-		eventService.promoteEvent('user.save', user._id, user);
-	}
-	if (type === 'removed') {
-		eventService.promoteEvent('user.delete', user._id);
+
+RocketChat.models.Users.on('change', ({action, id}) => {
+	switch (action) {
+		case 'update:record':
+		case 'update:diff':
+		case 'insert':
+			const user = RocketChat.models.Users.findOneById(id);
+			eventService.promoteEvent('user.save', id, user);
+			break;
+
+		case 'remove':
+			eventService.promoteEvent('user.delete', id);
+			break;
 	}
 });
 
-// TODO: CACHE: replace by `change`
-RocketChat.models.Rooms.on('changed', (type, room)=>{
-	if (type === 'inserted' || type === 'updated') {
-		eventService.promoteEvent('room.save', room._id, room);
-	}
-	if (type === 'removed') {
-		eventService.promoteEvent('room.delete', room._id);
+RocketChat.models.Rooms.on('change', ({action, id}) => {
+	switch (action) {
+		case 'update:record':
+		case 'update:diff':
+		case 'insert':
+			const room = RocketChat.models.Rooms.findOneById(id);
+			eventService.promoteEvent('room.save', id, room);
+			break;
+
+		case 'remove':
+			eventService.promoteEvent('room.delete', id);
+			break;
 	}
 });
