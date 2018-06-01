@@ -101,8 +101,8 @@ Template.accountPreferences.helpers({
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
 	},
-	dontAskAGainList() {
-		return RocketChat.getUserPreference(Meteor.user(), 'dontAskAGainList');
+	dontAskAgainList() {
+		return RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
 	}
 });
 
@@ -163,7 +163,7 @@ Template.accountPreferences.onCreated(function() {
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
-		data.dontAskAGainList = Array.from(document.getElementById('dont-ask').options).map(option => {
+		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map(option => {
 			return {action: option.value, label: option.text};
 		});
 
