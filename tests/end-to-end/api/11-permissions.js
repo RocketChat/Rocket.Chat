@@ -61,15 +61,13 @@ describe('[Permissions]', function() {
 		it('should change the permissions on the server', (done) => {
 			const permissions = [
 				{
-					"_id": "add-oauth-service",
-					"roles": ["admin", "user"]
+					'_id': 'add-oauth-service',
+					'roles': ['admin', 'user']
 				}
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)
-				.send({
-					permissions: permissions
-				})
+				.send({ permissions	})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -91,15 +89,13 @@ describe('[Permissions]', function() {
 		it('should 400 when trying to set an unknown permission', (done) => {
 			const permissions = [
 				{
-					"_id": "this-permission-does-not-exist",
-					"roles": ["admin"]
+					'_id': 'this-permission-does-not-exist',
+					'roles': ['admin']
 				}
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)
-				.send({
-					permissions: permissions
-				})
+				.send({ permissions	})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -110,15 +106,13 @@ describe('[Permissions]', function() {
 		it('should 400 when trying to assign a permission to an unknown role', (done) => {
 			const permissions = [
 				{
-					"_id": "add-oauth-service",
-					"roles": ["this-role-does-not-exist"]
+					'_id': 'add-oauth-service',
+					'roles': ['this-role-does-not-exist']
 				}
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)
-				.send({
-					permissions: permissions
-				})
+				.send({ permissions	})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -130,9 +124,7 @@ describe('[Permissions]', function() {
 			const permissions = '';
 			request.post(api('permissions.update'))
 				.set(credentials)
-				.send({
-					permissions: permissions
-				})
+				.send({ permissions	})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
