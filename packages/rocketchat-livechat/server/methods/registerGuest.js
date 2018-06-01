@@ -11,7 +11,8 @@ Meteor.methods({
 		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
 
 		return {
-			userId
+			userId,
+			token
 		};
 	}
 });
