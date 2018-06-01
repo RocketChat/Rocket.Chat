@@ -121,16 +121,16 @@ Template.rc_modal.events({
 			const dontAskAgainObject = {
 				action: dontAskAgain.action,
 				label: dontAskAgain.label
-			}
+			};
 
 			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAGainList');
 			if (dontAskAgainList) {
-				dontAskAgainList.push(dontAskAgainObject)
+				dontAskAgainList.push(dontAskAgainObject);
 			} else {
-				dontAskAgainList = [dontAskAgainObject]
+				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', {dontAskAGainList: dontAskAgainList}, function(error, results) {
+			Meteor.call('saveUserPreferences', {dontAskAGainList: dontAskAgainList}, function(error) {
 				if (error) {
 					return handleError(error);
 				}
