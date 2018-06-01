@@ -164,7 +164,7 @@ Template.accountPreferences.onCreated(function() {
 			return s.trim(e);
 		}));
 		data.dontAskAGainList = Array.from(document.getElementById('dont-ask').options).map(option => {
-			return {action: option.value, label: option.text}
+			return {action: option.value, label: option.text};
 		});
 
 		let reload = false;
