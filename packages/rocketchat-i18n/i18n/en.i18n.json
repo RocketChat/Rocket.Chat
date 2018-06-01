@@ -646,6 +646,8 @@
   "Display_unread_counter": "Display number of unread messages",
   "Display_offline_form": "Display Offline Form",
   "Displays_action_text": "Displays action text",
+  "Dont_ask_me_again": "Don't ask me again!",
+  "Dont_ask_me_again_list": "Don't ask me again list",
   "Do_not_display_unread_counter": "Do not display any counter of this channel",
   "Do_you_want_to_accept": "Do you want to accept?",
   "Do_you_want_to_change_to_s_question": "Do you want to change to <strong>%s</strong>?",
