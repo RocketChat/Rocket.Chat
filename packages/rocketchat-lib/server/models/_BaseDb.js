@@ -128,12 +128,8 @@ class ModelsBaseDb extends EventEmitter {
 		return this.findOne({ _id: { $in: ids }}, options);
 	}
 
-	defineSyncStrategy() {
-		return 'db';
-	}
-
 	updateHasPositionalOperator(update) {
-		return Object.keys(update).some(key => key.includes('.$') || (!Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
+		return Object.keys(update).some(key => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
 	}
 
 	processOplogRecord(action) {
@@ -219,9 +215,8 @@ class ModelsBaseDb extends EventEmitter {
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
-		const strategy = this.defineSyncStrategy(query, update, options);
 		let ids = [];
-		if (!isOplogEnabled && this.listenerCount('change') > 0 && strategy === 'db') {
+		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			const findOptions = {fields: {_id: 1}};
 			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
 			if (!Array.isArray(records)) {
@@ -241,46 +236,33 @@ class ModelsBaseDb extends EventEmitter {
 		const result = this.originals.update(query, update, options);
 
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			if (strategy === 'db') {
-				if (options.upsert === true) {
-					if (result.insertedId) {
-						this.emit('change', {
-							action: 'insert',
-							id: result.insertedId,
-							data: this.findOne({_id: result.insertedId}),
-							oplog: false
-						});
-						return;
-					}
-
-					query = {
-						_id: {
-							$in: ids
-						}
-					};
-				}
-
-				let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
-				if (!Array.isArray(records)) {
-					records = [records];
-				}
-				for (const record of records) {
+			if (options.upsert === true) {
+				if (result.insertedId) {
 					this.emit('change', {
-						action: 'update:record',
-						id: record._id,
-						data: record,
+						action: 'insert',
+						id: result.insertedId,
+						data: this.findOne({_id: result.insertedId}),
 						oplog: false
 					});
+					return;
 				}
-			} else {
+
+				query = {
+					_id: {
+						$in: ids
+					}
+				};
+			}
+
+			let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
+			if (!Array.isArray(records)) {
+				records = [records];
+			}
+			for (const record of records) {
 				this.emit('change', {
-					action: 'update:query',
-					id: undefined,
-					data: {
-						query,
-						update,
-						options
-					},
+					action: 'update:record',
+					id: record._id,
+					data: record,
 					oplog: false
 				});
 			}
