@@ -37,6 +37,8 @@ Template.chatRoomItem.helpers({
 			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
 
+		roomData.username = roomData.username || roomData.name;
+
 		if (RocketChat.settings.get('Store_Last_Message')) {
 			if (this.lastMessage) {
 				roomData.lastMessage = this.lastMessage;
