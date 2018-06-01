@@ -63,19 +63,12 @@ Meteor.startup(function() {
 		}
 	}
 
-	return RocketChat.models.Messages._db.on('change', function({action, id, data/*, oplog*/}) {
-		switch (action) {
-			case 'insert':
-				data._id = id;
-				publishMessage('inserted', data);
-				break;
-			case 'update:record':
-				publishMessage('updated', data);
-				break;
-			case 'update:diff':
-				publishMessage('updated', RocketChat.models.Messages.findOne({
-					_id: id
-				}));
+	return RocketChat.models.Messages.on('change', function({clientAction, id, data/*, oplog*/}) {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				const message = data || RocketChat.models.Messages.findOne({ _id: id });
+				publishMessage(clientAction, message);
 				break;
 		}
 	});

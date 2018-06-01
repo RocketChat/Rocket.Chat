@@ -140,6 +140,7 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'i') {
 			this.emit('change', {
 				action: 'insert',
+				clientAction: 'inserted',
 				id: action.op.o._id,
 				data: action.op.o,
 				oplog: true
@@ -150,7 +151,8 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'u') {
 			if (!action.op.o.$set && !action.op.o.$unset) {
 				this.emit('change', {
-					action: 'update:record',
+					action: 'update',
+					clientAction: 'updated',
 					id: action.id,
 					data: action.op.o,
 					oplog: true
@@ -176,9 +178,10 @@ class ModelsBaseDb extends EventEmitter {
 			}
 
 			this.emit('change', {
-				action: 'update:diff',
+				action: 'update',
+				clientAction: 'updated',
 				id: action.id,
-				data: diff,
+				diff,
 				oplog: true
 			});
 			return;
@@ -187,6 +190,7 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'd') {
 			this.emit('change', {
 				action: 'remove',
+				clientAction: 'removed',
 				id: action.id,
 				oplog: true
 			});
@@ -198,16 +202,18 @@ class ModelsBaseDb extends EventEmitter {
 		this.setUpdatedAt(record);
 
 		const result = this.originals.insert(...arguments);
+
+		record._id = result;
+
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			this.emit('change', {
 				action: 'insert',
+				clientAction: 'inserted',
 				id: result,
 				data: _.extend({}, record),
 				oplog: false
 			});
 		}
-
-		record._id = result;
 
 		return result;
 	}
@@ -236,37 +242,27 @@ class ModelsBaseDb extends EventEmitter {
 		const result = this.originals.update(query, update, options);
 
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			if (options.upsert === true) {
-				if (result.insertedId) {
-					this.emit('change', {
-						action: 'insert',
-						id: result.insertedId,
-						data: this.findOne({_id: result.insertedId}),
-						oplog: false
-					});
-					return;
-				}
-
-				query = {
-					_id: {
-						$in: ids
-					}
-				};
-			}
-
-			let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
-			if (!Array.isArray(records)) {
-				records = [records];
-			}
-			for (const record of records) {
+			if (options.upsert === true && result.insertedId) {
 				this.emit('change', {
-					action: 'update:record',
-					id: record._id,
-					data: record,
+					action: 'insert',
+					clientAction: 'inserted',
+					id: result.insertedId,
+					oplog: false
+				});
+
+				return result;
+			}
+
+			for (const id of ids) {
+				this.emit('change', {
+					action: 'update',
+					clientAction: 'updated',
+					id,
 					oplog: false
 				});
 			}
 		}
+
 		return result;
 	}
 
@@ -297,6 +293,7 @@ class ModelsBaseDb extends EventEmitter {
 			for (const record of records) {
 				this.emit('change', {
 					action: 'remove',
+					clientAction: 'removed',
 					id: record._id,
 					data: _.extend({}, record),
 					oplog: false

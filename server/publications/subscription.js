@@ -65,18 +65,18 @@ Meteor.methods({
 	}
 });
 
-RocketChat.models.Subscriptions.on('change', ({action, id}) => {
-	switch (action) {
-		case 'update:record':
-		case 'update:diff':
-		case 'insert':
-			const subscription = RocketChat.models.Subscriptions.findOneById(id, { fields });
-			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', (action === 'insert' ? 'inserted' : 'updated'), subscription);
+RocketChat.models.Subscriptions.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			// Override data cuz we do not publish all fields
+			data = RocketChat.models.Subscriptions.findOneById(id, { fields });
 			break;
 
-		case 'remove':
-			const removedSubscription = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1 } });
-			RocketChat.Notifications.notifyUserInThisInstance(removedSubscription.u._id, 'subscriptions-changed', 'removed', { _id: id });
+		case 'removed':
+			data = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1 } });
 			break;
 	}
+
+	RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', clientAction, data);
 });

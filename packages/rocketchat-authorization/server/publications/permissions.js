@@ -17,17 +17,17 @@ Meteor.methods({
 	}
 });
 
-RocketChat.models.Permissions.on('change', ({action, id}) => {
-	switch (action) {
-		case 'update:record':
-		case 'update:diff':
-		case 'insert':
-			const permission = RocketChat.models.Permissions.findOneById(id);
-			RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', (action === 'insert' ? 'inserted' : 'updated'), permission);
+RocketChat.models.Permissions.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			data = data || RocketChat.models.Permissions.findOneById(id);
 			break;
 
-		case 'remove':
-			RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', 'removed', { _id: id });
+		case 'removed':
+			data = { _id: id };
 			break;
 	}
+
+	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });

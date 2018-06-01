@@ -34,31 +34,29 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
  */
 
 
-RocketChat.models.Users.on('change', ({action, id}) => {
-	switch (action) {
-		case 'update:record':
-		case 'update:diff':
-		case 'insert':
-			const user = RocketChat.models.Users.findOneById(id);
+RocketChat.models.Users.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			const user = data || RocketChat.models.Users.findOneById(id);
 			eventService.promoteEvent('user.save', id, user);
 			break;
 
-		case 'remove':
+		case 'removed':
 			eventService.promoteEvent('user.delete', id);
 			break;
 	}
 });
 
-RocketChat.models.Rooms.on('change', ({action, id}) => {
-	switch (action) {
-		case 'update:record':
-		case 'update:diff':
-		case 'insert':
-			const room = RocketChat.models.Rooms.findOneById(id);
+RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			const room = data || RocketChat.models.Rooms.findOneById(id);
 			eventService.promoteEvent('room.save', id, room);
 			break;
 
-		case 'remove':
+		case 'removed':
 			eventService.promoteEvent('room.delete', id);
 			break;
 	}

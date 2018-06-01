@@ -56,13 +56,11 @@ Meteor.methods({
 	}
 });
 
-RocketChat.models.Settings.on('change', ({action, id}) => {
-	switch (action) {
-		case 'update:record':
-		case 'update:diff':
-		case 'insert':
-			const setting = RocketChat.models.Settings.findOneById(id);
-			const type = (action === 'insert' ? 'inserted' : 'updated');
+RocketChat.models.Settings.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			const setting = data || RocketChat.models.Settings.findOneById(id);
 			const value = {
 				_id: setting._id,
 				value: setting.value,
@@ -71,15 +69,15 @@ RocketChat.models.Settings.on('change', ({action, id}) => {
 			};
 
 			if (setting['public'] === true) {
-				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, value);
+				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			} else {
-				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', type, value);
+				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);
 			}
 			break;
 
-		case 'remove':
-			RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', 'removed', { _id: id });
-			RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', 'removed', { _id: id });
+		case 'removed':
+			RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+			RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
 			break;
 	}
 });
