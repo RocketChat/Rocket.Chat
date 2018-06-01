@@ -19,7 +19,7 @@ RocketChat.QueueMethods = {
 		const room = _.extend({
 			_id: message.rid,
 			msgs: 1,
-			usersCount: 0,
+			usersCount: 1,
 			lm: new Date(),
 			code: roomCode,
 			label: guest.name || guest.username,
@@ -40,6 +40,7 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true
 		}, roomInfo);
+
 		const subscriptionData = {
 			rid: message.rid,
 			name: guest.name || guest.username,
@@ -60,7 +61,7 @@ RocketChat.QueueMethods = {
 		};
 
 		RocketChat.models.Rooms.insert(room);
-		// TODO: CACHE: Inc rooms's usersCount
+
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
 		RocketChat.Livechat.stream.emit(room._id, {
@@ -119,6 +120,7 @@ RocketChat.QueueMethods = {
 			},
 			t: 'l'
 		};
+
 		const room = _.extend({
 			_id: message.rid,
 			msgs: 1,
@@ -139,6 +141,7 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true
 		}, roomInfo);
+
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
 

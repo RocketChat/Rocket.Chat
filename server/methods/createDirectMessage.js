@@ -51,7 +51,7 @@ Meteor.methods({
 				t: 'd',
 				msgs: 0,
 				ts: now,
-				usersCount: 0
+				usersCount: 2
 			}
 		});
 
@@ -85,7 +85,6 @@ Meteor.methods({
 			upsertSubscription.$set.archived = true;
 		}
 
-		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.upsert({
 			rid,
 			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
@@ -93,7 +92,6 @@ Meteor.methods({
 
 		const toNotificationPref = RocketChat.getDefaultSubscriptionPref(to);
 
-		// TODO: CACHE: Inc rooms's usersCount
 		RocketChat.models.Subscriptions.upsert({
 			rid,
 			$and: [{'u._id': to._id}] // work around to solve problems with upsert and dot

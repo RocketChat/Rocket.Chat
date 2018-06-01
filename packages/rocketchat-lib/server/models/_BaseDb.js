@@ -239,6 +239,7 @@ class ModelsBaseDb extends EventEmitter {
 			}
 		}
 
+		// TODO: CACHE: Can we use findAndModify here when oplog is disabled?
 		const result = this.originals.update(query, update, options);
 
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {

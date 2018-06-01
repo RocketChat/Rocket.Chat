@@ -523,12 +523,8 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		// const ourQuery = Object.assign({}, query, {
-		// 	t: 'c',
-		// 	'u._id': this.userId
-		// });
 
-		// TODO: CACHE: and the query?
+		// TODO: CACHE: Add Bracking notice since we removed the query param
 		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
