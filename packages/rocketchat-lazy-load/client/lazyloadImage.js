@@ -2,6 +2,10 @@ import './lazyloadImage.html';
 import { addImage, fixCordova } from './';
 
 Template.lazyloadImage.helpers({
+	class() {
+		const loaded = Template.instance().loaded.get();
+		return `${ this.class } ${ loaded ? '' : 'lazy-img' }`;
+	},
 	lazy() {
 		const { preview, placeholder, src } = this;
 		if (Template.instance().loaded.get() ||(!preview && !placeholder)) {
