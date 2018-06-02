@@ -8,6 +8,11 @@ const accountsConfig = {
 
 Accounts.config(accountsConfig);
 
+// This overwrite removes the # in order to make it compatibile with FlowRouter
+Accounts.urls.resetPassword = function(token) {
+	return Meteor.absoluteUrl(`reset-password/${ token }`);
+};
+
 Accounts.emailTemplates.siteName = RocketChat.settings.get('Site_Name');
 
 Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
@@ -59,52 +64,44 @@ Accounts.emailTemplates.userActivated = {
 	}
 };
 
+Accounts.emailTemplates.enrollAccount = {
+	subject(user = {}) {
+		let subject;
+		if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
+			subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
+		} else {
+			subject = TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', {
+				lng: user.language || RocketChat.settings.get('language') || 'en'
+			});
+		}
+		return RocketChat.placeholders.replace(subject);
+	},
 
-const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
+	html(user = {}) {
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-Accounts.emailTemplates.verifyEmail.html = function(user, url) {
-	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return verifyEmailHtml(user, url);
-};
+		let html;
+		if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
+			html = RocketChat.settings.get('Accounts_Enrollment_Email');
+		} else {
+			html = TAPi18n.__('Accounts_Enrollment_Email_Default', {
+				lng: user.language || RocketChat.settings.get('language') || 'en'
+			});
+		}
 
-Accounts.urls.resetPassword = function(token) {
-	return Meteor.absoluteUrl(`reset-password/${ token }`);
+		html = RocketChat.placeholders.replace(html, {
+			name: user.name,
+			email: user.emails && user.emails[0] && user.emails[0].address
+		});
+
+		return header + html + footer;
+	}
 };
 
 Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
 
-Accounts.emailTemplates.enrollAccount.subject = function(user = {}) {
-	let subject;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
-	} else {
-		subject = TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en'
-		});
-	}
-	return RocketChat.placeholders.replace(subject);
-};
-
-Accounts.emailTemplates.enrollAccount.html = function(user = {}/*, url*/) {
-	let html;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		html = RocketChat.settings.get('Accounts_Enrollment_Email');
-	} else {
-		html = TAPi18n.__('Accounts_Enrollment_Email_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en'
-		});
-	}
-
-	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
-	html = RocketChat.placeholders.replace(html, {
-		name: user.name,
-		email: user.emails && user.emails[0] && user.emails[0].address
-	});
-
-	return header + html + footer;
-};
+Accounts.emailTemplates.verifyEmail.html = Accounts.emailTemplates.verifyEmail.text;
 
 Accounts.onCreateUser(function(options, user = {}) {
 	RocketChat.callbacks.run('beforeCreateUser', options, user);
