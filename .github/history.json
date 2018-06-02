@@ -13238,5 +13238,1512 @@
         "web-flow"
       ]
     }
+  ],
+  "0.64.1": [
+    {
+      "pr": "10597",
+      "title": "[NEW] Store the last sent message to show bellow the room's name by default",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.1",
+      "contributors": [
+        "graywolf336",
+        "engelgabriel",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10529",
+      "title": "Support passing extra connection options to the Mongo driver",
+      "userLogin": "saplla",
+      "milestone": "0.64.1",
+      "contributors": [
+        "saplla",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10615",
+      "title": "[FIX] E-mails were hidden some information",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10611",
+      "title": "Regression: Updating an App on multi-instance servers wasn't working",
+      "userLogin": "graywolf336",
+      "milestone": "0.64.1",
+      "contributors": [
+        "graywolf336",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10627",
+      "title": "[FIX] Regression on 0.64.0 was freezing the application when posting some URLs",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10648",
+      "title": "Dependencies update",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.1",
+      "contributors": [
+        "engelgabriel"
+      ]
+    }
+  ],
+  "0.64.2-rc.0": [
+    {
+      "pr": "10736",
+      "title": "More improvements on send notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10720",
+      "title": "[FIX] Send a message when muted returns inconsistent result in chat.sendMessage",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10733",
+      "title": "[FIX] Regression: Empty content on announcement modal",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10607",
+      "title": "[NEW] Add REST endpoints `channels.roles` & `groups.roles`",
+      "userLogin": "cardoso",
+      "milestone": "0.64.2",
+      "contributors": [
+        "cardoso",
+        "web-flow",
+        "rafaelks"
+      ]
+    },
+    {
+      "pr": "10724",
+      "title": "[NEW] Add more options for Wordpress OAuth configuration",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10523",
+      "title": "[NEW] Setup Wizard",
+      "userLogin": "karlprieb",
+      "milestone": "0.64.2",
+      "contributors": [
+        "karlprieb",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10691",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10686",
+      "title": "[NEW] Improvements to notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10705",
+      "title": "[FIX] Missing attachment description when Rocket.Chat Apps were enabled",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10445",
+      "title": "[FIX] Improve desktop notification formatting",
+      "userLogin": "Sameesunkaria",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Sameesunkaria",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10524",
+      "title": "Add `npm run postinstall` into example build script",
+      "userLogin": "peccu",
+      "milestone": "0.64.2",
+      "contributors": [
+        "peccu",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10678",
+      "title": "[FIX] Message box emoji icon was flickering when typing a text",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10674",
+      "title": "Correct links in README file",
+      "userLogin": "winterstefan",
+      "milestone": "0.64.2",
+      "contributors": [
+        "winterstefan"
+      ]
+    },
+    {
+      "pr": "10665",
+      "title": "[FIX] Channel owner was being set as muted when creating a read-only channel",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10681",
+      "title": "[FIX] SAML wasn't working correctly when running multiple instances",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow"
+      ]
+    }
+  ],
+  "0.64.2-rc.1": [
+    {
+      "pr": "10789",
+      "title": "Prometheus: Improve metric names",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10788",
+      "title": "Improvement to push notifications on direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10786",
+      "title": "Better metric for notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10779",
+      "title": "Add badge back to push notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10776",
+      "title": "Wizard improvements",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10766",
+      "title": "Add setting and expose prometheus on port 9100",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10760",
+      "title": "Regression: Fix notifications for direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    }
+  ],
+  "0.64.2-rc.2": [
+    {
+      "pr": "10798",
+      "title": "Prometheus: Add metric to track hooks time",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10802",
+      "title": "Regression: Autorun of wizard was not destroyed after completion",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10803",
+      "title": "Prometheus: Fix notification metric",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10804",
+      "title": "Regression: Fix wrong wizard field name",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10793",
+      "title": "[FIX] Not escaping special chars on mentions",
+      "userLogin": "erhan-",
+      "milestone": "0.64.2",
+      "contributors": [
+        "erhan-",
+        "sampaiodiego"
+      ]
+    }
+  ],
+  "0.64.2": [
+    {
+      "pr": "10812",
+      "title": "Release 0.64.2",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow",
+        "MarcosSpessatto",
+        "winterstefan",
+        "gdelavald",
+        "peccu",
+        "Sameesunkaria",
+        "sampaiodiego",
+        "engelgabriel",
+        "karlprieb",
+        "cardoso",
+        "erhan-"
+      ]
+    },
+    {
+      "pr": "10798",
+      "title": "Prometheus: Add metric to track hooks time",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10802",
+      "title": "Regression: Autorun of wizard was not destroyed after completion",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10803",
+      "title": "Prometheus: Fix notification metric",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10804",
+      "title": "Regression: Fix wrong wizard field name",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10793",
+      "title": "[FIX] Not escaping special chars on mentions",
+      "userLogin": "erhan-",
+      "milestone": "0.64.2",
+      "contributors": [
+        "erhan-",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10789",
+      "title": "Prometheus: Improve metric names",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10788",
+      "title": "Improvement to push notifications on direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10786",
+      "title": "Better metric for notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10779",
+      "title": "Add badge back to push notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10776",
+      "title": "Wizard improvements",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10766",
+      "title": "Add setting and expose prometheus on port 9100",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10760",
+      "title": "Regression: Fix notifications for direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10736",
+      "title": "More improvements on send notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10720",
+      "title": "[FIX] Send a message when muted returns inconsistent result in chat.sendMessage",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10733",
+      "title": "[FIX] Regression: Empty content on announcement modal",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10607",
+      "title": "[NEW] Add REST endpoints `channels.roles` & `groups.roles`",
+      "userLogin": "cardoso",
+      "milestone": "0.64.2",
+      "contributors": [
+        "cardoso",
+        "web-flow",
+        "rafaelks"
+      ]
+    },
+    {
+      "pr": "10724",
+      "title": "[NEW] Add more options for Wordpress OAuth configuration",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10523",
+      "title": "[NEW] Setup Wizard",
+      "userLogin": "karlprieb",
+      "milestone": "0.64.2",
+      "contributors": [
+        "karlprieb",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10691",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10686",
+      "title": "[NEW] Improvements to notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10705",
+      "title": "[FIX] Missing attachment description when Rocket.Chat Apps were enabled",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10445",
+      "title": "[FIX] Improve desktop notification formatting",
+      "userLogin": "Sameesunkaria",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Sameesunkaria",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10524",
+      "title": "Add `npm run postinstall` into example build script",
+      "userLogin": "peccu",
+      "milestone": "0.64.2",
+      "contributors": [
+        "peccu",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10678",
+      "title": "[FIX] Message box emoji icon was flickering when typing a text",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10674",
+      "title": "Correct links in README file",
+      "userLogin": "winterstefan",
+      "milestone": "0.64.2",
+      "contributors": [
+        "winterstefan"
+      ]
+    },
+    {
+      "pr": "10665",
+      "title": "[FIX] Channel owner was being set as muted when creating a read-only channel",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10681",
+      "title": "[FIX] SAML wasn't working correctly when running multiple instances",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow"
+      ]
+    }
+  ],
+  "0.65.0-rc.0": [
+    {
+      "pr": "10822",
+      "title": "Apps: Command Previews, Message and Room Removal Events",
+      "userLogin": "graywolf336",
+      "milestone": "0.65.0",
+      "contributors": [
+        "graywolf336",
+        "rodrigok",
+        "web-flow",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "9857",
+      "title": "[NEW] Implement a local password policy",
+      "userLogin": "graywolf336",
+      "milestone": "0.65.0",
+      "contributors": [
+        "graywolf336",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10663",
+      "title": "[FIX] Livechat managers were not being able to send messages in some cases",
+      "userLogin": "renatobecker",
+      "milestone": "0.65.0",
+      "contributors": [
+        "renatobecker"
+      ]
+    },
+    {
+      "pr": "10584",
+      "title": "[NEW] Options to enable/disable each Livechat registration form field",
+      "userLogin": "renatobecker",
+      "milestone": "0.65.0",
+      "contributors": [
+        "renatobecker",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10612",
+      "title": "[FIX] Livechat settings not appearing correctly",
+      "userLogin": "renatobecker",
+      "milestone": "0.65.0",
+      "contributors": [
+        "renatobecker"
+      ]
+    },
+    {
+      "pr": "10677",
+      "title": "[NEW] Return the result of the `/me` endpoint within the result of the `/login` endpoint",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10815",
+      "title": "Develop sync",
+      "userLogin": "rodrigok",
+      "contributors": [
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336",
+        "nsuchy",
+        "rodrigok",
+        "rafaelks",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10608",
+      "title": "[NEW] Lazy load image attachments",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "karlprieb",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10427",
+      "title": "[FIX] Enabling `Collapse Embedded Media by Default` was hiding replies and quotes",
+      "userLogin": "c0dzilla",
+      "milestone": "0.65.0",
+      "contributors": [
+        "c0dzilla"
+      ]
+    },
+    {
+      "pr": "10214",
+      "title": "[NEW] View pinned message's attachment",
+      "userLogin": "c0dzilla",
+      "milestone": "0.65.0",
+      "contributors": [
+        "c0dzilla",
+        "karlprieb",
+        "web-flow",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10704",
+      "title": "[FIX] Missing option to disable/enable System Messages",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10448",
+      "title": "[FIX] Remove outdated translations of Internal Hubot's description of Scripts to Load that were pointing to a non existent address",
+      "userLogin": "Hudell",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10661",
+      "title": "Major dependencies update",
+      "userLogin": "engelgabriel",
+      "milestone": "0.65.0",
+      "contributors": [
+        "engelgabriel",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10702",
+      "title": "[NEW] Add REST API endpoint `users.getUsernameSuggestion` to get username suggestion",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10488",
+      "title": "[NEW] REST API endpoint `settings` now allow set colors and trigger actions",
+      "userLogin": "ThomasRoehl",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ThomasRoehl",
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10778",
+      "title": "[NEW] Add REST endpoint `subscriptions.unread` to mark messages as unread",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10662",
+      "title": "[NEW] REST API endpoint `/me` now returns all the settings, including the default values",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10741",
+      "title": "[NEW] Now is possible to access files using header authorization (`x-user-id` and `x-auth-token`)",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10564",
+      "title": "[FIX] UI was not disabling the actions when users has had no permissions to create channels or add users to rooms",
+      "userLogin": "chuckAtCataworx",
+      "milestone": "0.65.0",
+      "contributors": [
+        "cfunkles",
+        "chuckAtCataworx",
+        "web-flow",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "9679",
+      "title": "[NEW] Add REST API endpoints `channels.counters`, `groups.counters and `im.counters`",
+      "userLogin": "xbolshe",
+      "milestone": "0.65.0",
+      "contributors": [
+        "xbolshe",
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "9733",
+      "title": "[NEW] Add REST API endpoints `channels.setCustomFields` and `groups.setCustomFields`",
+      "userLogin": "xbolshe",
+      "milestone": "0.65.0",
+      "contributors": [
+        "xbolshe",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10625",
+      "title": "[FIX] Private settings were not being cleared from client cache in some cases",
+      "userLogin": "Hudell",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10811",
+      "title": "Prevent setup wizard redirects",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10798",
+      "title": "Prometheus: Add metric to track hooks time",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10802",
+      "title": "Regression: Autorun of wizard was not destroyed after completion",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10803",
+      "title": "Prometheus: Fix notification metric",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10804",
+      "title": "Regression: Fix wrong wizard field name",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10793",
+      "title": "[FIX] Not escaping special chars on mentions",
+      "userLogin": "erhan-",
+      "milestone": "0.64.2",
+      "contributors": [
+        "erhan-",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10789",
+      "title": "Prometheus: Improve metric names",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10788",
+      "title": "Improvement to push notifications on direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10786",
+      "title": "Better metric for notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10779",
+      "title": "Add badge back to push notifications",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10776",
+      "title": "Wizard improvements",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10766",
+      "title": "Add setting and expose prometheus on port 9100",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10760",
+      "title": "Regression: Fix notifications for direct messages",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10736",
+      "title": "More improvements on send notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10720",
+      "title": "[FIX] Send a message when muted returns inconsistent result in chat.sendMessage",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10733",
+      "title": "[FIX] Regression: Empty content on announcement modal",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10607",
+      "title": "[NEW] Add REST endpoints `channels.roles` & `groups.roles`",
+      "userLogin": "cardoso",
+      "milestone": "0.64.2",
+      "contributors": [
+        "cardoso",
+        "web-flow",
+        "rafaelks"
+      ]
+    },
+    {
+      "pr": "10724",
+      "title": "[NEW] Add more options for Wordpress OAuth configuration",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10523",
+      "title": "[NEW] Setup Wizard",
+      "userLogin": "karlprieb",
+      "milestone": "0.64.2",
+      "contributors": [
+        "karlprieb",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10691",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.64.2",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10686",
+      "title": "[NEW] Improvements to notifications logic",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.64.2",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10705",
+      "title": "[FIX] Missing attachment description when Rocket.Chat Apps were enabled",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10445",
+      "title": "[FIX] Improve desktop notification formatting",
+      "userLogin": "Sameesunkaria",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Sameesunkaria",
+        "engelgabriel",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10524",
+      "title": "Add `npm run postinstall` into example build script",
+      "userLogin": "peccu",
+      "milestone": "0.64.2",
+      "contributors": [
+        "peccu",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "10678",
+      "title": "[FIX] Message box emoji icon was flickering when typing a text",
+      "userLogin": "gdelavald",
+      "milestone": "0.64.2",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10674",
+      "title": "Correct links in README file",
+      "userLogin": "winterstefan",
+      "milestone": "0.64.2",
+      "contributors": [
+        "winterstefan"
+      ]
+    },
+    {
+      "pr": "10665",
+      "title": "[FIX] Channel owner was being set as muted when creating a read-only channel",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.64.2",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10681",
+      "title": "[FIX] SAML wasn't working correctly when running multiple instances",
+      "userLogin": "Hudell",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10812",
+      "title": "Release 0.64.2",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow",
+        "MarcosSpessatto",
+        "winterstefan",
+        "gdelavald",
+        "peccu",
+        "Sameesunkaria",
+        "sampaiodiego",
+        "engelgabriel",
+        "karlprieb",
+        "cardoso",
+        "erhan-"
+      ]
+    },
+    {
+      "pr": "10660",
+      "title": "Release 0.64.1",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "saplla",
+        "web-flow",
+        "engelgabriel",
+        "graywolf336",
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10613",
+      "title": "Release 0.64.0",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok",
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336",
+        "TwizzyDizzy",
+        "christianh814",
+        "tttt-conan",
+        "gdelavald",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10504",
+      "title": "Release 0.63.3",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "rafaelks",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10476",
+      "title": "Release 0.63.2",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10408",
+      "title": "add redhat dockerfile to master",
+      "userLogin": "geekgonecrazy",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    }
+  ],
+  "0.65.0-rc.1": [
+    {
+      "pr": "10837",
+      "title": "[FIX] Internal Error when requesting user data download",
+      "userLogin": "Hudell",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Hudell"
+      ]
+    },
+    {
+      "pr": "10835",
+      "title": "[FIX] Broadcast channels were showing reply button for deleted messages and generating wrong reply links some times",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10833",
+      "title": "Fix: Regression in REST API endpoint `/me` ",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10734",
+      "title": "[FIX] User's preference `Unread on Top` wasn't working for LiveChat rooms",
+      "userLogin": "renatobecker",
+      "milestone": "0.65.0",
+      "contributors": [
+        "renatobecker",
+        "sampaiodiego",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10753",
+      "title": "[NEW] Add permission `view-broadcast-member-list`",
+      "userLogin": "cardoso",
+      "milestone": "0.65.0",
+      "contributors": [
+        "cardoso",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10715",
+      "title": "[FIX] Cancel button wasn't working while uploading file",
+      "userLogin": "Mr-Gryphon",
+      "milestone": "0.65.0",
+      "contributors": [
+        "Mr-Gryphon",
+        "web-flow",
+        "karlprieb"
+      ]
+    }
+  ],
+  "0.65.0-rc.2": [
+    {
+      "pr": "10847",
+      "title": "Regression: Fix email notification preference not showing correct selected value",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.0",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10853",
+      "title": "Apps: Command previews are clickable & Apps Framework is controlled via a setting",
+      "userLogin": "graywolf336",
+      "milestone": "0.65.0",
+      "contributors": [
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10840",
+      "title": "[FIX] Missing pagination fields in the response of REST /directory endpoint",
+      "userLogin": "MarcosSpessatto",
+      "milestone": "0.65.0",
+      "contributors": [
+        "MarcosSpessatto"
+      ]
+    },
+    {
+      "pr": "10846",
+      "title": "[FIX] Layout badge cutting on unread messages for long names",
+      "userLogin": "kos4live",
+      "milestone": "0.65.0",
+      "contributors": [
+        "kos4live"
+      ]
+    },
+    {
+      "pr": "10848",
+      "title": "Regression: Make settings `Site_Name` and `Language` public again",
+      "userLogin": "rodrigok",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10520",
+      "title": "Fix: Clarify the wording of the release issue template",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10836",
+      "title": "Fix: Regression on users avatar in admin pages",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo",
+        "rodrigok",
+        "web-flow"
+      ]
+    }
+  ],
+  "0.65.0-rc.3": [
+    {
+      "pr": "10875",
+      "title": "[FIX] Slack-Bridge bug when migrating to 0.64.1",
+      "userLogin": "iliaal",
+      "milestone": "0.65.0",
+      "contributors": [
+        null
+      ]
+    },
+    {
+      "pr": "10882",
+      "title": "Fix: Manage apps layout was a bit confuse",
+      "userLogin": "gdelavald",
+      "milestone": "0.65.0",
+      "contributors": [
+        "gdelavald",
+        "ggazzo",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10886",
+      "title": "LingoHub based on develop",
+      "userLogin": "engelgabriel",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10887",
+      "title": "Fix: Regression Lazyload fix shuffle avatars",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10883",
+      "title": "[FIX] Horizontally align items in preview message",
+      "userLogin": "gdelavald",
+      "milestone": "0.65.0",
+      "contributors": [
+        "gdelavald"
+      ]
+    },
+    {
+      "pr": "10857",
+      "title": "Fix: typo on error message for push token API",
+      "userLogin": "rafaelks",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rafaelks",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10878",
+      "title": "[FIX] The first users was not set as admin some times",
+      "userLogin": "rodrigok",
+      "milestone": "0.65.0",
+      "contributors": [
+        "rodrigok"
+      ]
+    }
+  ],
+  "0.65.0": [
+    {
+      "pr": "10812",
+      "title": "Release 0.64.2",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.2",
+      "contributors": [
+        "Hudell",
+        "rodrigok",
+        "web-flow",
+        "MarcosSpessatto",
+        "winterstefan",
+        "gdelavald",
+        "peccu",
+        "Sameesunkaria",
+        "sampaiodiego",
+        "engelgabriel",
+        "karlprieb",
+        "cardoso",
+        "erhan-"
+      ]
+    },
+    {
+      "pr": "10660",
+      "title": "Release 0.64.1",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.1",
+      "contributors": [
+        "saplla",
+        "web-flow",
+        "engelgabriel",
+        "graywolf336",
+        "rodrigok",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10613",
+      "title": "Release 0.64.0",
+      "userLogin": "rodrigok",
+      "milestone": "0.64.0",
+      "contributors": [
+        "rodrigok",
+        "geekgonecrazy",
+        "web-flow",
+        "graywolf336",
+        "TwizzyDizzy",
+        "christianh814",
+        "tttt-conan",
+        "gdelavald",
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10504",
+      "title": "Release 0.63.3",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "rafaelks",
+        "graywolf336"
+      ]
+    },
+    {
+      "pr": "10476",
+      "title": "Release 0.63.2",
+      "userLogin": "graywolf336",
+      "contributors": [
+        "graywolf336",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "10408",
+      "title": "add redhat dockerfile to master",
+      "userLogin": "geekgonecrazy",
+      "contributors": [
+        "geekgonecrazy"
+      ]
+    }
+  ],
+  "0.65.1": [
+    {
+      "pr": "10940",
+      "title": "[FIX] Livechat not loading",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10934",
+      "title": "[FIX] Application crashing on startup when trying to log errors to `exceptions` channel",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10928",
+      "title": "[FIX] Incomplete email notification link",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10904",
+      "title": "[FIX] Image lazy load was breaking attachments",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.1",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10851",
+      "title": "[FIX] Leave room wasn't working as expected",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.1",
+      "contributors": [
+        "ggazzo"
+      ]
+    }
   ]
 }

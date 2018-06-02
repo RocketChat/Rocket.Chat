@@ -2,7 +2,17 @@
 	<!-- TODO: fix this class -->
 	<section class="preferences-page preferences-page--apps">
 		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
-			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
+			<div class="rc-directory-header">
+				<div class="rc-input rc-input--small rc-directory-search">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							{{> icon icon="magnifier" block="rc-input__icon" }}
+							<input type="text" class="rc-input__element rc-input__element--small js-search" name="app-filter" id="app-filter" placeholder={{_ "Search"}} autocomplete="off">
+						</div>
+					</label>
+				</div>
+				<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
+			</div>
 		{{/header}}
 		<div class="rc-directory-content">
 			{{#requiresPermission 'manage-apps'}}
@@ -17,7 +27,7 @@
 					</thead>
 					<tbody class="rc-table-body">
 						{{#each apps}}
-							<tr class="rc-table-tr" data-name="{{name}}">
+							<tr class="rc-table-tr {{activeClass status}}" data-name="{{name}}">
 								<td class="rc-table-td rc-table-td--name">
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
@@ -28,7 +38,7 @@
 											{{#if description}}
 												<span class="rc-directory-channel-description">{{description}}</span>
 											{{/if}}
-									</div>
+										</div>
 									</div>
 								</td>
 								<td class="rc-table-td rc-table-td--users">{{version}}</td>
@@ -42,11 +52,11 @@
 								</td>
 							</tr>
 						{{else}}
-						<tr class="rc-table-tr" data-name="{{name}}">
-							<td class="rc-table-td rc-table-td--name">
-								{{_ "There_are_no_applications_installed"}}
-							</td>
-						</tr>
+							<tr class="rc-table-tr" data-name="{{name}}">
+								<td class="rc-table-td rc-table-td--name">
+									{{_ "There_are_no_applications_installed"}}
+								</td>
+							</tr>
 						{{/each}}
 					</tbody>
 				</table>
