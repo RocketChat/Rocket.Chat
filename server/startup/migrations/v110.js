@@ -18,12 +18,10 @@ RocketChat.Migrations.add({
 			}
 
 			if (RocketChat.models.Users) {
-				RocketChat.models.Users.find({ 'settings.preferences.viewMode': { $exists: 1 } }).forEach(function(user) {
-					RocketChat.models.Users.update(
-						{ _id: user._id },
-						{ $rename: { 'settings.preferences.viewMode': 'user.settings.preferences.messageViewMode' } },
-					);
-				});
+				RocketChat.models.Users.update(
+					{ 'settings.preferences.viewMode': { $exists: 1 } },
+					{ $rename: { 'settings.preferences.viewMode': 'user.settings.preferences.messageViewMode' } },
+				);
 			}
 		}
 	},
@@ -45,12 +43,10 @@ RocketChat.Migrations.add({
 			}
 
 			if (RocketChat.models.Users) {
-				RocketChat.models.Users.find({ 'settings.preferences.messageViewMode': { $exists: 1 } }).forEach(function(user) {
-					RocketChat.models.Users.update(
-						{ _id: user._id },
-						{ $rename: { 'settings.preferences.messageViewMode': 'user.settings.preferences.viewMode' } },
-					);
-				});
+				RocketChat.models.Users.update(
+					{ 'settings.preferences.messageViewMode': { $exists: 1 } },
+					{ $rename: { 'settings.preferences.messageViewMode': 'user.settings.preferences.viewMode' } },
+				);
 			}
 		}
 	}

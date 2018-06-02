@@ -18,3 +18,11 @@ div.apps-error {
 	width: 100%;
 	font-size: 45px;
 }
+
+.preferences-page--apps .rc-table-tr {
+	opacity: 0.5;
+}
+
+.preferences-page--apps .rc-table-tr.active {
+	opacity: 1;
+}
