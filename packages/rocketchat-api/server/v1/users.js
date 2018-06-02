@@ -416,3 +416,11 @@ RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 		return RocketChat.API.v1.failure('User not found');
 	}
 });
+
+RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
+	get() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+
+		return RocketChat.API.v1.success({ result });
+	}
+});

@@ -32,6 +32,7 @@ const fields = {
 	label: 1,
 	ro: 1,
 	reactWhenReadOnly: 1,
+	sysMes: 1,
 	sentiment: 1,
 	tokenpass: 1,
 	streamingOptions: 1,
