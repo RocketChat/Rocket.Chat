@@ -1,7 +1,7 @@
 <template name="avatar">
 	<div class="avatar">
 		{{# if lazy}}
-			{{> lazyloadImage src=src class="avatar-image lazy-img" placeholder=true}}
+			{{> lazyloadImage src=src class="avatar-image" placeholder=true}}
 		{{else}}
 			<img src="{{src}}" class="avatar-image"/>
 		{{/if}}
