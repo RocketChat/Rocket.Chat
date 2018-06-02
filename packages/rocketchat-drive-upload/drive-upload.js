@@ -1,11 +1,6 @@
-import {Providers} from 'meteor/rocketchat:grant';
+//import {Providers} from 'meteor/rocketchat:grant';
 import {google} from 'googleapis';
-import {getUser} from 'rocketchat:grant-google';
-
-const drive = google.drive({
-	version: 'v3',
-	//auth: client.oAuth2Client
-});
+//import {getUser} from 'rocketchat:grant-google';
 
 Meteor.methods({
 	checkDriveAccess(id) {
@@ -24,6 +19,7 @@ Meteor.methods({
 });
 
 
+
 Meteor.methods({
 	async 'uploadFileToDrive'(file, metaData) {
 		const driveScope = 'https://www.googleapis.com/auth/drive.file';
@@ -37,23 +33,29 @@ Meteor.methods({
 		if (!token || !scopes || scopes.indexOf(driveScope) == -1) {
 			return;
 		}
-		const media = {
-			mimeType: metaData.type,
-			body: file
-		}
+
+		const drive = google.drive({
+			version: 'v3',
+			auth: token
+		});
+
 		const res = await drive.files.create({
 			requestBody: {
-
+				name: metaData.name,
+				mimeType: metaData.type
 			},
-			resource: metadata,
-			media: media
-		}, function(err, file) {
-			if (err) {
-				console.log(err);
+			media: {
+				name: metaData.type,
+				body: file
 			}
-			else {
-				console.log("File id: " + file.id);
+		},	function(err, file) {
+				if (err) {
+					console.log(err);
+				}
+				else {
+					console.log("File id: " + file.id);
+				}
 			}
-		}
+		);
 	}
 });
