@@ -67,12 +67,11 @@ Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 	return verifyEmailHtml(user, url);
 };
 
-const resetPasswordHtml = Accounts.emailTemplates.resetPassword.text;
-
-Accounts.emailTemplates.resetPassword.html = function(user, url) {
-	url = url.replace(/\/#\//, '/');
-	return resetPasswordHtml(user, url);
+Accounts.urls.resetPassword = function(token) {
+	return Meteor.absoluteUrl(`reset-password/${ token }`);
 };
+
+Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
 
 Accounts.emailTemplates.enrollAccount.subject = function(user = {}) {
 	let subject;
@@ -220,6 +219,9 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 			roles.push('user');
 		} else {
 			roles.push('admin');
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 		}
 	}
 

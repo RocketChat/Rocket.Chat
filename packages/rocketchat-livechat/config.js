@@ -4,7 +4,13 @@ Meteor.startup(function() {
 	RocketChat.settings.add('Livechat_enabled', false, { type: 'boolean', group: 'Livechat', public: true });
 
 	RocketChat.settings.add('Livechat_title', 'Rocket.Chat', { type: 'string', group: 'Livechat', public: true });
-	RocketChat.settings.add('Livechat_title_color', '#C1272D', { type: 'color', group: 'Livechat', public: true });
+	RocketChat.settings.add('Livechat_title_color', '#C1272D', {
+		type: 'color',
+		editor: 'color',
+		allowedTypes: ['color', 'expression'],
+		group: 'Livechat',
+		public: true
+	});
 
 	RocketChat.settings.add('Livechat_display_offline_form', true, {
 		type: 'boolean',
@@ -39,6 +45,8 @@ Meteor.startup(function() {
 	});
 	RocketChat.settings.add('Livechat_offline_title_color', '#666666', {
 		type: 'color',
+		editor: 'color',
+		allowedTypes: ['color', 'expression'],
 		group: 'Livechat',
 		public: true,
 		section: 'Offline',
@@ -66,7 +74,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Offline_success_message'
 	});
 
-	RocketChat.settings.add('Livechat_registration_form', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_preregistration_form' });
 	RocketChat.settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	RocketChat.settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 
@@ -75,6 +82,27 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Conversation_finished_message'
+	});
+
+	RocketChat.settings.add('Livechat_registration_form', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_preregistration_form'
+	});
+
+	RocketChat.settings.add('Livechat_name_field_registration_form', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_name_field'
+	});
+
+	RocketChat.settings.add('Livechat_email_field_registration_form', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Show_email_field'
 	});
 
 	RocketChat.settings.add('Livechat_guest_count', 1, { type: 'int', group: 'Livechat' });
@@ -213,6 +241,13 @@ Meteor.startup(function() {
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Office_hours_enabled'
+	});
+
+	RocketChat.settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Continuous_sound_notifications_for_new_livechat_room'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
