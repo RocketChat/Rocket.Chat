@@ -112,6 +112,7 @@ rocketchat:push-notifications
 rocketchat:reactions
 rocketchat:apps
 rocketchat:sandstorm
+rocketchat:setup-wizard
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
@@ -146,6 +147,7 @@ rocketchat:ui-master
 rocketchat:ui-message
 rocketchat:ui-sidenav
 rocketchat:ui-vrecord
+rocketchat:user-data-download
 rocketchat:version
 rocketchat:videobridge
 rocketchat:webrtc
@@ -185,3 +187,7 @@ todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:version-check
+
+rocketchat:search
+chatpal:search
+rocketchat:lazy-load
