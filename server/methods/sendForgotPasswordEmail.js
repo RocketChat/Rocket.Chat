@@ -22,7 +22,6 @@ Meteor.methods({
 				};
 
 				Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
-					url = url.replace('/#/', '/');
 					return html.replace(/\[Forgot_Password_Url]/g, url);
 				};
 			}
