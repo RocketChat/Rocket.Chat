@@ -6,19 +6,36 @@ RocketChat.settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
 	alwaysNotifyMobileBoolean = value;
 });
 
-// function getBadgeCount(userId) {
-// 	const subscriptions = RocketChat.models.Subscriptions.findUnreadByUserId(userId).fetch();
+let SubscriptionRaw;
+Meteor.startup(() => {
+	SubscriptionRaw = RocketChat.models.Subscriptions.model.rawCollection();
+});
 
-// 	return subscriptions.reduce((unread, sub) => {
-// 		return sub.unread + unread;
-// 	}, 0);
-// }
+async function getBadgeCount(userId) {
+	const [ result ] = await SubscriptionRaw.aggregate([
+		{ $match: { 'u._id': userId } },
+		{
+			$group: {
+				_id: 'total',
+				total: { $sum: '$unread' }
+			}
+		}
+	]).toArray();
+
+	const { total } = result;
+	return total;
+}
 
 function canSendMessageToRoom(room, username) {
 	return !((room.muted || []).includes(username));
 }
 
-export function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, notificationMessage }) {
+export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
+	let username = '';
+	if (RocketChat.settings.get('Push_show_username_room')) {
+		username = RocketChat.settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
+	}
+
 	RocketChat.PushNotification.send({
 		roomId: message.rid,
 		payload: {
@@ -28,10 +45,10 @@ export function sendSinglePush({ room, message, userId, receiverUsername, sender
 			type: room.t,
 			name: room.name
 		},
-		roomName: RocketChat.settings.get('Push_show_username_room') ? `${ room.t === 'd' ? '' : '#' }${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
-		username: RocketChat.settings.get('Push_show_username_room') ? senderUsername : '',
+		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
+		username,
 		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
-		// badge: getBadgeCount(userIdToNotify),
+		badge: await getBadgeCount(userId),
 		usersTo: {
 			userId
 		},
