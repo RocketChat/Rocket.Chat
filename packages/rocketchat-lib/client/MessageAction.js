@@ -352,11 +352,11 @@ Meteor.startup(function() {
 		// icon to be added
 		icon: 'drive',
 		label: 'Upload To Drive',
-		async action(event) {
+		async action() {
 			const message = this._arguments[1];
 			const attachment = message.attachments[0];
 			const file = message.file;
-			const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
+			//const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
 			const metaData = {
 				name: attachment.title,
 				type: file.type
@@ -364,6 +364,9 @@ Meteor.startup(function() {
 
 			if (!Meteor.call('validateDriveAccess', Meteor.userId())) {
 				Meteor.loginWithGoogle({}, function(error) {
+					if (error) {
+						return;
+					}
 					Meteor.call('uploadFileToDrive', file, metaData, (() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
 				});
 			}

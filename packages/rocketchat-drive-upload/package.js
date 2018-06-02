@@ -1,12 +1,12 @@
 Package.describe({
-  name: 'rocketchat:rocketchat-drive-upload',
-  version: '0.0.1',
+	name: 'rocketchat:rocketchat-drive-upload',
+	version: '0.0.1',
 
-  summary: 'Upload files to Google Drive',
+	summary: 'Upload files to Google Drive',
 
-  git: '',
+	git: '',
 
-  documentation: 'README.md'
+	documentation: 'README.md'
 });
 
 Package.onUse(function(api) {

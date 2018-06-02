@@ -11,7 +11,7 @@ Meteor.methods({
 		}
 		const token = user.accessToken;
 		const scopes = user.scopes;
-		if (!token || !scopes || scopes.indexOf(driveScope) == -1) {
+		if (!token || !scopes || scopes.indexOf(driveScope) === -1) {
 			return false;
 		}
 		return true;
@@ -30,7 +30,7 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOne({_id: id});
 		const token = user.accessToken;
 		const scopes = user.scopes;
-		if (!token || !scopes || scopes.indexOf(driveScope) == -1) {
+		if (!token || !scopes || scopes.indexOf(driveScope) === -1) {
 			return;
 		}
 
@@ -48,14 +48,12 @@ Meteor.methods({
 				name: metaData.type,
 				body: file
 			}
-		},	function(err, file) {
-				if (err) {
-					console.log(err);
-				}
-				else {
-					console.log("File id: " + file.id);
-				}
+		}, function(err, file) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(file.id);
 			}
-		);
+		});
 	}
 });
