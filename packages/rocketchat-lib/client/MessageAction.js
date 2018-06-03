@@ -362,14 +362,18 @@ Meteor.startup(function() {
 				type: file.type
 			};
 
-			if (!Meteor.call('validateDriveAccess', Meteor.userId())) {
-				Meteor.loginWithGoogle({}, function(error) {
-					if (error) {
-						return;
-					}
-					Meteor.call('uploadFileToDrive', file, metaData, (() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
-				});
-			}
+			Meteor.call('checkDriveAccess', file, metaData, (err, authorized) => {
+				if (!authorized) {
+					Meteor.loginWithGoogle({}, function(error) {
+						if (error) {
+							return;
+						}
+						Meteor.call('uploadFileToDrive', file, metaData, success(() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
+					});
+				} else {
+					Meteor.call('uploadFileToDrive', file, metaData, success(() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
+				}
+			});
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {

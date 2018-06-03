@@ -3,17 +3,22 @@ import {google} from 'googleapis';
 //import {getUser} from 'rocketchat:grant-google';
 
 Meteor.methods({
-	checkDriveAccess(id) {
+	checkDriveAccess() {
+		const id = Meteor.userId();
 		const driveScope = 'https://www.googleapis.com/auth/drive.file';
 		const user = RocketChat.models.Users.findOne({_id: id});
+
 		if (!user) {
 			return false;
 		}
+
 		const token = user.accessToken;
 		const scopes = user.scopes;
+
 		if (!token || !scopes || scopes.indexOf(driveScope) === -1) {
 			return false;
 		}
+
 		return true;
 	}
 });
@@ -23,13 +28,16 @@ Meteor.methods({
 Meteor.methods({
 	async 'uploadFileToDrive'(file, metaData) {
 		const driveScope = 'https://www.googleapis.com/auth/drive.file';
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'uploadFileToDrive' });
 		}
+
 		const id = Meteor.userId();
 		const user = RocketChat.models.Users.findOne({_id: id});
 		const token = user.accessToken;
 		const scopes = user.scopes;
+
 		if (!token || !scopes || scopes.indexOf(driveScope) === -1) {
 			return;
 		}
