@@ -3,11 +3,14 @@ Meteor.publish('clientCommands', function() {
 		return this.ready();
 	}
 
-	RocketChat.models.Users.update({_id: this.userId, type: 'bot'}, {
+	const update = RocketChat.models.Users.update({_id: this.userId, type: 'bot'}, {
 		$set: {
 			'botData.paused': false
 		}
 	});
+	if (update > 0) {
+		Meteor.call('UserPresence:setDefaultStatus', this.userId, 'online');
+	}
 
 	return RocketChat.models.ClientCommands.findById(this.userId);
 });

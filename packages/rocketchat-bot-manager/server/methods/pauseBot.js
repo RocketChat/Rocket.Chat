@@ -6,11 +6,14 @@ Meteor.methods({
 			if (err) {
 				throw err;
 			}
-			return RocketChat.models.Users.update({ _id: bot._id }, {
+			const update = RocketChat.models.Users.update({ _id: bot._id }, {
 				$set: {
 					'botData.paused': true
 				}
 			});
+			if (update > 0) {
+				return Meteor.call('UserPresence:setDefaultStatus', bot._id, 'busy');
+			}
 		});
 	}
 });
