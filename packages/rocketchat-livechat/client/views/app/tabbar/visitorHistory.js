@@ -22,7 +22,7 @@ Template.visitorHistory.helpers({
 		if (this.label) {
 			title += ` - ${ this.label }`;
 		}
-
+		console.log(this);
 		return title;
 	}
 });
