@@ -20,8 +20,12 @@
               <div class="input-line double-col">
                 <label>{{_ "Status"}}</label>
                 <div>
-                  <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
-                  <button class="button primary pause" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
+                  {{#if isOnline}}
+                    <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
+                    <button class="button primary pause danger" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
+                  {{else}}
+                    <div class="settings-description">{{_ "Offline"}}</div>
+                  {{/if}}
                 </div>
               </div>
               <div class="input-line double-col">
@@ -39,26 +43,27 @@
                 </div>
               </div>
               <div class="input-line double-col">
-                <label>{{_ "Framework"}}</label>
+                <label>{{_ "Bot_framework"}}</label>
                 <div>
-                  <input type="text" class="rc-input__element" name="name" value="{{getFramework}}" />
-                  <div class="settings-description">{{_ "Bot_framework"}}</div>
+                  <div class="settings-description">{{getFramework}}</div>
                 </div>
               </div>
-              <div class="input-line double-col">
-                <label>{{_ "Connection_status"}}</label>
-                <div>
-                  <div class="settings-description">{{ipAddress}}</div>
-                  <div class="settings-description">{{ping}}</div>
+              {{#if isOnline}}
+                <div class="input-line double-col">
+                  <label>{{_ "Connection_status"}}</label>
+                  <div>
+                    <div class="settings-description">{{ipAddress}}</div>
+                    <div class="settings-description">{{ping}}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="input-line double-col">
-                <label>{{_ "Uptime"}}</label>
-                <div>
-                  <div class="settings-description">{{connectedUptime}}</div>
-                  <div class="settings-description">{{activeUptime}}</div>
+                <div class="input-line double-col">
+                  <label>{{_ "Uptime"}}</label>
+                  <div>
+                    <div class="settings-description">{{connectedUptime}}</div>
+                    <div class="settings-description">{{activeUptime}}</div>
+                  </div>
                 </div>
-              </div>
+              {{/if}}
               <div class="input-line double-col">
                 <label>{{_ "Roles"}}</label>
                 <div>

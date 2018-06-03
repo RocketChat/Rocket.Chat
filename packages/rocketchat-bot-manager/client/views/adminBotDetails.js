@@ -85,6 +85,14 @@ Template.adminBotDetails.helpers({
 		}
 	},
 
+	isOnline() {
+		const bot = Template.instance().bot.get();
+		if (bot.statusConnection && bot.statusConnection !== 'offline') {
+			return true;
+		}
+		return false;
+	},
+
 	ipAddress() {
 		const bot = Template.instance().bot.get();
 		if (bot.botData) {
@@ -94,11 +102,8 @@ Template.adminBotDetails.helpers({
 
 	connectedUptime() {
 		const bot = Template.instance().bot.get();
-		if (bot.statusConnection && bot.statusConnection !== 'offline') {
-			const diff = (new Date()).getTime() - bot.lastLogin.getTime();
-			return `Connected: ${ Template.instance().humanReadableTime(diff / 1000) }`;
-		}
-		return 'Offline';
+		const diff = (new Date()).getTime() - bot.lastLogin.getTime();
+		return `Connected: ${ Template.instance().humanReadableTime(diff / 1000) }`;
 	}
 });
 
