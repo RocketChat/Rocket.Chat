@@ -4784,11 +4784,10 @@ body:not(.is-cordova) {
 
 .rc-old .mention-link {
 	border-radius: 4px;
+	padding: 0 4px 2px;
 
 	&.mention-link-me,
 	&.mention-link-all {
-		padding: 0 4px 2px;
-
 		font-weight: bold;
 	}
 }
