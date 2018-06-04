@@ -938,23 +938,8 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Host'
 		});
-		this.add('Direct_Reply_Port', '143', {
-			type: 'select',
-			values: [
-				{
-					key: '143',
-					i18nLabel: '143'
-				}, {
-					key: '993',
-					i18nLabel: '993'
-				}, {
-					key: '110',
-					i18nLabel: '110'
-				}, {
-					key: '995',
-					i18nLabel: '995'
-				}
-			],
+		this.add('Direct_Reply_Port', '', {
+			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
 		});
