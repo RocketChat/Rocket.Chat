@@ -1154,7 +1154,7 @@
   "Job_Title": "Job Title",
   "Keep_default_user_settings": "Keep the default settings",
   "Keyboard_Shortcuts_Edit_Previous_Message": "Edit previous message",
-  "Keyboard_Shortcuts_Keys_1": "<kbd>Ctrl</kbd> + <kbd>p</kbd>",
+  "Keyboard_Shortcuts_Keys_1": "<kbd>Ctrl</kbd> + <kbd>k</kbd> or <kbd>Ctrl</kbd> + <kbd>p</kbd>",
   "Keyboard_Shortcuts_Keys_2": "<kbd>Up Arrow</kbd>",
   "Keyboard_Shortcuts_Keys_3": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Left Arrow</kbd>",
   "Keyboard_Shortcuts_Keys_4": "<kbd>Command</kbd> (or <kbd>Alt</kbd>) + <kbd>Up Arrow</kbd>",
