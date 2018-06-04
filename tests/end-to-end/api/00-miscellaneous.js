@@ -90,7 +90,7 @@ describe('miscellaneous', function() {
 	it('/login by username', (done) => {
 		request.post(api('login'))
 			.send({
-				user: adminUsername,
+				username: adminUsername,
 				password: adminPassword
 			})
 			.expect('Content-Type', 'application/json')
