@@ -1,6 +1,10 @@
 <template name="adminBotDetails">
 	<section class="page-container page-home page-static page-settings">
-		{{#header sectionName=pageTitle}}
+		{{#header sectionName=pageTitle buttons=true}}
+    <div class="rc-header__section-button">
+      <button class="rc-button rc-button--cancel delete" disabled="{{not canDelete}}"><span>{{_ "Delete"}}</span></button>
+      <button class="rc-button rc-button--primary save" disabled="{{not isChanged}}"><span>{{_ "Save_changes"}}</span></button>
+    </div>
 		{{/header}}
 
 		<div class="content background-transparent-dark">
@@ -66,9 +70,11 @@
               {{/if}}
               <div class="input-line double-col">
                 <label>{{_ "Roles"}}</label>
-                <div>
-                  <div class="settings-description">{{getRoles}}</div>
-                </div>
+                <ul id="roles" class="chip-container current-user-roles">
+                  {{#each getRoles}}
+                  <li class="remove-role" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
+                  {{/each}}
+                </ul>
               </div>
 						</div>
 					</div>

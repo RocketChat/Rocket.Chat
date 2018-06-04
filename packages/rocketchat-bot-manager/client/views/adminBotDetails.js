@@ -2,8 +2,14 @@ import toastr from 'toastr';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
+	this.changed = new ReactiveVar(false);
 
 	this.updateBot = () => {
+		const bot = this.bot.get();
+		bot.name = $('[name=name]').val().trim();
+		bot.username = $('[name=username]').val().trim();
+		this.changed.set(true);
+		this.bot.set(bot);
 	};
 
 	this.autorun(() => {
@@ -104,6 +110,10 @@ Template.adminBotDetails.helpers({
 		const bot = Template.instance().bot.get();
 		const diff = (new Date()).getTime() - bot.lastLogin.getTime();
 		return `Connected: ${ Template.instance().humanReadableTime(diff / 1000) }`;
+	},
+
+	isChanged() {
+		return Template.instance().changed.get();
 	}
 });
 
@@ -122,15 +132,13 @@ Template.adminBotDetails.events({
 		Meteor.call('pauseBot', bot);
 	},
 
-	'click input[type=radio]': (e, t) => {
-		t.updateBot();
-	},
-
-	'change select[name=event]': (e, t) => {
-		const record = t.record.get();
-		record.event = $('[name=event]').val().trim();
-
-		t.record.set(record);
+	'click .remove-role'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+		const bot = t.bot.get();
+		bot.roles = bot.roles.filter(el => el !== this.valueOf());
+		t.bot.set(bot);
+		$(`[title=${ this }]`).remove();
 	},
 
 	'click .expand': (e) => {
@@ -142,5 +150,17 @@ Template.adminBotDetails.events({
 	'click .collapse': (e) => {
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+	},
+
+	'click .rc-header__section-button > .save': (e, t) => {
+		const bot = t.bot.get();
+		Meteor.call('insertOrUpdateBot', bot, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+
+			toastr.success(TAPi18n.__('Details_updated'));
+			FlowRouter.go(`/admin/bots/${ bot.username }`);
+		});
 	}
 });
