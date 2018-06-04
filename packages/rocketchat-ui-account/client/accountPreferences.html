@@ -107,8 +107,9 @@
 								<div>
 									<div class="rc-select">
 										<select class="input-monitor rc-select__element" name="emailNotificationMode">
-											<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
-											<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
+											<option value="default" selected="{{selected 'emailNotificationMode' 'default' 'default'}}">{{_ "Default"}} ({{_ defaultEmailNotification}})</option>
+											<option value="nothing" selected="{{selected 'emailNotificationMode' 'nothing'}}">{{_ "Email_Notification_Mode_Disabled"}}</option>
+											<option value="mentions" selected="{{selected 'emailNotificationMode' 'mentions'}}">{{_ "Email_Notification_Mode_All"}}</option>
 										</select>
 										{{> icon block="rc-select__arrow" icon="arrow-down" }}
 									</div>
@@ -319,7 +320,7 @@
 									<label><button class="button download-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Download_My_Data"}}</span></button></label>
 									<label><button class="button export-my-data"><i class="icon-download secondary-font-color"></i> <span>{{_ "Export_My_Data"}}</span></button></label>
 								</div>
-								
+
 							</div>
 						</div>
 					{{/if}}

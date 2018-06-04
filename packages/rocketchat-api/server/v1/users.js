@@ -363,6 +363,13 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
 		}
 
+		// Keep compatibility with old values
+		if (preferences.emailNotificationMode === 'all') {
+			preferences.emailNotificationMode = 'mentions';
+		} else if (preferences.emailNotificationMode === 'disabled') {
+			preferences.emailNotificationMode = 'nothing';
+		}
+
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
 
 		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: preferences }) });
@@ -407,5 +414,13 @@ RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 			return RocketChat.API.v1.success();
 		}
 		return RocketChat.API.v1.failure('User not found');
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
+	get() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+
+		return RocketChat.API.v1.success({ result });
 	}
 });
