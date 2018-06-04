@@ -468,6 +468,57 @@ RocketChat.settings.addGroup('Accounts', function() {
 			type: 'boolean'
 		});
 	});
+
+	this.section('Password_Policy', function() {
+		this.add('Accounts_Password_Policy_Enabled', false, {
+			type: 'boolean'
+		});
+
+		const enableQuery = {
+			_id: 'Accounts_Password_Policy_Enabled',
+			value: true
+		};
+
+		this.add('Accounts_Password_Policy_MinLength', 7, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_MaxLength', -1, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3, {
+			type: 'int',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneLowercase', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneUppercase', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneNumber', true, {
+			type: 'boolean',
+			enableQuery
+		});
+
+		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
+			type: 'boolean',
+			enableQuery
+		});
+	});
 });
 
 RocketChat.settings.addGroup('OAuth', function() {
@@ -651,6 +702,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Site_Name', 'Rocket.Chat', {
 		type: 'string',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 0
@@ -658,6 +710,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('Language', '', {
 		type: 'language',
+		'public': true,
 		wizard: {
 			step: 3,
 			order: 1
@@ -885,23 +938,8 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Host'
 		});
-		this.add('Direct_Reply_Port', '143', {
-			type: 'select',
-			values: [
-				{
-					key: '143',
-					i18nLabel: '143'
-				}, {
-					key: '993',
-					i18nLabel: '993'
-				}, {
-					key: '110',
-					i18nLabel: '110'
-				}, {
-					key: '995',
-					i18nLabel: '995'
-				}
-			],
+		this.add('Direct_Reply_Port', '', {
+			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
 		});

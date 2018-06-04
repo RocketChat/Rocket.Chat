@@ -12,7 +12,15 @@
 						{{/if}}
 						<a href="{{fixCordova author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+							{{#if message_link}}
+								<span class="time-link">
+									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+								</span>
+							{{else}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/if}}
 						{{/if}}
 					</div>
 				{{else}}
@@ -22,7 +30,15 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{#if message_link}}<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+						{{#if message_link}}
+							<span class="time-link">
+								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+							</span>
+						{{else}}
+							<span class="time">
+								{{time}}
+							</span>
+						{{/if}}
 					{{/if}}
 					</div>
 				{{/if}}
@@ -66,7 +82,7 @@
 					<div class="attachment-image">
 					{{#if loadImage}}
 						<figure>
-							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="lazy-img gallery-item" title=title description=description}}
+							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
 							{{#if labels}}
 								<div class="image-labels">
 									{{#each labels}}
