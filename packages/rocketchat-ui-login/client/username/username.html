@@ -8,7 +8,7 @@
 				</header>
 				{{#if username.error}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "error-field-unavailable" field=username.username}}}
+						{{{_ "error-field-unavailable" field=username.value}}}
 					</div>
 				{{/if}}
 				{{#if username.invalid}}
@@ -25,7 +25,7 @@
 					<div class='input-text active'>
 						{{#if username.ready}}
 							<span>
-								<input type="text" name='username' id="username" value="{{username.username}}" dir="auto" class="rc-input__element" placeholder="{{_ 'Username'}}"/>
+								<input type="text" name='username' id="username" value="{{username.value}}" dir="auto" class="rc-input__element" placeholder="{{_ 'Username'}}"/>
 							</span>
 							<i></i>
 						{{else}}
