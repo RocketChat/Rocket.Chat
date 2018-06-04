@@ -15,10 +15,27 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorHistory' }));
 	}
 
+	const self = this;
+
 	if (room && room.v && room.v._id) {
-		// CACHE: can we stop using publications here?
-		return RocketChat.models.Rooms.findByVisitorId(room.v._id);
+		const handle = RocketChat.models.Rooms.findByVisitorId(room.v._id).observeChanges({
+			added(id, fields) {
+				self.added('visitor_history', id, fields);
+			},
+			changed(id, fields) {
+				self.changed('visitor_history', id, fields);
+			},
+			removed(id) {
+				self.removed('visitor_history', id);
+			}
+		});
+
+		self.ready();
+
+		self.onStop(function() {
+			handle.stop();
+		});
 	} else {
-		return this.ready();
+		self.ready();
 	}
 });
