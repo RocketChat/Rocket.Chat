@@ -297,7 +297,7 @@ RocketChat.Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return RocketChat.models.Rooms.setLabelByRoomId(roomData._id, guestData.name) && RocketChat.models.Subscriptions.updateNameByRoomId(roomData._id, guestData.name);
+			return RocketChat.models.Rooms.setFnameById(roomData._id, guestData.name) && RocketChat.models.Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
@@ -349,7 +349,6 @@ RocketChat.Livechat = {
 				unread: 1,
 				userMentions: 1,
 				groupMentions: 0,
-				code: room.code,
 				u: {
 					_id: agent.agentId,
 					username: agent.username
@@ -409,9 +408,8 @@ RocketChat.Livechat = {
 
 		const postData = {
 			_id: room._id,
-			label: room.label,
+			label: room.fname || room.label, // using same field for compatibility
 			topic: room.topic,
-			code: room.code,
 			createdAt: room.ts,
 			lastMessageAt: room.lm,
 			tags: room.tags,
