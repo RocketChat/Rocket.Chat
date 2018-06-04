@@ -66,7 +66,7 @@ export default {
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
-			} else if (msg.t !== 'livechat_video_call') {
+            } else if ( (msg.t !== 'livechat_video_call') && (msg.t !== 'au') ) {
 				ChatMessage.upsert({ _id: msg._id }, msg);
 
 				if (msg.t === 'livechat-close') {
