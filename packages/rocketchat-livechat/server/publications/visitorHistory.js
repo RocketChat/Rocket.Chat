@@ -28,9 +28,9 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 			removed(id) {
 				self.removed('visitor_history', id);
 			}
-		});	
+		});
 
-		self.ready();	
+		self.ready();
 
 		self.onStop(function() {
 			handle.stop();
