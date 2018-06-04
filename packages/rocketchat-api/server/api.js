@@ -142,48 +142,48 @@ class API extends Restivus {
 
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.hasHelperMethods()) {
-				Object.keys(endpoints).forEach((method) => {
-					if (typeof endpoints[method] === 'function') {
-						endpoints[method] = {action: endpoints[method]};
+			Object.keys(endpoints).forEach((method) => {
+				if (typeof endpoints[method] === 'function') {
+					endpoints[method] = { action: endpoints[method] };
+				}
+
+				//Add a try/catch for each endpoint
+				const originalAction = endpoints[method].action;
+				endpoints[method].action = function _internalRouteActionHandler() {
+					const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+						method,
+						version,
+						user_agent: this.request.headers['user-agent'],
+						entrypoint: route
+					});
+
+					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+					let result;
+					try {
+						result = originalAction.apply(this);
+					} catch (e) {
+						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						result = RocketChat.API.v1.failure(e.message, e.error);
 					}
 
-					//Add a try/catch for each endpoint
-					const originalAction = endpoints[method].action;
-					endpoints[method].action = function _internalRouteActionHandler() {
-						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
-							method,
-							version,
-							user_agent: this.request.headers['user-agent'],
-							entrypoint: route
-						});
+					result = result || RocketChat.API.v1.success();
 
-						logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-						let result;
-						try {
-							result = originalAction.apply(this);
-						} catch (e) {
-							logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							result = RocketChat.API.v1.failure(e.message, e.error);
-						}
+					rocketchatRestApiEnd({
+						status: result.statusCode
+					});
 
-						result = result || RocketChat.API.v1.success();
+					return result;
+				};
 
-						rocketchatRestApiEnd({
-							status: result.statusCode
-						});
-
-						return result;
-					};
-
+				if (this.hasHelperMethods()) {
 					for (const [name, helperMethod] of this.getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
+				}
 
-					//Allow the endpoints to make usage of the logger which respects the user's settings
-					endpoints[method].logger = logger;
-				});
-			}
+				//Allow the endpoints to make usage of the logger which respects the user's settings
+				endpoints[method].logger = logger;
+			});
 
 			super.addRoute(route, options, endpoints);
 		});
