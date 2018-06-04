@@ -23,7 +23,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'raix:push',
-		'raix:ui-dropped-event'
+		'raix:ui-dropped-event',
+		'rocketchat:lazy-load'
 	]);
 
 	api.use('kadira:flow-router', 'client');
