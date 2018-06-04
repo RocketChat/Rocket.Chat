@@ -46,9 +46,11 @@ const sendNotification = ({
 		return;
 	}
 
-	notificationMessage = parseMessageTextPerUser(notificationMessage, receiver);
+	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
+
+	const roomType = room.t;
 
 	const {
 		audioNotifications,
@@ -67,7 +69,8 @@ const sendNotification = ({
 		hasMentionToAll,
 		hasMentionToHere,
 		isHighlighted,
-		hasMentionToUser
+		hasMentionToUser,
+		roomType
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
@@ -80,7 +83,8 @@ const sendNotification = ({
 		hasMentionToAll,
 		hasMentionToHere,
 		isHighlighted,
-		hasMentionToUser
+		hasMentionToUser,
+		roomType
 	})) {
 		notificationSent = true;
 		notifyDesktopUser({
@@ -99,7 +103,8 @@ const sendNotification = ({
 		hasMentionToAll,
 		isHighlighted,
 		hasMentionToUser,
-		statusConnection: receiver.statusConnection
+		statusConnection: receiver.statusConnection,
+		roomType
 	})) {
 		notificationSent = true;
 
@@ -109,6 +114,7 @@ const sendNotification = ({
 			message,
 			userId: subscription.u._id,
 			senderUsername: sender.username,
+			senderName: sender.name,
 			receiverUsername: receiver.username
 		});
 	}
@@ -119,7 +125,8 @@ const sendNotification = ({
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,
-		hasMentionToAll
+		hasMentionToAll,
+		roomType
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
@@ -194,11 +201,13 @@ function sendAllNotifications(message, room) {
 			});
 		}
 
-		if (RocketChat.settings.get(`Accounts_Default_User_Preferences_${ notificationField }`) === 'all' && !disableAllMessageNotifications) {
+		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
+		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
+		if ((room.t === 'd' && serverPreference === 'mentions') || (serverPreference === 'all' && !disableAllMessageNotifications)) {
 			query.$or.push({
 				[notificationField]: { $exists: false }
 			});
-		} else if (RocketChat.settings.get(`Accounts_Default_User_Preferences_${ notificationField }`) === 'mentions' && mentionIdsWithoutGroups.length) {
+		} else if (serverPreference === 'mentions' && mentionIdsWithoutGroups.length) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 				'u._id': { $in: mentionIdsWithoutGroups }

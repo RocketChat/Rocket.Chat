@@ -13,7 +13,7 @@
 				{{/if}}
 				{{#if username.invalid}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "Username_invalid" username.username}}}
+						{{{_ "Username_invalid" username.escaped}}}
 					</div>
 				{{/if}}
 				{{#if username.empty}}

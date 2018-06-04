@@ -22,10 +22,10 @@ Template.livechat.helpers({
 		};
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.roomsListExhibitionMode': 1 }
+			fields: { 'settings.preferences.sidebarShowUnread': 1 }
 		});
 
-		if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
+		if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 			query.alert = { $ne: true };
 		}
 
