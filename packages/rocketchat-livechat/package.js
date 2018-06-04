@@ -11,8 +11,8 @@ Package.registerBuildPlugin({
 		'plugin/build-livechat.js'
 	],
 	npmDependencies: {
-		'shelljs': '0.5.1',
-		'uglify-js': '2.7.5'
+		'shelljs': '0.8.1',
+		'uglify-js': '2.8.29'
 	}
 });
 
@@ -69,6 +69,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatVisitor.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
+
+	//client startup
+	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
 
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
