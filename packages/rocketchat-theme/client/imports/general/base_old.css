@@ -3162,7 +3162,6 @@
 
 		& .inline-image {
 			display: inline-block;
-			overflow: hidden;
 
 			border-radius: 3px;
 			background-repeat: no-repeat;
@@ -3175,6 +3174,7 @@
 			& img {
 				max-width: 100%;
 				max-height: 200px;
+				object-fit: contain;
 
 				cursor: pointer;
 			}
@@ -3295,7 +3295,7 @@
 }
 
 .rc-old .attachment-description {
-	margin-top: 10px;
+	margin: 6px;
 
 	line-height: 1;
 }
