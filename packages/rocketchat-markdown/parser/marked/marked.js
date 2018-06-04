@@ -1,6 +1,7 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { Random } from 'meteor/random';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
+import s from 'underscore.string';
 import hljs from 'highlight.js';
 import _marked from 'marked';
 
@@ -20,9 +21,9 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ (escaped ? code : _.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : _.escapeHTML(code, true)) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ (escaped ? code : s.escapeHTML(code, true)) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
@@ -91,7 +92,7 @@ export const marked = (message) => {
 	if (smartLists == null) { smartLists = RocketChat.settings.get('Markdown_Marked_SmartLists'); }
 	if (smartypants == null) { smartypants = RocketChat.settings.get('Markdown_Marked_Smartypants'); }
 
-	msg.html = _marked(_.unescapeHTML(msg.html), {
+	msg.html = _marked(s.unescapeHTML(msg.html), {
 		gfm,
 		tables,
 		breaks,

@@ -1,6 +1,8 @@
 /* globals MsgTyping */
+import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+
 this.ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
@@ -175,13 +177,28 @@ this.ChatMessages = class ChatMessages {
 		* * @param {Element} input DOM element
 		* * @param {function?} done callback
 		*/
-	send(rid, input, done = function() {}) {
-		if (_.trim(input.value) !== '') {
+	async send(rid, input, done = function() {}) {
+		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			const msg = input.value;
+			let msg = '';
+			const reply = $(input).data('reply');
+			const mentionUser = $(input).data('mention-user') || false;
+
+			if (reply !== undefined) {
+				msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
+				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+					msg += `@${ reply.u.username } `;
+				}
+			}
+			msg += input.value;
+			$(input)
+				.removeData('reply')
+				.trigger('dataChange');
+
 			const msgObject = { _id: Random.id(), rid, msg};
 
 			if (msg.slice(0, 2) === '+:') {
@@ -228,12 +245,16 @@ this.ChatMessages = class ChatMessages {
 							const commandOptions = RocketChat.slashCommands.commands[match[1]];
 							command = match[1];
 							const param = match[2] || '';
-							if (commandOptions.clientOnly) {
-								commandOptions.callback(command, param, msgObject);
-							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+
+							if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
+								if (commandOptions.clientOnly) {
+									commandOptions.callback(command, param, msgObject);
+								} else {
+									Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+								}
+
+								return;
 							}
-							return;
 						}
 
 						if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
@@ -243,10 +264,11 @@ this.ChatMessages = class ChatMessages {
 								ts: new Date,
 								msg: TAPi18n.__('No_such_command', { command: match[1] }),
 								u: {
-									username: 'rocketbot'
+									username: RocketChat.settings.get('InternalHubot_Username')
 								},
 								private: true
 							};
+
 							ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
 							return;
 						}
@@ -254,6 +276,9 @@ this.ChatMessages = class ChatMessages {
 				}
 
 				Meteor.call('sendMessage', msgObject);
+
+				localStorage.setItem(`messagebox_${ rid }`, '');
+
 				return done();
 			});
 
@@ -272,7 +297,7 @@ this.ChatMessages = class ChatMessages {
 
 	confirmDeleteMsg(message, done = function() {}) {
 		if (RocketChat.MessageTypes.isSystemMessage(message)) { return; }
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
 			type: 'warning',
@@ -280,10 +305,9 @@ this.ChatMessages = class ChatMessages {
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
 			html: false
 		}, () => {
-			swal({
+			modal.open({
 				title: t('Deleted'),
 				text: t('Your_entry_has_been_deleted'),
 				type: 'success',
@@ -299,9 +323,6 @@ this.ChatMessages = class ChatMessages {
 			this.$input.focus();
 			return done();
 		});
-
-		// In order to avoid issue "[Callback not called when still animating](https://github.com/t4t5/sweetalert/issues/528)"
-		return $('.sweet-alert').addClass('visible');
 	}
 
 	deleteMsg(message) {
@@ -344,7 +365,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	update(id, rid, msg, isDescription) {
-		if ((_.trim(msg) !== '') || (isDescription === true)) {
+		if ((s.trim(msg) !== '') || (isDescription === true)) {
 			Meteor.call('updateMessage', { _id: id, msg, rid });
 			this.clearEditing();
 			return this.stopTyping(rid);
@@ -352,7 +373,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	startTyping(rid, input) {
-		if (_.trim(input.value) !== '') {
+		if (s.trim(input.value) !== '') {
 			return MsgTyping.start(rid);
 		} else {
 			return MsgTyping.stop(rid);
@@ -384,6 +405,17 @@ this.ChatMessages = class ChatMessages {
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 		}
+		const msgId = FlowRouter.getQueryParam('reply');
+		if (!msgId) {
+			return;
+		}
+		const message = RocketChat.models.Messages.findOne(msgId);
+		if (message) {
+			return this.$input.data('reply', message).trigger('dataChange');
+		}
+		Meteor.call('getSingleMessage', msgId, (err, msg) => {
+			return !err && this.$input.data('reply', msg).trigger('dataChange');
+		});
 	}
 
 	keyup(rid, event) {
@@ -421,7 +453,7 @@ this.ChatMessages = class ChatMessages {
 
 	keydown(rid, event) {
 		const user = Meteor.user();
-		const sendOnEnter = user && user.settings && user.settings.preferences && user.settings.preferences.sendOnEnter;
+		const sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;

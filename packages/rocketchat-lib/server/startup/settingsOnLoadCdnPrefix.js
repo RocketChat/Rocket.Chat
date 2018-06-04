@@ -1,4 +1,6 @@
 /* globals WebAppInternals*/
+import _ from 'underscore';
+
 function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);
 }

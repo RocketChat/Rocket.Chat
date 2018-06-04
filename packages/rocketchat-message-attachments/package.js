@@ -9,8 +9,8 @@ Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'ecmascript',
-		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'rocketchat:lazy-load'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');

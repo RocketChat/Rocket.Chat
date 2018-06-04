@@ -24,17 +24,30 @@ Template.chatRoomItem.helpers({
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
 
-		return {
+		const roomData = {
 			...this,
 			icon,
 			avatar,
 			username : this.name,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
-			name,
+			name: name || RocketChat.roomTypes.getRoomName(this.t, this),
 			unread,
 			active,
 			archivedClass,
 			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
 		};
+
+		roomData.username = roomData.username || roomData.name;
+
+		if (RocketChat.settings.get('Store_Last_Message')) {
+			if (this.lastMessage) {
+				roomData.lastMessage = this.lastMessage;
+			} else {
+				const room = RocketChat.models.Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
+				roomData.lastMessage = room && room.lastMessage || { msg: t('No_messages_yet') };
+			}
+		}
+
+		return roomData;
 	}
 });

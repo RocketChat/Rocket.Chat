@@ -1,91 +1,112 @@
 Meteor.methods({
 	saveUserPreferences(settings) {
-		check(settings, Object);
-
-		if (Meteor.userId()) {
-			const preferences = {};
-
-			if (settings.language != null) {
-				RocketChat.models.Users.setLanguage(Meteor.userId(), settings.language);
-			}
-
-			if (settings.newRoomNotification) {
-				preferences.newRoomNotification = settings.newRoomNotification;
-			}
-
-			if (settings.newMessageNotification) {
-				preferences.newMessageNotification = settings.newMessageNotification;
-			}
-
-			if (settings.useEmojis) {
-				preferences.useEmojis = settings.useEmojis === '1' ? true : false;
-			}
-
-			if (settings.convertAsciiEmoji) {
-				preferences.convertAsciiEmoji = settings.convertAsciiEmoji === '1' ? true : false;
-			}
-
-			if (settings.saveMobileBandwidth) {
-				preferences.saveMobileBandwidth = settings.saveMobileBandwidth === '1' ? true : false;
-			}
-
-			if (settings.collapseMediaByDefault) {
-				preferences.collapseMediaByDefault = settings.collapseMediaByDefault === '1' ? true : false;
-			}
-
-			if (settings.unreadRoomsMode) {
-				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
-			}
-
-			if (settings.autoImageLoad) {
-				preferences.autoImageLoad = settings.autoImageLoad === '1' ? true : false;
-			}
-
-			if (settings.emailNotificationMode) {
-				preferences.emailNotificationMode = settings.emailNotificationMode;
-			}
-
-			if (settings.mergeChannels !== '-1') {
-				preferences.mergeChannels = settings.mergeChannels === '1';
-			} else {
-				delete preferences.mergeChannels;
-			}
-			if (settings.unreadRoomsMode) {
-				preferences.unreadRoomsMode = settings.unreadRoomsMode === '1' ? true : false;
-			}
-
-			preferences.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
-			if (settings.unreadAlert) {
-				preferences.unreadAlert = settings.unreadAlert === '1' ? true : false;
-			}
-
-			if (settings.notificationsSoundVolume) {
-				preferences.notificationsSoundVolume = settings.notificationsSoundVolume;
-			}
-
-			if (settings.audioNotifications) {
-				preferences.audioNotifications = settings.audioNotifications;
-			}
-			if (settings.desktopNotifications) {
-				preferences.desktopNotifications = settings.desktopNotifications;
-			}
-			if (settings.mobileNotifications) {
-				preferences.mobileNotifications = settings.mobileNotifications;
-			}
-
-			preferences.audioNotificationValue = settings.audioNotificationValue - 0;
-			preferences.desktopNotificationDuration = settings.desktopNotificationDuration - 0;
-			preferences.viewMode = settings.viewMode || 0;
-			preferences.hideUsernames = settings.hideUsernames === '1';
-			preferences.hideRoles = settings.hideRoles === '1';
-			preferences.hideAvatars = settings.hideAvatars === '1';
-			preferences.hideFlexTab = settings.hideFlexTab === '1';
-			preferences.highlights = settings.highlights;
-			preferences.sendOnEnter = settings.sendOnEnter;
-
-			RocketChat.models.Users.setPreferences(Meteor.userId(), preferences);
-
-			return true;
+		const keys = {
+			language: Match.Optional(String),
+			newRoomNotification: Match.Optional(String),
+			newMessageNotification: Match.Optional(String),
+			useEmojis: Match.Optional(Boolean),
+			convertAsciiEmoji: Match.Optional(Boolean),
+			saveMobileBandwidth: Match.Optional(Boolean),
+			collapseMediaByDefault: Match.Optional(Boolean),
+			autoImageLoad: Match.Optional(Boolean),
+			emailNotificationMode: Match.Optional(String),
+			roomsListExhibitionMode: Match.Optional(String),
+			unreadAlert: Match.Optional(Boolean),
+			notificationsSoundVolume: Match.Optional(Number),
+			desktopNotifications: Match.Optional(String),
+			mobileNotifications: Match.Optional(String),
+			enableAutoAway: Match.Optional(Boolean),
+			highlights: Match.Optional([String]),
+			desktopNotificationDuration: Match.Optional(Number),
+			messageViewMode: Match.Optional(Number),
+			hideUsernames: Match.Optional(Boolean),
+			hideRoles: Match.Optional(Boolean),
+			hideAvatars: Match.Optional(Boolean),
+			hideFlexTab: Match.Optional(Boolean),
+			sendOnEnter: Match.Optional(String),
+			roomCounterSidebar: Match.Optional(Boolean),
+			idleTimeLimit: Match.Optional(Number),
+			sidebarShowFavorites: Match.Optional(Boolean),
+			sidebarShowUnread: Match.Optional(Boolean),
+			sidebarSortby: Match.Optional(String),
+			sidebarViewMode: Match.Optional(String),
+			sidebarHideAvatar: Match.Optional(Boolean),
+			muteFocusedConversations: Match.Optional(Boolean)
+		};
+		check(settings, Match.ObjectIncluding(keys));
+		if (settings.mergeChannels) {
+			check(settings, Match.ObjectIncluding({
+				mergeChannels: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
+			}));
 		}
+		const user = Meteor.user();
+
+		if (!user) {
+			return false;
+		}
+
+		const {
+			desktopNotifications: oldDesktopNotifications,
+			mobileNotifications: oldMobileNotifications,
+			emailNotificationMode: oldEmailNotifications
+		} = (user.settings && user.settings.preferences) || {};
+
+		if (user.settings == null) {
+			RocketChat.models.Users.clearSettings(user._id);
+		}
+
+		if (settings.language != null) {
+			RocketChat.models.Users.setLanguage(user._id, settings.language);
+		}
+
+		if (settings.mergeChannels != null) {
+			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
+		}
+
+		if (settings.roomsListExhibitionMode != null) {
+			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
+		}
+
+		// Keep compatibility with old values
+		if (settings.emailNotificationMode === 'all') {
+			settings.emailNotificationMode = 'mentions';
+		} else if (settings.emailNotificationMode === 'disabled') {
+			settings.emailNotificationMode = 'nothing';
+		}
+
+		RocketChat.models.Users.setPreferences(user._id, settings);
+
+		// propagate changed notification preferences
+		Meteor.defer(() => {
+			if (oldDesktopNotifications !== settings.desktopNotifications) {
+				if (settings.desktopNotifications === 'default') {
+					RocketChat.models.Subscriptions.clearDesktopNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateDesktopNotificationUserPreferences(user._id, settings.desktopNotifications);
+				}
+			}
+
+			if (oldMobileNotifications !== settings.mobileNotifications) {
+				if (settings.mobileNotifications === 'default') {
+					RocketChat.models.Subscriptions.clearMobileNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateMobileNotificationUserPreferences(user._id, settings.mobileNotifications);
+				}
+			}
+
+			if (oldEmailNotifications !== settings.emailNotificationMode) {
+				if (settings.emailNotificationMode === 'default') {
+					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode);
+				}
+			}
+
+			if (Array.isArray(settings.highlights)) {
+				RocketChat.models.Subscriptions.updateUserHighlights(user._id, settings.highlights);
+			}
+		});
+
+		return true;
 	}
 });

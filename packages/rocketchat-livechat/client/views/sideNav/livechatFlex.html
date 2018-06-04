@@ -1,5 +1,5 @@
 <template name="livechatFlex">
-	<aside class="sidebar-light" role="navigation">
+	<aside class="sidebar-light sidebar--medium" role="navigation">
 		<header class="sidebar-flex__header">
 			<h1 class="sidebar-flex__title">{{_ "Livechat"}}</h1>
 			{{#unless embeddedVersion}}
@@ -17,7 +17,8 @@
 				{{> sidebarItem menuItem "Custom_Fields" false "livechat-customfields" }}
 				{{> sidebarItem menuItem "Installation" false "livechat-installation" }}
 				{{> sidebarItem menuItem "Appearance" false "livechat-appearance" }}
-				{{> sidebarItem menuItem "Integrations" false "livechat-integrations" }}
+				{{> sidebarItem menuItem "Webhooks" false "livechat-webhooks" }}
+				{{> sidebarItem menuItem "Facebook Messenger" false "livechat-facebook" }}
 				{{> sidebarItem menuItem "Office_Hours" false "livechat-officeHours" }}
 			</ul>
 		</div>

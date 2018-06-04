@@ -1,0 +1,4 @@
+input ChannelNameAndDirect {
+	name: String!
+	direct: Boolean!
+}

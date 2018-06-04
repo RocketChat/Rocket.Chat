@@ -7,6 +7,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
 		}
 
+		if (!RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
+		}
+
 		if (!RocketChat.setRealName(Meteor.userId(), name)) {
 			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', { method: 'setRealName' });
 		}

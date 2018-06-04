@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const buildMailURL = _.debounce(function() {
 	console.log('Updating process.env.MAIL_URL');
 

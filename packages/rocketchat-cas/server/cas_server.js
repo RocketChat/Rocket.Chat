@@ -1,11 +1,10 @@
 /* globals RoutePolicy, logger */
 /* jshint newcap: false */
+import _ from 'underscore';
 
-const fiber = Npm.require('fibers');
-const url = Npm.require('url');
-const CAS = Npm.require('cas');
-
-const _casCredentialTokens = {};
+import fiber from 'fibers';
+import url from 'url';
+import CAS from 'cas';
 
 RoutePolicy.declare('/_cas/', 'network');
 
@@ -37,7 +36,7 @@ const casTicket = function(req, token, callback) {
 		service: `${ appUrl }/_cas/${ token }`
 	});
 
-	cas.validate(ticketId, function(err, status, username, details) {
+	cas.validate(ticketId, Meteor.bindEnvironment(function(err, status, username, details) {
 		if (err) {
 			logger.error(`error when trying to validate: ${ err.message }`);
 		} else if (status) {
@@ -48,14 +47,14 @@ const casTicket = function(req, token, callback) {
 			if (details && details.attributes) {
 				_.extend(user_info, { attributes: details.attributes });
 			}
-			_casCredentialTokens[token] = user_info;
+			RocketChat.models.CredentialTokens.create(token, user_info);
 		} else {
 			logger.error(`Unable to validate ticket: ${ ticketId }`);
 		}
 		//logger.debug("Receveied response: " + JSON.stringify(details, null , 4));
 
 		callback();
-	});
+	}));
 
 	return;
 };
@@ -101,19 +100,6 @@ WebApp.connectHandlers.use(function(req, res, next) {
 	}).run();
 });
 
-const _hasCredential = function(credentialToken) {
-	return _.has(_casCredentialTokens, credentialToken);
-};
-
-/*
- * Retrieve token and delete it to avoid replaying it.
- */
-const _retrieveCredential = function(credentialToken) {
-	const result = _casCredentialTokens[credentialToken];
-	delete _casCredentialTokens[credentialToken];
-	return result;
-};
-
 /*
  * Register a server-side login handle.
  * It is call after Accounts.callLoginMethod() is call from client.
@@ -125,12 +111,13 @@ Accounts.registerLoginHandler(function(options) {
 		return undefined;
 	}
 
-	if (!_hasCredential(options.cas.credentialToken)) {
+	const credentials = RocketChat.models.CredentialTokens.findOneById(options.cas.credentialToken);
+	if (credentials === undefined) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
 			'no matching login attempt found');
 	}
 
-	const result = _retrieveCredential(options.cas.credentialToken);
+	const result = credentials.userInfo;
 	const syncUserDataFieldMap = RocketChat.settings.get('CAS_Sync_User_Data_FieldMap').trim();
 	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
 	const sync_enabled = RocketChat.settings.get('CAS_Sync_User_Data_Enabled');

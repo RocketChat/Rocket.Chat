@@ -3,35 +3,55 @@
 		<form class="edit-form" autocomplete="off">
 			{{#with visitor}}
 				<h3>{{username}}</h3>
-				<div class="input-line">
-					<label for="name">{{_ "Name"}}</label>
-					<input type="text" name="name" autocomplete="off" value="{{name}}">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Name"}}</div>
+						<div class="rc-input__wrapper">
+							<input class="rc-input__element" type="text" name="name" autocomplete="off" value="{{name}}">
+						</div>
+					</label>
 				</div>
-				<div class="input-line">
-					<label for="email">{{_ "Email"}}</label>
-					<input type="email" name="email" autocomplete="off" value="{{email}}">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Email"}}</div>
+						<div class="rc-input__wrapper">
+							<input class="rc-input__element" type="text" name="email" autocomplete="off" value="{{email}}">
+						</div>
+					</label>
 				</div>
-				<div class="input-line">
-					<label for="phone">{{_ "Phone"}}</label>
-					<input type="text" name="phone" autocomplete="off" value="{{phone}}">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Phone"}}</div>
+						<div class="rc-input__wrapper">
+							<input class="rc-input__element" type="text" name="phone" autocomplete="off" value="{{phone}}">
+						</div>
+					</label>
 				</div>
 			{{/with}}
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
-				<div class="input-line">
-					<label for="topic">{{_ "Topic"}}</label>
-					<input type="text" name="topic" autocomplete="off" value="{{topic}}">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Topic"}}</div>
+						<div class="rc-input__wrapper">
+							<input class="rc-input__element" type="text" name="topic" autocomplete="off" value="{{topic}}">
+						</div>
+					</label>
 				</div>
-				<div class="input-line">
-					<label for="tags">{{_ "Tags"}}</label>
-					<input type="text" name="tags" autocomplete="off" value="{{joinTags}}">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Tags"}}</div>
+						<div class="rc-input__wrapper">
+							<input class="rc-input__element" type="text" name="tags" autocomplete="off" value="{{tags}}">
+						</div>
+					</label>
 				</div>
 			{{/with}}
-			<nav>
-				<button class='button button-block cancel' type="button"><span>{{_ "Cancel"}}</span></button>
-				<button class='button button-block primary save'><span>{{_ "Save"}}</span></button>
-			</nav>
+			<div class="rc-user-info__flex rc-user-info__row">
+				<button class='rc-button cancel' type="button"><span>{{_ "Cancel"}}</span></button>
+				<button class='rc-button rc-button--primary save'><span>{{_ "Save"}}</span></button>
+			</div>
 		</form>
 	</div>
 </template>

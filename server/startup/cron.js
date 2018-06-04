@@ -50,6 +50,7 @@ Meteor.startup(function() {
 			},
 			job: cleanupOEmbedCache
 		});
+
 		return SyncedCron.start();
 	});
 });

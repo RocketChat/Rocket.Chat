@@ -8,7 +8,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('mongo');
-	api.use('underscore');
 	api.use('ecmascript');
 	api.use('babel-compiler');
 	api.use('rocketchat:lib');
@@ -38,6 +37,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsOutgoing.js', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
+	api.addFiles('client/views/additional/zapier.html', 'client');
 
 	// stylesheets
 	api.addFiles('client/stylesheets/integrations.css', 'client');
