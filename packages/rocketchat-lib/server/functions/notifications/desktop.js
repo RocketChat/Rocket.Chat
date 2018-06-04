@@ -30,6 +30,7 @@ export function notifyDesktopUser({
 		return;
 	}
 
+	RocketChat.metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	RocketChat.Notifications.notifyUser(userId, 'notification', {
 		title,
 		text,
@@ -51,7 +52,8 @@ export function shouldNotifyDesktop({
 	hasMentionToAll,
 	hasMentionToHere,
 	isHighlighted,
-	hasMentionToUser
+	hasMentionToUser,
+	roomType
 }) {
 	if (disableAllMessageNotifications && desktopNotifications == null) {
 		return false;
@@ -70,5 +72,5 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser;
 }

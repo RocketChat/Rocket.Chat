@@ -66,6 +66,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
+			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;
 		}
