@@ -11,8 +11,8 @@ curl https://dl.sandstorm.io/sandstorm-$SANDSTORM_VERSION.tar.xz | tar -xJf -
 
 mkdir -p ~/opt
 cd ~/opt
-curl https://dl.sandstorm.io/meteor-spk-0.4.0.tar.xz | tar -xJf -
-ln -s meteor-spk-0.4.0 meteor-spk
+curl https://dl.sandstorm.io/meteor-spk-0.4.1.tar.xz | tar -xJf -
+ln -s meteor-spk-0.4.1 meteor-spk
 cp -a /bin/bash ~/opt/meteor-spk/meteor-spk.deps/bin/
 cp -a /lib/x86_64-linux-gnu/libncurses.so.* ~/opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 cp -a /lib/x86_64-linux-gnu/libtinfo.so.* ~/opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
