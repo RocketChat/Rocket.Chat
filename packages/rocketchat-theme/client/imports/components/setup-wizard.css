@@ -9,9 +9,9 @@
 	justify-content: center;
 
 	&-info {
-		flex: 0 0 350px;
+		flex: 0 1 350px;
 
-		margin: 55px 65px 0 80px;
+		margin: 55px 65px 30px 80px;
 
 		&__header{
 			display: flex;
@@ -460,6 +460,18 @@
 		&-bonding {
 			right: 1.2rem;
 			left: auto;
+		}
+	}
+}
+
+@media (width <= 760px) {
+	.setup-wizard {
+		flex-direction: column;
+		justify-content: initial;
+
+		& .setup-wizard-forms__wrapper {
+			margin: 0;
+			width: 100%;
 		}
 	}
 }

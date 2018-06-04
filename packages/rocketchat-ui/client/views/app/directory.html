@@ -10,11 +10,13 @@
 				<label class="rc-input__label">
 					<div class="rc-input__wrapper">
 						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{_ "Search_Messages"}} autocomplete="off">
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
 					</div>
 				</label>
 			</div>
-			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
+			{{#if createChannelOrGroup}}
+				<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
+			{{/if}}
 		</div>
 		{{/header}}
 		<div class="rc-directory-content">
