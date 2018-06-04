@@ -409,7 +409,7 @@ RocketChat.Livechat = {
 
 		const postData = {
 			_id: room._id,
-			label: room.label,
+			label: room.fname || room.label, // using same field for compatibility
 			topic: room.topic,
 			createdAt: room.ts,
 			lastMessageAt: room.lm,
