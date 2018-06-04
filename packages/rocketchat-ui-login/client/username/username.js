@@ -58,7 +58,7 @@ Template.username.events({
 				} else {
 					username.error = true;
 				}
-				username.username = value;
+				username.value = value;
 				username.escaped = _.escape(value);
 			}
 
