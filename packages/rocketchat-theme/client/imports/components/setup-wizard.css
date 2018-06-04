@@ -9,7 +9,7 @@
 	justify-content: center;
 
 	&-info {
-		flex: 0 1 auto;
+		flex: 0 1 350px;
 
 		margin: 55px 65px 30px 80px;
 
