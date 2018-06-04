@@ -16,26 +16,26 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	}
 
 	const self = this;
-	
+
 	if (room && room.v && room.v._id) {
 		const handle = RocketChat.models.Rooms.findByVisitorId(room.v._id).observeChanges({
-		added(id, fields) {
-			self.added('visitor_history', id, fields);
-		},
-		changed(id, fields) {
-			self.changed('visitor_history', id, fields);
-		},
-		removed(id) {
-			self.removed('visitor_history', id);
-		}
-	});
+			added(id, fields) {
+				self.added('visitor_history', id, fields);
+			},
+			changed(id, fields) {
+				self.changed('visitor_history', id, fields);
+			},
+			removed(id) {
+				self.removed('visitor_history', id);
+			}
+		});
 	
-	self.ready();
+		self.ready();
 	
-	self.onStop(function() {
-		handle.stop();
-	});
+		self.onStop(function() {
+			handle.stop();
+		});
 	} else {
 		self.ready();
-	}	
+	}
 });
