@@ -19,6 +19,10 @@ export class AppMessagesConverter {
 		let sender;
 		if (msgObj.u && msgObj.u._id) {
 			sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+
+			if (!sender) {
+				sender = this.orch.getConverters().get('users').convertToApp(msgObj.u);
+			}
 		}
 
 		let editor;
@@ -59,10 +63,20 @@ export class AppMessagesConverter {
 		let u;
 		if (message.sender && message.sender.id) {
 			const user = RocketChat.models.Users.findOneById(message.sender.id);
-			u = {
-				_id: user._id,
-				username: user.username
-			};
+
+			if (user) {
+				u = {
+					_id: user._id,
+					username: user.username,
+					name: user.name
+				};
+			} else {
+				u = {
+					_id: message.sender.id,
+					username: message.sender.username,
+					name: message.sender.name
+				};
+			}
 		}
 
 		let editedBy;
@@ -115,7 +129,9 @@ export class AppMessagesConverter {
 				image_url: attachment.imageUrl,
 				audio_url: attachment.audioUrl,
 				video_url: attachment.videoUrl,
-				fields: attachment.fields
+				fields: attachment.fields,
+				type: attachment.type,
+				description: attachment.description
 			};
 		}).map((a) => {
 			Object.keys(a).forEach((k) => {
@@ -164,7 +180,9 @@ export class AppMessagesConverter {
 				imageUrl: attachment.image_url,
 				audioUrl: attachment.audio_url,
 				videoUrl: attachment.video_url,
-				fields: attachment.fields
+				fields: attachment.fields,
+				type: attachment.type,
+				description: attachment.description
 			};
 		});
 	}
