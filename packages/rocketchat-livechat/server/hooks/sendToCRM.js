@@ -22,7 +22,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	if (messages) {
 		messages.forEach((message) => {
-			if ((message.t) && (!(sendMessageType(message.t)))) {
+			if (message.t && !sendMessageType(message.t)) {
 				return;
 			}
 			const msg = {
@@ -88,7 +88,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 	// if the message has a type means it is a special message (like the closing comment), so skips
 	// unless the settings that handle with visitor navigation history are enabled
-	if ((message.t) && (!(sendMessageType(message.t)))) {
+	if (message.t && !sendMessageType(message.t)) {
 		return message;
 	}
 
