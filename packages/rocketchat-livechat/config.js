@@ -245,7 +245,7 @@ Meteor.startup(function() {
 		]
 	});
 
-	RocketChat.settings.add('Livechat_Visitor_navigation_as_a_message', true, {
+	RocketChat.settings.add('Livechat_Visitor_navigation_as_a_message', false, {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
