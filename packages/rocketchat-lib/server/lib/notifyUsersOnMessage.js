@@ -45,7 +45,7 @@ function notifyUsersOnMessage(message, room, userId) {
 		let toHere = false;
 		const mentionIds = [];
 		const highlightsIds = [];
-		const mentionedUsersThatAreNotInRoom = [];
+		const mentionedUsersThatAreNotInTheRoom = [];
 		const highlights = RocketChat.models.Subscriptions.findByRoomWithUserHighlights(room._id, { fields: {'userHighlights': 1, 'u._id': 1 }}).fetch();
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
@@ -60,7 +60,7 @@ function notifyUsersOnMessage(message, room, userId) {
 					const userInTheRoom = RocketChat.models.Subscriptions.findByRoomAndUserId(room._id, mention._id).count();
 
 					if (!userInTheRoom) {
-						mentionedUsersThatAreNotInRoom.push(mention.username);
+						mentionedUsersThatAreNotInTheRoom.push(mention.username);
 					}
 				}
 			});
@@ -74,19 +74,19 @@ function notifyUsersOnMessage(message, room, userId) {
 				canAddUser = true;
 			}
 
-			if (canAddUser && mentionedUsersThatAreNotInRoom.length > 0) {
+			if (canAddUser && mentionedUsersThatAreNotInTheRoom.length > 0) {
 				const currentUser = RocketChat.models.Users.findOneById(userId);
-				console.log(canAddUser)
 				RocketChat.models.Messages.createMentionedUserIsNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
 					to: {
 						_id: currentUser._id,
 						username: currentUser.username
 					},
+					mentionedUsers: mentionedUsersThatAreNotInTheRoom,
 					actionLinks: [
 						{
-							icon: 'icon-floppy', i18nLabel: 'Invite', method_id: 'addUsersToRoom', params: {
+							icon: 'icon-plus', i18nLabel: 'Invite', method_id: 'addUsersToRoom', params: {
 								rid: room._id,
-								users: mentionedUsersThatAreNotInRoom
+								users: mentionedUsersThatAreNotInTheRoom
 							}
 						}
 					]

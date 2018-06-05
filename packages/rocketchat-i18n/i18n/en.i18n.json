@@ -1372,7 +1372,7 @@
   "mention-all_description": "Permission to use the @all mention",
   "mention-here": "Mention Here",
   "mention-here_description": "Permission to use the @here mention",
-  "Mentioned_user_is_not_in_the_room": "Mentioned users are not in the room. Invite <button class='js-add'>%s</button> to this room",
+  "Mentioned_users_are_not_in_the_room": "Mentioned users are not in the room. Invite <strong>__users__</strong> to this room",
   "Mentions": "Mentions",
   "Mentions_default": "Mentions (default)",
   "Manufacturing": "Manufacturing",

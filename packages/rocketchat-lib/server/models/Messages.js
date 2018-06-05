@@ -616,7 +616,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	createMentionedUserIsNotInTheRoom(roomId, user, extraData) {
 		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('mentioned-user-not-in-the-room', roomId, message, user, extraData);
+		return this.createWithTypeRoomIdMessageAndUser('mentioned-users-not-in-the-room', roomId, message, user, extraData);
 	}
 
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {
