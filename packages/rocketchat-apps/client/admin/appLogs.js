@@ -59,13 +59,17 @@ Template.appLogs.helpers({
 		return moment(date).format('L LTS');
 	},
 	jsonStringify(data) {
+		let value = '';
+
 		if (!data) {
-			return '';
+			return value;
 		} else if (typeof data === 'object') {
-			return hljs.highlight('json', JSON.stringify(data, null, 2)).value;
+			value = hljs.highlight('json', JSON.stringify(data, null, 2)).value;
 		} else {
-			return hljs.highlight('json', data).value;
+			value = hljs.highlight('json', data).value;
 		}
+
+		return value.replace(/\\\\n/g, '<br>');
 	}
 });
 

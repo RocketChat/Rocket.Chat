@@ -10,7 +10,7 @@ const validateUsername = (username) => {
 const validateName = (name) => name.length;
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
 };
 const filterEmail = (old) => {
 	return old.replace(' ', '');

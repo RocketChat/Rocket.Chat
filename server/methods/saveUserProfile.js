@@ -64,6 +64,8 @@ Meteor.methods({
 				Accounts.setPassword(Meteor.userId(), settings.newPassword, {
 					logout: false
 				});
+
+				RocketChat.passwordPolicy.validate(settings.newPassword);
 			}
 		}
 
