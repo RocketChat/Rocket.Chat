@@ -131,6 +131,10 @@ Template.adminBotDetails.helpers({
 
 	roleName() {
 		return this.description || this._id;
+	},
+
+	canDelete() {
+		return RocketChat.authz.hasAllPermission('delete-bot-account');
 	}
 });
 
@@ -192,7 +196,39 @@ Template.adminBotDetails.events({
 
 			toastr.success(TAPi18n.__('Details_updated'));
 			t.changed.set(false);
-			FlowRouter.go(`/admin/bots/${ bot.username }`);
+			FlowRouter.go('admin-bots-username', { username: bot.username });
+		});
+	},
+
+	'click .rc-header__section-button > .delete': (e, instance) => {
+		const bot = instance.bot.get();
+
+		modal.open({
+			title: t('Are_you_sure'),
+			text: t('You_will_not_be_able_to_recover'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes_delete_it'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, () => {
+			Meteor.call('deleteBot', bot._id, (err) => {
+				if (err) {
+					return handleError(err);
+				}
+
+				modal.open({
+					title: t('Deleted'),
+					text: t('Your_entry_has_been_deleted'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+
+				FlowRouter.go('admin-bots');
+			});
 		});
 	}
 });
