@@ -20,7 +20,7 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-function notifyUsersOnMessage(message, room, userId) {
+function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
 		//TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
@@ -45,7 +45,6 @@ function notifyUsersOnMessage(message, room, userId) {
 		let toHere = false;
 		const mentionIds = [];
 		const highlightsIds = [];
-		const mentionedUsersThatAreNotInTheRoom = [];
 		const highlights = RocketChat.models.Subscriptions.findByRoomWithUserHighlights(room._id, { fields: {'userHighlights': 1, 'u._id': 1 }}).fetch();
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
@@ -57,41 +56,8 @@ function notifyUsersOnMessage(message, room, userId) {
 				}
 				if (mention._id !== message.u._id) {
 					mentionIds.push(mention._id);
-					const userInTheRoom = RocketChat.models.Subscriptions.findByRoomAndUserId(room._id, mention._id).count();
-
-					if (!userInTheRoom) {
-						mentionedUsersThatAreNotInTheRoom.push(mention.username);
-					}
 				}
 			});
-
-			let canAddUser = false;
-			if (RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
-				canAddUser = true;
-			} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
-				canAddUser = true;
-			} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
-				canAddUser = true;
-			}
-
-			if (canAddUser && mentionedUsersThatAreNotInTheRoom.length > 0) {
-				const currentUser = RocketChat.models.Users.findOneById(userId);
-				RocketChat.models.Messages.createMentionedUserIsNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
-					to: {
-						_id: currentUser._id,
-						username: currentUser.username
-					},
-					mentionedUsers: mentionedUsersThatAreNotInTheRoom,
-					actionLinks: [
-						{
-							icon: 'icon-plus', i18nLabel: 'Invite', method_id: 'addUsersToRoom', params: {
-								rid: room._id,
-								users: mentionedUsersThatAreNotInTheRoom
-							}
-						}
-					]
-				});
-			}
 		}
 
 		highlights.forEach(function(subscription) {
