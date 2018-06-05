@@ -114,6 +114,23 @@ Template.adminBotDetails.helpers({
 
 	isChanged() {
 		return Template.instance().changed.get();
+	},
+
+	disabled(cursor) {
+		return cursor.length === 0 ? 'disabled' : '';
+	},
+
+	rolesCursor() {
+		const bot = Template.instance().bot.get();
+		if (!bot.roles) {
+			return [];
+		}
+		const roles = bot.roles;
+		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+	},
+
+	roleName() {
+		return this.description || this._id;
 	}
 });
 
@@ -139,6 +156,20 @@ Template.adminBotDetails.events({
 		bot.roles = bot.roles.filter(el => el !== this.valueOf());
 		t.bot.set(bot);
 		$(`[title=${ this }]`).remove();
+		t.updateBot();
+	},
+
+	'click #addRole'(e, t) {
+		e.stopPropagation();
+		e.preventDefault();
+		if ($('#roleSelect').find(':selected').is(':disabled')) {
+			return;
+		}
+		const bot = t.bot.get();
+		bot.roles.push($('#roleSelect').val());
+		t.bot.set(bot);
+		$('#roleSelect').val('placeholder');
+		t.updateBot();
 	},
 
 	'click .expand': (e) => {
@@ -160,6 +191,7 @@ Template.adminBotDetails.events({
 			}
 
 			toastr.success(TAPi18n.__('Details_updated'));
+			t.changed.set(false);
 			FlowRouter.go(`/admin/bots/${ bot.username }`);
 		});
 	}
