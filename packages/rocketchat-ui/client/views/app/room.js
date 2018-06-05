@@ -6,6 +6,8 @@ import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 window.chatMessages = window.chatMessages || {};
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -536,6 +538,9 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
+
+		lazyloadtick();
+
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -714,7 +719,7 @@ Template.room.events({
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	},
-	'click .announcement'(e) {
+	'click .announcement'() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
@@ -722,7 +727,7 @@ Template.room.events({
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: $(e.target).attr('aria-label'),
+				text: roomData.announcement,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: t('Close')
@@ -739,6 +744,9 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+
+	lazyloadtick();
+
 	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = FlowRouter.getQueryParam('msg') ? false : true;
 	this.unreadCount = new ReactiveVar(0);
@@ -898,6 +906,8 @@ Template.room.onRendered(function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
 			template.sendToBottom();
 		}
+
+		lazyloadtick();
 	};
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
