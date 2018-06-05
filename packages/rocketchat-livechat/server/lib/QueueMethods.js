@@ -33,7 +33,8 @@ RocketChat.QueueMethods = {
 			},
 			servedBy: {
 				_id: agent.agentId,
-				username: agent.username
+				username: agent.username,
+				ts: new Date()
 			},
 			cl: false,
 			open: true,

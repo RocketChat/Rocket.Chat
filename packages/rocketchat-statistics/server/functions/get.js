@@ -1,6 +1,7 @@
 /* global InstanceStatus, MongoInternals */
 import _ from 'underscore';
 import os from 'os';
+import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
@@ -31,6 +32,9 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count();
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
 	statistics.totlalLivechat = RocketChat.models.Rooms.findByType('l').count();
+
+	// livechat visitors
+	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();

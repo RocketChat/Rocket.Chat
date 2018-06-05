@@ -106,8 +106,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		}
 	}
 
-	// Update all the room activity tracker fields
-	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
+	// Update all the room activity tracker fields, including livechat-analytics lm timestamps
+	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(room, message.token, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
