@@ -3271,6 +3271,12 @@
 
 		font-weight: 400;
 	}
+
+	&.livechat_navigation_history {
+		& .thumb, & .user, & .info {
+			display: none;
+		}
+	}
 }
 
 .rc-old .image-labels {
