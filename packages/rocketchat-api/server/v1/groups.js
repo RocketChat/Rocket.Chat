@@ -348,7 +348,23 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post() {
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+		let findResult;
+		const canAddUserToAnyPrivateGroup = RocketChat.authz.hasPermission(this.userId, 'add-user-to-any-p-room');
+		const params = this.requestParams();
+		if (canAddUserToAnyPrivateGroup) {
+			if (params.roomId && params.roomId.trim()) {
+				findResult = RocketChat.models.Subscriptions.findByRoomId(params.roomId).fetch()[0];
+			} else if (params.roomName && params.roomName.trim()) {
+				findResult = RocketChat.models.Subscriptions.findOneByRoomName(params.roomName);
+			} else {
+				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+			}
+			if (!findResult || findResult.t !== 'p') {
+				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			}
+		} else {
+			findResult = findPrivateGroupByIdOrName({ params, userId: this.userId });
+		}
 
 		const user = this.getUserFromParams();
 

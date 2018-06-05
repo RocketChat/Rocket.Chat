@@ -54,6 +54,14 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.findOne(query);
 	}
 
+	findOneByRoomName(roomName) {
+		const query = {
+			name: roomName
+		};
+
+		return this.findOne(query);
+	}
+
 	// FIND
 	findByUserId(userId, options) {
 		if (this.useCache) {
