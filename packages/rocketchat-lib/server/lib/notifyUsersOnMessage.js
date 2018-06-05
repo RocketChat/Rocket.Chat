@@ -60,29 +60,38 @@ function notifyUsersOnMessage(message, room, userId) {
 					const userInTheRoom = RocketChat.models.Subscriptions.findByRoomAndUserId(room._id, mention._id).count();
 
 					if (!userInTheRoom) {
-						mentionedUsersThatAreNotInRoom.push({ _id: mention._id, username: mention.username });
+						mentionedUsersThatAreNotInRoom.push(mention.username);
 					}
 				}
 			});
-			const currentUser = RocketChat.models.Users.findOneById('Wfn89YXjcKeu7fgnK')
-			console.log(currentUser)
-			const username = currentUser.username
-			// RocketChat.Notifications.notifyUser(currentUser._id, 'message', {
-			// 	_id: Random.id(),
-			// 	rid: room._id,
-			// 	ts: new Date,
-			// 	msg: TAPi18n.__('Mentioned_user_is_not_in_the_room', {
-			// 		postProcess: 'sprintf',
-			// 		sprintf: [username]
-			// 	}, currentUser.language)
-			// })
 
-			RocketChat.models.Messages.createMentionedUserIsNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, currentUser, {
-				actionLinks: [
-					{ icon: 'icon-floppy', i18nLabel: 'Invite', method_id: 'denyLivechatCall', params: '' }
-				]
-			});
-			console.log("***************UsersIds: ", mentionedUsersThatAreNotInRoom);
+			let canAddUser = false;
+			if (RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+				canAddUser = true;
+			} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
+				canAddUser = true;
+			} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
+				canAddUser = true;
+			}
+
+			if (canAddUser && mentionedUsersThatAreNotInRoom.length > 0) {
+				const currentUser = RocketChat.models.Users.findOneById(userId);
+				console.log(canAddUser)
+				RocketChat.models.Messages.createMentionedUserIsNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
+					to: {
+						_id: currentUser._id,
+						username: currentUser.username
+					},
+					actionLinks: [
+						{
+							icon: 'icon-floppy', i18nLabel: 'Invite', method_id: 'addUsersToRoom', params: {
+								rid: room._id,
+								users: mentionedUsersThatAreNotInRoom
+							}
+						}
+					]
+				});
+			}
 		}
 
 		highlights.forEach(function(subscription) {

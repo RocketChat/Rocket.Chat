@@ -1,3 +1,5 @@
+import toastr from 'toastr';
+
 RocketChat.MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
@@ -26,6 +28,17 @@ RocketChat.actionLinks.register('denyLivechatCall', function(message/*, params*/
 		});
 		Meteor.defer(() => {
 			RocketChat.models.Messages.setHiddenById(message._id);
+		});
+	}
+});
+
+RocketChat.actionLinks.register('addUsersToRoom', function(message, params) {
+	if (Meteor.isClient) {
+		Meteor.call('addUsersToRoom', params, function(err) {
+			if (err) {
+				return toastr.error(t(err.reason));
+			}
+			toastr.success(t('Users_added'));
 		});
 	}
 });

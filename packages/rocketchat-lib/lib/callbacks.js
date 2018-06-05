@@ -73,8 +73,9 @@ RocketChat.callbacks.remove = function(hookName, id) {
 * @returns {Object} Returns the item after it's been through all the callbacks for this hook
 */
 
-RocketChat.callbacks.run = function(hook, item, constant) {
+RocketChat.callbacks.run = function(hook, item, constant, userId) {
 	const callbacks = RocketChat.callbacks[hook];
+
 	if (callbacks && callbacks.length) {
 
 		let rocketchatHooksEnd;
@@ -94,7 +95,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
 				time = Date.now();
 			}
-			const callbackResult = callback(result, constant);
+			const callbackResult = callback(result, constant, userId);
 			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
 				const currentTime = Date.now() - time;
 				totalTime += currentTime;

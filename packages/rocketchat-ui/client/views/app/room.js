@@ -159,8 +159,13 @@ Template.room.helpers({
 			});
 		});
 
-		const query =
-			{ rid: this._id };
+		const query = {
+			rid: this._id,
+			$or: [
+				{'to': { $exists: false } },
+				{'to': { $exists: true }, 'to._id': Meteor.userId() }
+			]
+		};
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =
