@@ -8,7 +8,6 @@
 
 
 	/* TODO: -plus and -search should be "globals" */
-
 	&-plus {
 		width: 36px;
 		min-width: 36px;
@@ -42,12 +41,11 @@
 	}
 
 	&-avatar {
-
 		flex: 0 0 auto;
 
 		width: 32px;
 		height: 32px;
-		padding: 2px;
+		padding: 3px;
 
 		background-repeat: no-repeat;
 		background-position: center center;
@@ -71,12 +69,15 @@
 	}
 
 	&-name {
-
 		overflow: hidden;
 
 		white-space: nowrap;
 
 		text-overflow: ellipsis;
+
+		& .rc-icon {
+			font-size: 1rem;
+		}
 	}
 
 	&-description {
@@ -109,7 +110,6 @@
 
 .rc-directory-td--createdAt,
 .rc-directory-td--users {
-
 	overflow: hidden;
 
 	width: 120px;
