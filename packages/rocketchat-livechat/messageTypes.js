@@ -1,6 +1,15 @@
 RocketChat.MessageTypes.registerType({
 	id: 'livechat_navigation_history',
-	system: true
+	system: true,
+	message: 'New_visitor_navigation',
+	data(message) {
+		if (!message.navigation || !message.navigation.page) {
+			return;
+		}
+		return {
+			history: `${ (message.navigation.page.title ? `${ message.navigation.page.title } - ` : '') + message.navigation.page.location.href }`
+		};
+	}
 });
 
 RocketChat.MessageTypes.registerType({

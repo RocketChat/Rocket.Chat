@@ -1459,7 +1459,7 @@
   "New_Trigger": "Novo Gatilho",
   "New_version_available_(s)": "Nova versão disponível (% s)",
   "New_videocall_request": "Nova requisição de chamada de vídeo",
-  "New_visitor_navigation": "Nova Navegação do visitante",
+  "New_visitor_navigation": "Nova Navegação: __history__",
   "No_available_agents_to_transfer": "Nenhum agente disponível para transferir",
   "No_channel_with_name_%s_was_found": "Nenhum canal com nome <strong>\"%s\"</strong> foi encontrado!",
   "No_channels_yet": "Você não faz parte de nenhum canal ainda.",

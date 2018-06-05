@@ -343,7 +343,7 @@ RocketChat.Livechat = {
 				extraData._hidden = true;
 			}
 
-			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ TAPi18n.__('New_visitor_navigation') }: ${ pageTitle } - ${ pageUrl }`, user, extraData);
+			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
 
 		return;
