@@ -21,18 +21,18 @@
 		{{/header}}
 		<div class="rc-directory-content">
 			{{#if $eq searchType 'channels'}}
-				<table class="rc-table rc-table--fixed">
-					<thead class="rc-table-head">
-						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</td>
-							<td class="rc-table-td rc-table-td--users">{{_ "Users"}}</td>
-							<td class="rc-table-td js-sort rc-table-td--createdAt" data-sort="createdAt">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</td>
+				{{#table fixed='true' }}
+					<thead>
+						<tr>
+							<td class="js-sort" data-sort="name">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</td>
+							<td class="rc-directory-td--users">{{_ "Users"}}</td>
+							<td class="js-sort rc-directory-td--createdAt" data-sort="createdAt">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</td>
 						</tr>
 					</thead>
-					<tbody class="rc-table-body">
+					<tbody>
 						{{#each searchResults}}
-							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
+							<tr data-name="{{name}}">
+								<td>
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
 										<div class="rc-directory-channel-info">
@@ -46,14 +46,14 @@
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--users">{{users}}</td>
-								<td class="rc-table-td rc-table-td--createdAt">
+								<td class="rc-directory-td--users">{{users}}</td>
+								<td class="rc-directory-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
 							</tr>
 						{{/each}}
 					</tbody>
-				</table>
+				{{/table}}
 			{{/if}}
 			{{#if $eq searchType 'users'}}
 				<table class="rc-table">

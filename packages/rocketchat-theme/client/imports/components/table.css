@@ -1,38 +1,59 @@
 .rc-table {
-	font-size: 0.875rem;
-	color: var(--rc-color-primary);
 	width: 100%;
 
+	color: var(--rc-color-primary);
+
+	font-size: 0.875rem;
+
 	&--fixed {
-		table-layout:fixed;
+		table-layout: fixed;
 	}
 
-	&-head {
+	& thead {
 		color: var(--rc-color-primary-light);
+
+		& tr {
+			border-bottom: 1px solid #d8d8d8;
+		}
+
+		& td {
+			padding: 0.5rem;
+
+			font-size: 0.75rem;
+		}
 
 		& .rc-icon {
 			fill: var(--rc-color-primary-light);
 		}
 	}
 
-	&-body .rc-table-tr {
-		cursor: pointer;
+	& tbody {
+		& tr {
+			cursor: pointer;
 
-		&:hover {
-			background-color: var(--rc-color-primary-lightest);
+			&:hover {
+				background-color: var(--rc-color-primary-lightest);
+			}
 		}
 	}
 
-	&-tr {
-		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
-	}
+	& td {
 
-	&-td {
-		padding: 1.25rem 1rem;
+		padding: 0.25rem 0.5rem;
+
 		vertical-align: middle;
+		letter-spacing: 0;
 
-		&--bold {
+		font-size: 0.875rem;
+
+		line-height: 1.25rem;
+
+		&.bold {
 			font-weight: 600;
 		}
 	}
+}
+
+.tr-dummy {
+	height: 1rem;
 }
