@@ -186,7 +186,7 @@ RocketChat.Livechat = {
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 		if (user) {
-			return Meteor.users.update(user._id, updateUser);
+			return LivechatVisitors.updateById(user._id, updateUser);
 		}
 		return false;
 	},
