@@ -95,7 +95,7 @@ Object.assign(FileUpload, {
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (!metadata) {
 				metadata = {};
-			};
+			}
 
 			s.toFormat(sharp.format.jpeg)
 				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
