@@ -395,10 +395,12 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				if (attributes) {
 					attributes.forEach(function(attribute) {
 						const value = self.getElement(attribute, 'AttributeValue');
+						let key = attribute.$.Name.value;
+						key=key.replace(/\./g, '-');
 						if (typeof value[0] === 'string') {
-							profile[attribute.$.Name.value] = value[0];
+							profile[key] = value[0];
 						} else {
-							profile[attribute.$.Name.value] = value[0]._;
+							profile[key] = value[0]._;
 						}
 					});
 				}
