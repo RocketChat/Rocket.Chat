@@ -34,7 +34,7 @@ function notifyOnUserMention(message, room, userId) {
 
 			if (canAddUser && mentionedUsersThatAreNotInTheRoom.length > 0) {
 				const currentUser = RocketChat.models.Users.findOneById(userId);
-				RocketChat.models.Messages.createMentionedUserIsNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
+				RocketChat.models.Messages.createMentionedUsersAreNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
 					to: {
 						_id: currentUser._id,
 						username: currentUser.username

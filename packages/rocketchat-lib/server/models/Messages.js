@@ -614,7 +614,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, extraData);
 	}
 
-	createMentionedUserIsNotInTheRoom(roomId, user, extraData) {
+	createMentionedUsersAreNotInTheRoom(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('mentioned-users-not-in-the-room', roomId, message, user, extraData);
 	}
