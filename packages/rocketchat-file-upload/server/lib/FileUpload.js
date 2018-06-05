@@ -91,9 +91,14 @@ Object.assign(FileUpload, {
 		s.rotate();
 		// Get metadata to resize the image the first time to keep "inside" the dimensions
 		// then resize again to create the canvas around
+
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			if (!metadata) {
+				metadata = {};
+			};
+
 			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
+				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
 				.pipe(sharp()
 					.resize(height, height)
 					.background('#FFFFFF')
