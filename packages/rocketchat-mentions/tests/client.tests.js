@@ -183,7 +183,7 @@ describe('Mention', function() {
 
 });
 const message = {
-	mentions:[{username:'rocket.cat', name: 'Rocket.Cat'}, {username:'admin', name: 'Admin'}, {username: 'me', name: 'Me'}],
+	mentions:[{username:'rocket.cat', name: 'Rocket.Cat'}, {username:'admin', name: 'Admin'}, {username: 'me', name: 'Me'}, {username: 'specialchars', name:'<img onerror=alert(hello)>'}],
 	channels: [{name: 'general'}, {name: 'rocket.cat'}]
 };
 describe('replace methods', function() {
@@ -227,11 +227,18 @@ describe('replace methods', function() {
 			const result = mention.replaceUsers('@rocket.cat', message, 'me');
 			assert.equal(result, `<a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
 		});
-
 		it(`should render for "hello ${ str2 }"`, () => {
 			const result = mention.replaceUsers(`hello ${ str2 }`, message, 'me');
 			assert.equal(result, `hello <a class="mention-link " data-username="${ str2.replace('@', '') }" title="${ str2.replace('@', '') }">${ str2Name }</a>`);
 		});
+
+		const specialchars = '@specialchars';
+		const specialcharsName = '&lt;img onerror=alert(hello)&gt;';
+		it(`should escape special characters in "hello ${ specialchars }"`, () => {
+			const result = mention.replaceUsers(`hello ${ specialchars }`, message, 'me');
+			assert.equal(result, `hello <a class="mention-link " data-username="${ specialchars.replace('@', '') }" title="${ specialchars.replace('@', '') }">${ specialcharsName }</a>`);
+		});
+
 		it('should render for unknow/private user "hello @unknow"', () => {
 			const result = mention.replaceUsers('hello @unknow', message, 'me');
 			assert.equal(result, 'hello @unknow');
@@ -254,7 +261,6 @@ describe('replace methods', function() {
 		});
 		it(`should render for "hello ${ str2 }"`, () => {
 			const result = mention.replaceChannels(`hello ${ str2 }`, message);
-			console.log('result', result);
 			assert.equal(result, `hello <a class="mention-link" data-channel="${ str2.replace('#', '') }">${ str2 }</a>`);
 		});
 		it('should render for unknow/private channel "hello #unknow"', () => {
