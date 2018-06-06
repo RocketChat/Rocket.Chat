@@ -8,6 +8,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		const bot = this.bot.get();
 		bot.name = $('[name=name]').val().trim();
 		bot.username = $('[name=username]').val().trim();
+		bot.password = $('[name=password]').val().trim();
 		this.changed.set(true);
 		this.bot.set(bot);
 	};
