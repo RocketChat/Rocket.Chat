@@ -35,7 +35,7 @@ function notifyOnUserMention(message, room, userId) {
 					mentionedUsers: mentionedUsersThatAreNotInTheRoom,
 					actionLinks: [
 						{
-							icon: 'icon-plus', i18nLabel: 'Invite', method_id: 'addUsersToRoom', params: {
+							icon: 'icon-plus', i18nLabel: 'Invite_Users', method_id: 'addUsersToRoom', params: {
 								rid: room._id,
 								users: mentionedUsersThatAreNotInTheRoom
 							}
