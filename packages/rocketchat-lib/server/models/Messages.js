@@ -555,7 +555,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 				_id: user._id,
 				username: user.username
 			},
-			private: !!extraData.to,
+			private: extraData && extraData.hasOwnProperty('to'),
 			groupable: false
 		};
 
