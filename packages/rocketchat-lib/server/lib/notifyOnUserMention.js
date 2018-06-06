@@ -9,7 +9,7 @@
  */
 
 function notifyOnUserMention(message, room, userId) {
-	if (room != null) {
+	if (room != null && room.t === 'p') {
 		const mentionedUsersThatAreNotInTheRoom = [];
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
@@ -23,14 +23,7 @@ function notifyOnUserMention(message, room, userId) {
 			});
 
 			/* If user has permission to invite */
-			let canAddUser = false;
-			if (RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
-				canAddUser = true;
-			} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
-				canAddUser = true;
-			} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
-				canAddUser = true;
-			}
+			const canAddUser = RocketChat.authz.hasAtLeastOnePermission(userId, ['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
 
 			if (canAddUser && mentionedUsersThatAreNotInTheRoom.length > 0) {
 				const currentUser = RocketChat.models.Users.findOneById(userId);
