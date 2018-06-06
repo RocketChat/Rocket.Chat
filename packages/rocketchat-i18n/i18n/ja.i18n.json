@@ -1205,7 +1205,7 @@
   "LDAP_Search_Page_Size": "検索ページサイズ",
   "LDAP_Search_Page_Size_Description": "各結果ページが処理されるために返すエントリの最大数",
   "LDAP_Search_Size_Limit": "検索サイズ制限",
-  "LDAP_Search_Size_Limit_Description": "返す項目の最大数。<br/>**注意**この番号は、**ページのサイズの検索**より大きくする必要があります。",
+  "LDAP_Search_Size_Limit_Description": "返す項目の最大数。<br/>**注意**この番号は、**検索ページサイズ**より大きくする必要があります。",
   "LDAP_Test_Connection": "接続テスト",
   "LDAP_Timeout": "タイムアウト（ミリ秒）",
   "LDAP_Timeout_Description": "エラーを返す前に検索結果を待つ時間は何マイル秒か",
