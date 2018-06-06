@@ -9,6 +9,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
+		if (room.broadcast && !RocketChat.authz.hasPermission(Meteor.userId(), 'view-broadcast-member-list', roomId)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
+		}
+
 		const filter = (record) => {
 			if (!record._user) {
 				console.log('Subscription without user', record._id);
