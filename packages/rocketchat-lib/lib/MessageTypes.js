@@ -171,7 +171,7 @@ Meteor.startup(function() {
 		system: true,
 		message: 'Mentioned_users_are_not_in_the_room',
 		data(message) {
-			const users = message.mentionedUsers.join(', ');
+			const users = message.mentionedUsers.map((username) => `<a class="mention-link" data-username=${ username }>@${ username }</a>`).join(', ');
 
 			return {
 				users
