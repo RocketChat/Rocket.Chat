@@ -90,7 +90,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
 	api.addFiles('server/functions/loadMessageHistory.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
-	api.addFiles('server/functions/saveBot.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
@@ -101,7 +100,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setRealName.js', 'server');
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
-	api.addFiles('server/functions/updateBotData.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
@@ -172,7 +170,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
-	api.addFiles('server/methods/insertOrUpdateBot.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
 	api.addFiles('server/methods/joinRoom.js', 'server');
@@ -192,7 +189,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setEmail.js', 'server');
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
-	api.addFiles('server/methods/updateBotData.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
 
 	// SERVER STARTUP
