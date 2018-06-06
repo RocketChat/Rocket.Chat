@@ -29,7 +29,7 @@ const sendNotification = ({
 	}
 
 	// dont send notification to users who ignored the sender
-	if (Array.isArray(subscription.ignored) && subscription.ignored.find(sender._id)) {
+	if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
 		return;
 	}
 
@@ -199,11 +199,15 @@ function sendAllNotifications(message, room) {
 				[notificationField]: 'mentions',
 				'u._id': { $in: mentionIdsWithoutGroups }
 			});
+		} else if ((hasMentionToAll || hasMentionToHere) && !disableAllMessageNotifications) {
+			query.$or.push({
+				[notificationField]: 'mentions'
+			});
 		}
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
 		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
-		if ((room.t === 'd' && serverPreference === 'mentions') || (serverPreference === 'all' && !disableAllMessageNotifications)) {
+		if ((room.t === 'd' && serverPreference === 'mentions') || ((serverPreference === 'all' || hasMentionToAll || hasMentionToHere) && !disableAllMessageNotifications)) {
 			query.$or.push({
 				[notificationField]: { $exists: false }
 			});
