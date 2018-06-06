@@ -4626,6 +4626,11 @@ body:not(.is-cordova) {
 	align-items: center;
 	flex-flow: row nowrap;
 
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
+
 	& .wrapper {
 		position: relative;
 		z-index: 10;
