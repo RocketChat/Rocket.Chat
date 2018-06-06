@@ -48,22 +48,31 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 	return this.find(query, { sort: { ts: - 1 }, offset, limit });
 };
 
-RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
-	code = parseInt(code);
-
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 	const options = {};
 
 	if (fields) {
 		options.fields = fields;
 	}
 
-	// if (this.useCache) {
-	// 	return this.cache.findByIndex('t,code', ['l', code], options).fetch();
-	// }
+	const query = {
+		t: 'l',
+		_id
+	};
+
+	return this.findOne(query, options);
+};
+
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
 
 	const query = {
 		t: 'l',
-		code
+		_id
 	};
 
 	return this.findOne(query, options);
@@ -73,7 +82,7 @@ RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
  * Get the next visitor name
  * @return {string} The next visitor name
  */
-RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
+RocketChat.models.Rooms.updateLivechatRoomCount = function() {
 	const settingsRaw = RocketChat.models.Settings.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
 
@@ -160,10 +169,6 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 			open: 1
 		}
 	});
-};
-
-RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
-	return this.update({ _id: roomId }, { $set: { label } });
 };
 
 RocketChat.models.Rooms.findOpenByAgent = function(userId) {
