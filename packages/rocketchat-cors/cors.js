@@ -5,9 +5,17 @@ import url from 'url';
 
 import { Mongo } from 'meteor/mongo';
 import tls from 'tls';
+import semver from 'semver';
+
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
-// TODO: Remove after NodeJS fix it, more information https://github.com/nodejs/node/issues/16196 https://github.com/nodejs/node/pull/16853
-tls.DEFAULT_ECDH_CURVE = 'auto';
+// TODO: Remove after NodeJS fix it, more information
+// https://github.com/nodejs/node/issues/16196
+// https://github.com/nodejs/node/pull/16853
+// This is fixed in Node 10, but this woraround also supports LTS versions
+// https://github.com/nodejs/node/pull/15206
+if (semver.gte(process.version, '8.6.0') && tls.DEFAULT_ECDH_CURVE === 'prime256v1') {
+	tls.DEFAULT_ECDH_CURVE = 'auto';
+}
 
 // Revert change from Meteor 1.6.1 who set ignoreUndefined: true
 // more information https://github.com/meteor/meteor/pull/9444
