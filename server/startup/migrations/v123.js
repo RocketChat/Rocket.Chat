@@ -1,5 +1,5 @@
 RocketChat.Migrations.add({
-	version: 122,
+	version: 123,
 	up() {
 		RocketChat.models.Users.update({
 			'settings.preferences.mergeChannels': true
