@@ -6,24 +6,9 @@
 		display: flex;
 	}
 
-
-	/* TODO: -plus and -search should be "globals" */
-	&-plus {
-		width: 36px;
-		min-width: 36px;
-		height: 36px;
-		min-height: 36px;
-		padding: 0;
-	}
-
 	&-search {
-		max-width: 260px;
-	}
-
-	&-selector,
-	&-search,
-	&-plus {
-		margin: 0 0.5rem;
+		width: 100%;
+		padding: 0 0.5rem;
 	}
 }
 
@@ -98,7 +83,9 @@
 }
 
 .rc-directory-content {
+	display: flex;
 	overflow-x: auto;
+	flex-direction: column;
 	flex: 1 1 100%;
 
 	height: 100vh;

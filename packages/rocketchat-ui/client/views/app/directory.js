@@ -52,6 +52,26 @@ Template.directory.helpers({
 	},
 	createChannelOrGroup() {
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
+	},
+	tabsData() {
+		const searchType = Template.instance().searchType;
+		return {
+			tabs: [
+				{
+					label: t('Channels'),
+					value: 'channels',
+					condition() { return true; }
+				},
+				{
+					label: t('Users'),
+					value: 'users',
+					condition() { return true; }
+				}
+			],
+			onChange(value) {
+				searchType.set(value);
+			}
+		};
 	}
 });
 
@@ -89,7 +109,6 @@ Template.directory.events({
 		}
 	},
 	'click .js-sort'(e, t) {
-
 		const el = e.currentTarget;
 		const type = el.dataset.sort;
 

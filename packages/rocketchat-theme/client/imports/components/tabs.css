@@ -1,0 +1,27 @@
+.tabs {
+	display: flex;
+
+	width: 100%;
+
+	margin: 0 -1rem 0.5rem;
+	padding: 0 0.5rem;
+
+	border-bottom: 1px solid rgba(216,216,216, 0.2);
+}
+
+.tab {
+	margin: 0 1rem;
+	padding: 1rem 0;
+
+	cursor: pointer;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+
+	&.active {
+		color: var(--rc-color-button-primary);
+		border-bottom: 1px solid var(--rc-color-button-primary);
+	}
+}
