@@ -5,7 +5,7 @@ export class AppRoomBridge {
 		this.orch = orch;
 	}
 
-	create(room, appId) {
+	async create(room, appId) {
 		console.log(`The App ${ appId } is creating a new room.`, room);
 
 		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
@@ -31,19 +31,43 @@ export class AppRoomBridge {
 		return rid;
 	}
 
-	getById(roomId, appId) {
+	async getById(roomId, appId) {
 		console.log(`The App ${ appId } is getting the roomById: "${ roomId }"`);
 
 		return this.orch.getConverters().get('rooms').convertById(roomId);
 	}
 
-	getByName(roomName, appId) {
+	async getByName(roomName, appId) {
 		console.log(`The App ${ appId } is getting the roomByName: "${ roomName }"`);
 
 		return this.orch.getConverters().get('rooms').convertByName(roomName);
 	}
 
-	update(room, appId) {
+	async getCreatorById(roomId, appId) {
+		console.log(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
+
+		const room = RocketChat.models.Rooms.findOneById(roomId);
+
+		if (!room || !room.u || !room.u._id) {
+			return undefined;
+		}
+
+		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async getCreatorByName(roomName, appId) {
+		console.log(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
+
+		const room = RocketChat.models.Rooms.findOneByName(roomName);
+
+		if (!room || !room.u || !room.u._id) {
+			return undefined;
+		}
+
+		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async update(room, appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
 		if (!room.id || RocketChat.models.Rooms.findOneById(room.id)) {

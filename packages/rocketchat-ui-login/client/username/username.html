@@ -8,12 +8,12 @@
 				</header>
 				{{#if username.error}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "error-field-unavailable" field=username.username}}}
+						{{{_ "error-field-unavailable" field=username.escaped}}}
 					</div>
 				{{/if}}
 				{{#if username.invalid}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "Username_invalid" username.username}}}
+						{{{_ "Username_invalid" username.escaped}}}
 					</div>
 				{{/if}}
 				{{#if username.empty}}

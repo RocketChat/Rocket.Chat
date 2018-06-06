@@ -1,5 +1,6 @@
 .sidebar__header {
 	position: relative;
+
 	display: flex;
 
 	margin: 0 -10px;
@@ -31,11 +32,11 @@
 		width: var(--sidebar-account-status-bullet-size);
 		height: var(--sidebar-account-status-bullet-size);
 
-		border-width: 2px;
+		pointer-events: none;
 
+		border-width: 2px;
 		border-style: solid;
 		border-color: var(--sidebar-background);
-
 		border-radius: var(--sidebar-account-status-bullet-radius);
 
 		&--online {
@@ -77,8 +78,10 @@
 	&-search {
 		position: absolute;
 		right: calc(10px + var(--sidebar-default-padding));
-		width: 200px;
+
 		display: none;
+
+		width: 200px;
 
 		& .rc-input__element {
 			background-color: var(--sidebar-background);

@@ -95,19 +95,6 @@ FlowRouter.route('/account/:group?', {
 	}]
 });
 
-FlowRouter.route('/history/private', {
-	name: 'privateHistory',
-
-	subscriptions(/*params, queryParams*/) {
-		this.register('privateHistory', Meteor.subscribe('privateHistory'));
-	},
-
-	action() {
-		Session.setDefault('historyFilter', '');
-		BlazeLayout.render('main', {center: 'privateHistory'});
-	}
-});
-
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
 
@@ -161,3 +148,26 @@ FlowRouter.route('/register/:hash', {
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	}
 });
+
+FlowRouter.route('/setup-wizard', {
+	name: 'setup-wizard',
+
+	action() {
+		BlazeLayout.render('setupWizard');
+	}
+});
+
+FlowRouter.route('/setup-wizard/final', {
+	name: 'setup-wizard-final',
+
+	action() {
+		BlazeLayout.render('setupWizardFinal');
+	}
+});
+
+FlowRouter.notFound = {
+	action() {
+		BlazeLayout.render('pageNotFound');
+	}
+};
+
