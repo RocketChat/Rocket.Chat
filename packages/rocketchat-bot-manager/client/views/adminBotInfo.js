@@ -54,6 +54,21 @@ Template.adminBotInfo.helpers({
 		return Template.instance().bot.get();
 	},
 
+	isOnline() {
+		const bot = Template.instance().bot.get();
+		if (bot.statusConnection && bot.statusConnection !== 'offline') {
+			return true;
+		}
+		return false;
+	},
+
+	isPaused() {
+		const bot = Template.instance().bot.get();
+		if (bot.botData) {
+			return bot.botData.paused;
+		}
+	},
+
 	isLoading() {
 		return Template.instance().loadingBotInfo.get();
 	},
@@ -82,6 +97,14 @@ Template.adminBotInfo.events({
 	},
 	'click .js-back'(e, instance) {
 		return instance.clear();
+	},
+	'click .resume': (e, t) => {
+		const bot = t.bot.get();
+		Meteor.call('resumeBot', bot);
+	},
+	'click .pause': (e, t) => {
+		const bot = t.bot.get();
+		Meteor.call('pauseBot', bot);
 	}
 });
 

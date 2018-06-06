@@ -40,9 +40,19 @@
 							</div>
 
 							<div class="rc-user-info-details">
+								{{#if isOnline}}
+									<div class="rc-user-info-details__item">
+										<label class="rc-user-info-details__label	">{{_ "Status"}}</label>
+										{{#if isPaused}}
+											<button class="button primary resume"><span>{{_ "Resume"}}</span></button>
+										{{else}}
+											<button class="button primary pause danger"><span>{{_ "Pause"}}</span></button>
+										{{/if}}
+									</div>
+								{{/if}}
 								{{#if roles}}
 									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label	">Roles</label>
+										<label class="rc-user-info-details__label	">{{_ "Roles"}}</label>
 										<ul class="chip-container current-user-roles">
 											{{#each roles}}
 												<li class="role-tag" title="{{.}}">{{.}}</li>
