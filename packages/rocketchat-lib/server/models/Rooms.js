@@ -536,6 +536,18 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	setFnameById(_id, fname) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				fname
+			}
+		};
+
+		return this.update(query, update);
+	}
+
 	incMsgCountById(_id, inc) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
