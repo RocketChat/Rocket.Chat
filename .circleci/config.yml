@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - checkout
@@ -134,7 +134,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -152,10 +152,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
             sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
             echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
             sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell
+            sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
       - run:
           name: Configure Replica Set
@@ -179,7 +181,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: circleci/mongo:3.4
 
     environment:
@@ -191,6 +193,14 @@ jobs:
           at: /tmp
 
       - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
 
       - run:
           name: NPM install
@@ -208,7 +218,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8.9
 
     steps:
       - attach_workspace:
@@ -247,6 +257,7 @@ jobs:
             bash .circleci/update-releases.sh
             bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/redhat-registry.sh
 
 workflows:
   version: 2
