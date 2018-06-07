@@ -9,6 +9,11 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+const emailLabels = {
+	nothing: 'Email_Notification_Mode_Disabled',
+	mentions: 'Email_Notification_Mode_All'
+};
+
 function checkedSelected(property, value, defaultValue=undefined) {
 	if (defaultValue && defaultValue.hash) {
 		defaultValue = undefined;
@@ -57,7 +62,7 @@ Template.accountPreferences.helpers({
 	},
 	highlights() {
 		const userHighlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
-		return userHighlights ? userHighlights.join('\n') : undefined;
+		return userHighlights ? userHighlights.join(',\n') : undefined;
 	},
 	desktopNotificationEnabled() {
 		return KonchatNotification.notificationStatus.get() === 'granted' || (window.Notification && Notification.permission === 'granted');
@@ -84,8 +89,14 @@ Template.accountPreferences.helpers({
 	defaultMobileNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications')];
 	},
+	defaultEmailNotification() {
+		return emailLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode')];
+	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
+	},
+	userDataDownloadEnabled() {
+		return RocketChat.settings.get('UserData_EnableDownload') !== false;
 	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
@@ -133,9 +144,8 @@ Template.accountPreferences.onCreated(function() {
 		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
 		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
 		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
-		data.viewMode = parseInt($('#viewMode').find('select').val());
 		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
-		data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
@@ -147,11 +157,15 @@ Template.accountPreferences.onCreated(function() {
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
-		data.highlights = _.compact(_.map($('[name=highlights]').val().split('\n'), function(e) {
+		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
 
 		let reload = false;
+
+		if (RocketChat.settings.get('UI_DisplayRoles')) {
+			data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
+		}
 
 		// if highlights changed we need page reload
 		const highlights = RocketChat.getUserPreference(Meteor.user(), 'highlights');
@@ -186,7 +200,11 @@ Template.accountPreferences.onCreated(function() {
 				instance.clearForm();
 				if (reload) {
 					setTimeout(function() {
-						Meteor._reload.reload();
+						if (Meteor._reload && Meteor._reload.reload) { // make it compatible with old meteor
+							Meteor._reload.reload();
+						} else {
+							Reload._reload();
+						}
 					}, 1000);
 				}
 			}
@@ -194,6 +212,55 @@ Template.accountPreferences.onCreated(function() {
 				return handleError(error);
 			}
 		});
+	};
+
+	this.downloadMyData = function(fullExport = false) {
+		Meteor.call('requestDataDownload', {fullExport}, function(error, results) {
+			if (results) {
+				if (results.requested) {
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_Requested_Text'),
+						type: 'success'
+					});
+
+					return true;
+				}
+
+				if (results.exportOperation) {
+					if (results.exportOperation.status === 'completed') {
+						modal.open({
+							title: t('UserDataDownload_Requested'),
+							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							type: 'success'
+						});
+
+						return true;
+					}
+
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_RequestExisted_Text'),
+						type: 'success'
+					});
+					return true;
+				}
+
+				modal.open({
+					title: t('UserDataDownload_Requested'),
+					type: 'success'
+				});
+				return true;
+			}
+
+			if (error) {
+				return handleError(error);
+			}
+		});
+	};
+
+	this.exportMyData = function() {
+		this.downloadMyData(true);
 	};
 });
 
@@ -213,6 +280,14 @@ Template.accountPreferences.events({
 	},
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
+	},
+	'click .download-my-data'(e, t) {
+		e.preventDefault();
+		t.downloadMyData();
+	},
+	'click .export-my-data'(e, t) {
+		e.preventDefault();
+		t.exportMyData();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();

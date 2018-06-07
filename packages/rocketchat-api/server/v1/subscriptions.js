@@ -25,6 +25,28 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+		}
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
+			fields: {
+				_room: 0,
+				_user: 0,
+				$loki: 0
+			}
+		});
+
+		return RocketChat.API.v1.success({
+			subscription
+		});
+	}
+});
+
 /**
 	This API is suppose to mark any room as read.
 
@@ -46,4 +68,20 @@ RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	}
 });
+
+RocketChat.API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
+	post() {
+		const { roomId, firstUnreadMessage } = this.bodyParams;
+		if (!roomId && (firstUnreadMessage && !firstUnreadMessage._id)) {
+			return RocketChat.API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
+		}
+
+		Meteor.runAsUser(this.userId, () =>
+			Meteor.call('unreadMessages', firstUnreadMessage, roomId)
+		);
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 

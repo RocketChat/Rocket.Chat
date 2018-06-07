@@ -9,7 +9,7 @@ class SlackBridge {
 
 	constructor() {
 		this.util = util;
-		this.slackClient = require('slack-client');
+		this.slackClient = require('@slack/client');
 		this.apiToken = RocketChat.settings.get('SlackBridge_APIToken');
 		this.aliasFormat = RocketChat.settings.get('SlackBridge_AliasFormat');
 		this.excludeBotnames = RocketChat.settings.get('SlackBridge_Botnames');
@@ -50,8 +50,8 @@ class SlackBridge {
 		if (this.connected === false) {
 			this.connected = true;
 			logger.connection.info('Connecting via token: ', this.apiToken);
-			const RtmClient = this.slackClient.RtmClient;
-			this.rtm = new RtmClient(this.apiToken);
+			const RTMClient = this.slackClient.RTMClient;
+			this.rtm = new RTMClient(this.apiToken);
 			this.rtm.start();
 			this.registerForSlackEvents();
 			RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
@@ -665,20 +665,17 @@ class SlackBridge {
 	}
 
 	registerForSlackEvents() {
-		const CLIENT_EVENTS = this.slackClient.CLIENT_EVENTS;
-		this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, () => {
+		this.rtm.on('authenticated', () => {
 			logger.connection.info('Connected to Slack');
 		});
 
-		this.rtm.on(CLIENT_EVENTS.RTM.UNABLE_TO_RTM_START, () => {
+		this.rtm.on('unable_to_rtm_start', () => {
 			this.disconnect();
 		});
 
-		this.rtm.on(CLIENT_EVENTS.RTM.DISCONNECT, () => {
+		this.rtm.on('disconnected', () => {
 			this.disconnect();
 		});
-
-		const RTM_EVENTS = this.slackClient.RTM_EVENTS;
 
 		/**
 		* Event fired when someone messages a channel the bot is in
@@ -693,21 +690,21 @@ class SlackBridge {
 		* 	inviter: [message_subtype = 'group_join|channel_join' -> user_id]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.MESSAGE, Meteor.bindEnvironment((slackMessage) => {
+		this.rtm.on('message', Meteor.bindEnvironment((slackMessage) => {
 			logger.events.debug('OnSlackEvent-MESSAGE: ', slackMessage);
 			if (slackMessage) {
 				this.onSlackMessage(slackMessage);
 			}
 		}));
 
-		this.rtm.on(RTM_EVENTS.REACTION_ADDED, Meteor.bindEnvironment((reactionMsg) => {
+		this.rtm.on('reaction_added', Meteor.bindEnvironment((reactionMsg) => {
 			logger.events.debug('OnSlackEvent-REACTION_ADDED: ', reactionMsg);
 			if (reactionMsg) {
 				this.onSlackReactionAdded(reactionMsg);
 			}
 		}));
 
-		this.rtm.on(RTM_EVENTS.REACTION_REMOVED, Meteor.bindEnvironment((reactionMsg) => {
+		this.rtm.on('reaction_removed', Meteor.bindEnvironment((reactionMsg) => {
 			logger.events.debug('OnSlackEvent-REACTION_REMOVED: ', reactionMsg);
 			if (reactionMsg) {
 				this.onSlackReactionRemoved(reactionMsg);
@@ -730,7 +727,7 @@ class SlackBridge {
 		*	event_ts: [ts.milli]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.CHANNEL_CREATED, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('channel_created', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the bot joins a public channel
@@ -763,7 +760,7 @@ class SlackBridge {
 		* 	}
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.CHANNEL_JOINED, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('channel_joined', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the bot leaves (or is removed from) a public channel
@@ -772,7 +769,7 @@ class SlackBridge {
 		* 	channel: [channel_id]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.CHANNEL_LEFT, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('channel_left', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when an archived channel is deleted by an admin
@@ -782,7 +779,7 @@ class SlackBridge {
 		*	event_ts: [ts.milli]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.CHANNEL_DELETED, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('channel_deleted', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the channel has its name changed
@@ -797,7 +794,7 @@ class SlackBridge {
 		*	event_ts: [ts.milli]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.CHANNEL_RENAME, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('channel_rename', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the bot joins a private channel
@@ -830,7 +827,7 @@ class SlackBridge {
 		* 	}
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.GROUP_JOINED, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('group_joined', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the bot leaves (or is removed from) a private channel
@@ -839,7 +836,7 @@ class SlackBridge {
 		* 	channel: [channel_id]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.GROUP_LEFT, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('group_left', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when the private channel has its name changed
@@ -854,7 +851,7 @@ class SlackBridge {
 		*	event_ts: [ts.milli]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.GROUP_RENAME, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('group_rename', Meteor.bindEnvironment(() => {}));
 
 		/**
 		* Event fired when a new user joins the team
@@ -897,7 +894,7 @@ class SlackBridge {
 		* 	cache_ts: [ts]
 		* }
 		**/
-		this.rtm.on(RTM_EVENTS.TEAM_JOIN, Meteor.bindEnvironment(() => {}));
+		this.rtm.on('team_join', Meteor.bindEnvironment(() => {}));
 	}
 
 	findSlackChannel(rocketChannelName) {

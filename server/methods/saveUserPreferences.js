@@ -18,7 +18,7 @@ Meteor.methods({
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
 			desktopNotificationDuration: Match.Optional(Number),
-			viewMode: Match.Optional(Number),
+			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			hideAvatars: Match.Optional(Boolean),
@@ -45,6 +45,12 @@ Meteor.methods({
 			return false;
 		}
 
+		const {
+			desktopNotifications: oldDesktopNotifications,
+			mobileNotifications: oldMobileNotifications,
+			emailNotificationMode: oldEmailNotifications
+		} = (user.settings && user.settings.preferences) || {};
+
 		if (user.settings == null) {
 			RocketChat.models.Users.clearSettings(user._id);
 		}
@@ -57,13 +63,49 @@ Meteor.methods({
 			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
 		}
 
-
-
 		if (settings.roomsListExhibitionMode != null) {
 			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
+		// Keep compatibility with old values
+		if (settings.emailNotificationMode === 'all') {
+			settings.emailNotificationMode = 'mentions';
+		} else if (settings.emailNotificationMode === 'disabled') {
+			settings.emailNotificationMode = 'nothing';
+		}
+
 		RocketChat.models.Users.setPreferences(user._id, settings);
+
+		// propagate changed notification preferences
+		Meteor.defer(() => {
+			if (oldDesktopNotifications !== settings.desktopNotifications) {
+				if (settings.desktopNotifications === 'default') {
+					RocketChat.models.Subscriptions.clearDesktopNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateDesktopNotificationUserPreferences(user._id, settings.desktopNotifications);
+				}
+			}
+
+			if (oldMobileNotifications !== settings.mobileNotifications) {
+				if (settings.mobileNotifications === 'default') {
+					RocketChat.models.Subscriptions.clearMobileNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateMobileNotificationUserPreferences(user._id, settings.mobileNotifications);
+				}
+			}
+
+			if (oldEmailNotifications !== settings.emailNotificationMode) {
+				if (settings.emailNotificationMode === 'default') {
+					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
+				} else {
+					RocketChat.models.Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode);
+				}
+			}
+
+			if (Array.isArray(settings.highlights)) {
+				RocketChat.models.Subscriptions.updateUserHighlights(user._id, settings.highlights);
+			}
+		});
 
 		return true;
 	}
