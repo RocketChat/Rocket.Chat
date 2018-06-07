@@ -75,7 +75,6 @@ RocketChat.callbacks.remove = function(hookName, id) {
 
 RocketChat.callbacks.run = function(hook, item, constant, userId) {
 	const callbacks = RocketChat.callbacks[hook];
-
 	if (callbacks && callbacks.length) {
 
 		let rocketchatHooksEnd;
