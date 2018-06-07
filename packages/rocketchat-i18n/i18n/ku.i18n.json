@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Pêwîste ku avatar dahûreke danûstandinê li ser OAuth Account an Gravatar bi bingehîn",
   "Accounts_ShowFormLogin": "Login-bingeha forma nîşan",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta diyar dike ku çiqas li kîjan tikan têne derbas kirin. Tokens di her 30 saetan de têne çêkirin, û ji bo duyemîn (30 * Maximum Delta) derbasdar e. <br / >Vebijêr: Bi bi Maximum Delta ve di 10 de, herkotek dikare 300 saetan berî an jî piştî demjimêra xwe bi kar tîne. Vê gava ku demjimêrê muwekîlê bi rêkûpêk bi rasterast nayê girêdan e.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta diyar dike ku çiqas li kîjan tikan têne derbas kirin. Tokens di her 30 saetan de têne çêkirin, û ji bo duyemîn (30 * Maximum Delta) derbasdar e. <br/>Vebijêr: Bi bi Maximum Delta ve di 10 de, herkotek dikare 300 saetan berî an jî piştî demjimêra xwe bi kar tîne. Vê gava ku demjimêrê muwekîlê bi rêkûpêk bi rasterast nayê girêdan e.",
   "Accounts_UseDefaultBlockedDomainsList": "Use Default astengkirin Lîsteya Domain",
   "Accounts_UseDNSDomainCheck": "Bi kar bîne Check DNS Domain",
   "Accounts_UserAddedEmail_Default": "<h2>bi xêr bên <h1> [Site_Name]</h1> </h2><p> Go to <a href=\"[Site_URL]\">[Site_URL]</a> û hewl baştirîn çareserî chat çavkaniya vekirî ya îro tune! </p><p> [email] û şîfreya:: [password] Hûn dikarin bi bikaranîna email te (login). Te pêwîst be ji bo ku ew piştî yekem login xwe biguherînî.",

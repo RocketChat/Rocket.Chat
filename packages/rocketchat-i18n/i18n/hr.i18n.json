@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Pokušava odrediti zadani avatar prema OAuth računu ili Gravataru",
   "Accounts_ShowFormLogin": "Prikaži obrazac za prijavu",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimalna delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimalna delta određuje koliko je token valjan u bilo kojem trenutku. Tokeni se generiraju svakih 30 sekundi, a vrijede za (30 * Maksimalni Delta) sekundi. <br / >Primjer: Ako je maksimalna delta postavljena na 10, svaki token može se koristiti do 300 sekundi prije ili nakon vremenske oznake. To je korisno kada sat klijenta nije ispravno sinkroniziran s poslužiteljem.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimalna delta određuje koliko je token valjan u bilo kojem trenutku. Tokeni se generiraju svakih 30 sekundi, a vrijede za (30 * Maksimalni Delta) sekundi. <br/>Primjer: Ako je maksimalna delta postavljena na 10, svaki token može se koristiti do 300 sekundi prije ili nakon vremenske oznake. To je korisno kada sat klijenta nije ispravno sinkroniziran s poslužiteljem.",
   "Accounts_UseDefaultBlockedDomainsList": "Koristi zadanu listu blokiranih domena",
   "Accounts_UseDNSDomainCheck": "Koristi DNS provjeru domena",
   "Accounts_UserAddedEmail_Default": "<h2>Dobrodošli na<h1> [Site_Name] </h1></h2><p> Idi na <a href=\"[Site_URL]\">[Site_URL]</a> i isprobaj najbolje open source chat rješenje danas! </p> <p>Možete se prijaviti preko emaila: [email] i lozinke: [password]. Moguće je da će vas tražiti da zamijenite lozinku nakon prijave.",
