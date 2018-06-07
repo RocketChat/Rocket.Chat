@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "Το SlackBridge έλαβε ένα σφάλμα κατά την εισαγωγή των μηνυμάτων σας στο% s:% s",
   "SlackBridge_finish": "Το SlackBridge ολοκλήρωσε την εισαγωγή των μηνυμάτων στο% s. Κάντε επανάληψη φόρτωσης για να δείτε όλα τα μηνύματα.",
   "SlackBridge_Out_All": "SlackBridge Όλα έξω",
+  "Search_Channels": "Αναζήτηση καναλιών",
   "SlackBridge_Out_All_Description": "Στείλτε μηνύματα από όλα τα κανάλια που υπάρχουν στο Slack και το bot έχει ενώσει",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Επιλέξτε ποια κανάλια θα στέλνουν μηνύματα πίσω στο Slack",

@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge hibát észlelt az üzenetek importálásakor:% s:% s",
   "SlackBridge_finish": "A SlackBridge befejezte az üzenetek importálását a (z)% s fájlban. Kérjük, töltse be az összes üzenetet.",
   "SlackBridge_Out_All": "SlackBridge ki minden",
+  "Search_Channels": "Keresés Csatornák",
   "SlackBridge_Out_All_Description": "Az összes olyan csatorna üzeneteinek küldése, amelyek a Lazán léteznek, és a bot csatlakozott",
   "SlackBridge_Out_Channels": "SlackBridge kimeneti csatornák",
   "SlackBridge_Out_Channels_Description": "Válassza ki, hogy mely csatornák küldik vissza az üzenetet a Laza gombra",
