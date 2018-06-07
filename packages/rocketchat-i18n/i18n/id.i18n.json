@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Halaman Admin Chatpal",
   "Chatpal_All_Results": "Semua",
   "Chatpal_API_Key": "kunci API",
-  "Chatpal_API_Key_Description": "Anda belum memiliki Kunci API <strong></strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Dapatkan satu!</a>",
+  "Chatpal_API_Key_Description": "Anda belum memiliki Kunci API <strong></strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Dapatkan satu!</a>",
   "Chatpal_Backend": "Jenis Backend",
   "Chatpal_Backend_Description": "Pilih jika Anda ingin menggunakan Chatpal sebagai Layanan atau sebagai Instalasi Di Tempat",
   "Chatpal_Base_URL": "Url Dasar",

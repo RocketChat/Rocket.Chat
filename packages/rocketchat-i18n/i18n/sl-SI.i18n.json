@@ -455,7 +455,7 @@
   "Chatpal_AdminPage": "Administracija strani Chatpal",
   "Chatpal_All_Results": "Vsi",
   "Chatpal_API_Key": "API ključ",
-  "Chatpal_API_Key_Description": "Še nimate <strong>ključa API</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Get one!</a>",
+  "Chatpal_API_Key_Description": "Še nimate <strong>ključa API</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Get one!</a>",
   "Chatpal_Backend": "Vrsta zadaj",
   "Chatpal_Backend_Description": "Izberite, če želite uporabljati Chatpal kot storitev ali kot namestitev na mestu",
   "Chatpal_Base_URL": "Osnovni URL",

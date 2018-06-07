@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Babila Admin-paĝo",
   "Chatpal_All_Results": "Ĉio",
   "Chatpal_API_Key": "API Ŝlosilo",
-  "Chatpal_API_Key_Description": "Vi ankoraŭ ne havas <strong>API-klavon</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Akiru unu!</a>",
+  "Chatpal_API_Key_Description": "Vi ankoraŭ ne havas <strong>API-klavon</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Akiru unu!</a>",
   "Chatpal_Backend": "Backend-tipo",
   "Chatpal_Backend_Description": "Elektu se vi volas uzi Chatpal kiel Servo aŭ kiel En-ejo Instalado",
   "Chatpal_Base_URL": "Bazo Url",

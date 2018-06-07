@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal adminisztrációs oldal",
   "Chatpal_All_Results": "Minden",
   "Chatpal_API_Key": "API-kulcs",
-  "Chatpal_API_Key_Description": "Még nincs <strong>API-kulcs</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Szerezd meg!</a>",
+  "Chatpal_API_Key_Description": "Még nincs <strong>API-kulcs</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Szerezd meg!</a>",
   "Chatpal_Backend": "Backend típusú",
   "Chatpal_Backend_Description": "Válassza ki, hogy a Chatpal szolgáltatást szolgáltatásként vagy helyszíni telepítésként kívánja-e használni",
   "Chatpal_Base_URL": "Base Url",

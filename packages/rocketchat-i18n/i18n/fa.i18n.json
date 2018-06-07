@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "صفحه مدیریت Chattal",
   "Chatpal_All_Results": "همه",
   "Chatpal_API_Key": "کلید ای پی ای",
-  "Chatpal_API_Key_Description": "شما هنوز <strong>کلید API</strong>ندارید؟ <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >دریافت کنید!</a>",
+  "Chatpal_API_Key_Description": "شما هنوز <strong>کلید API</strong>ندارید؟ <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >دریافت کنید!</a>",
   "Chatpal_Backend": "نوع پایه",
   "Chatpal_Backend_Description": "اگر میخواهید از Chatpal به عنوان یک سرویس یا به عنوان نصب روی سایت استفاده کنید، انتخاب کنید",
   "Chatpal_Base_URL": "آدرس پایه",

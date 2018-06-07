@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "ທັງຫມົດ",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "ທ່ານຍັງບໍ່ມີ <strong>ຫຼັກ API</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Get one!</a>",
+  "Chatpal_API_Key_Description": "ທ່ານຍັງບໍ່ມີ <strong>ຫຼັກ API</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Get one!</a>",
   "Chatpal_Backend": "ປະເພດຂອງ backend",
   "Chatpal_Backend_Description": "ເລືອກຖ້າທ່ານຕ້ອງການໃຊ້ Chatpal ເປັນບໍລິການຫຼືເປັນການຕິດຕັ້ງຢູ່ໃນເວັບໄຊທ໌",
   "Chatpal_Base_URL": "Base Url",

@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "Бүгд",
   "Chatpal_API_Key": "API түлхүүр",
-  "Chatpal_API_Key_Description": "Та одоогоор <strong>API түлхүүр</strong>байхгүй байна уу? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Get one!</a>",
+  "Chatpal_API_Key_Description": "Та одоогоор <strong>API түлхүүр</strong>байхгүй байна уу? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Get one!</a>",
   "Chatpal_Backend": "Нөөцлөх төрөл",
   "Chatpal_Backend_Description": "Чи Chatpal-г Service буюу Интернет суулгах гэж байгаа бол сонгоно уу",
   "Chatpal_Base_URL": "Үндсэн Url",

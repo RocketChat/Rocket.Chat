@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "\"Chatpal Admin\" puslapis",
   "Chatpal_All_Results": "Visi",
   "Chatpal_API_Key": "API raktas",
-  "Chatpal_API_Key_Description": "Jūs dar neturite <strong>API klavišo</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Get one!</a>",
+  "Chatpal_API_Key_Description": "Jūs dar neturite <strong>API klavišo</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Get one!</a>",
   "Chatpal_Backend": "Talpyklos tipas",
   "Chatpal_Backend_Description": "Pasirinkite, ar norite naudoti \"Chatpal\" kaip paslaugą, ar kaip \"on-site\" diegimą",
   "Chatpal_Base_URL": "Pagrindinė url",

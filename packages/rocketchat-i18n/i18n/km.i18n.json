@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "ទំព័រអ្នកគ្រប់គ្រង Chatpal",
   "Chatpal_All_Results": "ទាំងអស់",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "អ្នកមិនទាន់មានកូនសោ API <strong>នៅឡើយទេ</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >ទទួលយកមួយ!</a>",
+  "Chatpal_API_Key_Description": "អ្នកមិនទាន់មានកូនសោ API <strong>នៅឡើយទេ</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >ទទួលយកមួយ!</a>",
   "Chatpal_Backend": "ប្រភេទកម្មវិធីខាងក្រោយ",
   "Chatpal_Backend_Description": "ជ្រើសថាតើអ្នកចង់ប្រើ Chatpal ជាសេវាឬជាការតំឡើងនៅនឹងកន្លែង",
   "Chatpal_Base_URL": "មូលដ្ឋាន Url",
