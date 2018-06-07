@@ -1358,7 +1358,7 @@
   "Invisible": "پنهان",
   "Invitation": "دعوت نامه",
   "Invitation_HTML": "HTML دعوتنامه",
-  "Invitation_HTML_Default": "<h2>شما به <h1>[Site_Name]</h1> دعوت شده اید.</h2><p>به [Site_URL] رفته و بهترین برنامه چت متن باز را امتحان کنید!</p>",
+  "Invitation_HTML_Default": "<h2>شما به <strong>[Site_Name]</strong> دعوت شده اید.</h2><p>به [Site_URL] رفته و بهترین برنامه چت متن باز را امتحان کنید!</p>",
   "Invitation_HTML_Description": "می توانید از مکان نماهای زیر استفاده کنید: <br/><ul><li>[email] برای گیرنده ایمیل.</li><li>[Site_Name] و [Site_URL] به ترتیب برای نام و آدرس برنامه.</li></ul>",
   "Invitation_Subject": "عنوان دعوت نامه",
   "Invitation_Subject_Default": "شما به [Site_Name] دعوت شده اید",

@@ -1358,7 +1358,7 @@
   "Invisible": "Invisible",
   "Invitation": "Invitation",
   "Invitation_HTML": "Contenu HTML de l'invitation",
-  "Invitation_HTML_Default": "<h2>Vous avez été invité à rejoindre <h1>[Site_Name]</h1></h2><p>Accédez à [Site_URL] et essayez la meilleure solution de chat open source disponible aujourd'hui !</p>",
+  "Invitation_HTML_Default": "<h2>Vous avez été invité à rejoindre <strong>[Site_Name]</strong></h2><p>Accédez à [Site_URL] et essayez la meilleure solution de chat open source disponible aujourd'hui !</p>",
   "Invitation_HTML_Description": "Vous pouvez utiliser les variables suivantes :<br/><ul><li>[email] pour l'adresse e-mail du destinataire,</li><li>[Site_Name] et [Site_URL] pour le nom de l'application et son URL respectivement.</li></ul>",
   "Invitation_Subject": "Sujet de l'invitation",
   "Invitation_Subject_Default": "Vous avez été invité à [Site_Name]",
