@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal நிர்வாகம் பக்கம்",
   "Chatpal_All_Results": "அனைத்து",
   "Chatpal_API_Key": "API விசை",
-  "Chatpal_API_Key_Description": "உங்களிடம் இன்னும் <strong>API விசை</strong>இல்லை? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >ஒன்றைப் பெறுக!</a>",
+  "Chatpal_API_Key_Description": "உங்களிடம் இன்னும் <strong>API விசை</strong>இல்லை? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >ஒன்றைப் பெறுக!</a>",
   "Chatpal_Backend": "பின்தளத்தில் வகை",
   "Chatpal_Backend_Description": "சேட் பாலை ஒரு சேவையாக அல்லது ஆன்-சைட் நிறுவலை பயன்படுத்த விரும்பினால் தேர்ந்தெடுக்கவும்",
   "Chatpal_Base_URL": "அடிப்படை ஊர்",

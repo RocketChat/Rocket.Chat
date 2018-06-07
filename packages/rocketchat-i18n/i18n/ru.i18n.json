@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Страница администрирования Chatpal",
   "Chatpal_All_Results": "Все",
   "Chatpal_API_Key": "API ключ",
-  "Chatpal_API_Key_Description": "У вас еще нет <strong>ключа API</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\">Получите его!</a>",
+  "Chatpal_API_Key_Description": "У вас еще нет <strong>ключа API</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">Получите его!</a>",
   "Chatpal_Backend": "Тип бэкэнда",
   "Chatpal_Backend_Description": "Выберите, если вы хотите использовать Chatpal как услугу или как установку на месте",
   "Chatpal_Base_URL": "Базовый URL",

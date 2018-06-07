@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "صفحة المسؤول شات",
   "Chatpal_All_Results": "الكل",
   "Chatpal_API_Key": "مفتاح API",
-  "Chatpal_API_Key_Description": "ليس لديك بعد <strong>مفتاح واجهة برمجة التطبيقات</strong>؟ <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >احصل على واحدة!</a>",
+  "Chatpal_API_Key_Description": "ليس لديك بعد <strong>مفتاح واجهة برمجة التطبيقات</strong>؟ <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >احصل على واحدة!</a>",
   "Chatpal_Backend": "نوع الخلفية",
   "Chatpal_Backend_Description": "حدد ما إذا كنت تريد استخدام Chatpal كخدمة أو كتثبيت في الموقع",
   "Chatpal_Base_URL": "عنوان قاعدة",

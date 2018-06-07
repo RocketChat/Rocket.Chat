@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "Gişt",
   "Chatpal_API_Key": "Key Key",
-  "Chatpal_API_Key_Description": "Hûn ne xwedî <strong>Key Key</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Get one!</A>",
+  "Chatpal_API_Key_Description": "Hûn ne xwedî <strong>Key Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Get one!</A>",
   "Chatpal_Backend": "Tişta paşîn",
   "Chatpal_Backend_Description": "Hilbijêrin eger hûn dixwazin Chatpal wekî xizmetê an jî wekî sazkirina On-Site",
   "Chatpal_Base_URL": "Base Url",

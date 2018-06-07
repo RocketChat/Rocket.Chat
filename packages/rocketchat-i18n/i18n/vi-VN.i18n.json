@@ -447,7 +447,7 @@
   "Chatpal_AdminPage": "Trang quản trị Chatpal",
   "Chatpal_All_Results": "Tất cả các",
   "Chatpal_API_Key": "Khóa API",
-  "Chatpal_API_Key_Description": "Bạn chưa có <strong>Khóa API</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\">Nhận tại đây!</a>",
+  "Chatpal_API_Key_Description": "Bạn chưa có <strong>Khóa API</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">Nhận tại đây!</a>",
   "Chatpal_Backend": "Loại phụ trợ",
   "Chatpal_Backend_Description": "Chọn nếu bạn muốn sử dụng Chatpal làm Dịch vụ hoặc khi cài đặt trên trang web",
   "Chatpal_Base_URL": "Url cơ sở",

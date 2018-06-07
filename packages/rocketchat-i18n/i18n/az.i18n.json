@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "Bütün",
   "Chatpal_API_Key": "API Açarı",
-  "Chatpal_API_Key_Description": "Hələ bir <strong>API Anahtarı</strong>yoxdur? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Bir tane alın!</a>",
+  "Chatpal_API_Key_Description": "Hələ bir <strong>API Anahtarı</strong>yoxdur? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Bir tane alın!</a>",
   "Chatpal_Backend": "Backend növü",
   "Chatpal_Backend_Description": "Chatpal'i Xidmət və ya Yerdə Quraşdırma kimi istifadə etmək istəyirsinizsə seçin",
   "Chatpal_Base_URL": "Base Url",

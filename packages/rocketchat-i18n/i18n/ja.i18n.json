@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal管理ページ",
   "Chatpal_All_Results": "すべて",
   "Chatpal_API_Key": "APIキー",
-  "Chatpal_API_Key_Description": "<strong>APIキー<STRONG>はまだありませんか？ <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >1つを取得してください！</a>",
+  "Chatpal_API_Key_Description": "<strong>APIキー<STRONG>はまだありませんか？ <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >1つを取得してください！</a>",
   "Chatpal_Backend": "バックエンドタイプ",
   "Chatpal_Backend_Description": "Chatpalをサービスとして使用するかオンサイトインストールとして使用するかを選択します",
   "Chatpal_Base_URL": "ベースURL",

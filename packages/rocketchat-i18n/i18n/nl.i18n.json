@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal-beheerderspagina",
   "Chatpal_All_Results": "Alle",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "U heeft nog geen <strong>API-sleutel</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Ontvang er een!</a>",
+  "Chatpal_API_Key_Description": "U heeft nog geen <strong>API-sleutel</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Ontvang er een!</a>",
   "Chatpal_Backend": "Backend Type",
   "Chatpal_Backend_Description": "Selecteer of u Chatpal als een service of als installatie op locatie wilt gebruiken",
   "Chatpal_Base_URL": "Base URL",

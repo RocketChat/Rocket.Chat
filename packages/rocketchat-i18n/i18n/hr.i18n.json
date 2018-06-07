@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Stranica",
   "Chatpal_All_Results": "Svi",
   "Chatpal_API_Key": "API ključ",
-  "Chatpal_API_Key_Description": "Još nemate <strong>API ključ</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Pronađite jedan!</a>",
+  "Chatpal_API_Key_Description": "Još nemate <strong>API ključ</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Pronađite jedan!</a>",
   "Chatpal_Backend": "Vrsta natrag",
   "Chatpal_Backend_Description": "Odaberite želite li koristiti Chatpal kao uslugu ili kao instalaciju na licu mjesta",
   "Chatpal_Base_URL": "Baza Url",

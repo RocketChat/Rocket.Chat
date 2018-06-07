@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin-sivu",
   "Chatpal_All_Results": "Kaikki",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "Sinulla ei vielä ole <strong>API-avainta</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Hanki yksi!</a>",
+  "Chatpal_API_Key_Description": "Sinulla ei vielä ole <strong>API-avainta</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Hanki yksi!</a>",
   "Chatpal_Backend": "Taustatyyppi",
   "Chatpal_Backend_Description": "Valitse, jos haluat käyttää Chatpalia palveluna tai asennuspaikkana",
   "Chatpal_Base_URL": "Base Url",
