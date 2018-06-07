@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge sai virheen tuotaessa viestejäsi% s:% s",
   "SlackBridge_finish": "SlackBridge on lopettanut viestien tuonnin% s: ssä. Lataa kaikki viestit uudelleen.",
   "SlackBridge_Out_All": "SlackBridge pois kaikki",
+  "Search_Channels": "Hae kanavia",
   "SlackBridge_Out_All_Description": "Lähetä viestejä kaikista kanavista, jotka ovat olemassa Löytää ja botti on liittynyt",
   "SlackBridge_Out_Channels": "SlackBridge-kanavat",
   "SlackBridge_Out_Channels_Description": "Valitse, mitkä kanavat lähettävät viestit takaisin löysäksi",

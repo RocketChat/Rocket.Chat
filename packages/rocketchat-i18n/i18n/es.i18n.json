@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge obtuvo un error al importar sus mensajes en% s:% s",
   "SlackBridge_finish": "SlackBridge ha terminado de importar los mensajes en% s. Por favor, vuelva a cargar para ver todos los mensajes.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Canales de búsqueda",
   "SlackBridge_Out_All_Description": "Envía mensajes de todos los canales que existen en Slack y el bot se ha unido",
   "SlackBridge_Out_Channels": "Canales SlackBridge Out",
   "SlackBridge_Out_Channels_Description": "Elige qué canales enviarán mensajes a Slack",
