@@ -12,7 +12,7 @@ const checked = function(prop, field) {
 		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
 	}
 	if (prop === 'sidebarSortby') {
-		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity') === field;
+		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical') === field;
 	}
 };
 

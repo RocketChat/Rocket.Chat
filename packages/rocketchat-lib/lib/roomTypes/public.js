@@ -41,7 +41,6 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		// const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
 		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'groupByType');
 		return groupByType && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	}

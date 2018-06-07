@@ -299,22 +299,8 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Hide_Avatars'
 		});
-		this.add('Accounts_Default_User_Preferences_roomsListExhibitionMode', 'category', {
-			type: 'select',
-			values: [
-				{
-					key: 'unread',
-					i18nLabel: 'Unread_Rooms_Mode'
-				},
-				{
-					key: 'activity',
-					i18nLabel: 'Sort_by_activity'
-				},
-				{
-					key: 'category',
-					i18nLabel: 'Split_by_categories'
-				}
-			],
+		this.add('Accounts_Default_User_Preferences_groupByType', true, {
+			type: 'boolean',
 			'public': true,
 			i18nLabel: 'Sidebar_list_mode'
 		});

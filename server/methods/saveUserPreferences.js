@@ -10,7 +10,6 @@ Meteor.methods({
 			collapseMediaByDefault: Match.Optional(Boolean),
 			autoImageLoad: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
-			roomsListExhibitionMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
@@ -61,10 +60,6 @@ Meteor.methods({
 
 		if (settings.groupByType != null) {
 			settings.groupByType = ['1', true].includes(settings.groupByType);
-		}
-
-		if (settings.roomsListExhibitionMode != null) {
-			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
 		// Keep compatibility with old values
