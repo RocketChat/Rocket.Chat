@@ -74,6 +74,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 		'public': true,
 		i18nLabel: 'Placeholder_for_password_login_field'
 	});
+	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
+		type: 'string',
+		'public': true,
+		i18nLabel: 'Placeholder_for_password_login_field'
+	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
@@ -1625,9 +1630,9 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
-		this.add('UI_Merge_Channels_Groups', true, {
+		this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
-			'public': true
+			'public': false
 		});
 		this.add('UI_Use_Name_Avatar', false, {
 			type: 'boolean',
