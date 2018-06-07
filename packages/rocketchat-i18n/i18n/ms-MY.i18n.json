@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge mendapat ralat semasa mengimport mesej anda pada% s:% s",
   "SlackBridge_finish": "SlackBridge telah selesai mengimport mesej pada% s. Sila muat semula untuk melihat semua mesej.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Cari Saluran",
   "SlackBridge_Out_All_Description": "Hantar mesej dari semua saluran yang ada di Slack dan bot telah bergabung",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Pilih saluran yang akan menghantar mesej kembali ke Slack",
