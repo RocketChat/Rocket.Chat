@@ -1625,9 +1625,9 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
-		this.add('UI_Merge_Channels_Groups', true, {
+		this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
-			'public': true
+			'public': false
 		});
 		this.add('UI_Use_Name_Avatar', false, {
 			type: 'boolean',
