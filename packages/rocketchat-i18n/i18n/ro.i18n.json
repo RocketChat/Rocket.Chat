@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge a înregistrat o eroare în timp ce importa mesajele dvs. la% s:% s",
   "SlackBridge_finish": "SlackBridge a terminat să importe mesajele la% s. Reîncărcați pentru a vedea toate mesajele.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "canale de căutare",
   "SlackBridge_Out_All_Description": "Trimiteți mesaje de la toate canalele care există în Slack și botul sa alăturat",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Alegeți care canale vor trimite mesaje înapoi la Slack",

@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge mendapat pesan kesalahan saat mengimpor pesan Anda di% s:% s",
   "SlackBridge_finish": "SlackBridge telah selesai mengimpor pesan di% s. Harap muat ulang untuk melihat semua pesan.",
   "SlackBridge_Out_All": "SlackBridge Keluar Semua",
+  "Search_Channels": "Cari Saluran",
   "SlackBridge_Out_All_Description": "Kirim pesan dari semua saluran yang ada di Slack dan bot telah bergabung",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Pilih saluran mana yang akan mengirim pesan kembali ke Slack",
