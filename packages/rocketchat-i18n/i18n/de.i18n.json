@@ -2192,7 +2192,7 @@
   "UserData_ProcessingFrequency": "Verarbeitungshäufigkeit (Minuten)",
   "UserData_MessageLimitPerRequest": "Nachrichtenlimit pro Anfrage",
   "UserDataDownload_EmailSubject": "Ihre Datendatei ist bereit zum Herunterladen",
-  "UserDataDownload_EmailBody": "Ihre Datendatei ist jetzt zum Herunterladen bereit. Klicken Sie <a href = \"__ download_link __\">hier</a>, um es herunterzuladen.",
+  "UserDataDownload_EmailBody": "Ihre Datendatei ist jetzt zum Herunterladen bereit. Klicken Sie <a href=\"__ download_link __\">hier</a>, um es herunterzuladen.",
   "UserDataDownload_Requested": "Datei herunterladen angefordert",
   "UserDataDownload_Requested_Text": "Ihre Datendatei wird generiert. Ein Link zum Herunterladen wird an Ihre E-Mail-Adresse gesendet, wenn Sie fertig sind.",
   "UserDataDownload_RequestExisted_Text": "Ihre Datendatei wird bereits generiert. Ein Link zum Herunterladen wird an Ihre E-Mail-Adresse gesendet, wenn Sie fertig sind.",
