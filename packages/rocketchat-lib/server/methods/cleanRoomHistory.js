@@ -21,10 +21,24 @@ Meteor.methods({
 					$lte: latest
 				}
 			});
+			RocketChat.models.Uploads.remove({
+				rid: roomId,
+				uploadedAt: {
+					$gte: oldest,
+					$lte: latest
+				}
+			});
 		} else {
 			RocketChat.models.Messages.remove({
 				rid: roomId,
 				ts: {
+					$gt: oldest,
+					$lt: latest
+				}
+			});
+			RocketChat.models.Uploads.remove({
+				rid: roomId,
+				uploadedAt: {
 					$gt: oldest,
 					$lt: latest
 				}
