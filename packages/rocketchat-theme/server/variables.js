@@ -66,7 +66,7 @@ Object.keys(minorColors).forEach((key) => {
 	RocketChat.theme.addPublicColor(key, value, 'Old Colors (minor)', 'expression');
 });
 
-RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, Roboto, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Segoe UI\', \'Meiryo UI\', Arial, sans-serif');
+RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\', Arial, sans-serif');
 
 RocketChat.settings.add('theme-custom-css', '', {
 	group: 'Layout',
