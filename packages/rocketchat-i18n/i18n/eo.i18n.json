@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Elektu se vi volas uzi Chatpal kiel Servo aŭ kiel En-ejo Instalado",
   "Chatpal_Suggestion_Enabled": "Sugestoj ebligitaj",
   "Chatpal_Base_URL": "Bazo Url",
-  "Chatpal_Base_URL_Description": "Trovu iun priskribon kiel kuri lokan instancon <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >sur github</a >. La URL devas esti absoluta kaj punkto al la kapala kerno, ekz. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Trovu iun priskribon kiel kuri lokan instancon <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >sur github</a>. La URL devas esti absoluta kaj punkto al la kapala kerno, ekz. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Ĉefa Lingvo",
   "Chatpal_Main_Language_Description": "La lingvo plej uzata en konversacioj",
   "Chatpal_Default_Result_Type": "Defaŭlta Rezulto Tipo",

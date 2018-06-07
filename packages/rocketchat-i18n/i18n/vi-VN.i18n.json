@@ -412,7 +412,7 @@
   "Chatpal_Backend_Description": "Chọn nếu bạn muốn sử dụng Chatpal làm Dịch vụ hoặc khi cài đặt trên trang web",
   "Chatpal_Suggestion_Enabled": "Đã bật đề xuất",
   "Chatpal_Base_URL": "Url cơ sở",
-  "Chatpal_Base_URL_Description": "Tìm một số mô tả cách chạy một local instance <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\">trên github</a >. URL phải là tuyệt đối và trỏ đến Chatpal core, ví dụ: http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Tìm một số mô tả cách chạy một local instance <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\">trên github</a>. URL phải là tuyệt đối và trỏ đến Chatpal core, ví dụ: http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Ngôn ngữ chính",
   "Chatpal_Main_Language_Description": "Ngôn ngữ được sử dụng nhiều nhất trong các cuộc trò chuyện",
   "Chatpal_Default_Result_Type": "Loại kết quả mặc định",

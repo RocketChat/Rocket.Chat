@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "选择是否要使用Chatpal作为服务或现场安装",
   "Chatpal_Suggestion_Enabled": "建议启用",
   "Chatpal_Base_URL": "基地网址",
-  "Chatpal_Base_URL_Description": "查找一些说明如何在github上运行本地实例<a target =“_blank”class =“chatpal-admin-link”href =“https://github.com/chatpal/chatpal-search-standalone”></a >。网址必须是absolue，并指向chatpal核心，例如HTTP：//本地主机：8983 / Solr的/ chatpal。",
+  "Chatpal_Base_URL_Description": "查找一些说明如何在github上运行本地实例<a target =“_blank”class =“chatpal-admin-link”href =“https://github.com/chatpal/chatpal-search-standalone”></a>。网址必须是absolue，并指向chatpal核心，例如HTTP：//本地主机：8983 / Solr的/ chatpal。",
   "Chatpal_Main_Language": "主要语言",
   "Chatpal_Main_Language_Description": "在对话中最常用的语言",
   "Chatpal_Default_Result_Type": "默认结果类型",

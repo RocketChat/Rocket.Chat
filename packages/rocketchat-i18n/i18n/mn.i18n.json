@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Чи Chatpal-г Service буюу Интернет суулгах гэж байгаа бол сонгоно уу",
   "Chatpal_Suggestion_Enabled": "Санал болголт идэвхжсэн",
   "Chatpal_Base_URL": "Үндсэн Url",
-  "Chatpal_Base_URL_Description": "Орон нутгийн жишээ <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >ghtub</a >. URL нь үнэмлэхүй байх ёстой бөгөөд chatpal цөмд, ж.нь. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Орон нутгийн жишээ <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >ghtub</a>. URL нь үнэмлэхүй байх ёстой бөгөөд chatpal цөмд, ж.нь. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Үндсэн хэл",
   "Chatpal_Main_Language_Description": "Ярилцлагад хамгийн их ашиглагддаг хэл",
   "Chatpal_Default_Result_Type": "Үр дүнгийн үр дүнгийн төрөл",

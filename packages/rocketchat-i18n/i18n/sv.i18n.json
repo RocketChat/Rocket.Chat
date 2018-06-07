@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Välj om du vill använda Chatpal som en tjänst eller som installation på plats",
   "Chatpal_Suggestion_Enabled": "Förslag aktiverat",
   "Chatpal_Base_URL": "Basadress",
-  "Chatpal_Base_URL_Description": "Hitta någon beskrivning hur man kör en lokal instans <a target=\"_blank\" class=\"chatpal-admin-länk\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >på github</a >. Webbadressen måste vara absolut och peka på chatpal-kärnan, t.ex. http: // localhost: 8983 / Solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Hitta någon beskrivning hur man kör en lokal instans <a target=\"_blank\" class=\"chatpal-admin-länk\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >på github</a>. Webbadressen måste vara absolut och peka på chatpal-kärnan, t.ex. http: // localhost: 8983 / Solr / chatpal.",
   "Chatpal_Main_Language": "Modersmål",
   "Chatpal_Main_Language_Description": "Språket som används mest i konversationer",
   "Chatpal_Default_Result_Type": "Standardresultatstyp",

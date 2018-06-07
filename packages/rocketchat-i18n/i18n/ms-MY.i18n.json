@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Pilih jika anda mahu menggunakan Chatpal sebagai Perkhidmatan atau sebagai Pemasangan Dalam Laman",
   "Chatpal_Suggestion_Enabled": "Cadangan didayakan",
   "Chatpal_Base_URL": "Url Base",
-  "Chatpal_Base_URL_Description": "Cari beberapa huraian cara menjalankan contoh lokal <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >pada github</a >. URL mestilah benar dan menunjuk ke teras chatpal, cth. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Cari beberapa huraian cara menjalankan contoh lokal <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >pada github</a>. URL mestilah benar dan menunjuk ke teras chatpal, cth. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Bahasa utama",
   "Chatpal_Main_Language_Description": "Bahasa yang paling banyak digunakan dalam perbualan",
   "Chatpal_Default_Result_Type": "Jenis Hasil Lalai",
