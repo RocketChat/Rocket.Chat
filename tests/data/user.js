@@ -25,6 +25,7 @@ export const preferences = {
 		highlights: [],
 		desktopNotificationDuration: 0,
 		messageViewMode: 0,
+		usedTheme: 0,
 		hideUsernames: false,
 		hideRoles: false,
 		hideAvatars: false,

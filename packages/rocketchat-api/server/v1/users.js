@@ -336,6 +336,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				highlights: Match.Maybe(Array),
 				desktopNotificationDuration: Match.Maybe(Number),
 				messageViewMode: Match.Maybe(Number),
+				usedTheme: Match.Maybe(Number),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
 				hideAvatars: Match.Maybe(Boolean),

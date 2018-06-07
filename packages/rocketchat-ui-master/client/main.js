@@ -176,6 +176,9 @@ Template.main.helpers({
 		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
 
 		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
+	},
+	usedTheme() {
+		return RocketChat.getUserPreference(Meteor.user(), 'usedTheme', 0) === 1 ? 'dark-theme' : '';
 	}
 });
 
