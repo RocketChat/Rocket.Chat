@@ -161,7 +161,7 @@ Template.room.helpers({
 
 		const query = {
 			rid: this._id,
-			/* query for messages with no 'to' property or if 'to' property exists make sure it equals current user */
+			/* query for messages and for messages only for current user */
 			$or: [
 				{'to': { $exists: false } },
 				{'to': { $exists: true }, 'to._id': Meteor.userId() }
