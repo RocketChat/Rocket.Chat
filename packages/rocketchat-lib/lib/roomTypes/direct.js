@@ -61,8 +61,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const mergeChannels = RocketChat.getUserPreference(Meteor.userId(), 'mergeChannels');
-		return !mergeChannels && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'groupByType');
+		return groupByType && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	}
 
 	getUserStatus(roomId) {

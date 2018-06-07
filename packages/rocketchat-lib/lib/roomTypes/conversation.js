@@ -10,6 +10,7 @@ export class ConversationRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'mergeChannels');
+		// returns true only if groupByType is not set
+		return !RocketChat.getUserPreference(Meteor.userId(), 'groupByType');
 	}
 }

@@ -70,6 +70,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
+	//client startup
+	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
+
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
@@ -180,6 +183,7 @@ Package.onUse(function(api) {
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');

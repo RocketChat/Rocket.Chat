@@ -30,12 +30,13 @@ Template.chatRoomItem.helpers({
 			avatar,
 			username : this.name,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
-			name,
+			name: name || RocketChat.roomTypes.getRoomName(this.t, this),
 			unread,
 			active,
 			archivedClass,
 			status: this.t === 'd' || this.t === 'l'
 		};
+		roomData.username = roomData.username || roomData.name;
 
 		if (!this.lastMessage && RocketChat.settings.get('Store_Last_Message')) {
 			const room = RocketChat.models.Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
