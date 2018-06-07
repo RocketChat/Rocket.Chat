@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal admina lapa",
   "Chatpal_All_Results": "Visi",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "Jums vēl nav <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\">Iegādājieties!</a>",
+  "Chatpal_API_Key_Description": "Jums vēl nav <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">Iegādājieties!</a>",
   "Chatpal_Backend": "Fona darbības veids",
   "Chatpal_Backend_Description": "Izvēlieties, vai vēlaties izmantot Chatpal kā pakalpojumu vai kā instalāciju uz vietas",
   "Chatpal_Base_URL": "Bāzes url",

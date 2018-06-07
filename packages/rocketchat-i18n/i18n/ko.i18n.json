@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal 관리 페이지",
   "Chatpal_All_Results": "모든",
   "Chatpal_API_Key": "API 키",
-  "Chatpal_API_Key_Description": "<strong>API 키</STRONG>가 아직 없습니까? <a class=\"chatpal-admin-link\"href=\"./ admin / chatpal\">하나 가져 오십시오!</a>",
+  "Chatpal_API_Key_Description": "<strong>API 키</STRONG>가 아직 없습니까? <a class=\"chatpal-admin-link\"href=\"./admin/chatpal\">하나 가져 오십시오!</a>",
   "Chatpal_Backend": "백엔드 유형",
   "Chatpal_Backend_Description": "Chatpal을 서비스 또는 현장 설치로 사용하려면 선택하십시오.",
   "Chatpal_Base_URL": "기본 URL",

@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Pàgina d'administrador de Chatpal",
   "Chatpal_All_Results": "Tot",
   "Chatpal_API_Key": "Clau API",
-  "Chatpal_API_Key_Description": "Encara no tens una <strong>clau de l'API</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Obteniu-ne un!</a>",
+  "Chatpal_API_Key_Description": "Encara no tens una <strong>clau de l'API</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Obteniu-ne un!</a>",
   "Chatpal_Backend": "Tipus de suport",
   "Chatpal_Backend_Description": "Seleccioneu si voleu utilitzar Chatpal com a servei o com a instal·lació al lloc",
   "Chatpal_Base_URL": "Base Url",

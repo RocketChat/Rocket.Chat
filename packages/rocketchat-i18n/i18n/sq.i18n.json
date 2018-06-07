@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Page",
   "Chatpal_All_Results": "të gjithë",
   "Chatpal_API_Key": "API Key",
-  "Chatpal_API_Key_Description": "Ju ende nuk keni një <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Merrni një!</a>",
+  "Chatpal_API_Key_Description": "Ju ende nuk keni një <strong>API Key</strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Merrni një!</a>",
   "Chatpal_Backend": "Lloji Backend",
   "Chatpal_Backend_Description": "Zgjidh nëse dëshironi të përdorni Chatpal si një Shërbim ose si instalim në vend",
   "Chatpal_Base_URL": "Baza Url",

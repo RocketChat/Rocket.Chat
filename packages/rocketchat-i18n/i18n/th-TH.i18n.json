@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "หน้าผู้ดูแลระบบ Chatpal",
   "Chatpal_All_Results": "ทั้งหมด",
   "Chatpal_API_Key": "คีย์ API",
-  "Chatpal_API_Key_Description": "คุณยังไม่มี <strong>คีย์ API</strong>หรือไม่? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >รับเลย!</a>",
+  "Chatpal_API_Key_Description": "คุณยังไม่มี <strong>คีย์ API</strong>หรือไม่? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >รับเลย!</a>",
   "Chatpal_Backend": "ประเภทแบ็กเอนด์",
   "Chatpal_Backend_Description": "เลือกถ้าคุณต้องการใช้ Chatpal เป็น Service หรือ On-Site Installation",
   "Chatpal_Base_URL": "URL ฐาน",

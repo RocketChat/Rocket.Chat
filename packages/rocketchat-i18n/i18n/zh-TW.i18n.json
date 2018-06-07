@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "聊天管理員頁面",
   "Chatpal_All_Results": "所有",
   "Chatpal_API_Key": "API密鑰",
-  "Chatpal_API_Key_Description": "您還沒有<strong>API密鑰<strong>？ <a class =“chatpal-admin-link”href =“./ admin / chatpal”>獲取一個！</a>",
+  "Chatpal_API_Key_Description": "您還沒有<strong>API密鑰<strong>？ <a class =“chatpal-admin-link”href =“./admin/chatpal”>獲取一個！</a>",
   "Chatpal_Backend": "後端類型",
   "Chatpal_Backend_Description": "選擇是否要使用Chatpal作為服務或現場安裝",
   "Chatpal_Base_URL": "基地網址",

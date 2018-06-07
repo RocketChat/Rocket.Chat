@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Yönetici Sayfası",
   "Chatpal_All_Results": "Tümü",
   "Chatpal_API_Key": "API Anahtarı",
-  "Chatpal_API_Key_Description": "Henüz bir <strong>API Anahtarı</strong>değeriniz yok mu? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Bir tane alın!</a>",
+  "Chatpal_API_Key_Description": "Henüz bir <strong>API Anahtarı</strong>değeriniz yok mu? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Bir tane alın!</a>",
   "Chatpal_Backend": "Arka Uç Türü",
   "Chatpal_Backend_Description": "Chatpal'i Hizmet Olarak mı yoksa Yerinde Kurulum olarak mı kullanmak istediğinizi seçin.",
   "Chatpal_Base_URL": "Temel URL",

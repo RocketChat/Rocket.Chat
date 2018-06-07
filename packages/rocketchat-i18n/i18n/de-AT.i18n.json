@@ -456,7 +456,7 @@
   "Chatpal_AdminPage": "Chatpal Admin Seite",
   "Chatpal_All_Results": "Alle",
   "Chatpal_API_Key": "API-Schlüssel",
-  "Chatpal_API_Key_Description": "Sie haben noch keinen API-Schlüssel <strong></strong>? <a class=\"chatpal-admin-link\" href=\"./ admin / chatpal\" >Holen Sie sich eins!</a>",
+  "Chatpal_API_Key_Description": "Sie haben noch keinen API-Schlüssel <strong></strong>? <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\" >Holen Sie sich eins!</a>",
   "Chatpal_Backend": "Backend-Typ",
   "Chatpal_Backend_Description": "Wählen Sie, ob Sie Chatpal als Service oder als Vor-Ort-Installation verwenden möchten",
   "Chatpal_Base_URL": "Basis-URL",
