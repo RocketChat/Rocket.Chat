@@ -1,25 +1,14 @@
 <template name="sideNav">
-		<aside class="sidebar {{#if isLastMessageActive}}sidebar--big{{/if}}" role="navigation">
-			<header class="sidebar__header">
-				{{> accountBox }}
-				{{> toolbar}}
-			</header>
-
+		<aside class="sidebar sidebar--{{sidebarViewMode}} {{#if sidebarHideAvatar}}sidebar--hide-avatar{{/if}}" role="navigation">
+			{{> sidebarHeader }}
 			{{#if loggedInUser}}
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast top-unread-rooms hidden">
 					{{_ "More_unreads"}} <i class="icon-up-big"></i>
 				</div>
 				<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
-
 					{{#each roomType}}
 						{{> Template.dynamic template=template data=data }}
 					{{/each}}
-
-					{{#if canViewHistory}}
-						<h3 class="history-div">
-							<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
-						</h3>
-					{{/if}}
 				</div>
 				<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
 					{{_ "More_unreads"}} <i class="icon-down-big"></i>

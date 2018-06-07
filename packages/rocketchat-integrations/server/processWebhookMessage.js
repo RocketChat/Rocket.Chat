@@ -50,7 +50,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: s.trim(messageObj.text || messageObj.msg || ''),
-			attachments: messageObj.attachments,
+			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
