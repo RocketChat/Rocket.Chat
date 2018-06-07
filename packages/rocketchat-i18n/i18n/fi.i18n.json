@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Yritetään määrittää oletus avatar perustuu OAuth tilille tai Gravatar",
   "Accounts_ShowFormLogin": "Näytä lomakepohjainen kirjautuminen",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Suurin Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Suurin Delta määrittää kuinka monta rahakkeita on voimassa milloin tahansa. Tokelit tuotetaan 30 sekunnin välein, ja ne ovat voimassa (30 * Suurin Delta) sekuntia. <br / >Esimerkki: Suurin Delta-arvoksi asetettu 10, jokainen merkki voidaan käyttää enintään 300 sekuntia ennen tai jälkeen sen aikaleiman. Tämä on hyödyllistä, kun asiakkaan kelloa ei synkronoida oikein palvelimen kanssa.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Suurin Delta määrittää kuinka monta rahakkeita on voimassa milloin tahansa. Tokelit tuotetaan 30 sekunnin välein, ja ne ovat voimassa (30 * Suurin Delta) sekuntia. <br/>Esimerkki: Suurin Delta-arvoksi asetettu 10, jokainen merkki voidaan käyttää enintään 300 sekuntia ennen tai jälkeen sen aikaleiman. Tämä on hyödyllistä, kun asiakkaan kelloa ei synkronoida oikein palvelimen kanssa.",
   "Accounts_UseDefaultBlockedDomainsList": "Käytä Estettyjen Verkkotunnusten Oletuslistaa",
   "Accounts_UseDNSDomainCheck": "Varmista Toimialueen DNS",
   "Accounts_UserAddedEmail_Default": "<h2> Tervetuloa sivustolle </h2><h1> [Site_Name] </h1><p> Mene <a href=\"[Site_URL]\">[Site_URL]</a> ja kokeile parasta avoimen lähdekoodin chat ratkaisua tänään! </p><p> Voit kirjautua käyttäen sähköpostiasi: [email] ja salasanaa: [password]. Voit joutua muuttamaan salasanasi ensimmäisen kirjautumisen jälkeen.</p>",

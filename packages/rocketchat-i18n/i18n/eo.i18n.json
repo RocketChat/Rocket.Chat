@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Provas determini defaŭlta avataro bazita sur OAuth-Konto aŭ Gravataro",
   "Accounts_ShowFormLogin": "Montri Form-Based Based Login",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimuma Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "La Maksimuma Delta determinas kiom da tokensoj estas valida je iu ajn tempo. Taksoj estas generitaj ĉiun 30 sekundojn, kaj estas validaj por (30 * Maksimuma Delta) sekundoj. <br / >Ekzemplo: Kun maksimuma Delta aro al 10, ĉiu token povas esti uzata ĝis 300 sekundoj antaŭ aŭ post la temptempa tempo. Ĉi tio estas utila kiam la horloĝo de la kliento ne konvene sinkronigas kun la servilo.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "La Maksimuma Delta determinas kiom da tokensoj estas valida je iu ajn tempo. Taksoj estas generitaj ĉiun 30 sekundojn, kaj estas validaj por (30 * Maksimuma Delta) sekundoj. <br/>Ekzemplo: Kun maksimuma Delta aro al 10, ĉiu token povas esti uzata ĝis 300 sekundoj antaŭ aŭ post la temptempa tempo. Ĉi tio estas utila kiam la horloĝo de la kliento ne konvene sinkronigas kun la servilo.",
   "Accounts_UseDefaultBlockedDomainsList": "Uzu Defaŭltan Blokitajn Domajnojn Listo",
   "Accounts_UseDNSDomainCheck": "Uzu DNS-Domajnan Kontrolon",
   "Accounts_UserAddedEmail_Default": "<h2>Bonvenon <h1>[SITE_NAME]</h1></h2><p>Iri al <a href = \"[Site_URL]\">[Site_URL]</a>kaj provu la plej bona libera programaro babilejo solvo havebla hodiaŭ!</p><p>Vi povas ensaluti uzante vian retpoŝton: [retpoŝto] kaj pasvorto: [pasvorto]. Vi eble devos ŝanĝi ĝin post via unua ensaluto.",

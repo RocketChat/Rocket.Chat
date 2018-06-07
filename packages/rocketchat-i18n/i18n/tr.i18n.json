@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Varsayılan avatarın OAuth Hesabı'na veya Gravatar'a dayalı olarak belirlenmeye çalışılması",
   "Accounts_ShowFormLogin": "Form-tabanlı Girişi Göster",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, herhangi bir zamanda kaç jetonun geçerli olduğunu belirler. Jetonlar her 30 saniyede bir üretilir ve (30 * Maksimum Delta) saniye için geçerlidir. <br / >Örnek: Maksimum Delta değeri 10'a ayarlandığında, her simge zaman damgasından 300 saniye önce veya sonra kullanılabilir. Bu, istemcinin saati sunucuyla düzgün bir şekilde senkronize edilmediğinde kullanışlıdır.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, herhangi bir zamanda kaç jetonun geçerli olduğunu belirler. Jetonlar her 30 saniyede bir üretilir ve (30 * Maksimum Delta) saniye için geçerlidir. <br/>Örnek: Maksimum Delta değeri 10'a ayarlandığında, her simge zaman damgasından 300 saniye önce veya sonra kullanılabilir. Bu, istemcinin saati sunucuyla düzgün bir şekilde senkronize edilmediğinde kullanışlıdır.",
   "Accounts_UseDefaultBlockedDomainsList": "Standart Engelli Domain Listesini Kullan",
   "Accounts_UseDNSDomainCheck": "DNS Alan Adı Kontrolü'nü Kullan",
   "Accounts_UserAddedEmail_Default": "<h2> <h1> [Site_Name] </h1>  sitesine hoşgeldiniz! </h2><p> <a href=\"[Site_URL]\">[Site_URL]</a> 'a gidin ve şu an mevcut en iyi açık kaynak sohbet çözümünü deneyin! </p> <p> E-mail [email] ve Şifre: [password] 'nizi kullanarak giriş yapabilirsiniz. İlk girişinizden sonra bunları değiştirmeniz gerekebilir.",

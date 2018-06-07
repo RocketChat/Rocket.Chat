@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Försöker bestämma standard avatar baserat på OAuth konto eller Gravatar",
   "Accounts_ShowFormLogin": "Visa formbaserad inloggning",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximal Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta bestämmer hur många symboler som är giltiga vid varje given tillfälle. Token genereras var 30: e sekund och gäller för (30 * Maximum Delta) sekunder. <br / >Exempel: Med en maximalt Delta-uppsättning till 10 kan varje symbol användas upp till 300 sekunder före eller efter tidsstämpeln. Detta är användbart när klientens klocka inte synkroniseras korrekt med servern.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maximum Delta bestämmer hur många symboler som är giltiga vid varje given tillfälle. Token genereras var 30: e sekund och gäller för (30 * Maximum Delta) sekunder. <br/>Exempel: Med en maximalt Delta-uppsättning till 10 kan varje symbol användas upp till 300 sekunder före eller efter tidsstämpeln. Detta är användbart när klientens klocka inte synkroniseras korrekt med servern.",
   "Accounts_UseDefaultBlockedDomainsList": "Använd standardlista för blockerade domäner",
   "Accounts_UseDNSDomainCheck": "Använd DNS Domain Check",
   "Accounts_UserAddedEmail_Default": "<h2> Välkommen till <h1> [Site_Name] </h1></h2><p> Gå till <a href=\"[Site_URL]\">[Site_URL]</a> och prova den bästa öppen källkod chattlösningen som finns idag! </p><p> Du kan logga in med din e-post: [email] och lösenord: [password]. Du kan bli tvungen att ändra den efter första inloggning.",

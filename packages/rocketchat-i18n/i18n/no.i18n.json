@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Trenger å bestemme standard avatar basert på OAuth-konto eller Gravatar",
   "Accounts_ShowFormLogin": "Vis skjemabasert pålogging",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimal Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta bestemmer hvor mange tokens er gyldige til enhver tid. Tokene genereres hvert 30. sekund, og gjelder for (30 * Maks. Delta) sekunder. <br / >Eksempel: Med et maksimalt Delta-sett på 10, kan hver token brukes opptil 300 sekunder før eller etter tidsstempel. Dette er nyttig når klientens klokke ikke er riktig synkronisert med serveren.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta bestemmer hvor mange tokens er gyldige til enhver tid. Tokene genereres hvert 30. sekund, og gjelder for (30 * Maks. Delta) sekunder. <br/>Eksempel: Med et maksimalt Delta-sett på 10, kan hver token brukes opptil 300 sekunder før eller etter tidsstempel. Dette er nyttig når klientens klokke ikke er riktig synkronisert med serveren.",
   "Accounts_UseDefaultBlockedDomainsList": "Bruk standard blokkert domener liste",
   "Accounts_UseDNSDomainCheck": "Bruk DNS Domain Check",
   "Accounts_UserAddedEmail_Default": "<h2>Velkommen til <h1>[SITE_NAME]</h1></h2><p>Gå til <a href = \"[site_url]\">[site_url]</a>og prøve det beste åpen kildekode chat-løsning tilgjengelig i dag!</p><p>Du kan logge inn ved hjelp av e-postadressen din: [email] og passord: [passord]. Det kan hende du må endre det etter første innlogging.",

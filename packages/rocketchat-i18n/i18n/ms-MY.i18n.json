@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Cuba untuk menentukan avatar lalai berdasarkan Akaun OAuth atau Gravatar",
   "Accounts_ShowFormLogin": "berasaskan Tunjukkan bentuk Login",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta Maksimum",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang sah pada bila-bila masa tertentu. Token dijana setiap 30 saat, dan sah untuk (30 * Maksimum Delta) saat. <br / >Contoh: Dengan Delta Maksimum ditetapkan kepada 10, setiap token dapat digunakan hingga 300 saat sebelum atau sesudah cap waktu. Ini berguna apabila jam klien tidak disegerakkan dengan betul dengan pelayan.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang sah pada bila-bila masa tertentu. Token dijana setiap 30 saat, dan sah untuk (30 * Maksimum Delta) saat. <br/>Contoh: Dengan Delta Maksimum ditetapkan kepada 10, setiap token dapat digunakan hingga 300 saat sebelum atau sesudah cap waktu. Ini berguna apabila jam klien tidak disegerakkan dengan betul dengan pelayan.",
   "Accounts_UseDefaultBlockedDomainsList": "Penggunaan Lalai Disekat Senarai Domain",
   "Accounts_UseDNSDomainCheck": "Gunakan DNS Domain Daftar",
   "Accounts_UserAddedEmail_Default": "<h2> Selamat datang ke <h1> [Site_Name] </h1></h2><p> Pergi ke <a href=\"[Site_URL]\">[Site_URL]</a> dan cuba yang terbaik penyelesaian chat sumber terbuka yang ada hari ini! </p><p> Anda boleh log masuk menggunakan e-mel anda: [email] dan kata laluan: [password]. Anda mungkin dikehendaki untuk mengubahnya selepas log masuk pertama anda.",

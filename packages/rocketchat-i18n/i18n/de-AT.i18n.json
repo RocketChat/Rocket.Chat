@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Versucht, den Standardavatar basierend auf OAuth Account oder Gravatar zu bestimmen",
   "Accounts_ShowFormLogin": "Anmeldeformular zeigen",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximales Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden. <br / >Beispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Das maximale Delta bestimmt, wie viele Token zu einem bestimmten Zeitpunkt gültig sind. Token werden alle 30 Sekunden generiert und gelten für (30 * Maximum Delta) Sekunden. <br/>Beispiel: Wenn ein maximales Delta auf 10 gesetzt ist, kann jedes Token bis zu 300 Sekunden vor oder nach dem Zeitstempel verwendet werden. Dies ist nützlich, wenn die Uhr des Clients nicht richtig mit dem Server synchronisiert ist.",
   "Accounts_UseDefaultBlockedDomainsList": "Standardliste für blockierte Domains verwenden",
   "Accounts_UseDNSDomainCheck": "DNS-Domain-Check verwenden",
   "Accounts_UserAddedEmail_Default": "<h2> Willkommen zu <h1>[Site_Name]</h1></h2><p>Besuchen Sie <a href=\"[Site_URL]\">[Site_URL]</a> und probieren Sie noch heute die beste Open-Source-Chat-Lösung aus.</p><p>Sie können sich mit den folgenden Daten einloggen. E-Mail-Adresse: [email] Passwort: [password]<br/><br/>Sie müssen Ihr Passwort möglicherweise nach dem ersten Login ändern.</p>",
