@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "％sでメッセージをインポート中にSlackBridgeでエラーが発生しました：％s",
   "SlackBridge_finish": "SlackBridgeは％sでメッセージのインポートを完了しました。すべてのメッセージを表示するには、再読み込みしてください。",
   "SlackBridge_Out_All": "SlackBridge Outすべて",
+  "Search_Channels": "チャンネルを検索",
   "SlackBridge_Out_All_Description": "Slackに存在するすべてのチャンネルからメッセージを送信し、ボットに参加しました",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "スラックにメッセージを送るチャネルを選択する",

@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge在％s导入邮件时出错：％s",
   "SlackBridge_finish": "SlackBridge已完成导入％s处的消息。请重新加载以查看所有消息。",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "搜索频道",
   "SlackBridge_Out_All_Description": "从Slack中存在的所有频道发送消息，并且僵尸已加入",
   "SlackBridge_Out_Channels": "SlackBridge输出通道",
   "SlackBridge_Out_Channels_Description": "选择哪些频道将消息发回Slack",
