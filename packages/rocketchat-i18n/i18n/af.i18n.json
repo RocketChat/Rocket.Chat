@@ -2294,7 +2294,7 @@
   "UserData_ProcessingFrequency": "Verwerkingsfrekwensie (Notules)",
   "UserData_MessageLimitPerRequest": "Boodskap Limiet per versoek",
   "UserDataDownload_EmailSubject": "Jou data lêer is gereed om af te laai",
-  "UserDataDownload_EmailBody": "Jou data lêer is nou gereed om af te laai. Klik <a href=\"__ download_link __\">hier</a>om dit af te laai.",
+  "UserDataDownload_EmailBody": "Jou data lêer is nou gereed om af te laai. Klik <a href=\"__download_link__\">hier</a> om dit af te laai.",
   "UserDataDownload_Requested": "Laai Lêer Gevra",
   "UserDataDownload_Requested_Text": "Jou data lêer sal gegenereer word. 'N Skakel om dit te laai sal na u e-pos gestuur word wanneer dit gereed is.",
   "UI_Group_Channels_By_Type": "Groepskanale per tipe",
