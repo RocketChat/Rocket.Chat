@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge heeft een fout opgetreden tijdens het importeren van uw berichten met% s:% s",
   "SlackBridge_finish": "SlackBridge is klaar met het importeren van de berichten op% s. Laad opnieuw om alle berichten te bekijken.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Zoek kanalen",
   "SlackBridge_Out_All_Description": "Stuur berichten van alle kanalen die in Slack bestaan ​​en de bot is toegetreden",
   "SlackBridge_Out_Channels": "SlackBridge Out-kanalen",
   "SlackBridge_Out_Channels_Description": "Kies uit welke kanalen berichten naar Slack worden verzonden",

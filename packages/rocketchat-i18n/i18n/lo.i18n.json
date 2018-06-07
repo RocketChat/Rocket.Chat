@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge ມີຂໍ້ຜິດພາດໃນຂະນະທີ່ນໍາເຂົ້າຂໍ້ຄວາມຂອງທ່ານຢູ່% s:% s",
   "SlackBridge_finish": "SlackBridge ໄດ້ສໍາເລັດການນໍາເຂົ້າຂໍ້ຄວາມຢູ່% s. ກະລຸນາ reload ເພື່ອເບິ່ງຂໍ້ຄວາມທັງຫມົດ.",
   "SlackBridge_Out_All": "SlackBridge ອອກທັງຫມົດ",
+  "Search_Channels": "ຊ່ອງຄົ້ນຫາ",
   "SlackBridge_Out_All_Description": "ສົ່ງຂໍ້ຄວາມຈາກທຸກຊ່ອງທີ່ມີຢູ່ໃນ Slack ແລະ bot ໄດ້ເຂົ້າຮ່ວມ",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "ເລືອກຊ່ອງທີ່ຈະສົ່ງຂໍ້ຄວາມກັບ Slack",
