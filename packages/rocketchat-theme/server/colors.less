@@ -947,3 +947,13 @@ label.required::after {
 .range-slider-range::-moz-range-track {
 	background-color: @tertiary-background-color;
 }
+
+.announcement {
+	background-color: @primary-background-color;
+	&.warning {
+		background-color: var(--rc-color-alert);
+	}
+	&.error {
+		background-color: var(--rc-color-alert-message-warning);
+	}
+}
