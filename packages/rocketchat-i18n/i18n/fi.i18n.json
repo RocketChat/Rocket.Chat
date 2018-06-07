@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Valitse, jos haluat käyttää Chatpalia palveluna tai asennuspaikkana",
   "Chatpal_Suggestion_Enabled": "Ehdotukset käytössä",
   "Chatpal_Base_URL": "Base Url",
-  "Chatpal_Base_URL_Description": "Löydä kuvaus paikallisen tapahtuman käyttämisestä <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >githubissa</a >. URL-osoitteen on oltava tyhjä ja osoitettava chatpal-ydin, esim. http: // localhost: 8983 / SOLR / chatpal.",
+  "Chatpal_Base_URL_Description": "Löydä kuvaus paikallisen tapahtuman käyttämisestä <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >githubissa</a>. URL-osoitteen on oltava tyhjä ja osoitettava chatpal-ydin, esim. http: // localhost: 8983 / SOLR / chatpal.",
   "Chatpal_Main_Language": "Pääkieli",
   "Chatpal_Main_Language_Description": "Kielen, jota käytetään eniten keskusteluissa",
   "Chatpal_Default_Result_Type": "Oletustulostyyppi",

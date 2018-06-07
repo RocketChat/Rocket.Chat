@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Seleccione si desea usar Chatpal como un servicio o como instalación en el sitio",
   "Chatpal_Suggestion_Enabled": "Sugerencias habilitadas",
   "Chatpal_Base_URL": "URL base",
-  "Chatpal_Base_URL_Description": "Encuentre alguna descripción sobre cómo ejecutar una instancia local <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >en github</a >. La URL debe ser absoluta y apuntar al núcleo de chatpal, p. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Encuentre alguna descripción sobre cómo ejecutar una instancia local <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >en github</a>. La URL debe ser absoluta y apuntar al núcleo de chatpal, p. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Lenguaje principal",
   "Chatpal_Main_Language_Description": "El lenguaje que se usa más en las conversaciones",
   "Chatpal_Default_Result_Type": "Tipo de resultado predeterminado",

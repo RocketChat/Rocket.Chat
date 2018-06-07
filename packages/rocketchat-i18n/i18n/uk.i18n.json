@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Виберіть, якщо ви хочете використовувати Chatpal як Сервіс або як On-Site Installation",
   "Chatpal_Suggestion_Enabled": "Поради увімкнено",
   "Chatpal_Base_URL": "Базовий URL",
-  "Chatpal_Base_URL_Description": "Знайдіть опис способу запуску локального примірника <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >на github</a >. URL-адреса повинна бути абсолютною та вказати на сервець chatpal, наприклад, http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Знайдіть опис способу запуску локального примірника <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >на github</a>. URL-адреса повинна бути абсолютною та вказати на сервець chatpal, наприклад, http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Основна мова",
   "Chatpal_Main_Language_Description": "Мова, яка найчастіше використовується в бесідах",
   "Chatpal_Default_Result_Type": "Тип результату за замовчуванням",

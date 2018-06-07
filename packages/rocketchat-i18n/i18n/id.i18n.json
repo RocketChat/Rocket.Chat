@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Pilih jika Anda ingin menggunakan Chatpal sebagai Layanan atau sebagai Instalasi Di Tempat",
   "Chatpal_Suggestion_Enabled": "Saran diaktifkan",
   "Chatpal_Base_URL": "Url Dasar",
-  "Chatpal_Base_URL_Description": "Temukan beberapa deskripsi cara menjalankan instance lokal <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >di github</a >. URL harus absolue dan arahkan ke inti chatpal, mis. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Temukan beberapa deskripsi cara menjalankan instance lokal <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >di github</a>. URL harus absolue dan arahkan ke inti chatpal, mis. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Bahasa utama",
   "Chatpal_Main_Language_Description": "Bahasa yang paling sering digunakan dalam percakapan",
   "Chatpal_Default_Result_Type": "Tipe Hasil Default",

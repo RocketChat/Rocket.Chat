@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Chatpal'i Xidmət və ya Yerdə Quraşdırma kimi istifadə etmək istəyirsinizsə seçin",
   "Chatpal_Suggestion_Enabled": "Təkliflər effektivdir",
   "Chatpal_Base_URL": "Base Url",
-  "Chatpal_Base_URL_Description": "Yerli bir instansiyanın necə işləməsi barədə bir təsviri tap <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >github üzrə</a >. URL mütləq olmalıdır və chatpal nüvəni, məs. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Yerli bir instansiyanın necə işləməsi barədə bir təsviri tap <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >github üzrə</a>. URL mütləq olmalıdır və chatpal nüvəni, məs. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Əsas dil",
   "Chatpal_Main_Language_Description": "Söhbətlərdə ən çox istifadə olunan dil",
   "Chatpal_Default_Result_Type": "Default Nəticə Tipi",

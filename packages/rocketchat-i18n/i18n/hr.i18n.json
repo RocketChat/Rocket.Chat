@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Odaberite želite li koristiti Chatpal kao uslugu ili kao instalaciju na licu mjesta",
   "Chatpal_Suggestion_Enabled": "Prijedlozi su omogućeni",
   "Chatpal_Base_URL": "Baza Url",
-  "Chatpal_Base_URL_Description": "Pronađite opis kako pokrenuti lokalnu instancu <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >na stranici github</a >. URL mora biti apsolutni i ukazati na chatpal jezgru, npr. http: // localhost: 8983 / Solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Pronađite opis kako pokrenuti lokalnu instancu <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >na stranici github</a>. URL mora biti apsolutni i ukazati na chatpal jezgru, npr. http: // localhost: 8983 / Solr / chatpal.",
   "Chatpal_Main_Language": "Glavni jezik",
   "Chatpal_Main_Language_Description": "Jezik koji se najčešće upotrebljava u razgovorima",
   "Chatpal_Default_Result_Type": "Zadana vrsta rezultata",
