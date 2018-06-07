@@ -3,7 +3,7 @@
  *
  * @param {string} message
  * @param {object} room
- * @param {integer} userId
+ * @param {number} userId
  *
  * @returns {string}
  */
