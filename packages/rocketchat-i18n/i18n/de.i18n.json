@@ -1083,7 +1083,7 @@
   "IssueLinks_LinkTemplate": "Vorlage für Issue-Verknüpfungen",
   "IssueLinks_LinkTemplate_Description": "Vorlage für Issue-Verknüpfungen; %s wird mit der Issue-Nummer ersetzt werden.",
   "It_works": "Es funktioniert",
-  "Idle_Time_Limit": "Abwesend nach Inaktivität (in ms)",
+  "Idle_Time_Limit": "Abwesend nach Inaktivität",
   "Idle_Time_Limit_Description": "Zeitraum bis sich der Status in away ändert. Der Wert muss in Sekunden angegeben werden.",
   "italics": "kursiv",
   "Jitsi_Chrome_Extension": "Chrome Extension ID",
