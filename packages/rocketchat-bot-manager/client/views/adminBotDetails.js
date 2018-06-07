@@ -146,12 +146,22 @@ Template.adminBotDetails.events({
 
 	'click .resume': (e, t) => {
 		const bot = t.bot.get();
-		Meteor.call('resumeBot', bot);
+		Meteor.call('resumeBot', bot, (err) => {
+			if (err) {
+				return toastr.error(TAPi18n.__(err));
+			}
+			toastr.success(TAPi18n.__('Bot_resumed'));
+		});
 	},
 
 	'click .pause': (e, t) => {
 		const bot = t.bot.get();
-		Meteor.call('pauseBot', bot);
+		Meteor.call('pauseBot', bot, (err) => {
+			if (err) {
+				return toastr.error(TAPi18n.__(err));
+			}
+			toastr.success(TAPi18n.__('Bot_paused'));
+		});
 	},
 
 	'click .remove-role'(e, t) {
