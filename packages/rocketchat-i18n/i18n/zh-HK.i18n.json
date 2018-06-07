@@ -1148,7 +1148,7 @@
   "LDAP_BaseDN": "基准DN",
   "LDAP_BaseDN_Description": "您要搜索用户和组的LDAP子树的标准名称（DN）。你可以添加尽可能多的，只要你喜欢;但是，每个组必须与属于它的用户在相同的域基中定义。示例：`ou =用户+ ou =项目，dc =示例，dc = com`。如果您指定受限制的用户组，则只有属于这些组的用户才会在范围内。我们建议您指定LDAP目录树的顶层作为您的域基，并使用搜索过滤器来控制访问。",
   "LDAP_User_Search_Field": "搜索字段",
-  "LDAP_User_Search_Field_Description": "标识尝试验证的LDAP用户的LDAP属性。对于大多数Active Directory安装，此字段应该是`sAMAccountName`，但对于其他LDAP解决方案（如OpenLDAP），它可能是`uid`。您可以使用“邮件”通过电子邮件或任何您想要的属性来识别用户。<br>您可以使用多个用逗号分隔的值，以允许用户使用多个标识符（如用户名或电子邮件）进行登录。",
+  "LDAP_User_Search_Field_Description": "标识尝试验证的LDAP用户的LDAP属性。对于大多数Active Directory安装，此字段应该是`sAMAccountName`，但对于其他LDAP解决方案（如OpenLDAP），它可能是`uid`。您可以使用“邮件”通过电子邮件或任何您想要的属性来识别用户。<br/>您可以使用多个用逗号分隔的值，以允许用户使用多个标识符（如用户名或电子邮件）进行登录。",
   "LDAP_User_Search_Filter": "过滤",
   "LDAP_User_Search_Filter_Description": "如果指定，则只有与此过滤条件匹配的用户才能登录。如果未指定过滤条件，则指定域名范围内的所有用户都可以登录。<br/>例如，用于Active Directory`memberOf = cn = ROCKET_CHAT，ou =常规组。<br/>对于OpenLDAP（可扩展匹配搜索）`ou：dn：= ROCKET_CHAT`。",
   "LDAP_User_Search_Scope": "范围",
