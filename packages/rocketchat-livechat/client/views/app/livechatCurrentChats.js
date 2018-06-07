@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import moment from 'moment';
 
 const LivechatRoom = new Mongo.Collection('livechatRoom');
@@ -25,7 +26,7 @@ Template.livechatCurrentChats.helpers({
 
 Template.livechatCurrentChats.events({
 	'click .row-link'() {
-		FlowRouter.go('live', { code: this.code });
+		FlowRouter.go('live', { id: this._id });
 	},
 	'click .load-more'(event, instance) {
 		instance.limit.set(instance.limit.get() + 20);

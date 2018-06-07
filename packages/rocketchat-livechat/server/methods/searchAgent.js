@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'livechat:searchAgent'(username) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {

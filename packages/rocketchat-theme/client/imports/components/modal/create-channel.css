@@ -1,10 +1,26 @@
 .create-channel {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
+	margin: 0 -25px;
+
+	&__wrapper {
+		overflow-x: hidden;
+		overflow-y: auto;
+
+		padding: 0 25px;
+
+		height: 100%;
+	}
+
 	&__header,
 	&__switches,
-	&__inputs,
+	&__inputs:not(:last-child),
 	& .rc-input:not(:last-child) {
 		margin-bottom: var(--create-channel-gap-between-elements);
 	}
@@ -27,10 +43,15 @@
 
 	&__switches {
 		display: flex;
+		flex-wrap: wrap;
 	}
 
 	& .rc-switch {
-		width: 50%;
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	& .rc-input__icon-svg {

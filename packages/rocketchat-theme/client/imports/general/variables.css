@@ -2,24 +2,45 @@
 	/*
 	* General Colors
 	*/
-	--color-primary: var(--color-dark);
+
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
+	--color-dark-light: #6c727a;
 	--color-gray: #9ea2a8;
 	--color-gray-medium: #cbced1;
 	--color-gray-light: #e1e5e8;
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-	--color-error: #f5455c;
-	--color-error-light: #e1364c;
-	--color-alert: #ffd21f;
-	--color-alert-light: #f6c502;
-	--color-success: #2de0a5;
-	--color-success-light: #25d198;
-	--color-button-primary: #1d74f5;
-	--color-button-primary-light: #175cc4;
+
+	--rc-color-error: #f5455c;
+	--rc-color-error-light: #e1364c;
+	--rc-color-alert: #ffd21f;
+	--rc-color-alert-light: #f6c502;
+	--rc-color-success: #2de0a5;
+	--rc-color-success-light: #25d198;
+
+	--rc-color-button-primary: #1d74f5;
+	--rc-color-button-primary-light: #175cc4;
+
+	--rc-color-alert-message-primary: var(--rc-color-button-primary);
+	--rc-color-alert-message-primary-background: #f1f6ff;
+	--rc-color-alert-message-secondary: #7ca52b;
+	--rc-color-alert-message-secondary-background: #fafff1;
+	--rc-color-alert-message-warning: #d52d24;
+	--rc-color-alert-message-warning-background: #fff3f3;
+
+	--rc-color-primary: var(--color-dark);
+	--rc-color-primary-darkest: var(--color-darkest);
+	--rc-color-primary-dark: var(--color-dark-medium);
+	--rc-color-primary-light: var(--color-gray);
+	--rc-color-primary-light-medium: var(--color-gray-medium);
+	--rc-color-primary-lightest: var(--color-gray-lightest);
+	--rc-color-content: var(--color-white);
+
+	--rc-color-link-active: var(--rc-color-button-primary);
+
 
 	/*
 	* General
@@ -35,10 +56,34 @@
 	--user-image-square: 20px;
 	--border: 2px;
 	--border-radius: 2px;
-	--status-online: var(--color-success);
-	--status-away: var(--color-alert);
-	--status-busy: var(--color-error);
+	--status-online: var(--rc-color-success);
+	--status-away: var(--rc-color-alert);
+	--status-busy: var(--rc-color-error);
 	--status-invisible: var(--color-gray-medium);
+	--status-invisible-sidebar: var(--rc-color-primary-darkest);
+	--default-padding: 1.5rem;
+	--default-small-padding: 1rem;
+	--status-bullet-size: 12px;
+	--status-bullet-radius: 50%;
+	--account-username-weight: 700;
+	--status-name-weight: 400;
+
+
+	/*
+	* General Typography
+	*/
+	--text-default-size: 1rem;
+	--text-default-weight: 500;
+	--text-small-size: 0.875rem;
+	--text-small-weight: 500;
+	--text-heading-size: 1.375rem;
+	--text-heading-weight: 700;
+	--text-label-size: 075rem;
+	--text-label-weight: 600;
+	--text-tiny-size: 075rem;
+	--text-tiny-weight: 400;
+	--text-micro-size: 0.625rem;
+	--text-micro-weight: 700;
 
 	/*
 	* Forms
@@ -57,8 +102,11 @@
 	--button-border-radius: var(--border-radius);
 	--button-disabled-background: var(--color-gray-light);
 	--button-disabled-text-color: var(--color-white);
-	--button-primary-background: var(--color-button-primary);
+	--button-primary-background: var(--rc-color-button-primary);
 	--button-primary-text-color: var(--color-white);
+	--button-cancel-color: var(--rc-color-error);
+	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-text-color: var(--color-dark-medium);
 
 	/*
 	* Forms - Input
@@ -74,7 +122,7 @@
 	--input-border-radius: var(--border-radius);
 	--input-description-text-color: var(--color-gray);
 	--input-description-text-size: var(--input-font-size);
-	--input-error-color: var(--color-error);
+	--input-error-color: var(--rc-color-error);
 
 	/*
 	* Forms - popup list
@@ -92,7 +140,7 @@
 	--tags-border-width: var(--border);
 	--tags-border-radius: var(--border-radius);
 	--tags-border-color: var(--color-gray-light);
-	--tags-text-color: var(--color-dark);
+	--tags-text-color: var(--rc-color-primary);
 	--tags-background: #f2f3f5;
 	--tags-avatar-size: 20px;
 
@@ -103,6 +151,64 @@
 	--select-avatar-preview-size: 150px;
 	--select-avatar-upload-background: var(--color-gray-light);
 	--select-avatar-upload-color: #2d343d;
+
+	/*
+	* Sidebar
+	*/
+	--sidebar-width: 280px;
+	--sidebar-small-width: 90%;
+	--sidebar-background: var(--rc-color-primary);
+	--sidebar-background-hover: var(--rc-color-primary-dark);
+	--sidebar-background-light: var(--rc-color-primary-lightest);
+	--sidebar-background-light-hover: var(--rc-color-primary-light);
+	--sidebar-default-padding: 24px;
+	--sidebar-small-default-padding: 16px;
+	--sidebar-extra-small-default-padding: 12px;
+	--sidebar-footer-height: 70px;
+	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
+
+	/*
+	* Sidebar flex
+	*/
+	--sidebar-flex-search-background: var(--color-white);
+	--sidebar-flex-search-placeholder-color: var(--color-gray);
+
+	/*
+	* Sidebar Account
+	*/
+	--sidebar-account-thumb-size: 23px;
+	--sidebar-small-account-thumb-size: 40px;
+	--sidebar-account-status-bullet-size: 10px;
+	--sidebar-small-account-status-bullet-size: 8px;
+	--sidebar-account-status-bullet-radius: 50%;
+	--sidebar-account-username-size: 1rem;
+	--sidebar-account-username-weight: 700;
+	--sidebar-small-account-username-weight: 400;
+	--sidebar-account-username-color: var(--color-white);
+	--sidebar-account-username-color-darker: var(--color-dark);
+	--sidebar-account-status-font-size: 0.875rem;
+	--sidebar-account-status-color: var(--color-gray);
+
+	/*
+	* Sidebar Item
+	*/
+	--sidebar-item-radius: 2px;
+	--sidebar-item-height: 24px;
+	--sidebar-item-height-medium: 34px;
+	--sidebar-item-height-extended: 52px;
+	--sidebar-item-thumb-size: 18px;
+	--sidebar-item-thumb-size-medium: 27px;
+	--sidebar-item-thumb-size-extended: 36px;
+	--sidebar-item-text-color: var(--color-gray);
+	--sidebar-item-background: inherit;
+	--sidebar-item-hover-background: var(--rc-color-primary-darkest);
+	--sidebar-item-active-background: var(--rc-color-primary-dark);
+	--sidebar-item-active-color: var(--sidebar-item-text-color);
+	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-popup-background: var(--color-dark-medium);
+	--sidebar-item-user-status-size: 6px;
+	--sidebar-item-user-status-radius: 50%;
+	--sidebar-item-text-size: 0.875rem;
 
 	/*
 	* Modal
@@ -119,62 +225,6 @@
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);
 	--create-channel-description-text-size: 0.875rem;
-
-	/*
-	* Sidebar
-	*/
-	--sidebar-width: 280px;
-	--sidebar-small-width: 90%;
-	--sidebar-background: var(--color-primary);
-	--sidebar-background-light: var(--color-gray-lightest);
-	--sidebar-header-height: 180px;
-	--sidebar-default-padding: 24px;
-	--sidebar-small-default-padding: 16px;
-	--sidebar-header-padding: var(--sidebar-default-padding);
-	--sidebar-footer-height: 70px;
-	--sidebar-footer-padding: var(--sidebar-header-padding);
-	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
-
-	/*
-	* Sidebar flex
-	*/
-	--sidebar-flex-back-button-color: var(--color-dark);
-	--sidebar-flex-search-background: var(--color-white);
-	--sidebar-flex-search-placeholder-color: var(--color-gray);
-
-	/*
-	* Sidebar Account
-	*/
-	--sidebar-account-thumb-size: 48px;
-	--sidebar-small-account-thumb-size: 40px;
-	--sidebar-account-status-bullet-size: 12px;
-	--sidebar-small-account-status-bullet-size: 8px;
-	--sidebar-account-status-bullet-radius: 50%;
-	--sidebar-account-username-size: 1rem;
-	--sidebar-account-username-weight: 700;
-	--sidebar-small-account-username-weight: 400;
-	--sidebar-account-username-color: var(--color-white);
-	--sidebar-account-username-color-darker: var(--color-dark);
-	--sidebar-account-status-font-size: 0.875rem;
-	--sidebar-account-status-color: var(--color-gray);
-
-	/*
-	* Sidebar Item
-	*/
-	--sidebar-item-radius: 2px;
-	--sidebar-item-height: 32px;
-	--sidebar-item-thumb-size: 20px;
-	--sidebar-item-text-color: var(--color-gray);
-	--sidebar-item-lighten-hover-background: var(--color-dark-medium);
-	--sidebar-item-darken-hover-background: var(--color-gray-light);
-	--sidebar-item-darken-text-color: var(--color-dark);
-	--sidebar-item-active-background: var(--color-gray);
-	--sidebar-item-active-text-color: var(--color-white);
-	--sidebar-item-popup-background: var(--color-dark-medium);
-	--sidebar-item-user-status-size: 6px;
-	--sidebar-small-item-user-status-size: 4px;
-	--sidebar-item-user-status-radius: 50%;
-	--sidebar-item-text-size: 1rem;
 
 	/*
 	* Toolbar
@@ -209,8 +259,42 @@
 	--badge-text-color: var(--color-white);
 	--badge-radius: var(--border-radius);
 	--badge-text-size: 0.75rem;
-	--badge-background: var(--color-dark-medium);
-	--badge-unread-background: var(--color-button-primary);
+	--badge-background: var(--rc-color-primary-dark);
+	--badge-unread-background: var(--rc-color-button-primary);
+
+	/*
+	* Message box
+	*/
+	--message-box-text-size: var(--input-font-size);
+	--message-box-placeholder-color: var(--color-gray-medium);
+	--message-box-markdown-color: var(--color-gray);
+	--message-box-markdown-hover-color: var(--color-dark);
+	--message-box-user-typing-color: var(--color-gray);
+	--message-box-user-typing-text-size: 0.75rem;
+	--message-box-user-typing-user-color: var(--color-dark);
+	--message-box-container-border-color: var(--color-gray-medium);
+	--message-box-container-border-width: var(--border);
+	--message-box-container-border-radius: var(--border-radius);
+	--message-box-editing-color: #fff5df;
+	--message-box-popover-title-text-color: var(--color-gray);
+	--message-box-popover-title-text-size: 0.75rem;
+
+	/*
+	* Header
+	*/
+	--header-height: 77px;
+	--header-padding: 16px;
+	--header-toggle-favorite-color: var(--color-gray-medium);
+	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
+	--header-title-username-color-darker: var(--color-dark);
+	--header-title-font-size: var(--text-default-size);
+	--header-title-font-size--subtitle: var(--text-small-size);
+	--header-title-status-color: var(--color-gray);
+	--header-title-username-weight: 400;
+	--header-title-status-name-weight: 400;
+	--header-title-status-bullet-radius: var(--status-bullet-radius);
+	--header-title-status-bullet-size: var(--status-bullet-size);
+	--header-background-color: var(--color-white);
 
 	/*
 	* Flex nav
@@ -241,19 +325,13 @@
 	--tooltip-radius: var(--border-radius);
 
 	/*
-	* Message box
+	* alert
 	*/
-	--message-box-text-size: var(--input-font-size);
-	--message-box-placeholder-color: var(--color-gray-medium);
-	--message-box-markdown-color: var(--color-gray);
-	--message-box-markdown-hover-color: var(--color-dark);
-	--message-box-user-typing-color: var(--color-gray);
-	--message-box-user-typing-text-size: 0.75rem;
-	--message-box-user-typing-user-color: var(--color-dark);
-	--message-box-container-border-color: var(--color-gray-light);
-	--message-box-container-border-width: var(--border);
-	--message-box-container-border-radius: var(--border-radius);
-	--message-box-editing-color: #fff5df;
-	--message-box-popover-title-text-color: var(--color-gray);
-	--message-box-popover-title-text-size: 0.75rem;
+	--alerts-padding: var(--sidebar-default-padding);
+	--alerts-padding-vertical: 10px;
+	--alerts-padding-vertical-large: 20px;
+	--alerts-background: #1d73f5;
+	--alerts-color: var(--color-white);
+	--alerts-font-size: var(--text-default-size);
+
 }

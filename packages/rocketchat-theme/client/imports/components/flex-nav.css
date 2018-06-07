@@ -16,3 +16,7 @@
 		transform: translate3d(-100%, 0, 0);
 	}
 }
+
+.rtl .flex-nav.animated-hidden {
+	transform: translate3d(200%, 0, 0);
+}

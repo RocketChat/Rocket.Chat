@@ -1,20 +1,14 @@
-/* globals Importer */
+import { Importers } from 'meteor/rocketchat:importer';
 import toastr from 'toastr';
+
 Template.adminImportPrepare.helpers({
 	isAdmin() {
 		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 	},
 	importer() {
 		const importerKey = FlowRouter.getParam('importer');
-		let importer = undefined;
-		_.each(Importer.Importers, function(i, key) {
-			i.key = key;
-			if (key === importerKey) {
-				return importer = i;
-			}
-		});
 
-		return importer;
+		return Importers.get(importerKey);
 	},
 	isLoaded() {
 		return Template.instance().loaded.get();
@@ -36,7 +30,7 @@ Template.adminImportPrepare.helpers({
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
 		const importer = this;
-		if (!importer.key) { return; }
+		if (!importer || !importer.key) { return; }
 
 		const e = event.originalEvent || event;
 		let { files } = e.target;
@@ -44,13 +38,13 @@ Template.adminImportPrepare.events({
 			files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
 		}
 
-		return Array.from(files).map((blob) => {
+		return Array.from(files).map((file) => {
 			template.preparing.set(true);
 
 			const reader = new FileReader();
-			reader.readAsDataURL(blob);
+			reader.readAsDataURL(file);
 			reader.onloadend = () => {
-				Meteor.call('prepareImport', importer.key, reader.result, blob.type, blob.name, function(error, data) {
+				Meteor.call('prepareImport', importer.key, reader.result, file.type, file.name, function(error, data) {
 					if (error) {
 						toastr.error(t('Invalid_Import_File_Type'));
 						template.preparing.set(false);
@@ -84,7 +78,6 @@ Template.adminImportPrepare.events({
 	'click .button.start'(event, template) {
 		const btn = this;
 		$(btn).prop('disabled', true);
-		// const importer = this;
 		for (const user of Array.from(template.users.get())) {
 			user.do_import = $(`[name=${ user.user_id }]`).is(':checked');
 		}
@@ -93,12 +86,12 @@ Template.adminImportPrepare.events({
 			channel.do_import = $(`[name=${ channel.channel_id }]`).is(':checked');
 		}
 
-		return Meteor.call('startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, function(error) {
+		Meteor.call('startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, function(error) {
 			if (error) {
 				console.warn('Error on starting the import:', error);
-				return handleError(error);
+				handleError(error);
 			} else {
-				return FlowRouter.go(`/admin/import/progress/${ FlowRouter.getParam('importer') }`);
+				FlowRouter.go(`/admin/import/progress/${ FlowRouter.getParam('importer') }`);
 			}
 		});
 	},
@@ -141,9 +134,12 @@ Template.adminImportPrepare.onCreated(function() {
 		if ((progress != null ? progress.step : undefined)) {
 			switch (progress.step) {
 				//When the import is running, take the user to the progress page
-				case 'importer_importing_started': case 'importer_importing_users': case 'importer_importing_channels': case 'importer_importing_messages': case 'importer_finishing':
+				case 'importer_importing_started':
+				case 'importer_importing_users':
+				case 'importer_importing_channels':
+				case 'importer_importing_messages':
+				case 'importer_finishing':
 					return FlowRouter.go(`/admin/import/progress/${ FlowRouter.getParam('importer') }`);
-				// when the import is done, restart it (new instance)
 				case 'importer_user_selection':
 					return Meteor.call('getSelectionData', FlowRouter.getParam('importer'), function(error, data) {
 						if (error) {

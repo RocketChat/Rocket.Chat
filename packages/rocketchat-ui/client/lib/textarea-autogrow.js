@@ -10,7 +10,6 @@
 			var self = this;
 			var $self = $(self);
 			var minHeight = $self.height();
-			var noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0;
 			var settings = $.extend({
 				preGrowCallback: null,
 				postGrowCallback: null
@@ -24,6 +23,9 @@
 			}
 
 			shadow.css({
+				position: 'absolute',
+				top: -10000,
+				left: -10000,
 				width: $self.width(),
 				fontSize: $self.css('fontSize'),
 				fontFamily: $self.css('fontFamily'),
@@ -54,30 +56,28 @@
 				}
 
 				shadow.css('width', $self.width());
-				shadow.html(val + (noFlickerPad === 0 ? '...' : '')); // Append '...' to resize pre-emptively.
+				shadow.html(val);
 
-				var newHeight = Math.max(shadow.height() + noFlickerPad + 1, minHeight);
+				var newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
 				if (settings.preGrowCallback !== null) {
 					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
 				}
 
 				if(newHeight === $self[0].offsetHeight){
-					return;
+					return true;
 				}
 
+				var overflow = 'hidden';
 				if(maxHeight <= newHeight){
-					return;
+					newHeight = maxHeight;
+					overflow = ''
+				} else {
+					overflow = 'hidden'
 				}
-
-				$self.css('overflow-y', 'hidden');
 
 				$self.stop().animate( { height: newHeight }, { duration: 100, complete: ()=> {
 					$self.trigger('autogrow', []);
-					$self.css('overflow-y', '');
-				}});
-
-
-
+				}}).css('overflow', overflow);
 
 				$self.trigger('autogrow', []);
 
@@ -86,7 +86,7 @@
 				}
 			};
 
-			$self.on('focus, change, keyup, keydown, input', update);
+			$self.on('focus change input', update);
 			$(window).resize(update);
 
 			update();

@@ -8,7 +8,6 @@ const fields = {
 	code: 1,
 	f: 1,
 	u: 1,
-	lastActivity: 1,
 	open: 1,
 	alert: 1,
 	roles: 1,
@@ -29,7 +28,9 @@ const fields = {
 	autoTranslate: 1,
 	autoTranslateLanguage: 1,
 	disableNotifications: 1,
-	hideUnreadStatus: 1
+	hideUnreadStatus: 1,
+	muteGroupMentions: 1,
+	ignored: 1
 };
 
 Meteor.methods({
@@ -40,9 +41,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		const options = {
-			fields
-		};
+		const options = { fields };
 
 		const records = RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch();
 
@@ -61,6 +60,7 @@ Meteor.methods({
 				}).fetch()
 			};
 		}
+
 		return records;
 	}
 });

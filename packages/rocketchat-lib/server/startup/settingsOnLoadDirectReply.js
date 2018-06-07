@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { IMAPIntercepter } from '../lib/interceptDirectReplyEmails.js';
 import { POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 

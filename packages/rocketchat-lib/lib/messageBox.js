@@ -47,4 +47,14 @@ RocketChat.messageBox.actions = new class {
 
 		return this.actions[group].filter(action => !action.condition || action.condition());
 	}
+
+	getById(id) {
+		const messageActions = this.actions;
+		let actions = [];
+		Object.keys(messageActions).forEach(function(action) {
+			actions = actions.concat(messageActions[action]);
+		});
+
+		return actions.filter(action => action.id === id);
+	}
 };

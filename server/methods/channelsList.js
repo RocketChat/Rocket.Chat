@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.methods({
 	channelsList(filter, channelType, limit, sort) {
 		this.unblock();
@@ -27,7 +30,7 @@ Meteor.methods({
 			options.limit = limit;
 		}
 
-		if (_.trim(sort)) {
+		if (s.trim(sort)) {
 			switch (sort) {
 				case 'name':
 					options.sort = {
@@ -59,11 +62,12 @@ Meteor.methods({
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
 			const user = Meteor.user();
-			const userPref = user && user.settings && user.settings.preferences && user.settings.preferences.mergeChannels && user.settings.preferences.roomsListExhibitionMode === 'category';
-			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref !== undefined ? userPref : globalPref;
+			const userPref = RocketChat.getUserPreference(user, 'groupByType') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
+			const globalPref = RocketChat.settings.get('UI_Group_Channels_By_Type');
+			// needs to negate globalPref because userPref represents its opposite
+			const groupByType = userPref !== undefined ? userPref : globalPref;
 
-			if (mergeChannels) {
+			if (!groupByType) {
 				roomTypes.push({
 					type: 'p',
 					username: user.username

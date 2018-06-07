@@ -12,7 +12,6 @@ Meteor.startup(function() {
 				action() {
 					const message = this._arguments[1];
 					const language = RocketChat.AutoTranslate.getLanguage(message.rid);
-					RocketChat.MessageAction.hideDropDown();
 					if ((!message.translations || !message.translations[language])) { //} && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });

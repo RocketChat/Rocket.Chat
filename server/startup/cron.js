@@ -74,7 +74,6 @@ Meteor.startup(function() {
 
 		configCleanupTokens();
 
-
 		return SyncedCron.start();
 	});
 });

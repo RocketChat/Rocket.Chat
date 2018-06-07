@@ -5,10 +5,6 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'@google-cloud/language': '0.8.0'
-});
-
 Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('http');
