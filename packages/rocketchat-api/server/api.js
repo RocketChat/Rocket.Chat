@@ -1,5 +1,6 @@
 /* global Restivus, DDP, DDPCommon */
 import _ from 'underscore';
+const logger = new Logger('API', {});
 
 class API extends Restivus {
 	constructor(properties) {
@@ -28,7 +29,8 @@ class API extends Restivus {
 			roles: 0,
 			statusDefault: 0,
 			_updatedAt: 0,
-			customFields: 0
+			customFields: 0,
+			settings: 0
 		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
@@ -58,6 +60,10 @@ class API extends Restivus {
 		return RocketChat.API.helperMethods;
 	}
 
+	getHelperMethod(name) {
+		return RocketChat.API.helperMethods.get(name);
+	}
+
 	addAuthMethod(method) {
 		this.authMethods.push(method);
 	}
@@ -67,10 +73,14 @@ class API extends Restivus {
 			result.success = true;
 		}
 
-		return {
+		result = {
 			statusCode: 200,
 			body: result
 		};
+
+		logger.debug('Success', result);
+
+		return result;
 	}
 
 	failure(result, errorType) {
@@ -87,10 +97,14 @@ class API extends Restivus {
 			}
 		}
 
-		return {
+		result = {
 			statusCode: 400,
 			body: result
 		};
+
+		logger.debug('Failure', result);
+
+		return result;
 	}
 
 	notFound(msg) {
@@ -125,6 +139,8 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
+		const version = this._config.version;
+
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			if (this.hasHelperMethods()) {
@@ -136,27 +152,27 @@ class API extends Restivus {
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function _internalRouteActionHandler() {
+						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+							method,
+							version,
+							user_agent: this.request.headers['user-agent'],
+							entrypoint: route
+						});
+
 						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
 							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							return RocketChat.API.v1.failure(e.message, e.error);
+							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
-						result = result ? result : RocketChat.API.v1.success();
+						result = result || RocketChat.API.v1.success();
 
-						if (
-							/(channels|groups)\./.test(route)
-							&& result
-							&& result.body
-							&& result.body.success === true
-							&& (result.body.channel || result.body.channels || result.body.group || result.body.groups)
-						) {
-							// TODO: Remove this after three versions have been released. That means at 0.64 this should be gone. ;)
-							result.body.developerWarning = '[WARNING]: The "usernames" field has been removed for performance reasons. Please use the "*.members" endpoint to get a list of members/users in a room.';
-						}
+						rocketchatRestApiEnd({
+							status: result.statusCode
+						});
 
 						return result;
 					};
@@ -227,6 +243,7 @@ class API extends Restivus {
 		this.addRoute('login', {authRequired: false}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
+				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
@@ -276,7 +293,8 @@ class API extends Restivus {
 					status: 'success',
 					data: {
 						userId: this.userId,
-						authToken: auth.token
+						authToken: auth.token,
+						me: getUserInfo(this.user)
 					}
 				};
 

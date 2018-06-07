@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-var path = require('path'),
-	fs = require('fs'),
-	extend = require('util')._extend,
-	exec = require('child_process').exec,
-	processes = [];
 
-var baseDir = path.resolve(__dirname, '..'),
-	srcDir = path.resolve(baseDir);
+const path = require('path');
+const fs = require('fs');
+const extend = require('util')._extend;
+const exec = require('child_process').exec;
+const processes = [];
 
-var appOptions = {
+const baseDir = path.resolve(__dirname, '..');
+const srcDir = path.resolve(baseDir);
+
+const appOptions = {
 	env: {
 		PORT: 3000,
 		ROOT_URL: 'http://localhost:3000'
@@ -16,7 +17,7 @@ var appOptions = {
 };
 
 function startProcess(opts, callback) {
-	var proc = exec(
+	const proc = exec(
 		opts.command,
 		opts.options
 	);
@@ -37,14 +38,14 @@ function startProcess(opts, callback) {
 	}
 
 	if (opts.logFile) {
-		var logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
+		const logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
 		proc.stdout.pipe(logStream);
 		proc.stderr.pipe(logStream);
 	}
 
 	proc.on('close', function(code) {
-		console.log(opts.name, 'exited with code ' + code);
-		for (var i = 0; i < processes.length; i += 1) {
+		console.log(opts.name, `exited with code ${ code }`);
+		for (let i = 0; i < processes.length; i += 1) {
 			processes[i].kill();
 		}
 		process.exit(code);
@@ -70,9 +71,9 @@ function startChimp() {
 		command: 'npm run chimp-test',
 		options: {
 			env: Object.assign({}, process.env, {
-				NODE_PATH: process.env.NODE_PATH +
+				NODE_PATH: `${ process.env.NODE_PATH +
 					path.delimiter + srcDir +
-					path.delimiter + srcDir + '/node_modules'
+					path.delimiter + srcDir }/node_modules`
 			})
 		}
 	});

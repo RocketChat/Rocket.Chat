@@ -1,6 +1,7 @@
 /* globals Department, Livechat, LivechatVideoCall */
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
+import s from 'underscore.string';
 
 Template.register.helpers({
 	error() {
@@ -20,7 +21,13 @@ Template.register.helpers({
 	},
 	selectedDepartment() {
 		return this._id === Livechat.department;
-	}
+	},
+	showNameFieldRegisterForm() {
+		return Livechat.nameFieldRegistrationForm;
+	},
+	showEmailFieldRegisterForm() {
+		return Livechat.emailFieldRegistrationForm;
+	}	
 });
 
 Template.register.events({
@@ -33,11 +40,24 @@ Template.register.events({
 				LivechatVideoCall.request();
 			}
 		};
+		const form = e.currentTarget;
+		
+		const fields = [];
+		let name;
+		let email;
 
-		const $name = instance.$('input[name=name]');
-		const $email = instance.$('input[name=email]');
-		if (!($name.val().trim() && $email.val().trim())) {
-			return instance.showError(TAPi18n.__('Please_fill_name_and_email'));
+		if (Livechat.nameFieldRegistrationForm) {
+			fields.push('name');
+			name = instance.$('input[name=name]').val();
+		}
+
+		if (Livechat.emailFieldRegistrationForm) {
+			fields.push('email');
+			email = instance.$('input[name=email]').val();
+		}
+
+		if (!instance.validateForm(form, fields)) {
+			return instance.showError(TAPi18n.__('You_must_complete_all_fields'));
 		} else {
 			let departmentId = instance.$('select[name=department]').val();
 			if (!departmentId) {
@@ -49,8 +69,8 @@ Template.register.events({
 
 			const guest = {
 				token: visitor.getToken(),
-				name: $name.val(),
-				email: $email.val(),
+				name,
+				email,
 				department: Livechat.department || departmentId
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
@@ -77,6 +97,15 @@ Template.register.events({
 Template.register.onCreated(function() {
 	this.error = new ReactiveVar();
 	this.request = '';
+
+	this.validateForm = (form, fields) => {
+		const valid = fields.every((field) => {
+			return !_.isEmpty(s.trim(form.elements[field].value));
+		});
+
+		return valid;
+	};
+	
 	this.showError = (msg) => {
 		$('.error').addClass('show');
 		this.error.set(msg);

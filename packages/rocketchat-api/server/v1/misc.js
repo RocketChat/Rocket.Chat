@@ -1,4 +1,3 @@
-import _ from 'underscore';
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
@@ -20,23 +19,7 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 
 RocketChat.API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		const me = _.pick(this.user, [
-			'_id',
-			'name',
-			'emails',
-			'status',
-			'statusConnection',
-			'username',
-			'utcOffset',
-			'active',
-			'language'
-		]);
-
-		const verifiedEmail = me.emails.find((email) => email.verified);
-
-		me.email = verifiedEmail ? verifiedEmail.address : undefined;
-
-		return RocketChat.API.v1.success(me);
+		return RocketChat.API.v1.success(this.getUserInfo(RocketChat.models.Users.findOneById(this.userId)));
 	}
 });
 
@@ -137,5 +120,54 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				</svg>
 			`.trim().replace(/\>[\s]+\</gm, '><')
 		};
+	}
+});
+
+RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+	get() {
+		check(this.queryParams, {
+			query: String
+		});
+
+		const { query } = this.queryParams;
+
+		const result = Meteor.runAsUser(this.userId, () =>
+			Meteor.call('spotlight', query)
+		);
+
+		return RocketChat.API.v1.success(result);
+	}
+});
+
+RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		const { text, type } = query;
+		if (sort && Object.keys(sort).length > 1) {
+			return RocketChat.API.v1.failure('This method support only one "sort" parameter');
+		}
+		const sortBy = sort ? Object.keys(sort)[0] : undefined;
+		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
+			text,
+			type,
+			sortBy,
+			sortDirection,
+			page: offset,
+			limit: count
+		}));
+
+		if (!result) {
+			return RocketChat.API.v1.failure('Please verify the parameters');
+		}
+		return RocketChat.API.v1.success({
+			result: result.results,
+			count: result.results.length,
+			offset,
+			total: result.total
+		});
 	}
 });

@@ -22,6 +22,10 @@ const assets = {
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
 			width: undefined,
 			height: undefined
+		},
+		wizard: {
+			step: 3,
+			order: 2
 		}
 	},
 	favicon_ico: {
@@ -296,7 +300,8 @@ function addAssetToSetting(key, value) {
 		fileConstraints: value.constraints,
 		i18nLabel: value.label,
 		asset: key,
-		public: true
+		public: true,
+		wizard: value.wizard
 	});
 }
 
