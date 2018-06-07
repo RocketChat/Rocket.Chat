@@ -347,47 +347,4 @@ Meteor.startup(function() {
 		group: 'menu'
 	});
 
-	RocketChat.MessageAction.addButton({
-		id: 'drive-upload',
-		// icon to be added
-		icon: 'drive',
-		label: 'Upload To Drive',
-		async action() {
-			const message = this._arguments[1];
-			const attachment = message.attachments[0];
-			const file = message.file;
-			//const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
-			const metaData = {
-				name: attachment.title,
-				type: file.type
-			};
-
-			Meteor.call('checkDriveAccess', file, metaData, (err, authorized) => {
-				if (!authorized) {
-					Meteor.loginWithGoogle({}, function(error) {
-						if (error) {
-							return;
-						}
-						Meteor.call('uploadFileToDrive', file, metaData, success(() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
-					});
-				} else {
-					Meteor.call('uploadFileToDrive', file, metaData, success(() => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'))));
-				}
-			});
-		},
-		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
-				return false;
-			}
-			if (!message.file) {
-				return false;
-			}
-			return true;
-		},
-		order: 7,
-		group: 'menu'
-	});
-
-
-
 });

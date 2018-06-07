@@ -16,5 +16,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:api');
 	api.use('rocketchat:grant');
 
-	api.mainModule('lib/drive-upload.js');
+	api.use('templating', 'client');
+
+	api.addFiles('server/drive-upload.js', 'server');
+	api.addFiles('client/actionButton.js', 'client');
 });
