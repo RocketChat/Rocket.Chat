@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "حصلت سلاكبريدج على خطأ أثناء استيراد الرسائل في٪ s:٪ s",
   "SlackBridge_finish": "انتهت سلاكبريدج من استيراد الرسائل في٪ s. الرجاء إعادة التحميل لعرض جميع الرسائل.",
   "SlackBridge_Out_All": "سلاكبريدج خارج الكل",
+  "Search_Channels": "بحث في القنوات",
   "SlackBridge_Out_All_Description": "إرسال رسائل من جميع القنوات الموجودة في سلاك والبوت قد انضم",
   "SlackBridge_Out_Channels": "قنوات سلاكبريدج خارج",
   "SlackBridge_Out_Channels_Description": "اختر القنوات التي سترسل رسائل إلى سلاك",
