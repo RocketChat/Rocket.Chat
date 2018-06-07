@@ -505,7 +505,7 @@
   "Direct_Reply_Separator_Description": "[Alter only if you know exactly what you are doing, refer docs]<br/>Separator between base & tag part of email",
   "Direct_Reply_Username": "Username",
   "Direct_Reply_Username_Description": "Please use absolute email, tagging is not allowed, it would be over-written",
-  "Disable": "Disable",
+  "Disabled": "Disabled",
   "Disable_Notifications": "Disable Notifications",
   "Disable_two-factor_authentication": "Disable two-factor authentication",
   "Display_offline_form": "Display offline form",
