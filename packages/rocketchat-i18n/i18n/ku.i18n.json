@@ -1358,7 +1358,7 @@
   "Invisible": "Nedît",
   "Invitation": "Ezimanî",
   "Invitation_HTML": "Dawetname HTML",
-  "Invitation_HTML_Default": "<h2>Tu bo vexwendin <h1>[Site_Name]</h1></h2><p>Go to [Site_URL] û hewl baştirîn çareserî chat çavkaniya vekirî ya îro tune!</p>",
+  "Invitation_HTML_Default": "<h2>Tu bo vexwendin <strong>[Site_Name]</strong></h2><p>Go to [Site_URL] û hewl baştirîn çareserî chat çavkaniya vekirî ya îro tune!</p>",
   "Invitation_HTML_Description": "Dibe ku divê tu guhêrbaran li jêr bi kar tînin: <br/><ul><li>[email] ji bo email emaila kesê wergir.</li><li>[Site_Name] û [Site_URL] ji bo Name Application û URL rêzê.</li></ul>",
   "Invitation_Subject": "Dawetname Subject",
   "Invitation_Subject_Default": "Tu bo vexwendin [Site_Name]",
