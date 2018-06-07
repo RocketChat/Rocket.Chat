@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge napotkał błąd podczas importowania wiadomości na %s: %s",
   "SlackBridge_finish": "SlackBridge ukończył importowanie wiadomości at %s. Proszę odświerz stronę aby wyświetlić wszystkie wiadomości.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Szukaj kanałów",
   "SlackBridge_Out_All_Description": "Wysyłaj wiadomości ze wszystkich kanałów, które istnieją w Slack, a bot dołączył",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Wybierz, które kanały będą wysyłać wiadomości z powrotem do Slack",

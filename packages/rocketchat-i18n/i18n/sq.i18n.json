@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge mori një gabim gjatë importimit të mesazheve tuaja në% s:% s",
   "SlackBridge_finish": "SlackBridge ka përfunduar importimin e mesazheve në% s. Ju lutemi rifreskoni për të parë të gjitha mesazhet.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Kërko Kanalet",
   "SlackBridge_Out_All_Description": "Dërgo mesazhe nga të gjitha kanalet që ekzistojnë në Slack dhe boti është bashkuar",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "Zgjidhni cilat kanale do t'i dërgojnë mesazhet përsëri në Slack",

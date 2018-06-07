@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge je naišao na grešku tijekom uvoza tvojih poruka na %s: %s",
   "SlackBridge_finish": "SlackBRidge je završio uvoz poruka na %s. Molimo osvježi stranicu kako bi ih vidio.",
   "SlackBridge_Out_All": "SlackBridge sve van",
+  "Search_Channels": "Pretraži Kanale",
   "SlackBridge_Out_All_Description": "Slanje poruka s svih kanala koje postoje u Slacku i pridruživanje bot",
   "SlackBridge_Out_Channels": "SlackBridge Out kanali",
   "SlackBridge_Out_Channels_Description": "Odaberite kanale koji će poslati poruke natrag u zalihu",
