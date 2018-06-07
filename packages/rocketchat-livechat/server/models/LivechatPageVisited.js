@@ -14,10 +14,10 @@ class LivechatPageVisited extends RocketChat.models._Base {
 
 	saveByToken(token, pageInfo) {
 		// keep history of unregistered visitors for 1 month
-		var keepHistoryMiliseconds = 2592000000;
+		const keepHistoryMiliseconds = 2592000000;
 
 		return this.insert({
-			token: token,
+			token,
 			page: pageInfo,
 			ts: new Date(),
 			expireAt: new Date().getTime() + keepHistoryMiliseconds
@@ -25,12 +25,12 @@ class LivechatPageVisited extends RocketChat.models._Base {
 	}
 
 	findByToken(token) {
-		return this.find({ token: token }, { sort : { ts: -1 }, limit: 20 });
+		return this.find({ token }, { sort : { ts: -1 }, limit: 20 });
 	}
 
 	keepHistoryForToken(token) {
 		return this.update({
-			token: token,
+			token,
 			expireAt: {
 				$exists: true
 			}

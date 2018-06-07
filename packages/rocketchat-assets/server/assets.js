@@ -1,4 +1,5 @@
 /* global WebAppHashing, WebAppInternals */
+import _ from 'underscore';
 
 import sizeOf from 'image-size';
 import mime from 'mime-type/with-db';
@@ -21,6 +22,10 @@ const assets = {
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
 			width: undefined,
 			height: undefined
+		},
+		wizard: {
+			step: 3,
+			order: 2
 		}
 	},
 	favicon_ico: {
@@ -144,7 +149,7 @@ const assets = {
 		}
 	},
 	safari_pinned: {
-		label: 'safari pinneed tab (svg)',
+		label: 'safari pinned tab (svg)',
 		defaultUrl: 'images/logo/safari-pinned-tab.svg',
 		constraints: {
 			type: 'image',
@@ -173,7 +178,7 @@ RocketChat.Assets = new (class {
 
 		const extension = mime.extension(contentType);
 		if (assets[asset].constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error(contentType, `Invalid file type: ${contentType}`, {
+			throw new Meteor.Error(contentType, `Invalid file type: ${ contentType }`, {
 				function: 'RocketChat.Assets.setAsset',
 				errorTitle: 'error-invalid-file-type'
 			});
@@ -198,9 +203,9 @@ RocketChat.Assets = new (class {
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
 		ws.on('end', Meteor.bindEnvironment(function() {
 			return Meteor.setTimeout(function() {
-				const key = `Assets_${asset}`;
+				const key = `Assets_${ asset }`;
 				const value = {
-					url: `assets/${asset}.${extension}`,
+					url: `assets/${ asset }.${ extension }`,
 					defaultUrl: assets[asset].defaultUrl
 				};
 
@@ -220,7 +225,7 @@ RocketChat.Assets = new (class {
 		}
 
 		RocketChatAssetsInstance.deleteFile(asset);
-		const key = `Assets_${asset}`;
+		const key = `Assets_${ asset }`;
 		const value = {
 			defaultUrl: assets[asset].defaultUrl
 		};
@@ -262,18 +267,18 @@ RocketChat.Assets = new (class {
 		const extension = settingValue.url.split('.').pop();
 
 		return assetValue.cache = {
-			path: `assets/${assetKey}.${extension}`,
+			path: `assets/${ assetKey }.${ extension }`,
 			cacheable: false,
 			sourceMapUrl: undefined,
 			where: 'client',
 			type: 'asset',
 			content: file.buffer,
-			extension: extension,
-			url: `/assets/${assetKey}.${extension}?${hash}`,
+			extension,
+			url: `/assets/${ assetKey }.${ extension }?${ hash }`,
 			size: file.length,
 			uploadDate: file.uploadDate,
 			contentType: file.contentType,
-			hash: hash
+			hash
 		};
 	}
 });
@@ -287,7 +292,7 @@ RocketChat.settings.add('Assets_SvgFavicon_Enable', true, {
 });
 
 function addAssetToSetting(key, value) {
-	return RocketChat.settings.add(`Assets_${key}`, {
+	return RocketChat.settings.add(`Assets_${ key }`, {
 		defaultUrl: value.defaultUrl
 	}, {
 		type: 'asset',
@@ -295,7 +300,8 @@ function addAssetToSetting(key, value) {
 		fileConstraints: value.constraints,
 		i18nLabel: value.label,
 		asset: key,
-		public: true
+		public: true,
+		wizard: value.wizard
 	});
 }
 
@@ -347,22 +353,22 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 				size: value.cache.size,
 				hash: value.cache.hash
 			};
-			WebAppInternals.staticFiles[`/__cordova/assets/${key}`] = value.cache;
-			WebAppInternals.staticFiles[`/__cordova/assets/${key}.${value.cache.extension}`] = value.cache;
+			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = value.cache;
+			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ value.cache.extension }`] = value.cache;
 		} else {
 			const extension = value.defaultUrl.split('.').pop();
 			cache = {
-				path: `assets/${key}.${extension}`,
+				path: `assets/${ key }.${ extension }`,
 				cacheable: false,
 				sourceMapUrl: undefined,
 				where: 'client',
 				type: 'asset',
-				url: `/assets/${key}.${extension}?v3`,
+				url: `/assets/${ key }.${ extension }?v3`,
 				hash: 'v3'
 			};
 
-			WebAppInternals.staticFiles[`/__cordova/assets/${key}`] = WebAppInternals.staticFiles[`/__cordova/${value.defaultUrl}`];
-			WebAppInternals.staticFiles[`/__cordova/assets/${key}.${extension}`] = WebAppInternals.staticFiles[`/__cordova/${value.defaultUrl}`];
+			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
+			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ extension }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
 		}
 
 		const manifestItem = _.findWhere(manifest, {
@@ -445,7 +451,7 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	if (!file) {
 		if (assets[params.asset] && assets[params.asset].defaultUrl) {
-			req.url = `/${assets[params.asset].defaultUrl}`;
+			req.url = `/${ assets[params.asset].defaultUrl }`;
 			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFiles, req, res, next);
 		} else {
 			res.writeHead(404);

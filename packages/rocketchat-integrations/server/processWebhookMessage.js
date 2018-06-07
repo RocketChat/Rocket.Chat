@@ -1,91 +1,34 @@
-function retrieveRoomInfo({ currentUserId, channel, ignoreEmpty=false }) {
-	const room = RocketChat.models.Rooms.findOneByIdOrName(channel);
-	if (!_.isObject(room) && !ignoreEmpty) {
-		throw new Meteor.Error('invalid-channel');
-	}
+import _ from 'underscore';
+import s from 'underscore.string';
 
-	if (room && room.t === 'c') {
-		//Check if the user already has a Subscription or not, this avoids this issue: https://github.com/RocketChat/Rocket.Chat/issues/5477
-		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
+	const sentData = [];
+	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
-		if (!sub) {
-			Meteor.runAsUser(currentUserId, function() {
-				return Meteor.call('joinRoom', room._id);
-			});
-		}
-	}
+	for (const channel of channels) {
+		const channelType = channel[0];
 
-	return room;
-}
-
-function retrieveDirectMessageInfo({ currentUserId, channel, findByUserIdOnly=false }) {
-	let roomUser = undefined;
-
-	if (findByUserIdOnly) {
-		roomUser = RocketChat.models.Users.findOneById(channel);
-	} else {
-		roomUser = RocketChat.models.Users.findOne({
-			$or: [{ _id: channel }, { username: channel }]
-		});
-	}
-
-	const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : channel;
-	let room = RocketChat.models.Rooms.findOneById(rid);
-
-	if (!_.isObject(room)) {
-		if (!_.isObject(roomUser)) {
-			throw new Meteor.Error('invalid-channel');
-		}
-
-		room = Meteor.runAsUser(currentUserId, function() {
-			const {rid} = Meteor.call('createDirectMessage', roomUser.username);
-			return RocketChat.models.Rooms.findOneById(rid);
-		});
-	}
-
-	return room;
-}
-
-this.processWebhookMessage = function(messageObj, user, defaultValues) {
-	var attachment, channel, channels, channelType, i, len, message, ref, room, ret;
-	ret = [];
-
-	if (!defaultValues) {
-		defaultValues = {
-			channel: '',
-			alias: '',
-			avatar: '',
-			emoji: ''
-		};
-	}
-
-	channel = messageObj.channel || messageObj.roomId || defaultValues.channel;
-
-	channels = [].concat(channel);
-
-	for (channel of channels) {
-		channelType = channel[0];
-
-		channel = channel.substr(1);
+		let channelValue = channel.substr(1);
+		let room;
 
 		switch (channelType) {
 			case '#':
-				room = retrieveRoomInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true });
 				break;
 			case '@':
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd' });
 				break;
 			default:
-				channel = channelType + channel;
+				channelValue = channelType + channelValue;
 
 				//Try to find the room by id or name if they didn't include the prefix.
-				room = retrieveRoomInfo({ currentUserId: user._id, channel, ignoreEmpty: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
 				if (room) {
 					break;
 				}
 
 				//We didn't get a room, let's try finding direct messages
-				room = retrieveDirectMessageInfo({ currentUserId: user._id, channel, findByUserIdOnly: true });
+				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
 				if (room) {
 					break;
 				}
@@ -94,15 +37,20 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 				throw new Meteor.Error('invalid-channel');
 		}
 
+		if (mustBeJoined && !room.usernames.includes(user.username)) {
+			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
+			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
+		}
+
 		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
 			console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
 			messageObj.attachments = undefined;
 		}
 
-		message = {
+		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
-			msg: _.trim(messageObj.text || messageObj.msg || ''),
-			attachments: messageObj.attachments,
+			msg: s.trim(messageObj.text || messageObj.msg || ''),
+			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
@@ -119,18 +67,18 @@ this.processWebhookMessage = function(messageObj, user, defaultValues) {
 		}
 
 		if (_.isArray(message.attachments)) {
-			ref = message.attachments;
-			for (i = 0, len = ref.length; i < len; i++) {
-				attachment = ref[i];
+			for (let i = 0; i < message.attachments.length; i++) {
+				const attachment = message.attachments[i];
 				if (attachment.msg) {
-					attachment.text = _.trim(attachment.msg);
+					attachment.text = s.trim(attachment.msg);
 					delete attachment.msg;
 				}
 			}
 		}
 
-		var messageReturn = RocketChat.sendMessage(user, message, room);
-		ret.push({ channel: channel, message: messageReturn });
+		const messageReturn = RocketChat.sendMessage(user, message, room);
+		sentData.push({ channel, message: messageReturn });
 	}
-	return ret;
+
+	return sentData;
 };

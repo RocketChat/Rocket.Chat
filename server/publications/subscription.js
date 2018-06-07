@@ -3,6 +3,7 @@ const fields = {
 	ts: 1,
 	ls: 1,
 	name: 1,
+	fname: 1,
 	rid: 1,
 	code: 1,
 	f: 1,
@@ -11,8 +12,11 @@ const fields = {
 	alert: 1,
 	roles: 1,
 	unread: 1,
+	userMentions: 1,
+	groupMentions: 1,
 	archived: 1,
-	audioNotification: 1,
+	audioNotifications: 1,
+	audioNotificationValue: 1,
 	desktopNotifications: 1,
 	desktopNotificationDuration: 1,
 	mobilePushNotifications: 1,
@@ -20,7 +24,13 @@ const fields = {
 	unreadAlert: 1,
 	_updatedAt: 1,
 	blocked: 1,
-	blocker: 1
+	blocker: 1,
+	autoTranslate: 1,
+	autoTranslateLanguage: 1,
+	disableNotifications: 1,
+	hideUnreadStatus: 1,
+	muteGroupMentions: 1,
+	ignored: 1
 };
 
 Meteor.methods({
@@ -31,9 +41,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		const options = {
-			fields: fields
-		};
+		const options = { fields };
 
 		const records = RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch();
 
@@ -52,12 +60,22 @@ Meteor.methods({
 				}).fetch()
 			};
 		}
+
 		return records;
 	}
 });
 
 RocketChat.models.Subscriptions.on('changed', function(type, subscription) {
-	return RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
-		fields: fields
+	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
+		fields
+	}));
+});
+
+// TODO needs improvement
+// We are sending the record again cuz any update on subscription will send the record without the fname (join)
+// Then we need to sent it again listening to the join event.
+RocketChat.models.Subscriptions.on('join:fname:inserted', function(subscription/*, user*/) {
+	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', 'changed', RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
+		fields
 	}));
 });

@@ -4,18 +4,18 @@ import supertest from 'supertest';
 export const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';
 
-export const apiUsername = 'api'+username;
-export const apiEmail = 'api'+email;
-export const apiPublicChannelName= 'api'+publicChannelName;
-export const apiPrivateChannelName = 'api'+privateChannelName;
+export const apiUsername = `api${ username }`;
+export const apiEmail = `api${ email }`;
+export const apiPublicChannelName= `api${ publicChannelName }`;
+export const apiPrivateChannelName = `api${ privateChannelName }`;
 
-export var targetUser = {};
-export var channel = {};
-export var group = {};
-export var message = {};
-export var directMessage = {};
-export var integration = {};
-export var credentials = {
+export const targetUser = {};
+export const channel = {};
+export const group = {};
+export const message = {};
+export const directMessage = {};
+export const integration = {};
+export const credentials = {
 	['X-Auth-Token']: undefined,
 	['X-User-Id']: undefined
 };
@@ -36,7 +36,7 @@ export function log(res) {
 	});
 }
 
-export function getCredentials() {
+export function getCredentials(done = function() {}) {
 	request.post(api('login'))
 		.send(login)
 		.expect('Content-Type', 'application/json')
@@ -44,6 +44,7 @@ export function getCredentials() {
 		.expect((res) => {
 			credentials['X-Auth-Token'] = res.body.data.authToken;
 			credentials['X-User-Id'] = res.body.data.userId;
-		});
+		})
+		.end(done);
 }
 

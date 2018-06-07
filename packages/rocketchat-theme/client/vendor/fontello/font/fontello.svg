@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg">
-<metadata>Copyright (C) 2016 by original authors @ fontello.com</metadata>
+<metadata>Copyright (C) 2017 by original authors @ fontello.com</metadata>
 <defs>
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
@@ -407,6 +407,8 @@
 <glyph glyph-name="angle-up" unicode="&#xe85b;" d="M600 189q0-7-6-12l-28-28q-5-6-12-6t-13 6l-220 219-219-219q-5-6-13-6t-12 6l-28 28q-6 5-6 12t6 13l260 260q5 6 12 6t13-6l260-260q6-5 6-13z" horiz-adv-x="642.9" />
 
 <glyph glyph-name="angle-down" unicode="&#xe85c;" d="M600 439q0-7-6-12l-260-261q-5-5-13-5t-12 5l-260 261q-6 5-6 12t6 13l28 28q5 6 12 6t13-6l219-219 220 219q5 6 13 6t12-6l28-28q6-5 6-13z" horiz-adv-x="642.9" />
+
+<glyph glyph-name="language" unicode="&#xe85d;" d="M988 306q30-82-10-176t-134-160q-10 0-12 2t-16 19-16 19q-2 6 2 10 86 60 117 152t-11 148q-16-38-39-76t-59-80-86-65-106-15q-52 6-84 41t-32 93q0 84 60 148 50 50 114 66l-2 100q-140-24-146-24-6-2-10 4 0 2-5 29t-5 31q-2 2 1 4t7 2l156 28q0 110-2 114 0 8 8 8 46 0 52 2 10 0 10-8l0-104q158 22 164 22 8 4 10-6 0-2 4-23t4-25q4-10-4-12l-176-30 0-102 12 0q86 0 148-36t86-100z m-370-160q28-6 62 6l-4 214q-34-12-60-40-44-44-44-108 0-66 46-72z m122 28q28 24 58 68t45 79 7 41q-36 18-96 18-2 0-6-1t-6-1z m-448 382q10-28 53-165t83-261 40-126q0-4-4-4l-86 0q-6 0-6 4l-50 166-176 0q-48-164-50-166 0-4-6-4l-86 0q-4 0-4 4 10 18 176 552 2 8 10 8l96 0q10 0 10-8z m-130-316l144 0-72 264z" horiz-adv-x="1001" />
 
 <glyph glyph-name="angle-circled-up" unicode="&#xe85f;" d="M650 214l57 57q11 11 11 25t-11 26l-253 253q-11 11-25 11t-25-11l-254-253q-10-11-10-26t10-25l57-57q11-10 25-10t25 10l172 172 171-172q11-10 25-10t25 10z m207 136q0-117-57-215t-156-156-215-58-216 58-155 156-58 215 58 215 155 156 216 58 215-58 156-156 57-215z" horiz-adv-x="857.1" />
 

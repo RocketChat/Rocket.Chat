@@ -1,8 +1,9 @@
 /* globals HTTP, SystemLogger */
+import _ from 'underscore';
 
-var knowledgeEnabled = false;
-var apiaiKey = '';
-var apiaiLanguage = 'en';
+let knowledgeEnabled = false;
+let apiaiKey = '';
+let apiaiLanguage = 'en';
 RocketChat.settings.get('Livechat_Knowledge_Enabled', function(key, value) {
 	knowledgeEnabled = value;
 });
@@ -15,7 +16,7 @@ RocketChat.settings.get('Livechat_Knowledge_Apiai_Language', function(key, value
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
-	if (message.editedAt) {
+	if (!message || message.editedAt) {
 		return message;
 	}
 
@@ -42,7 +43,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				},
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8',
-					'Authorization': 'Bearer ' + apiaiKey
+					'Authorization': `Bearer ${ apiaiKey }`
 				}
 			});
 

@@ -1,6 +1,6 @@
 Meteor.methods({
-	reportMessage(message, description) {
-		check(message, Object);
+	reportMessage(messageId, description) {
+		check(messageId, String);
 		check(description, String);
 
 		if (!Meteor.userId()) {
@@ -11,6 +11,13 @@ Meteor.methods({
 
 		if ((description == null) || description.trim() === '') {
 			throw new Meteor.Error('error-invalid-description', 'Invalid description', {
+				method: 'reportMessage'
+			});
+		}
+
+		const message = RocketChat.models.Messages.findOneById(messageId);
+		if (!message) {
+			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
 				method: 'reportMessage'
 			});
 		}

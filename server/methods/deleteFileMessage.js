@@ -1,6 +1,6 @@
 /* global FileUpload */
 Meteor.methods({
-	deleteFileMessage: function(fileID) {
+	deleteFileMessage(fileID) {
 		check(fileID, String);
 
 		const msg = RocketChat.models.Messages.getMessageByFileId(fileID);
@@ -9,6 +9,6 @@ Meteor.methods({
 			return Meteor.call('deleteMessage', msg);
 		}
 
-		return FileUpload.delete(fileID);
+		return FileUpload.getStore('Uploads').deleteById(fileID);
 	}
 });

@@ -28,30 +28,38 @@ Template.otrFlexTab.helpers({
 });
 
 Template.otrFlexTab.events({
-	'click button.start': function(e, t) {
+	'click button.start'(e, t) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.handshake();
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open({
+					title: t('Timeout'),
+					type: 'error',
+					timer: 2000
+				});
 				otr.establishing.set(false);
 			}, 10000);
 		}
 	},
-	'click button.refresh': function(e, t) {
+	'click button.refresh'(e, t) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.reset();
 			otr.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open({
+					title: t('Timeout'),
+					type: 'error',
+					timer: 2000
+				});
 				otr.establishing.set(false);
 			}, 10000);
 		}
 	},
-	'click button.end': function(e/*, t*/) {
+	'click button.end'(e/*, t*/) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);
@@ -71,8 +73,8 @@ Meteor.methods({
 
 		return {
 			messages: messages.concat(afterMessages),
-			moreBefore: moreBefore,
-			moreAfter: moreAfter
+			moreBefore,
+			moreAfter
 		};
 	}
 });

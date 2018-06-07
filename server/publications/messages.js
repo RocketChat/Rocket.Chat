@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.publish('messages', function(rid/*, start*/) {
 	if (!this.userId) {
 		return this.ready();
@@ -21,13 +23,13 @@ Meteor.publish('messages', function(rid/*, start*/) {
 	});
 
 	const cursorHandle = cursor.observeChanges({
-		added: function(_id, record) {
+		added(_id, record) {
 			record.starred = _.findWhere(record.starred, {
 				_id: publication.userId
 			});
 			return publication.added('rocketchat_message', _id, record);
 		},
-		changed: function(_id, record) {
+		changed(_id, record) {
 			record.starred = _.findWhere(record.starred, {
 				_id: publication.userId
 			});
@@ -42,12 +44,12 @@ Meteor.publish('messages', function(rid/*, start*/) {
 	});
 
 	const cursorDeleteHandle = cursorDelete.observeChanges({
-		added: function(_id/*, record*/) {
+		added(_id/*, record*/) {
 			return publication.added('rocketchat_message', _id, {
 				_hidden: true
 			});
 		},
-		changed: function(_id/*, record*/) {
+		changed(_id/*, record*/) {
 			return publication.added('rocketchat_message', _id, {
 				_hidden: true
 			});
@@ -60,4 +62,40 @@ Meteor.publish('messages', function(rid/*, start*/) {
 		cursorHandle.stop();
 		return cursorDeleteHandle.stop();
 	});
+});
+
+Meteor.methods({
+	'messages/get'(rid, {lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads= false}) {
+		check(rid, String);
+
+		const fromId = Meteor.userId();
+
+		if (!fromId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'messages/get'
+			});
+		}
+
+		if (!Meteor.call('canAccessRoom', rid, fromId)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'messages/get'
+			});
+		}
+
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+
+		if (lastUpdate instanceof Date) {
+			return {
+				updated: RocketChat.models.Messages.findForUpdates(rid, lastUpdate, options).fetch(),
+				deleted: RocketChat.models.Messages.trashFindDeletedAfter(lastUpdate, {rid}, { ...options, fields: { _id: 1, _deletedAt: 1 }}).fetch()
+			};
+		}
+
+		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+
+	}
 });

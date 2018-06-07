@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function getIdentity(accessToken) {
 	try {
 		return HTTP.get('https://graph.facebook.com/me', {
@@ -6,7 +8,7 @@ function getIdentity(accessToken) {
 			}
 		}).data;
 	} catch (error) {
-		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${error.message}`), {
+		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ error.message }`), {
 			response: error.response
 		});
 	}

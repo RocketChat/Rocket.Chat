@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
@@ -15,7 +17,7 @@ Meteor.methods({
 
 		if (roleName === 'admin' && !RocketChat.authz.hasPermission(Meteor.userId(), 'assign-admin-role')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
-				method: 'insertOrUpdateUser',
+				method: 'authorization:addUserToRole',
 				action: 'Assign_admin'
 			});
 		}
@@ -40,9 +42,9 @@ Meteor.methods({
 				_id: roleName,
 				u: {
 					_id: user._id,
-					username: username
+					username
 				},
-				scope: scope
+				scope
 			});
 		}
 

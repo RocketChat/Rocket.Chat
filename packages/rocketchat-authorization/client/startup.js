@@ -3,7 +3,8 @@ Meteor.subscribe('roles');
 RocketChat.AdminBox.addOption({
 	href: 'admin-permissions',
 	i18nLabel: 'Permissions',
-	permissionGranted: function() {
+	icon: 'lock',
+	permissionGranted() {
 		return RocketChat.authz.hasAllPermission('access-permissions');
 	}
 });

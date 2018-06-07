@@ -1,11 +1,13 @@
+import {StatsD} from 'node-dogstatsd';
+
 RocketChat.statsTracker = new (class StatsTracker {
 	constructor() {
-		this.StatsD = Npm.require('node-dogstatsd').StatsD;
+		this.StatsD = StatsD;
 		this.dogstatsd = new this.StatsD();
 	}
 
 	track(type, stats, ...args) {
-		this.dogstatsd[type](`RocketChat.${stats}`, ...args);
+		this.dogstatsd[type](`RocketChat.${ stats }`, ...args);
 	}
 
 	now() {

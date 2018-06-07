@@ -1,7 +1,149 @@
-/* globals Push */
 import moment from 'moment';
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
+import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
+import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
+import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
+import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
+
+const sendNotification = ({
+	subscription,
+	sender,
+	hasMentionToAll,
+	hasMentionToHere,
+	message,
+	notificationMessage,
+	room,
+	mentionIds,
+	disableAllMessageNotifications
+}) => {
+
+	// don't notify the sender
+	if (subscription.u._id === sender._id) {
+		return;
+	}
+
+	// notifications disabled
+	if (subscription.disableNotifications) {
+		return;
+	}
+
+	// dont send notification to users who ignored the sender
+	if (Array.isArray(subscription.ignored) && subscription.ignored.find(sender._id)) {
+		return;
+	}
+
+	const hasMentionToUser = mentionIds.includes(subscription.u._id);
+
+	// mute group notifications (@here and @all) if not directly mentioned as well
+	if (!hasMentionToUser && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
+		return;
+	}
+
+	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
+
+	if (!receiver || !receiver.active) {
+		return;
+	}
+
+	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+
+	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
+
+	const roomType = room.t;
+
+	const {
+		audioNotifications,
+		desktopNotifications,
+		mobilePushNotifications,
+		emailNotifications
+	} = subscription;
+
+	let notificationSent = false;
+
+	// busy users don't receive audio notification
+	if (shouldNotifyAudio({
+		disableAllMessageNotifications,
+		status: receiver.status,
+		audioNotifications,
+		hasMentionToAll,
+		hasMentionToHere,
+		isHighlighted,
+		hasMentionToUser,
+		roomType
+	})) {
+		notifyAudioUser(subscription.u._id, message, room);
+	}
+
+	// busy users don't receive desktop notification
+	if (shouldNotifyDesktop({
+		disableAllMessageNotifications,
+		status: receiver.status,
+		desktopNotifications,
+		hasMentionToAll,
+		hasMentionToHere,
+		isHighlighted,
+		hasMentionToUser,
+		roomType
+	})) {
+		notificationSent = true;
+		notifyDesktopUser({
+			notificationMessage,
+			userId: subscription.u._id,
+			user: sender,
+			message,
+			room,
+			duration: subscription.desktopNotificationDuration
+		});
+	}
+
+	if (shouldNotifyMobile({
+		disableAllMessageNotifications,
+		mobilePushNotifications,
+		hasMentionToAll,
+		isHighlighted,
+		hasMentionToUser,
+		statusConnection: receiver.statusConnection,
+		roomType
+	})) {
+		notificationSent = true;
+
+		sendSinglePush({
+			notificationMessage,
+			room,
+			message,
+			userId: subscription.u._id,
+			senderUsername: sender.username,
+			senderName: sender.name,
+			receiverUsername: receiver.username
+		});
+	}
+
+	if (receiver.emails && shouldNotifyEmail({
+		disableAllMessageNotifications,
+		statusConnection: receiver.statusConnection,
+		emailNotifications,
+		isHighlighted,
+		hasMentionToUser,
+		hasMentionToAll,
+		roomType
+	})) {
+		receiver.emails.some((email) => {
+			if (email.verified) {
+				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });
+
+				return true;
+			}
+		});
+	}
+
+	if (notificationSent) {
+		RocketChat.Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
+	}
+};
+
+function sendAllNotifications(message, room) {
+
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -11,334 +153,111 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	var user = RocketChat.models.Users.findOneById(message.u._id);
+	if (!room || room.t == null) {
+		return message;
+	}
 
-	/*
-	Increment unread couter if direct messages
-	 */
-	var indexOf = [].indexOf || function(item) {
-		for (var i = 0, l = this.length; i < l; i++) {
-			if (i in this && this[i] === item) {
-				return i;
-			}
-		}
-		return -1;
+	const sender = (room.t !== 'l') ? RocketChat.models.Users.findOneById(message.u._id) : room.v;
+	if (!sender) {
+		return message;
+	}
+
+	const mentionIds = (message.mentions || []).map(({_id}) => _id);
+	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
+	const hasMentionToAll = mentionIds.includes('all');
+	const hasMentionToHere = mentionIds.includes('here');
+
+	let notificationMessage = RocketChat.callbacks.run('beforeSendMessageNotifications', message.msg);
+	if (mentionIds.length > 0 && RocketChat.settings.get('UI_Use_Real_Name')) {
+		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+	}
+
+	// Don't fetch all users if room exceeds max members
+	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
+	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+
+	const query = {
+		rid: room._id,
+		$or: [{
+			'userHighlights.0': { $exists: 1 }
+		}]
 	};
 
-	var settings, desktopMentionIds, i, j, len, len1, highlights, mentionIds, highlightsIds, usersWithHighlights, mobileMentionIds, ref, ref1, toAll, toHere, userIdsToNotify, userIdsToPushNotify, userOfMention, userOfMentionId, usersOfDesktopMentions, usersOfMentionId, usersOfMentionItem, usersOfMobileMentions;
+	['audio', 'desktop', 'mobile', 'email'].map((kind) => {
+		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
 
-	/**
-	 * Checks if a given user can be notified
-	 *
-	 * @param {string} id
-	 * @param {string} type - mobile|desktop
-	 *
-	 * @returns {boolean}
-     */
-	function canBeNotified(id, type) {
-		var types = {
-			mobile: [ 'dontNotifyDesktopUsers', 'alwaysNotifyDesktopUsers' ],
-			desktop: [ 'dontNotifyMobileUsers', 'alwaysNotifyMobileUsers' ]
-		};
+		const filter = { [notificationField]: 'all' };
 
-		return (settings[types[type][0]].indexOf(id) === -1 || settings[types[type][1]].indexOf(id) !== -1);
-	}
-
-	/**
-	 * Checks if a message contains a user highlight
-	 *
-	 * @param {string} message
-	 * @param {array|undefined} highlights
-	 *
-	 * @returns {boolean}
-	 */
-	function messageContainsHighlight(message, highlights) {
-		if (! highlights || highlights.length === 0) { return false; }
-
-		var has = false;
-		highlights.some(function(highlight) {
-			var regexp = new RegExp(s.escapeRegExp(highlight), 'i');
-			if (regexp.test(message.msg)) {
-				has = true;
-				return true;
-			}
-		});
-
-		return has;
-	}
-
-	settings = {};
-
-	settings.alwaysNotifyDesktopUsers = [];
-	settings.dontNotifyDesktopUsers = [];
-	settings.alwaysNotifyMobileUsers = [];
-	settings.dontNotifyMobileUsers = [];
-	settings.desktopNotificationDurations = {};
-
-	const notificationPreferencesByRoom = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(room._id);
-	notificationPreferencesByRoom.forEach(function(subscription) {
-		if (subscription.desktopNotifications === 'all') {
-			settings.alwaysNotifyDesktopUsers.push(subscription.u._id);
-		} else if (subscription.desktopNotifications === 'nothing') {
-			settings.dontNotifyDesktopUsers.push(subscription.u._id);
+		if (disableAllMessageNotifications) {
+			filter[`${ kind }PrefOrigin`] = { $ne: 'user' };
 		}
-		if (subscription.mobilePushNotifications === 'all') {
-			settings.alwaysNotifyMobileUsers.push(subscription.u._id);
-		} else if (subscription.mobilePushNotifications === 'nothing') {
-			settings.dontNotifyMobileUsers.push(subscription.u._id);
+
+		query.$or.push(filter);
+
+		if (mentionIdsWithoutGroups.length > 0) {
+			query.$or.push({
+				[notificationField]: 'mentions',
+				'u._id': { $in: mentionIdsWithoutGroups }
+			});
 		}
-		settings.desktopNotificationDurations[subscription.u._id] = subscription.desktopNotificationDuration;
-	});
 
-	userIdsToNotify = [];
-	userIdsToPushNotify = [];
-	usersWithHighlights = [];
-
-	highlights = RocketChat.models.Users.findUsersByUsernamesWithHighlights(room.usernames, { fields: { '_id': 1, 'settings.preferences.highlights': 1 }}).fetch();
-
-	highlights.forEach(function(user) {
-		if (messageContainsHighlight(message, user.settings.preferences.highlights)) {
-			usersWithHighlights.push(user);
+		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
+		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
+		if ((room.t === 'd' && serverPreference === 'mentions') || (serverPreference === 'all' && !disableAllMessageNotifications)) {
+			query.$or.push({
+				[notificationField]: { $exists: false }
+			});
+		} else if (serverPreference === 'mentions' && mentionIdsWithoutGroups.length) {
+			query.$or.push({
+				[notificationField]: { $exists: false },
+				'u._id': { $in: mentionIdsWithoutGroups }
+			});
 		}
 	});
 
-	let push_message;
-	//Set variables depending on Push Notification settings
-	if (RocketChat.settings.get('Push_show_message')) {
-		push_message = message.msg;
-	} else {
-		push_message = ' ';
-	}
+	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
+	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
+	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+	subscriptions.forEach((subscription) => sendNotification({
+		subscription,
+		sender,
+		hasMentionToAll,
+		hasMentionToHere,
+		message,
+		notificationMessage,
+		room,
+		mentionIds,
+		disableAllMessageNotifications
+	}));
 
-	let push_username;
-	let push_room;
-	if (RocketChat.settings.get('Push_show_username_room')) {
-		push_username = user.username;
-		push_room = '#' + room.name;
-	} else {
-		push_username = '';
-		push_room = '';
-	}
+	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
+	if (room.t === 'c') {
+		Promise.all(message.mentions
+			.filter(({ _id, username }) => _id !== 'here' && _id !== 'all' && !room.usernames.includes(username))
+			.map(async(user) => {
+				await callJoinRoom(user, room._id);
 
-	if ((room.t == null) || room.t === 'd') {
-		userOfMentionId = message.rid.replace(message.u._id, '');
-		userOfMention = RocketChat.models.Users.findOne({
-			_id: userOfMentionId
-		}, {
-			fields: {
-				username: 1,
-				statusConnection: 1
-			}
+				return user._id;
+			})
+		).then((users) => {
+			users.forEach((userId) => {
+				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+
+				sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds
+				});
+			});
 		});
-
-		// Always notify Sandstorm
-		if (userOfMention != null) {
-			RocketChat.Sandstorm.notify(message, [userOfMention._id],
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
-
-		}
-		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'mobile')) {
-			RocketChat.Notifications.notifyUser(userOfMention._id, 'notification', {
-				title: '@' + user.username,
-				text: message.msg,
-				duration: settings.desktopNotificationDurations[userOfMention._id],
-				payload: {
-					_id: message._id,
-					rid: message.rid,
-					sender: message.u,
-					type: room.t,
-					name: room.name
-				}
-			});
-		}
-
-		if ((userOfMention != null) && canBeNotified(userOfMentionId, 'desktop')) {
-			if (Push.enabled === true && userOfMention.statusConnection !== 'online') {
-				RocketChat.PushNotification.send({
-					roomId: message.rid,
-					username: push_username,
-					message: push_message,
-					payload: {
-						host: Meteor.absoluteUrl(),
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					},
-					usersTo: {
-						userId: userOfMention._id
-					}
-				});
-				return message;
-			}
-		}
-
-	} else {
-		mentionIds = [];
-		if ((ref = message.mentions) != null) {
-			ref.forEach(function(mention) {
-				return mentionIds.push(mention._id);
-			});
-		}
-		toAll = mentionIds.indexOf('all') > -1;
-		toHere = mentionIds.indexOf('here') > -1;
-		if (mentionIds.length > 0 || settings.alwaysNotifyDesktopUsers.length > 0) {
-			desktopMentionIds = _.union(mentionIds, settings.alwaysNotifyDesktopUsers);
-			desktopMentionIds = _.difference(desktopMentionIds, settings.dontNotifyDesktopUsers);
-
-			usersOfDesktopMentions = RocketChat.models.Users.find({
-				_id: {
-					$in: desktopMentionIds
-				}
-			}, {
-				fields: {
-					_id: 1,
-					username: 1,
-					active: 1
-				}
-			}).fetch();
-			if (room.t === 'c' && !toAll) {
-				const callJoin = function(usersOfMentionItem) {
-					if (usersOfMentionItem.active) {
-						Meteor.runAsUser(usersOfMentionItem._id, function() {
-							return Meteor.call('joinRoom', room._id);
-						});
-					}
-				};
-				for (i = 0, len = usersOfDesktopMentions.length; i < len; i++) {
-					usersOfMentionItem = usersOfDesktopMentions[i];
-					if (room.usernames.indexOf(usersOfMentionItem.username) === -1) {
-						callJoin(usersOfMentionItem);
-					}
-				}
-			}
-
-			if (room.t !== 'c') {
-				usersOfDesktopMentions = _.reject(usersOfDesktopMentions, (usersOfMentionItem) => {
-					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
-				});
-			}
-
-			userIdsToNotify = _.pluck(usersOfDesktopMentions, '_id');
-		}
-
-		if (mentionIds.length > 0 || settings.alwaysNotifyMobileUsers.length > 0) {
-			mobileMentionIds = _.union(mentionIds, settings.alwaysNotifyMobileUsers);
-			mobileMentionIds = _.difference(mobileMentionIds, settings.dontNotifyMobileUsers);
-
-			usersOfMobileMentions = RocketChat.models.Users.find({
-				_id: {
-					$in: mobileMentionIds
-				}
-			}, {
-				fields: {
-					_id: 1,
-					username: 1,
-					statusConnection: 1
-				}
-			}).fetch();
-
-			if (room.t !== 'c') {
-				usersOfMobileMentions = _.reject(usersOfMobileMentions, (usersOfMentionItem) => {
-					return room.usernames.indexOf(usersOfMentionItem.username) === -1;
-				});
-			}
-
-			userIdsToPushNotify = _.pluck(_.filter(usersOfMobileMentions, function(user) {
-				return user.statusConnection !== 'online';
-			}), '_id');
-		}
-
-		if ((toAll || toHere) && ((ref1 = room.usernames) != null ? ref1.length : void 0) > 0) {
-			RocketChat.models.Users.find({
-				username: {
-					$in: room.usernames
-				},
-				_id: {
-					$ne: user._id
-				}
-			}, {
-				fields: {
-					_id: 1,
-					username: 1,
-					status: 1,
-					statusConnection: 1
-				}
-			}).forEach(function(user) {
-				var ref2, ref3, ref4;
-				if (((ref2 = user.status) === 'online' || ref2 === 'away' || ref2 === 'busy') && (ref3 = user._id, indexOf.call(settings.dontNotifyDesktopUsers, ref3) < 0)) {
-					userIdsToNotify.push(user._id);
-				}
-				if (toAll && user.statusConnection !== 'online' && (ref4 = user._id, indexOf.call(settings.dontNotifyMobileUsers, ref4) < 0)) {
-					return userIdsToPushNotify.push(user._id);
-				}
-			});
-		}
-
-		if (usersWithHighlights.length > 0) {
-			highlightsIds = _.pluck(usersWithHighlights, '_id');
-			userIdsToNotify = userIdsToNotify.concat(highlightsIds);
-			userIdsToPushNotify = userIdsToPushNotify.concat(highlightsIds);
-		}
-
-		userIdsToNotify = _.without(_.compact(_.unique(userIdsToNotify)), message.u._id);
-		userIdsToPushNotify = _.without(_.compact(_.unique(userIdsToPushNotify)), message.u._id);
-
-		if (userIdsToNotify.length > 0) {
-			for (j = 0, len1 = userIdsToNotify.length; j < len1; j++) {
-				usersOfMentionId = userIdsToNotify[j];
-				let title = '@' + user.username;
-				if (room.name) {
-					title += ' @ #' + room.name;
-				}
-				RocketChat.Notifications.notifyUser(usersOfMentionId, 'notification', {
-					title: title,
-					text: message.msg,
-					duration: settings.desktopNotificationDurations[usersOfMentionId],
-					payload: {
-						_id: message._id,
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					}
-				});
-			}
-		}
-
-		if (userIdsToPushNotify.length > 0) {
-			if (Push.enabled === true) {
-				RocketChat.PushNotification.send({
-					roomId: message.rid,
-					roomName: push_room,
-					username: push_username,
-					message: push_message,
-					payload: {
-						host: Meteor.absoluteUrl(),
-						rid: message.rid,
-						sender: message.u,
-						type: room.t,
-						name: room.name
-					},
-					usersTo: {
-						userId: {
-							$in: userIdsToPushNotify
-						}
-					}
-				});
-			}
-		}
-
-		const allUserIdsToNotify = _.unique(userIdsToNotify.concat(userIdsToPushNotify));
-		if (room.t === 'p') {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'privateMessage');
-		} else {
-			RocketChat.Sandstorm.notify(message, allUserIdsToNotify,
-				'@' + user.username + ': ' + message.msg, 'message');
-		}
 	}
 
 	return message;
+}
 
-}, RocketChat.callbacks.priority.LOW, 'sendNotificationOnMessage');
+RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');

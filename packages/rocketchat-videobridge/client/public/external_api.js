@@ -112,7 +112,7 @@ function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, conf
     if (width) this.iframeHolder.style.width = width + "px";
     if (height) this.iframeHolder.style.height = height + "px";
     this.frameName = "jitsiConferenceFrame" + id;
-    this.url = noSsl ? "http" : "https" + "://" + domain + "/";
+    this.url = (noSsl ? "http" : "https") + "://" + domain + "/";
     if (room_name) this.url += room_name;
     this.url += "#jitsi_meet_external_api_id=" + id;
 
@@ -138,6 +138,7 @@ function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, conf
     this.frame.width = "100%";
     this.frame.height = "100%";
     this.frame.setAttribute("allowFullScreen", "true");
+    this.frame.setAttribute("allow", "microphone; camera");
     this.frame = this.iframeHolder.appendChild(this.frame);
     this.postis = Postis({
         window: this.frame.contentWindow,

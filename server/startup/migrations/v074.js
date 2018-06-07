@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 74,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			RocketChat.models.Settings.remove({_id: 'Assets_favicon_64'});
 			RocketChat.models.Settings.remove({_id: 'Assets_favicon_96'});

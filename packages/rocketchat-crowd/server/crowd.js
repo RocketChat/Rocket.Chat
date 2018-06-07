@@ -5,7 +5,7 @@ const logger = new Logger('CROWD', {});
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
-			username = {username: username};
+			username = {username};
 		} else {
 			username = {email: username};
 		}
@@ -26,8 +26,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 const CROWD = class CROWD {
 	constructor() {
-		const AtlassianCrowd = Npm.require('atlassian-crowd');
-
+		const AtlassianCrowd = require('atlassian-crowd');
 		let url = RocketChat.settings.get('CROWD_URL');
 		const urlLastChar = url.slice(-1);
 
@@ -76,7 +75,7 @@ const CROWD = class CROWD {
 			displayname: userResponse['display-name'],
 			username: userResponse.name,
 			email: userResponse.email,
-			password: password,
+			password,
 			active: userResponse.active
 		};
 
@@ -85,7 +84,6 @@ const CROWD = class CROWD {
 
 	syncDataToUser(crowdUser, id) {
 		const user = {
-			name: crowdUser.displayname,
 			username: crowdUser.username,
 			emails: [{
 				address : crowdUser.email,
@@ -94,6 +92,10 @@ const CROWD = class CROWD {
 			password: crowdUser.password,
 			active: crowdUser.active
 		};
+
+		if (crowdUser.displayname) {
+			RocketChat._setRealName(id, crowdUser.displayname);
+		}
 
 		Meteor.users.update(id, {
 			$set: user
@@ -105,7 +107,7 @@ const CROWD = class CROWD {
 			return;
 		}
 
-		var self = this;
+		const self = this;
 		logger.info('Sync started');
 
 		const users = RocketChat.models.Users.findCrowdUsers();
@@ -129,7 +131,7 @@ const CROWD = class CROWD {
 	}
 
 	addNewUser(crowdUser) {
-		var userQuery = {
+		const userQuery = {
 			crowd: true,
 			username: crowdUser.username
 		};
@@ -222,7 +224,7 @@ RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
 });
 
 Meteor.methods({
-	crowd_test_connection:function() {
+	crowd_test_connection() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });

@@ -1,5 +1,5 @@
 Meteor.methods({
-	snippetMessage: function(message, filename) {
+	snippetMessage(message, filename) {
 		if ((typeof Meteor.userId() === 'undefined') || (Meteor.userId() === null)) {
 			//noinspection JSUnresolvedFunction
 			throw new Meteor.Error('error-invalid-user', 'Invalid user',

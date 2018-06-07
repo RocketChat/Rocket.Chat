@@ -2,17 +2,20 @@
 /* Send a transcript of the room converstation to the given email */
 import moment from 'moment';
 
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
-	'livechat:sendTranscript'(rid, email) {
+	'livechat:sendTranscript'(token, rid, email) {
 		check(rid, String);
 		check(email, String);
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
-		const user = Meteor.user();
-		const userLanguage = user.language || RocketChat.settings.get('language') || 'en';
+
+		const visitor = LivechatVisitors.getVisitorByToken(token);
+		const userLanguage = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
-		if (!room || room.t !== 'l' || !room.v || !user.profile || room.v.token !== user.profile.token) {
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
@@ -20,28 +23,28 @@ Meteor.methods({
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-		var html = '<div> <hr>';
+		let html = '<div> <hr>';
 		messages.forEach(message => {
 			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
 				return;
 			}
 
-			var author;
-			if (message.u._id === Meteor.userId()) {
+			let author;
+			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
 				author = message.u.username;
 			}
 
-			var datetime = moment(message.ts).locale(userLanguage).format('LLL');
-			var singleMessage = `
-				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
+			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const singleMessage = `
+				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
+				<p>${ message.msg }</p>
 			`;
 			html = html + singleMessage;
 		});
 
-		html = html + '</div>';
+		html = `${ html }</div>`;
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 

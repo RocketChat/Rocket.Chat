@@ -1,15 +1,15 @@
 RocketChat.Migrations.add({
 	version: 65,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 
 			// New color settings - start with old settings as defaults
-			var replace1 = RocketChat.models.Settings.findOne({ _id: 'theme-color-quaternary-font-color' });
-			var replace2 = RocketChat.models.Settings.findOne({ _id: 'theme-color-input-font-color' });
-			var replace3 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-online' });
-			var replace4 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-away' });
-			var replace5 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-busy' });
-			var replace6 = RocketChat.models.Settings.findOne({ _id: 'theme-color-info-active-font-color' });
+			const replace1 = RocketChat.models.Settings.findOne({ _id: 'theme-color-quaternary-font-color' });
+			const replace2 = RocketChat.models.Settings.findOne({ _id: 'theme-color-input-font-color' });
+			const replace3 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-online' });
+			const replace4 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-away' });
+			const replace5 = RocketChat.models.Settings.findOne({ _id: 'theme-color-status-busy' });
+			const replace6 = RocketChat.models.Settings.findOne({ _id: 'theme-color-info-active-font-color' });
 			if (replace1) {
 				RocketChat.models.Settings.upsert({ _id: 'theme-color-secondary-action-color' }, { $set: { value: replace1.value } });
 			}
@@ -30,7 +30,7 @@ RocketChat.Migrations.add({
 			}
 
 			// Renamed color settings
-			var oldColor = RocketChat.models.Settings.findOne({ _id: 'theme-color-action-buttons-color' });
+			const oldColor = RocketChat.models.Settings.findOne({ _id: 'theme-color-action-buttons-color' });
 			if (oldColor) {
 				RocketChat.models.Settings.remove({ _id: 'theme-color-action-buttons-color' });
 				RocketChat.models.Settings.upsert({ _id: 'theme-color-primary-action-color' }, { $set: { value: oldColor.value } });

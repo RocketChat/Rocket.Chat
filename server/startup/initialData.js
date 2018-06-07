@@ -1,12 +1,14 @@
+import _ from 'underscore';
+
 Meteor.startup(function() {
-	Meteor.defer(function() {
+	Meteor.defer(() => RocketChat.models._CacheControl.withValue(false, function() {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				'default': true
 			});
 		}
 
-		if (!RocketChat.models.Users.db.findOneById('rocket.cat')) {
+		if (!RocketChat.models.Users.findOneById('rocket.cat')) {
 			RocketChat.models.Users.create({
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
@@ -21,16 +23,19 @@ Meteor.startup(function() {
 			RocketChat.authz.addUserRoles('rocket.cat', 'bot');
 
 			const rs = RocketChatFile.bufferToStream(new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8'));
+			const fileStore = FileUpload.getStore('Avatars');
+			fileStore.deleteByName('rocket.cat');
 
-			RocketChatFileAvatarInstance.deleteFile('rocket.cat.jpg');
+			const file = {
+				userId: 'rocket.cat',
+				type: 'image/png'
+			};
 
-			const ws = RocketChatFileAvatarInstance.createWriteStream('rocket.cat.jpg', 'image/png');
-
-			ws.on('end', Meteor.bindEnvironment(function() {
-				return RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local');
-			}));
-
-			rs.pipe(ws);
+			Meteor.runAsUser('rocket.cat', () => {
+				fileStore.insert(file, rs, () => {
+					return RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local');
+				});
+			});
 		}
 
 		if (process.env.ADMIN_PASS) {
@@ -49,7 +54,7 @@ Meteor.startup(function() {
 					adminUser.name = process.env.ADMIN_NAME;
 				}
 
-				console.log(('Name: ' + adminUser.name).green);
+				console.log((`Name: ${ adminUser.name }`).green);
 
 				if (process.env.ADMIN_EMAIL) {
 					const re = /^[^@].*@[^@]+$/i;
@@ -61,7 +66,7 @@ Meteor.startup(function() {
 								verified: true
 							}];
 
-							console.log(('Email: ' + process.env.ADMIN_EMAIL).green);
+							console.log((`Email: ${ process.env.ADMIN_EMAIL }`).green);
 						} else {
 							console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
 						}
@@ -74,7 +79,7 @@ Meteor.startup(function() {
 					let nameValidation;
 
 					try {
-						nameValidation = new RegExp('^' + RocketChat.settings.get('UTF8_Names_Validation') + '$');
+						nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 					} catch (error) {
 						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 					}
@@ -90,7 +95,7 @@ Meteor.startup(function() {
 					}
 				}
 
-				console.log(('Username: ' + adminUser.username).green);
+				console.log((`Username: ${ adminUser.username }`).green);
 
 				adminUser.type = 'user';
 
@@ -98,11 +103,27 @@ Meteor.startup(function() {
 
 				Accounts.setPassword(id, process.env.ADMIN_PASS);
 
-				console.log(('Password: ' + process.env.ADMIN_PASS).green);
+				console.log((`Password: ${ process.env.ADMIN_PASS }`).green);
 
 				RocketChat.authz.addUserRoles(id, 'admin');
 			} else {
 				console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
+			}
+		}
+
+		if (typeof process.env.INITIAL_USER === 'string' && process.env.INITIAL_USER.length > 0) {
+			try {
+				const initialUser = JSON.parse(process.env.INITIAL_USER);
+
+				if (!initialUser._id) {
+					console.log('No _id provided; Ignoring environment variable INITIAL_USER'.red);
+				} else if (!RocketChat.models.Users.findOneById(initialUser._id)) {
+					console.log('Inserting initial user:'.green);
+					console.log(JSON.stringify(initialUser, null, 2).green);
+					RocketChat.models.Users.create(initialUser);
+				}
+			} catch (e) {
+				console.log('Error processing environment variable INITIAL_USER'.red, e);
 			}
 		}
 
@@ -122,7 +143,14 @@ Meteor.startup(function() {
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
-				console.log(`No admins are found. Set ${oldestUser.username} as admin for being the oldest user`);
+				console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
+			}
+		}
+
+		if (!_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
 
@@ -148,17 +176,17 @@ Meteor.startup(function() {
 				type: 'user'
 			};
 
-			console.log((`Name: ${adminUser.name}`).green);
-			console.log((`Email: ${adminUser.emails[0].address}`).green);
-			console.log((`Username: ${adminUser.username}`).green);
-			console.log((`Password: ${adminUser._id}`).green);
+			console.log((`Name: ${ adminUser.name }`).green);
+			console.log((`Email: ${ adminUser.emails[0].address }`).green);
+			console.log((`Username: ${ adminUser.username }`).green);
+			console.log((`Password: ${ adminUser._id }`).green);
 
-			if (RocketChat.models.Users.db.findOneByEmailAddress(adminUser.emails[0].address)) {
-				throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, 'Rocket.Chat can\'t run in test mode');
+			if (RocketChat.models.Users.findOneByEmailAddress(adminUser.emails[0].address)) {
+				throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');
 			}
 
 			if (!RocketChat.checkUsernameAvailability(adminUser.username)) {
-				throw new Meteor.Error(`Username ${adminUser.username} already exists`, 'Rocket.Chat can\'t run in test mode');
+				throw new Meteor.Error(`Username ${ adminUser.username } already exists`, 'Rocket.Chat can\'t run in test mode');
 			}
 
 			RocketChat.models.Users.create(adminUser);
@@ -167,7 +195,11 @@ Meteor.startup(function() {
 
 			RocketChat.authz.addUserRoles(adminUser._id, 'admin');
 
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
+
 			return RocketChat.addUserToDefaultChannels(adminUser, true);
 		}
-	});
+	}));
 });

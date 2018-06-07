@@ -8,16 +8,9 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:version');
-	api.use('coffeescript');
 	api.use('ecmascript');
 
-	api.addFiles('file.server.coffee', 'server');
+	api.addFiles('file.server.js', 'server');
 
 	api.export('RocketChatFile', 'server');
-});
-
-Npm.depends({
-	'mkdirp': '0.5.1',
-	'gridfs-stream': '1.1.1',
-	'gm': '1.23.0'
 });

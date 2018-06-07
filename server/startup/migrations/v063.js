@@ -1,8 +1,8 @@
 RocketChat.Migrations.add({
 	version: 63,
-	up: function() {
-		var forward = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats' });
-		var timeout = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats_timeout' });
+	up() {
+		const forward = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats' });
+		const timeout = RocketChat.models.Settings.findOne({ _id:'Livechat_forward_open_chats_timeout' });
 
 		if (forward && forward.value) {
 			RocketChat.models.Settings.upsert({ _id: 'Livechat_agent_leave_action' }, {

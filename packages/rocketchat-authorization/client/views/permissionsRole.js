@@ -65,7 +65,7 @@ Template.permissionsRole.helpers({
 					noMatchTemplate: Template.roomSearchEmpty,
 					matchAll: true,
 					sort: 'name',
-					selector: function(match) {
+					selector(match) {
 						return {
 							name: match
 						};
@@ -90,7 +90,7 @@ Template.permissionsRole.helpers({
 					filter: {
 						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch()
 					},
-					selector: function(match) {
+					selector(match) {
 						return {
 							term: match
 						};
@@ -105,7 +105,7 @@ Template.permissionsRole.helpers({
 Template.permissionsRole.events({
 	'click .remove-user'(e, instance) {
 		e.preventDefault();
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -120,7 +120,7 @@ Template.permissionsRole.events({
 					return handleError(error);
 				}
 
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
 					type: 'success',

@@ -1,9 +1,11 @@
 /* global Cookies */
 WebApp.connectHandlers.use('/snippet/download', function(req, res) {
-	var cookie, rawCookies, ref, token, uid;
-	cookie = new Cookies();
+	let rawCookies;
+	let token;
+	let uid;
+	const cookie = new Cookies();
 
-	if ((typeof req !== 'undefined' && req !== null ? (ref = req.headers) !== null ? ref.cookie : void 0 : void 0) !== null) {
+	if (req.headers && req.headers.cookie !== null) {
 		rawCookies = req.headers.cookie;
 	}
 
@@ -27,7 +29,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 		res.end();
 		return false;
 	}
-	var match = /^\/([^\/]+)\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
 		const snippet = RocketChat.models.Messages.findOne(
@@ -43,7 +45,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 			return false;
 		}
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(snippet.snippetName)}`);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(snippet.snippetName) }`);
 		res.setHeader('Content-Type', 'application/octet-stream');
 
 		// Removing the ``` contained in the msg.

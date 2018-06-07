@@ -22,8 +22,7 @@ RocketChat.Migrations.add({
 			try {
 				Meteor.startup(function() {
 					return Meteor.setTimeout(function() {
-						var result;
-						result = HTTP.get(requestUrl, {
+						const result = HTTP.get(requestUrl, {
 							npmRequestOptions: {
 								encoding: 'binary'
 							}

@@ -6,13 +6,12 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('coffeescript');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:custom-oauth');
 
 	api.use('templating', 'client');
 
-	api.addFiles('common.coffee');
-	api.addFiles('wordpress-login-button.css', 'client');
-	api.addFiles('startup.coffee', 'server');
+	api.addFiles('common.js');
+	api.addFiles('client/wordpress-login-button.css', 'client');
+	api.addFiles('startup.js', 'server');
 });

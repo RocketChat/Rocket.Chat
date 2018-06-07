@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 88,
-	up: function() {
+	up() {
 		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
 			const setting = RocketChat.models.Settings.findOne({ _id: 'Layout_Sidenav_Footer' });
 			if (setting && setting.value && setting.packageValue) {

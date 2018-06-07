@@ -8,6 +8,7 @@ Meteor.startup(function() {
 				u: 1,
 				usernames: 1,
 				topic: 1,
+				announcement: 1,
 				muted: 1,
 				archived: 1,
 				ro: 1,
@@ -15,13 +16,10 @@ Meteor.startup(function() {
 				jitsiTimeout: 1,
 				description: 1,
 				sysMes: 1,
-				joinCodeRequired: 1
+				joinCodeRequired: 1,
+				streamingOptions: 1
 			}
 		};
-
-		if (RocketChat.authz.hasPermission(this.userId, 'view-join-code')) {
-			options.fields.joinCode = 1;
-		}
 
 		if (RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
 			return RocketChat.models.Rooms.findByTypeAndName('c', identifier, options);
@@ -44,13 +42,16 @@ Meteor.startup(function() {
 				u: 1,
 				usernames: 1,
 				topic: 1,
+				announcement: 1,
 				muted: 1,
 				archived: 1,
 				ro: 1,
 				reactWhenReadOnly: 1,
 				jitsiTimeout: 1,
 				description: 1,
-				sysMes: 1
+				sysMes: 1,
+				tokenpass: 1,
+				streamingOptions: 1
 			}
 		};
 

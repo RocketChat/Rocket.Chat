@@ -25,13 +25,28 @@ Meteor.methods({
 
 		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
-			let currentTsDiff, msgTs;
-			if (Match.test(originalMessage.ts, Number)) { msgTs = moment(originalMessage.ts); }
-			if (msgTs) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			let currentTsDiff;
+			let msgTs;
+
+			if (Match.test(originalMessage.ts, Number)) {
+				msgTs = moment(originalMessage.ts);
+			}
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
 			}
 		}
+
+		// It is possible to have an empty array as the attachments property, so ensure both things exist
+		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
+			message.attachments = originalMessage.attachments;
+			message.attachments[0].description = message.msg;
+			message.msg = originalMessage.msg;
+		}
+
+		message.u = originalMessage.u;
 
 		return RocketChat.updateMessage(message, Meteor.user());
 	}

@@ -1,11 +1,6 @@
 Package.describe({
   summary: "Update the client when new client code is available",
-  version: '1.2.11'
-});
-
-Cordova.depends({
-  'cordova-plugin-file': '4.1.1',
-  'cordova-plugin-file-transfer': '1.5.1'
+  version: '1.4.0'
 });
 
 Package.onUse(function (api) {
@@ -20,9 +15,9 @@ Package.onUse(function (api) {
   ], 'client');
 
   api.use([
+    'ecmascript',
     'ddp',
-    'mongo',
-    'underscore'
+    'mongo'
   ], ['client', 'server']);
 
   api.use(['http', 'random'], 'web.cordova');

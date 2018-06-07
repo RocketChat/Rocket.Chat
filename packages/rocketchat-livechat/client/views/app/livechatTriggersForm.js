@@ -50,23 +50,27 @@ Template.livechatTriggersForm.events({
 		$('.each-condition').each(function() {
 			data.conditions.push({
 				name: $('.trigger-condition', this).val(),
-				value: $('.' + $('.trigger-condition', this).val() + '-value').val()
+				value: $(`.${ $('.trigger-condition', this).val() }-value`).val()
 			});
 		});
 
 		$('.each-action').each(function() {
 			if ($('.trigger-action', this).val() === 'send-message') {
+				const params = {
+					sender: $('[name=send-message-sender]', this).val(),
+					msg: $('[name=send-message-msg]', this).val()
+				};
+				if (params.sender === 'custom') {
+					params.name = $('[name=send-message-name]', this).val();
+				}
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					params: {
-						name: $('[name=send-message-name]', this).val(),
-						msg: $('[name=send-message-msg]', this).val()
-					}
+					params
 				});
 			} else {
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					value: $('.' + $('.trigger-action', this).val() + '-value').val()
+					value: $(`.${ $('.trigger-action', this).val() }-value`).val()
 				});
 			}
 		});

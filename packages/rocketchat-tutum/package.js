@@ -6,12 +6,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('coffeescript');
 	api.use('rocketchat:lib');
-
-	api.addFiles('startup.coffee', 'server');
-});
-
-Npm.depends({
-	'redis': '2.2.5'
+	api.addFiles('startup.js', 'server');
 });

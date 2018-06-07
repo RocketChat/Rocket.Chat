@@ -6,20 +6,11 @@ import {getCredentials, api, login, request, credentials, directMessage, log } f
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
-describe('direct messages', function() {
+describe('[Direct Messages]', function() {
 	this.retries(0);
 
-	before((done) => {
-		request.post(api('login'))
-		.send(login)
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			credentials['X-Auth-Token'] = res.body.data.authToken;
-			credentials['X-User-Id'] = res.body.data.userId;
-		})
-		.end(done);
-	});
+	before(done => getCredentials(done));
+
 	it('/chat.postMessage', (done) => {
 		request.post(api('chat.postMessage'))
 			.set(credentials)
@@ -31,8 +22,8 @@ describe('direct messages', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('message.msg', 'This message was sent using the API');
-				expect(res.body).to.have.deep.property('message.rid');
+				expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
+				expect(res.body).to.have.nested.property('message.rid');
 				directMessage._id = res.body.message.rid;
 			})
 			.end(done);
@@ -95,8 +86,8 @@ describe('direct messages', function() {
 			.end(done);
 	});
 
-	it('/im.close', (done) => {
-		request.post(api('im.close'))
+	it('/im.open', (done) => {
+		request.post(api('im.open'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
@@ -110,8 +101,29 @@ describe('direct messages', function() {
 			.end(done);
 	});
 
-	it('/im.open', (done) => {
-		request.post(api('im.open'))
+	it('/im.counters', (done) => {
+		request.get(api('im.counters'))
+			.set(credentials)
+			.query({
+				roomId: directMessage._id
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('joined', true);
+				expect(res.body).to.have.property('members');
+				expect(res.body).to.have.property('unreads');
+				expect(res.body).to.have.property('unreadsFrom');
+				expect(res.body).to.have.property('msgs');
+				expect(res.body).to.have.property('latest');
+				expect(res.body).to.have.property('userMentions');
+			})
+			.end(done);
+	});
+
+	it('/im.close', (done) => {
+		request.post(api('im.close'))
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,

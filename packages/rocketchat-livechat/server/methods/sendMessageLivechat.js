@@ -1,18 +1,39 @@
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
-	sendMessageLivechat: function(message) {
-		var guest;
+	sendMessageLivechat({ token, _id, rid, msg }, agent) {
+		check(token, String);
+		check(_id, String);
+		check(rid, String);
+		check(msg, String);
 
-		check(message.rid, String);
-		check(message.token, String);
+		check(agent, Match.Maybe({
+			agentId: String,
+			username: String
+		}));
 
-		guest = Meteor.users.findOne(Meteor.userId(), {
+		const guest = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
 				name: 1,
 				username: 1,
-				department: 1
+				department: 1,
+				token: 1
 			}
 		});
 
-		return RocketChat.Livechat.sendMessage({ guest: guest, message: message });
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		return RocketChat.Livechat.sendMessage({
+			guest,
+			message: {
+				_id,
+				rid,
+				msg,
+				token
+			},
+			agent
+		});
 	}
 });

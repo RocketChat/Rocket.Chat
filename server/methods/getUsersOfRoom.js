@@ -9,6 +9,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
+		if (room.broadcast && !RocketChat.authz.hasPermission(Meteor.userId(), 'view-broadcast-member-list', roomId)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
+		}
+
 		const filter = (record) => {
 			if (!record._user) {
 				console.log('Subscription without user', record._id);
@@ -23,7 +27,11 @@ Meteor.methods({
 		};
 
 		const map = (record) => {
-			return record._user.username;
+			return {
+				_id: record._user._id,
+				username: record._user.username,
+				name: record._user.name
+			};
 		};
 
 		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();

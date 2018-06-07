@@ -6,13 +6,15 @@ Meteor.publish('roomFiles', function(rid, limit = 50) {
 	const pub = this;
 
 	const cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, limit).observeChanges({
-		added: function(_id, record) {
-			return pub.added('room_files', _id, record);
+		added(_id, record) {
+			const {username, name} = record.userId ? RocketChat.models.Users.findOneById(record.userId) : {};
+			return pub.added('room_files', _id, {...record, user:{username, name}});
 		},
-		changed: function(_id, record) {
-			return pub.changed('room_files', _id, record);
+		changed(_id, record) {
+			const {username, name} = record.userId ? RocketChat.models.Users.findOneById(record.userId) : {};
+			return pub.changed('room_files', _id, {...record, user:{username, name}});
 		},
-		removed: function(_id, record) {
+		removed(_id, record) {
 			return pub.removed('room_files', _id, record);
 		}
 	});

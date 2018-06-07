@@ -1,4 +1,5 @@
 import Page from './Page';
+import mainContent from './main-content.page';
 
 class LoginPage extends Page {
 	get registerButton() { return browser.element('button.register'); }
@@ -11,6 +12,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get reasonField() { return browser.element('[name=reason]'); }
 	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
@@ -18,6 +20,7 @@ class LoginPage extends Page {
 	get emailInvalidText() { return browser.element('[name=email]~.input-error'); }
 	get passwordInvalidText() { return browser.element('[name=pass]~.input-error'); }
 	get confirmPasswordInvalidText() { return browser.element('[name=confirm-pass]~.input-error'); }
+	get registrationSucceededCard() { return browser.element('#login-card h2'); }
 
 	open() {
 		super.open('');
@@ -26,11 +29,15 @@ class LoginPage extends Page {
 	gotToRegister() {
 		this.registerButton.waitForVisible(5000);
 		this.registerButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.nameField.waitForVisible(15000);
 	}
 
 	gotToForgotPassword() {
 		this.forgotPasswordButton.waitForVisible(5000);
 		this.forgotPasswordButton.click();
+		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
+		this.emailField.waitForVisible(15000);
 	}
 
 	registerNewUser({username, email, password}) {
@@ -59,6 +66,12 @@ class LoginPage extends Page {
 		this.passwordField.setValue(password);
 
 		this.submit();
+	}
+
+	loginSucceded({email, password}) {
+		this.login({email, password});
+
+		mainContent.mainContent.waitForVisible(5000);
 	}
 
 	submit() {

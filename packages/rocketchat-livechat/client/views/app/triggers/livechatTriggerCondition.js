@@ -22,7 +22,7 @@ Template.livechatTriggerCondition.helpers({
 Template.livechatTriggerCondition.events({
 	'change .trigger-condition'(e, instance) {
 		instance.$('.trigger-condition-value ').addClass('hidden');
-		instance.$('.' + e.currentTarget.value).removeClass('hidden');
+		instance.$(`.${ e.currentTarget.value }`).removeClass('hidden');
 	}
 });
 

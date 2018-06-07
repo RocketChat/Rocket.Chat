@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Meteor.methods({
 	channelsList(filter, channelType, limit, sort) {
 		this.unblock();
@@ -27,7 +30,7 @@ Meteor.methods({
 			options.limit = limit;
 		}
 
-		if (_.trim(sort)) {
+		if (s.trim(sort)) {
 			switch (sort) {
 				case 'name':
 					options.sort = {
@@ -58,14 +61,15 @@ Meteor.methods({
 		}
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
-			const userPref = Meteor.user() && Meteor.user().settings && Meteor.user().settings.preferences && Meteor.user().settings.preferences.mergeChannels;
+			const user = Meteor.user();
+			const userPref = RocketChat.getUserPreference(user, 'mergeChannels') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
 			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref || globalPref;
+			const mergeChannels = userPref !== undefined ? userPref : globalPref;
 
 			if (mergeChannels) {
 				roomTypes.push({
 					type: 'p',
-					username: Meteor.user().username
+					username: user.username
 				});
 			}
 		}

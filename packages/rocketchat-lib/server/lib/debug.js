@@ -1,4 +1,7 @@
-var logger = new Logger('Meteor', {
+/* global InstanceStatus */
+import _ from 'underscore';
+
+const logger = new Logger('Meteor', {
 	methods: {
 		method: {
 			type: 'debug'
@@ -9,16 +12,19 @@ var logger = new Logger('Meteor', {
 	}
 });
 
-var wrapMethods = function(name, originalHandler, methodsMap) {
+const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
-		var args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
+		const end = RocketChat.metrics.meteorMethods.startTimer({method: name});
+		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
-		return originalHandler.apply(this, arguments);
+		const result = originalHandler.apply(this, arguments);
+		end();
+		return result;
 	};
 };
 
-var originalMeteorMethods = Meteor.methods;
+const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function(methodMap) {
 	_.each(methodMap, function(handler, name) {
@@ -27,12 +33,24 @@ Meteor.methods = function(methodMap) {
 	originalMeteorMethods(methodMap);
 };
 
-var originalMeteorPublish = Meteor.publish;
+const originalMeteorPublish = Meteor.publish;
 
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
 		logger.publish(name, '-> userId:', this.userId, ', arguments: ', arguments);
+		const end = RocketChat.metrics.meteorSubscriptions.startTimer({subscription: name});
+
+		const originalReady = this.ready;
+		this.ready = function() {
+			end();
+			return originalReady.apply(this, arguments);
+		};
 
 		return func.apply(this, arguments);
 	});
 };
+
+WebApp.rawConnectHandlers.use(function(req, res, next) {
+	res.setHeader('X-Instance-ID', InstanceStatus.id());
+	return next();
+});

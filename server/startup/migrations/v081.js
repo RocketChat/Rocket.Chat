@@ -1,6 +1,6 @@
 RocketChat.Migrations.add({
 	version: 81,
-	up: function() {
+	up() {
 		RocketChat.models.OAuthApps.update({ _id: 'zapier' }, {
 			$set: {
 				active: true,

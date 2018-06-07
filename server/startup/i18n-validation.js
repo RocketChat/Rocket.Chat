@@ -1,9 +1,12 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 function flat(obj, newObj = {}, path = '') {
 	for (const key of Object.keys(obj)) {
 		const value = obj[key];
 
 		if (_.isObject(value)) {
-			flat(value, newObj, key + '.');
+			flat(value, newObj, `${ key }.`);
 		} else {
 			newObj[path + key] = value;
 		}
@@ -39,7 +42,7 @@ RocketChat.i18nValidation = function i18nValidation() {
 			continue;
 		}
 
-		const error = ((_.difference(langs, present).join(',')) + ': missing translation for ').red + key.white + ('. Present in [' + (present.join(',')) + ']').red;
+		const error = (`${ _.difference(langs, present).join(',') }: missing translation for `).red + key.white + (`. Present in [${ present.join(',') }]`).red;
 
 		errors.push(error);
 
@@ -52,7 +55,7 @@ RocketChat.i18nValidation = function i18nValidation() {
 		console.log('+'.red + s.rpad('', len - 28, '-').red + '+'.red);
 
 		for (const error of errors) {
-			console.log('|'.red, s.rpad('' + error, len).red, '|'.red);
+			console.log('|'.red, s.rpad(`${ error }`, len).red, '|'.red);
 		}
 
 		return console.log('+'.red + s.rpad('', len - 28, '-').red + '+'.red);

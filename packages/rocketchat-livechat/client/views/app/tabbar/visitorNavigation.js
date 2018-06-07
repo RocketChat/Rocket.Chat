@@ -23,7 +23,7 @@ Template.visitorNavigation.helpers({
 });
 
 Template.visitorNavigation.onCreated(function() {
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
 		this.pageVisited = this.subscribe('livechat:visitorPageVisited', { rid: currentData.rid });

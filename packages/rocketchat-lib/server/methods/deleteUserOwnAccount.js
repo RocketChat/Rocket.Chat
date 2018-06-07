@@ -1,5 +1,7 @@
+import s from 'underscore.string';
+
 Meteor.methods({
-	deleteUserOwnAccount: function(password) {
+	deleteUserOwnAccount(password) {
 
 		check(password, String);
 

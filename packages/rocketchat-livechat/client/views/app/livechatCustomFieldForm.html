@@ -7,19 +7,19 @@
 						<div class="input-line">
 							<label>{{_ "Field"}}</label>
 							<div>
-								<input type="text" name="field" value="{{customField._id}}" readonly="{{$exists customField._id}}" placeholder="{{_ "Field"}}" />
+								<input type="text" class="rc-input__element" name="field" value="{{customField._id}}" readonly="{{$exists customField._id}}" placeholder="{{_ "Field"}}" />
 							</div>
 						</div>
 						<div class="input-line">
 							<label>{{_ "Label"}}</label>
 							<div>
-								<input type="text" name="label" value="{{customField.label}}" placeholder="{{_ "Label"}}" />
+								<input type="text" class="rc-input__element" name="label" value="{{customField.label}}" placeholder="{{_ "Label"}}" />
 							</div>
 						</div>
 						<div class="input-line">
 							<label>{{_ "Scope"}}</label>
 							<div>
-								<select name="scope">
+								<select name="scope" class="rc-input__element">
 									<option value="visitor" selected="{{$eq customField.scope 'visitor'}}">{{_ "Visitor"}}</option>
 									<option value="room" selected="{{$eq customField.scope 'room'}}">{{_ "Room"}}</option>
 								</select>
@@ -28,7 +28,7 @@
 						<div class="input-line">
 							<label>{{_ "Visibility"}}</label>
 							<div>
-								<select name="visibility">
+								<select name="visibility" class="rc-input__element">
 									<option value="visible" selected="{{$eq customField.visibility 'visible'}}">{{_ "Visible"}}</option>
 									<option value="hidden" selected="{{$eq customField.visibility 'hidden'}}">{{_ "Hidden"}}</option>
 								</select>

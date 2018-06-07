@@ -52,10 +52,10 @@ Meteor.methods({
 
 		Push.send({
 			from: 'push',
-			title: `@${user.username}`,
+			title: `@${ user.username }`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${user.username}:\n${TAPi18n.__('This_is_a_push_test_messsage')}`
+				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`
 			},
 			sound: 'default',
 			query: {
@@ -73,12 +73,12 @@ Meteor.methods({
 function sendPush(service, token, options, tries = 0) {
 	const data = {
 		data: {
-			token: token,
-			options: options
+			token,
+			options
 		}
 	};
 
-	return HTTP.post(RocketChat.settings.get('Push_gateway') + `/push/${service}/send`, data, function(error, response) {
+	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({
@@ -95,7 +95,7 @@ function sendPush(service, token, options, tries = 0) {
 			return;
 		}
 
-		SystemLogger.error(`Error sending push to gateway (${tries} try) ->`, error);
+		SystemLogger.error(`Error sending push to gateway (${ tries } try) ->`, error);
 
 		if (tries <= 6) {
 			const milli = Math.pow(10, tries + 2);
@@ -117,12 +117,13 @@ function configurePush() {
 
 	if (RocketChat.settings.get('Push_enable') === true) {
 		Push.allow({
-			send: function(userId/*, notification*/) {
+			send(userId/*, notification*/) {
 				return RocketChat.authz.hasRole(userId, 'admin');
 			}
 		});
 
-		let apn, gcm;
+		let apn;
+		let gcm;
 
 		if (RocketChat.settings.get('Push_enable_gateway') === false) {
 			gcm = {
@@ -155,8 +156,8 @@ function configurePush() {
 		}
 
 		Push.Configure({
-			apn: apn,
-			gcm: gcm,
+			apn,
+			gcm,
 			production: RocketChat.settings.get('Push_production'),
 			sendInterval: 1000,
 			sendBatchSize: 10
@@ -174,7 +175,7 @@ function configurePush() {
 					throw new Error('Push.send: option "text" not a string');
 				}
 				if (RocketChat.settings.get('Push_debug')) {
-					console.log(`Push: send message "${options.title}" via query`, options.query);
+					console.log(`Push: send message "${ options.title }" via query`, options.query);
 				}
 
 				const query = {

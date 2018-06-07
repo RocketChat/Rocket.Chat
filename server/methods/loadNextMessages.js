@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
 		check(rid, String);
@@ -43,7 +45,7 @@ Meteor.methods({
 		});
 
 		return {
-			messages: messages
+			messages
 		};
 	}
 });

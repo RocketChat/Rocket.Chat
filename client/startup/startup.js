@@ -2,6 +2,10 @@
 
 import moment from 'moment';
 import toastr from 'toastr';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
+
+hljs.initHighlightingOnLoad();
 
 if (window.DISABLE_ANIMATION) {
 	toastr.options.timeOut = 1;
@@ -13,8 +17,20 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
-	UserPresence.start();
+	const userHasPreferences = (user) => {
+		if (!user) {
+			return false;
+		}
+
+		const userHasSettings = user.hasOwnProperty('settings');
+
+		if (!userHasSettings) {
+			return false;
+		}
+
+		return user.settings.hasOwnProperty('preferences');
+	};
+
 	Meteor.subscribe('activeUsers');
 
 	Session.setDefault('AvatarRandom', 0);
@@ -40,6 +56,7 @@ Meteor.startup(function() {
 		return RocketChat.settings.get('Language') || defaultAppLanguage();
 	};
 
+	const availableLanguages = TAPi18n.getLanguages();
 	const loadedLanguages = [];
 
 	window.setLanguage = function(language) {
@@ -59,20 +76,39 @@ Meteor.startup(function() {
 			$('html').removeClass('rtl');
 		}
 
-		language = language.split('-').shift();
+		if (!availableLanguages[language]) {
+			language = language.split('-').shift();
+		}
+
 		TAPi18n.setLanguage(language);
 
 		language = language.toLowerCase();
 		if (language !== 'en') {
 			Meteor.call('loadLocale', language, (err, localeFn) => {
-				Function(localeFn).call({moment: moment});
+				Function(localeFn).call({moment});
 				moment.locale(language);
 			});
 		}
 	};
 
+	const defaultIdleTimeLimit = 300;
+
 	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
+		const user = Meteor.user();
+		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
+
+		if (!userHasPreferences(user)) {
+			UserPresence.awayTime = defaultIdleTimeLimit * 1000;
+			UserPresence.start();
+		} else {
+			UserPresence.awayTime = (user.settings.preferences.idleTimeLimit || defaultIdleTimeLimit) * 1000;
+
+			if (user.settings.preferences.hasOwnProperty('enableAutoAway')) {
+				user.settings.preferences.enableAutoAway && UserPresence.start();
+			} else {
+				UserPresence.start();
+			}
+		}
 
 		if (localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);
@@ -86,8 +122,8 @@ Meteor.startup(function() {
 				return;
 			}
 
-			if (Meteor.user() && Meteor.user().status !== status) {
-				status = Meteor.user().status;
+			if (user && user.status !== status) {
+				status = user.status;
 				fireGlobalEvent('status-changed', status);
 			}
 		});

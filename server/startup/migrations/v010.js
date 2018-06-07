@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.Migrations.add({
 	version: 10,
 	up() {
@@ -28,6 +30,6 @@ RocketChat.Migrations.add({
 			}
 		});
 
-		return console.log(`Removed duplicated usernames from ${count} rooms`);
+		return console.log(`Removed duplicated usernames from ${ count } rooms`);
 	}
 });

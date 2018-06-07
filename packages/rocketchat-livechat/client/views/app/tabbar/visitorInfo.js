@@ -1,3 +1,7 @@
+/* globals LivechatVisitor */
+
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
@@ -5,17 +9,17 @@ Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
 		if (user && user.userAgent) {
-			var ua = new UAParser();
+			const ua = new UAParser();
 			ua.setUA(user.userAgent);
 
-			user.os = ua.getOS().name + ' ' + ua.getOS().version;
+			user.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
 			if (['Mac OS', 'iOS'].indexOf(ua.getOS().name) !== -1) {
 				user.osIcon = 'icon-apple';
 			} else {
-				user.osIcon = 'icon-' + ua.getOS().name.toLowerCase();
+				user.osIcon = `icon-${ ua.getOS().name.toLowerCase() }`;
 			}
-			user.browser = ua.getBrowser().name + ' ' + ua.getBrowser().version;
-			user.browserIcon = 'icon-' + ua.getBrowser().name.toLowerCase();
+			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
+			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
 		}
 
 		return user;
@@ -50,7 +54,7 @@ Template.visitorInfo.helpers({
 				if (livechatData.hasOwnProperty(_id)) {
 					const customFields = Template.instance().customFields.get();
 					if (customFields) {
-						const field = _.findWhere(customFields, { _id: _id });
+						const field = _.findWhere(customFields, { _id });
 						if (field && field.visibility !== 'hidden') {
 							fields.push({ label: field.label, value: livechatData[_id] });
 						}
@@ -152,7 +156,7 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Closing_chat'),
 			type: 'input',
 			inputPlaceholder: t('Please_add_a_comment'),
@@ -160,12 +164,12 @@ Template.visitorInfo.events({
 			closeOnConfirm: false
 		}, (inputValue) => {
 			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
 			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
@@ -173,7 +177,7 @@ Template.visitorInfo.events({
 				if (error) {
 					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Chat_closed'),
 					text: t('Chat_closed_successfully'),
 					type: 'success',
@@ -187,7 +191,7 @@ Template.visitorInfo.events({
 	'click .return-inquiry'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Would_you_like_to_return_the_inquiry'),
 			type: 'warning',
 			showCancelButton: true,
@@ -225,7 +229,7 @@ Template.visitorInfo.onCreated(function() {
 		}
 	});
 
-	var currentData = Template.currentData();
+	const currentData = Template.currentData();
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
@@ -241,6 +245,6 @@ Template.visitorInfo.onCreated(function() {
 	}
 
 	this.autorun(() => {
-		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
+		this.user.set(LivechatVisitor.findOne({ '_id': this.visitorId.get() }));
 	});
 });

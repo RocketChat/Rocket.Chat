@@ -16,41 +16,24 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
 
-		function checkPassword(user = {}, currentPassword) {
-			if (user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim()) {
+		function checkPassword(user = {}, typedPassword) {
+			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
 				return true;
 			}
 
-			if (!currentPassword) {
-				return false;
-			}
-
 			const passCheck = Accounts._checkPassword(user, {
-				digest: currentPassword,
+				digest: typedPassword,
 				algorithm: 'sha-256'
 			});
 
 			if (passCheck.error) {
 				return false;
 			}
-
 			return true;
 		}
 
-		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.currentPassword)) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
-				});
-			}
-
-			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
-				logout: false
-			});
-		}
-
 		if (settings.realname) {
-			Meteor.call('setRealName', settings.realname);
+			RocketChat.setRealName(Meteor.userId(), settings.realname);
 		}
 
 		if (settings.username) {
@@ -58,13 +41,28 @@ Meteor.methods({
 		}
 
 		if (settings.email) {
-			if (!checkPassword(user, settings.currentPassword)) {
+			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile'
 				});
 			}
 
 			Meteor.call('setEmail', settings.email);
+		}
+
+		// Should be the last check to prevent error when trying to check password for users without password
+		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
+			if (!checkPassword(user, settings.typedPassword)) {
+				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+					method: 'saveUserProfile'
+				});
+			}
+
+			RocketChat.passwordPolicy.validate(settings.newPassword);
+
+			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
+				logout: false
+			});
 		}
 
 		RocketChat.models.Users.setProfile(Meteor.userId(), {});

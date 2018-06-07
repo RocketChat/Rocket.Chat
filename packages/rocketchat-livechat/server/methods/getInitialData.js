@@ -1,20 +1,29 @@
+import _ from 'underscore';
+
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken) {
-		var info = {
+		const info = {
 			enabled: null,
 			title: null,
 			color: null,
 			registrationForm: null,
 			room: null,
+			visitor: null,
 			triggers: [],
 			departments: [],
+			allowSwitchingDepartments: null,
 			online: true,
 			offlineColor: null,
 			offlineMessage: null,
 			offlineSuccessMessage: null,
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
-			videoCall: null
+			videoCall: null,
+			conversationFinishedMessage: null,
+			nameFieldRegistrationForm: null,
+			emailFieldRegistrationForm: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -33,6 +42,18 @@ Meteor.methods({
 			info.room = room[0];
 		}
 
+		const visitor = LivechatVisitors.getVisitorByToken(visitorToken, {
+			fields: {
+				name: 1,
+				username: 1,
+				visitorEmails: 1
+			}
+		});
+
+		if (room) {
+			info.visitor = visitor;
+		}
+
 		const initSettings = RocketChat.Livechat.getInitSettings();
 
 		info.title = initSettings.Livechat_title;
@@ -49,6 +70,9 @@ Meteor.methods({
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
+		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
+		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
+		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
@@ -59,6 +83,7 @@ Meteor.methods({
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
 			info.departments.push(department);
 		});
+		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 

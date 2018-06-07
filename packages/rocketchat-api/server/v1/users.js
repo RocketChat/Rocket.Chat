@@ -1,5 +1,8 @@
+import _ from 'underscore';
+import Busboy from 'busboy';
+
 RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, {
 			email: String,
 			name: String,
@@ -19,11 +22,16 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 			this.bodyParams.joinDefaultChannels = true;
 		}
 
+		if (this.bodyParams.customFields) {
+			RocketChat.validateCustomFields(this.bodyParams.customFields);
+		}
+
 		const newUserId = RocketChat.saveUser(this.userId, this.bodyParams);
 
 		if (this.bodyParams.customFields) {
-			RocketChat.saveCustomFields(newUserId, this.bodyParams.customFields);
+			RocketChat.saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 		}
+
 
 		if (typeof this.bodyParams.active !== 'undefined') {
 			Meteor.runAsUser(this.userId, () => {
@@ -36,7 +44,7 @@ RocketChat.API.v1.addRoute('users.create', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
-	post: function() {
+	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'delete-user')) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -52,10 +60,10 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
-	get: function() {
+	get() {
 		const user = this.getUserFromParams();
 
-		const url = RocketChat.getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		const url = RocketChat.getURL(`/avatar/${ user.username }`, { cdn: false, full: true });
 		this.response.setHeader('Location', url);
 
 		return {
@@ -66,27 +74,26 @@ RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 });
 
 RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
-	get: function() {
-		//BLAHHHHHHHHHH :'(
-		if ((this.queryParams.userId && this.userId !== this.queryParams.userId) || (this.queryParams.username && this.user.username !== this.queryParams.username) || (this.queryParams.user && this.user.username !== this.queryParams.user)) {
-			const user = this.getUserFromParams();
-
+	get() {
+		if (this.isUserFromParams()) {
+			const user = RocketChat.models.Users.findOneById(this.userId);
 			return RocketChat.API.v1.success({
-				presence: user.status
+				presence: user.status,
+				connectionStatus: user.statusConnection,
+				lastLogin: user.lastLogin
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(this.userId);
+		const user = this.getUserFromParams();
+
 		return RocketChat.API.v1.success({
-			presence: user.status,
-			connectionStatus: user.statusConnection,
-			lastLogin: user.lastLogin
+			presence: user.status
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
-	get: function() {
+	get() {
 		const user = this.getUserFromParams();
 
 		let result;
@@ -95,7 +102,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${user._id}".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
 		}
 
 		return RocketChat.API.v1.success({
@@ -105,50 +112,32 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 });
 
 RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
-	get: function() {
+	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		let fieldsToKeepFromRegularUsers;
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-			fieldsToKeepFromRegularUsers = {
-				avatarOrigin: 0,
-				emails: 0,
-				phone: 0,
-				statusConnection: 0,
-				createdAt: 0,
-				lastLogin: 0,
-				services: 0,
-				requirePasswordChange: 0,
-				requirePasswordChangeReason: 0,
-				roles: 0,
-				statusDefault: 0,
-				_updatedAt: 0,
-				customFields: 0
-			};
-		}
-
-		const ourQuery = Object.assign({}, query);
-		const ourFields = Object.assign({}, fields, fieldsToKeepFromRegularUsers, RocketChat.API.v1.defaultFieldsToExclude);
-
-		const users = RocketChat.models.Users.find(ourQuery, {
+		const users = RocketChat.models.Users.find(query, {
 			sort: sort ? sort : { username: 1 },
 			skip: offset,
 			limit: count,
-			fields: ourFields
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: RocketChat.models.Users.find(ourQuery).count()
+			total: RocketChat.models.Users.find(query).count()
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
-	post: function() {
+	post() {
 		if (this.userId) {
 			return RocketChat.API.v1.failure('Logged in users can not register again.');
 		}
@@ -169,50 +158,73 @@ RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
 	}
 });
 
-//TODO: Make this route work with support for usernames
-RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
-	post: function() {
-		check(this.bodyParams, { avatarUrl: Match.Maybe(String), userId: Match.Maybe(String) });
+RocketChat.API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
+	post() {
+		const user = this.getUserFromParams();
 
-		if (typeof this.bodyParams.userId !== 'undefined' && this.userId !== this.bodyParams.userId && !RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
-			return RocketChat.API.v1.unauthorized();
-		}
-
-		const user = Meteor.users.findOne(this.bodyParams.userId ? this.bodyParams.userId : this.userId);
-
-		if (this.bodyParams.avatarUrl) {
-			RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+		if (user._id === this.userId) {
+			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
+		} else if (RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+			Meteor.runAsUser(user._id, () => Meteor.call('resetAvatar'));
 		} else {
-			const Busboy = Npm.require('busboy');
-			const busboy = new Busboy({ headers: this.request.headers });
-
-			Meteor.wrapAsync((callback) => {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-					if (fieldname !== 'image') {
-						return callback(new Meteor.Error('invalid-field'));
-					}
-
-					const imageData = [];
-					file.on('data', Meteor.bindEnvironment((data) => {
-						imageData.push(data);
-					}));
-
-					file.on('end', Meteor.bindEnvironment(() => {
-						RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-						callback();
-					}));
-
-					this.request.pipe(busboy);
-				}));
-			})();
+			return RocketChat.API.v1.unauthorized();
 		}
 
 		return RocketChat.API.v1.success();
 	}
 });
 
+RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			avatarUrl: Match.Maybe(String),
+			userId: Match.Maybe(String),
+			username: Match.Maybe(String)
+		}));
+
+		let user;
+		if (this.isUserFromParams()) {
+			user = Meteor.users.findOne(this.userId);
+		} else if (RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+			user = this.getUserFromParams();
+		} else {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		Meteor.runAsUser(user._id, () => {
+			if (this.bodyParams.avatarUrl) {
+				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+			} else {
+				const busboy = new Busboy({ headers: this.request.headers });
+
+				Meteor.wrapAsync((callback) => {
+					busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
+						if (fieldname !== 'image') {
+							return callback(new Meteor.Error('invalid-field'));
+						}
+
+						const imageData = [];
+						file.on('data', Meteor.bindEnvironment((data) => {
+							imageData.push(data);
+						}));
+
+						file.on('end', Meteor.bindEnvironment(() => {
+							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+							callback();
+						}));
+
+					}));
+					this.request.pipe(busboy);
+				})();
+			}
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
-	post: function() {
+	post() {
 		check(this.bodyParams, {
 			userId: String,
 			data: Match.ObjectIncluding({
@@ -232,7 +244,7 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
-		RocketChat.saveUser(this.userId, userData);
+		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
 
 		if (this.bodyParams.data.customFields) {
 			RocketChat.saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
@@ -245,5 +257,170 @@ RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
+	}
+});
+
+RocketChat.API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			data: Match.ObjectIncluding({
+				email: Match.Maybe(String),
+				name: Match.Maybe(String),
+				username: Match.Maybe(String),
+				currentPassword: Match.Maybe(String),
+				newPassword: Match.Maybe(String)
+			}),
+			customFields: Match.Maybe(Object)
+		});
+
+		const userData = {
+			email: this.bodyParams.data.email,
+			realname: this.bodyParams.data.name,
+			username: this.bodyParams.data.username,
+			newPassword: this.bodyParams.data.newPassword,
+			typedPassword: this.bodyParams.data.currentPassword
+		};
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields));
+
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.userId, { fields: RocketChat.API.v1.defaultFieldsToExclude }) });
+	}
+});
+
+RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
+	post() {
+		const user = this.getUserFromParams();
+		let data;
+		Meteor.runAsUser(this.userId, () => {
+			data = Meteor.call('createToken', user._id);
+		});
+		return data ? RocketChat.API.v1.success({ data }) : RocketChat.API.v1.unauthorized();
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
+	get() {
+		const user = RocketChat.models.Users.findOneById(this.userId);
+		if (user.settings) {
+			const preferences = user.settings.preferences;
+			preferences['language'] = user.language;
+
+			return RocketChat.API.v1.success({
+				preferences
+			});
+		} else {
+			return RocketChat.API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
+		}
+	}
+});
+
+RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			userId: Match.Maybe(String),
+			data: Match.ObjectIncluding({
+				newRoomNotification: Match.Maybe(String),
+				newMessageNotification: Match.Maybe(String),
+				useEmojis: Match.Maybe(Boolean),
+				convertAsciiEmoji: Match.Maybe(Boolean),
+				saveMobileBandwidth: Match.Maybe(Boolean),
+				collapseMediaByDefault: Match.Maybe(Boolean),
+				autoImageLoad: Match.Maybe(Boolean),
+				emailNotificationMode: Match.Maybe(String),
+				roomsListExhibitionMode: Match.Maybe(String),
+				unreadAlert: Match.Maybe(Boolean),
+				notificationsSoundVolume: Match.Maybe(Number),
+				desktopNotifications: Match.Maybe(String),
+				mobileNotifications: Match.Maybe(String),
+				enableAutoAway: Match.Maybe(Boolean),
+				highlights: Match.Maybe(Array),
+				desktopNotificationDuration: Match.Maybe(Number),
+				messageViewMode: Match.Maybe(Number),
+				hideUsernames: Match.Maybe(Boolean),
+				hideRoles: Match.Maybe(Boolean),
+				hideAvatars: Match.Maybe(Boolean),
+				hideFlexTab: Match.Maybe(Boolean),
+				sendOnEnter: Match.Maybe(String),
+				roomCounterSidebar: Match.Maybe(Boolean),
+				language: Match.Maybe(String),
+				sidebarShowFavorites: Match.Optional(Boolean),
+				sidebarShowUnread: Match.Optional(Boolean),
+				sidebarSortby: Match.Optional(String),
+				sidebarViewMode: Match.Optional(String),
+				sidebarHideAvatar: Match.Optional(Boolean),
+				mergeChannels: Match.Optional(Boolean),
+				muteFocusedConversations: Match.Optional(Boolean)
+			})
+		});
+
+		let preferences;
+		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
+		if (this.bodyParams.data.language) {
+			const language = this.bodyParams.data.language;
+			delete this.bodyParams.data.language;
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
+		} else {
+			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
+		}
+
+		// Keep compatibility with old values
+		if (preferences.emailNotificationMode === 'all') {
+			preferences.emailNotificationMode = 'mentions';
+		} else if (preferences.emailNotificationMode === 'disabled') {
+			preferences.emailNotificationMode = 'nothing';
+		}
+
+		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
+
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: preferences }) });
+	}
+});
+
+/**
+ DEPRECATED
+ // TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
+ This API returns the logged user roles.
+
+ Method: GET
+ Route: api/v1/user.roles
+ */
+RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
+	get() {
+		let currentUserRoles = {};
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUserRoles'));
+
+		if (Array.isArray(result) && result.length > 0) {
+			currentUserRoles = result[0];
+		}
+
+		return RocketChat.API.v1.success(this.deprecationWarning({
+			endpoint: 'user.roles',
+			versionWillBeRemove: 'v0.66',
+			response: currentUserRoles
+		}));
+	}
+});
+
+RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
+	post() {
+		const { email } = this.bodyParams;
+		if (!email) {
+			return RocketChat.API.v1.failure('The \'email\' param is required');
+		}
+
+		const emailSent = Meteor.call('sendForgotPasswordEmail', email);
+		if (emailSent) {
+			return RocketChat.API.v1.success();
+		}
+		return RocketChat.API.v1.failure('User not found');
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
+	get() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+
+		return RocketChat.API.v1.success({ result });
 	}
 });

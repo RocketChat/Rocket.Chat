@@ -10,7 +10,7 @@ Meteor.publish('usersInRole', function(roleName, scope, limit = 50) {
 	}
 
 	const options = {
-		limit: limit,
+		limit,
 		sort: {
 			name: 1
 		}

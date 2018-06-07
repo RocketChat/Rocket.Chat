@@ -2,7 +2,10 @@
 **/build/*
 **/node_modules/*
 **/tmp/*
+**/.meteor/.id
 **/.meteor/dev_bundle
+**/.meteor/local*
+**/.meteor/meteorite
 /private/certs/*
 *.bak
 *.iml
@@ -34,13 +37,11 @@
 .env
 .externalToolBuilders
 .idea
+.vscode
 .loadpath
 .map
 .metadata
-.meteor/local*
-.meteor/meteorite
-.meteor/dev_bundle
-packages/rocketchat-livechat/app/.meteor/dev_bundle
+packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
 .project
@@ -73,3 +74,4 @@ pm2.json
 settings.json
 build.sh
 /public/livechat
+packages/rocketchat-i18n/i18n/livechat.*

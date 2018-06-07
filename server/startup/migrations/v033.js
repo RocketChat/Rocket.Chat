@@ -33,13 +33,13 @@ RocketChat.Migrations.add({
 		integrations.forEach(function(integration) {
 			let script = '';
 			if (integration.processIncomingRequestScript) {
-				script += integration.processIncomingRequestScript + '\n\n';
+				script += `${ integration.processIncomingRequestScript }\n\n`;
 			}
 			if (integration.prepareOutgoingRequestScript) {
-				script += integration.prepareOutgoingRequestScript + '\n\n';
+				script += `${ integration.prepareOutgoingRequestScript }\n\n`;
 			}
 			if (integration.processOutgoingResponseScript) {
-				script += integration.processOutgoingResponseScript + '\n\n';
+				script += `${ integration.processOutgoingResponseScript }\n\n`;
 			}
 
 			return RocketChat.models.Integrations.update(integration._id, {

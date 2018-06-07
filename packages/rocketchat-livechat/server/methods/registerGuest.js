@@ -1,22 +1,17 @@
 Meteor.methods({
-	'livechat:registerGuest': function({ token, name, email, department } = {}) {
-		var stampedToken = Accounts._generateStampedLoginToken();
-		var hashStampedToken = Accounts._hashStampedToken(stampedToken);
-
+	'livechat:registerGuest'({ token, name, email, department } = {}) {
 		const userId = RocketChat.Livechat.registerGuest.call(this, {
-			token: token,
-			name: name,
-			email: email,
-			department: department,
-			loginToken: hashStampedToken
+			token,
+			name,
+			email,
+			department
 		});
 
 		// update visited page history to not expire
 		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
 
 		return {
-			userId: userId,
-			token: stampedToken.token
+			userId
 		};
 	}
 });

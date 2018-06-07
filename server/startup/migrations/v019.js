@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.Migrations.add({
 	version: 19,
 	up() {
@@ -29,7 +31,7 @@ RocketChat.Migrations.add({
 
 		let usernames = _.pluck(admins, 'username').join(', ');
 
-		console.log((`Migrate ${usernames} from admin field to 'admin' role`).green);
+		console.log((`Migrate ${ usernames } from admin field to 'admin' role`).green);
 
 		// Add 'user' role to all users
 		const users = Meteor.users.find().fetch();
@@ -38,7 +40,7 @@ RocketChat.Migrations.add({
 		});
 
 		usernames = _.pluck(users, 'username').join(', ');
-		console.log((`Add ${usernames} to 'user' role`).green);
+		console.log((`Add ${ usernames } to 'user' role`).green);
 
 		// Add 'moderator' role to channel/group creators
 		const rooms = RocketChat.models.Rooms.findByTypes(['c', 'p']).fetch();
