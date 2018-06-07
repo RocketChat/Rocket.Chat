@@ -1358,7 +1358,7 @@
   "Invisible": "onsigbare",
   "Invitation": "uitnodiging",
   "Invitation_HTML": "Uitnodiging HTML",
-  "Invitation_HTML_Default": "<h2>Jy is genooi na <strong>[Site_Name]</strong></h2><p>Gaan na [Site_URL] en probeer die beste oopbron-kletsoplossing wat vandag beskikbaar is!</p>",
+  "Invitation_HTML_Default": "<h1>Jy is genooi na <strong>[Site_Name]</strong></h1><p>Gaan na [Site_URL] en probeer die beste oopbron-kletsoplossing wat vandag beskikbaar is!</p>",
   "Invitation_HTML_Description": "U mag die volgende plekhouers gebruik: <br/><ul><li>[e-pos] vir die ontvanger se e-pos.</li><li>[Site_Name] en [Site_URL] vir die Aansoek Naam en URL onderskeidelik.</li></ul>",
   "Invitation_Subject": "Uitnodigingsvak",
   "Invitation_Subject_Default": "U is genooi na [Site_Name]",
