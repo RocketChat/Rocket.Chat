@@ -1,0 +1,20 @@
+.message-color {
+	display: inline-block;
+
+	font-weight: 100;
+}
+
+.message-color-sample {
+	position: relative;
+	top: 2px;
+
+	display: inline-block;
+
+	width: 14px;
+	height: 14px;
+	margin-right: 3px;
+	margin-left: 2px;
+
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
+}

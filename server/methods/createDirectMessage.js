@@ -16,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		if (me.username === username) {
+		if (RocketChat.settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage'
 			});
@@ -54,6 +54,8 @@ Meteor.methods({
 			}
 		});
 
+		const myNotificationPref = RocketChat.getDefaultSubscriptionPref(me);
+
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
@@ -68,10 +70,12 @@ Meteor.methods({
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				customFields: me.customFields,
 				u: {
 					_id: me._id,
 					username: me.username
-				}
+				},
+				...myNotificationPref
 			}
 		};
 
@@ -83,6 +87,8 @@ Meteor.methods({
 			rid,
 			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
 		}, upsertSubscription);
+
+		const toNotificationPref = RocketChat.getDefaultSubscriptionPref(to);
 
 		RocketChat.models.Subscriptions.upsert({
 			rid,
@@ -96,10 +102,12 @@ Meteor.methods({
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				customFields: to.customFields,
 				u: {
 					_id: to._id,
 					username: to.username
-				}
+				},
+				...toNotificationPref
 			}
 		});
 

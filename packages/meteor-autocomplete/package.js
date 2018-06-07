@@ -7,7 +7,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use(['blaze', 'templating', 'jquery'], 'client');
-	api.use(['underscore', 'ecmascript']); // both
+	api.use(['ecmascript']); // both
 	api.use(['mongo', 'ddp']);
 
 	api.use('dandv:caret-position@2.1.0-3', 'client');
@@ -25,17 +25,4 @@ Package.onUse(function(api) {
 	], 'server');
 
 	api.export('Autocomplete', 'server');
-	api.export('AutocompleteTest', {testOnly: true});
-});
-
-Package.onTest(function(api) {
-	api.use('mizzao:autocomplete');
-
-	api.use('mongo');
-	api.use('tinytest');
-
-	api.addFiles('tests/rule_tests.coffee', 'client');
-	api.addFiles('tests/regex_tests.coffee', 'client');
-	api.addFiles('tests/param_tests.coffee', 'client');
-	api.addFiles('tests/security_tests.coffee');
 });

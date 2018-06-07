@@ -38,12 +38,20 @@ Template.body.onRendered(() => {
 					window._paq.push(['setDomains', domains]);
 				}
 				(() => {
-					const addTrackers = JSON.parse(piwikAdditionalTracker);
-					for (let i = 0; i < addTrackers.length; i++) {
-						const tracker = addTrackers[i];
-						window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
+					try {
+						if (/\S/.test(piwikAdditionalTracker)) {
+							// piwikAdditionalTracker is not empty or whitespace only
+							const addTrackers = JSON.parse(piwikAdditionalTracker);
+							for (let i = 0; i < addTrackers.length; i++) {
+								const tracker = addTrackers[i];
+								window._paq.push(['addTracker', `${ tracker['trackerURL'] }js/`, tracker['siteId']]);
+							}
+						}
+					} catch (e) {
+						// parsing JSON faild
+						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
-					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
+					window._paq.push(['setTrackerUrl', `${ piwikUrl }js/`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;
 					const g = d.createElement('script');
@@ -51,7 +59,7 @@ Template.body.onRendered(() => {
 					g.type = 'text/javascript';
 					g.async = true;
 					g.defer = true;
-					g.src = `${ piwikUrl }piwik.js`;
+					g.src = `${ piwikUrl }js/`;
 					s.parentNode.insertBefore(g, s);
 				})();
 			}

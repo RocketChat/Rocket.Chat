@@ -1,3 +1,5 @@
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 /* globals menu*/
 
 Template.sideNav.helpers({
@@ -14,23 +16,30 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes();
+		return RocketChat.roomTypes.getTypes().map((roomType) => {
+			return {
+				template: roomType.customTemplate || 'roomList',
+				data: {
+					header: roomType.header,
+					identifier: roomType.identifier,
+					isCombined: roomType.isCombined,
+					label: roomType.label
+				}
+			};
+		});
 	},
 
-	canShowRoomType() {
-		if (Template.instance().mergedChannels.get()) {
-			return RocketChat.roomTypes.checkCondition(this) && (this.identifier !== 'p');
-		}
-
-		return RocketChat.roomTypes.checkCondition(this);
+	loggedInUser() {
+		return !!Meteor.userId();
 	},
 
-	isCombined() {
-		if (Template.instance().mergedChannels.get()) {
-			return this.identifier === 'c';
-		}
+	sidebarViewMode() {
+		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
+		return viewMode ? viewMode : 'condensed';
+	},
 
-		return false;
+	sidebarHideAvatar() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
 	}
 });
 
@@ -43,19 +52,12 @@ Template.sideNav.events({
 		return SideNav.toggleCurrent();
 	},
 
-	'mouseenter .header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave .header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'scroll .rooms-list'() {
+		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
-	'dropped .side-nav'(e) {
+	'dropped .sidebar'(e) {
 		return e.preventDefault();
 	}
 });
@@ -63,20 +65,27 @@ Template.sideNav.events({
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
+	lazyloadtick();
+	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
+	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
+	if (room !== undefined && room._id !== '') {
+		FlowRouter.go(`/channel/${ first_channel_login }`);
+	}
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
 
 Template.sideNav.onCreated(function() {
-	this.mergedChannels = new ReactiveVar(false);
+	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {
-		const user = Meteor.user();
-		let userPref = null;
-		if (user && user.settings && user.settings.preferences) {
-			userPref = user.settings.preferences.mergeChannels;
-		}
-
-		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				'settings.preferences.roomsListExhibitionMode': 1,
+				'settings.preferences.groupByType': 1
+			}
+		});
+		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'groupByType');
+		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));
 	});
 });

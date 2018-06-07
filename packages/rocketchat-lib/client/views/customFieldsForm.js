@@ -1,4 +1,7 @@
 Template.customFieldsForm.helpers({
+	new() {
+		return this.new;
+	},
 	customFields() {
 		const customFields = Template.instance().customFields.get();
 

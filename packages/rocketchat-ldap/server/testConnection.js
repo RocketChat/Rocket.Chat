@@ -1,4 +1,4 @@
-/* globals LDAP */
+import LDAP from './ldap';
 
 Meteor.methods({
 	ldap_test_connection() {
@@ -26,7 +26,6 @@ Meteor.methods({
 
 		try {
 			ldap.bindIfNecessary();
-			ldap.disconnect();
 		} catch (error) {
 			throw new Meteor.Error(error.name || error.message);
 		}

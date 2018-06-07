@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.saveRoomDescription = function(rid, roomDescription, user) {
 
 	if (!Match.test(rid, String)) {

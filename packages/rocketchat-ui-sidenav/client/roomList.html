@@ -2,27 +2,26 @@
 	{{#if isLivechat}}
 		{{> livechat . }}
 	{{else}}
-		{{#if isActiveFavorite}}
-			{{#with rooms}}
-				<h3 class="room-type {{unreadClass ..}} {{roomType ..}}">
-					{{_ ../label}} <span class="room-count-small">({{count}})</span>
-				</h3>
-				<ul>
-					{{#each room in this}}
-						{{> chatRoomItem room }}
-					{{else}}
-						<p class="empty">{{_ "No_channels_yet" }}</p>
-					{{/each}}
-				</ul>
-
-				{{#if hasMoreChannelsButton ..}}
-					<button class="more more-channels background-transparent-darker-hover">{{_ "More_channels"}}...</button>
+		{{#with rooms}}
+			{{#if shouldAppear .. .}}
+					<h3 class="rooms-list__type">
+						<span class="rooms-list__type-text">{{_ ../label}}</span>
+						{{#if showRoomCounter}}
+							{{#with count}}
+								{{#if .}}
+									<span class="badge">{{.}}</span>
+								{{/if}}
+							{{/with}}
+						{{/if}}
+					</h3>
+					<ul class="rooms-list__list {{ roomType ..}}">
+						{{#each room in this}}
+							{{> chatRoomItem room }}
+						{{else}}
+							<p class="rooms-list__empty-room">{{_ noSubscriptionText }}</p>
+						{{/each}}
+					</ul>
 				{{/if}}
-
-				{{#if hasMoreGroupsButton ..}}
-					<button class="more more-groups background-transparent-darker-hover">{{_ "More_groups"}}...</button>
-				{{/if}}
-			{{/with}}
-		{{/if}}
+		{{/with}}
 	{{/if}}
 </template>

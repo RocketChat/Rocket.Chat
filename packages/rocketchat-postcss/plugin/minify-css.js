@@ -18,7 +18,7 @@ const getPostCSSPlugins = () => {
 	if (postCSSConfig.plugins) {
 		Object.keys(postCSSConfig.plugins).forEach((pluginName) => {
 			const postCSSPlugin = require(pluginName);
-			if (postCSSPlugin && postCSSPlugin.name === 'creator' && postCSSPlugin().postcssPlugin) {
+			if (postCSSPlugin && postCSSPlugin().postcssPlugin) {
 				plugins.push(postCSSPlugin(postCSSConfig.plugins ? postCSSConfig.plugins[pluginName] : {}));
 			}
 		});
@@ -61,7 +61,6 @@ const mergeCss = css => {
 		let css;
 		let postres;
 		const isFileForPostCSS = isNotInExcludedPackages(excludedPackagesArr, file.getPathInBundle());
-
 		postCSS(isFileForPostCSS ? getPostCSSPlugins() : [])
 			.process(file.getContentsAsString(), {
 				from: process.cwd() + file._source.url.replace('_', '-')
@@ -123,7 +122,6 @@ const mergeCss = css => {
 			};
 		}
 	});
-
 	const mergedCssAst = CssTools.mergeCssAsts(cssAsts, (filename, msg) => {
 		console.log(`${ filename }: warn: ${ msg }`);
 	});

@@ -1,0 +1,8 @@
+type Mutation {
+	createChannel(
+		name: String!,
+		private: Boolean = false,
+		readOnly: Boolean = false,
+		membersId: [String!]
+	): Channel
+}

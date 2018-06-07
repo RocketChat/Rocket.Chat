@@ -74,7 +74,7 @@ WebApp.connectHandlers.stack.unshift({
 		const options = {
 			hostname: instance.extraInformation.host,
 			port: instance.extraInformation.port,
-			path: req.url,
+			path: req.originalUrl,
 			method: 'POST'
 		};
 

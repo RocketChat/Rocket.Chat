@@ -1,7 +1,7 @@
-/* globals sync */
+import {importNewUsers} from './sync';
 
 Meteor.methods({
-	ldap_sync_users() {
+	ldap_sync_now() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ldap_sync_users' });
@@ -15,15 +15,13 @@ Meteor.methods({
 			throw new Meteor.Error('LDAP_disabled');
 		}
 
-		const result = sync();
+		this.unblock();
 
-		if (result === true) {
-			return {
-				message: 'Sync_success',
-				params: []
-			};
-		}
+		importNewUsers();
 
-		throw result;
+		return {
+			message: 'Sync_in_progress',
+			params: []
+		};
 	}
 });

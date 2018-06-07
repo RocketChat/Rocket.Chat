@@ -5,15 +5,9 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'coffee-script': '1.9.3',
-	'lru-cache': '2.6.5'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'rocketchat:lib'
 	]);
 

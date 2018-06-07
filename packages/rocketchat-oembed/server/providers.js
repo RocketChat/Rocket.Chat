@@ -1,9 +1,7 @@
 /*globals changeCase */
-
-
-const URL = Npm.require('url');
-
-const QueryString = Npm.require('querystring');
+import _ from 'underscore';
+import URL from 'url';
+import QueryString from 'querystring';
 
 class Providers {
 	constructor() {

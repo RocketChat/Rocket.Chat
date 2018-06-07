@@ -1,4 +1,5 @@
 /* globals CustomOAuth */
+import s from 'underscore.string';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
@@ -44,7 +45,7 @@ Template.loginServices.helpers({
 					icon = service.service;
 					break;
 				default:
-					serviceName = _.capitalize(service.service);
+					serviceName = s.capitalize(service.service);
 					icon = service.service;
 			}
 			return services.push({
@@ -85,7 +86,7 @@ Template.loginServices.events({
 				}
 			});
 		} else {
-			const loginWithService = `loginWith${ longinMethods[this.service.service] || _.capitalize(this.service.service) }`;
+			const loginWithService = `loginWith${ longinMethods[this.service.service] || s.capitalize(this.service.service) }`;
 			const serviceConfig = this.service.clientConfig || {};
 			return Meteor[loginWithService](serviceConfig, function(error) {
 				loadingIcon.addClass('hidden');
