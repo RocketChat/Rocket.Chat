@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge fick ett fel när du importerade dina meddelanden vid% s:% s",
   "SlackBridge_finish": "SlackBridge har slutat importera meddelandena till% s. Vänligen ladda om för att se alla meddelanden.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Sök kanaler",
   "SlackBridge_Out_All_Description": "Skicka meddelanden från alla kanaler som finns i Slack och boten har gått med",
   "SlackBridge_Out_Channels": "SlackBridge ut kanaler",
   "SlackBridge_Out_Channels_Description": "Välj vilka kanaler som skickar meddelanden tillbaka till Slack",

@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "% s에서 메시지를 가져 오는 동안 SlackBridge에 오류가 발생했습니다 : % s",
   "SlackBridge_finish": "SlackBridge가 % s에서 메시지 가져 오기를 완료했습니다. 모든 메시지를 보려면 다시로드하십시오.",
   "SlackBridge_Out_All": "슬랙 브리지 아웃 모두",
+  "Search_Channels": "검색 채널",
   "SlackBridge_Out_All_Description": "Slack에있는 모든 채널의 메시지를 보내고 봇이 참여했습니다.",
   "SlackBridge_Out_Channels": "SlackBridge Out Channels",
   "SlackBridge_Out_Channels_Description": "슬랙에 메시지를 보낼 채널 선택",
