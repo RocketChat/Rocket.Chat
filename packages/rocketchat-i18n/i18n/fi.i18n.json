@@ -1284,7 +1284,7 @@
   "Mail_Messages_Instructions": "Valitse, mitkä viestit haluat lähettää sähköpostitse klikkaamalla viestejä",
   "Mail_Messages_Subject": "Tässä muutama viesti (%s viestiä)",
   "Mailer": "Postittaja",
-  "Mailer_body_tags": "Sinun <b>tulee</b> käyttää [unsubscribe] postituslistalta poistumislinkkinä.<br />Voit käyttää [name], [fname], [lname] käyttäjän koko nimen, etunimen tai sukunimen paikalla.<br />Voit käyttää [email] käyttäjän sähköpostin paikalla.",
+  "Mailer_body_tags": "Sinun <b>tulee</b> käyttää [unsubscribe] postituslistalta poistumislinkkinä.<br/>Voit käyttää [name], [fname], [lname] käyttäjän koko nimen, etunimen tai sukunimen paikalla.<br/>Voit käyttää [email] käyttäjän sähköpostin paikalla.",
   "Mailing": "Sähköpostitus",
   "Make_Admin": "Tee ylläpitäjäksi",
   "Make_sure_you_have_a_copy_of_your_codes": "Varmista, että sinulla on kopio koodeistasi: __codes__ Jos menetät pääsyn autentikointisovellukseen, voit kirjautua sisään yhdellä näistä koodeista.",
