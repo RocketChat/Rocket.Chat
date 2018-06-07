@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Επιλέξτε εάν θέλετε να χρησιμοποιήσετε το Chatpal ως υπηρεσία ή ως επί τόπου εγκατάσταση",
   "Chatpal_Suggestion_Enabled": "Οι προτάσεις είναι ενεργοποιημένες",
   "Chatpal_Base_URL": "Βασική διεύθυνση Url",
-  "Chatpal_Base_URL_Description": "Βρείτε μια περιγραφή για τον τρόπο εκτέλεσης μιας τοπικής παρουσίασης <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >στο github</a >. Η διεύθυνση URL πρέπει να είναι absolue και να δείχνει στον πυρήνα chatpal, π.χ. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Βρείτε μια περιγραφή για τον τρόπο εκτέλεσης μιας τοπικής παρουσίασης <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >στο github</a>. Η διεύθυνση URL πρέπει να είναι absolue και να δείχνει στον πυρήνα chatpal, π.χ. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Κύρια γλώσσα",
   "Chatpal_Main_Language_Description": "Η γλώσσα που χρησιμοποιείται περισσότερο στις συνομιλίες",
   "Chatpal_Default_Result_Type": "Προεπιλεγμένος τύπος αποτελέσματος",

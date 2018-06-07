@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Изберете дали искате да използвате Chatpal като услуга или като инсталация на място",
   "Chatpal_Suggestion_Enabled": "Предложенията са активирани",
   "Chatpal_Base_URL": "URL адрес на базата",
-  "Chatpal_Base_URL_Description": "Намерете някои описания как да стартирате локален потребителски модел <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >в github</a >. URL адресът трябва да бъде абсолютно абстрактно и да сочи към ядрото на chatpal, напр. HTTP: // Localhost: 8983 / Solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Намерете някои описания как да стартирате локален потребителски модел <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >в github</a>. URL адресът трябва да бъде абсолютно абстрактно и да сочи към ядрото на chatpal, напр. HTTP: // Localhost: 8983 / Solr / chatpal.",
   "Chatpal_Main_Language": "Основен език",
   "Chatpal_Main_Language_Description": "Езикът, който се използва най-много в разговорите",
   "Chatpal_Default_Result_Type": "Тип на резултата по подразбиране",

@@ -412,7 +412,7 @@
   "Chatpal_Backend_Description": "Izberite, če želite uporabljati Chatpal kot storitev ali kot namestitev na mestu",
   "Chatpal_Suggestion_Enabled": "Predlogi so omogočeni",
   "Chatpal_Base_URL": "Osnovni URL",
-  "Chatpal_Base_URL_Description": "Poiščite opis, kako zagnati lokalni primer <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >dne github</a >. URL mora biti popoln in usmeriti na jedro klepetalnice, npr. http: // localhost: 8983 / solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Poiščite opis, kako zagnati lokalni primer <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >dne github</a>. URL mora biti popoln in usmeriti na jedro klepetalnice, npr. http: // localhost: 8983 / solr / chatpal.",
   "Chatpal_Main_Language": "Glavni jezik",
   "Chatpal_Main_Language_Description": "Jezik, ki se najbolj uporablja v pogovorih",
   "Chatpal_Default_Result_Type": "Privzeti tip rezultata",

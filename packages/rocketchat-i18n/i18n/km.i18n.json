@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "ជ្រើសថាតើអ្នកចង់ប្រើ Chatpal ជាសេវាឬជាការតំឡើងនៅនឹងកន្លែង",
   "Chatpal_Suggestion_Enabled": "ការផ្តល់យោបល់ត្រូវបានបើក",
   "Chatpal_Base_URL": "មូលដ្ឋាន Url",
-  "Chatpal_Base_URL_Description": "រកការពិពណ៌នាមួយចំនួនអំពីរបៀបដំណើរការមូលដ្ឋាន <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >នៅលើ github</a > ។ URL ត្រូវតែដាច់ខាតហើយចង្អុលទៅស្នូល chatpal ឧ។ http: // localhost: 8983 / solr / chatpal ។",
+  "Chatpal_Base_URL_Description": "រកការពិពណ៌នាមួយចំនួនអំពីរបៀបដំណើរការមូលដ្ឋាន <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >នៅលើ github</a> ។ URL ត្រូវតែដាច់ខាតហើយចង្អុលទៅស្នូល chatpal ឧ។ http: // localhost: 8983 / solr / chatpal ។",
   "Chatpal_Main_Language": "ភាសាចម្បង",
   "Chatpal_Main_Language_Description": "ភាសាដែលត្រូវបានប្រើច្រើនបំផុតក្នុងការសន្ទនា",
   "Chatpal_Default_Result_Type": "ប្រភេទលទ្ធផលលំនាំដើម",

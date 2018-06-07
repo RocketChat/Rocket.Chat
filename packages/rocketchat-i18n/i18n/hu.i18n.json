@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Válassza ki, hogy a Chatpal szolgáltatást szolgáltatásként vagy helyszíni telepítésként kívánja-e használni",
   "Chatpal_Suggestion_Enabled": "Javaslatok engedélyezve",
   "Chatpal_Base_URL": "Base Url",
-  "Chatpal_Base_URL_Description": "Lásd a helyi példány futtatását <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >a github</a >. Az URL-nek abszolútnak kell lennie, és a csevegési magra kell mutatnia, pl. http: // localhost: 8983 / Solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Lásd a helyi példány futtatását <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >a github</a>. Az URL-nek abszolútnak kell lennie, és a csevegési magra kell mutatnia, pl. http: // localhost: 8983 / Solr / chatpal.",
   "Chatpal_Main_Language": "Fő nyelv",
   "Chatpal_Main_Language_Description": "A beszélgetésben leginkább használt nyelv",
   "Chatpal_Default_Result_Type": "Alapértelmezett eredménytípus",

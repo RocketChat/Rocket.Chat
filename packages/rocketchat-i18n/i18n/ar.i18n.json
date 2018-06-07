@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "حدد ما إذا كنت تريد استخدام Chatpal كخدمة أو كتثبيت في الموقع",
   "Chatpal_Suggestion_Enabled": "تم تمكين الاقتراحات",
   "Chatpal_Base_URL": "عنوان قاعدة",
-  "Chatpal_Base_URL_Description": "ابحث عن وصف لكيفية تشغيل مثيل محلي <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >على Gitub</a >. يجب أن يكون عنوان URL مطلقًا وأن يشير إلى جوهر chatpal ، على سبيل المثال ، HTTP: // المضيف المحلي: 8983 / المؤسسة العامة / chatpal.",
+  "Chatpal_Base_URL_Description": "ابحث عن وصف لكيفية تشغيل مثيل محلي <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >على Gitub</a>. يجب أن يكون عنوان URL مطلقًا وأن يشير إلى جوهر chatpal ، على سبيل المثال ، HTTP: // المضيف المحلي: 8983 / المؤسسة العامة / chatpal.",
   "Chatpal_Main_Language": "اللغة الرئيسية",
   "Chatpal_Main_Language_Description": "اللغة المستخدمة أكثر في المحادثات",
   "Chatpal_Default_Result_Type": "نوع النتيجة الافتراضي",

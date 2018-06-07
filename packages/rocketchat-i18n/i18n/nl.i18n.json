@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Selecteer of u Chatpal als een service of als installatie op locatie wilt gebruiken",
   "Chatpal_Suggestion_Enabled": "Suggesties ingeschakeld",
   "Chatpal_Base_URL": "Base URL",
-  "Chatpal_Base_URL_Description": "Een korte beschrijving van het uitvoeren van een lokale instantie <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >op github</a >. De URL moet absolue zijn en verwijzen naar de chatpal-kern, bijvoorbeeld http: // localhost: 8983 / SOLR / chatpal.",
+  "Chatpal_Base_URL_Description": "Een korte beschrijving van het uitvoeren van een lokale instantie <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >op github</a>. De URL moet absolue zijn en verwijzen naar de chatpal-kern, bijvoorbeeld http: // localhost: 8983 / SOLR / chatpal.",
   "Chatpal_Main_Language": "Hoofdtaal",
   "Chatpal_Main_Language_Description": "De taal die het meest wordt gebruikt in gesprekken",
   "Chatpal_Default_Result_Type": "Standaard resultaattype",

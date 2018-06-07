@@ -413,7 +413,7 @@
   "Chatpal_Backend_Description": "Selectați dacă doriți să utilizați Chatpal ca serviciu sau ca instalare pe site",
   "Chatpal_Suggestion_Enabled": "Sugestiile au fost activate",
   "Chatpal_Base_URL": "Adresa URL de bază",
-  "Chatpal_Base_URL_Description": "Găsiți o descriere a modului de rulare a unei instanțe locale <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >pe github</a >. Adresa URL trebuie să fie absolută și să indice miezul chatpal, de ex. http: // localhost: 8983 / Solr / chatpal.",
+  "Chatpal_Base_URL_Description": "Găsiți o descriere a modului de rulare a unei instanțe locale <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\" >pe github</a>. Adresa URL trebuie să fie absolută și să indice miezul chatpal, de ex. http: // localhost: 8983 / Solr / chatpal.",
   "Chatpal_Main_Language": "Principala limbă de comunicare",
   "Chatpal_Main_Language_Description": "Limba utilizată cel mai mult în conversații",
   "Chatpal_Default_Result_Type": "Tipul de rezultat implicit",
