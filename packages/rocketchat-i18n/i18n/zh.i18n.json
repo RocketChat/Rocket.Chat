@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "尝试从 OAuth 账户或 Gravatar 检查默认头像",
   "Accounts_ShowFormLogin": "显示基于表单的登录界面",
   "Accounts_TwoFactorAuthentication_MaxDelta": "最大Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大增量确定在任何给定时间有多少令牌有效。令牌每30秒产生一次，并且对于（30 *最大增量）秒有效。 <br / >示例：将最大差值设置为10时，每个令牌可以在时间戳之前或之后使用达300秒。当客户端的时钟与服务器没有正确同步时，这很有用。",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "最大增量确定在任何给定时间有多少令牌有效。令牌每30秒产生一次，并且对于（30 *最大增量）秒有效。 <br/>示例：将最大差值设置为10时，每个令牌可以在时间戳之前或之后使用达300秒。当客户端的时钟与服务器没有正确同步时，这很有用。",
   "Accounts_UseDefaultBlockedDomainsList": "使用默认的屏蔽域名列表",
   "Accounts_UseDNSDomainCheck": "使用 DNS 域名检查",
   "Accounts_UserAddedEmail_Default": "<h2>欢迎访问 <h1>[Site_Name]</h1></h2><p> 转到 <a href=\"[Site_URL]\">[Site_URL]</a> 并尝试当今最先进的开源聊天解决方案！</p><p>您可以使用您的电子邮件地址：[email] 和密码：[password] 进行登陆。您可能需要在您首次登录后更改密码。",

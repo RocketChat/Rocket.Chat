@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "OAuth Hesabına və ya Gravatar'a əsaslanan default avatar müəyyən etməyə çalışır",
   "Accounts_ShowFormLogin": "Forma əsaslanan Giriş göstər",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maksimum Delta",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, hər hansı bir zamanda neçə tokenin etibarlı olduğunu müəyyən edir. Token hər 30 saniyədə yaradılıb və (30 * Maksimum Delta) saniyə üçün etibarlıdır. <br / >Örnek: Maksimum Delta 10'a ayarlandığında, her simge, zaman damgasının öncesi və ya sonra 300 saniyə qədər istifadə edilə bilər. Müştərinin saatı server ilə düzgün bir şəkildə sinxronlaşdırılmadıqda bu faydalıdır.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Maksimum Delta, hər hansı bir zamanda neçə tokenin etibarlı olduğunu müəyyən edir. Token hər 30 saniyədə yaradılıb və (30 * Maksimum Delta) saniyə üçün etibarlıdır. <br/>Örnek: Maksimum Delta 10'a ayarlandığında, her simge, zaman damgasının öncesi və ya sonra 300 saniyə qədər istifadə edilə bilər. Müştərinin saatı server ilə düzgün bir şəkildə sinxronlaşdırılmadıqda bu faydalıdır.",
   "Accounts_UseDefaultBlockedDomainsList": "Default Engellenen Etki Alan siyahısı istifadə edin",
   "Accounts_UseDNSDomainCheck": "DNS Domain Check istifadə edin",
   "Accounts_UserAddedEmail_Default": "<h2>xoş gəlmisiniz <h1>[SITE_NAME]</h1></h2><p>gedin <a href = \"[SITE_URL saytındakı]\">[SITE_URL saytındakı]</a>və bu gün mövcud olan ən yaxşı açıq mənbə chat həll cəhd edin!</p><p>E-poçtunuzu istifadə edərək daxil ola bilərsiniz: [email] və parol: [parol]. İlk girişinizdən sonra onu dəyişdirmək tələb oluna bilər.",

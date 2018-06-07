@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Tratar de determinar el avatar predeterminado basado en la cuenta OAuth o Gravatar",
   "Accounts_ShowFormLogin": "Mostrar Inicio de sesión basado en formulario",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "El máximo delta determina cuántos tokens son válidos en un momento dado. Los tokens se generan cada 30 segundos y son válidos para (30 * Delta máximo) segundos. <br / >Ejemplo: Con un Delta máximo establecido en 10, cada token se puede usar hasta 300 segundos antes o después de su marca de tiempo. Esto es útil cuando el reloj del cliente no está sincronizado correctamente con el servidor.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "El máximo delta determina cuántos tokens son válidos en un momento dado. Los tokens se generan cada 30 segundos y son válidos para (30 * Delta máximo) segundos. <br/>Ejemplo: Con un Delta máximo establecido en 10, cada token se puede usar hasta 300 segundos antes o después de su marca de tiempo. Esto es útil cuando el reloj del cliente no está sincronizado correctamente con el servidor.",
   "Accounts_UseDefaultBlockedDomainsList": "Usar lista predeterminada de dominios bloqueados",
   "Accounts_UseDNSDomainCheck": "Utilizar la comprobación de dominio DNS",
   "Accounts_UserAddedEmail_Default": "<h2>Bienvenido a <h1>[Site_Name]</h1></h2><p>Ve a <a href=\"[Site_URL]\">[Site_URL]</a> y prueba la mejor solución de chat de código abierto disponible en la actualidad! </p><p>Puede iniciar sesión utilizando su correo electrónico: [email] y contraseña: [password]. Se le puede solicitar que lo cambie al iniciar sesion por primera vez.",

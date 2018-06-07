@@ -2363,7 +2363,7 @@
   "WebRTC_Enable_Direct": "Aktivér for direkte beskeder",
   "WebRTC_Enable_Private": "Aktivér for private kanaler",
   "WebRTC_Servers": "STUN / TURN servere",
-  "WebRTC_Servers_Description": "En liste over STUN- og TURN-servere adskilt af komma. <br / >Brugernavn, adgangskode og port er tilladt i formatet `brugernavn: password @ stun: host: port` eller` brugernavn: password @ turn: host: port`.",
+  "WebRTC_Servers_Description": "En liste over STUN- og TURN-servere adskilt af komma. <br/>Brugernavn, adgangskode og port er tilladt i formatet `brugernavn: password @ stun: host: port` eller` brugernavn: password @ turn: host: port`.",
   "Website": "Websted",
   "Wednesday": "onsdag",
   "Welcome": "Velkommen <em>% s</em>.",

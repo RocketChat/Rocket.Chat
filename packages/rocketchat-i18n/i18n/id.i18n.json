@@ -154,7 +154,7 @@
   "Accounts_SetDefaultAvatar_Description": "Mencoba untuk menentukan avatar default berdasarkan Akun OAuth atau Gravatar",
   "Accounts_ShowFormLogin": "berbasis bentuk acara Login",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta maksimum",
-  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang valid pada waktu tertentu. Token dihasilkan setiap 30 detik, dan berlaku untuk (30 * Maksimum Delta) detik. <br / >Contoh: Dengan Delta Maksimum yang disetel ke 10, masing-masing token dapat digunakan hingga 300 detik sebelum atau sesudah cap waktu itu. Ini berguna saat jam klien tidak disinkronkan dengan benar dengan server.",
+  "Accounts_TwoFactorAuthentication_MaxDelta_Description": "Delta Maksimum menentukan berapa banyak token yang valid pada waktu tertentu. Token dihasilkan setiap 30 detik, dan berlaku untuk (30 * Maksimum Delta) detik. <br/>Contoh: Dengan Delta Maksimum yang disetel ke 10, masing-masing token dapat digunakan hingga 300 detik sebelum atau sesudah cap waktu itu. Ini berguna saat jam klien tidak disinkronkan dengan benar dengan server.",
   "Accounts_UseDefaultBlockedDomainsList": "Gunakan Default Diblokir Daftar Domain",
   "Accounts_UseDNSDomainCheck": "Gunakan DNS Domain Periksa",
   "Accounts_UserAddedEmail_Default": "<h2> Selamat Datang di <h1> [Nama situs] </h1></h2><p> Pergi ke <a href=\"[Site_URL]\">[Site_URL]</a> dan mencoba yang terbaik open source solusi chatting yang tersedia saat ini! </p><p> Anda dapat login menggunakan email Anda: [email] dan password: [password]. Anda mungkin diminta untuk mengubahnya setelah login pertama Anda.",
