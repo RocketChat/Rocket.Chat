@@ -1,9 +1,13 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
 			name: 'private-settings',
-			eventType: 'onLogged'
+			eventType: 'onLogged',
+			useCache: false
 		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
@@ -14,6 +18,10 @@ const label = function() {
 	return TAPi18n.__(this.i18nLabel || this._id);
 };
 
+// Template.adminFlex.onRendered(function() {
+// 	$(this.find('.rooms-list')).perfectScrollbar();
+// });
+
 Template.adminFlex.helpers({
 	groups() {
 		const filter = Template.instance().settingsFilter.get();
@@ -21,7 +29,7 @@ Template.adminFlex.helpers({
 			type: 'group'
 		};
 		if (filter) {
-			const filterRegex = new RegExp(_.escapeRegExp(filter), 'i');
+			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
 			const records = RocketChat.settings.collectionPrivate.find().fetch();
 			let groups = [];
 			records.forEach(function(record) {
@@ -57,13 +65,17 @@ Template.adminFlex.helpers({
 			icon,
 			pathSection: section,
 			pathGroup: group,
-			darken: true
+			darken: true,
+			isLightSidebar: true
 		};
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
 
 Template.adminFlex.events({
-	'click [data-action="back"]'() {
+	'click [data-action="close"]'() {
 		SideNav.closeFlex();
 	},
 	'keyup [name=settings-search]'(e, t) {

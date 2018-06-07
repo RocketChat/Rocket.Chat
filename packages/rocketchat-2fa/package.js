@@ -6,11 +6,6 @@ Package.describe({
 	documentation: 'README.md'
 });
 
-Npm.depends({
-	speakeasy: '2.0.0',
-	yaqrcode: '0.2.1'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'accounts-base',

@@ -1,12 +1,12 @@
 /* globals SAML:true */
 
-const zlib = Npm.require('zlib');
-const xml2js = Npm.require('xml2js');
-const xmlCrypto = Npm.require('xml-crypto');
-const crypto = Npm.require('crypto');
-const xmldom = Npm.require('xmldom');
-const querystring = Npm.require('querystring');
-const xmlbuilder = Npm.require('xmlbuilder');
+import zlib from 'zlib';
+import xml2js from 'xml2js';
+import xmlCrypto from 'xml-crypto';
+import crypto from 'crypto';
+import xmldom from 'xmldom';
+import querystring from 'querystring';
+import xmlbuilder from 'xmlbuilder';
 
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
@@ -395,10 +395,12 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				if (attributes) {
 					attributes.forEach(function(attribute) {
 						const value = self.getElement(attribute, 'AttributeValue');
+						let key = attribute.$.Name.value;
+						key=key.replace(/\./g, '-');
 						if (typeof value[0] === 'string') {
-							profile[attribute.$.Name] = value[0];
+							profile[key] = value[0];
 						} else {
-							profile[attribute.$.Name] = value[0]._;
+							profile[key] = value[0]._;
 						}
 					});
 				}
@@ -413,7 +415,7 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				}
 			}
 
-			if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
+			if (!profile.email && profile.nameID && (profile.nameIDFormat && profile.nameIDFormat.value != null ? profile.nameIDFormat.value : profile.nameIDFormat).indexOf('emailAddress') >= 0) {
 				profile.email = profile.nameID;
 			}
 			if (Meteor.settings.debug) {

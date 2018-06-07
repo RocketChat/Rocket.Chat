@@ -1,0 +1,39 @@
+<template name="livechatIntegrationFacebook">
+	<form id="profile" autocomplete="off" class="container">
+		<fieldset class="rc-form-legend">
+			<div class="rc-form-group">
+				{{#if enabled}}
+					<button class="button reload">{{_ "Reload_Pages"}}</button>
+					<button class="button danger disable">{{_ "Disable"}}</button>
+				{{else}}
+					<button class="button primary enable" {{enableButtonDisabled}}>{{_ "Enable"}}</button>
+					{{#unless hasToken}}
+						<p>{{_ "You_have_to_set_an_API_token_first_in_order_to_use_the_integration"}}</p>
+						<p>{{_ "Please_go_to_the_Administration_page_then_Livechat_Facebook"}}</p>
+					{{/unless}}
+				{{/if}}
+			</div>
+			{{#if isLoading}}
+				{{> loading}}
+			{{else}}
+				{{#each pages}}
+					<div class="rc-form-group">
+						<div class="rc-switch">
+							<label class="rc-switch__label" tabindex="-1">
+								<input type="checkbox" class="rc-switch__input" name="subscribe" value="true"  {{subscribed}}>
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+								<span class="rc-switch__text">{{name}}</span>
+							</label>
+						</div>
+					</div>
+				{{else}}
+					{{#if enabled}}
+						<p>{{_ "No_pages_yet_Try_hitting_Reload_Pages_button"}}</p>
+					{{/if}}
+				{{/each}}
+			{{/if}}
+		</fieldset>
+	</form>
+</template>

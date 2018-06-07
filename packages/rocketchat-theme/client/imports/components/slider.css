@@ -52,6 +52,11 @@
 	line-height: 20px;
 }
 
+.rtl .range-slider-value {
+	margin-right: 8px;
+	margin-left: unset;
+}
+
 .range-slider-value::after {
 	position: absolute;
 	top: 8px;
@@ -61,10 +66,18 @@
 	height: 0;
 
 	content: '';
-
+  
 	border-top: 7px solid;
 	border-right: 7px solid;
 	border-bottom: 7px solid;
+}
+
+.rtl .range-slider-value::after {
+	right: -7px;
+	left: unset;
+	-ms-transform: rotate(180deg); /* IE 9 */
+	-webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+	transform: rotate(180deg);
 }
 
 .range-slider-range::-moz-range-track,

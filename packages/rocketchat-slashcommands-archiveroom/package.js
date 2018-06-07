@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use([
 		'ecmascript',
 		'check',
@@ -15,7 +14,6 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-	api.addFiles('client.js', 'client');
-	api.addFiles('messages.js', 'server');
-	api.addFiles('server.js', 'server');
+	api.addFiles('client/client.js', 'client');
+	api.addFiles(['server/server.js', 'server/messages.js'], 'server');
 });

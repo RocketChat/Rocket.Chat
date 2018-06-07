@@ -1,4 +1,6 @@
 /*globals MentionedMessage */
+import _ from 'underscore';
+
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
 		return MentionedMessage.find({
@@ -19,9 +21,7 @@ Template.mentionsFlexTab.helpers({
 		});
 	},
 	message() {
-		return _.extend(this, {
-			customClass: 'mentions'
-		});
+		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions'});
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -42,21 +42,6 @@ Template.mentionsFlexTab.onCreated(function() {
 });
 
 Template.mentionsFlexTab.events({
-	'click .message-cog'(e, t) {
-		e.stopPropagation();
-		e.preventDefault();
-		const message_id = $(e.currentTarget).closest('.message').attr('id');
-		RocketChat.MessageAction.hideDropDown();
-		t.$(`\#${ message_id } .message-dropdown`).remove();
-		const message = MentionedMessage.findOne(message_id);
-		const actions = RocketChat.MessageAction.getButtons(message, 'mentions');
-		const el = Blaze.toHTMLWithData(Template.messageDropdown, {
-			actions
-		});
-		t.$(`\#${ message_id } .message-cog-container`).append(el);
-		const dropDown = t.$(`\#${ message_id } .message-dropdown`);
-		return dropDown.show();
-	},
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);

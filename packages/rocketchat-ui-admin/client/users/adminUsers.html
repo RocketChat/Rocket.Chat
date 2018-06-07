@@ -1,22 +1,23 @@
 <template name="adminUsers">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-			<header class="fixed-title border-component-color">
-				{{> burger}}
-				<h2>
-					<span class="room-title">{{_ "Users"}}</span>
-				</h2>
-			</header>
+			{{> header sectionName="Users"}}
 			<div class="content">
 				{{#unless hasPermission 'view-user-administration'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 				{{else}}
 					<form class="search-form" role="form">
-						<div class="input-line search">
-							<input type="text" id="users-filter" placeholder="{{_ "Search"}}" dir="auto">
-							<i class="icon-search secondary-font-color"></i>
-							{{#unless isReady}}<i class="icon-spin secondary-font-color"></i>{{/unless}}
-						</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="users-filter" type="text" class="rc-input__element"
+								   placeholder="{{_ "Search"}}" autofocus dir="auto">
+					 	</div>
 					</form>
 					<div class="results">
 						{{{_ "Showing_results" users.length}}}
@@ -63,4 +64,3 @@
 		{{/with}}
 	</div>
 </template>
-

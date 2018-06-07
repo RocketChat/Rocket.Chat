@@ -17,6 +17,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('rocketchat.js');
 
-	api.addFiles('sprites.css', 'client');
-	api.addFiles('callbacks.js', 'server');
+	api.addFiles('client/sprites.css', 'client');
+	api.addFiles('server/callbacks.js', 'server');
 });

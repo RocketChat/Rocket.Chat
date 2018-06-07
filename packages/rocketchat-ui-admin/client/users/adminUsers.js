@@ -1,4 +1,8 @@
-/* globals RocketChatTabBar */
+import _ from 'underscore';
+import s from 'underscore.string';
+
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 Template.adminUsers.helpers({
 	isReady() {
 		const instance = Template.instance();
@@ -74,7 +78,7 @@ Template.adminUsers.onCreated(function() {
 		let query;
 
 		if (instance.filter && instance.filter.get()) {
-			filter = _.trim(instance.filter.get());
+			filter = s.trim(instance.filter.get());
 		}
 
 		if (filter) {

@@ -1,4 +1,5 @@
 /* globals Google */
+import _ from 'underscore';
 
 function getIdentity(accessToken) {
 	try {

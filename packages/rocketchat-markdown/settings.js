@@ -5,6 +5,9 @@ Meteor.startup(() => {
 	RocketChat.settings.add('Markdown_Parser', 'original', {
 		type: 'select',
 		values: [{
+			key: 'disabled',
+			i18nLabel: 'Disabled'
+		}, {
 			key: 'original',
 			i18nLabel: 'Original'
 		}, {

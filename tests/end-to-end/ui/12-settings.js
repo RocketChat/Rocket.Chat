@@ -16,7 +16,7 @@ import admin from '../../pageobjects/administration.page';
 import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
 import {targetUser, imgURL} from '../../data/interactions.js';
 
-import {adminUsername, adminEmail, adminPassword, username, email, password} from '../../data/user.js';
+import {adminUsername, adminEmail, adminPassword, username, email, password, reason} from '../../data/user.js';
 
 function api(path) {
 	return prefix + path;
@@ -47,9 +47,9 @@ const settingValue = {
 describe('[Api Settings Change]', () => {
 	before((done) => {
 		checkIfUserIsValid(username, email, password);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.general.waitForVisible(5000);
-		sideNav.general.click();
+		// sideNav.spotlightSearch.waitForVisible(10000);
+		// sideNav.general.waitForVisible(5000);
+		// sideNav.general.click();
 
 		request.post(api('login'))
 			.send(login)
@@ -358,7 +358,7 @@ describe('[Api Settings Change]', () => {
 
 	describe.skip('profile changes:', () => {
 		before(() => {
-			sideNav.accountMenu.click();
+			sideNav.sidebarUserMenu.click();
 			sideNav.account.waitForVisible(5000);
 			sideNav.account.click();
 		});
@@ -433,8 +433,8 @@ describe('[Api Settings Change]', () => {
 
 	describe('Manually Approve New Users:', () => {
 		before(() => {
-			sideNav.accountMenu.waitForVisible(5000);
-			sideNav.accountMenu.click();
+			sideNav.sidebarUserMenu.waitForVisible(5000);
+			sideNav.sidebarUserMenu.click();
 			sideNav.logout.waitForVisible(5000);
 			sideNav.logout.click();
 
@@ -454,6 +454,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('register the user', () => {
+			browser.refresh();
 			loginPage.registerButton.waitForVisible(5000);
 			loginPage.registerButton.click();
 			loginPage.nameField.waitForVisible(5000);
@@ -461,6 +462,8 @@ describe('[Api Settings Change]', () => {
 			loginPage.emailField.setValue(`setting${ email }`);
 			loginPage.passwordField.setValue(password);
 			loginPage.confirmPasswordField.setValue(password);
+			loginPage.reasonField.waitForVisible(5000);
+			loginPage.reasonField.setValue(reason);
 
 			loginPage.submit();
 
@@ -471,7 +474,7 @@ describe('[Api Settings Change]', () => {
 
 		it('login as admin and go to users', () => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();
 			admin.usersLink.waitForVisible(5000);
@@ -492,6 +495,7 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should show the activate user btn', () => {
+			flexTab.moreActions.click();
 			flexTab.usersActivate.waitForVisible(5000);
 			flexTab.usersActivate.isVisible().should.be.true;
 		});
@@ -501,8 +505,10 @@ describe('[Api Settings Change]', () => {
 		});
 
 		it('it should show the deactivate btn', () => {
+			flexTab.moreActions.click();
 			flexTab.usersDeactivate.waitForVisible(5000);
 			flexTab.usersDeactivate.isVisible().should.be.true;
+			mainContent.popoverWrapper.click();
 		});
 
 		it('it should change the Manually Approve New Users via api', (done) => {
@@ -518,4 +524,3 @@ describe('[Api Settings Change]', () => {
 		});
 	});
 });
-

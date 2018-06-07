@@ -8,5 +8,8 @@ Template.burger.helpers({
 		if (Session.equals('isMenuOpen', true)) {
 			return 'menu-opened';
 		}
+	},
+	embeddedVersion() {
+		return RocketChat.Layout.isEmbedded();
 	}
 });
