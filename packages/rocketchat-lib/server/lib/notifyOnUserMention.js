@@ -14,7 +14,7 @@ function notifyOnUserMention(message, room, userId) {
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
 				if (mention._id !== message.u._id) {
-					const userInTheRoom = RocketChat.models.Subscriptions.findByRoomAndUserId(room._id, mention._id).count();
+					const userInTheRoom = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, mention._id);
 
 					if (!userInTheRoom) {
 						mentionedUsersThatAreNotInTheRoom.push(mention.username);

@@ -148,15 +148,6 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findByRoomAndUserId(roomId, userId, options) {
-		const query = {
-			rid: roomId,
-			'u._id': userId
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastSeen(options) {
 		if (options == null) {
 			options = {};
