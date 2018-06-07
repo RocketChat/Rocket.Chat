@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Имэйлийн баталгаажуулалт",
   "Accounts_EmailVerification_Description": "Энэ онцлогийг ашиглахын тулд SMTP тохиргоог зөв эсэхийг шалгаарай",
   "Accounts_Enrollment_Email": "Элсэлтийн и-мэйл",
-  "Accounts_Enrollment_Email_Default": "<h2>тавтай морилно уу <h1>[SITE_NAME]</h1></h2><p>Явж <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a>өнөө үед хамгийн сайн нээлттэй эхийн чатын шийдлүүдийг туршиж үзээрэй!</p>",
+  "Accounts_Enrollment_Email_Default": "<h2>тавтай морилно уу <strong>[Site_Name]</strong></h2><p>Явж <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a>өнөө үед хамгийн сайн нээлттэй эхийн чатын шийдлүүдийг туршиж үзээрэй!</p>",
   "Accounts_Enrollment_Email_Description": "Та дараах байршлыг ашиглаж болно: <br/><ul><li>[нэр], [fname], [lname] хэрэглэгчийн бүтэн нэр, эхний нэр эсвэл овог нэрийг тус тусад нь ашиглаж болно.</li><li>[имэйл] хэрэглэгчийн имэйлийн хувьд.</li><li>[Site_Name] болон [Site_URL] нь Програмын Нэр болон URL-ыг тус тусад нь зааж өгсөн.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Та [Site_Name] -д тавтай морилно уу",
   "Accounts_ForgetUserSessionOnWindowClose": "Цонхны хажуугаар хэрэглэгчийн нэг хэсгийг дарна уу",
