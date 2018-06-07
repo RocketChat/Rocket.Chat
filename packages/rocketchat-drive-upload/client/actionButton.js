@@ -21,7 +21,7 @@ Meteor.startup(function() {
 			const options = {};
 
 			HTTP.call('GET', url, options, function(err, response) {
-				const fileData = new Buffer(response.content, 'base64');
+				const fileData = new Buffer(btoa(unescape(encodeURIComponent(response.content))), 'base64');
 				Meteor.call('checkDriveAccess', (err, authorized) => {
 					if (!authorized) {
 						Meteor.loginWithGoogle({
