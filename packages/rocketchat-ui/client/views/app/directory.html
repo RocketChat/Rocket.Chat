@@ -12,12 +12,21 @@
 				</label>
 			</div>
 			{{#if $eq searchType 'channels'}}
-				{{#table fixed='true'}}
+				{{#table fixed='true' onItemClick=onTableItemClick}}
 					<thead>
 						<tr>
-							<th class="js-sort" data-sort="name">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</th>
-							<th class="rc-directory-td--users">{{_ "Users"}}</th>
-							<th class="js-sort rc-directory-td--createdAt" data-sort="createdAt">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</th>
+							<th class="js-sort" data-sort="name">
+								{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}
+								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
+							</th>
+							<th class="rc-directory-td--users">
+								{{_ "Users"}}
+								<div class="table-fake-th">{{_ "Users"}}</div>
+							</th>
+							<th class="js-sort rc-directory-td--createdAt" data-sort="createdAt">
+								{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}
+								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -47,12 +56,21 @@
 				{{/table}}
 			{{/if}}
 			{{#if $eq searchType 'users'}}
-				{{#table}}
+				{{#table onItemClick=onTableItemClick}}
 					<thead>
 						<tr>
-							<th class="js-sort" data-sort="name">{{_ "Name"}} {{> icon icon="sort" }}</th>
-							<th class="js-sort" data-sort="username">{{_ "Username"}} {{> icon icon="sort" }}</th>
-							<th class="js-sort" data-sort="createdAt">{{_ "Created_at"}} {{> icon icon="sort" }}</th>
+							<th class="js-sort" data-sort="name">
+								{{_ "Name"}} {{> icon icon="sort" }}
+								<div class="table-fake-th">{{_ "Name"}} {{> icon icon="sort" }}</div>
+							</th>
+							<th class="js-sort" data-sort="username">
+								{{_ "Username"}} {{> icon icon="sort" }}
+								<div class="table-fake-th">{{_ "Username"}} {{> icon icon="sort" }}</div>
+							</th>
+							<th class="js-sort" data-sort="createdAt">
+								{{_ "Created_at"}} {{> icon icon="sort" }}
+								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon="sort" }}</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>

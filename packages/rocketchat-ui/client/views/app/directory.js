@@ -54,7 +54,12 @@ Template.directory.helpers({
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
 	tabsData() {
-		const searchType = Template.instance().searchType;
+		const {
+			sortDirection,
+			searchType,
+			end,
+			page
+		} = Template.instance();
 		return {
 			tabs: [
 				{
@@ -69,8 +74,26 @@ Template.directory.helpers({
 				}
 			],
 			onChange(value) {
+				end.set(false);
+				sortDirection.set('asc');
+				page.set(0);
 				searchType.set(value);
 			}
+		};
+	},
+	onTableItemClick() {
+		const searchType = Template.instance().searchType;
+		let type;
+		let routeConfig;
+		return function(item) {
+			if (searchType.get() === 'channels') {
+				type = 'c';
+				routeConfig = {name: item.name};
+			} else {
+				type = 'd';
+				routeConfig = {name: item.username};
+			}
+			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
 		};
 	}
 });
@@ -81,24 +104,6 @@ Template.directory.events({
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
-	},
-	'change .js-typeSelector'(e, t) {
-		t.end.set(false);
-		t.sortDirection.set('asc');
-		t.page.set(0);
-		t.searchType.set(e.currentTarget.value);
-	},
-	'click .rc-table-body .rc-table-tr'() {
-		let searchType;
-		let routeConfig;
-		if (Template.instance().searchType.get() === 'channels') {
-			searchType = 'c';
-			routeConfig = {name: this.name};
-		} else {
-			searchType = 'd';
-			routeConfig = {name: this.username};
-		}
-		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
 	},
 	'scroll .rc-directory-content'({currentTarget}, instance) {
 		if (instance.loading || instance.end.get()) {
@@ -112,9 +117,6 @@ Template.directory.events({
 		const el = e.currentTarget;
 		const type = el.dataset.sort;
 
-		$('.js-sort').removeClass('rc-table-td--bold');
-		$(el).addClass('rc-table-td--bold');
-
 		t.end.set(false);
 		t.page.set(0);
 
@@ -125,9 +127,6 @@ Template.directory.events({
 
 		t.searchSortBy.set(type);
 		t.sortDirection.set('asc');
-	},
-	'click .rc-directory-plus'() {
-		FlowRouter.go('create-channel');
 	}
 });
 
