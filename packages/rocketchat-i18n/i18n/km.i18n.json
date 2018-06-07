@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge មានកំហុសខណៈពេលនាំចូលសាររបស់អ្នកនៅ% s:% s",
   "SlackBridge_finish": "SlackBridge បានបញ្ចប់ការនាំចូលសារនៅ% s ។ សូមផ្ទុកឡើងវិញដើម្បីមើលសារទាំងអស់។",
   "SlackBridge_Out_All": "SlackBridge ចេញទាំងអស់",
+  "Search_Channels": "ស្វែងរកឆានែល",
   "SlackBridge_Out_All_Description": "ផ្ញើសារពីគ្រប់បណ្តាញទាំងអស់ដែលមាននៅក្នុង Slack ហើយ Bot បានចូលរួម",
   "SlackBridge_Out_Channels": "SlackBridge ចេញឆានែល",
   "SlackBridge_Out_Channels_Description": "ជ្រើសឆានែលណាដែលនឹងផ្ញើសារទៅ Slack",

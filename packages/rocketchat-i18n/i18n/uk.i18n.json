@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "Під час імпорту повідомлень у% s:% s з'явилася помилка SlackBridge",
   "SlackBridge_finish": "SlackBridge закінчив імпортувати повідомлення на% s. Будь ласка, перезавантажте, щоб переглянути всі повідомлення.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Пошук каналів",
   "SlackBridge_Out_All_Description": "Надіслати повідомлення з усіх каналів, що існують у Slack, і бот приєднався",
   "SlackBridge_Out_Channels": "Канали слабкого каналу",
   "SlackBridge_Out_Channels_Description": "Виберіть, які канали будуть відправляти повідомлення назад до Slack",

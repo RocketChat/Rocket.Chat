@@ -1895,6 +1895,7 @@
   "SlackBridge_error": "SlackBridge a eu une erreur durant l'importation de vos messages at %s : %s",
   "SlackBridge_finish": "SlackBridge a fini d'importer les messages sur% s. Veuillez recharger pour voir tous les messages.",
   "SlackBridge_Out_All": "SlackBridge Out Tous",
+  "Search_Channels": "Recherche de canaux",
   "SlackBridge_Out_All_Description": "Envoyer les messages de tous les canaux qui existent dans Slack et le bot a rejoint",
   "SlackBridge_Out_Channels": "SlackBridge Out Chaînes",
   "SlackBridge_Out_Channels_Description": "Choisissez les canaux qui envoient les messages à Slack",

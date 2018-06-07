@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge, iletilerinizi% s:% s içeri aktarırken hata verdi.",
   "SlackBridge_finish": "SlackBridge, mesajları% s alanına aktarmayı bitirdi. Tüm mesajları görüntülemek için lütfen tekrar yükleyin.",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "Kanal Arama",
   "SlackBridge_Out_All_Description": "Slack'te bulunan ve bot'un katıldığı tüm kanallardan mesaj gönder",
   "SlackBridge_Out_Channels": "Gevşek Çıkış Kanalları",
   "SlackBridge_Out_Channels_Description": "Hangi kanalların Mesajları Slack'e geri göndereceğini seçin",
