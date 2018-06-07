@@ -1869,6 +1869,7 @@
   "SlackBridge_error": "Hi ha hagut un error a SlackBridge mentre importava els missatges a %s: %s",
   "SlackBridge_finish": "SlackBridge ha finalitat la importació a %s. Si us plau, refresqueu per veure tots els missatges.",
   "SlackBridge_Out_All": "SlackBridge Out de tot",
+  "Search_Channels": "Cerca canals",
   "SlackBridge_Out_All_Description": "Envia els missatges de tots els canals que existeixen a Slack i en els quals el bot s'ha unit",
   "SlackBridge_Out_Channels": "SlackBridge Out de canals",
   "SlackBridge_Out_Channels_Description": "Escull els canals dels quals es reenviaran els missatges a Slack",

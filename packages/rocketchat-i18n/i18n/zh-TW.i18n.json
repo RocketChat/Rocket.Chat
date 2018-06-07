@@ -1868,6 +1868,7 @@
   "SlackBridge_error": "SlackBridge在％s導入郵件時出錯：％s",
   "SlackBridge_finish": "SlackBridge已完成導入％s處的消息。請重新加載以查看所有消息。",
   "SlackBridge_Out_All": "SlackBridge Out All",
+  "Search_Channels": "搜尋頻道",
   "SlackBridge_Out_All_Description": "從Slack中存在的所有頻道發送消息，並且殭屍已加入",
   "SlackBridge_Out_Channels": "SlackBridge輸出通道",
   "SlackBridge_Out_Channels_Description": "選擇哪些頻道將消息發回Slack",
