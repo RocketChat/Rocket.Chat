@@ -108,7 +108,7 @@ const KonchatNotification = {
 		Tracker.nonreactive(function() {
 			let newRoomSound = Session.get('newRoomSound');
 			if (newRoomSound != null) {
-				newRoomSound = _.union(newRoomSound, rid);
+				newRoomSound = _.union(newRoomSound, [rid]);
 			} else {
 				newRoomSound = [rid];
 			}
