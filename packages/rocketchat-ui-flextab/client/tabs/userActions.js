@@ -6,7 +6,10 @@ import toastr from 'toastr';
 export const getActions = function({ user, directActions, hideAdminControls }) {
 
 	const hasPermission = RocketChat.authz.hasAllPermission;
-
+	const isIgnored = () => {
+		const sub = RocketChat.models.Subscriptions.findOne({rid : Session.get('openedRoom')});
+		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1;
+	};
 	const canSetLeader= () => {
 		return RocketChat.authz.hasAllPermission('set-leader', Session.get('openedRoom'));
 	};
@@ -303,6 +306,24 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				})
 			};
 		}, () => {
+			if (!directActions || user._id === Meteor.userId()) {
+				return;
+			}
+			if (isIgnored()) {
+				return {
+					group: 'channel',
+					icon : 'ban',
+					name: t('Unignore'),
+					action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: false}, success(() => toastr.success(t('User_has_been_unignored')))))
+				};
+			}
+			return {
+				group: 'channel',
+				icon : 'ban',
+				name: t('Ignore'),
+				action: prevent(getUser, ({_id}) => Meteor.call('ignoreUser', { rid: Session.get('openedRoom'), userId:_id, ignore: true}, success(() => toastr.success(t('User_has_been_ignored')))))
+			};
+		}, () => {
 			if (!directActions || !canMuteUser()) {
 				return;
 			}
@@ -402,9 +423,12 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			icon : 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({_id}) => {
+				const erasureType = RocketChat.settings.get('Message_ErasureType');
+				const warningKey = `Delete_User_Warning_${ erasureType }`;
+
 				modal.open({
 					title: t('Are_you_sure'),
-					text: t('Delete_User_Warning'),
+					text: t(warningKey),
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',

@@ -1,6 +1,10 @@
 /* globals Department, Livechat, LivechatVideoCall */
 import visitor from '../../imports/client/visitor';
 
+function showDepartments() {
+	return Department.find({ showOnRegistration: true }).count() > 1;
+};
+ 
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -21,7 +25,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return Livechat.registrationForm;
+		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -71,6 +75,8 @@ Template.livechatWindow.events({
 Template.livechatWindow.onCreated(function() {
 	Session.set({sound: true});
 
+	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
+
 	const availableLanguages = TAPi18n.getLanguages();
 
 	const defaultAppLanguage = () => {
@@ -109,10 +115,12 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.online = true;
 				Livechat.transcript = result.transcript;
 				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
 			Livechat.registrationForm = result.registrationForm;
-
+			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
+			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
 			if (result.room) {
 				Livechat.room = result.room._id;
 
@@ -142,6 +150,7 @@ Template.livechatWindow.onCreated(function() {
 				Department.insert(department);
 			});
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
+
 			Livechat.ready();
 		}
 	});
