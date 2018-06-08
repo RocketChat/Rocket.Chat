@@ -77,7 +77,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		if (minutes > 0) {
 			out += `${ minutes } ${ TAPi18n.__('minutes') }, `;
 		}
-		if (seconds > 0) {
+		if (seconds >= 0) {
 			out += `${ seconds } ${ TAPi18n.__('seconds') }`;
 		}
 		return out;
@@ -136,7 +136,8 @@ Template.adminBotDetails.helpers({
 
 	ping() {
 		const ping = Template.instance().ping.get();
-		return `Ping: ${ Math.round(ping) }ms`;
+		const formattedPing = (ping === Infinity ? TAPi18n.__('Infinity') : `${ Math.round(ping) }ms`);
+		return `Ping: ${ formattedPing }`;
 	},
 
 	connectedUptime() {
