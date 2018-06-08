@@ -989,7 +989,7 @@
   "Error": "Kļūda",
   "error-action-not-allowed": "darbība nav atļauta",
   "error-application-not-found": "Lietotne nav atrasta",
-  "error-archived-duplicate-name": "Ir arhivēts kanāls ar nosaukumu \"istabas nosaukums\"\n",
+  "error-archived-duplicate-name": "Ir arhivēts kanāls ar nosaukumu \"istabas nosaukums\"",
   "error-avatar-invalid-url": "Nederīgs avatara URL: url",
   "error-avatar-url-handling": "Kļūda, apstrādājot avatara iestatījumus no URL (url) par lietotājvārds",
   "error-cant-invite-for-direct-room": "Nevar uzaicināt lietotāju uz tiešajām istabām",

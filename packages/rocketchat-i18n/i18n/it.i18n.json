@@ -272,7 +272,7 @@
   "API_GitHub_Enterprise_URL_Description": "Esempio: http://domain.com (escludendo lo slash finale)",
   "API_Gitlab_URL": "URL GitLab",
   "API_Shield_Types": "Tipi di Shield",
-  "API_Shield_Types_Description": "Tipi di shield da abilitare come elenco separato da virgole, scegli da `online`, `channel` o `*` per tutto\n",
+  "API_Shield_Types_Description": "Tipi di shield da abilitare come elenco separato da virgole, scegli da `online`, `channel` o `*` per tutto",
   "API_Token": "Token API",
   "API_Tokenpass_URL": "Tokenpass Server URL",
   "API_Tokenpass_URL_Description": "Esempio: https://domain.com (esclusa la barra finale)",
