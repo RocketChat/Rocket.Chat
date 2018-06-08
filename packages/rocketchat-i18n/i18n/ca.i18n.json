@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Verificació de correu electrònic",
   "Accounts_EmailVerification_Description": "Assegura't que la configuració SMTP és correcta per fer servir aquesta funcionalitat",
   "Accounts_Enrollment_Email": "Missatge de correu electrònic d'inscripció",
-  "Accounts_Enrollment_Email_Default": "<h1>Benvingut a <strong>[Site_Name]</strong></h1><p>Vés a <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> i prova la millor eina de programari lliure per a treball a distància disponible actualment!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Benvingut a <strong>[Site_Name]</strong></h1><p>Vés a <a href=\"[Site_URL]\">[Site_URL]</a> i prova la millor eina de programari lliure per a treball a distància disponible actualment!</p>",
   "Accounts_Enrollment_Email_Description": "És possible utilitzar els marcadors: <br/><ul><li>[name], [fname], [lname] per al nom complet de l'usuari, nom o cognom, respectivament.</li><li>[email] per a l'adreça de correu electrònic de l'usuari.</li><li>[Site_Name] i [Site_URL] pel nom del lloc web i de l'adreça URL, respectivament.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Benvingut a [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Oblida la sessió d'usuari en tancar la finestra",

@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "邮件验证",
   "Accounts_EmailVerification_Description": "确保您有正确的SMTP设置来使用此功能",
   "Accounts_Enrollment_Email": "注册电子邮件",
-  "Accounts_Enrollment_Email_Default": "<h1>欢迎<strong>[Site_Name]</strong></h1><p>转到<a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[SITE_URL]</a></a>并尝试今天提供的最佳开源聊天解决方案！</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>欢迎<strong>[Site_Name]</strong></h1><p>转到<a href=\"[Site_URL]\">[SITE_URL]</a>并尝试今天提供的最佳开源聊天解决方案！</p>",
   "Accounts_Enrollment_Email_Description": "您可以分别使用以下占位符：<br/><ul><li>[名称]，[名称]，[名称]分别为用户的全名，名字或姓氏。用户的电子邮件为</li><li>[email]。分别为应用程序名称和URL分别为</li><li>[Site_Name]和[Site_URL]。</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "欢迎使用[Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "在窗口关闭时忘记用户会话",

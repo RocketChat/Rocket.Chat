@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-mail Verifikimi",
   "Accounts_EmailVerification_Description": "Sigurohuni që keni cilësimet e duhura SMTP për të përdorur këtë funksion",
   "Accounts_Enrollment_Email": "Regjistrimi E-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>Mire se erdhet ne <strong>[Site_Name]</strong></h1><p> Shko tek <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> dhe të përpiqet të mirë të burimit të hapur chat zgjidhje në dispozicion sot! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Mire se erdhet ne <strong>[Site_Name]</strong></h1><p> Shko tek <a href=\"[Site_URL]\">[Site_URL]</a> dhe të përpiqet të mirë të burimit të hapur chat zgjidhje në dispozicion sot! </p>",
   "Accounts_Enrollment_Email_Description": "Mund të përdorësh vendin e mëposhtëm: <br/><ul><li>[name], [fname], [lname] për emrin e plotë, emrin ose mbiemrin e përdoruesit.</li><li>[email] për emailin e përdoruesit.</li><li>[Site_Name] dhe [Site_URL] për emrin e aplikacionit dhe URL përkatësisht.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Mirë se vini në [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Harrojeni Sesionin e Përdoruesit në Mbylljen e Dritares",

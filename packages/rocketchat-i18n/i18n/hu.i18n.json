@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Email megerősítése",
   "Accounts_EmailVerification_Description": "Győződjön meg róla, hogy az SMTP megfelelően be van állítva",
   "Accounts_Enrollment_Email": "Beiratkozás E-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>Isten hozott a <strong>[Site_Name]</strong></h1><p> Tovább a <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a>, és próbálja a legjobb nyílt forráskódú chat megoldást ma elérhető! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Isten hozott a <strong>[Site_Name]</strong></h1><p> Tovább a <a href=\"[Site_URL]\">[Site_URL]</a>, és próbálja a legjobb nyílt forráskódú chat megoldást ma elérhető! </p>",
   "Accounts_Enrollment_Email_Description": "A következő kódok használhatók különböző változók beszúrásához: <br/> \n<ul>\n<li>Teljes név: [name]</li>\n<li>Családnév, Keresztnév: [lname], [fname]</li>\n<li>Oldal neve, URL: [Site_Name], [Site_URL]</li>\n</ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Üdvözöljük a [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Elfelejtett felhasználói munkamenet bezárása",

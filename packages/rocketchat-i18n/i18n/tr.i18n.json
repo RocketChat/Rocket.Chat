@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-Posta Doğrulama",
   "Accounts_EmailVerification_Description": "Bu özelliği kullanmak için doğru SMTP ayarlarına sahip olduğunuza emin olun",
   "Accounts_Enrollment_Email": "Kayıt E-Postası",
-  "Accounts_Enrollment_Email_Default": "<h1><strong>[Site_Name]</strong> sitesine hoşgeldiniz!</h1><p><a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> 'a gidin ve şu an mevcut en iyi açık kaynak sohbet çözümünü deneyin! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1><strong>[Site_Name]</strong> sitesine hoşgeldiniz!</h1><p><a href=\"[Site_URL]\">[Site_URL]</a> 'a gidin ve şu an mevcut en iyi açık kaynak sohbet çözümünü deneyin! </p>",
   "Accounts_Enrollment_Email_Description": "Kullanıcının tam adı, ad veya soyadı için sırayla,  [lname], [name], [fname] kullanabilirsiniz. <br/> Kullanıcının e-postası için [email] kullanabilirsiniz.",
   "Accounts_Enrollment_Email_Subject_Default": "[Site_Name] sitesine hoşgeldiniz!",
   "Accounts_ForgetUserSessionOnWindowClose": "Pencere kapandığında kullanıcı oturumunu unut",

@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Επιβεβαίωση E-mail",
   "Accounts_EmailVerification_Description": "Βεβαιωθείτε ότι έχετε τις σωστές ρυθμίσεις SMTP για να χρησιμοποιήσετε αυτήν τη λειτουργία",
   "Accounts_Enrollment_Email": "E-mail εγγραφής",
-  "Accounts_Enrollment_Email_Default": "<h1>Καλωσήρθατε στο <strong>[Site_Name]</strong></h1><p> Πηγαίνετε στο <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> και δοκιμάστε την καλύτερη λύση συνομιλίας ανοικτού κώδικα που διατίθεται σήμερα! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Καλωσήρθατε στο <strong>[Site_Name]</strong></h1><p> Πηγαίνετε στο <a href=\"[Site_URL]\">[Site_URL]</a> και δοκιμάστε την καλύτερη λύση συνομιλίας ανοικτού κώδικα που διατίθεται σήμερα! </p>",
   "Accounts_Enrollment_Email_Description": "Μπορείτε να χρησιμοποιήσετε τους ακόλουθους αντικαταστάτες: <br/><ul><li>[name], [fname], [lname] για το πλήρες όνομα του χρήστη, το όνομα ή το επώνυμο, αντίστοιχα.</li><li>[email] για τη διεύθυνση ηλεκτρονικού ταχυδρομείου του χρήστη.</li><li>[Site_Name] και [Site_URL] για το Όνομα της Εφαρμογής και το URL της αντίστοιχα.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Καλώς ήρθατε στο [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Ξέχασε τη Συνεδρία του Χρήστη με το Κλείσιμο του Παραθύρου",

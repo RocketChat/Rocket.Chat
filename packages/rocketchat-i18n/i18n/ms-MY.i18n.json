@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Pengesahan E-mel",
   "Accounts_EmailVerification_Description": "Pastikan anda mempunyai tetapan SMTP betul untuk menggunakan ciri-ciri ini",
   "Accounts_Enrollment_Email": "Pendaftaran E-mel",
-  "Accounts_Enrollment_Email_Default": "<h1>Selamat datang ke <strong>[Site_Name]</strong></h1><p> Pergi ke <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> dan cuba yang terbaik penyelesaian chat sumber terbuka yang ada hari ini! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Selamat datang ke <strong>[Site_Name]</strong></h1><p> Pergi ke <a href=\"[Site_URL]\">[Site_URL]</a> dan cuba yang terbaik penyelesaian chat sumber terbuka yang ada hari ini! </p>",
   "Accounts_Enrollment_Email_Description": "Anda boleh menggunakan [nama], [fname], [lname] bagi nama penuh pengguna, nama pertama atau nama akhir, masing-masing. <br/> Anda boleh menggunakan [email] untuk e-mel pengguna.",
   "Accounts_Enrollment_Email_Subject_Default": "Selamat datang ke [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Lupakan Sesi Pengguna pada Tutup Tetingkap",

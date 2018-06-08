@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Overenie e-mailu",
   "Accounts_EmailVerification_Description": "Uistite sa, že máte správne nastavenia SMTP na používanie tejto funkcie",
   "Accounts_Enrollment_Email": "Registračný e-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>Vitajte na lokalite <strong>[Site_Name]</strong></h1><p>Choďte na adresu <a href=\"[SITE_URL]\"><a href=\"[SITE_URL]\">[SITE_URL]</a></a>a vyskúšajte najlepšie diskusné open source riešenie, aké je dnes k dispozícii!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Vitajte na lokalite <strong>[Site_Name]</strong></h1><p>Choďte na adresu <a href=\"[Site_URL]\">[SITE_URL]</a>a vyskúšajte najlepšie diskusné open source riešenie, aké je dnes k dispozícii!</p>",
   "Accounts_Enrollment_Email_Description": "Môžete použiť nasledujúce zástupné symboly: <br/><ul><li>[name], [fname], [lname] pre celé meno používateľa, krstné meno alebo priezvisko.</li><li>[email] pre e-mail používateľa.</li><li>[Site_Name] a [Site_URL] pre názov aplikácie a adresu URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Vitajte na lokalite [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Zabudnúť používateľskú reláciu pri zatvorení okna",

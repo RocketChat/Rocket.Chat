@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-mail-bekræftelse",
   "Accounts_EmailVerification_Description": "Sørg for, at du har korrekte SMTP-indstillinger for at bruge denne funktion",
   "Accounts_Enrollment_Email": "Tilmeldings-e-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>Velkommen til <strong>[Site_Name]</strong></h1><p>Gå til <a href=\"[SITE_URL]\"><a href=\"[SITE_URL]\">[SITE_URL]</a></a> for at prøve den bedste opensource-chatløsning, du kan få i dag!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Velkommen til <strong>[Site_Name]</strong></h1><p>Gå til <a href=\"[Site_URL]\">[SITE_URL]</a> for at prøve den bedste opensource-chatløsning, du kan få i dag!</p>",
   "Accounts_Enrollment_Email_Description": "Du kan bruge følgende pladsholdere:<br/><ul><li>[navn], [fname], [lname] for brugerens fulde navn, fornavn eller efternavn.</li><li>[email] for brugerens e-mail.</li><li>[Site_Name] og [Site_URL] for henholdsvis applikationsnavn og url.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Velkommen til [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Glem brugersessionen, når vinduet lukkes",
