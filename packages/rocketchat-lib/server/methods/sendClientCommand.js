@@ -18,6 +18,7 @@ Meteor.methods({
 
 			const handle = RocketChat.models.ClientCommands.find(id).observeChanges({
 				changed: (id, fields) => {
+					fields._id = id;
 					if (finished) {
 						return;
 					}
