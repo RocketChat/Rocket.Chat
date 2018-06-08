@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "การตรวจสอบอีเมล์",
   "Accounts_EmailVerification_Description": "ต้องตั้งค่า SMTP เพื่อใช้งานฟีเจอร์นี้",
   "Accounts_Enrollment_Email": "การลงทะเบียนอีเมล์",
-  "Accounts_Enrollment_Email_Default": "<h1>ยินดีต้อนรับสูง <strong>[Site_Name]</strong></h1><p>ไปที่ <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> และทดลองใช้งานโปรแกรมแชทที่ดีที่สุดที่มี ณ ปัจจุบัน</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>ยินดีต้อนรับสูง <strong>[Site_Name]</strong></h1><p>ไปที่ <a href=\"[Site_URL]\">[Site_URL]</a> และทดลองใช้งานโปรแกรมแชทที่ดีที่สุดที่มี ณ ปัจจุบัน</p>",
   "Accounts_Enrollment_Email_Description": "คุณสามารถใช้ตัวยึดตำแหน่งต่อไปนี้: <br/><ul><li>[name], [fname], [lname] สำหรับชื่อเต็มของผู้ใช้ชื่อหรือนามสกุลตามลำดับ</li><li>[email] สำหรับอีเมลของผู้ใช้</li><li>[Site_Name] และ [Site_URL] สำหรับชื่อแอ็พพลิเคชันและ URL ตามลำดับ</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "ยินดีต้อนรับสูง [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "ลืม session เมื่อปิดหน้าต่าง",

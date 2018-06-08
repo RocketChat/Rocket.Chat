@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Vérification de l'adresse e-mail",
   "Accounts_EmailVerification_Description": "Vous devez avoir des paramètres SMTP corrects pour utiliser cette fonctionnalité",
   "Accounts_Enrollment_Email": "E-mail d'inscription",
-  "Accounts_Enrollment_Email_Default": "<h1>Bienvenue à <strong>[Site_Name]</strong></h1><p> Allez sur <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> et essayer la meilleure solution de chat open source disponible aujourd'hui ! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Bienvenue à <strong>[Site_Name]</strong></h1><p> Allez sur <a href=\"[Site_URL]\">[Site_URL]</a> et essayer la meilleure solution de chat open source disponible aujourd'hui ! </p>",
   "Accounts_Enrollment_Email_Description": "Vous pouvez utiliser, respectivement, <br/> <ul><li>[name], [fname], [lname] pour le nom complet , le prénom et le nom de famille de l'utilisateur.</li> <li>Vous pouvez utiliser [email] pour l'adresse e-mail de l'utilisateur.</li><li>[Site_Name] et [Site_URL] pour les noms de l'application et l'URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Bienvenue sur [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Ne pas se souvenir de la session utilisateur lors de la fermeture de la fenêtre",

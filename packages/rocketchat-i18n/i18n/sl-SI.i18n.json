@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Potrditev e-poštnega naslova",
   "Accounts_EmailVerification_Description": "Prepričajte se, da imate pravilno namestitev SMTP za uporabo te funkcije",
   "Accounts_Enrollment_Email": "E-poštni naslov za vpis",
-  "Accounts_Enrollment_Email_Default": "<h1>Dobrodošli na <strong>[Site_Name]</strong></h1><p>Pojdite na <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> in preizkusite  najboljše odprtokodne klepetalnice, ki so sedaj na voljo!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Dobrodošli na <strong>[Site_Name]</strong></h1><p>Pojdite na <a href=\"[Site_URL]\">[Site_URL]</a> in preizkusite  najboljše odprtokodne klepetalnice, ki so sedaj na voljo!</p>",
   "Accounts_Enrollment_Email_Description": "Uporabite lahko naslednje označbe mesta: <br/><ul><li>[name], [fname], [lname] za uporabnikovo polno ime, ime ali priimek.</li><li>[email] za uporabnikov e-poštni naslov.</li><li>[Site_Name] in [Site_URL] za ime aplikacije in URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Dobrodošli na [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Pozabi uporabniško sejo na oknu Zapri",

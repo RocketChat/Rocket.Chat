@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-pasta apstiprināšana",
   "Accounts_EmailVerification_Description": "Lai izmantotu šo funkciju, pārliecinieties, ka jums ir pareizi SMTP iestatījumi",
   "Accounts_Enrollment_Email": "Uzņemšanas e-pasts",
-  "Accounts_Enrollment_Email_Default": "<h1>Laipni lūdzam <strong>[Site_Name]</strong></h1><p>Iet uz <a href=\"[SITE_URL]\"><a href=\"[SITE_URL]\">[SITE_URL]</a></a>un izmēģiniet labāko atvērtā pirmkoda tērzēšanas risinājumu, kas pieejams šodien!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Laipni lūdzam <strong>[Site_Name]</strong></h1><p>Iet uz <a href=\"[Site_URL]\">[SITE_URL]</a>un izmēģiniet labāko atvērtā pirmkoda tērzēšanas risinājumu, kas pieejams šodien!</p>",
   "Accounts_Enrollment_Email_Description": "Varat izmantot šādus vietturus: <br/><ul><li>[vārds], [fname], [lname] attiecīgi lietotāja pilnam vārdam, vārdam vai uzvārdam.</li><li>[e-pasts] lietotāja e-pastam.</li><li>[Vietnes nosaukums] un [Site_URL] attiecīgi lietojumprogrammas nosaukums un URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Laipni lūdzam [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Aizmirst lietotāja sesiju, aizverot logu",

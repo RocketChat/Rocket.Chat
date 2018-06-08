@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Пацвярджэнне адрасу электроннай пошты",
   "Accounts_EmailVerification_Description": "Пераканайцеся, што ў вас верныя налады SMTP для выкарыстання гэтай функцыі",
   "Accounts_Enrollment_Email": "Электроннае паведамленне пры рэгістрацыі",
-  "Accounts_Enrollment_Email_Default": "<h1>Сардэчна запрашаем у <strong>[Site_Name]</strong></h1><p>Пераход <a href=\"[site_URL]\"><a href=\"[site_URL]\">[site_URL]</a></a>і паспрабаваць лепшае рашэнне чата з адкрытым зыходным кодам на сённяшні дзень!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Сардэчна запрашаем у <strong>[Site_Name]</strong></h1><p>Пераход <a href=\"[Site_URL]\">[site_URL]</a>і паспрабаваць лепшае рашэнне чата з адкрытым зыходным кодам на сённяшні дзень!</p>",
   "Accounts_Enrollment_Email_Description": "Вы можаце выкарыстоўваць наступныя запаўняльнікі: <br/><ul><li>[імя], [імя_файла], [LNAME] поўнае імя карыстальніка, імя або прозвішча, адпаведна.</li><li>[пошта] для электроннай пошты карыстальніка.</li><li>[site_name] і [site_url] для імя прыкладання і URL адпаведна.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Сардэчна запрашаем на [site_name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Забыць сесію карыстальніка пры закрыцці вокна",

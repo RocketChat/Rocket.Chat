@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-mail verificatie",
   "Accounts_EmailVerification_Description": "Zorg ervoor dat u de juiste SMTP-instellingen om deze functie te gebruiken",
   "Accounts_Enrollment_Email": "Registratie E-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>Welkom bij <strong>[Site_Name]</strong></h1><p>Ga naar <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> en probeer de beste open source chat-oplossing die vandaag beschikbaar zijn! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Welkom bij <strong>[Site_Name]</strong></h1><p>Ga naar <a href=\"[Site_URL]\">[Site_URL]</a> en probeer de beste open source chat-oplossing die vandaag beschikbaar zijn! </p>",
   "Accounts_Enrollment_Email_Description": "You may use [name], [fname], [lname] for the user's full name, first name or last name, respectively.<br/>You may use [email] for the user's e-mail.",
   "Accounts_Enrollment_Email_Subject_Default": "Welkom bij [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Gebruikerssessie vergeten bij sluiten van venster",

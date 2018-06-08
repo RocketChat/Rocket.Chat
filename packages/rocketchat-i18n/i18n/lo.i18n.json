@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "ການກວດສອບອີເມລ໌",
   "Accounts_EmailVerification_Description": "ເຮັດໃຫ້ແນ່ໃຈວ່າທ່ານມີການຕັ້ງຄ່າ SMTP ທີ່ຖືກຕ້ອງທີ່ຈະນໍາໃຊ້ຄຸນນະສົມບັດນີ້",
   "Accounts_Enrollment_Email": "ການລົງທະບຽນ E-mail",
-  "Accounts_Enrollment_Email_Default": "<h1>ຍິນດີຕ້ອນຮັບສູ່ <strong>[Site_Name]</strong></h1><p> ໄປທີ່ <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> ແລະພະຍາຍາມມາເປີດການແກ້ໄຂທີ່ດີທີ່ສຸດສົນທະຢູ່ໃນມື້ນີ້! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>ຍິນດີຕ້ອນຮັບສູ່ <strong>[Site_Name]</strong></h1><p> ໄປທີ່ <a href=\"[Site_URL]\">[Site_URL]</a> ແລະພະຍາຍາມມາເປີດການແກ້ໄຂທີ່ດີທີ່ສຸດສົນທະຢູ່ໃນມື້ນີ້! </p>",
   "Accounts_Enrollment_Email_Description": "ທ່ານອາດຈະນໍາໃຊ້ [name], [fname], [lname] ສໍາລັບຊື່ເຕັມຂອງຜູ້ໃຊ້ໄດ້, ຊື່ທໍາອິດຫຼືຊື່ສຸດທ້າຍ, ຕາມລໍາດັບ. <br/> ທ່ານອາດຈະນໍາໃຊ້ [email] ສໍາລັບອີເມລຂອງຜູ້ໃຊ້ໄດ້.",
   "Accounts_Enrollment_Email_Subject_Default": "ຍິນດີຕ້ອນຮັບ [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "ລືມລະຫັດຜ່ານຂອງຜູ້ໃຊ້ໃນຫນ້າຈໍປິດ",

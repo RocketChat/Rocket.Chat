@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Подтверждение адреса электронной почты",
   "Accounts_EmailVerification_Description": "Убедитесь, что у вас верные настройки SMTP для использования этой функции",
   "Accounts_Enrollment_Email": "Электронное сообщение при регистрации",
-  "Accounts_Enrollment_Email_Default": "<h1>Добро пожаловать на <strong>[Site_Name]</strong></h1> <p>Посетите <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> и попробуйте лучший чат с открытым исходным кодом на сегодняшний день!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Добро пожаловать на <strong>[Site_Name]</strong></h1> <p>Посетите <a href=\"[Site_URL]\">[Site_URL]</a> и попробуйте лучший чат с открытым исходным кодом на сегодняшний день!</p>",
   "Accounts_Enrollment_Email_Description": "Вы можете использовать следующие подстановки: <br/><ul><li>[name], [fname] и [lname] для полного имени пользователя, только имени или только фамилии).</li>\n<li>[email] - для email адреса пользователя</li>\n<li>[Site_Name] и [Site_URL] - для название вашего приложения и его URL</li>\n</ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Добро пожаловать на [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Забыть сессию пользователя при закрытии окна",
