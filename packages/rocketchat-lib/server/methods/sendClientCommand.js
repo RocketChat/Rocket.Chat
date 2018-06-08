@@ -6,24 +6,28 @@ Meteor.methods({
 			check(user, Object);
 			check(command, Object);
 
-			const id = RocketChat.models.ClientCommands.insert({
+			const clientCommand = {
 				u: {
 					_id: user._id,
 					username: user.username
 				},
 				cmd: command,
 				ts: new Date()
-			});
+			};
+
+			const id = RocketChat.models.ClientCommands.insert(clientCommand);
+			clientCommand._id = id;
+
 			let finished = false;
 
 			const handle = RocketChat.models.ClientCommands.find(id).observeChanges({
 				changed: (id, fields) => {
-					fields._id = id;
 					if (finished) {
 						return;
 					}
 					finished = true;
-					resolve(fields);
+					_.assign(clientCommand, fields);
+					resolve(clientCommand);
 				}
 			});
 
@@ -31,7 +35,7 @@ Meteor.methods({
 				const error = new Meteor.Error('error-client-command-response-timeout',
 					`${ _.escape(user.name) } didn't respond to the command in time`, {
 						method: 'sendClientCommand',
-						field: command
+						command: clientCommand
 					});
 				handle.stop();
 				if (finished) {
