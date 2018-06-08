@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/deleteBot.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateBot.js', 'server');
 	api.addFiles('server/methods/pauseBot.js', 'server');
+	api.addFiles('server/methods/pingBot.js', 'server');
 	api.addFiles('server/methods/resumeBot.js', 'server');
 	api.addFiles('server/methods/updateBotData.js', 'server');
 

@@ -3,6 +3,7 @@ import toastr from 'toastr';
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
 	this.changed = new ReactiveVar(false);
+	this.ping = new ReactiveVar(undefined);
 
 	this.updateBot = () => {
 		const bot = this.bot.get();
@@ -35,6 +36,32 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		}
 	});
 
+	this.isOnline = () => {
+		const bot = this.bot.get();
+		if (bot.statusConnection && bot.statusConnection !== 'offline') {
+			return true;
+		}
+		return false;
+	};
+
+	this.autorun(() => {
+		let finished = true;
+		this.interval = Meteor.setInterval(async() => {
+			if (!finished || !this.isOnline()) {
+				return;
+			}
+			finished = false;
+			Meteor.call('pingBot', this.bot.get(), (err, ping) => {
+				if (err) {
+					this.ping.set(Infinity);
+				} else {
+					this.ping.set(ping);
+				}
+				finished = true;
+			});
+		}, 1500);
+	});
+
 	this.humanReadableTime = (time) => {
 		const days = Math.floor(time / 86400);
 		const hours = Math.floor((time % 86400) / 3600);
@@ -55,6 +82,10 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		}
 		return out;
 	};
+});
+
+Template.adminBotDetails.onDestroyed(function _adminBotDetailsOnDestroyed() {
+	Meteor.clearInterval(this.interval);
 });
 
 Template.adminBotDetails.helpers({
@@ -93,11 +124,7 @@ Template.adminBotDetails.helpers({
 	},
 
 	isOnline() {
-		const bot = Template.instance().bot.get();
-		if (bot.statusConnection && bot.statusConnection !== 'offline') {
-			return true;
-		}
-		return false;
+		return Template.instance().isOnline();
 	},
 
 	ipAddress() {
@@ -105,6 +132,11 @@ Template.adminBotDetails.helpers({
 		if (bot.botData) {
 			return bot.botData.ipAddress;
 		}
+	},
+
+	ping() {
+		const ping = Template.instance().ping.get();
+		return `Ping: ${ Math.round(ping) }ms`;
 	},
 
 	connectedUptime() {
