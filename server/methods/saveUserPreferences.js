@@ -30,14 +30,10 @@ Meteor.methods({
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
+			sidebarGroupByType: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean)
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		if (settings.groupByType) {
-			check(settings, Match.ObjectIncluding({
-				groupByType: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
-			}));
-		}
 		const user = Meteor.user();
 
 		if (!user) {
@@ -56,10 +52,6 @@ Meteor.methods({
 
 		if (settings.language != null) {
 			RocketChat.models.Users.setLanguage(user._id, settings.language);
-		}
-
-		if (settings.groupByType != null) {
-			settings.groupByType = ['1', true].includes(settings.groupByType);
 		}
 
 		// Keep compatibility with old values

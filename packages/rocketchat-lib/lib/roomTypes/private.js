@@ -43,7 +43,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'groupByType');
+		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 		return groupByType && RocketChat.authz.hasAllPermission('view-p-room');
 	}
 

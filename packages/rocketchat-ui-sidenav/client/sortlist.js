@@ -5,8 +5,8 @@ const checked = function(prop, field) {
 	if (prop === 'sidebarShowFavorites') {
 		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
 	}
-	if (prop === 'groupByType') {
-		return RocketChat.getUserPreference(user, 'groupByType');
+	if (prop === 'sidebarGroupByType') {
+		return RocketChat.getUserPreference(user, 'sidebarGroupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
 		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
@@ -40,8 +40,4 @@ Template.sortlist.events({
 		});
 		popover.close();
 	}
-});
-
-Template.sortlist.onRendered(function() {
-
 });

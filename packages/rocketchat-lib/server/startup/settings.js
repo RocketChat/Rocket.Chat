@@ -299,10 +299,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Hide_Avatars'
 		});
-		this.add('Accounts_Default_User_Preferences_groupByType', true, {
+		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
 			'public': true,
-			i18nLabel: 'Sidebar_list_mode'
+			i18nLabel: 'Group_by_Type'
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
