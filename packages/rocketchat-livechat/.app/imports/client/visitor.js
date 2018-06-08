@@ -9,6 +9,8 @@ export default {
 	roomToSubscribe: new ReactiveVar(null),
 	roomSubscribed: null,
 	connected: null,
+	idleTimeLimit: 300000,
+	sessionTimeout: 600000,
 
 	register() {
 		if (!localStorage.getItem('visitorToken')) {
@@ -52,6 +54,27 @@ export default {
 		return roomId;
 	},
 
+	setSessionTimeout(time) {
+		this.sessionTimeout = time;
+	},
+
+	getSessionTimeout() {
+		return this.sessionTimeout;
+	},
+
+	setIdleTimeLimt(time) {
+		if (!(Number.isInteger(time)) || (time === this.idleTimeLimit)) {
+			return;
+		}
+
+		this.idleTimeLimit = time * 1000;
+
+		if (this.connected) {
+			UserPresence.awayTime = this.idleTimeLimit;
+			UserPresence.restartTimer();
+		}
+	},
+
 	isSubscribed(roomId) {
 		return this.roomSubscribed === roomId;
 	},
@@ -91,9 +114,23 @@ export default {
 		this.connected = true;
 		Meteor.call('UserPresence:connect', token, { visitor: token });
 
+		const idleTimeLimit = this.idleTimeLimit;
+		self = this;
+
 		Meteor.startup(function() {
-			UserPresence.awayTime = 300000; // 5 minutes
+			UserPresence.awayTime = idleTimeLimit;
 			UserPresence.start(token);
+
+			msgStream.onReconnect(() => {
+
+				const roomId = self.getRoom();
+				if (!roomId) {
+					return;
+				}
+
+				RoomHistoryManager.getRoom(roomId).hasMore.set(true);
+				RoomHistoryManager.getMore(roomId);
+			});
 		});
 	}
 };

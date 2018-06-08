@@ -23,7 +23,9 @@ Meteor.methods({
 			videoCall: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
-			emailFieldRegistrationForm: null
+			emailFieldRegistrationForm: null,
+			visitorPresenceIdleTimeoutLimit: null,
+			visitorPresenceIdleIdleSessionTimeout: null
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -73,6 +75,8 @@ Meteor.methods({
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.visitorPresenceIdleTimeoutLimit = initSettings.Livechat_Visitor_Presence_idleTimeoutLimit;
+		info.visitorPresenceIdleIdleSessionTimeout = initSettings.Livechat_Visitor_Presence_idleSessionTimeout;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 

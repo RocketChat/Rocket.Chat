@@ -366,4 +366,21 @@ Meteor.startup(function() {
 		i18nLabel: 'Secret_token',
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'External' }
 	});
+
+	RocketChat.settings.add('Livechat_Visitor_Presence_idleTimeoutLimit', 300, {
+		type: 'int',
+		group: 'Livechat',
+		public: true,
+		section: 'Visitor Presence',
+		i18nLabel: 'Idle_Time_Limit'
+	});
+
+	RocketChat.settings.add('Livechat_Visitor_Presence_idleSessionTimeout ', 600, {
+		type: 'int',
+		group: 'Livechat',
+		public: true,
+		section: 'Visitor Presence',
+		i18nLabel: 'Idle_Session_Timeout',
+		i18nDescription: 'Idle_Session_Timeout_Description'
+	});
 });
