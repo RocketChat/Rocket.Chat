@@ -199,7 +199,7 @@ function sendAllNotifications(message, room) {
 				[notificationField]: 'mentions',
 				'u._id': { $in: mentionIdsWithoutGroups }
 			});
-		} else if ((hasMentionToAll || hasMentionToHere) && !disableAllMessageNotifications) {
+		} else if (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) {
 			query.$or.push({
 				[notificationField]: 'mentions'
 			});
@@ -207,7 +207,7 @@ function sendAllNotifications(message, room) {
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
 		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
-		if ((room.t === 'd' && serverPreference === 'mentions') || ((serverPreference === 'all' || hasMentionToAll || hasMentionToHere) && !disableAllMessageNotifications)) {
+		if ((room.t === 'd' && serverPreference !== 'nothing') || (!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))) {
 			query.$or.push({
 				[notificationField]: { $exists: false }
 			});
