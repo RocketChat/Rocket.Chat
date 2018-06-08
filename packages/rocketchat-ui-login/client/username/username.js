@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.username.onCreated(function() {
 	const self = this;
 	self.username = new ReactiveVar;
@@ -57,6 +59,7 @@ Template.username.events({
 					username.error = true;
 				}
 				username.username = value;
+				username.escaped = _.escape(value);
 			}
 
 			RocketChat.Button.reset(button);
