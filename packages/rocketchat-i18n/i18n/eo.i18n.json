@@ -2663,7 +2663,7 @@
   "You_are_logged_in_as": "Vi estas ensalutinta kiel",
   "You_are_not_authorized_to_view_this_page": "Vi ne rajtas vidi ĉi tiun paĝon.",
   "You_can_change_a_different_avatar_too": "Vi povas forĵeti la avataron por afiŝi de ĉi tiu integriĝo.",
-  "You_can_search_using_RegExp_eg": "Vi povas serĉi RegExp. ekz.",
+  "You_can_search_using_RegExp_eg": "Vi povas serĉi RegExp. ekz. <code class=\"code-colors inline\">/^text$/i</code>",
   "You_can_use_an_emoji_as_avatar": "Vi ankaŭ povas uzi emoji kiel avataro.",
   "You_can_use_webhooks_to_easily_integrate_livechat_with_your_CRM": "Vi povas uzi webhookojn por facile integri vivkaptanton kun via CRM.",
   "You_cant_leave_a_livechat_room_Please_use_the_close_button": "Vi ne povas lasi salutnomon. Bonvolu uzi la ferman butonon.",
