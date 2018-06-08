@@ -41,6 +41,36 @@
 
 	--rc-color-link-active: var(--rc-color-button-primary);
 
+	/*
+	* Dark versions
+	*/
+
+	--rc-color-darktheme-error: #CC243A;
+	--rc-color-darktheme-error-light: #A6303F;
+	--rc-color-darktheme-alert: #E8BE19;
+	--rc-color-darktheme-alert-light: #CEAB20;
+	--rc-color-darktheme-success: #20CE41;
+	--rc-color-darktheme-success-light: #0FA224;
+
+	--rc-color-darktheme-button-primary: #1d74f5;
+	--rc-color-darktheme-button-primary-light: #175cc4;
+
+	--rc-color-darktheme-alert-message-primary: var(--rc-color-darktheme-button-primary);
+	--rc-color-darktheme-alert-message-primary-background: #2E2F30;
+	--rc-color-darktheme-alert-message-secondary: #556F22;
+	--rc-color-darktheme-alert-message-secondary-background: #272825;
+	--rc-color-darktheme-alert-message-warning: #d52d24;
+	--rc-color-darktheme-alert-message-warning-background: #341818;
+
+	--rc-color-darktheme-primary: #1A1A1A;
+	--rc-color-darktheme-primary-darkest: #060606;
+	--rc-color-darktheme-primary-dark: #151515;
+	--rc-color-darktheme-primary-light: #242424;
+	--rc-color-darktheme-primary-light-medium: #282828;
+	--rc-color-darktheme-primary-lightest: #3D3D3D;
+	--rc-color-darktheme-content: #CCCCCC;
+
+	--rc-color-darktheme-link-active: var(--rc-color-darktheme-button-primary);
 
 	/*
 	* General
@@ -334,4 +364,175 @@
 	--alerts-color: var(--color-white);
 	--alerts-font-size: var(--text-default-size);
 
+}
+
+/*
+* Dark theme overrides
+*/
+
+#rocket-chat.dark-theme {
+	/*
+	* General
+	*/
+	--status-online: var(--rc-color-darktheme-success);
+	--status-away: var(--rc-color-darktheme-alert);
+	--status-busy: var(--rc-color-darktheme-error);
+	--status-invisible: var(--color-gray-medium);
+	--status-invisible-sidebar: var(--rc-color-darktheme-primary-darkest);
+
+	/*
+	* Forms - Button
+	*/
+	--button-disabled-background: #444444;
+	--button-disabled-text-color: #888888;
+	--button-primary-background: var(--rc-color-darktheme-button-primary);
+	--button-primary-text-color: var(--color-white);
+	--button-cancel-color: var(--rc-color-darktheme-error);
+	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-text-color: var(--color-dark-medium);
+
+	/*
+	* Forms - Input
+	*/
+	--input-title-color: #737373;
+	--input-text-color: #C9C9C9;
+	--input-placeholder-color: #444444;
+	--input-icon-color: #444444;
+	--input-border-color: #444444;
+	--input-description-text-color: #666666;
+	--input-error-color: var(--rc-color-darktheme-error);
+
+	/*
+	* Forms - popup list
+	*/
+	--popup-list-background: #181818;
+	--popup-list-background-hover: #212121;
+	--popup-list-selected-background: #313131;
+	--popup-list-name-color: #C9C9C9;
+
+	/*
+	* Forms - tags
+	*/
+	--tags-border-color: #202020;
+	--tags-text-color: var(--rc-color-darktheme-primary);
+	--tags-background: #141414;
+
+	/*
+	* Forms - select avatar
+	*/
+	--select-avatar-upload-background: #202020;
+	--select-avatar-upload-color: #C9C9C9;
+
+	/*
+	* Sidebar
+	*/
+	--sidebar-background: var(--rc-color-darktheme-primary);
+	--sidebar-background-hover: var(--rc-color-darktheme-primary-dark);
+	--sidebar-background-light: var(--rc-color-darktheme-primary-lightest);
+	--sidebar-background-light-hover: var(--rc-color-darktheme-primary-light);
+
+	/*
+	* Sidebar flex
+	*/
+	--sidebar-flex-search-background: #141414;
+	--sidebar-flex-search-placeholder-color: #444444;
+
+	/*
+	* Sidebar Account
+	*/
+	--sidebar-account-username-color: var(--color-white);
+	--sidebar-account-username-color-darker: #666666;
+	--sidebar-account-status-color: var(--color-gray);
+
+	/*
+	* Sidebar Item
+	*/
+	--sidebar-item-text-color: var(--color-gray);
+	--sidebar-item-hover-background: var(--rc-color-darktheme-primary-darkest);
+	--sidebar-item-active-background: var(--rc-color-darktheme-primary-dark);
+	--sidebar-item-active-color: var(--sidebar-item-text-color);
+	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-popup-background: #555555;
+
+	/*
+	* Modal
+	*/
+	--modal-back-button-color: var(--color-gray);
+
+	/*
+	* Modal - Create Channel
+	*/
+	--create-channel-title-color: #DDDDDD;
+	--create-channel-description-color: var(--color-gray);
+
+	/*
+	* Toolbar
+	*/
+	--toolbar-placeholder-color: var(--color-gray);
+
+	/*
+	* Rooms list
+	*/
+	--rooms-list-title-color: var(--color-gray);
+	--rooms-list-empty-text-color: var(--color-gray);
+
+	/*
+	* Chip
+	*/
+	--chip-background: #222222;
+
+	/*
+	* Badge
+	*/
+	--badge-text-color: var(--color-white);
+	--badge-background: var(--rc-color-darktheme-primary-dark);
+	--badge-unread-background: var(--rc-color-darktheme-button-primary);
+
+	/*
+	* Message box
+	*/
+	--message-box-placeholder-color: #444444;
+	--message-box-markdown-color: var(--color-gray);
+	--message-box-markdown-hover-color: #999999;
+	--message-box-user-typing-color: #444444;
+	--message-box-user-typing-user-color: #555555;
+	--message-box-container-border-color: #444444;
+	--message-box-editing-color: #604408;
+	--message-box-popover-title-text-color: var(--color-gray);
+
+	/*
+	* Header
+	*/
+	--header-toggle-favorite-color: #444444;
+	--header-toggle-favorite-star-color: var(--rc-color-darktheme-alert-light);
+	--header-title-username-color-darker: #CCCCCC;
+	--header-title-status-color: var(--color-gray);
+	--header-background-color: #222222;
+
+	/*
+	* Flex nav
+	*/
+	--flex-nav-background: #555555;
+
+	/*
+	* Tooltip
+	*/
+	--tooltip-background: #000000;
+	--tooltip-text-color: var(--color-white);
+
+	/*
+	* alert
+	*/
+	--alerts-background: #1d73f5;
+	--alerts-color: var(--color-white);
+
+	/*
+	* Popover
+	*/
+	& ~ .rc-popover {
+		--popover-background: #242424;
+		--popover-title-color: #DDDDDD;
+		--popover-item-color: #DDDDDD;
+		--popover-divider-color: #333333;
+	}
 }

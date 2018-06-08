@@ -39,4 +39,5 @@ Package.onUse(function(api) {
 
 	// Run-time stylesheets
 	api.addAssets('server/colors.less', 'server');
+	api.addAssets('server/colors-dark.less', 'server');
 });
