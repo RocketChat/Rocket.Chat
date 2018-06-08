@@ -2485,7 +2485,7 @@
   "User__username__removed_from__room_name__moderators": "__username__ User ji moderator __room_name__ rakirin",
   "User__username__removed_from__room_name__owners": "__username__ User ji xwediyên __room_name__ rakirin",
   "User_added": "بەکارهێنەر زیادکرا",
-  "User_added_by": "بەکارهێنەر <em>__user_added__</em> زیادکرا لەلایەن <em>__user_by__</em>.\n",
+  "User_added_by": "بەکارهێنەر <em>__user_added__</em> زیادکرا لەلایەن <em>__user_by__</em>.",
   "User_added_successfully": "Bikarhêner added bi serkeftî",
   "User_and_group_mentions_only": "Bikarhêner û grûp tenê tenê",
   "User_default": "Default default",

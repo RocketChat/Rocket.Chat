@@ -804,7 +804,7 @@
   "Create_unique_rules_for_this_channel": "Hozzon létre egyedi szabályokat ehhez a csatornához",
   "Created_at": "Készült",
   "Created_at_s_by_s": "Létrehozva <strong>%s</strong>, <strong>%s</strong> által",
-  "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong>  hatására <strong>%s</strong> által készítve <strong>%s</strong> időpontban.\n\n",
+  "Created_at_s_by_s_triggered_by_s": "<strong>%s</strong>  hatására <strong>%s</strong> által készítve <strong>%s</strong> időpontban.\n",
   "CRM_Integration": "CRM integráció",
   "CROWD_Reject_Unauthorized": "Elutasítás jogosulatlanul",
   "Current_Chats": "jelenlegi beszélgetés",

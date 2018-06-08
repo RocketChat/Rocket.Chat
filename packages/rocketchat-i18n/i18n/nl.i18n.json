@@ -2524,7 +2524,7 @@
   "User_sent_a_message_to_you": "<strong>__username__</strong>heeft je een bericht gestuurd:",
   "user_sent_an_attachment": "__user__ heeft een bijlage verzonden",
   "User_Settings": "Gebruikersinstellingen",
-  "User_unmuted_by": "Gebruiker <em>__user_muted__</em> weer tot spreken in staat gebracht door <em>__user_by__</em>.\n",
+  "User_unmuted_by": "Gebruiker <em>__user_muted__</em> weer tot spreken in staat gebracht door <em>__user_by__</em>.",
   "User_unmuted_in_room": "Gebruiker kan weer spreken in de kamer",
   "User_updated_successfully": "Gebruiker succesvol bijgewerkt",
   "User_uploaded_a_file_on_channel": "<strong>__username__</strong>heeft een bestand geüpload op <strong>__channel__</strong>:",
