@@ -7,9 +7,9 @@
  */
 RocketChat.API.v1.addRoute('permissions', { authRequired: true }, {
 	get() {
-                const warningMessage = 'The endpoint "permissions" is deprecated and will be removed after version v0.69';
-                console.warn(warningMessage);
-		
+		const warningMessage = 'The endpoint "permissions" is deprecated and will be removed after version v0.69';
+		console.warn(warningMessage);
+
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success(result);
