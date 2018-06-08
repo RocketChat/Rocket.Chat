@@ -278,7 +278,7 @@
   "API_Tokenpass_URL_Description": "Exemplo: https://domain.com (excluindo a barra diagonal)",
   "API_Upper_Count_Limit": "Montante máximo máximo",
   "API_Upper_Count_Limit_Description": "Qual é o número máximo de registros que a API REST deve retornar (quando não ilimitada)?",
-  "API_User_Limit": "Limite de usuários para adicionar todos os usuários para o Canal",
+  "API_User_Limit": "Limite de usuários para adicionar todos os usuários para o canal",
   "API_Wordpress_URL": "URL do WordPress",
   "Apiai_Key": "Api.ai Key",
   "Apiai_Language": "Idioma Api.ai",
