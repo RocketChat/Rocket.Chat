@@ -274,6 +274,18 @@ Template.sidebarHeader.events({
 							{
 								items: [
 									{
+										icon: 'eye-off',
+										name: t('Hide_all_direct_messages'),
+										modifier: 'hide-direct-messages',
+										action: () => {
+											console.log("in")
+										}
+									},
+								]
+							},
+							{
+								items: [
+									{
 										icon: 'user',
 										name: t('My_Account'),
 										type: 'open',
