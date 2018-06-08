@@ -1,4 +1,6 @@
 /* globals popover menu */
+import { hideAllDirect } from 'meteor/rocketchat:lib';
+
 const setStatus = status => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
@@ -278,9 +280,9 @@ Template.sidebarHeader.events({
 										name: t('Hide_all_direct_messages'),
 										modifier: 'hide-direct-messages',
 										action: () => {
-											console.log("in")
+											hideAllDirect();
 										}
-									},
+									}
 								]
 							},
 							{

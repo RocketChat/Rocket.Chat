@@ -1,5 +1,16 @@
 import { call, UiTextContext } from 'meteor/rocketchat:lib';
 
+const handleHideRoom = async rid => {
+	if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+		FlowRouter.go('home');
+	}
+
+	await call('hideRoom', rid);
+	if (rid === Session.get('openedRoom')) {
+		Session.delete('openedRoom');
+	}
+};
+
 export function hide(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
 
@@ -14,16 +25,19 @@ export function hide(type, rid, name) {
 		closeOnConfirm: true,
 		html: false
 	}, async function() {
-		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-			FlowRouter.go('home');
-		}
-
-		await call('hideRoom', rid);
-		if (rid === Session.get('openedRoom')) {
-			Session.delete('openedRoom');
-		}
+		await handleHideRoom(rid);
 	});
 	return false;
+}
+
+export function hideAllDirect() {
+	Meteor.call('getRoomsByType', 'd', (err, directRooms) => {
+		if (!err) {
+			directRooms.forEach(async function({ _id }) {
+				await handleHideRoom(_id);
+			});
+		}
+	});
 }
 
 const leaveRoom = async rid => {
