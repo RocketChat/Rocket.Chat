@@ -55,7 +55,9 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
+		return RocketChat.TabBar.getButtons().filter(button =>
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
+		);
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
