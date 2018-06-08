@@ -183,6 +183,7 @@ Package.onUse(function(api) {
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');
