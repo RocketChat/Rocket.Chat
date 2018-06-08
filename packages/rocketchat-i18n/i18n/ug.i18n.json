@@ -29,7 +29,7 @@
   "Accounts_EmailVerification": "ئاكونت ئىلخەت تەكشۈرۈپ ئىسپاتلاش",
   "Accounts_EmailVerification_Description": "نىڭ توغرا تەڭشەكلىرىنى جەزىملەشتۈرۈڭSTP،بۇ ئىقتىدارنى ئىشلىتىش ئۈچۈن",
   "Accounts_Enrollment_Email": "ئىلخەتكە تىزىملىتىش",
-  "Accounts_Enrollment_Email_Default": "<h1>كەلگىنىڭىزنى قارشى ئالىمىز<strong>[Site_Name]</strong></h1><p>بۇنىڭغا ئۆتۈش<a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> ، ھەمدە ھازىرقى ئەڭ ئىلغار بولغان ئورۇق كود پاراڭلىشىشنى ھەل قىلىش پىلانىنى سىناپ بېقىڭ ! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>كەلگىنىڭىزنى قارشى ئالىمىز<strong>[Site_Name]</strong></h1><p>بۇنىڭغا ئۆتۈش<a href=\"[Site_URL]\">[Site_URL]</a> ، ھەمدە ھازىرقى ئەڭ ئىلغار بولغان ئورۇق كود پاراڭلىشىشنى ھەل قىلىش پىلانىنى سىناپ بېقىڭ ! </p>",
   "Accounts_Enrollment_Email_Description": "سىز تۆۋەندىكى ئورۇن ئىگىلەش بەلگىلەرنى ئىشلىتەلەيسىز ：<br/><ul><li>ئىسىم_فامىلىسى [name]、ئىسمى [fname] ياكى فامىلىسى[lname]。</li><li>ئىلخەت[email]。</li><li>تور بېكەت ئىسمى[Site_Name] ۋە توربېكەت ئادرېسى [Site_URL]。</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "زىيارەت قىلغىنىڭىزنى قارشى ئالىمىز [Site_Name]",
   "Accounts_Iframe_api_method": "API ئۇسۇلى",

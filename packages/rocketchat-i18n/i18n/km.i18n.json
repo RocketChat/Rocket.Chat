@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "ការ​ផ្ទៀងផ្ទាត់​តាម​​អ៊ី​ម៉ែ​ល",
   "Accounts_EmailVerification_Description": "សូមប្រាកដថាអ្នកមានការកំណត់របស់ SMTP ត្រឹមត្រូវដើម្បីប្រើលក្ខណៈពិសេសនេះ",
   "Accounts_Enrollment_Email": "ការចូលអ៊ីមែល",
-  "Accounts_Enrollment_Email_Default": "<h1>ស្វាគមន៍មកកាន់ <strong>[Site_Name]</strong></h1><p> ចូរទៅទៅ <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> និងព្យាយាមដំណោះស្រាយប្រភពបើកចំហជជែកកំសាន្តដែលអាចប្រើបានល្អបំផុតនាពេលបច្ចុប្បន្ននេះ! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>ស្វាគមន៍មកកាន់ <strong>[Site_Name]</strong></h1><p> ចូរទៅទៅ <a href=\"[Site_URL]\">[Site_URL]</a> និងព្យាយាមដំណោះស្រាយប្រភពបើកចំហជជែកកំសាន្តដែលអាចប្រើបានល្អបំផុតនាពេលបច្ចុប្បន្ននេះ! </p>",
   "Accounts_Enrollment_Email_Description": "អ្នកប្រហែលប្រើ [name], [fname], [lname] ពីឈ្មោះពេញរបស់អ្នកប្រើប្រាស់ គោត្តនាម ឬនាមខ្លួន។ <br/> អ្នកប្រហែលប្រើប្រាស់ [email] ពីអ៊ីមែលរបស់អញនកប្រើប្រាស់។",
   "Accounts_Enrollment_Email_Subject_Default": "សូមស្វាគមន៍មកកាន់ [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "បំភ្លេចសម័យអ្នកប្រើនៅលើបង្អួចបិទ",

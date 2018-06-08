@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Verificarea email-ului",
   "Accounts_EmailVerification_Description": "Asigurați-vă că aveți setările SMT corecte pentru a utiliza această funcționalitate",
   "Accounts_Enrollment_Email": "E-mail de înscriere ",
-  "Accounts_Enrollment_Email_Default": "<h1>Bun venit la <strong>[Site_Name]</strong></h1><p> Du-te la <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> și să încercați cea mai bună soluție de chat open source disponibile astăzi! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Bun venit la <strong>[Site_Name]</strong></h1><p> Du-te la <a href=\"[Site_URL]\">[Site_URL]</a> și să încercați cea mai bună soluție de chat open source disponibile astăzi! </p>",
   "Accounts_Enrollment_Email_Description": "Puteți utiliza [name], [fname], [lname] pentru numele complet al utilizatorului, prenumele respectiv numele de familie.<br/>Puteți folosi [email] pentru e-mailul utilizatorului.",
   "Accounts_Enrollment_Email_Subject_Default": "Bine ati venit la [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Închideți sesiunea de utilizatori în fereastra închisă",

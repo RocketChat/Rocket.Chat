@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-mail Verifikacija",
   "Accounts_EmailVerification_Description": "Provjerite imate li ispravne postavke SMTP kako bi koristili ovu mogućnost",
   "Accounts_Enrollment_Email": "Email dobrodošlice",
-  "Accounts_Enrollment_Email_Default": "<h1>Dobrodošli u <strong>[Site_Name]</strong></h1><p> Idite na <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> i pokušajte najbolje open source chat rješenje danas! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Dobrodošli u <strong>[Site_Name]</strong></h1><p> Idite na <a href=\"[Site_URL]\">[Site_URL]</a> i pokušajte najbolje open source chat rješenje danas! </p>",
   "Accounts_Enrollment_Email_Description": "Možete koristiti sljedeće oznake: <br/><ul><li>[name], [fname], [lname] za korisničko ime, ime te prezime.</li><li>[email] za korisnikov email.</li><li>[Site_Name] i [Site_URL] za naziv aplikacije i URL.\n</li></ul> ",
   "Accounts_Enrollment_Email_Subject_Default": "Dobro došli na [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Zaboravi korisnikovu prijavu pri zatvaranju prozora",

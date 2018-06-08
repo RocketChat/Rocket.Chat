@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "மின்னஞ்சல் சரிபார்ப்பு",
   "Accounts_EmailVerification_Description": "நிச்சயமாக நீங்கள் இந்த வசதியை பயன்படுத்த சரியான SMTP அமைப்புகளை வைத்து கொள்ளுங்கள்",
   "Accounts_Enrollment_Email": "பதிவு மின்னஞ்சல்",
-  "Accounts_Enrollment_Email_Default": "<h1>வரவேற்கிறோம் <strong>[Site_Name]</strong></h1><p> <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> போய், இன்றைக்கும் கிடைக்க சிறந்த திறந்த மூல அரட்டை தீர்வு முயற்சி! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>வரவேற்கிறோம் <strong>[Site_Name]</strong></h1><p> <a href=\"[Site_URL]\">[Site_URL]</a> போய், இன்றைக்கும் கிடைக்க சிறந்த திறந்த மூல அரட்டை தீர்வு முயற்சி! </p>",
   "Accounts_Enrollment_Email_Description": "முறையே பயனர் முழு பெயர், முதல் பெயர் அல்லது கடைசி பெயரை நீங்கள் [name], [fname], பயன்படுத்தலாம் [lname]. <br/> நீங்கள் பயனர் மின்னஞ்சல் ஐந்து [email] பயன்படுத்தலாம்.",
   "Accounts_Enrollment_Email_Subject_Default": "வரவேற்கிறோம் [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "சாளரத்தை மூடுகையில் பயனர் அமர்வுகளை மற",

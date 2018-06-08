@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Проверка на електроната поща",
   "Accounts_EmailVerification_Description": "Уверете се, че имате правилни SMTP настройки, за да използвате тази функция",
   "Accounts_Enrollment_Email": "Имейл за записване",
-  "Accounts_Enrollment_Email_Default": "<h1>дошли в <strong>[Site_Name]</strong></h1><p>Към <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[SITE_URL]</a></a>и опитайте най-доброто решение за чат с отворен код, налично днес!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>дошли в <strong>[Site_Name]</strong></h1><p>Към <a href=\"[Site_URL]\">[SITE_URL]</a>и опитайте най-доброто решение за чат с отворен код, налично днес!</p>",
   "Accounts_Enrollment_Email_Description": "Можете да използвате следните заместващи символи: <br/><ul><li>[име], [fname], [име] за пълно име, потребителско име или фамилия на потребителя.</li><li>[имейл] за имейла на потребителя.</li><li>[Site_Name] и [Site_URL] съответно за името на приложението и URL адреса.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Добре дошли в [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Забравете потребителската сесия в прозореца Затваряне",

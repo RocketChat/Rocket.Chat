@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "Weryfikacja adresu email",
   "Accounts_EmailVerification_Description": "Upewnij się, że masz odpowiednie ustawienia SMTP by korzystać z tej funkcji",
   "Accounts_Enrollment_Email": "Adres e-mail do rekrutacji",
-  "Accounts_Enrollment_Email_Default": "<h1>Witamy w <strong>[Site_Name]</strong></h1><p>Przejdź do <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[Site_URL]</a></a> i spróbuj najlepszego rozwiązanie czat open source dostępne już dziś! </p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Witamy w <strong>[Site_Name]</strong></h1><p>Przejdź do <a href=\"[Site_URL]\">[Site_URL]</a> i spróbuj najlepszego rozwiązanie czat open source dostępne już dziś! </p>",
   "Accounts_Enrollment_Email_Description": "Możesz użyć znaczników [name], [fname], [lname] by wstawić odpowiednio pełną nazwę użytkownika, jego imię, nazwisko.<br/>\nMożesz użyć znacznika [email] by wstawić adres email użytkownika.",
   "Accounts_Enrollment_Email_Subject_Default": "Witamy w [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Zapomnij o sesji użytkownika w oknie Zamknij",

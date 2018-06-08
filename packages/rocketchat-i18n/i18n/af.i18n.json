@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "E-pos verifikasie",
   "Accounts_EmailVerification_Description": "Maak seker dat u die korrekte SMTP-instellings het om hierdie kenmerk te gebruik",
   "Accounts_Enrollment_Email": "Inskrywing E-pos",
-  "Accounts_Enrollment_Email_Default": "<h1>Welkom by <strong>[SITE_NAME]</strong></h1><p>Gaan na <a href=\"[Site_URL]\"><a href=\"[Site_URL]\">[SITE_URL] </a></a>en probeer die beste open source chat oplossing wat vandag beskikbaar is!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Welkom by <strong>[SITE_NAME]</strong></h1><p>Gaan na <a href=\"[Site_URL]\">[SITE_URL] </a>en probeer die beste open source chat oplossing wat vandag beskikbaar is!</p>",
   "Accounts_Enrollment_Email_Description": "U mag die volgende plekhouers gebruik: <br/><ul><li>[naam], [fname], [lname] vir die volle naam, voornaam of van die gebruiker se naam.</li><li>[e-pos] vir die gebruiker se e-pos.</li><li>[Site_Name] en [Site_URL] vir die Aansoek Naam en URL onderskeidelik.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Welkom by [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Vergeet gebruikerssessie op venster sluit",

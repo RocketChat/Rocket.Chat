@@ -59,7 +59,7 @@
   "Accounts_EmailVerification": "El. pašto patvirtinimas",
   "Accounts_EmailVerification_Description": "Jei norite naudoti šią funkciją, įsitikinkite, kad turite teisingus SMTP nustatymus",
   "Accounts_Enrollment_Email": "Registracija el. Paštu",
-  "Accounts_Enrollment_Email_Default": "<h1>Sveiki <strong>[Site_Name]</strong></h1><p>Eiti į <a href=\"[site_url]\"><a href=\"[site_url]\">[site_url]</a></a>ir išbandykite geriausią atvirojo šaltinio pokalbių sprendimą šiandien!</p>",
+  "Accounts_Enrollment_Email_Default": "<h1>Sveiki <strong>[Site_Name]</strong></h1><p>Eiti į <a href=\"[Site_URL]\">[site_url]</a>ir išbandykite geriausią atvirojo šaltinio pokalbių sprendimą šiandien!</p>",
   "Accounts_Enrollment_Email_Description": "Galite atitinkamai nurodyti naudotojo vardą, pavardę ar vardą, naudodami šiuos užpildytojus: <br/><ul><li>[name], [fname], [lname].</li><li>[el. Paštas] naudotojo el. Laiškui.</li><li> [Site_Name] ir [Site_URL] atitinkamai programos pavadinimui ir URL.</li></ul>",
   "Accounts_Enrollment_Email_Subject_Default": "Sveiki atvykę į [Site_Name]",
   "Accounts_ForgetUserSessionOnWindowClose": "Pamirškite naudotojo seansą lango uždaryje",
