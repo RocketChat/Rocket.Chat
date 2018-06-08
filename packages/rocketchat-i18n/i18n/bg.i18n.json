@@ -23,7 +23,7 @@
   "Accounts": "Профили",
   "Accounts_Admin_Email_Approval_Needed_Default": "<p>Потребителят <b>[име] ([имейл])</b>е регистриран.</p><p>Моля, проверете \"Администрация ->Потребители\", за да го активирате или изтриете.</p>",
   "Accounts_Admin_Email_Approval_Needed_Subject_Default": "Регистриран нов потребител и одобрение на нуждите",
-  "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>Потребителят <b>[име] ([имейл])</b>е регистриран.</p><p><p><p><p><p><p><p><p>Моля, проверете \"Администрация -></p>",
+  "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>Потребителят <b>[name] ([email])</b> е регистриран.</p><p><p>Моля, проверете \"Администрация -></p>",
   "Accounts_AllowAnonymousRead": "Разрешаване на анонимно четене",
   "Accounts_AllowAnonymousWrite": "Разрешаване на анонимно писане",
   "Accounts_AllowDeleteOwnAccount": "Позволява на потребителите да изтрива собствения си профил",
