@@ -1952,7 +1952,7 @@
   "Push_apn_dev_cert": "شهادة المطور APN",
   "Push_apn_dev_key": "مفتاح المطور APN",
   "Push_apn_dev_passphrase": "عبارة مرور المطور APN",
-  "Push_apn_key": "مفتاح APN\n",
+  "Push_apn_key": "مفتاح APN",
   "Push_apn_passphrase": "عبارة المرور APN",
   "Push_debug": "التصحيح",
   "Push_enable": "تمكين",
