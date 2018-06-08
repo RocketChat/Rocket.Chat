@@ -1,9 +1,10 @@
 
 # 0.65.2
-`2018-06-16  ·  5 🐛  ·  6 👩‍💻👨‍💻`
+`2018-06-08  ·  6 🐛  ·  7 👩‍💻👨‍💻`
 
 ### 🐛 Bug fixes
 
+- flex-tab icons missing ([#11049](https://github.com/RocketChat/Rocket.Chat/pull/11049))
 - Users model was not receiving options ([#11129](https://github.com/RocketChat/Rocket.Chat/pull/11129))
 - Preview of large images not resizing to fit the area and having scrollbars ([#10998](https://github.com/RocketChat/Rocket.Chat/pull/10998) by [@vynmera](https://github.com/vynmera))
 - Wordpress OAuth not providing enough info to log in  ([#11152](https://github.com/RocketChat/Rocket.Chat/pull/11152))
@@ -20,6 +21,7 @@
 
 - [@Hudell](https://github.com/Hudell)
 - [@engelgabriel](https://github.com/engelgabriel)
+- [@ggazzo](https://github.com/ggazzo)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.65.1
