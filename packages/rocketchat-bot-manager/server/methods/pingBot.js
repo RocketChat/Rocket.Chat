@@ -1,20 +1,17 @@
 Meteor.methods({
-	pingBot(bot) {
+	async pingBot(bot) {
 		check(bot, Object);
-		const promise = new Promise((resolve, reject) => {
-			const start = process.hrtime();
-			Meteor.call('sendClientCommand', bot, { msg: 'heartbeat' }, (err, command) => {
-				if (err) {
-					command = err.details.command;
-					reject(err);
-				} else {
-					const diff = process.hrtime(start);
-					resolve(diff[1]/1000000);
-				}
-				RocketChat.models.ClientCommands.remove(command._id);
-			});
-		});
 
-		return promise;
+		try {
+			const start = process.hrtime();
+			const command = await RocketChat.sendClientCommand(bot, { msg: 'heartbeat' });
+			const diff = process.hrtime(start);
+			RocketChat.models.ClientCommands.remove(command._id);
+			return diff[1]/1000000;
+		} catch (err) {
+			const { command } = err.details;
+			RocketChat.models.ClientCommands.remove(command._id);
+			throw err;
+		}
 	}
 });

@@ -93,6 +93,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
+	api.addFiles('server/functions/sendClientCommand.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
@@ -181,7 +182,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveSetting.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.js', 'server');
 	api.addFiles('server/methods/sendMessage.js', 'server');
-	api.addFiles('server/methods/sendClientCommand.js', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
 	api.addFiles('server/methods/setAdminStatus.js', 'server');
 	api.addFiles('server/methods/setRealName.js', 'server');
