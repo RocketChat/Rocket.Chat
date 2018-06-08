@@ -140,7 +140,7 @@
   "Accounts_OAuth_Wordpress_token_path": "Token Path",
   "Accounts_Password_Policy_AtLeastOneLowercase": "По крайней мере, один строчный регистр",
   "Accounts_Password_Policy_AtLeastOneLowercase_Description": "Убедитесь, что пароль содержит хотя бы один строчный символ.",
-  "Accounts_Password_Policy_AtLeastOneNumber": "По меньшей мере один номер",
+  "Accounts_Password_Policy_AtLeastOneNumber": "Хотя бы одну цифру",
   "Accounts_Password_Policy_AtLeastOneNumber_Description": "Убедитесь, что пароль содержит хотя бы один цифровой символ.",
   "Accounts_Password_Policy_AtLeastOneSpecialCharacter": "По меньшей мере один символ",
   "Accounts_Password_Policy_AtLeastOneSpecialCharacter_Description": "Убедитесь, что пароль содержит хотя бы один специальный символ.",
