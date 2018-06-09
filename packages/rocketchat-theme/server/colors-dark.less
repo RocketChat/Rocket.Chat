@@ -181,6 +181,10 @@
 		background-color: #111111;
 	}
 
+	.rc-switch--blue .rc-switch__input:checked + .rc-switch__button {
+		background-color: var(--button-primary-background);
+	}
+
 	.rc-switch__text {
 		color: @darktheme-primary-font-color;
 	}
@@ -260,6 +264,21 @@
 		background-color: @darktheme-content-background-color;
 	}
 
+	.messages-box .new-message {
+		color: #FFFFFF !important;
+	}
+
+	.message .reactions > li {
+		background-color: #333333;
+		border-color: #444444;
+
+		&.selected {
+			background-color: @darktheme-primary-action-color;
+			border-color: #FFFFFF;
+			color: #FFFFFF;
+		}
+	}
+
 	&~.rc-popover,
 	&~.rc-popover__content {
 		.rc-input__wrapper {
@@ -298,6 +317,10 @@
 
 			.rc-button {
 				color: #CCCCCC;
+			}
+
+			.rc-input__element {
+				color: #AAAAAA;
 			}
 		}
 	}

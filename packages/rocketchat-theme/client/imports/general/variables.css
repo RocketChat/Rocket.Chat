@@ -501,8 +501,8 @@
 	--message-box-placeholder-color: #444444;
 	--message-box-markdown-color: var(--color-gray);
 	--message-box-markdown-hover-color: #999999;
-	--message-box-user-typing-color: #444444;
-	--message-box-user-typing-user-color: #555555;
+	--message-box-user-typing-color: #888888;
+	--message-box-user-typing-user-color: #AAAAAA;
 	--message-box-container-border-color: #444444;
 	--message-box-editing-color: #604408;
 	--message-box-popover-title-text-color: var(--color-gray);

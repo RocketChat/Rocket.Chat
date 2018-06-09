@@ -10,6 +10,23 @@
 			<form id="preferences" autocomplete="off">
 				<fieldset class="rc-form-legend">
 					<div class="section">
+						<h1>{{_ "Customization"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col" id="usedTheme">
+								<label>{{_ "Theme"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="usedTheme">
+											<option value="0" selected="{{selected 'usedTheme' 0}}">{{_ "Light"}}</option>
+											<option value="1" selected="{{selected 'usedTheme' 1}}">{{_ "Dark"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
 						<h1>{{_ "Localization"}}</h1>
 						<div class="section-content border-component-color">
 							<div class="input-line double-col">
@@ -121,18 +138,6 @@
 					<div class="section">
 						<h1>{{_ "Messages"}}</h1>
 						<div class="section-content border-component-color">
-							<div class="input-line double-col" id="usedTheme">
-								<label>{{_ "Theme"}}</label>
-								<div>
-									<div class="rc-select">
-										<select class="input-monitor rc-select__element" name="usedTheme">
-											<option value="0" selected="{{selected 'usedTheme' 0}}">{{_ "Light"}}</option>
-											<option value="1" selected="{{selected 'usedTheme' 1}}">{{_ "Dark"}}</option>
-										</select>
-										{{> icon block="rc-select__arrow" icon="arrow-down" }}
-									</div>
-								</div>
-							</div>
 							<div class="input-line double-col" id="unreadAlert">
 								<label>{{_ "Unread_Tray_Icon_Alert"}}</label>
 								<div>
