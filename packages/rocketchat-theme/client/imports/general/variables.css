@@ -371,6 +371,13 @@
 */
 
 #rocket-chat.dark-theme {
+	--rc-color-alert-message-primary: var(--rc-color-darktheme-button-primary);
+	--rc-color-alert-message-primary-background: #282F3D;
+	--rc-color-alert-message-secondary: #7ca52b;
+	--rc-color-alert-message-secondary-background: #2F4011;
+	--rc-color-alert-message-warning: #d52d24;
+	--rc-color-alert-message-warning-background: #582626;
+	
 	/*
 	* General
 	*/
@@ -383,12 +390,12 @@
 	/*
 	* Forms - Button
 	*/
-	--button-disabled-background: #444444;
-	--button-disabled-text-color: #888888;
+	--button-disabled-background: #060606;
+	--button-disabled-text-color: #555555;
 	--button-primary-background: var(--rc-color-darktheme-button-primary);
 	--button-primary-text-color: var(--color-white);
 	--button-cancel-color: var(--rc-color-darktheme-error);
-	--button-secondary-background: var(--color-gray-medium);
+	--button-secondary-background: #323232;
 	--button-secondary-text-color: var(--color-dark-medium);
 
 	/*
@@ -414,7 +421,7 @@
 	* Forms - tags
 	*/
 	--tags-border-color: #202020;
-	--tags-text-color: var(--rc-color-darktheme-primary);
+	--tags-text-color: #AAAAAA;
 	--tags-background: #141414;
 
 	/*
@@ -512,7 +519,7 @@
 	/*
 	* Flex nav
 	*/
-	--flex-nav-background: #555555;
+	--flex-nav-background: #161616;
 
 	/*
 	* Tooltip
@@ -529,6 +536,7 @@
 	/*
 	* Popover
 	*/
+	& ~ .rc-popover__content,
 	& ~ .rc-popover {
 		--popover-background: #242424;
 		--popover-title-color: #DDDDDD;

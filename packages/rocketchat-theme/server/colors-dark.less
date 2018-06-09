@@ -7,13 +7,13 @@
 @darktheme-primary-action-contrast: contrast(@darktheme-primary-action-color, #444444);
 @darktheme-secondary-background-contrast: contrast(@darktheme-secondary-background-color, #444444);
 @darktheme-secondary-action-contrast: contrast(@darktheme-secondary-action-color, #444444);
-@darktheme-selection-background: lighten(@darktheme-selection-color, 30%);
-@darktheme-success-background: lighten(@darktheme-success-color, 45%);
+@darktheme-selection-background: darken(@darktheme-selection-color, 30%);
+@darktheme-success-background: darken(@darktheme-success-color, 45%);
 @darktheme-success-border: lighten(@darktheme-success-color, 30%);
-@darktheme-error-background: lighten(@darktheme-error-color, 45%);
+@darktheme-error-background: darken(@darktheme-error-color, 45%);
 @darktheme-error-border: lighten(@darktheme-error-color, 30%);
 @darktheme-error-contrast: contrast(@darktheme-error-color);
-@darktheme-pending-background: lighten(@darktheme-pending-color, 45%);
+@darktheme-pending-background: darken(@darktheme-pending-color, 45%);
 @darktheme-pending-border: lighten(@darktheme-pending-color, 30%);
 
 #rocket-chat.dark-theme {
@@ -36,6 +36,9 @@
 	}
 
 	.color-primary-font-color {
+		color: @darktheme-primary-font-color;
+	}
+	&.color-primary-font-color {
 		color: @darktheme-primary-font-color;
 	}
 
@@ -73,6 +76,235 @@
 
 	.success-color {
 		color: @darktheme-success-color;
+	}
+
+	.pending-color {
+		color: @darktheme-pending-color;
+	}
+
+	.pending-background {
+		background-color: @darktheme-pending-background;
+	}
+
+	.pending-border {
+		border-color: @darktheme-pending-border;
+	}
+
+	.error-color {
+		color: @darktheme-error-color;
+	}
+
+	.background-error-color {
+		background-color: @darktheme-error-color;
+	}
+
+	.color-info-font-color {
+		color: @darktheme-info-font-color;
+	}
+
+	.background-info-font-color {
+		background-color: @darktheme-info-font-color;
+	}
+
+	.background-attention-color {
+		background-color: @darktheme-attention-color;
+	}
+
+	// Minor Colors
+
+	.tertiary-background-color {
+		background-color: @darktheme-tertiary-background-color;
+	}
+
+	.border-tertiary-background-color {
+		border-color: @darktheme-tertiary-background-color;
+	}
+
+	// Derivative Colors
+
+	.color-tertiary-font-color {
+		color: @darktheme-tertiary-font-color;
+	}
+
+	.error-background {
+		background-color: @darktheme-error-background;
+	}
+
+	.error-border {
+		border-color: @darktheme-error-border;
+	}
+
+	.color-error-contrast {
+		color: @darktheme-error-contrast;
+	}
+
+	/** ----------------------------------------------------------------------------
+	 * Override hardcoded components
+	 */
+
+	.contextual-bar {
+		background-color: #161616;
+	}
+
+	.rc-user-info-container {
+		background-color: #161616;
+	}
+
+	.rc-user-info-details {
+		background-color: #101010;
+
+		.rc-user-info-details__info {
+			color: @darktheme-primary-font-color;
+		}
+	}
+
+	.rc-button {
+		color: rgba(255, 255, 255, 0.9);
+		border-color: rgba(255, 255, 255, 0.9);
+	}
+
+	.attachments__item {
+		.attachments__name {
+			color: #DDDDDD;
+		}
+
+		&:hover {
+			background-color: #222222;
+		}
+	}
+
+	.rc-switch-double {
+		color: @darktheme-primary-font-color;
+	}
+
+	.rc-switch--blue .rc-switch__button {
+		background-color: #111111;
+	}
+
+	.rc-switch__text {
+		color: @darktheme-primary-font-color;
+	}
+
+	.rc-old blockquote::before {
+		background-color: #444444;
+	}
+
+	.message-actions {
+		color: #888888;
+	}
+
+	.reply-preview {
+		background-color: #111111;
+	}
+
+	.toolbar .rc-input__element {
+		background-color: #111111;
+	}
+
+	.rc-table {
+		color: @darktheme-primary-font-color;
+	}
+
+	.rc-table-body .rc-table-tr:hover {
+		background-color: #111111;
+	}
+
+	.code-colors {
+		background-color: #999999;
+		border-color: #555555;
+	}
+
+	.rc-form-legend {
+		color: #AAAAAA;
+	}
+
+	.sidebar-light .sidebar-item {
+		color: #CCCCCC;
+	}
+
+	.rc-form-label {
+		color: #CCCCCC;
+	}
+
+	.admin-table-row {
+		background-color: transparent;
+	}
+
+	.admin-table-row:nth-of-type(2n) {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.rc-old .page-settings .section {
+		background-color: #161616;
+		border-color: #444444;
+	}
+
+	.flex-tab-bar .tab-button-icon {
+		color: #AAAAAA;
+		fill: #AAAAAA;
+	}
+
+	.admin-integrations-new-panel .admin-integrations-new-item {
+		border-color: #333333;
+
+		&:hover {
+			background-color: #222222;
+		}
+	}
+
+	.message.new-day.first-unread::after {
+		border-color: @darktheme-error-color;
+	}
+
+	.first-unread .body::after {
+		background-color: @darktheme-content-background-color;
+	}
+
+	&~.rc-popover,
+	&~.rc-popover__content {
+		.rc-input__wrapper {
+			color: #AAAAAA;
+		}
+
+		.rc-input__element {
+			color: #AAAAAA;
+			border-color: #AAAAAA;
+		}
+	}
+
+	&~.emoji-picker .filter-item {
+		border-color: #444444;
+
+		&:hover {
+			border-color: #666666;
+		}
+
+		&.active {
+			border-color: @darktheme-primary-action-color;
+		}
+	}
+
+	&~.rc-modal-wrapper {
+		background-color: rgba(12, 12, 15, 0.8);
+
+		.rc-modal {
+			background-color: #090909;
+			color: #AAAAAA;
+
+			.rc-modal__footer {
+				background-color: #0C0C0C;
+				color: #CCCCCC;
+			}
+
+			.rc-button {
+				color: #CCCCCC;
+			}
+		}
+	}
+
+	&~.connection-status .alert-warning {
+		color: #FFB128;
+		background-color: #48391F;
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -314,7 +546,7 @@
 	}
 
 	.message.editing {
-		background-color: lighten(@darktheme-pending-color, 40%);
+		background-color: #644B1F;
 	}
 
 	.rc-old {
@@ -342,7 +574,7 @@
 		}
 
 		&.new-day::after {
-			border-color: @darktheme-component-color;
+			border-color: #282828;
 		}
 
 		.message-dropdown,
@@ -428,13 +660,21 @@
 		background-color: lighten(@darktheme-primary-background-color, 2.5%);
 	}
 
+	.rc-member-list__counter {
+		color: #AAAAAA;
+	}
+
+	.rc-member-list__user:hover {
+		background-color: #222222;
+	}
+
 	/** ----------------------------------------------------------------------------
 	 * Flex tabs / admin fly-out panels
 	 */
 	.flex-tab {
 		.message {
 			&.new-day::before {
-				background-color: @darktheme-secondary-background-color;
+				background-color: #161616;
 			}
 		}
 
