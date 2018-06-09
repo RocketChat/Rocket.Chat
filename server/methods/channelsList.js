@@ -65,11 +65,12 @@ Meteor.methods({
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
 			const user = Meteor.user();
-			const userPref = RocketChat.getUserPreference(user, 'mergeChannels') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
-			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref !== undefined ? userPref : globalPref;
+			const userPref = RocketChat.getUserPreference(user, 'groupByType') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
+			const globalPref = RocketChat.settings.get('UI_Group_Channels_By_Type');
+			// needs to negate globalPref because userPref represents its opposite
+			const groupByType = userPref !== undefined ? userPref : globalPref;
 
-			if (mergeChannels) {
+			if (!groupByType) {
 				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('p', Meteor.userId(), {fields: {rid: 1}}).fetch().map(s => s.rid);
 				if (filter) {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('p', roomIds, options).fetch());

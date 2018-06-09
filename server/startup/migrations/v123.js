@@ -1,93 +1,89 @@
-import Future from 'fibers/future';
+let pageVisitedCollection;
+let messageCollection;
+let roomCollection;
+
+const roomIdByToken = {};
+
+const batchSize = 5000;
+
+async function migrateHistory(total, current) {
+	console.log(`Livechat history migration ${ current }/${ total }`);
+
+	const items = await pageVisitedCollection.find({}).limit(batchSize).toArray();
+
+	const tokens = items.filter((item) => item.token && !roomIdByToken[item.token]).map((item) => item.token);
+	const rooms = await roomCollection.find({
+		'v.token': {
+			$in: tokens
+		}
+	}, {
+		fields: {
+			'v.token': 1
+		}
+	}).toArray();
+
+	rooms.forEach((room) => {
+		roomIdByToken[room.v.token] = room._id;
+	});
+
+	const actions = items.reduce((result, item) => {
+		const msg = {
+			t: 'livechat_navigation_history',
+			rid: roomIdByToken[item.token] || null, // prevent from being `undefined`
+			ts: item.ts,
+			msg: `${ item.page.title } - ${ item.page.location.href }`,
+			u: {
+				_id : 'rocket.cat',
+				username : 'rocket.cat'
+			},
+			groupable : false,
+			navigation : {
+				page: item.page,
+				token: item.token
+			}
+		};
+		if (!roomIdByToken[item.token] && item.expireAt) {
+			msg.expireAt = item.expireAt;
+		}
+		result.insert.push(msg);
+		result.remove.push(item._id);
+
+		return result;
+	}, { insert: [], remove: [] });
+
+	const batch = Promise.all([
+		messageCollection.insertMany(actions.insert),
+		pageVisitedCollection.removeMany({ _id: { $in: actions.remove } })
+	]);
+	if (actions.remove.length === batchSize) {
+		await batch;
+		return migrateHistory(total, current + batchSize);
+	}
+
+	return batch;
+}
+
 
 RocketChat.Migrations.add({
 	version: 123,
 	up() {
-		RocketChat.models.Rooms.update({
-			t: { $ne: 'd' }
-		}, {
-			$unset: { usernames: 1 }
-		}, {
-			multi: true
-		});
+		pageVisitedCollection = RocketChat.models.LivechatPageVisited.model.rawCollection();
+		messageCollection = RocketChat.models.Messages.model.rawCollection();
+		roomCollection = RocketChat.models.Rooms.model.rawCollection();
 
-		RocketChat.models.Rooms.find({
-			usersCount: { $exists: false }
-		}, {
-			fields: {
-				_id: 1
-			}
-		}).forEach(({_id}) => {
-			const usersCount = RocketChat.models.Subscriptions.findByRoomId(_id).count();
+		/*
+		 * Move visitor navigation history to messages
+		 */
+		Meteor.setTimeout(async() => {
+			const pages = pageVisitedCollection.find({});
+			const total = await pages.count();
+			await pages.close();
 
-			RocketChat.models.Rooms.update({
-				_id
-			}, {
-				$set: {
-					usersCount
-				}
-			});
-		});
+			console.log('Migrating livechat visitors navigation history to livechat messages. This might take a long time ...');
 
-		// Getting all subscriptions and users to memory allow us to process in batches,
-		// all other solutions takes hundreds or thousands times more to process.
-		const subscriptions = RocketChat.models.Subscriptions.find({
-			t: 'd',
-			name: { $exists: true },
-			fname: { $exists: false }
-		}, {
-			fields: {
-				name: 1
-			}
-		}).fetch();
+			await migrateHistory(total, 0);
 
-		const users = RocketChat.models.Users.find({username: {$exists: true}, name: {$exists: true}}, {fields: {username: 1, name: 1}}).fetch();
-		const usersByUsername = users.reduce((obj, user) => {
-			obj[user.username] = user.name;
-			return obj;
-		}, {});
-
-		const updateSubscription = (subscription) => {
-			return new Promise((resolve) => {
-				Meteor.defer(() => {
-					const name = usersByUsername[subscription.name];
-
-					if (!name) {
-						return resolve();
-					}
-
-					RocketChat.models.Subscriptions.update({
-						_id: subscription._id
-					}, {
-						$set: {
-							fname: name
-						}
-					});
-
-					resolve();
-				});
-			});
-		};
-
-		// Use FUTURE to process itens in batchs and wait the final one
-		const fut = new Future();
-
-		const processBatch = () => {
-			const itens = subscriptions.splice(0, 1000);
-
-			console.log('Migrating', itens.length, 'of', subscriptions.length, 'subscriptions');
-
-			if (itens.length) {
-				Promise.all(itens.map(s => updateSubscription(s))).then(() => {
-					processBatch();
-				});
-			} else {
-				fut.return();
-			}
-		};
-
-		processBatch();
-
-		fut.wait();
+			console.log('Livechat visitors navigation history migration finished.');
+		}, 1000);
 	}
 });
