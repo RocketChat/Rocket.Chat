@@ -10,8 +10,7 @@ export class ConversationRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		// returns true only if groupByType is not set
-		return !RocketChat.getUserPreference(user, 'groupByType');
+		// returns true only if sidebarGroupByType is not set
+		return !RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }
