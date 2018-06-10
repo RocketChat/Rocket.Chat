@@ -1,9 +1,8 @@
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true && record['public'] === true;
-		});
+		const records = RocketChat.models.Settings.findNotHiddenPublic().fetch();
+
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
@@ -32,9 +31,7 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
 			return [];
 		}
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true;
-		});
+		const records = RocketChat.models.Settings.findNotHidden().fetch();
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {

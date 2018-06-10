@@ -1,6 +1,8 @@
 Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
+		// TODO: should we return this for non logged users?
+		// TODO: we could cache this collection
 
 		const records = RocketChat.models.Permissions.find().fetch();
 
