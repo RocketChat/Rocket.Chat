@@ -68,7 +68,7 @@ RocketChat.models.Settings.on('change', ({clientAction, id, data}) => {
 			if (setting['public'] === true) {
 				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			} else {
-				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);
+				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
 			}
 			break;
 
