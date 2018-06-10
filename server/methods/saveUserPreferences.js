@@ -74,6 +74,10 @@ Meteor.methods({
 			settings.emailNotificationMode = 'nothing';
 		}
 
+		if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
+			throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		}
+
 		RocketChat.models.Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences

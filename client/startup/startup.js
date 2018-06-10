@@ -95,8 +95,8 @@ Meteor.startup(function() {
 			fields: {
 				status: 1,
 				language: 1,
-				'settings.idleTimeLimit': 1,
-				'settings.enableAutoAway': 1
+				'settings.preferences.idleTimeLimit': 1,
+				'settings.preferences.enableAutoAway': 1
 			}
 		});
 
@@ -113,6 +113,9 @@ Meteor.startup(function() {
 		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
 			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
+		} else {
+			delete UserPresence.awayTime;
+			UserPresence.stopTimer();
 		}
 
 		UserPresence.start();
