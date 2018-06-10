@@ -1695,6 +1695,30 @@ RocketChat.settings.addGroup('Logs', function() {
 		type: 'int'
 	});
 
+	this.add('Log_Trace_Methods', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Methods_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Methods',
+			value: true
+		}
+	});
+
+	this.add('Log_Trace_Subscriptions', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Subscriptions_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Subscriptions',
+			value: true
+		}
+	});
+
 	this.section('Prometheus', function() {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
