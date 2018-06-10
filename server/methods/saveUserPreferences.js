@@ -10,7 +10,6 @@ Meteor.methods({
 			collapseMediaByDefault: Match.Optional(Boolean),
 			autoImageLoad: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
-			roomsListExhibitionMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
@@ -31,14 +30,10 @@ Meteor.methods({
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
+			sidebarGroupByType: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean)
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		if (settings.groupByType) {
-			check(settings, Match.ObjectIncluding({
-				groupByType: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
-			}));
-		}
 		const user = Meteor.user();
 
 		if (!user) {
@@ -57,14 +52,6 @@ Meteor.methods({
 
 		if (settings.language != null) {
 			RocketChat.models.Users.setLanguage(user._id, settings.language);
-		}
-
-		if (settings.groupByType != null) {
-			settings.groupByType = ['1', true].includes(settings.groupByType);
-		}
-
-		if (settings.roomsListExhibitionMode != null) {
-			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
 		}
 
 		// Keep compatibility with old values
