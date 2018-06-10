@@ -77,12 +77,11 @@ Meteor.startup(function() {
 		}
 	};
 
-	Meteor.subscribe('userData');
-
 	Tracker.autorun(function(computation) {
 		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
+		Meteor.subscribe('userData');
 		Meteor.subscribe('activeUsers');
 		computation.stop();
 	});
