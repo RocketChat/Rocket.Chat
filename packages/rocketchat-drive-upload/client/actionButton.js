@@ -18,25 +18,32 @@ Meteor.startup(function() {
 				'mimeType': `${ file.type }`
 			};
 
-			const options = {};
+			const fileRequest = new XMLHttpRequest();
+			fileRequest.open('GET', url, true);
+			fileRequest.responseType = 'arraybuffer';
 
-			HTTP.call('GET', url, options, function(err, response) {
-				const fileData = new Buffer(btoa(unescape(encodeURIComponent(response.content))), 'base64');
-				Meteor.call('checkDriveAccess', (err, authorized) => {
-					if (!authorized) {
-						Meteor.loginWithGoogle({
-							requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
-						}, function(error) {
-							if (error) {
-								console.log(error);
-							}
+			fileRequest.onload = function() {
+				const arrayBuffer = fileRequest.response;console.log(arrayBuffer);
+				if (arrayBuffer) {
+					const fileData = new Uint8Array(arrayBuffer);
+					Meteor.call('checkDriveAccess', (err, authorized) => {
+						if (!authorized) {
+							Meteor.loginWithGoogle({
+								requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+							}, function(error) {
+								if (error) {
+									console.log(error);
+								}
+								Meteor.call('uploadFileToDrive', {fileData, metaData}, () => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark')));
+							});
+						} else {
 							Meteor.call('uploadFileToDrive', {fileData, metaData}, () => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark')));
-						});
-					} else {
-						Meteor.call('uploadFileToDrive', {fileData, metaData}, () => toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark')));
-					}
-				});
-			});
+						}
+					});
+				}
+			};
+
+			fileRequest.send(null);
 		},
 
 		condition(message) {
