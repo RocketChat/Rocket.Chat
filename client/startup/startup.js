@@ -96,8 +96,8 @@ Meteor.startup(function() {
 			fields: {
 				status: 1,
 				language: 1,
-				'settings.idleTimeLimit': 1,
-				'settings.enableAutoAway': 1
+				'settings.preferences.idleTimeLimit': 1,
+				'settings.preferences.enableAutoAway': 1
 			}
 		});
 

@@ -190,7 +190,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enable_Auto_Away'
 		});
-		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300, {
+		this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
 			type: 'int',
 			'public': true,
 			i18nLabel: 'Idle_Time_Limit'
@@ -1679,6 +1679,30 @@ RocketChat.settings.addGroup('Logs', function() {
 	});
 	this.add('Log_View_Limit', 1000, {
 		type: 'int'
+	});
+
+	this.add('Log_Trace_Methods', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Methods_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Methods',
+			value: true
+		}
+	});
+
+	this.add('Log_Trace_Subscriptions', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Subscriptions_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Subscriptions',
+			value: true
+		}
 	});
 
 	this.section('Prometheus', function() {

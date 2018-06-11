@@ -130,8 +130,8 @@ class Administration extends Page {
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
-	get accountsIdleTimeoutLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
-	get accountsIdleTimeoutLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
+	get accountsidleTimeLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
+	get accountsidleTimeLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
 	get accountsNotificationDuration() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 	get accountsNotificationDurationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
