@@ -23,11 +23,24 @@ tar xf "$CACHE_TARGET"
 # Create symlink so we can rely on the path /opt/meteor-spk
 ln -s "${PACKAGE}" meteor-spk
 
+#This will install capnp, the Cap’n Proto command-line tool.
+#It will also install libcapnp, libcapnpc, and libkj in /usr/local/lib and headers in /usr/local/include/capnp and /usr/local/include/kj.
+wget https://capnproto.org/capnproto-c++-0.5.3.tar.gz
+tar zxf capnproto-c++-0.5.3.tar.gz
+cd capnproto-c++-0.5.3
+./configure
+make -j6 check
+# inlcude libcapnp and libkj library to dependencies.
+cp .libs/* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+
 # Add bash, and its dependencies, so they get mapped into the image.
 # Bash runs the launcher script.
 cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
 cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+# for npm in package.json sharp.
+cp -a /lib/x86_64-linux-gnu/libresolv* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+
 
 # Unfortunately, Meteor does not explicitly make it easy to cache packages, but
 # we know experimentally that the package is mostly directly extractable to a
