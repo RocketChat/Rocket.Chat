@@ -71,17 +71,21 @@ export class AppsRestApi {
 					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
 				}
 
-				const item = Meteor.wrapAsync((callback) => {
-					manager.add(buff.toString('base64'), false).then((rl) => callback(undefined, rl)).catch((e) => {
-						console.warn('Error!', e);
-						callback(e);
-					});
-				})();
+				const aff = Promise.await(manager.add(buff.toString('base64'), false));
+				const info = aff.getAppInfo();
 
-				const info = item.getInfo();
-				info.status = item.getStatus();
+				// If there are compiler errors, there won't be an App to get the status of
+				if (aff.getApp()) {
+					info.status = aff.getApp().getStatus();
+				} else {
+					info.status = 'compiler_error';
+				}
 
-				return RocketChat.API.v1.success({ app: info });
+				return RocketChat.API.v1.success({
+					app: info,
+					implemented: aff.getImplementedInferfaces(),
+					compilerErrors: aff.getCompilerErrors()
+				});
 			}
 		});
 
@@ -116,15 +120,39 @@ export class AppsRestApi {
 				console.log('Updating:', this.urlParams.id);
 				// TODO: Verify permissions
 
-				const buff = fileHandler(this.request, 'app');
-				const item = Meteor.wrapAsync((callback) => {
-					manager.update(buff.toString('base64')).then((rl) => callback(rl)).catch((e) => callback(e));
+				let buff;
+
+				if (this.bodyParams.url) {
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' }});
+
+					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return RocketChat.API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'base64');
+				} else {
+					buff = fileHandler(this.request, 'app');
+				}
+
+				if (!buff) {
+					return RocketChat.API.v1.failure({ error: 'Failed to get a file to install for the App. '});
+				}
+
+				const aff = Promise.await(manager.update(buff.toString('base64')));
+				const info = aff.getAppInfo();
+
+				// Should the updated version have compiler errors, no App will be returned
+				if (aff.getApp()) {
+					info.status = aff.getApp().getStatus();
+				} else {
+					info.status = 'compiler_error';
+				}
+
+				return RocketChat.API.v1.success({
+					app: info,
+					implemented: aff.getImplementedInferfaces(),
+					compilerErrors: aff.getCompilerErrors()
 				});
-
-				const info = item.getInfo();
-				info.status = item.getStatus();
-
-				return RocketChat.API.v1.success({ app: info });
 			},
 			delete() {
 				console.log('Uninstalling:', this.urlParams.id);

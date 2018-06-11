@@ -1,0 +1,31 @@
+<template name="DefaultSearchResultTemplate">
+	<div class="rocket-default-search-settings">
+		<div>
+			{{#if globalSearchEnabled}}
+				<label>
+					<input type="checkbox" id="global-search" checked>{{_ "Global_Search"}}
+				</label>
+			{{/if}}
+		</div>
+	</div>
+	<div class="rocket-default-search-results">
+		{{#if result}}
+			{{#if $and result.message result.message.docs}}
+				<div class="flex-tab__result js-list">
+					<ul class="list clearfix">
+						{{#each result.message.docs}}
+							{{#nrr nrrargs 'message' message}}{{/nrr}}
+						{{/each}}
+					</ul>
+				</div>
+			{{else}}
+				<h2>{{_ "No_results_found"}}</h2>
+			{{/if}}
+		{{/if}}
+			<div class="load-more">
+				{{#if searching}}
+					{{> loading}}
+				{{/if}}
+			</div>
+	</div>
+</template>
