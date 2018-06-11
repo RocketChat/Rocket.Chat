@@ -119,7 +119,7 @@ const mergeSubRoom = (record/*, t*/) => {
 	}
 	record.lastMessage = room.lastMessage;
 	record.lm = room._updatedAt;
-	return _.extend(record, getLowerCaseNames(record, record.name));
+	return _.extend(record, getLowerCaseNames(record));
 };
 
 RocketChat.callbacks.add('cachedCollection-received-rooms', (room) => {
