@@ -20,4 +20,5 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/drive-upload.js', 'server');
 	api.addFiles('client/actionButton.js', 'client');
+	api.addFiles('client/messageBoxActions.js', 'client');
 });

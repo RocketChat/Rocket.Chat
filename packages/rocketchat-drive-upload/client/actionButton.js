@@ -23,7 +23,7 @@ Meteor.startup(function() {
 			fileRequest.responseType = 'arraybuffer';
 
 			fileRequest.onload = function() {
-				const arrayBuffer = fileRequest.response;console.log(arrayBuffer);
+				const arrayBuffer = fileRequest.response;
 				if (arrayBuffer) {
 					const fileData = new Uint8Array(arrayBuffer);
 					Meteor.call('checkDriveAccess', (err, authorized) => {

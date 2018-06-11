@@ -7,7 +7,7 @@ Meteor.methods({
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 		const user = RocketChat.models.Users.findOne({_id: id});
 
-		if (!user) {
+		if (!user || !user.services.google) {
 			return false;
 		}
 
@@ -68,13 +68,19 @@ Meteor.methods({
 			auth: authObj
 		});
 
-		const bufferStream = new stream.PassThrough();
-		bufferStream.end(fileData);
+		let bufferStream = new stream.PassThrough();
+
+		if (fileData) {
+			bufferStream.end(fileData);
+		} else {
+			bufferStream = null;
+		}
 
 		const mediaObj = {
-			mimeType: metaData['mimetype'],
+			mimeType: metaData['mimeType'],
 			body: bufferStream
 		};
+
 		const res = await drive.files.create({
 			resource: metaData,
 			media: mediaObj,
@@ -88,5 +94,24 @@ Meteor.methods({
 		});
 
 		return res;
+	}
+});
+
+
+Meteor.methods({
+	async createGoogleFile({type, name}) {
+		const mimeTypes = {
+			'docs': 'application/vnd.google-apps.document',
+			'slides': 'application/vnd.google-apps.presentation',
+			'sheets': 'application/vnd.google-apps.spreadsheet'
+		};
+
+		const fileData = null;
+		const metaData = {
+			'mimeType': `${ mimeTypes[type] }`,
+			'name': `${ name }`
+		};
+
+		Meteor.call('uploadFileToDrive', {fileData, metaData});
 	}
 });
