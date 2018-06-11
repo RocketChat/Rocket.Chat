@@ -1065,6 +1065,7 @@
   "error-user-is-not-activated": "User is not activated",
   "error-user-limit-exceeded": "The number of users you are trying to invite to #channel_name exceeds the limit set by the administrator",
   "error-user-not-in-room": "User is not in this room",
+  "error-logged-user-not-in-room": "You are not in the room `%s`",
   "error-user-registration-disabled": "User registration is disabled",
   "error-user-registration-secret": "User registration is only allowed via Secret URL",
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
