@@ -12,37 +12,21 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'clean-channel-history')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
-
-		if (inclusive) {
-			RocketChat.models.Messages.remove({
-				rid: roomId,
-				ts: {
-					$gte: oldest,
-					$lte: latest
-				}
-			});
-			RocketChat.models.Uploads.remove({
-				rid: roomId,
-				uploadedAt: {
-					$gte: oldest,
-					$lte: latest
-				}
-			});
-		} else {
-			RocketChat.models.Messages.remove({
-				rid: roomId,
-				ts: {
-					$gt: oldest,
-					$lt: latest
-				}
-			});
-			RocketChat.models.Uploads.remove({
-				rid: roomId,
-				uploadedAt: {
-					$gt: oldest,
-					$lt: latest
-				}
-			});
-		}
+		const gt = inclusive ? '$gte' : '$gt';
+		const lt = inclusive ? '$lte' : '$lt';
+		RocketChat.models.Messages.remove({
+			rid: roomId,
+			ts: {
+				[gt]: oldest,
+				[lt]: latest
+			}
+		});
+		RocketChat.models.Uploads.remove({
+			rid: roomId,
+			uploadedAt: {
+				[gt]: oldest,
+				[lt]: latest
+			}
+		});
 	}
 });
