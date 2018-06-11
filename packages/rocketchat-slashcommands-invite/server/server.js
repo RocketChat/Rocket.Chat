@@ -32,7 +32,7 @@ function Invite(command, params, item) {
 		});
 		return;
 	}
-	users = users.filter(function(user) {
+	users = users.fetch().filter(function(user) {
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {fields: {_id: 1}});
 		if (subscription == null) {
 			return true;
