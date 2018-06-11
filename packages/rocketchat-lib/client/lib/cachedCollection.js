@@ -107,6 +107,7 @@ class CachedCollection {
 		eventName,
 		eventType = 'onUser',
 		userRelated = true,
+		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		useCache = true,
 		version = 7,
@@ -123,6 +124,7 @@ class CachedCollection {
 		this.eventType = eventType;
 		this.useSync = useSync;
 		this.useCache = useCache;
+		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
 		this.debug = debug;
 		this.version = version;
 		this.userRelated = userRelated;
@@ -379,7 +381,13 @@ class CachedCollection {
 				});
 			}
 
-			this.setupListener();
+			if (this.listenChangesForLoggedUsersOnly) {
+				RocketChat.CachedCollectionManager.onLogin(() => {
+					this.setupListener();
+				});
+			} else {
+				this.setupListener();
+			}
 		});
 	}
 }
