@@ -77,12 +77,11 @@ Meteor.startup(function() {
 		}
 	};
 
-	Meteor.subscribe('userData');
-
 	Tracker.autorun(function(computation) {
 		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
+		Meteor.subscribe('userData');
 		Meteor.subscribe('activeUsers');
 		computation.stop();
 	});
@@ -114,6 +113,9 @@ Meteor.startup(function() {
 		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
 			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
+		} else {
+			delete UserPresence.awayTime;
+			UserPresence.stopTimer();
 		}
 
 		UserPresence.start();

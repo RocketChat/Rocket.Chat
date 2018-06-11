@@ -15,18 +15,22 @@ class CachedCollectionManager {
 			this.clearAllCacheOnLogout();
 		};
 
-		let connectionWasOnline = true;
-		Tracker.autorun(() => {
-			const connected = Meteor.connection.status().connected;
+		// Wait 1s to start or the code will run before the connection and
+		// on first connection the `reconnect` callbacks will run
+		Meteor.setTimeout(() => {
+			let connectionWasOnline = true;
+			Tracker.autorun(() => {
+				const connected = Meteor.connection.status().connected;
 
-			if (connected === true && connectionWasOnline === false) {
-				for (const cb of this.reconnectCb) {
-					cb();
+				if (connected === true && connectionWasOnline === false) {
+					for (const cb of this.reconnectCb) {
+						cb();
+					}
 				}
-			}
 
-			connectionWasOnline = connected;
-		});
+				connectionWasOnline = connected;
+			});
+		}, 1000);
 
 		Tracker.autorun(() => {
 			if (Meteor.userId() !== null) {
@@ -103,6 +107,7 @@ class CachedCollection {
 		eventName,
 		eventType = 'onUser',
 		userRelated = true,
+		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		useCache = true,
 		version = 7,
@@ -119,6 +124,7 @@ class CachedCollection {
 		this.eventType = eventType;
 		this.useSync = useSync;
 		this.useCache = useCache;
+		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
 		this.debug = debug;
 		this.version = version;
 		this.userRelated = userRelated;
@@ -375,7 +381,13 @@ class CachedCollection {
 				});
 			}
 
-			this.setupListener();
+			if (this.listenChangesForLoggedUsersOnly) {
+				RocketChat.CachedCollectionManager.onLogin(() => {
+					this.setupListener();
+				});
+			} else {
+				this.setupListener();
+			}
 		});
 	}
 }
