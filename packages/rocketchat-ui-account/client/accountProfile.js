@@ -8,6 +8,13 @@ const validateUsername = (username) => {
 	return reg.test(username);
 };
 const validateName = (name) => name.length;
+const validatePassword = (password, confirmPassword) => {
+	if (!confirmPassword) {
+		return true;
+	}
+
+	return password === confirmPassword;
+};
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
@@ -51,6 +58,10 @@ Template.accountProfile.helpers({
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
 	},
+	confirmPasswordInvalid() {
+		const { password, confirmPassword } = Template.instance();
+		return !validatePassword(password.get(), confirmPassword.get());
+	},
 	selectUrl() {
 		return Template.instance().url.get().trim() ? '' : 'disabled';
 	},
@@ -86,6 +97,7 @@ Template.accountProfile.helpers({
 		const realname = instance.realname.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
+		const confirmPassword = instance.confirmPassword.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -100,7 +112,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && !password) {
+		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && (!password || password !== confirmPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -138,6 +150,10 @@ Template.accountProfile.helpers({
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
 	},
+	canConfirmNewPassword() {
+		const password = Template.instance().password.get();
+		return RocketChat.settings.get('Accounts_AllowPasswordChange') && password && password !== '';
+	},
 	allowAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
 	},
@@ -154,6 +170,7 @@ Template.accountProfile.onCreated(function() {
 	self.email = new ReactiveVar(user.emails[0].address);
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
+	self.confirmPassword = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
@@ -347,6 +364,9 @@ Template.accountProfile.events({
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);
+	},
+	'input [name=confirm-password]'(e, instance) {
+		instance.confirmPassword.set(e.target.value);
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
