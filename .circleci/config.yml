@@ -355,7 +355,7 @@ workflows:
               ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
-      - image-build:
+      - pr-image-build:
           requires:
             - hold
           filters:
