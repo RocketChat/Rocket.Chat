@@ -454,6 +454,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true
 			}
 		});
+		this.add('Accounts_AvatarCacheTime', 3600, {
+			type: 'int',
+			i18nDescription: 'Accounts_AvatarCacheTime_description'
+		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
