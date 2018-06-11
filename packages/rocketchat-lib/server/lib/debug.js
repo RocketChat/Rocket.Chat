@@ -46,7 +46,11 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
-		const end = RocketChat.metrics.meteorMethods.startTimer({method: name});
+		const end = RocketChat.metrics.meteorMethods.startTimer({
+			method: name,
+			has_connection: this.connection != null,
+			has_user: this.userId != null
+		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
