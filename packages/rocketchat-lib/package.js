@@ -37,6 +37,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/core.js');
 
+	api.addFiles('lib/settings.js');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
@@ -54,7 +56,6 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/getAvatarColor.js');
@@ -209,7 +210,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
-	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');

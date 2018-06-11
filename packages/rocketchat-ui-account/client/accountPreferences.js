@@ -81,7 +81,7 @@ Template.accountPreferences.helpers({
 		return RocketChat.getUserPreference(Meteor.user(), 'idleTimeLimit');
 	},
 	defaultIdleTimeLimit() {
-		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit');
+		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit');
 	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications')];
@@ -187,7 +187,7 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
-		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit') : parseInt($('input[name=idleTimeLimit]').val());
+		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
 		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
 			localStorage.setItem('idleTimeLimit', idleTimeLimit);

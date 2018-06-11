@@ -152,10 +152,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
             sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
             echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
             sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell
+            sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
       - run:
           name: Configure Replica Set
@@ -191,6 +193,14 @@ jobs:
           at: /tmp
 
       - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
 
       - run:
           name: NPM install
@@ -245,9 +255,59 @@ jobs:
             aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
             bash .circleci/update-releases.sh
-            bash .circleci/docker.sh
             bash .circleci/snap.sh
             bash .circleci/redhat-registry.sh
+
+  image-build:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image
+          command: |
+            cd /tmp/build
+            cp ~/repo/.docker/Dockerfile .
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            export CIRCLE_TAG=${CIRCLE_TAG:=}
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            if [[ $CIRCLE_TAG ]]; then
+              docker build -t rocketchat/rocket.chat:latest .
+              docker push rocketchat/rocket.chat:latest
+
+              docker tag rocketchat/rocket.chat:latest rocketchat/rocket.chat:$CIRCLE_TAG
+              docker push rocketchat/rocket.chat:$CIRCLE_TAG
+
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_PR_NUMBER ]]; then
+              docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
+              docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              docker build -t rocketchat/rocket.chat:develop .
+              docker push rocketchat/rocket.chat:develop
+
+              exit 0
+            fi;
 
 workflows:
   version: 2
@@ -276,6 +336,31 @@ workflows:
           filters:
             branches:
               only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - image-build:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - hold:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - image-build:
+          requires:
+            - hold
+          filters:
+            branches:
+              ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
 
