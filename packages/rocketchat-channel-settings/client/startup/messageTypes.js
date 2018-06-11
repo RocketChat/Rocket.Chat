@@ -18,7 +18,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_topic: message.msg
+				room_topic: message.msg || `(${ t('None').toLowerCase() })`
 			};
 		}
 	});
@@ -30,7 +30,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_announcement: message.msg
+				room_announcement: message.msg || `(${ t('None').toLowerCase() })`
 			};
 		}
 	});
@@ -42,7 +42,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_description: message.msg
+				room_description: message.msg || `(${ t('None').toLowerCase() })`
 			};
 		}
 	});
