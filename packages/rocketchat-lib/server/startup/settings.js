@@ -74,6 +74,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 		'public': true,
 		i18nLabel: 'Placeholder_for_password_login_field'
 	});
+	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
+		type: 'string',
+		'public': true,
+		i18nLabel: 'Placeholder_for_password_login_field'
+	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
@@ -185,7 +190,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Enable_Auto_Away'
 		});
-		this.add('Accounts_Default_User_Preferences_idleTimeoutLimit', 300, {
+		this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
 			type: 'int',
 			'public': true,
 			i18nLabel: 'Idle_Time_Limit'
@@ -299,24 +304,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Hide_Avatars'
 		});
-		this.add('Accounts_Default_User_Preferences_roomsListExhibitionMode', 'category', {
-			type: 'select',
-			values: [
-				{
-					key: 'unread',
-					i18nLabel: 'Unread_Rooms_Mode'
-				},
-				{
-					key: 'activity',
-					i18nLabel: 'Sort_by_activity'
-				},
-				{
-					key: 'category',
-					i18nLabel: 'Split_by_categories'
-				}
-			],
+		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
+			type: 'boolean',
 			'public': true,
-			i18nLabel: 'Sidebar_list_mode'
+			i18nLabel: 'Group_by_Type'
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
@@ -1688,6 +1679,30 @@ RocketChat.settings.addGroup('Logs', function() {
 	});
 	this.add('Log_View_Limit', 1000, {
 		type: 'int'
+	});
+
+	this.add('Log_Trace_Methods', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Methods_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Methods',
+			value: true
+		}
+	});
+
+	this.add('Log_Trace_Subscriptions', false, {
+		type: 'boolean'
+	});
+
+	this.add('Log_Trace_Subscriptions_Filter', '', {
+		type: 'string',
+		enableQuery: {
+			_id: 'Log_Trace_Subscriptions',
+			value: true
+		}
 	});
 
 	this.section('Prometheus', function() {
