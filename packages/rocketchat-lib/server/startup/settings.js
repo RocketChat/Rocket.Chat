@@ -74,6 +74,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 		'public': true,
 		i18nLabel: 'Placeholder_for_password_login_field'
 	});
+	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
+		type: 'string',
+		'public': true,
+		i18nLabel: 'Placeholder_for_password_login_field'
+	});
 	this.add('Accounts_ForgetUserSessionOnWindowClose', false, {
 		type: 'boolean',
 		'public': true
@@ -299,24 +304,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 			'public': true,
 			i18nLabel: 'Hide_Avatars'
 		});
-		this.add('Accounts_Default_User_Preferences_roomsListExhibitionMode', 'category', {
-			type: 'select',
-			values: [
-				{
-					key: 'unread',
-					i18nLabel: 'Unread_Rooms_Mode'
-				},
-				{
-					key: 'activity',
-					i18nLabel: 'Sort_by_activity'
-				},
-				{
-					key: 'category',
-					i18nLabel: 'Split_by_categories'
-				}
-			],
+		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
+			type: 'boolean',
 			'public': true,
-			i18nLabel: 'Sidebar_list_mode'
+			i18nLabel: 'Group_by_Type'
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
@@ -938,23 +929,8 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Host'
 		});
-		this.add('Direct_Reply_Port', '143', {
-			type: 'select',
-			values: [
-				{
-					key: '143',
-					i18nLabel: '143'
-				}, {
-					key: '993',
-					i18nLabel: '993'
-				}, {
-					key: '110',
-					i18nLabel: '110'
-				}, {
-					key: '995',
-					i18nLabel: '995'
-				}
-			],
+		this.add('Direct_Reply_Port', '', {
+			type: 'string',
 			env: true,
 			i18nLabel: 'Port'
 		});
@@ -1050,6 +1026,12 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Username',
+			placeholder: 'email@domain'
+		});
+		this.add('Direct_Reply_ReplyTo', '', {
+			type: 'string',
+			env: true,
+			i18nLabel: 'ReplyTo',
 			placeholder: 'email@domain'
 		});
 		return this.add('Direct_Reply_Password', '', {
@@ -1634,9 +1616,9 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			'public': true
 		});
-		this.add('UI_Merge_Channels_Groups', true, {
+		this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
-			'public': true
+			'public': false
 		});
 		this.add('UI_Use_Name_Avatar', false, {
 			type: 'boolean',
