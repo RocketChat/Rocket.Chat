@@ -100,7 +100,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && !password) {
+		if (!avatar && user.name === realname && user.username === username && user.emails[0] && user.emails[0].address === email && !password) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -151,7 +151,7 @@ Template.accountProfile.onCreated(function() {
 	const user = Meteor.user();
 	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
-	self.email = new ReactiveVar(user.emails[0].address);
+	self.email = new ReactiveVar(user.emails[0] && user.emails[0].address);
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
