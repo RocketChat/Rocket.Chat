@@ -9,6 +9,11 @@ const notificationLabels = {
 	nothing: 'Nothing'
 };
 
+const emailLabels = {
+	nothing: 'Email_Notification_Mode_Disabled',
+	mentions: 'Email_Notification_Mode_All'
+};
+
 function checkedSelected(property, value, defaultValue=undefined) {
 	if (defaultValue && defaultValue.hash) {
 		defaultValue = undefined;
@@ -76,7 +81,7 @@ Template.accountPreferences.helpers({
 		return RocketChat.getUserPreference(Meteor.user(), 'idleTimeLimit');
 	},
 	defaultIdleTimeLimit() {
-		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit');
+		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit');
 	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications')];
@@ -84,8 +89,14 @@ Template.accountPreferences.helpers({
 	defaultMobileNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications')];
 	},
+	defaultEmailNotification() {
+		return emailLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_emailNotificationMode')];
+	},
 	showRoles() {
 		return RocketChat.settings.get('UI_DisplayRoles');
+	},
+	userDataDownloadEnabled() {
+		return RocketChat.settings.get('UserData_EnableDownload') !== false;
 	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
@@ -176,7 +187,7 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
-		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit') : parseInt($('input[name=idleTimeLimit]').val());
+		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
 		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
 			localStorage.setItem('idleTimeLimit', idleTimeLimit);
@@ -202,6 +213,55 @@ Template.accountPreferences.onCreated(function() {
 			}
 		});
 	};
+
+	this.downloadMyData = function(fullExport = false) {
+		Meteor.call('requestDataDownload', {fullExport}, function(error, results) {
+			if (results) {
+				if (results.requested) {
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_Requested_Text'),
+						type: 'success'
+					});
+
+					return true;
+				}
+
+				if (results.exportOperation) {
+					if (results.exportOperation.status === 'completed') {
+						modal.open({
+							title: t('UserDataDownload_Requested'),
+							text: t('UserDataDownload_CompletedRequestExisted_Text'),
+							type: 'success'
+						});
+
+						return true;
+					}
+
+					modal.open({
+						title: t('UserDataDownload_Requested'),
+						text: t('UserDataDownload_RequestExisted_Text'),
+						type: 'success'
+					});
+					return true;
+				}
+
+				modal.open({
+					title: t('UserDataDownload_Requested'),
+					type: 'success'
+				});
+				return true;
+			}
+
+			if (error) {
+				return handleError(error);
+			}
+		});
+	};
+
+	this.exportMyData = function() {
+		this.downloadMyData(true);
+	};
 });
 
 Template.accountPreferences.onRendered(function() {
@@ -220,6 +280,14 @@ Template.accountPreferences.events({
 	},
 	'click .enable-notifications'() {
 		KonchatNotification.getDesktopPermission();
+	},
+	'click .download-my-data'(e, t) {
+		e.preventDefault();
+		t.downloadMyData();
+	},
+	'click .export-my-data'(e, t) {
+		e.preventDefault();
+		t.exportMyData();
 	},
 	'click .test-notifications'(e) {
 		e.preventDefault();
