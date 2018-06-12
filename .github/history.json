@@ -14697,5 +14697,53 @@
         "geekgonecrazy"
       ]
     }
+  ],
+  "0.65.1": [
+    {
+      "pr": "10940",
+      "title": "[FIX] Livechat not loading",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "10934",
+      "title": "[FIX] Application crashing on startup when trying to log errors to `exceptions` channel",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10928",
+      "title": "[FIX] Incomplete email notification link",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.65.1",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10904",
+      "title": "[FIX] Image lazy load was breaking attachments",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.1",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "10851",
+      "title": "[FIX] Leave room wasn't working as expected",
+      "userLogin": "ggazzo",
+      "milestone": "0.65.1",
+      "contributors": [
+        "ggazzo"
+      ]
+    }
   ]
 }
