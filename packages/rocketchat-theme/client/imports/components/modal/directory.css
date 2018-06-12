@@ -104,6 +104,24 @@
 
 	& .js-sort {
 		cursor: pointer;
+
+		&.is-sorting .table-fake-th .rc-icon {
+			opacity: 1;
+		}
+	}
+
+	& .table-fake-th {
+		&:hover .rc-icon {
+			opacity: 1;
+		}
+
+		& .rc-icon {
+			transition: opacity 0.3s;
+
+			opacity: 0;
+
+			font-size: 1rem;
+		}
 	}
 }
 

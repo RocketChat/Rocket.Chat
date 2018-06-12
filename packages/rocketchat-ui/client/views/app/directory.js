@@ -50,6 +50,9 @@ Template.directory.helpers({
 
 		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
 	},
+	searchSortBy(key) {
+		return Template.instance().searchSortBy.get() === key;
+	},
 	createChannelOrGroup() {
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
