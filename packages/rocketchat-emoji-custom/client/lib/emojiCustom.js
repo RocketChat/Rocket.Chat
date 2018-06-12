@@ -148,21 +148,23 @@ updateEmojiCustom = function(emojiData) {
 };
 
 Meteor.startup(() =>
-	Meteor.call('listEmojiCustom', (error, result) => {
-		RocketChat.emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
-		for (const emoji of result) {
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(emoji.name);
-			RocketChat.emoji.packages.emojiCustom.list.push(`:${ emoji.name }:`);
-			RocketChat.emoji.list[`:${ emoji.name }:`] = emoji;
-			RocketChat.emoji.list[`:${ emoji.name }:`].emojiPackage = 'emojiCustom';
-			for (const alias of emoji['aliases']) {
-				RocketChat.emoji.packages.emojiCustom.list.push(`:${ alias }:`);
-				RocketChat.emoji.list[`:${ alias }:`] = {
-					emojiPackage: 'emojiCustom',
-					aliasOf: emoji.name
-				};
+	RocketChat.CachedCollectionManager.onLogin(() => {
+		Meteor.call('listEmojiCustom', (error, result) => {
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
+			for (const emoji of result) {
+				RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.push(emoji.name);
+				RocketChat.emoji.packages.emojiCustom.list.push(`:${ emoji.name }:`);
+				RocketChat.emoji.list[`:${ emoji.name }:`] = emoji;
+				RocketChat.emoji.list[`:${ emoji.name }:`].emojiPackage = 'emojiCustom';
+				for (const alias of emoji['aliases']) {
+					RocketChat.emoji.packages.emojiCustom.list.push(`:${ alias }:`);
+					RocketChat.emoji.list[`:${ alias }:`] = {
+						emojiPackage: 'emojiCustom',
+						aliasOf: emoji.name
+					};
+				}
 			}
-		}
+		});
 	})
 );
 
