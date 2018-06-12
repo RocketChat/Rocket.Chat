@@ -2,32 +2,30 @@
 	<!-- TODO: fix this class -->
 	<section class="preferences-page preferences-page--apps">
 		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
-			<div class="rc-directory-header">
-				<div class="rc-input rc-input--small rc-directory-search">
-					<label class="rc-input__label">
-						<div class="rc-input__wrapper">
-							{{> icon icon="magnifier" block="rc-input__icon" }}
-							<input type="text" class="rc-input__element rc-input__element--small js-search" name="app-filter" id="app-filter" placeholder={{_ "Search"}} autocomplete="off">
-						</div>
-					</label>
-				</div>
-				<button class="rc-button rc-button--small rc-button--primary rc-directory-plus rc-tooltip rc-tooltip--down" data-button="install" aria-label="{{_ 'Install_package'}}">{{> icon icon="plus"}}</button>
-			</div>
 		{{/header}}
 		<div class="rc-directory-content">
+			<div class="rc-input rc-directory-search">
+				<label class="rc-input__label">
+					<div class="rc-input__wrapper">
+						{{> icon icon="magnifier" block="rc-input__icon" }}
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="app-filter" id="app-filter" placeholder={{_ "Search"}} autocomplete="off">
+					</div>
+				</label>
+			</div>
 			{{#requiresPermission 'manage-apps'}}
 				<table class="rc-table">
 					<thead class="rc-table-head">
 						<tr class="rc-table-tr">
 							<td class="rc-table-td">{{_ "Name"}}</td>
-							<td class="rc-table-td">{{_ "Version"}}</td>
-							<td class="rc-table-td">{{_ "Status"}}</td>
+							<td class="rc-table-td">{{_ "Category"}}</td>
+							<td class="rc-table-td">{{_ "Details"}}</td>
+							<td class="rc-table-td"></td>
 							<td class="rc-table-td"></td>
 						</tr>
 					</thead>
 					<tbody class="rc-table-body">
 						{{#each apps}}
-							<tr class="rc-table-tr {{activeClass status}}" data-name="{{name}}">
+							<tr class="rc-table-tr manage" data-name="{{name}}">
 								<td class="rc-table-td rc-table-td--name">
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
@@ -35,20 +33,28 @@
 											<span class="rc-directory-channel-name">
 												{{name}}
 											</span>
-											{{#if description}}
-												<span class="rc-directory-channel-description">{{description}}</span>
+											{{#if creator}}
+												<span class="rc-directory-channel-creator">by {{creator}}</span>
 											{{/if}}
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--users">{{version}}</td>
+								<td class="rc-table-td rc-table-td--users">{{category}}</td>
+								<td class="rc-table-td rc-table-td--description">{{description}}</td>
 								<td class="rc-table-td">
-									{{parseStatus status}}
-								</td>
+									<button class="rc-button rc-button--nude rc-tooltip" aria-label="{{_ "Manage_the_App"}}">
+										{{> icon icon="menu"}}
+									</button>								</td>
 								<td class="rc-table-td">
-									<button class="rc-button rc-button--nude rc-tooltip manage" aria-label="{{_ "Manage_the_App"}}">
-										{{> icon icon="cog"}}
-									</button>
+									{{#if activeClass status}}
+										<button class="rc-button rc-button--cancel rc-tooltip" aria-label="{{_ "Remove"}}">
+											{{> icon icon="trash"}}
+										</button>
+									{{else}}
+										<button class="rc-button rc-button--primary rc-tooltip" aria-label="{{_ "Download_Snippet"}}">
+											{{> icon icon="copy"}}
+										</button>
+									{{/if}}
 								</td>
 							</tr>
 						{{else}}

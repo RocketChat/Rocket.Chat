@@ -41,8 +41,8 @@
 	}
 
 	&-avatar {
-		width: 60px;
-		height: 60px;
+		width: 40px;
+		height: 40px;
 		margin: 0 9px;
 
 		flex: 0 0 auto;
@@ -66,18 +66,16 @@
 
 	&-name {
 		font-size: 1rem;
-		font-weight: 500;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 
-	&-description {
-		margin-top: 0.625rem;
+	&-creator {
+		margin-top: 0.275rem;
 		color: var(--rc-color-primary-light);
 		overflow: hidden;
 		text-overflow: ellipsis;
-		max-width: 200px;
 	}
 
 	&-createdAt {
@@ -86,12 +84,25 @@
 }
 
 .rc-directory-content {
-	overflow-x: auto;
+	overflow-x: hidden;
+	overflow-y: scroll;
 	flex: 1 1 100%;
 	height: 100vh;
+	padding: 0 1rem;
 
 	& .js-sort {
 		cursor: pointer;
+	}
+}
+.rc-table-td {
+	padding: 0.250rem 0;
+}
+
+.rc-table-body .rc-table-tr {
+	box-shadow: none;
+	&:hover {
+		box-shadow: 1px 1px 2px 2px rgba(31, 35, 41, 0.08);
+		background-color: var(--rc-color-primary-white);
 	}
 }
 
