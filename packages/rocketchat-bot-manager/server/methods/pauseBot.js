@@ -2,7 +2,7 @@ Meteor.methods({
 	async pauseBot(bot) {
 		check(bot, Object);
 
-		await RocketChat.sendClientCommand(bot, { msg: 'pauseMessageStream' });
+		await RocketChat.sendClientCommand(bot, { key: 'pauseMessageStream' });
 		const update = RocketChat.models.Users.update({ _id: bot._id }, {
 			$set: {
 				'botData.paused': true

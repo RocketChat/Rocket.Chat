@@ -3,7 +3,6 @@ class ModelClientCommands extends RocketChat.models._Base {
 		super('clientcommand');
 
 		this.tryEnsureIndex({ 'ts': 1 });
-		this.tryEnsureIndex({ 'cmm': 'text' });
 		this.tryEnsureIndex({ 'u': 1 });
 	}
 

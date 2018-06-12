@@ -4,6 +4,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 	const promise = new Promise((resolve, reject) => {
 		check(user, Object);
 		check(command, Object);
+		check(command.key, String);
 
 		const msTimeout = timeout * 1000;
 
