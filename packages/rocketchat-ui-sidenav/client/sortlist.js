@@ -1,18 +1,18 @@
 /* globals popover */
 
 const checked = function(prop, field) {
-	const user = Meteor.user();
+	const user = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
 		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
 	}
-	if (prop === 'groupByType') {
-		return RocketChat.getUserPreference(user, 'groupByType');
+	if (prop === 'sidebarGroupByType') {
+		return RocketChat.getUserPreference(user, 'sidebarGroupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
 		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
 	}
 	if (prop === 'sidebarSortby') {
-		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity') === field;
+		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical') === field;
 	}
 };
 
@@ -40,8 +40,4 @@ Template.sortlist.events({
 		});
 		popover.close();
 	}
-});
-
-Template.sortlist.onRendered(function() {
-
 });
