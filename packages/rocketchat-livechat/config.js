@@ -181,6 +181,15 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_request_on_agent_message'
 	});
 
+	RocketChat.settings.add('Send_visitor_navigation_history_livechat_webhook_request', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_visitor_navigation_history_on_request',
+		i18nDescription: 'Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled',
+		enableQuery: { _id: 'Livechat_Visitor_navigation_as_a_message', value: true }
+	});
+
 	RocketChat.settings.add('Livechat_webhook_on_capture', false, {
 		type: 'boolean',
 		group: 'Livechat',
@@ -234,6 +243,13 @@ Meteor.startup(function() {
 			{ key: 'url', i18nLabel: 'Page_URL' },
 			{ key: 'title', i18nLabel: 'Page_title' }
 		]
+	});
+
+	RocketChat.settings.add('Livechat_Visitor_navigation_as_a_message', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Send_Visitor_navigation_history_as_a_message'
 	});
 
 	RocketChat.settings.add('Livechat_enable_office_hours', false, {
@@ -371,16 +387,17 @@ Meteor.startup(function() {
 		type: 'int',
 		group: 'Livechat',
 		public: true,
-		section: 'Visitor Presence',
-		i18nLabel: 'Idle_Time_Limit'
+		section: 'Visitor_Presence',
+		i18nLabel: 'Idle_Time_Limit',
+		i18nDescription: 'Idle_Time_Limit_Description'
 	});
 
-	RocketChat.settings.add('Livechat_Visitor_Presence_idleSessionTimeout ', 600, {
+	RocketChat.settings.add('Livechat_Visitor_Presence_idleTimeoutDisconnect', 600, {
 		type: 'int',
 		group: 'Livechat',
 		public: true,
-		section: 'Visitor Presence',
-		i18nLabel: 'Idle_Session_Timeout',
-		i18nDescription: 'Idle_Session_Timeout_Description'
+		section: 'Visitor_Presence',
+		i18nLabel: 'Idle_Timeout_Disconnect',
+		i18nDescription: 'Idle_timeout_disconnect_description'
 	});
 });

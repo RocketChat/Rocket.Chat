@@ -105,6 +105,10 @@ RocketChat.Livechat = {
 			throw new Meteor.Error('cannot-access-room');
 		}
 
+		if (newRoom) {
+			RocketChat.models.Messages.setRoomIdByToken(guest.token, room._id);
+		}
+
 		return { room, newRoom };
 	},
 	sendMessage({ guest, message, roomInfo, agent }) {
@@ -280,7 +284,7 @@ RocketChat.Livechat = {
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_Visitor_Presence_idleTimeoutLimit',
-			'Livechat_Visitor_Presence_keepPersistentConnectionToTheServer'
+			'Livechat_Visitor_Presence_idleTimeoutDisconnect'
 
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
@@ -317,9 +321,31 @@ RocketChat.Livechat = {
 		});
 	},
 
-	savePageHistory(token, pageInfo) {
+	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
-			return RocketChat.models.LivechatPageVisited.saveByToken(token, pageInfo);
+
+			const user = RocketChat.models.Users.findOneById('rocket.cat');
+
+			const pageTitle = pageInfo.title;
+			const pageUrl = pageInfo.location.href;
+			const extraData = {
+				navigation: {
+					page: pageInfo,
+					token
+				}
+			};
+
+			if (!roomId) {
+				// keep history of unregistered visitors for 1 month
+				const keepHistoryMiliseconds = 2592000000;
+				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+			}
+
+			if (!RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message')) {
+				extraData._hidden = true;
+			}
+
+			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
 
 		return;

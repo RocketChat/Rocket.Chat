@@ -179,10 +179,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/returnAsInquiry.js', 'server');
 	api.addFiles('server/methods/saveOfficeHours.js', 'server');
 	api.addFiles('server/methods/sendTranscript.js', 'server');
+	api.addFiles('server/methods/updateVisitorStatus.js', 'server');
 
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');

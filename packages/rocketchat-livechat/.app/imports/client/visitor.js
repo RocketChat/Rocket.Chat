@@ -7,10 +7,10 @@ export default {
 	room: new ReactiveVar(null),
 	data: new ReactiveVar(null),
 	roomToSubscribe: new ReactiveVar(null),
+	idleTimeLimit: new ReactiveVar(300000),
+	idleTimeoutDisconnect: new ReactiveVar(600000),
 	roomSubscribed: null,
 	connected: null,
-	idleTimeLimit: 300000,
-	sessionTimeout: 600000,
 
 	register() {
 		if (!localStorage.getItem('visitorToken')) {
@@ -54,25 +54,34 @@ export default {
 		return roomId;
 	},
 
-	setSessionTimeout(time) {
-		this.sessionTimeout = time;
-	},
-
-	getSessionTimeout() {
-		return this.sessionTimeout;
-	},
-
 	setIdleTimeLimt(time) {
-		if (!(Number.isInteger(time)) || (time === this.idleTimeLimit)) {
+		if (!(Number.isInteger(time)) || (time === this.idleTimeLimit.get())) {
 			return;
 		}
 
-		this.idleTimeLimit = time * 1000;
+		const idleTime = time * 1000;
+		this.idleTimeLimit.set(idleTime);
 
 		if (this.connected) {
-			UserPresence.awayTime = this.idleTimeLimit;
+			UserPresence.awayTime = this.idleTimeLimit.get();
 			UserPresence.restartTimer();
 		}
+	},
+
+	getIdleTimeLimt() {
+		return this.idleTimeLimit.get();
+	},
+
+	setIdleTimeoutConnection(time) {
+		if (!(Number.isInteger(time)) || (time === this.idleTimeoutDisconnect.get())) {
+			return;
+		}
+		const idleTimeoutDisconnect = time * 1000;
+		this.idleTimeoutDisconnect.set(idleTimeoutDisconnect);
+	},
+
+	getIdleTimeoutDisconnect() {
+		return this.idleTimeoutDisconnect.get();
 	},
 
 	isSubscribed(roomId) {
@@ -86,10 +95,11 @@ export default {
 
 		this.roomSubscribed = roomId;
 
+		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
 		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
-			} else if ((msg.t !== 'livechat_video_call') && (msg.t !== 'au')) {
+			} else if (!msgTypesNotDisplayed.includes(msg.t)) {
 				ChatMessage.upsert({ _id: msg._id }, msg);
 
 				if (msg.t === 'livechat-close') {
@@ -114,7 +124,8 @@ export default {
 		this.connected = true;
 		Meteor.call('UserPresence:connect', token, { visitor: token });
 
-		const idleTimeLimit = this.idleTimeLimit;
+		const idleTimeLimit = this.idleTimeLimit.get();
+
 		self = this;
 
 		Meteor.startup(function() {

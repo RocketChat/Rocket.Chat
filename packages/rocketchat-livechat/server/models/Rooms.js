@@ -63,6 +63,21 @@ RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 	return this.findOne(query, options);
 };
 
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
+
+	const query = {
+		t: 'l',
+		_id
+	};
+
+	return this.findOne(query, options);
+};
+
 /**
  * Get the next visitor name
  * @return {string} The next visitor name
