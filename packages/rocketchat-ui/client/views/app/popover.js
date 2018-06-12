@@ -5,8 +5,12 @@ import { hide, leave } from 'meteor/rocketchat:lib';
 
 this.popover = {
 	renderedPopover: null,
-	open(config) {
-		this.renderedPopover = Blaze.renderWithData(Template.popover, config, document.body);
+	open({ currentTarget, ...config }) {
+		const data = {
+			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
+			...config
+		};
+		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
 	},
 	close() {
 		if (!this.renderedPopover) {
@@ -52,8 +56,8 @@ Template.popover.onRendered(function() {
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
 
 		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.currentTarget.getBoundingClientRect()[horizontalDirection === 'left'? 'right' : 'left'],
-			y: this.data.currentTarget.getBoundingClientRect()[verticalDirection]
+			x: this.data.targetRect[horizontalDirection === 'left'? 'right' : 'left'],
+			y: this.data.targetRect[verticalDirection]
 		};
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
@@ -62,7 +66,7 @@ Template.popover.onRendered(function() {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;
 		} else {
-			const clientHeight = this.data.currentTarget.clientHeight;
+			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
 			const popoverHeight = popoverContent.offsetHeight;
 			const windowWidth = window.innerWidth;
