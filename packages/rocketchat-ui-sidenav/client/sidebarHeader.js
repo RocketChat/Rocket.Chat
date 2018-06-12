@@ -51,7 +51,7 @@ const toolbarButtons = (user) => {
 	},
 	{
 		name: t('View_mode'),
-		icon: () => RocketChat.getUserPreference(user, 'sidebarViewMode') ? viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')] : viewModeIcon.condensed,
+		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode') || 'condensed'],
 		action: (e) => {
 			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
 			const config = {
@@ -206,24 +206,20 @@ const toolbarButtons = (user) => {
 };
 Template.sidebarHeader.helpers({
 	myUserInfo() {
-		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		const id = Meteor.userId();
+
+		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				username: 'anonymous',
 				status: 'online'
 			};
 		}
-
-		const user = Meteor.user() || {};
-		const { username } = user;
-		const userStatus = Session.get(`user_${ username }_status`);
-
-		return {
-			username,
-			status: userStatus
-		};
+		return id && Meteor.users.findOne(id, {fields: {
+			username: 1, status: 1
+		}});
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.user()).filter(button => !button.condition || button.condition());
+		return toolbarButtons(Meteor.userId()).filter(button => !button.condition || button.condition());
 	}
 });
 

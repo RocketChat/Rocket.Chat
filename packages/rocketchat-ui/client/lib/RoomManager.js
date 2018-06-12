@@ -298,10 +298,11 @@ export { RoomManager };
 this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
-
-RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
-	ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
-	if (sub && sub.ignored) {
-		ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
-	}
+RocketChat.CachedCollectionManager.onLogin(() => {
+	RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
+		ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
+		if (sub && sub.ignored) {
+			ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
+		}
+	});
 });
