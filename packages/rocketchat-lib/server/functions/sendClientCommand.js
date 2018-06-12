@@ -1,9 +1,11 @@
 import _ from 'underscore';
 
-RocketChat.sendClientCommand = (user, command) => {
+RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 	const promise = new Promise((resolve, reject) => {
 		check(user, Object);
 		check(command, Object);
+
+		const msTimeout = timeout * 1000;
 
 		const clientCommand = {
 			u: {
@@ -42,7 +44,7 @@ RocketChat.sendClientCommand = (user, command) => {
 			}
 			finished = true;
 			reject(error);
-		}, 5000);
+		}, msTimeout);
 	});
 
 	return promise;
