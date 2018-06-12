@@ -141,7 +141,7 @@
 
 @media (width <= 500px) {
 	.rc-directory-content {
-		& thead,
+		& th:not(:first-child),
 		& td:not(:first-child) {
 			display: none;
 		}

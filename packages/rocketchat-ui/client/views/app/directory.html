@@ -62,7 +62,7 @@
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
 								<div class="table-fake-th">{{_ "Username"}} {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
-							<th class="js-sort {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+							<th class="js-sort rc-directory-td--createdAt {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
 						</tr>
@@ -81,7 +81,7 @@
 									</div>
 								</td>
 								<td>{{name}}</td>
-								<td>
+								<td class="rc-directory-td--createdAt">
 									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
 								</td>
 							</tr>
