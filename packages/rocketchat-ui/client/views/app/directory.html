@@ -49,6 +49,11 @@
 								</td>
 							</tr>
 						{{/each}}
+						{{#if isLoading}}
+							<tr>
+									<td colspan="3" style="position: relative;">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
 				{{/table}}
 			{{/if}}
@@ -86,6 +91,11 @@
 								</td>
 							</tr>
 						{{/each}}
+						{{#if isLoading}}
+							<tr>
+									<td colspan="3" style="position: relative;">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
 				{{/table}}
 			{{/if}}

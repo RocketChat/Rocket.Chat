@@ -99,6 +99,10 @@ Template.directory.helpers({
 			}
 			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
 		};
+	},
+	isLoading() {
+		console.log('loading', Template.instance().isLoading.get())
+		return Template.instance().isLoading.get();
 	}
 });
 
@@ -154,8 +158,10 @@ Template.directory.onRendered(function() {
 			return;
 		}
 		this.loading = true;
+		this.isLoading.set(true);
 		directorySearch(searchConfig, (result) => {
 			this.loading = false;
+			this.isLoading.set(false);
 			if (!result) {
 				this.end.set(true);
 			}
@@ -181,6 +187,8 @@ Template.directory.onCreated(function() {
 	this.end = new ReactiveVar(false);
 
 	this.results = new ReactiveVar([]);
+
+	this.isLoading = new ReactiveVar(false);
 });
 
 Template.directory.onRendered(function() {
