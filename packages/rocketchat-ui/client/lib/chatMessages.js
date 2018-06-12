@@ -554,7 +554,8 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		return message && message.length > this.messageMaxSize;
+		const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message);
+		return RocketChat.messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
 
 	isEmpty() {

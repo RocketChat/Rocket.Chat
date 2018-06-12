@@ -15,6 +15,18 @@ export class AppWebsocketReceiver {
 		this.orch = orch;
 		this.streamer = new Meteor.Streamer('apps');
 
+		RocketChat.CachedCollectionManager.onLogin(() => {
+			this.listenStreamerEvents();
+		});
+
+		this.listeners = {};
+
+		Object.keys(AppEvents).forEach((v) => {
+			this.listeners[AppEvents[v]] = [];
+		});
+	}
+
+	listenStreamerEvents() {
 		this.streamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
 		this.streamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
 		this.streamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
@@ -24,12 +36,6 @@ export class AppWebsocketReceiver {
 		this.streamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
 		this.streamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
 		this.streamer.on(AppEvents.COMMAND_REMOVED, this.onCommandDisabled.bind(this));
-
-		this.listeners = {};
-
-		Object.keys(AppEvents).forEach((v) => {
-			this.listeners[AppEvents[v]] = [];
-		});
 	}
 
 	registerListener(event, listener) {
