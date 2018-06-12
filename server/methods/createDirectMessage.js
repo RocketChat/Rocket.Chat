@@ -54,6 +54,8 @@ Meteor.methods({
 			}
 		});
 
+		const myNotificationPref = RocketChat.getDefaultSubscriptionPref(me);
+
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
@@ -72,7 +74,8 @@ Meteor.methods({
 				u: {
 					_id: me._id,
 					username: me.username
-				}
+				},
+				...myNotificationPref
 			}
 		};
 
@@ -84,6 +87,8 @@ Meteor.methods({
 			rid,
 			$and: [{'u._id': me._id}] // work around to solve problems with upsert and dot
 		}, upsertSubscription);
+
+		const toNotificationPref = RocketChat.getDefaultSubscriptionPref(to);
 
 		RocketChat.models.Subscriptions.upsert({
 			rid,
@@ -101,7 +106,8 @@ Meteor.methods({
 				u: {
 					_id: to._id,
 					username: to.username
-				}
+				},
+				...toNotificationPref
 			}
 		});
 

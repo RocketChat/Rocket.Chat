@@ -64,13 +64,14 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	room = RocketChat.models.Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 }});
+		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
 		}
 
-		// make all room members muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly')) {
+		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
+		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly') && !isTheOwner) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
