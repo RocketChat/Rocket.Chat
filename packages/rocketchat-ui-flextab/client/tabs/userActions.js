@@ -54,9 +54,11 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 		return RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'));
 	};
 	const canDirectMessage = (username) => {
-		const user = Meteor.user();
 		const rid = Session.get('openedRoom');
-		return username && (!directActions && rid && RocketChat.models.Subscriptions.findOne({ rid }).name !== username) || (directActions && RocketChat.authz.hasAllPermission('create-d') && user && user.username !== username);
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid });
+		const canOpenDm = RocketChat.authz.hasAllPermission('create-d') || RocketChat.models.Subscriptions.findOne({ name: unsername });
+		const dmIsNotAlreadyOpen = subscription.name !== username;
+		return canOpenDm && dmIsNotAlreadyOpen;
 	};
 	const canMuteUser = () => {
 		return RocketChat.authz.hasAllPermission('mute-user', Session.get('openedRoom'));
