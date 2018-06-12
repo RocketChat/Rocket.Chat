@@ -1,4 +1,3 @@
-import {Meteor} from 'meteor/meteor';
 import {UploadFS} from 'meteor/jalik:ufs';
 import Webdav from 'webdav';
 import stream from 'stream';
@@ -13,124 +12,122 @@ export class WebdavStore extends UploadFS.Store {
 
 		super(options);
 
-		if (Meteor.isServer) {
 
-			const client = new Webdav(
-				options.connection.credentials.server,
-				options.connection.credentials.username,
-				options.connection.credentials.password,
-			);
+		const client = new Webdav(
+			options.connection.credentials.server,
+			options.connection.credentials.username,
+			options.connection.credentials.password,
+		);
 
-			options.getPath = function(file) {
-				if (options.uploadFolderPath[options.uploadFolderPath.length-1] !== '/') {
-					options.uploadFolderPath += '/';
-				}
-				return options.uploadFolderPath + file._id;
+		options.getPath = function(file) {
+			if (options.uploadFolderPath[options.uploadFolderPath.length-1] !== '/') {
+				options.uploadFolderPath += '/';
+			}
+			return options.uploadFolderPath + file._id;
+		};
+
+		client.stat(options.uploadFolderPath).catch(function(err) {
+			if (err.status === '404') {
+				client.createDirectory(options.uploadFolderPath);
+			}
+		});
+
+		/**
+		 * Returns the file path
+		 * @param file
+		 * @return {string}
+		 */
+		this.getPath = function(file) {
+			if (file.Webdav) {
+				return file.Webdav.path;
+			}
+		};
+
+		/**
+		 * Creates the file in the col lection
+		 * @param file
+		 * @param callback
+		 * @return {string}
+		 */
+		this.create = function(file, callback) {
+			check(file, Object);
+
+			if (file._id == null) {
+				file._id = Random.id();
+			}
+
+			file.Webdav = {
+				path: options.getPath(file)
 			};
 
-			client.stat(options.uploadFolderPath).catch(function(err) {
-				if (err.status === '404') {
-					client.createDirectory(options.uploadFolderPath);
+			file.store = this.options.name;
+			return this.getCollection().insert(file, callback);
+		};
+
+		/**
+		 * Removes the file
+		 * @param fileId
+		 * @param callback
+		 */
+		this.delete = function(fileId, callback) {
+			const file = this.getCollection().findOne({_id: fileId});
+			client.deleteFile(this.getPath(file), (err, data) => {
+				if (err) {
+					console.error(err);
 				}
+
+				callback && callback(err, data);
 			});
+		};
 
-			/**
-			 * Returns the file path
-			 * @param file
-			 * @return {string}
-			 */
-			this.getPath = function(file) {
-				if (file.Webdav) {
-					return file.Webdav.path;
-				}
-			};
+		/**
+		 * Returns the file read stream
+		 * @param fileId
+		 * @param file
+		 * @param options
+		 * @return {*}
+		 */
+		this.getReadStream = function(fileId, file, options = {}) {
+			const range = {};
 
-			/**
-			 * Creates the file in the col lection
-			 * @param file
-			 * @param callback
-			 * @return {string}
-			 */
-			this.create = function(file, callback) {
-				check(file, Object);
+			if (options.start != null) {
+				range.start = options.start;
+			}
 
-				if (file._id == null) {
-					file._id = Random.id();
-				}
+			if (options.end != null) {
+				range.end = options.end;
+			}
+			return client.createReadStream(this.getPath(file), options);
+		};
 
-				file.Webdav = {
-					path: options.getPath(file)
-				};
+		/**
+		 * Returns the file write stream
+		 * @param fileId
+		 * @param file
+		 * @return {*}
+		 */
+		this.getWriteStream = function(fileId, file) {
+			const writeStream = new stream.PassThrough();
+			const webdavStream = client.createWriteStream(this.getPath(file));
 
-				file.store = this.options.name;
-				return this.getCollection().insert(file, callback);
-			};
-
-			/**
-			 * Removes the file
-			 * @param fileId
-			 * @param callback
-			 */
-			this.delete = function(fileId, callback) {
-				const file = this.getCollection().findOne({_id: fileId});
-				client.deleteFile(this.getPath(file), (err, data) => {
-					if (err) {
-						console.error(err);
-					}
-
-					callback && callback(err, data);
-				});
-			};
-
-			/**
-			 * Returns the file read stream
-			 * @param fileId
-			 * @param file
-			 * @param options
-			 * @return {*}
-			 */
-			this.getReadStream = function(fileId, file, options = {}) {
-				const range = {};
-
-				if (options.start != null) {
-					range.start = options.start;
-				}
-
-				if (options.end != null) {
-					range.end = options.end;
-				}
-				return client.createReadStream(this.getPath(file), options);
-			};
-
-			/**
-			 * Returns the file write stream
-			 * @param fileId
-			 * @param file
-			 * @return {*}
-			 */
-			this.getWriteStream = function(fileId, file) {
-				const writeStream = new stream.PassThrough();
-				const webdavStream = client.createWriteStream(this.getPath(file));
-
-				//TODO remove timeout when UploadFS bug resolved
-				const newListenerCallback = (event, listener) => {
-					if (event === 'finish') {
-						process.nextTick(() => {
-							writeStream.removeListener(event, listener);
-							writeStream.removeListener('newListener', newListenerCallback);
-							writeStream.on(event, function() {
-								setTimeout(listener, 500);
-							});
+			//TODO remove timeout when UploadFS bug resolved
+			const newListenerCallback = (event, listener) => {
+				if (event === 'finish') {
+					process.nextTick(() => {
+						writeStream.removeListener(event, listener);
+						writeStream.removeListener('newListener', newListenerCallback);
+						writeStream.on(event, function() {
+							setTimeout(listener, 500);
 						});
-					}
-				};
-				writeStream.on('newListener', newListenerCallback);
-
-				writeStream.pipe(webdavStream);
-				return writeStream;
+					});
+				}
 			};
+			writeStream.on('newListener', newListenerCallback);
 
-		}
+			writeStream.pipe(webdavStream);
+			return writeStream;
+		};
+
 	}
 }
 
