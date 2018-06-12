@@ -69,7 +69,8 @@ Template.directory.helpers({
 				{
 					label: t('Channels'),
 					value: 'channels',
-					condition() { return true; }
+					condition() { return true; },
+					active: true
 				},
 				{
 					label: t('Users'),
@@ -101,7 +102,6 @@ Template.directory.helpers({
 		};
 	},
 	isLoading() {
-		console.log('loading', Template.instance().isLoading.get())
 		return Template.instance().isLoading.get();
 	}
 });
