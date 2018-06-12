@@ -5,7 +5,7 @@ Template.tabs.onRendered(function() {
 
 Template.tabs.events({
 	'click .tab'(e) {
-		$('.tab').removeClass('active');
+		$(e.currentTarget).siblings('.tab').removeClass('active');
 		$(e.currentTarget).addClass('active');
 		Template.instance().data.tabs.onChange($(e.currentTarget).data('value'));
 	}
