@@ -44,6 +44,8 @@ const loginWith = function(event, template) {
 		template.getSuggestions();
 	});
 };
+const isUserEmailVerified = user => user.emails && user.emails[0] && user.emails[0].verified;
+const getUserEmailAddress = user => user.emails && user.emails[0] && user.emails[0].address;
 
 Template.accountProfile.helpers({
 	emailInvalid() {
@@ -112,7 +114,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && (!password || password !== confirmPassword)) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -132,11 +134,11 @@ Template.accountProfile.helpers({
 	},
 	email() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].address;
+		return getUserEmailAddress(user);
 	},
 	emailVerified() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].verified;
+		return isUserEmailVerified(user);
 	},
 	allowRealNameChange() {
 		return RocketChat.settings.get('Accounts_AllowRealNameChange');
@@ -167,7 +169,7 @@ Template.accountProfile.onCreated(function() {
 	const user = Meteor.user();
 	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
-	self.email = new ReactiveVar(user.emails[0].address);
+	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
 	self.confirmPassword = new ReactiveVar;
@@ -251,7 +253,7 @@ Template.accountProfile.onCreated(function() {
 				data.username = s.trim(self.username.get());
 			}
 		}
-		if (s.trim(self.email.get()) !== (user.emails && user.emails[0] && user.emails[0].address)) {
+		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
 			if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
 				toastr.remove();
 				toastr.error(t('Email_Change_Disabled'));
@@ -376,7 +378,7 @@ Template.accountProfile.events({
 
 		const send = $(e.target.send);
 		send.addClass('loading');
-		const reqPass = ((email !== (user && user.emails && user.emails[0] && user.emails[0].address))
+		const reqPass = ((email !== getUserEmailAddress(user))
 			|| s.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
 			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
@@ -483,7 +485,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
 		e.currentTarget.disabled = true;
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
+		Meteor.call('sendConfirmationEmail', getUserEmailAddress(user), (error, results) => {
 			if (results) {
 				toastr.success(t('Verification_email_sent'));
 			} else if (error) {
