@@ -1,12 +1,15 @@
 .tabs {
+	margin-bottom: 0.5rem;
+
+	border-bottom: 1px solid rgba(216, 216, 216, 0.2);
+}
+
+.tabs-wrapper {
 	display: flex;
 
 	width: 100%;
 
-	margin: 0 -1rem 0.5rem;
-	padding: 0 0.5rem;
-
-	border-bottom: 1px solid rgba(216,216,216, 0.2);
+	margin: 0 -1rem;
 }
 
 .tab {
@@ -15,13 +18,17 @@
 
 	cursor: pointer;
 
+	transition: all 0.3s;
+
 	color: var(--rc-color-primary-light);
+
+	border-bottom: 1px solid transparent;
 
 	font-size: 0.875rem;
 	line-height: 1.25rem;
 
 	&.active {
 		color: var(--rc-color-button-primary);
-		border-bottom: 1px solid var(--rc-color-button-primary);
+		border-bottom-color: var(--rc-color-button-primary);
 	}
 }

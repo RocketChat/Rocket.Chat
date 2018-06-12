@@ -46,7 +46,7 @@
 	}
 
 	& td {
-		padding: 0.25rem 0.5rem;
+		padding: 0.25rem 0;
 
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -93,7 +93,7 @@
 	position: absolute;
 	top: 0;
 
-	padding: 0.5rem;
+	padding: 0.5rem 0;
 
 	text-align: left;
 
