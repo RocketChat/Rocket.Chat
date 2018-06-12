@@ -217,7 +217,7 @@ describe('Message Properties', () => {
 	describe('Check Message Length', () => {
 		Object.keys(messages).forEach((objectKey) => {
 			it('should treat emojis as single characters', () => {
-				assert.equal(messageProperties(objectKey).length, messages[objectKey]);
+				assert.equal(messageProperties.length(objectKey), messages[objectKey]);
 			});
 		});
 	});

@@ -30,7 +30,7 @@ Meteor.methods({
 		}
 
 		if (message.msg) {
-			const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message);
+			const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message.msg);
 
 			if (RocketChat.messageProperties.length(adjustedMessage) > RocketChat.settings.get('Message_MaxAllowedSize')) {
 				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
