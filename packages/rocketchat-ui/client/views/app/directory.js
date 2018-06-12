@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'underscore';
 
 function timeAgo(time) {
 	const now = new Date();
@@ -102,12 +103,12 @@ Template.directory.helpers({
 });
 
 Template.directory.events({
-	'input .js-search'(e, t) {
+	'input .js-search': _.debounce((e, t) => {
 		t.end.set(false);
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
-	},
+	}, 300),
 	'scroll .rc-directory-content'({currentTarget}, instance) {
 		if (instance.loading || instance.end.get()) {
 			return;
