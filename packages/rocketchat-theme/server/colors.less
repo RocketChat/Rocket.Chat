@@ -598,15 +598,15 @@ input:-webkit-autofill {
 	}
 
 	.mention-link {
-		&:not(.mention-link-me):not(.mention-link-all) {
-			background-color: fade(@rc-color-button-primary, 20%);
-		}
+		background-color: fade(@rc-color-button-primary, 20%);
 
 		&.mention-link-me {
+			background: @primary-action-color;
 			color: @primary-action-contrast;
 		}
 
 		&.mention-link-all {
+			background: @attention-color;
 			color: @primary-action-contrast;
 		}
 	}
