@@ -1,3 +1,9 @@
+---
+name: Release
+about: Internal release checklist template
+
+---
+
 # Release {version}
 We are releasing a new version, this issue will keep track of the progress between the first release candidate (20th of each month) to the final release (27th of each month).
 
