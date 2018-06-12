@@ -9,7 +9,8 @@
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
-	userRelated: false
+	userRelated: false,
+	listenChangesForLoggedUsersOnly: true
 });
 
 RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection;
