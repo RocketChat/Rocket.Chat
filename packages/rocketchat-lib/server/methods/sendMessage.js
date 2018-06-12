@@ -30,14 +30,9 @@ Meteor.methods({
 		}
 
 		if (message.msg) {
-			const adjustedMessage = message.msg.replace(/:\w+:/gm, (match) => {
-				if (RocketChat.emoji.list[match] !== undefined) {
-					return ' ';
-				}
-				return match;
-			});
+			const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message);
 
-			if (RocketChat.messageProperties(adjustedMessage).length > RocketChat.settings.get('Message_MaxAllowedSize')) {
+			if (RocketChat.messageProperties.length(adjustedMessage) > RocketChat.settings.get('Message_MaxAllowedSize')) {
 				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 					method: 'sendMessage'
 				});

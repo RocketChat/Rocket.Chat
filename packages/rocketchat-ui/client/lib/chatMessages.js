@@ -554,13 +554,8 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		const adjustedMessage = message.replace(/:\w+:/gm, (match) => {
-			if (RocketChat.emoji.list[match] !== undefined) {
-				return ' ';
-			}
-			return match;
-		});
-		return message && RocketChat.messageProperties(adjustedMessage).length > this.messageMaxSize;
+		const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message);
+		return RocketChat.messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
 
 	isEmpty() {
