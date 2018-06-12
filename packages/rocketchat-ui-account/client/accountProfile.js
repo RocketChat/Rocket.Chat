@@ -8,13 +8,14 @@ const validateUsername = (username) => {
 	return reg.test(username);
 };
 const validateName = (name) => name.length;
-const validatePassword = (password, confirmPassword) => {
-	if (!confirmPassword) {
+const validatePassword = (password, confirmationPassword) => {
+	if (!confirmationPassword) {
 		return true;
 	}
 
-	return password === confirmPassword;
+	return password === confirmationPassword;
 };
+
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
@@ -22,6 +23,7 @@ const filterNames = (old) => {
 const filterEmail = (old) => {
 	return old.replace(' ', '');
 };
+
 const setAvatar = function(event, template) {
 	const {blob, contentType, service} = this.suggestion;
 
@@ -60,9 +62,9 @@ Template.accountProfile.helpers({
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
 	},
-	confirmPasswordInvalid() {
-		const { password, confirmPassword } = Template.instance();
-		return !validatePassword(password.get(), confirmPassword.get());
+	confirmationPasswordInvalid() {
+		const { password, confirmationPassword } = Template.instance();
+		return !validatePassword(password.get(), confirmationPassword.get());
 	},
 	selectUrl() {
 		return Template.instance().url.get().trim() ? '' : 'disabled';
@@ -99,7 +101,7 @@ Template.accountProfile.helpers({
 		const realname = instance.realname.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
-		const confirmPassword = instance.confirmPassword.get();
+		const confirmationPassword = instance.confirmationPassword.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -114,7 +116,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmPassword)) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -172,7 +174,7 @@ Template.accountProfile.onCreated(function() {
 	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
-	self.confirmPassword = new ReactiveVar;
+	self.confirmationPassword = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
@@ -366,9 +368,13 @@ Template.accountProfile.events({
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);
+
+		if (e.target.value.length === 0) {
+			instance.confirmationPassword.set('');
+		}
 	},
-	'input [name=confirm-password]'(e, instance) {
-		instance.confirmPassword.set(e.target.value);
+	'input [name=confirmation-password]'(e, instance) {
+		instance.confirmationPassword.set(e.target.value);
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
