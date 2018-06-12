@@ -6,11 +6,7 @@ Template.table.onRendered(function() {
 Template.table.events({
 	'click tbody tr'() {
 		const onItemClick = Template.instance().data.onItemClick;
-		if (onItemClick) {
-			onItemClick(this);
-			return;
-		}
 
-		return false;
+		return onItemClick && onItemClick(this);
 	}
 });

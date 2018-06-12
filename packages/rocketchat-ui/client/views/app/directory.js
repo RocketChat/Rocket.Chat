@@ -82,7 +82,7 @@ Template.directory.helpers({
 		};
 	},
 	onTableItemClick() {
-		const searchType = Template.instance().searchType;
+		const { searchType } = Template.instance();
 		let type;
 		let routeConfig;
 		return function(item) {
