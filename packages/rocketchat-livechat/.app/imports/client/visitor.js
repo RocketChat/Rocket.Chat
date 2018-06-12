@@ -54,7 +54,7 @@ export default {
 		return roomId;
 	},
 
-	setIdleTimeLimt(time) {
+	setIdleTimeLimit(time) {
 		if (!(Number.isInteger(time)) || (time === this.idleTimeLimit.get())) {
 			return;
 		}
@@ -68,7 +68,7 @@ export default {
 		}
 	},
 
-	getIdleTimeLimt() {
+	getIdleTimeLimit() {
 		return this.idleTimeLimit.get();
 	},
 

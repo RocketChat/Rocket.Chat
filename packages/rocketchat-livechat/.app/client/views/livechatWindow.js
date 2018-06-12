@@ -122,7 +122,7 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
 
-			visitor.setIdleTimeLimt(result.visitorPresenceIdleTimeoutLimit);
+			visitor.setIdleTimeLimit(result.visitorPresenceIdleTimeoutLimit);
 			visitor.setIdleTimeoutConnection(result.visitorPresenceIdleTimeoutDisconnect);
 
 			if (result.room) {

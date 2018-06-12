@@ -2155,8 +2155,6 @@
   "Server_Type": "Server Type",
   "Service": "Service",
   "Service_account_key": "Service account key",
-  "Session_Expired": "Session Expired",
-  "Session_expired_reconnect_question": "Your session has expired. Do you want to reconnect?",
   "set-moderator": "Set Moderator",
   "set-moderator_description": "Permission to set other users as moderator of a channel",
   "set-owner": "Set Owner",

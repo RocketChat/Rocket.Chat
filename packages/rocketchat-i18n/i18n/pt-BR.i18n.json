@@ -2156,8 +2156,6 @@
   "Server_Type": "Tipo de servidor",
   "Service": "Serviço",
   "Service_account_key": "Chave de conta de serviço",
-  "Session_Expired": "Sessão Expirada",
-  "Session_expired_reconnect_question": "Sua sessão expirou. Deseja reconectar?",
   "set-moderator": "Set Moderator",
   "set-moderator_description": "Permissão para configurar outros usuários como moderador de um canal",
   "set-owner": "Proprietário do Set.",
