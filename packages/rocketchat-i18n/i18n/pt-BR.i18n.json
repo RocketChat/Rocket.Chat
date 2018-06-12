@@ -2692,7 +2692,7 @@
   "your_message": "sua mensagem",
   "your_message_optional": "sua mensagem (opcional)",
   "Your_password_is_wrong": "Sua senha está errada!",
-  "Your_push_was_sent_to_s_devices": "Sua notificação foi enviada para %s dispositivos"
+  "Your_push_was_sent_to_s_devices": "Sua notificação foi enviada para %s dispositivos",
   "Your_server_link": "O link do seu servidor",
   "Your_workspace_is_ready": "O seu espaço de trabalho está pronto a usar 🎉"
 }
