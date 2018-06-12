@@ -1782,6 +1782,8 @@
   "New_messages": "New messages",
   "New_password": "New Password",
   "New_Password_Placeholder": "Please enter new password...",
+  "Confirm_new_password": "Confirm New Password",
+  "Confirm_New_Password_Placeholder": "Please re-enter new password...",
   "New_role": "New role",
   "New_Room_Notification": "New Room Notification",
   "New_Trigger": "New Trigger",
