@@ -12,7 +12,7 @@ RocketChat.Migrations.add({
 
 		if (setting) {
 			setting._id = 'Accounts_Default_User_Preferences_idleTimeLimit';
-			RocketChat.models.Rooms.insert(setting);
+			RocketChat.models.Settings.insert(setting);
 			RocketChat.models.Settings.remove(query);
 		}
 	}
