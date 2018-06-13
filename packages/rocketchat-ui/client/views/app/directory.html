@@ -12,7 +12,7 @@
 				</label>
 			</div>
 			{{#if $eq searchType 'channels'}}
-				{{#table fixed='true' onItemClick=onTableItemClick}}
+				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">

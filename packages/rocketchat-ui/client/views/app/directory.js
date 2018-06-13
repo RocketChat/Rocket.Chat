@@ -103,6 +103,40 @@ Template.directory.helpers({
 	},
 	isLoading() {
 		return Template.instance().isLoading.get();
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		if (instance.loading || instance.end.get()) {
+			return;
+		}
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+				return instance.page.set(instance.page.get() + 1);
+			}
+		};
+	},
+	onTableResize() {
+		const { limit } = Template.instance();
+
+		return function() {
+			limit.set(Math.ceil((this.$('.table-scroll').height() / 40) + 5));
+		};
+	},
+	onTableSort() {
+		const { end, page, sortDirection, searchSortBy } = Template.instance();
+
+		return function(type) {
+			end.set(false);
+			page.set(0);
+
+			if (searchSortBy.get() === type) {
+				sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
+				return;
+			}
+
+			searchSortBy.set(type);
+			sortDirection.set('asc');
+		};
 	}
 });
 
@@ -112,39 +146,10 @@ Template.directory.events({
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
-	}, 300),
-	'scroll .rc-directory-content'({currentTarget}, instance) {
-		if (instance.loading || instance.end.get()) {
-			return;
-		}
-		if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
-			return instance.page.set(instance.page.get() + 1);
-		}
-	},
-	'click .js-sort'(e, t) {
-		const el = e.currentTarget;
-		const type = el.dataset.sort;
-
-		t.end.set(false);
-		t.page.set(0);
-
-		if (t.searchSortBy.get() === type) {
-			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'desc' : 'asc');
-			return;
-		}
-
-		t.searchSortBy.set(type);
-		t.sortDirection.set('asc');
-	}
+	}, 300)
 });
 
 Template.directory.onRendered(function() {
-	this.resize = () => {
-		const height = this.$('.rc-directory-content').height();
-		this.limit.set(Math.ceil((height / 100) + 5));
-	};
-	this.resize();
-	$(window).on('resize', this.resize);
 	Tracker.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
@@ -162,9 +167,12 @@ Template.directory.onRendered(function() {
 		directorySearch(searchConfig, (result) => {
 			this.loading = false;
 			this.isLoading.set(false);
-			if (!result) {
-				this.end.set(true);
+			this.end.set(!result);
+
+			if (!Array.isArray(result)) {
+				return;
 			}
+
 			if (this.page.get() > 0) {
 				return this.results.set([...this.results.get(), ...result]);
 			}
