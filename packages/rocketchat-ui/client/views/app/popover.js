@@ -128,7 +128,7 @@ Template.popover.onRendered(function() {
 	position();
 	this.position = position;
 
-	this.firstNode.style.display = 'block';
+	this.firstNode.style.visibility = 'visible';
 });
 
 Template.popover.onDestroyed(function() {
