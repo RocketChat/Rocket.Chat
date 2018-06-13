@@ -1,8 +1,8 @@
 Package.describe({
-	name: 'rocketchat:drive-upload',
+	name: 'rocketchat:drive',
 	version: '0.0.1',
 
-	summary: 'Upload files to Google Drive',
+	summary: '',
 
 	git: '',
 
@@ -18,7 +18,9 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 
-	api.addFiles('server/drive-upload.js', 'server');
+	api.addFiles('server/checkDriveAccess.js', 'server');
+	api.addFiles('server/createGoogleFile.js', 'server');
+	api.addFiles('server/uploadFileToDrive', 'server');
 	api.addFiles('client/actionButton.js', 'client');
 	api.addFiles('client/messageBoxActions.js', 'client');
 });
