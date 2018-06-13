@@ -93,7 +93,7 @@ Template.soundEdit.onCreated(function() {
 		}
 
 		if (this.soundFile) {
-			if (!/audio\/mp3/.test(this.soundFile.type)) {
+			if (!/audio\/mp3/.test(this.soundFile.type) && !/audio\/mpeg/.test(this.soundFile.type) && !/audio\/x-mpeg/.test(this.soundFile.type)) {
 				errors.push('FileType');
 				toastr.error(TAPi18n.__('error-invalid-file-type'));
 			}
