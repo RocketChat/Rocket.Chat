@@ -19,7 +19,3 @@ Package.onUse(function(api) {
 	api.addFiles('server/RocketAdapter.js', 'server');
 	api.addFiles('server/SlackAdapter.js', 'server');
 });
-
-Npm.depends({
-	'slack-client': '2.0.6'
-});
