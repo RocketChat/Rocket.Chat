@@ -123,9 +123,14 @@ const mountPopover = (e, i, outerContext) => {
 };
 
 const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading').filter(upload => !upload.error);
-	Session.set('uploading', uploads);
+	const uploads = Session.get('uploading');
+
+	if (uploads) {
+		Session.set('uploading', uploads.filter(upload => !upload.error));
+	}
 };
+
+RocketChat.callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
 	isTranslated() {
@@ -874,7 +879,6 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	wipeFailedUploads();
 	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!window.chatMessages[rid]) {
