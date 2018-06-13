@@ -122,6 +122,11 @@ const mountPopover = (e, i, outerContext) => {
 	popover.open(config);
 };
 
+const wipeFailedUploads = () => {
+	const uploads = Session.get('uploading').filter(upload => !upload.error);
+	Session.set('uploading', uploads);
+};
+
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -283,7 +288,12 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) { return 'show'; }
+		const hasUnreadData = ((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null);
+		const isUploading = (uploading != null ? uploading.length : undefined) > 0;
+
+		if (hasUnreadData || isUploading) {
+			return 'show';
+		}
 	},
 
 	formatUnreadSince() {
@@ -864,6 +874,7 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
+	wipeFailedUploads();
 	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!window.chatMessages[rid]) {
