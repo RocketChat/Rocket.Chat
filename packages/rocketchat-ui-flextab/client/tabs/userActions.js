@@ -57,7 +57,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 		const rid = Session.get('openedRoom');
 		const subscription = RocketChat.models.Subscriptions.findOne({ rid });
 		const canOpenDm = RocketChat.authz.hasAllPermission('create-d') || RocketChat.models.Subscriptions.findOne({ name: username });
-		const dmIsNotAlreadyOpen = subscription.name !== username;
+		const dmIsNotAlreadyOpen = subscription && subscription.name !== username;
 		return canOpenDm && dmIsNotAlreadyOpen;
 	};
 	const canMuteUser = () => {
