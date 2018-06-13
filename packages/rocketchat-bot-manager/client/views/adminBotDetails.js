@@ -117,6 +117,13 @@ Template.adminBotDetails.helpers({
 		return bot.roles;
 	},
 
+	canPause() {
+		const bot = Template.instance().bot.get();
+		// customClientData, renamed to botData in this template, will always be empty when user is offline
+		// therefore there's no need to check for online status
+		return bot.botData && bot.botData.canPauseResumeMsgStream;
+	},
+
 	isPaused() {
 		const bot = Template.instance().bot.get();
 		if (bot.botData) {
@@ -133,6 +140,11 @@ Template.adminBotDetails.helpers({
 		if (bot.botData) {
 			return bot.botData.ipAddress;
 		}
+	},
+
+	canPing() {
+		const bot = Template.instance().bot.get();
+		return bot.botData && bot.botData.canListenToHeartbeat;
 	},
 
 	ping() {

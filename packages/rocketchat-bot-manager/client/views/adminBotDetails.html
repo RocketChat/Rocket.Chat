@@ -25,8 +25,12 @@
                 <label>{{_ "Status"}}</label>
                 <div>
                   {{#if isOnline}}
-                    <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
-                    <button class="button primary pause danger" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
+                    {{#if canPause}}
+                      <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
+                      <button class="button primary pause danger" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
+                    {{else}}
+                      <div class="settings-description">{{_ "Online"}}</div>
+                    {{/if}}
                   {{else}}
                     <div class="settings-description">{{_ "Offline"}}</div>
                   {{/if}}
@@ -96,14 +100,18 @@
                   <label>{{_ "Connection_status"}}</label>
                   <div>
                     <div class="settings-description">{{ipAddress}}</div>
-                    <div class="settings-description">{{ping}}</div>
+                    {{#if canPing}}
+                      <div class="settings-description">{{ping}}</div>
+                    {{/if}}
                   </div>
                 </div>
                 <div class="input-line double-col">
                   <label>{{_ "Uptime"}}</label>
                   <div>
                     <div class="settings-description">{{connectedUptime}}</div>
-                    <div class="settings-description">{{activeUptime}}</div>
+                    {{#if canPause}}
+                      <div class="settings-description">{{activeUptime}}</div>
+                    {{/if}}
                   </div>
                 </div>
               {{/if}}

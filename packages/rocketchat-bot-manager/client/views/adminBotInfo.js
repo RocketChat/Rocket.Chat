@@ -54,12 +54,11 @@ Template.adminBotInfo.helpers({
 		return Template.instance().bot.get();
 	},
 
-	isOnline() {
+	canPause() {
 		const bot = Template.instance().bot.get();
-		if (bot.statusConnection && bot.statusConnection !== 'offline') {
-			return true;
-		}
-		return false;
+		// customClientData, renamed to botData in this template, will always be empty when user is offline
+		// therefore there's no need to check for online status
+		return bot.botData && bot.botData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
