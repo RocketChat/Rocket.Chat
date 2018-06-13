@@ -12,8 +12,8 @@ function timeAgo(time) {
 }
 
 function directorySearch(config, cb) {
-	return Meteor.call('browseChannels', config, (err, results) => {
-		cb(results && results.length && results.map(result => {
+	return Meteor.call('browseChannels', config, (err, result) => {
+		cb(result.results && result.results.length && result.results.map(result => {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
