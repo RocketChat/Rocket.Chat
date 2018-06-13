@@ -288,8 +288,8 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		const hasUnreadData = ((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null);
-		const isUploading = (uploading != null ? uploading.length : undefined) > 0;
+		const hasUnreadData = unreadData && (unreadData.count && unreadData.since);
+		const isUploading = uploading && uploading.length;
 
 		if (hasUnreadData || isUploading) {
 			return 'show';
