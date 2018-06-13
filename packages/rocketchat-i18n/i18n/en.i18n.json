@@ -1980,6 +1980,7 @@
   "Push_enable": "Enable",
   "Push_enable_gateway": "Enable Gateway",
   "Push_gateway": "Gateway",
+  "Push_gateway_proxy": "Gateway Proxy",
   "Push_gcm_api_key": "GCM API Key",
   "Push_gcm_project_number": "GCM Project Number",
   "Push_production": "Production",

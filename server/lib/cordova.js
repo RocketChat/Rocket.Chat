@@ -71,14 +71,20 @@ Meteor.methods({
 });
 
 function sendPush(service, token, options, tries = 0) {
-	const data = {
+	const callOptions = {
 		data: {
 			token,
 			options
 		}
 	};
 
-	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
+	const proxy = RocketChat.settings.get('Push_gateway_proxy').replace(/\s/g, '');
+
+	if (proxy) {
+		callOptions.npmRequestOptions = {proxy};
+	}
+
+	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, callOptions, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({

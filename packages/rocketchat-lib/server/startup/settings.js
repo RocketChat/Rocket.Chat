@@ -1503,6 +1503,18 @@ RocketChat.settings.addGroup('Push', function() {
 			}
 		]
 	});
+	this.add('Push_gateway_proxy', '', {
+		type: 'string',
+		enableQuery: [
+			{
+				_id: 'Push_enable',
+				value: true
+			}, {
+				_id: 'Push_enable_gateway',
+				value: true
+			}
+		]
+	});
 	this.add('Push_production', true, {
 		type: 'boolean',
 		'public': true,
