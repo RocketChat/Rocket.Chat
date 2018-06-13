@@ -172,7 +172,7 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.user();
+				const user = Meteor.users.findOne(Meteor.userId(), {fields: {name: 1, username:1}});
 				if (user) {
 					usernamesFromClient = [user];
 				}

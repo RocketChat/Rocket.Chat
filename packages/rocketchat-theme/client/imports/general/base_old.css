@@ -3271,6 +3271,12 @@
 
 		font-weight: 400;
 	}
+
+	&.livechat_navigation_history {
+		& .thumb, & .user, & .info {
+			display: none;
+		}
+	}
 }
 
 .rc-old .image-labels {
@@ -4784,13 +4790,8 @@ body:not(.is-cordova) {
 
 .rc-old .mention-link {
 	border-radius: 4px;
-
-	&.mention-link-me,
-	&.mention-link-all {
-		padding: 0 4px 2px;
-
-		font-weight: bold;
-	}
+	padding: 0 4px 2px;
+	font-weight: bold;
 }
 
 .rc-old .highlight-text {
