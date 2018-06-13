@@ -1,3 +1,9 @@
+---
+name: Bug report
+about: Create a report to help us improve
+
+---
+
 <!-- 
 
 Please see our guide for opening issues: https://rocket.chat/docs/contributing/reporting-issues
@@ -10,22 +16,12 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 
 ### Description:
 
-<!-- Description of the issue -->
+<!-- A clear and concise description of what the bug is. -->
 
-### Server Setup Information:
+### Steps to reproduce:
 
-* Version of Rocket.Chat Server: 
-* Operating System: 
-* Deployment Method(snap/docker/tar/etc): 
-* Number of Running Instances: 
-* DB Replicaset Oplog: 
-* Node Version: 
-* mongoDB Version: 
-
-### Steps to Reproduce:
-
-1. <!-- First Step -->
-2. <!-- Second Step -->
+1. <!-- Go to '...' -->
+2. <!-- Click on '....' -->
 3. <!-- and so on... -->
 
 ### Expected behavior:
@@ -34,8 +30,23 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 
 ### Actual behavior:
 
-<!-- What actually happens -->
+<!-- What actually happens with SCREENSHOT, if applicable -->
+
+### Server Setup Information:
+
+- Version of Rocket.Chat Server: 
+- Operating System: 
+- Deployment Method: <!-- snap/docker/tar/etc -->
+- Number of Running Instances: 
+- DB Replicaset Oplog: 
+- NodeJS Version: 
+- MongoDB Version: 
+
+### Additional context
+
+<!-- Add any other context about the problem here. -->
 
 ### Relevant logs:
-<!-- Logs from both server and browser -->
+
+<!-- Logs from both SERVER and BROWSER -->
 <!-- For more information about collecting logs please see: https://rocket.chat/docs/contributing/reporting-issues#gathering-logs -->

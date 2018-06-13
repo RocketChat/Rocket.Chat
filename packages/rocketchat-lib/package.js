@@ -37,6 +37,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/core.js');
 
+	api.addFiles('lib/settings.js');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
@@ -54,7 +56,6 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/getAvatarColor.js');
@@ -65,6 +66,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageProperties.js');
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
