@@ -23,11 +23,8 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-				nonSelectableFields = nonSelectableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
-			} else {
-				nonSelectableFields = nonSelectableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
-			}
+			const getFields = () => Object.keys(RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info') ? RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : RocketChat.API.v1.limitedUserFieldsToExclude);
+			nonSelectableFields = nonSelectableFields.concat(getFields());
 		}
 
 		Object.keys(fields).forEach((k) => {
@@ -59,17 +56,17 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 
 	// Verify the user has permission to query the fields they are
 	if (typeof query === 'object') {
-		let nonQuerableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
+		let nonQueryableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
 			if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-				nonQuerableFields = nonQuerableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {
-				nonQuerableFields = nonQuerableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
 			}
 		}
 
 		Object.keys(query).forEach((k) => {
-			if (nonQuerableFields.includes(k) || nonQuerableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
+			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
 				delete query[k];
 			}
 		});
