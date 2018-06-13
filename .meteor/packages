@@ -118,6 +118,7 @@ rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
 rocketchat:slashcommands-help
+rocketchat:slashcommands-hide
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
@@ -190,3 +191,5 @@ rocketchat:version-check
 
 rocketchat:search
 chatpal:search
+rocketchat:lazy-load
+tap:i18n

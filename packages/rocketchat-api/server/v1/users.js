@@ -327,7 +327,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				collapseMediaByDefault: Match.Maybe(Boolean),
 				autoImageLoad: Match.Maybe(Boolean),
 				emailNotificationMode: Match.Maybe(String),
-				roomsListExhibitionMode: Match.Maybe(String),
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
@@ -348,7 +347,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
-				mergeChannels: Match.Optional(Boolean),
+				sidebarGroupByType: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean)
 			})
 		});
@@ -414,5 +413,13 @@ RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 			return RocketChat.API.v1.success();
 		}
 		return RocketChat.API.v1.failure('User not found');
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }, {
+	get() {
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
+
+		return RocketChat.API.v1.success({ result });
 	}
 });
