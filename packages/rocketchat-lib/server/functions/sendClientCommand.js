@@ -24,6 +24,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 
 		const handle = RocketChat.models.ClientCommands.find(id).observeChanges({
 			changed: (id, fields) => {
+				handle.stop();
 				if (finished) {
 					return;
 				}
