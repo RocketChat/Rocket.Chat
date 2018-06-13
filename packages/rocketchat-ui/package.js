@@ -65,9 +65,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/cordova/user-state.js', 'client');
 
 	// LIB RECORDERJS
-	api.addFiles('client/lib/recorderjs/audioRecorder.js', 'client');
 	api.addFiles('client/lib/recorderjs/videoRecorder.js', 'client');
-	api.addFiles('client/lib/recorderjs/recorder.js', 'client');
 
 	// TEXTAREA CURSOR MANAGEMENT
 	api.addFiles('client/lib/textarea-cursor/set-cursor-position.js', 'client');
