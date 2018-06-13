@@ -65,7 +65,7 @@ Template.adminBotInfo.helpers({
 	isPaused() {
 		const bot = Template.instance().bot.get();
 		if (bot.botData) {
-			return bot.botData.paused;
+			return bot.botData.pausedMsgStream;
 		}
 	},
 

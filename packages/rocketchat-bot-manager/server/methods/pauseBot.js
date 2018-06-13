@@ -5,7 +5,7 @@ Meteor.methods({
 		await RocketChat.sendClientCommand(bot, { key: 'pauseMessageStream' });
 		const update = RocketChat.models.Users.update({ _id: bot._id }, {
 			$set: {
-				'botData.paused': true
+				'customClientData.pausedMsgStream': true
 			}
 		});
 		if (update > 0) {
