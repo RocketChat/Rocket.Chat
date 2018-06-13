@@ -37,6 +37,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/core.js');
 
+	api.addFiles('lib/settings.js');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
@@ -54,16 +56,17 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/getAvatarColor.js');
+	api.addFiles('lib/getDefaultSubscriptionPref.js');
 	api.addFiles('lib/getValidRoomName.js');
 	api.addFiles('lib/placeholders.js');
 	api.addFiles('lib/promises.js');
 	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageProperties.js');
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
@@ -115,6 +118,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/roomTypes.js', 'server');
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
+	api.addFiles('server/lib/passwordPolicy.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
@@ -159,6 +163,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/createPrivateGroup.js', 'server');
 	api.addFiles('server/methods/deleteMessage.js', 'server');
 	api.addFiles('server/methods/deleteUserOwnAccount.js', 'server');
+	api.addFiles('server/methods/executeSlashCommandPreview.js', 'server');
 	api.addFiles('server/methods/filterBadWords.js', ['server']);
 	api.addFiles('server/methods/filterATAllTag.js', 'server');
 	api.addFiles('server/methods/filterATHereTag.js', 'server');
@@ -168,6 +173,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
+	api.addFiles('server/methods/getSlashCommandPreviews.js', 'server');
 	api.addFiles('server/methods/getUserRoles.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
@@ -205,7 +211,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
-	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
 	api.addFiles('client/lib/roomExit.js', 'client');

@@ -130,14 +130,15 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 	}
 	// If direct reply enabled, email content with headers
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
+		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') ? RocketChat.settings.get('Direct_Reply_ReplyTo') : RocketChat.settings.get('Direct_Reply_Username');
 		email.headers = {
 			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ RocketChat.settings.get('Direct_Reply_Username').split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ RocketChat.settings.get('Direct_Reply_Username').split('@')[1] }`
+			'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`
 		};
 	}
 
 	Meteor.defer(() => {
-		RocketChat.metrics.notificationsSent.inc({ type: 'email' }, 1, new Date());
+		RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
 		Email.send(email);
 	});
 }

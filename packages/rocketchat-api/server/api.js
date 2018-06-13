@@ -5,7 +5,6 @@ const logger = new Logger('API', {});
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
-		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -58,6 +57,10 @@ class API extends Restivus {
 
 	getHelperMethods() {
 		return RocketChat.API.helperMethods;
+	}
+
+	getHelperMethod(name) {
+		return RocketChat.API.helperMethods.get(name);
 	}
 
 	addAuthMethod(method) {
@@ -151,14 +154,16 @@ class API extends Restivus {
 						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
 							method,
 							version,
+							user_agent: this.request.headers['user-agent'],
 							entrypoint: route
 						});
-						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+
+						logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
-							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+							logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
@@ -176,7 +181,7 @@ class API extends Restivus {
 					}
 
 					//Allow the endpoints to make usage of the logger which respects the user's settings
-					endpoints[method].logger = this.logger;
+					endpoints[method].logger = logger;
 				});
 			}
 
@@ -237,6 +242,7 @@ class API extends Restivus {
 		this.addRoute('login', {authRequired: false}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
+				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
@@ -286,7 +292,8 @@ class API extends Restivus {
 					status: 'success',
 					data: {
 						userId: this.userId,
-						authToken: auth.token
+						authToken: auth.token,
+						me: getUserInfo(this.user)
 					}
 				};
 
