@@ -17,7 +17,7 @@ Template.adminBots.helpers({
 		}
 	},
 	getFramework() {
-		if (this.botData) {
+		if (this.customClientData && this.customClientData.framework) {
 			return this.botData.framework;
 		}
 		return 'Undefined';

@@ -154,6 +154,7 @@ Template.adminBotInfo.onCreated(function() {
 			filter = { _id: data._id };
 		}
 		const bot = Meteor.users.findOne(filter);
+		bot.botData = bot.customClientData;
 		return this.bot.set(bot);
 	});
 });

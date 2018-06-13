@@ -27,6 +27,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 				}
 
 				if (bot) {
+					bot.botData = bot.customClientData;
 					this.bot.set(bot);
 				} else {
 					toastr.error(TAPi18n.__('No_bot_found'));
