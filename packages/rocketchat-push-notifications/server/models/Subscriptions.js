@@ -235,6 +235,7 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(que
 			code: 1,
 
 			// fields to define if should send a notification
+			ignored: 1,
 			audioNotifications: 1,
 			audioNotificationValue: 1,
 			desktopNotificationDuration: 1,

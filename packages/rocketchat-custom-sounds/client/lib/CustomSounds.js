@@ -62,9 +62,11 @@ class CustomSounds {
 RocketChat.CustomSounds = new CustomSounds;
 
 Meteor.startup(() =>
-	Meteor.call('listCustomSounds', (error, result) => {
-		for (const sound of result) {
-			RocketChat.CustomSounds.add(sound);
-		}
+	RocketChat.CachedCollectionManager.onLogin(() => {
+		Meteor.call('listCustomSounds', (error, result) => {
+			for (const sound of result) {
+				RocketChat.CustomSounds.add(sound);
+			}
+		});
 	})
 );

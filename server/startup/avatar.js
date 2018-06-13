@@ -7,6 +7,7 @@ Meteor.startup(function() {
 		const params = {
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
 		};
+		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
 
 		if (_.isEmpty(params.username)) {
 			res.writeHead(403);
@@ -47,7 +48,7 @@ Meteor.startup(function() {
 					return;
 				}
 
-				res.setHeader('Cache-Control', 'public, max-age=0');
+				res.setHeader('Cache-Control', `public, max-age=${ cacheTime }`);
 				res.setHeader('Expires', '-1');
 				res.setHeader('Content-Disposition', 'inline');
 				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
@@ -57,7 +58,7 @@ Meteor.startup(function() {
 				return FileUpload.get(file, req, res);
 			} else {
 				res.setHeader('Content-Type', 'image/svg+xml');
-				res.setHeader('Cache-Control', 'public, max-age=0');
+				res.setHeader('Cache-Control', `public, max-age=${ cacheTime }`);
 				res.setHeader('Expires', '-1');
 				res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
 
