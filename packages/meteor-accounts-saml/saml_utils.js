@@ -128,10 +128,10 @@ SAML.prototype.generateLogoutRequest = function(options) {
 			options.nameID }</saml:NameID>` +
 		`<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>` +
 		'</samlp:LogoutRequest>';
-	if (Meteor.settings.debug) {
-		console.log('------- SAML Logout request -----------');
-		console.log(request);
-	}
+
+	this.debugLog('------- SAML Logout request -----------');
+	this.debugLog(request);
+
 	return {
 		request,
 		id
@@ -181,9 +181,8 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 
 		target += querystring.stringify(samlRequest);
 
-		if (Meteor.settings.debug) {
-			console.log(`requestToUrl: ${ target }`);
-		}
+		this.debugLog(`requestToUrl: ${ target }`);
+
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
 			return callback(null, target);
@@ -279,9 +278,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	const compressedSAMLResponse = new Buffer(samlResponse, 'base64');
 	zlib.inflateRaw(compressedSAMLResponse, function(err, decoded) {
 		if (err) {
-			if (Meteor.settings.debug) {
-				console.log(`Error while inflating. ${ err }`);
-			}
+			this.debugLog(`Error while inflating. ${ err }`);
 		} else {
 			console.log(`constructing new DOM parser: ${ Object.prototype.toString.call(decoded) }`);
 			console.log(`>>>> ${ decoded }`);
@@ -294,9 +291,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 					let inResponseTo;
 					try {
 						inResponseTo = response.getAttribute('InResponseTo');
-						if (Meteor.settings.debug) {
-							console.log(`In Response to: ${ inResponseTo }`);
-						}
+						this.debugLog(`In Response to: ${ inResponseTo }`);
 					} catch (e) {
 						if (Meteor.settings.debug) {
 							console.log(`Caught error: ${ e }`);
@@ -304,7 +299,6 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 							console.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
 						}
 					}
-
 
 					const statusValidateObj = self.validateStatus(doc);
 
