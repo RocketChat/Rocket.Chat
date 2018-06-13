@@ -3,9 +3,8 @@ const OAuth2 = google.auth.OAuth2;
 
 RocketChat.API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), 'http://localhost:3000/api/v1/livestream/oauth/callback');
+		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 		const { userId } = this.queryParams;
-		console.log('userId', userId);
 		const url = clientAuth.generateAuthUrl({
 			access_type: 'offline',
 			scope: ['https://www.googleapis.com/auth/youtube'],
@@ -29,11 +28,9 @@ RocketChat.API.v1.addRoute('livestream/oauth/callback', {
 
 		const { userId } = JSON.parse(state);
 
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), 'http://localhost:3000/api/v1/livestream/oauth/callback');
+		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
-
-		console.log(ret);
 
 		RocketChat.models.Users.update({ _id: userId }, {$set: {
 			'settings.livestream' : ret

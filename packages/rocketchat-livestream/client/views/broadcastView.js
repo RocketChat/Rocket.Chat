@@ -60,7 +60,7 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function() {
-	const connection = createAndConnect(`ws://localhost:3002/${ this.data.id }`);
+	const connection = createAndConnect(`${ RocketChat.settings.get('Broadcasting_media_server_url') }/${ this.data.id }`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);
@@ -131,6 +131,13 @@ Template.broadcastView.events({
 	},
 	async 'stopStreaming .streaming-popup'(e, i) {
 		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {}, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+			i.editing.set(false);
+			i.streamingOptions.set({});
+		});
 		if (i.mediaRecorder.get()) {
 			i.mediaRecorder.get().stop();
 			i.mediaRecorder.set(null);
