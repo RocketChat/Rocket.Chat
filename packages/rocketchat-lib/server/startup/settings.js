@@ -1704,6 +1704,10 @@ RocketChat.settings.addGroup('Logs', function() {
 			type: 'boolean',
 			i18nLabel: 'Enabled'
 		});
+		this.add('Prometheus_Port', 9451, {
+			type: 'string',
+			i18nLabel: 'Port'
+		});
 	});
 });
 
