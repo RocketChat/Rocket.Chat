@@ -127,6 +127,8 @@ Template.popover.onRendered(function() {
 	$(window).on('resize', position);
 	position();
 	this.position = position;
+
+	this.firstNode.style.display = 'block';
 });
 
 Template.popover.onDestroyed(function() {
