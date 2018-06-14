@@ -58,7 +58,7 @@
 				{{/table}}
 			{{/if}}
 			{{#if $eq searchType 'users'}}
-				{{#table onItemClick=onTableItemClick}}
+				{{#table onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
