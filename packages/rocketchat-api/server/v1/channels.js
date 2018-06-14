@@ -557,22 +557,26 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort = {} } = this.parseJsonQuery();
 
-		const members = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
-			sort: {'u.username':  sort.username != null ? sort.username : 1},
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
+			sort: {'u.username': sort.username != null ? sort.username : 1},
 			skip: offset,
 			limit: count
-		}).fetch().map(s => s.u && s.u.username);
+		});
 
-		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
+		const total = subscriptions.count();
+
+		const members = subscriptions.fetch().map(s => s.u && s.u._id);
+
+		const users = RocketChat.models.Users.find({ _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
 			sort: {username:  sort.username != null ? sort.username : 1}
-		}).fetch();
+		});
 
 		return RocketChat.API.v1.success({
-			members: users,
-			count: users.length,
+			members: users.fetch(),
+			count: users.count(),
 			offset,
-			total: RocketChat.models.Subscriptions.findByRoomId(findResult._id).count()
+			total
 		});
 	}
 });
