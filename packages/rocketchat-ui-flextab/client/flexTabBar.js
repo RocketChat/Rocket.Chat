@@ -11,22 +11,53 @@ const commonHelpers = {
 		}
 	}
 };
-
+function canShowAddUsersButton(rid) {
+	const canAddToChannel = RocketChat.authz.hasAllPermission(
+		'add-user-to-any-c-room', rid
+	);
+	const canAddToGroup = RocketChat.authz.hasAllPermission(
+		'add-user-to-any-p-room', rid
+	);
+	const canAddToJoinedRoom = RocketChat.authz.hasAllPermission(
+		'add-user-to-joined-room', rid
+	);
+	if (
+		!canAddToJoinedRoom &&
+		!canAddToChannel &&
+		Template.instance().tabBar.currentGroup() === 'channel'
+	) {
+		return false;
+	}
+	if (
+		!canAddToJoinedRoom &&
+		!canAddToGroup &&
+		Template.instance().tabBar.currentGroup() === 'group'
+	) {
+		return false;
+	}
+	return true;
+}
+const filterButtons = (button, anonymous, rid) => {
+	if (!Meteor.userId() && !anonymous) {
+		return false;
+	}
+	if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
+		return false;
+	}
+	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
+		return false;
+	}
+	return true;
+};
 Template.flexTabBar.helpers({
 	headerData() {
 		return Template.instance().tabBar.getData();
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
+		return RocketChat.TabBar.getButtons().filter(button =>
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
+		);
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
@@ -131,15 +162,7 @@ Template.RoomsActionTab.events({
 	'click .js-more'(e, instance) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
+		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, instance.anonymous, instance.data.rid));
 		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
 			item.name = TAPi18n.__(item.i18nTitle);
 			item.action = action;
@@ -188,15 +211,7 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
+		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
 		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
 	},
 
@@ -204,15 +219,9 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return true;
 		}
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
+		const buttons = RocketChat.TabBar.getButtons().filter(button =>
+			filterButtons(button, this.anonymous, this.data.rid)
+		);
 		return buttons.length > 5;
 	}
 });

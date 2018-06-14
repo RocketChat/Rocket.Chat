@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/helpers/requestParams.js', 'server');
 	api.addFiles('server/helpers/getPaginationItems.js', 'server');
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
+	api.addFiles('server/helpers/getUserInfo.js', 'server');
 	api.addFiles('server/helpers/isUserFromParams.js', 'server');
 	api.addFiles('server/helpers/parseJsonQuery.js', 'server');
 	api.addFiles('server/helpers/deprecationWarning.js', 'server');
@@ -27,7 +28,6 @@ Package.onUse(function(api) {
 
 	//Add default routes
 	api.addFiles('server/default/info.js', 'server');
-	api.addFiles('server/default/metrics.js', 'server');
 
 	//Add v1 routes
 	api.addFiles('server/v1/channels.js', 'server');
