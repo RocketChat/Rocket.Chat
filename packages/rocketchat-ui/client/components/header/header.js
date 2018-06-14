@@ -104,25 +104,32 @@ Template.header.helpers({
 });
 
 Template.header.events({
-	'click .iframe-toolbar button'() {
+	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
+		e.currentTarget.querySelector('button').blur();
+		return false;
 	},
 
 	'click .rc-header__toggle-favorite'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('toggleFavorite', this._id, !$(event.currentTarget).hasClass('favorite-room'), function(err) {
-			if (err) {
-				return handleError(err);
-			}
-		});
+		return Meteor.call(
+			'toggleFavorite',
+			this._id,
+			!$(event.currentTarget).hasClass('favorite-room'),
+			err => err && handleError(err)
+		);
 	},
 
 	'click .edit-room-title'(event) {
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
 		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
+		return Meteor.setTimeout(() =>
+			$('#room-title-field')
+				.focus()
+				.select(),
+		10);
 	}
 });
 
