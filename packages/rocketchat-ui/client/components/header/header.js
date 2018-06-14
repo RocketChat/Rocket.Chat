@@ -106,7 +106,7 @@ Template.header.helpers({
 Template.header.events({
 	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
-		$('button', e.currentTarget).blur();
+		e.currentTarget.querySelector('button').blur();
 		return false;
 	},
 
@@ -117,11 +117,7 @@ Template.header.events({
 			'toggleFavorite',
 			this._id,
 			!$(event.currentTarget).hasClass('favorite-room'),
-			function(err) {
-				if (err) {
-					return handleError(err);
-				}
-			}
+			err => err && handleError(err)
 		);
 	},
 
@@ -129,13 +125,11 @@ Template.header.events({
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
 		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(
-			() =>
-				$('#room-title-field')
-					.focus()
-					.select(),
-			10
-		);
+		return Meteor.setTimeout(() =>
+			$('#room-title-field')
+				.focus()
+				.select(),
+		10);
 	}
 });
 
