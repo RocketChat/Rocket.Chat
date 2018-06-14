@@ -10,7 +10,7 @@ Meteor.methods({
 		});
 
 		// update visited page history to not expire
-		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
+		RocketChat.models.Messages.keepHistoryForToken(token);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
