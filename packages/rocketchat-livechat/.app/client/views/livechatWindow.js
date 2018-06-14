@@ -4,7 +4,7 @@ import visitor from '../../imports/client/visitor';
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;
 };
- 
+
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -127,8 +127,16 @@ Template.livechatWindow.onCreated(function() {
 				visitor.setConnected();
 			}
 
+			result.departments.forEach((department) => {
+				Department.insert(department);
+			});
+
 			if (result.visitor) {
 				visitor.setData(result.visitor);
+
+				if (result.visitor.department) {
+					Livechat.department = result.visitor.department;
+				}
 			}
 
 			if (result.agentData) {
@@ -146,9 +154,6 @@ Template.livechatWindow.onCreated(function() {
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
 
-			result.departments.forEach((department) => {
-				Department.insert(department);
-			});
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 
 			Livechat.ready();

@@ -393,6 +393,13 @@ RocketChat.Livechat = {
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 
+			const guestData = {
+				token: guest.token,
+				department: transferData.departmentId
+			};
+
+			this.setDepartmentForGuest(guestData);
+
 			RocketChat.Livechat.stream.emit(room._id, {
 				type: 'agentData',
 				data: RocketChat.models.Users.getAgentInfo(agent.agentId)

@@ -46,7 +46,8 @@ Meteor.methods({
 			fields: {
 				name: 1,
 				username: 1,
-				visitorEmails: 1
+				visitorEmails: 1,
+				department: 1
 			}
 		});
 
