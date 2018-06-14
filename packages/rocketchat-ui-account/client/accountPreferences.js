@@ -100,6 +100,9 @@ Template.accountPreferences.helpers({
 	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
+	},
+	dontAskAgainList() {
+		return RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
 	}
 });
 
@@ -161,6 +164,9 @@ Template.accountPreferences.onCreated(function() {
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
+		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map(option => {
+			return {action: option.value, label: option.text};
+		});
 
 		let reload = false;
 
@@ -310,5 +316,14 @@ Template.accountPreferences.events({
 			const $audio = $(`audio#${ audio }`);
 			return $audio && $audio[0] && $audio[0].play();
 		}
+	},
+	'click .js-dont-ask-remove'(e) {
+		e.preventDefault();
+		const selectEl = document.getElementById('dont-ask');
+		const options = selectEl.options;
+		const selectedOption = selectEl.value;
+		const optionIndex = Array.from(options).findIndex(option => option.value === selectedOption);
+
+		selectEl.remove(optionIndex);
 	}
 });
