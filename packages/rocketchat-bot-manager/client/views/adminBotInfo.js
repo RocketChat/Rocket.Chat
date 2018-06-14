@@ -23,10 +23,10 @@ Template.adminBotInfo.helpers({
 
 	framework() {
 		const bot = Template.instance().bot.get();
-		if (bot.botData && bot.botData.framework) {
-			return bot.botData.framework;
+		if (bot.customClientData && bot.customClientData.framework) {
+			return bot.customClientData.framework;
 		}
-		return 'Undefined';
+		return TAPi18n.__('Undefined');
 	},
 
 	lastLogin() {
@@ -36,36 +36,30 @@ Template.adminBotInfo.helpers({
 		}
 	},
 
-	createdAt() {
-		const bot = Template.instance().bot.get();
-		if (bot && bot.createdAt) {
-			return false && moment(bot.createdAt).format('LLL');
-		}
-	},
-
-	botTime() {
-		const bot = Template.instance().bot.get();
-		if (bot && bot.utcOffset != null) {
-			return Template.instance().now.get().utcOffset(bot.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'));
-		}
-	},
-
 	bot() {
 		return Template.instance().bot.get();
 	},
 
-	canPause() {
+	canPauseResumeMsgStream() {
 		const bot = Template.instance().bot.get();
-		// customClientData, renamed to botData in this template, will always be empty when user is offline
+		// customClientData will always be empty when user is offline
 		// therefore there's no need to check for online status
-		return bot.botData && bot.botData.canPauseResumeMsgStream;
+		return bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		if (bot.botData) {
-			return bot.botData.pausedMsgStream;
+		if (bot.customClientData) {
+			return bot.customClientData.pausedMsgStream;
 		}
+	},
+
+	isOnline() {
+		const bot = Template.instance().bot.get();
+		if (bot.statusConnection && bot.statusConnection !== 'offline') {
+			return true;
+		}
+		return false;
 	},
 
 	isLoading() {
@@ -89,7 +83,7 @@ Template.adminBotInfo.events({
 		if (!bot || !bot._id) {
 			return;
 		}
-		FlowRouter.go(`/admin/bots/${ bot.username }`);
+		FlowRouter.go('admin-bots-username', { username: bot.username });
 	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
@@ -99,11 +93,21 @@ Template.adminBotInfo.events({
 	},
 	'click .resume': (e, t) => {
 		const bot = t.bot.get();
-		Meteor.call('resumeBot', bot);
+		Meteor.call('resumeBot', bot, (err) => {
+			if (err) {
+				return toastr.error(TAPi18n.__('Bot_resumed_error'));
+			}
+			toastr.success(TAPi18n.__('Bot_resumed'));
+		});
 	},
 	'click .pause': (e, t) => {
 		const bot = t.bot.get();
-		Meteor.call('pauseBot', bot);
+		Meteor.call('pauseBot', bot, (err) => {
+			if (err) {
+				return toastr.error(TAPi18n.__('Bot_paused_error'));
+			}
+			toastr.success(TAPi18n.__('Bot_paused'));
+		});
 	}
 });
 
@@ -153,7 +157,6 @@ Template.adminBotInfo.onCreated(function() {
 			filter = { _id: data._id };
 		}
 		const bot = Meteor.users.findOne(filter);
-		bot.botData = bot.customClientData;
 		return this.bot.set(bot);
 	});
 });

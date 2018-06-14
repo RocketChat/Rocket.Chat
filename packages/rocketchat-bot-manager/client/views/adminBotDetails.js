@@ -6,6 +6,10 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.ping = new ReactiveVar(undefined);
 
 	this.updateBot = () => {
+		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+			return;
+		}
+
 		const bot = this.bot.get();
 		bot.name = $('[name=name]').val().trim();
 		bot.username = $('[name=username]').val().trim();
@@ -22,12 +26,11 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (sub.ready()) {
 				let bot;
 
-				if (RocketChat.authz.hasAllPermission('edit-bot-account')) {
+				if (RocketChat.authz.hasAllPermission('view-full-bot-account')) {
 					bot = Meteor.users.findOne({ username });
 				}
 
 				if (bot) {
-					bot.botData = bot.customClientData;
 					this.bot.set(bot);
 				} else {
 					toastr.error(TAPi18n.__('No_bot_found'));
@@ -91,7 +94,7 @@ Template.adminBotDetails.onDestroyed(function _adminBotDetailsOnDestroyed() {
 
 Template.adminBotDetails.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('edit-bot-account');
+		return RocketChat.authz.hasAllPermission('view-full-bot-account');
 	},
 
 	getName() {
@@ -106,8 +109,8 @@ Template.adminBotDetails.helpers({
 
 	getFramework() {
 		const bot = Template.instance().bot.get();
-		if (bot.botData && bot.botData.framework) {
-			return bot.botData.framework;
+		if (bot.customClientData && bot.customClientData.framework) {
+			return bot.customClientData.framework;
 		}
 		return 'Undefined';
 	},
@@ -119,15 +122,16 @@ Template.adminBotDetails.helpers({
 
 	canPause() {
 		const bot = Template.instance().bot.get();
-		// customClientData, renamed to botData in this template, will always be empty when user is offline
+		const isOnline = Template.instance().isOnline();
+		// customClientData, renamed to customClientData in this template, will always be empty when user is offline
 		// therefore there's no need to check for online status
-		return bot.botData && bot.botData.canPauseResumeMsgStream;
+		return isOnline && bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		if (bot.botData) {
-			return bot.botData.pausedMsgStream;
+		if (bot.customClientData) {
+			return bot.customClientData.pausedMsgStream;
 		}
 	},
 
@@ -137,14 +141,14 @@ Template.adminBotDetails.helpers({
 
 	ipAddress() {
 		const bot = Template.instance().bot.get();
-		if (bot.botData) {
-			return bot.botData.ipAddress;
+		if (bot.customClientData) {
+			return bot.customClientData.ipAddress;
 		}
 	},
 
 	canPing() {
 		const bot = Template.instance().bot.get();
-		return bot.botData && bot.botData.canListenToHeartbeat;
+		return bot.customClientData && bot.customClientData.canListenToHeartbeat;
 	},
 
 	ping() {
@@ -194,7 +198,7 @@ Template.adminBotDetails.events({
 		const bot = t.bot.get();
 		Meteor.call('resumeBot', bot, (err) => {
 			if (err) {
-				return toastr.error(TAPi18n.__(err));
+				return toastr.error(TAPi18n.__('Bot_resumed_error'));
 			}
 			toastr.success(TAPi18n.__('Bot_resumed'));
 		});
@@ -204,7 +208,7 @@ Template.adminBotDetails.events({
 		const bot = t.bot.get();
 		Meteor.call('pauseBot', bot, (err) => {
 			if (err) {
-				return toastr.error(TAPi18n.__(err));
+				return toastr.error(TAPi18n.__('Bot_paused_error'));
 			}
 			toastr.success(TAPi18n.__('Bot_paused'));
 		});
@@ -246,6 +250,12 @@ Template.adminBotDetails.events({
 
 	'click .rc-header__section-button > .save': (e, t) => {
 		const bot = t.bot.get();
+
+		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+			const error = new Meteor.Error('error-action-not-allowed', 'Editing bot is not allowed');
+			return handleError(error);
+		}
+
 		Meteor.call('insertOrUpdateBot', bot, (err) => {
 			if (err) {
 				return handleError(err);
@@ -259,6 +269,11 @@ Template.adminBotDetails.events({
 
 	'click .rc-header__section-button > .delete': (e, instance) => {
 		const bot = instance.bot.get();
+
+		if (!RocketChat.authz.hasAllPermission('delete-bot-account')) {
+			const error = new Meteor.Error('error-action-not-allowed', 'Deleting bot is not allowed');
+			return handleError(error);
+		}
 
 		modal.open({
 			title: t('Are_you_sure'),

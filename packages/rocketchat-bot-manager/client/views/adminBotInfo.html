@@ -1,6 +1,10 @@
 <template name="adminBotInfo">
 
-
+	{{#unless hasPermission 'view-bot-administration'}}
+		<div class="edit-form">
+			<div>{{_ "You_are_not_authorized_to_view_this_page"}}</div>
+		</div>
+	{{else}}
 		{{#if _id}}
 			{{#unless hideHeader}}
 				<header class="contextual-bar__header">
@@ -40,15 +44,17 @@
 							</div>
 
 							<div class="rc-user-info-details">
-								{{#if canPause}}
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label	">{{_ "Status"}}</label>
-										{{#if isPaused}}
-											<button class="button primary resume"><span>{{_ "Resume"}}</span></button>
-										{{else}}
-											<button class="button primary pause danger"><span>{{_ "Pause"}}</span></button>
-										{{/if}}
-									</div>
+								{{#if isOnline}}
+									{{#if canPauseResumeMsgStream}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label	">{{_ "Status"}}</label>
+											{{#if isPaused}}
+												<button class="button primary resume"><span>{{_ "Resume"}}</span></button>
+											{{else}}
+												<button class="button primary pause danger"><span>{{_ "Pause"}}</span></button>
+											{{/if}}
+										</div>
+									{{/if}}
 								{{/if}}
 								{{#if roles}}
 									<div class="rc-user-info-details__item">
@@ -66,11 +72,13 @@
 										<p class="rc-user-info-details__info">{{lastLogin}}</p>
 									</div>
 								{{/if}}
-								{{#if framework}}
-									<div class="rc-user-info-details__item">
-										<label class="rc-user-info-details__label">Framework</label>
-										<p class="rc-user-info-details__info">{{framework}}</p>
-									</div>
+								{{#if isOnline}}
+									{{#if framework}}
+										<div class="rc-user-info-details__item">
+											<label class="rc-user-info-details__label">Framework</label>
+											<p class="rc-user-info-details__info">{{framework}}</p>
+										</div>
+									{{/if}}
 								{{/if}}
 							</div>
 						</div>
@@ -82,5 +90,6 @@
 				<div>{{_ "Please_select_a_bot"}}</div>
 			</div>
 		{{/if}}
+	{{/unless}}
 
 </template>
