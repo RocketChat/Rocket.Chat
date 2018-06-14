@@ -349,33 +349,25 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post() {
 		let findResult;
-		let roomId;
-		const canAddUserToAnyPrivateGroup = RocketChat.authz.hasPermission(this.userId, 'add-user-to-any-p-room');
 		const params = this.requestParams();
-		if (canAddUserToAnyPrivateGroup) {
-			if ((params.roomId && params.roomId.trim()) || (params.roomName && params.roomName.trim())) {
-				const idOrName = params.roomId || params.roomName;
-				findResult = RocketChat.models.Rooms.findOneByIdOrName(idOrName);
-				roomId = findResult._id;
-			} else {
-				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
-			}
-			if (!findResult || findResult.t !== 'p') {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
+		if ((params.roomId && params.roomId.trim()) || (params.roomName && params.roomName.trim())) {
+			const idOrName = params.roomId || params.roomName;
+			findResult = RocketChat.models.Rooms.findOneByIdOrName(idOrName);
 		} else {
-			findResult = findPrivateGroupByIdOrName({ params, userId: this.userId });
-			roomId = findResult.rid;
+			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		}
+		if (!findResult || findResult.t !== 'p') {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		const user = this.getUserFromParams();
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addUserToRoom', { rid: roomId, username: user.username });
+			Meteor.call('addUserToRoom', { rid: findResult._id, username: user.username });
 		});
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(roomId, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
