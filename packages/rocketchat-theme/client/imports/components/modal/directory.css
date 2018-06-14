@@ -65,7 +65,8 @@
 		flex-grow: 1;
 	}
 
-	&-name {
+	&-name,
+	&-username {
 		overflow: hidden;
 
 		white-space: nowrap;
