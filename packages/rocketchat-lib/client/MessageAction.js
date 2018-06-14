@@ -1,4 +1,5 @@
 /* globals chatMessages cordova */
+
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -346,5 +347,7 @@ Meteor.startup(function() {
 		order: 20,
 		group: 'menu'
 	});
+
+
 
 });

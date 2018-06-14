@@ -25,6 +25,7 @@ Template.roomList.helpers({
 			sort.lm = -1;
 		} else { // alphabetical
 			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
+			sort['name'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {

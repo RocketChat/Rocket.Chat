@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/checkDriveAccess.js', 'server');
 	api.addFiles('server/createGoogleFile.js', 'server');
-	api.addFiles('server/uploadFileToDrive', 'server');
+	api.addFiles('server/uploadFileToDrive.js', 'server');
 	api.addFiles('client/actionButton.js', 'client');
 	api.addFiles('client/messageBoxActions.js', 'client');
 });
