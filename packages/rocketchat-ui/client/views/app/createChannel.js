@@ -189,8 +189,11 @@ Template.createChannel.events({
 		const length = input.value.length;
 		const modified = filterNames(input.value);
 
-		input.value = modified;
-		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		if (modified !== input.value) {
+			input.value = modified;
+			document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		}
+
 		t.invalid.set(!validateChannelName(input.value));
 		if (input.value !== t.name.get()) {
 			t.inUse.set(undefined);
