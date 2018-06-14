@@ -11,8 +11,8 @@ RocketChat.Migrations.add({
 		const setting = RocketChat.models.Settings.findOne(query);
 
 		if (setting) {
-			setting._id = 'Accounts_Default_User_Preferences_idleTimeLimit';
-			RocketChat.models.Settings.insert(setting);
+			delete setting._id;
+			RocketChat.models.Settings.upsert({_id: 'Accounts_Default_User_Preferences_idleTimeLimit'}, setting);
 			RocketChat.models.Settings.remove(query);
 		}
 	}
