@@ -1,29 +1,33 @@
 <template name="apps">
-	<!-- TODO: fix this class -->
-	<section class="preferences-page preferences-page--apps">
+	<section class="rc-directory">
 		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
 		{{/header}}
 		<div class="rc-directory-content">
-			<div class="rc-input rc-directory-search">
+			<!-- {{>tabs tabs=tabsData}} -->
+			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
 					<div class="rc-input__wrapper">
 						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small js-search" name="app-filter" id="app-filter" placeholder={{_ "Search"}} autocomplete="off">
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
 					</div>
 				</label>
 			</div>
 			{{#requiresPermission 'manage-apps'}}
-				<table class="rc-table">
-					<thead class="rc-table-head">
-						<tr class="rc-table-tr">
-							<td class="rc-table-td">{{_ "Name"}}</td>
-							<td class="rc-table-td">{{_ "Category"}}</td>
-							<td class="rc-table-td">{{_ "Details"}}</td>
-							<td class="rc-table-td"></td>
-							<td class="rc-table-td"></td>
+				{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+					<thead>
+						<tr>
+							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
+							</th>
+							<th class="js-sort rc-directory-td {{#if searchSortBy 'category'}}is-sorting{{/if}}" data-sort="category">>
+								<div class="table-fake-th">{{_ "Category"}} {{> icon icon=(sortIcon 'category') }}</div>
+							</th>
+							<th class="rc-directory-td">
+								<div class="table-fake-th">{{_ "Details"}} </div>
+							</th>
 						</tr>
 					</thead>
-					<tbody class="rc-table-body">
+					<tbody>
 						{{#each apps}}
 							<tr class="rc-table-tr manage" data-name="{{name}}">
 								<td class="rc-table-td rc-table-td--name">
@@ -46,8 +50,9 @@
 										{{> icon icon="menu"}}
 									</button>								</td>
 								<td class="rc-table-td">
-									{{#if activeClass status}}
-										<button class="rc-button rc-button--cancel rc-tooltip" aria-label="{{_ "Remove"}}">
+									{{#if isActive status}}
+										Installed
+										<button class="rc-button rc-button--cancel rc-tooltip hover-hidden" aria-label="{{_ "Remove"}}">
 											{{> icon icon="trash"}}
 										</button>
 									{{else}}
@@ -57,15 +62,14 @@
 									{{/if}}
 								</td>
 							</tr>
-						{{else}}
-							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
-									{{_ "There_are_no_applications_installed"}}
-								</td>
-							</tr>
 						{{/each}}
+						{{#if isLoading}}
+							<tr>
+									<td colspan="3" style="position: relative;">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
-				</table>
+				{{/table}}
 			{{/requiresPermission}}
 		</div>
 	</section>

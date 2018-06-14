@@ -18,3 +18,10 @@ div.apps-error {
 	width: 100%;
 	font-size: 45px;
 }
+
+.hover-hidden {
+	display: none;
+}
+.rc-table-tr:hover .hover-hidden {
+	display: inherit;
+}
