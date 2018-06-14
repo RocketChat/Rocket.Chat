@@ -99,9 +99,9 @@ Template.admin.helpers({
 
 		return result;
 	},
-	appLanguage(key) {
+	isAppLanguage(key) {
 		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+		return typeof setting === 'string' && setting.split('-').shift().toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');
