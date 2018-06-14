@@ -24,27 +24,23 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 
 		const handle = RocketChat.models.ClientCommands.find(id).observeChanges({
 			changed: (id, fields) => {
-				handle.stop();
-				if (finished) {
-					return;
-				}
 				finished = true;
+				handle.stop();
 				_.assign(clientCommand, fields);
 				resolve(clientCommand);
 			}
 		});
 
 		setTimeout(() => {
+			handle.stop();
+			if (finished) {
+				return;
+			}
 			const error = new Meteor.Error('error-client-command-response-timeout',
 				`${ _.escape(user.name) } didn't respond to the command in time`, {
 					method: 'sendClientCommand',
 					command: clientCommand
 				});
-			handle.stop();
-			if (finished) {
-				return;
-			}
-			finished = true;
 			reject(error);
 		}, msTimeout);
 	});
