@@ -27,6 +27,9 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 	const canSetModerator = () => {
 		return RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'));
 	};
+	const isBot = () => {
+		return (user && user.type === 'bot');
+	};
 	const isDirect = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return (room != null ? room.t : undefined) === 'd';
@@ -468,6 +471,40 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				icon : 'key',
 				name: t('Make_Admin'),
 				action: prevent(getUser, ({_id}) => Meteor.call('setAdminStatus', _id, true, success(() => toastr.success(t('User_is_now_an_admin')))))
+			};
+		}, () => {
+			if (isBot() || !(Package['rocketchat:bot-manager'])) {
+				return;
+			}
+			return {
+				group: 'admin',
+				icon: 'hubot',
+				id: 'turn-into-bot',
+				name: t('Transform_into_bot'),
+				action: prevent(getUser, ({_id}) => {
+					modal.open({
+						title: t('Are_you_sure'),
+						text: t('The_user_will_become_a_bot_and_its_roles_will_be_reset'),
+						type: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#DD6B55',
+						confirmButtonText: t('Yes_transform_it'),
+						cancelButtonText: t('Cancel'),
+						closeOnConfirm: false,
+						html: false
+					}, () => {
+						Meteor.call('turnUserIntoBot', _id, success(() => {
+							modal.open({
+								title: t('Deleted'),
+								text: t('User_is_now_a_bot'),
+								type: 'success',
+								timer: 2000,
+								showConfirmButton: false
+							});
+							this.instance.tabBar.close();
+						}));
+					});
+				})
 			};
 		}, () => {
 			if (hideAdminControls || !hasPermission('edit-other-user-active-status')) {

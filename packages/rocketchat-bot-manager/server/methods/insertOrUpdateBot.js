@@ -4,7 +4,7 @@ Meteor.methods({
 		check(botData, Object);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-bot', 'Invalid bot', { method: 'insertOrUpdateBot' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'insertOrUpdateBot' });
 		}
 
 		return RocketChat.saveBot(Meteor.userId(), botData);
