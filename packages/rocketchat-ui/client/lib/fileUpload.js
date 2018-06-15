@@ -229,26 +229,14 @@ fileUpload = function(filesToUpload) {
 				Tracker.autorun(function(c) {
 					const cancel = Session.get(`uploading-cancel-${ upload.id }`);
 					if (cancel) {
-						let item;
 						upload.stop();
 						c.stop();
 
 						uploading = Session.get('uploading');
 						if (uploading != null) {
-							item = _.findWhere(uploading, {id: upload.id});
-							if (item != null) {
-								item.percentage = 0;
-							}
-							Session.set('uploading', uploading);
+							const item = _.findWhere(uploading, {id: upload.id});
+							Session.set('uploading', _.without(uploading, item));
 						}
-
-						return Meteor.setTimeout(function() {
-							uploading = Session.get('uploading');
-							if (uploading != null) {
-								item = _.findWhere(uploading, {id: upload.id});
-								return Session.set('uploading', _.without(uploading, item));
-							}
-						}, 1000);
 					}
 				});
 			});
