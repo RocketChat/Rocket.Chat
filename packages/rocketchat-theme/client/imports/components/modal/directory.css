@@ -38,15 +38,12 @@
 	}
 
 	&-avatar {
-		width: 40px;
-		height: 40px;
-		margin: 0 9px;
-
-		flex: 0 0 auto;
-
 		width: 32px;
 		height: 32px;
+		margin: 0 9px;
 		padding: 3px;
+
+		flex: 0 0 auto;
 
 		background-repeat: no-repeat;
 		background-position: center center;
@@ -138,13 +135,19 @@
 }
 
 .rc-directory-td--createdAt,
-.rc-directory-td--users {
+.rc-directory-td--users,
+.rc-directory-td--medium,
+.rc-directory-td--small {
 	overflow: hidden;
 
 	width: 120px;
 
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+.rc-directory-td--medium {
+	width: 200px;
 }
 
 .rc-directory-td--users {

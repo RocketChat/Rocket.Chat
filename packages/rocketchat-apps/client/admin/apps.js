@@ -2,13 +2,20 @@ import { AppEvents } from '../communication';
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const enabled = ({status}) => ENABLED_STATUS.includes(status);
 
+const sortByColumn = (array, column, inverted) => {
+	return array.sort((a, b) => {
+		if (a[column] < b[column] && !inverted) {
+			return -1;
+		}
+		return 1;
+	});
+};
+
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
-	this.filter = new ReactiveVar('');
 	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('channels');
 	this.searchSortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
 	this.limit = new ReactiveVar(0);
@@ -66,9 +73,10 @@ Template.apps.helpers({
 	},
 	apps() {
 		const instance = Template.instance();
-		const filter = instance.filter.get().toLowerCase();
-		// const sortOrder = instance.sortDirection.get();
-		return instance.apps.get().filter(({name}) => name.toLowerCase().includes(filter));
+		const searchText = instance.searchText.get().toLowerCase();
+		const sortColumn = instance.searchSortBy.get();
+		const inverted = instance.sortDirection.get() === 'desc';
+		return sortByColumn(instance.apps.get().filter(({name}) => name.toLowerCase().includes(searchText)), sortColumn, inverted);
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
@@ -78,9 +86,6 @@ Template.apps.helpers({
 	},
 	searchResults() {
 		return Template.instance().results.get();
-	},
-	searchType() {
-		return Template.instance().searchType.get();
 	},
 	sortIcon(key) {
 		const {
@@ -116,7 +121,6 @@ Template.apps.helpers({
 	},
 	onTableSort() {
 		const { end, page, sortDirection, searchSortBy } = Template.instance();
-
 		return function(type) {
 			end.set(false);
 			page.set(0);
@@ -145,7 +149,7 @@ Template.apps.events({
 		FlowRouter.go('/admin/app/install');
 	},
 	'keyup .js-search'(e, t) {
-		t.filter.set(e.currentTarget.value);
+		t.searchText.set(e.currentTarget.value);
 	},
 	'submit .js-search'(e) {
 		e.preventDefault();
