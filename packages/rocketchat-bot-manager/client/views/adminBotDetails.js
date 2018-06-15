@@ -33,7 +33,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 				if (bot) {
 					this.bot.set(bot);
 				} else {
-					toastr.error(TAPi18n.__('No_bot_found'));
+					toastr.error(TAPi18n.__('Bot_not_found'));
 					FlowRouter.go('admin-bots');
 				}
 			}
@@ -153,14 +153,22 @@ Template.adminBotDetails.helpers({
 
 	ping() {
 		const ping = Template.instance().ping.get();
-		const formattedPing = (ping === Infinity ? TAPi18n.__('Infinity') : `${ Math.round(ping) }ms`);
-		return `Ping: ${ formattedPing }`;
+		return (ping === Infinity ? TAPi18n.__('Infinity') : `${ Math.round(ping) }ms`);
 	},
 
 	connectedUptime() {
 		const bot = Template.instance().bot.get();
 		const diff = (new Date()).getTime() - bot.lastLogin.getTime();
-		return `Connected: ${ Template.instance().humanReadableTime(diff / 1000) }`;
+		return Template.instance().humanReadableTime(diff / 1000);
+	},
+
+	activeUptime() {
+		const bot = Template.instance().bot.get();
+		let diff = (new Date()).getTime() - bot.lastLogin.getTime();
+		if (bot.customClientData.lastResumed) {
+			diff = (new Date()).getTime() - bot.customClientData.lastResumed.getTime();
+		}
+		return Template.instance().humanReadableTime(diff / 1000);
 	},
 
 	isChanged() {

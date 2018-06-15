@@ -101,18 +101,18 @@
                 <div class="input-line double-col">
                   <label>{{_ "Connection_status"}}</label>
                   <div>
-                    <div class="settings-description">{{ipAddress}}</div>
+                    <div class="settings-description">{{_ "IP_Address"}}: {{ipAddress}}</div>
                     {{#if canPing}}
-                      <div class="settings-description">{{ping}}</div>
+                      <div class="settings-description">{{_ "Ping"}}: {{ping}}</div>
                     {{/if}}
                   </div>
                 </div>
                 <div class="input-line double-col">
                   <label>{{_ "Uptime"}}</label>
                   <div>
-                    <div class="settings-description">{{connectedUptime}}</div>
+                    <div class="settings-description">{{_ "Connected"}}: {{connectedUptime}}</div>
                     {{#if canPause}}
-                      <div class="settings-description">{{activeUptime}}</div>
+                      <div class="settings-description">{{_ "Active"}}: {{activeUptime}}</div>
                     {{/if}}
                   </div>
                 </div>

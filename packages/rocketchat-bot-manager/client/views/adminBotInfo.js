@@ -1,4 +1,5 @@
 import moment from 'moment';
+import toastr from 'toastr';
 
 Template.adminBotInfo.helpers({
 	hideHeader() {
