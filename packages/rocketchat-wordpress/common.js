@@ -73,7 +73,7 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	}
 
 	return result;
-}), 2000);
+}), 1000);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
