@@ -7,7 +7,7 @@ const api = {
 			Triggers.processRequest(info);
 		}
 
-		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
+		Meteor.call('livechat:pageVisited', visitor.getToken(), visitor.getRoom(), info);
 	},
 
 	setCustomField(key, value, overwrite = true) {
