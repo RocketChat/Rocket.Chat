@@ -9,7 +9,7 @@ export default class RocketAdapter {
 		this.util = Npm.require('util');
 
 		this.userTags = {};
-		this.slack = {};
+		this.slackAdapters = [];
 	}
 
 	connect() {
@@ -20,8 +20,10 @@ export default class RocketAdapter {
 		this.unregisterForEvents();
 	}
 
-	setSlack(slack) {
-		this.slack = slack;
+	addSlack(slack) {
+		if (this.slackAdapters.indexOf(slack) < 0) {
+			this.slackAdapters.push(slack);
+		}
 	}
 
 	registerForEvents() {
@@ -41,17 +43,18 @@ export default class RocketAdapter {
 	}
 
 	onMessageDelete(rocketMessageDeleted) {
-		try {
-			if (! this.slack.getSlackChannel(rocketMessageDeleted.rid)) {
-				//This is on a channel that the rocket bot is not subscribed
-				return;
+		this.slackAdapters.forEach((slack) => {
+			try {
+				if (!slack.getSlackChannel(rocketMessageDeleted.rid)) {
+					//This is on a channel that the rocket bot is not subscribed on this slack server
+					return;
+				}
+				logger.rocket.debug('onRocketMessageDelete', rocketMessageDeleted);
+				slack.postDeleteMessage(rocketMessageDeleted);
+			} catch (err) {
+				logger.rocket.error('Unhandled error onMessageDelete', err);
 			}
-			logger.rocket.debug('onRocketMessageDelete', rocketMessageDeleted);
-
-			this.slack.postDeleteMessage(rocketMessageDeleted);
-		} catch (err) {
-			logger.rocket.error('Unhandled error onMessageDelete', err);
-		}
+		});
 	}
 
 	onSetReaction(rocketMsgID, reaction) {
@@ -65,11 +68,13 @@ export default class RocketAdapter {
 				}
 				const rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
-					const slackChannel = this.slack.getSlackChannel(rocketMsg.rid);
-					if (null != slackChannel) {
-						const slackTS = this.slack.getTimeStamp(rocketMsg);
-						this.slack.postReactionAdded(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
-					}
+					this.slackAdapters.forEach((slack) => {
+						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
+						if (null != slackChannel) {
+							const slackTS = slack.getTimeStamp(rocketMsg);
+							slack.postReactionAdded(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
+						}
+					});
 				}
 			}
 		} catch (err) {
@@ -89,11 +94,13 @@ export default class RocketAdapter {
 
 				const rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
-					const slackChannel = this.slack.getSlackChannel(rocketMsg.rid);
-					if (null != slackChannel) {
-						const slackTS = this.slack.getTimeStamp(rocketMsg);
-						this.slack.postReactionRemove(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
-					}
+					this.slackAdapters.forEach((slack) => {
+						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
+						if (null != slackChannel) {
+							const slackTS = slack.getTimeStamp(rocketMsg);
+							slack.postReactionRemove(reaction.replace(/:/g, ''), slackChannel.id, slackTS);
+						}
+					});
 				}
 			}
 		} catch (err) {

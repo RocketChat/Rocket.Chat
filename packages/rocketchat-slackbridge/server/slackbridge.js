@@ -14,7 +14,7 @@ class SlackBridge {
 		this.reactionsMap = new Map();	//Sync object between rocket and slack
 
 		this.connected = false;
-		this.rocket.setSlack(this.slack);
+		this.rocket.addSlack(this.slack);
 		this.slack.setRocket(this.rocket);
 
 		this.processSettings();
