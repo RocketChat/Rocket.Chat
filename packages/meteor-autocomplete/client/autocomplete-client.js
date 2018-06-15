@@ -1,5 +1,6 @@
 /* globals Deps, getCaretCoordinates*/
-const AutoCompleteRecords = new Mongo.Collection('autocompleteRecords');
+import _ from 'underscore';
+import AutoCompleteRecords from './collection';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -74,6 +75,11 @@ this.AutoComplete = class {
 		this.limit = settings.limit || 5;
 		this.position = settings.position || 'bottom';
 		this.rules = settings.rules;
+		this.selector = {
+			constainer: '.-autocomplete-container',
+			item: '.-autocomplete-item',
+			...settings.selector
+		};
 		const rules = this.rules;
 
 		Object.keys(rules).forEach(key => {
@@ -178,7 +184,7 @@ this.AutoComplete = class {
 		const startpos = this.element.selectionStart;
 		const val = this.getText().substring(0, startpos);
 
-    /*
+		/*
       Matching on multiple expressions.
       We always go from a matched state to an unmatched one
       before going to a different matched one.
@@ -258,8 +264,8 @@ this.AutoComplete = class {
 	}
 
 	onItemHover(doc, e) {
-		this.tmplInst.$('.-autocomplete-item').removeClass('selected');
-		$(e.target).closest('.-autocomplete-item').addClass('selected');
+		this.tmplInst.$(this.selector.item).removeClass('selected');
+		$(e.target).closest(this.selector.item).addClass('selected');
 	}
 
 	filteredList() {
@@ -305,7 +311,7 @@ this.AutoComplete = class {
 
 	// Replace text with currently selected item
 	select() {
-		const node = this.tmplInst.find('.-autocomplete-item.selected');
+		const node = this.tmplInst.find(`${ this.selector.item }.selected`);
 		if (node == null) {
 			return false;
 		}
@@ -370,13 +376,13 @@ this.AutoComplete = class {
 	}
 
 
-  /*
+	/*
     Rendering functions
    */
 
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
-		let pos;
+		let pos = {};
 		const position = this.$element.position();
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
@@ -384,10 +390,11 @@ this.AutoComplete = class {
 		// In whole-field positioning, we don't move the container and make it the
 		// full width of the field.
 		if (rule && isWholeField(rule)) {
-			pos = {
-				left: position.left,
-				width: this.$element.outerWidth() //position.offsetWidth
-			};
+			pos.left = position.left;
+			if (rule.doNotChangeWidth !== false) {
+				pos.width = this.$element.outerWidth(); //position.offsetWidth
+
+			}
 		} else { //Normal positioning, at token word
 			pos = { left: position.left + offset.left };
 		}
@@ -398,36 +405,36 @@ this.AutoComplete = class {
 		} else {
 			pos.top = position.top + offset.top + parseInt(this.$element.css('font-size'));
 		}
-		this.tmplInst.$('.-autocomplete-container').css(pos);
+		this.tmplInst.$(this.selector.container).css(pos);
 	}
 
 	ensureSelection() {
 		// Re-render; make sure selected item is something in the list or none if list empty
-		const selectedItem = this.tmplInst.$('.-autocomplete-item.selected');
+		const selectedItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!selectedItem.length) {
 			// Select anything
-			this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
+			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
 		}
 	}
 
 	// Select next item in list
 	next() {
-		const currentItem = this.tmplInst.$('.-autocomplete-item.selected');
+		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!currentItem.length) {
-			return;
+			return this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
 		}
 		currentItem.removeClass('selected');
 		const next = currentItem.next();
 		if (next.length) {
 			next.addClass('selected');
 		} else { //End of list or lost selection; Go back to first item
-			this.tmplInst.$('.-autocomplete-item:first-child').addClass('selected');
+			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
 		}
 	}
 
 	//Select previous item in list
 	prev() {
-		const currentItem = this.tmplInst.$('.-autocomplete-item.selected');
+		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!currentItem.length) {
 			return; //Don't try to iterate an empty list
 		}
@@ -436,7 +443,7 @@ this.AutoComplete = class {
 		if (prev.length) {
 			prev.addClass('selected');
 		} else { //Beginning of list or lost selection; Go to end of list
-			this.tmplInst.$('.-autocomplete-item:last-child').addClass('selected');
+			this.tmplInst.$(`${ this.selector.item }:last-child`).addClass('selected');
 		}
 	}
 

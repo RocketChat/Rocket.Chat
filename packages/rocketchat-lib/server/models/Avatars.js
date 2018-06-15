@@ -1,6 +1,14 @@
+/* globals InstanceStatus */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 	constructor() {
 		super('avatars');
+
+		this.model.before.insert((userId, doc) => {
+			doc.instanceId = InstanceStatus.id();
+		});
 
 		this.tryEnsureIndex({ name: 1 });
 	}

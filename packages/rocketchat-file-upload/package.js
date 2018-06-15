@@ -18,7 +18,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('random');
 	api.use('accounts-base');
-	api.use('underscore');
 	api.use('tracker');
 	api.use('webapp');
 
@@ -31,6 +30,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fileUploadHandler.js', 'client');
 
 	api.addFiles('server/lib/FileUpload.js', 'server');
+	api.addFiles('server/lib/proxy.js', 'server');
 	api.addFiles('server/lib/requests.js', 'server');
 
 	api.addFiles('server/config/_configUploadStorage.js', 'server');
@@ -42,8 +42,4 @@ Package.onUse(function(api) {
 
 	api.export('fileUploadHandler');
 	api.export('FileUpload');
-});
-
-Npm.depends({
-	'filesize': '3.3.0'
 });

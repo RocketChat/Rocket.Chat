@@ -1,9 +1,20 @@
-/* globals renderEmoji renderMessageBody*/
+/* globals renderEmoji renderMessageBody */
+import _ from 'underscore';
 import moment from 'moment';
 
 Template.message.helpers({
 	encodeURI(text) {
 		return encodeURI(text);
+	},
+	broadcast() {
+		const instance = Template.instance();
+		return !this.private && this.t && this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
+	},
+	isIgnored() {
+		return this.ignored;
+	},
+	ignoredClass() {
+		return this.ignored ? 'message--ignored' : '';
 	},
 	isBot() {
 		if (this.bot != null) {
@@ -12,8 +23,7 @@ Template.message.helpers({
 	},
 	roleTags() {
 		const user = Meteor.user();
-		// test user -> settings -> preferences -> hideRoles
-		if (!RocketChat.settings.get('UI_DisplayRoles') || ['settings', 'preferences', 'hideRoles'].reduce((obj, field) => typeof obj !== 'undefined' && obj[field], user)) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
 			return [];
 		}
 
@@ -42,11 +52,14 @@ Template.message.helpers({
 		});
 	},
 	isGroupable() {
-		if (this.groupable === false) {
+		if (Template.instance().room.broadcast || this.groupable === false) {
 			return 'false';
 		}
 	},
 	isSequential() {
+		return this.groupable !== false && !Template.instance().room.broadcast;
+	},
+	sequentialClass() {
 		if (this.groupable !== false) {
 			return 'sequential';
 		}
@@ -205,7 +218,7 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user().username;
+		const userUsername = Meteor.user() && Meteor.user().username;
 		return Object.keys(this.reactions||{}).map(emoji => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
@@ -264,13 +277,56 @@ Template.message.helpers({
 		if (subscription == null) {
 			return 'hidden';
 		}
+	},
+	channelName() {
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		return subscription && subscription.name;
+	},
+	roomIcon() {
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return RocketChat.roomTypes.getIcon(room && room.t);
+	},
+	fromSearch() {
+		return this.customClass === 'search';
+	},
+	actionContext() {
+		return this.actionContext;
+	},
+	messageActions(group) {
+		let messageGroup = group;
+		let context = this.actionContext;
+
+		if (!group) {
+			messageGroup = 'message';
+		}
+
+		if (!context) {
+			context = 'message';
+		}
+
+		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
+	},
+	isSnippet() {
+		return this.actionContext === 'snippeted';
 	}
 });
+
 
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
 
 	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
+
+	this.room = RocketChat.models.Rooms.findOne({
+		_id: msg.rid
+	}, {
+		fields: {
+			broadcast: 1
+		}
+	});
 
 	return this.body = (() => {
 		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
@@ -288,7 +344,6 @@ Template.message.onCreated(function() {
 		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
 			msg = RocketChat.callbacks.run('renderMentions', msg);
-				// console.log JSON.stringify message
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
@@ -305,7 +360,19 @@ Template.message.onViewRendered = function(context) {
 	return this._domrange.onAttached(function(domRange) {
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
-		const previousNode = currentNode.previousElementSibling;
+		const getPreviousSentMessage = (currentNode) => {
+			if ($(currentNode).hasClass('temp')) {
+				return currentNode.previousElementSibling;
+			}
+			if (currentNode.previousElementSibling != null) {
+				let previousValid = currentNode.previousElementSibling;
+				while (previousValid != null && $(previousValid).hasClass('temp')) {
+					previousValid = previousValid.previousElementSibling;
+				}
+				return previousValid;
+			}
+		};
+		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 		const $currentNode = $(currentNode);
 		const $nextNode = $(nextNode);
@@ -338,7 +405,7 @@ Template.message.onViewRendered = function(context) {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
 					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day')) {
+				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
 					$nextNode.addClass('sequential');
 				}
 			}
@@ -350,12 +417,11 @@ Template.message.onViewRendered = function(context) {
 			if (!templateInstance) {
 				return;
 			}
+
 			if (currentNode.classList.contains('own') === true) {
-				return (templateInstance.atBottom = true);
-			} else if (templateInstance.firstNode && templateInstance.atBottom === false) {
-				const newMessage = templateInstance.find('.new-message');
-				return newMessage && (newMessage.className = 'new-message background-primary-action-color color-content-background-color ');
+				templateInstance.atBottom = true;
 			}
+			templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };

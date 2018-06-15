@@ -1,4 +1,7 @@
 /* globals RocketChat */
+import _ from 'underscore';
+import s from 'underscore.string';
+
 RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
@@ -13,63 +16,62 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
 
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-
-	if (!nameValidation.test(name)) {
-		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
-	}
-
-	const now = new Date();
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
 	}
 
-	// avoid duplicate names
-	let room = RocketChat.models.Rooms.findOneByName(name);
-	if (room) {
-		if (room.archived) {
-			throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${ name }`, { function: 'RocketChat.createRoom', room_name: name });
-		} else {
-			throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ name }' exists`, { function: 'RocketChat.createRoom', room_name: name });
+	if (extraData.broadcast) {
+		readOnly = true;
+		delete extraData.reactWhenReadOnly;
+	}
+
+	const now = new Date();
+	let room = Object.assign({
+		name: RocketChat.getValidRoomName(name),
+		fname: name,
+		t: type,
+		msgs: 0,
+		usernames: members,
+		u: {
+			_id: owner._id,
+			username: owner.username
 		}
-	}
-
-	if (type === 'c') {
-		RocketChat.callbacks.run('beforeCreateChannel', owner, {
-			t: 'c',
-			name,
-			ts: now,
-			ro: readOnly === true,
-			sysMes: readOnly !== true,
-			usernames: members,
-			u: {
-				_id: owner._id,
-				username: owner.username
-			}
-		});
-	}
-
-	extraData = Object.assign({}, extraData, {
+	}, extraData, {
 		ts: now,
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, extraData);
+	if (Apps && Apps.isLoaded()) {
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-creation', 'A Rocket.Chat App prevented the room creation.');
+		}
+
+		let result;
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateExtend', room));
+		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
+
+		if (typeof result === 'object') {
+			room = Object.assign(room, result);
+		}
+	}
+
+	if (type === 'c') {
+		RocketChat.callbacks.run('beforeCreateChannel', owner, room);
+	}
+
+	room = RocketChat.models.Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 }});
+		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
 		}
 
-		// make all room members muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly')) {
+		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
+		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly') && !isTheOwner) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
@@ -94,7 +96,14 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		});
 	}
 
+	if (Apps && Apps.isLoaded()) {
+		// This returns a promise, but it won't mutate anything about the message
+		// so, we don't really care if it is successful or fails
+		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
+	}
+
 	return {
-		rid: room._id
+		rid: room._id,
+		name: room.name
 	};
 };

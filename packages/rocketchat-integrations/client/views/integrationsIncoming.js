@@ -159,7 +159,7 @@ Template.integrationsIncoming.events({
 	'click .submit > .delete': () => {
 		const params = Template.instance().data.params();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
 			type: 'warning',
@@ -172,9 +172,9 @@ Template.integrationsIncoming.events({
 		}, () => {
 			Meteor.call('deleteIncomingIntegration', params.id, (err) => {
 				if (err) {
-					handleError(err);
+					return handleError(err);
 				} else {
-					swal({
+					modal.open({
 						title: t('Deleted'),
 						text: t('Your_entry_has_been_deleted'),
 						type: 'success',

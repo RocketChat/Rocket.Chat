@@ -1,0 +1,19 @@
+<template name="selectDropdown">
+	<div class="rc-input">
+		<label class="rc-input__label">
+			<div class="rc-input__title">Invite people to channel</div>
+			<div class="rc-input__wrapper">
+				<div class="rc-input__icon">
+					{{> icon block="rc-input__icon-svg" icon="at"}}
+				</div>
+				{{ selectedUsers }}
+				<input type="text" class="rc-input__element" placeholder="Type user name" name="users">
+			</div>
+		</label>
+		{{#if open}}
+		<div class="fadeInDown">
+			{{ > popupList .}}
+		</div>
+		{{/if}}
+	</div>
+</template>

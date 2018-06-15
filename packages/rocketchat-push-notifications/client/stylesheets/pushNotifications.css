@@ -1,0 +1,58 @@
+.flex-tab {
+	& .push-notifications {
+		& .input.checkbox.toggle {
+			width: 40px;
+		}
+
+		& ul {
+			& li {
+				margin-bottom: 20px;
+			}
+		}
+
+		& form {
+			& label {
+				display: block;
+
+				margin-bottom: 5px;
+
+				font-weight: bold;
+			}
+
+			& div span {
+				font-size: 14px;
+
+				& i.icon-pencil {
+					margin-left: 3px;
+
+					font-size: 12px;
+				}
+			}
+		}
+
+		& .submit {
+			margin-top: 30px;
+
+			text-align: center;
+		}
+
+		& [data-edit],
+		& [data-play] {
+			cursor: pointer;
+		}
+
+		& .disable-notifications,
+		& .unread-room-status {
+			display: flex;
+			align-items: center;
+
+			& label {
+				flex: 1 1;
+			}
+		}
+
+		& .alert {
+			padding: 0.5rem;
+		}
+	}
+}

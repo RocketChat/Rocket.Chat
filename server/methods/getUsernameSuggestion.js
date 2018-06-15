@@ -1,4 +1,5 @@
 /* global slugify */
+import _ from 'underscore';
 
 function slug(text) {
 	text = slugify(text, '.');
@@ -14,9 +15,7 @@ function usernameIsAvaliable(username) {
 		return false;
 	}
 
-	return !RocketChat.models.Users.findOneByUsername({
-		$regex: new RegExp(`^${ username }$`, 'i')
-	});
+	return !RocketChat.models.Users.findOneByUsername(username);
 }
 
 function generateSuggestion(user) {

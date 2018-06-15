@@ -1,4 +1,6 @@
 /* globals RocketChatFileEmojiCustomInstance */
+import _ from 'underscore';
+
 Meteor.startup(function() {
 	let storeType = 'GridFS';
 

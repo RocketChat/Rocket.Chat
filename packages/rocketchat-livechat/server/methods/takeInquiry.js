@@ -24,7 +24,8 @@ Meteor.methods({
 			alert: true,
 			open: true,
 			unread: 1,
-			code: inquiry.code,
+			userMentions: 1,
+			groupMentions: 0,
 			u: {
 				_id: agent.agentId,
 				username: agent.username

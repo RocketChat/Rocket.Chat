@@ -1,7 +1,13 @@
 {
 	"plugins": {
-		"postcss-smart-import": {},
-		"postcss-cssnext": {
+		"postcss-import": {},
+		"postcss-custom-properties": {
+			"preserve": true
+		},
+		"postcss-media-minmax": {},
+		"postcss-selector-not": {},
+		"postcss-nested": {},
+		"autoprefixer": {
 			"browsers": [
 				"ie > 10",
 				"last 2 Edge versions",
@@ -9,7 +15,7 @@
 				"last 1 FirefoxAndroid versions",
 				"last 2 Chrome versions",
 				"last 1 ChromeAndroid versions",
-				"last 2 Safari versions",
+				"Safari > 7",
 				"last 2 Opera versions",
 				"last 2 iOS versions",
 				"last 1 Android version"

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.createCombinedFlex.helpers({
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
@@ -76,14 +78,6 @@ Template.createCombinedFlex.events({
 		return SideNav.closeFlex(() => instance.clearForm());
 	},
 
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'keydown input[type="text"]'() {
 		return Template.instance().error.set([]);
 	},
@@ -111,7 +105,7 @@ Template.createCombinedFlex.events({
 		if (!err) {
 			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
 				if (err) {
-					if (err.error === 'error-invalid-name') {
+					if (err.error === 'error-invalid-room-name') {
 						instance.error.set({ invalid: true });
 						return;
 					}
@@ -130,10 +124,10 @@ Template.createCombinedFlex.events({
 				SideNav.closeFlex(() => instance.clearForm());
 
 				if (!privateGroup) {
-					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name });
+					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 				}
 
-				return FlowRouter.go(successRoute, { name }, FlowRouter.current().queryParams);
+				return FlowRouter.go(successRoute, { name: result.name }, FlowRouter.current().queryParams);
 			});
 		} else {
 			return instance.error.set({ fields: err });

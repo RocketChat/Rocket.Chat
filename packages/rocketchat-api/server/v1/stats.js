@@ -25,20 +25,18 @@ RocketChat.API.v1.addRoute('statistics.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query);
-
-		const statistics = RocketChat.models.Statistics.find(ourQuery, {
+		const statistics = RocketChat.models.Statistics.find(query, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude)
+			fields
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			statistics,
 			count: statistics.length,
 			offset,
-			total: RocketChat.models.Statistics.find(ourQuery).count()
+			total: RocketChat.models.Statistics.find(query).count()
 		});
 	}
 });

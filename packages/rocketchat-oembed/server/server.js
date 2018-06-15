@@ -1,18 +1,13 @@
 /*globals HTTPInternals, changeCase */
-const URL = Npm.require('url');
-
-const querystring = Npm.require('querystring');
+import _ from 'underscore';
+import URL from 'url';
+import querystring from 'querystring';
+import iconv from 'iconv-lite';
+import ipRangeCheck from 'ip-range-check';
+import he from 'he';
+import jschardet from 'jschardet';
 
 const request = HTTPInternals.NpmModules.request.module;
-
-const iconv = Npm.require('iconv-lite');
-
-const ipRangeCheck = Npm.require('ip-range-check');
-
-const he = Npm.require('he');
-
-const jschardet = Npm.require('jschardet');
-
 const OEmbed = {};
 
 //  Detect encoding
@@ -88,7 +83,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36'
+			'User-Agent': RocketChat.settings.get('API_Embed_UserAgent')
 		}
 	};
 	let headers = null;

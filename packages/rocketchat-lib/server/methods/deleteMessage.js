@@ -14,7 +14,8 @@ Meteor.methods({
 			fields: {
 				u: 1,
 				rid: 1,
-				file: 1
+				file: 1,
+				ts: 1
 			}
 		});
 		if (originalMessage == null) {
@@ -34,7 +35,7 @@ Meteor.methods({
 			});
 		}
 		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if ((blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) || !(forceDelete)) {
+		if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0 && !forceDelete) {
 			if (originalMessage.ts == null) {
 				return;
 			}

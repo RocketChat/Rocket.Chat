@@ -3,76 +3,13 @@ import stream from 'stream';
 import fs from 'fs';
 import path from 'path';
 import mkdirp from 'mkdirp';
-import gm from 'gm';
-import {exec} from 'child_process';
 
 // Fix problem with usernames being converted to object id
 Grid.prototype.tryParseObjectId = function() {
 	return false;
 };
 //TODO: REMOVE RocketChatFile from globals
-RocketChatFile = {
-	gm,
-	enabled: undefined,
-	enable() {
-		RocketChatFile.enabled = true;
-		return RocketChat.settings.updateOptionsById('Accounts_AvatarResize', {
-			alert: undefined
-		});
-	},
-	disable() {
-		RocketChatFile.enabled = false;
-		return RocketChat.settings.updateOptionsById('Accounts_AvatarResize', {
-			alert: 'The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server'
-		});
-	}
-};
-
-const detectGM = function() {
-	return exec('gm version', Meteor.bindEnvironment(function(error, stdout) {
-		if ((error == null) && stdout.indexOf('GraphicsMagick') > -1) {
-			RocketChatFile.enable();
-			RocketChat.Info.GraphicsMagick = {
-				enabled: true,
-				version: stdout
-			};
-		} else {
-			RocketChat.Info.GraphicsMagick = {
-				enabled: false
-			};
-		}
-		return exec('convert -version', Meteor.bindEnvironment(function(error, stdout) {
-			if ((error == null) && stdout.indexOf('ImageMagick') > -1) {
-				if (RocketChatFile.enabled !== true) {
-					// Enable GM to work with ImageMagick if no GraphicsMagick
-					RocketChatFile.gm = RocketChatFile.gm.subClass({
-						imageMagick: true
-					});
-					RocketChatFile.enable();
-				}
-				return RocketChat.Info.ImageMagick = {
-					enabled: true,
-					version: stdout
-				};
-			} else {
-				if (RocketChatFile.enabled !== true) {
-					RocketChatFile.disable();
-				}
-				return RocketChat.Info.ImageMagick = {
-					enabled: false
-				};
-			}
-		}));
-	}));
-};
-
-detectGM();
-
-Meteor.methods({
-	'detectGM'() {
-		detectGM();
-	}
-});
+RocketChatFile = {};
 
 RocketChatFile.bufferToStream = function(buffer) {
 	const bufferStream = new stream.PassThrough();
@@ -105,6 +42,7 @@ RocketChatFile.GridFS = class {
 		this.store = new Grid(db, mongo);
 		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
+		this.countSync = Meteor.wrapAsync(this.store._col.count.bind(this.store._col));
 		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 

@@ -10,10 +10,10 @@ RocketChat.settings.get('Site_Url', function(key, value) {
 		host = match[1];
 		// prefix = match[2].replace(/\/$/, '');
 	}
-	__meteor_runtime_config__.ROOT_URL = host;
+	__meteor_runtime_config__.ROOT_URL = value;
 
 	if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
-		Meteor.absoluteUrl.defaultOptions.rootUrl = host;
+		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
 	}
 	if (Meteor.isServer) {
 		RocketChat.hostname = host.replace(/^https?:\/\//, '');

@@ -1,0 +1,15 @@
+type Message {
+	id: String
+	author: User
+	content: String
+	channel: Channel
+	creationTime: Float
+	# Message sent by server e.g. User joined channel
+	fromServer: Boolean
+	type: String
+	# List of mentioned users
+	userRef: [User]
+	# list of mentioned channels
+	channelRef: [Channel]
+	reactions: [Reaction]
+}

@@ -1,4 +1,7 @@
-/* globals RocketChatTabBar */
+import s from 'underscore.string';
+
+import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+
 Template.adminEmoji.helpers({
 	isReady() {
 		if (Template.instance().ready != null) {
@@ -46,7 +49,7 @@ Template.adminEmoji.onCreated(function() {
 		groups: ['emoji-custom'],
 		id: 'add-emoji',
 		i18nTitle: 'Custom_Emoji_Add',
-		icon: 'icon-plus',
+		icon: 'plus',
 		template: 'adminEmojiEdit',
 		order: 1
 	});
@@ -55,7 +58,7 @@ Template.adminEmoji.onCreated(function() {
 		groups: ['emoji-custom'],
 		id: 'admin-emoji-info',
 		i18nTitle: 'Custom_Emoji_Info',
-		icon: 'icon-cog',
+		icon: 'customize',
 		template: 'adminEmojiInfo',
 		order: 2
 	});
@@ -67,7 +70,7 @@ Template.adminEmoji.onCreated(function() {
 	});
 
 	this.customemoji = function() {
-		const filter = (instance.filter != null) ? _.trim(instance.filter.get()) : '';
+		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 

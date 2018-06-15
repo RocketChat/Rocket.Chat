@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.AutoTranslate = {
 	messageIdsToWait: {},
 	supportedLanguages: [],
@@ -88,5 +90,7 @@ RocketChat.AutoTranslate = {
 };
 
 Meteor.startup(function() {
-	RocketChat.AutoTranslate.init();
+	RocketChat.CachedCollectionManager.onLogin(() => {
+		RocketChat.AutoTranslate.init();
+	});
 });

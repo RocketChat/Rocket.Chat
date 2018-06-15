@@ -17,9 +17,7 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
-	UserPresence.start();
-	Meteor.subscribe('activeUsers');
+
 
 	Session.setDefault('AvatarRandom', 0);
 
@@ -79,25 +77,52 @@ Meteor.startup(function() {
 		}
 	};
 
-	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
-
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
+	Tracker.autorun(function(computation) {
+		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return;
 		}
+		Meteor.subscribe('userData');
+		Meteor.subscribe('activeUsers');
+		computation.stop();
+	});
 
-		window.setLanguage(userLanguage);
-
-		let status = undefined;
-		Tracker.autorun(function() {
-			if (!Meteor.userId()) {
-				return;
-			}
-
-			if (Meteor.user() && Meteor.user().status !== status) {
-				status = Meteor.user().status;
-				fireGlobalEvent('status-changed', status);
+	let status = undefined;
+	Tracker.autorun(function() {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				status: 1,
+				language: 1,
+				'settings.preferences.idleTimeLimit': 1,
+				'settings.preferences.enableAutoAway': 1
 			}
 		});
+
+		if (!user) {
+			return;
+		}
+
+		const userLanguage = user.language ? user.language : window.defaultUserLanguage();
+		if (localStorage.getItem('userLanguage') !== userLanguage) {
+			localStorage.setItem('userLanguage', userLanguage);
+			window.setLanguage(userLanguage);
+		}
+
+		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
+			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
+			UserPresence.awayTime = idleTimeLimit * 1000;
+		} else {
+			delete UserPresence.awayTime;
+			UserPresence.stopTimer();
+		}
+
+		UserPresence.start();
+
+		if (user.status !== status) {
+			status = user.status;
+			fireGlobalEvent('status-changed', status);
+		}
 	});
 });

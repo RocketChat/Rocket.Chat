@@ -1,0 +1,21 @@
+.badge {
+	display: inline-block;
+
+	padding: 3px 6px;
+
+	color: var(--badge-text-color);
+
+	border-radius: var(--badge-radius);
+
+	background-color: var(--badge-background);
+
+	font-size: var(--badge-text-size);
+
+	&--unread {
+		margin: 0 3px;
+
+		white-space: nowrap;
+
+		background-color: var(--badge-unread-background);
+	}
+}

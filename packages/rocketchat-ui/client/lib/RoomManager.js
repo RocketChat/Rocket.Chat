@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import { upsertMessage } from './RoomHistoryManager';
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -12,7 +14,7 @@ const RoomManager = new function() {
 				Object.keys(openedRooms).forEach(typeName => {
 					const record = openedRooms[typeName];
 					if (record.active !== true || record.ready === true) { return; }
-					const ready = CachedChatRoom.ready.get() && CachedChatSubscription.ready.get() === true;
+					const ready = CachedChatRoom.ready.get() && RocketChat.mainReady.get();
 					if (ready !== true) { return; }
 					const user = Meteor.user();
 
@@ -23,14 +25,9 @@ const RoomManager = new function() {
 						return RocketChat.roomTypes.findRoom(type, name, user);
 					});
 
-					if (room == null) {
-						record.ready = true;
-					} else {
+					if (room != null) {
 						openedRooms[typeName].rid = room._id;
-
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
-						record.ready = RoomHistoryManager.isLoading(room._id) === false;
-						Dep.changed();
 
 						if (openedRooms[typeName].streamActive !== true) {
 							openedRooms[typeName].streamActive = true;
@@ -43,14 +40,14 @@ const RoomManager = new function() {
 
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
-											const roles = [
-												(msg.u && msg.u._id && UserRoles.findOne(msg.u._id, { fields: { roles: 1 }})) || {},
-												(msg.u && msg.u._id && RoomRoles.findOne({rid: msg.rid, 'u._id': msg.u._id})) || {}
-											].map(e => e.roles);
-											msg.roles = _.union.apply(_.union, roles);
-											ChatMessage.upsert({ _id: msg._id }, msg);
+											const subscription = ChatSubscription.findOne({rid: openedRooms[typeName].rid});
+											upsertMessage({msg, subscription});
+											msg.room = {
+												type,
+												name
+											};
 										}
-
+										msg.name = room.name;
 										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
 										RocketChat.callbacks.run('streamMessage', msg);
@@ -63,7 +60,10 @@ const RoomManager = new function() {
 							RocketChat.Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 						}
 					}
-					return Dep.changed();
+					Meteor.defer(() => {
+						record.ready = true;
+						Dep.changed();
+					});
 				});
 			});
 		}
@@ -123,7 +123,7 @@ const RoomManager = new function() {
 
 			const roomsToClose = _.sortBy(_.values(openedRooms), 'lastSeen').reverse().slice(maxRoomsOpen);
 			return Array.from(roomsToClose).map((roomToClose) =>
-			this.close(roomToClose.typeName));
+				this.close(roomToClose.typeName));
 		}
 
 
@@ -218,23 +218,14 @@ const RoomManager = new function() {
 };
 
 const loadMissedMessages = function(rid) {
-	const lastMessage = ChatMessage.findOne({rid}, {sort: {ts: -1}, limit: 1});
+	const lastMessage = ChatMessage.findOne({rid, temp: { $exists: false } }, {sort: {ts: -1}, limit: 1});
 	if (lastMessage == null) {
 		return;
 	}
-
+	const subscription = ChatSubscription.findOne({rid});
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-	Array.from(result).map((item) =>
-	RocketChat.promises.run('onClientMessageReceived', item).then(function(item) {
-		/* globals UserRoles RoomRoles*/
-		const roles = [
-			(item.u && item.u._id && UserRoles.findOne(item.u._id)) || {},
-			(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-		].map(({roles}) => roles);
-		item.roles = _.union.apply(_, roles);
-		return ChatMessage.upsert({_id: item._id}, item);
-	}))
-);
+		Array.from(result).map(item => RocketChat.promises.run('onClientMessageReceived', item).then(msg => upsertMessage({msg, subscription})))
+	);
 };
 
 let connectionWasOnline = true;
@@ -252,18 +243,24 @@ Tracker.autorun(function() {
 	return connectionWasOnline = connected;
 });
 
-// Reload rooms after login
-let currentUsername = undefined;
-Tracker.autorun(() => {
-	const user = Meteor.user();
-	if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
-		currentUsername = user.username;
-		RoomManager.closeAllRooms();
-		return FlowRouter._current.route.callAction(FlowRouter._current);
-	}
-});
+Meteor.startup(() => {
 
-Meteor.startup(() =>
+	// Reload rooms after login
+	let currentUsername = undefined;
+	Tracker.autorun(() => {
+		const user = Meteor.user();
+		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
+			currentUsername = user.username;
+			RoomManager.closeAllRooms();
+			const roomTypes = RocketChat.roomTypes.roomTypes;
+			// Reload only if the current route is a channel route
+			const roomType = Object.keys(roomTypes).find(key => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			if (roomType) {
+				FlowRouter.reload();
+			}
+		}
+	});
+
 	ChatMessage.find().observe({
 		removed(record) {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
@@ -278,8 +275,8 @@ Meteor.startup(() =>
 				}
 			}
 		}
-	})
-);
+	});
+});
 
 
 const onDeleteMessageStream = msg => ChatMessage.remove({_id: msg._id});
@@ -300,3 +297,12 @@ Tracker.autorun(function() {
 export { RoomManager };
 this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
+
+RocketChat.CachedCollectionManager.onLogin(() => {
+	RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
+		ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
+		if (sub && sub.ignored) {
+			ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
+		}
+	});
+});

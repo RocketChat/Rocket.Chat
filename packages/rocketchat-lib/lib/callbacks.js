@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /*
 * Callback hooks provide an easy way to add extra steps to common operations.
 * @namespace RocketChat.callbacks
@@ -74,10 +76,20 @@ RocketChat.callbacks.remove = function(hookName, id) {
 RocketChat.callbacks.run = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
 	if (callbacks && callbacks.length) {
+
+		let rocketchatHooksEnd;
+		if (Meteor.isServer) {
+			rocketchatHooksEnd = RocketChat.metrics.rocketchatHooks.startTimer({hook, callbacks_length: callbacks.length});
+		}
+
 		let totalTime = 0;
 		const result = _.sortBy(callbacks, function(callback) {
 			return callback.priority || RocketChat.callbacks.priority.MEDIUM;
 		}).reduce(function(result, callback) {
+			let rocketchatCallbacksEnd;
+			if (Meteor.isServer) {
+				rocketchatCallbacksEnd = RocketChat.metrics.rocketchatCallbacks.startTimer({hook, callback: callback.id});
+			}
 			let time = 0;
 			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
 				time = Date.now();
@@ -88,6 +100,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 				totalTime += currentTime;
 				if (RocketChat.callbacks.showTime === true) {
 					if (Meteor.isServer) {
+						rocketchatCallbacksEnd();
 						RocketChat.statsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
 					} else {
 						let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
@@ -98,6 +111,11 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 			}
 			return (typeof callbackResult === 'undefined') ? result : callbackResult;
 		}, item);
+
+		if (Meteor.isServer) {
+			rocketchatHooksEnd();
+		}
+
 		if (RocketChat.callbacks.showTotalTime === true) {
 			if (Meteor.isServer) {
 				RocketChat.statsTracker.timing('callbacks.totalTime', totalTime, [`hook:${ hook }`]);
@@ -105,6 +123,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 				console.log(`${ hook }:`, totalTime);
 			}
 		}
+
 		return result;
 	} else {
 		return item;

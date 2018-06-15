@@ -3,26 +3,10 @@ this.SideNav = new class {
 		this.initiated = false;
 		this.sideNav = {};
 		this.flexNav = {};
-		this.arrow = {};
 		this.animating = false;
 		this.openQueue = [];
 	}
 
-	toggleArrow(status = null) {
-		if (status === 0) {
-			this.arrow.addClass('close');
-			this.arrow.removeClass('top');
-			return this.arrow.removeClass('bottom');
-		} else if (status === -1 || (status !== 1 && this.arrow.hasClass('top'))) {
-			this.arrow.removeClass('close');
-			this.arrow.removeClass('top');
-			return this.arrow.addClass('bottom');
-		} else {
-			this.arrow.removeClass('close');
-			this.arrow.addClass('top');
-			return this.arrow.removeClass('bottom');
-		}
-	}
 	toggleFlex(status, callback) {
 		if (this.animating === true) {
 			return;
@@ -61,7 +45,6 @@ this.SideNav = new class {
 		if (this.animating === true) {
 			return;
 		}
-		this.toggleArrow(-1);
 		return this.toggleFlex(-1, callback);
 	}
 	flexStatus() {
@@ -88,31 +71,17 @@ this.SideNav = new class {
 			return AccountBox.toggle();
 		}
 	}
-	overArrow() {
-		return this.arrow.addClass('hover');
-	}
-	leaveArrow() {
-		return this.arrow.removeClass('hover');
-	}
-	arrowBindHover() {
-		this.arrow.on('mouseenter', () => {
-			return this.sideNav.find('header').addClass('hover');
-		});
-		return this.arrow.on('mouseout', () => {
-			return this.sideNav.find('header').removeClass('hover');
-		});
-	}
 	focusInput() {
-		const sideNavDivs = _.filter(document.querySelectorAll('aside.side-nav')[0].children, function(ele) {
-			return ele.tagName === 'DIV' && !ele.classList.contains('hidden');
+		const sideNavDivs = [...this.sideNav[0].children].filter(el => {
+			return el.tagName === 'DIV' && !el.classList.contains('hidden');
 		});
 		let highestZidx = 0;
 		let highestZidxElem;
-		_.each(sideNavDivs, (ele) => {
-			const zIndex = Number(window.getComputedStyle(ele).zIndex);
-			if (Number(zIndex) > highestZidx) {
-				highestZidx = Number(zIndex);
-				highestZidxElem = ele;
+		sideNavDivs.forEach(el => {
+			const zIndex = Number(window.getComputedStyle(el).zIndex);
+			if (zIndex > highestZidx) {
+				highestZidx = zIndex;
+				highestZidxElem = el;
 			}
 		});
 		setTimeout(() => {
@@ -144,17 +113,14 @@ this.SideNav = new class {
 			return;
 		}
 		AccountBox.close();
-		this.toggleArrow(0);
 		this.toggleFlex(1, callback);
 		return this.focusInput();
 	}
 
 	init() {
-		this.sideNav = $('.side-nav');
+		this.sideNav = $('.sidebar');
 		this.flexNav = this.sideNav.find('.flex-nav');
-		this.arrow = this.sideNav.children('.arrow');
 		this.setFlex('');
-		this.arrowBindHover();
 		this.initiated = true;
 		if (this.openQueue.length > 0) {
 			this.openQueue.forEach((item) => {
@@ -163,8 +129,5 @@ this.SideNav = new class {
 			});
 			return this.openQueue = [];
 		}
-	}
-	getSideNav() {
-		return this.sideNav;
 	}
 };

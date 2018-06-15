@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -18,7 +21,11 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findOneByUsername(username, options) {
-		const query =	{username};
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ username }$`, 'i');
+		}
+
+		const query = {username};
 
 		return this.findOne(query, options);
 	}
@@ -44,6 +51,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneById(userId, options) {
+		const query =	{_id: userId};
+
+		return this.findOne(query, options);
+	}
 
 	// FIND
 	findById(userId) {
@@ -138,18 +150,16 @@ class ModelUsers extends RocketChat.models._Base {
 		}
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+
+		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: [
-						{
-							username: termRegex
-						},
-						{
-							name: termRegex
-						}
-					]
+					$or: orStmt
 				},
 				{
 					username: { $exists: true, $nin: exceptions }
@@ -157,7 +167,8 @@ class ModelUsers extends RocketChat.models._Base {
 			]
 		};
 
-		return this.find(query, options);
+		// do not use cache
+		return this._db.find(query, options);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {
@@ -222,6 +233,15 @@ class ModelUsers extends RocketChat.models._Base {
 			}
 		};
 
+		return this.find(query, options);
+	}
+
+	findUsersByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			}
+		};
 		return this.find(query, options);
 	}
 
@@ -315,9 +335,8 @@ class ModelUsers extends RocketChat.models._Base {
 
 	setCustomFields(_id, fields) {
 		const values = {};
-		Object.keys(fields).reduce(key => {
-			const value = fields[key];
-			values[`customFields.${ key }`] = value;
+		Object.keys(fields).forEach(key => {
+			values[`customFields.${ key }`] = fields[key];
 		});
 
 		const update = {$set: values};
@@ -421,11 +440,26 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
-	setPreferences(_id, preferences) {
+	clearSettings(_id) {
 		const update = {
 			$set: {
-				'settings.preferences': preferences
+				settings: {}
 			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	setPreferences(_id, preferences) {
+		const settings = Object.assign(
+			{},
+			...Object.keys(preferences).map(key => {
+				return {[`settings.preferences.${ key }`]: preferences[key]};
+			})
+		);
+
+		const update = {
+			$set: settings
 		};
 
 		return this.update(_id, update);
@@ -493,7 +527,47 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
-// INSERT
+	setReason(_id, reason) {
+		const update = {
+			$set: {
+				reason
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetReason(_id) {
+		const update = {
+			$unset: {
+				reason: true
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	addBannerById(_id, banner) {
+		const update = {
+			$set: {
+				[`banners.${ banner.id }`]: banner
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	removeBannerById(_id, banner) {
+		const update = {
+			$unset: {
+				[`banners.${ banner.id }`]: true
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	// INSERT
 	create(data) {
 		const user = {
 			createdAt: new Date,
@@ -506,12 +580,12 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 
-// REMOVE
+	// REMOVE
 	removeById(_id) {
 		return this.remove(_id);
 	}
 
-/*
+	/*
 Find users to send a message by email if:
 - he is not online
 - has a verified email
@@ -531,7 +605,17 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } });
+		const options = {
+			fields: {
+				name: 1,
+				username: 1,
+				emails: 1,
+				'settings.preferences.emailNotificationMode': 1,
+				language: 1
+			}
+		};
+
+		return this.find(query, options);
 	}
 }
 

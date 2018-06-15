@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.models._Base.prototype.roleBaseQuery = function(/*userId, scope*/) {
 	return;
 };
@@ -15,7 +17,7 @@ RocketChat.models._Base.prototype.isUserInRole = function(userId, roleName, scop
 	}
 
 	query.roles = roleName;
-	return !_.isUndefined(this.findOne(query));
+	return !_.isUndefined(this.findOne(query, {fields: {roles: 1}}));
 };
 
 RocketChat.models._Base.prototype.addRolesByUserId = function(userId, roles, scope) {

@@ -1,4 +1,20 @@
 /* globals readMessage UserRoles RoomRoles*/
+import _ from 'underscore';
+
+export const upsertMessage = ({msg, subscription}) => {
+	const userId = msg.u && msg.u._id;
+
+	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
+		msg.ignored = true;
+	}
+	const roles = [
+		(userId && UserRoles.findOne(userId, { fields: { roles: 1 }})) || {},
+		(userId && RoomRoles.findOne({rid: msg.rid, 'u._id': userId})) || {}
+	].map(e => e.roles);
+	msg.roles = _.union.apply(_.union, roles);
+	return ChatMessage.upsert({_id: msg._id}, msg);
+};
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
@@ -51,11 +67,12 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
-		return Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
+		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
 			if (err) {
 				return;
 			}
 			let previousHeight;
+			const {messages = []} = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
 			room.firstUnread.set(result.firstUnread);
 
@@ -64,16 +81,7 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			result.messages.forEach(item => {
-				if (item.t !== 'command') {
-					const roles = [
-						(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-						(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-					].map(e => e.roles);
-					item.roles = _.union.apply(_.union, roles);
-					ChatMessage.upsert({_id: item._id}, item);
-				}
-			});
+			messages.forEach(msg => msg.t !== 'command' && upsertMessage({msg, subscription}));
 
 			if (wrapper) {
 				const heightDiff = wrapper.scrollHeight - previousHeight;
@@ -87,8 +95,8 @@ export const RoomHistoryManager = new class {
 
 			room.isLoading.set(false);
 			if (room.loaded == null) { room.loaded = 0; }
-			room.loaded += result.messages.length;
-			if (result.messages.length < limit) {
+			room.loaded += messages.length;
+			if (messages.length < limit) {
 				return room.hasMore.set(false);
 			}
 		});
@@ -123,14 +131,9 @@ export const RoomHistoryManager = new class {
 
 		if (ts) {
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
-				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (item.t !== 'command') {
-						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
-						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
 					}
 				}
 
@@ -169,8 +172,7 @@ export const RoomHistoryManager = new class {
 				return instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
-			return setTimeout(() => msgElement.removeClass('highlight')
-			, 500);
+			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		} else {
 			const room = this.getRoom(message.rid);
 			room.isLoading.set(true);
@@ -188,14 +190,9 @@ export const RoomHistoryManager = new class {
 			}
 
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (item.t !== 'command') {
-						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
-						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
 					}
 				}
 
@@ -218,8 +215,7 @@ export const RoomHistoryManager = new class {
 						return 500;
 					});
 
-					return setTimeout(() => msgElement.removeClass('highlight')
-					, 500);
+					return setTimeout(() => msgElement.removeClass('highlight'), 500);
 				});
 				if (room.loaded == null) { room.loaded = 0; }
 				room.loaded += result.messages.length;
