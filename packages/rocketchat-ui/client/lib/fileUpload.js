@@ -168,7 +168,7 @@ fileUpload = function(filesToUpload) {
 				}
 				const upload = fileUploadHandler('Uploads', record, file.file);
 
-				let uploading = Session.get('uploading') || [];
+				const uploading = Session.get('uploading') || [];
 				uploading.push({
 					id: upload.id,
 					name: upload.getFileName(),
@@ -178,7 +178,7 @@ fileUpload = function(filesToUpload) {
 				Session.set('uploading', uploading);
 
 				upload.onProgress = function(progress) {
-					uploading = Session.get('uploading');
+					const uploading = Session.get('uploading');
 
 					const item = _.findWhere(uploading, {id: upload.id});
 					if (item != null) {
@@ -227,17 +227,16 @@ fileUpload = function(filesToUpload) {
 				});
 
 				Tracker.autorun(function(c) {
-					const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-					if (cancel) {
-						upload.stop();
-						c.stop();
-
-						uploading = Session.get('uploading');
-						if (uploading != null) {
-							const item = _.findWhere(uploading, {id: upload.id});
-							Session.set('uploading', _.without(uploading, item));
-						}
+					if (!Session.get(`uploading-cancel-${ upload.id }`)) {
+						return;
 					}
+					upload.stop();
+					c.stop();
+					const uploading = Session.get('uploading');
+					if (!uploading) {
+						return;
+					}
+					Session.set('uploading', uploading.filter(({ _id }) => _id !== upload.id));
 				});
 			});
 		});
