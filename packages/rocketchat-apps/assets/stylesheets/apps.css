@@ -33,4 +33,7 @@
 	.rc-directory-channel-info {
 		font-weight: 600;
 	}
+	.rc-directory-content {
+		padding: 0;
+	}
 }
