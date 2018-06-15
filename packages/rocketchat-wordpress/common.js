@@ -57,8 +57,9 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 			break;
 	}
 
-	const enabled = RocketChat.settings.get('Accounts_OAuth_Wordpress');
+	const result = WordPress.configure(config);
 
+	const enabled = RocketChat.settings.get('Accounts_OAuth_Wordpress');
 	if (enabled) {
 		ServiceConfiguration.configurations.upsert({
 			service: 'wordpress'
@@ -71,7 +72,7 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 		});
 	}
 
-	return WordPress.configure(config);
+	return result;
 }), 2000);
 
 if (Meteor.isServer) {
