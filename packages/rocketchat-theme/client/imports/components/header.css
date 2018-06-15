@@ -278,6 +278,14 @@
 		font-size: 12px;
 		font-weight: 600;
 	}
+	& + & {
+		border-left: 1px var(--color-gray) solid;
+
+		.rtl & {
+			border-left: 0;
+			border-right: 1px var(--color-gray) solid;
+		}
+	}
 }
 
 .tab-button-icon--star {
