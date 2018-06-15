@@ -218,7 +218,7 @@ class ModelRooms extends RocketChat.models._Base {
 		return this._db.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
+	findChannelAndPrivateByNameStarting(name, options, exceptions = []) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {
@@ -226,6 +226,15 @@ class ModelRooms extends RocketChat.models._Base {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			$and: [{
+				name: {
+					$exists: true,
+				},
+			}, {
+				name: {
+					$nin: exceptions,
+				},
+			}],
 		};
 
 		return this.find(query, options);

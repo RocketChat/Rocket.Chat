@@ -7,27 +7,23 @@
 		<form class="forward-message__content">
 			{{> messagePreview message}}
 
-			{{#each subscriptions}}
-				<span class="rc-checklist__item">
-					<span class="rc-checklist__item-avatar">
-						{{#if $eq this.t 'd'}}
-							{{> avatar username=this.name}}
-						{{/if}}
+			<label>{{_ "Choose_a_room"}}</label><br>
+			<div class="rc-tags">
+				{{#each room in selected}}
+					{{> nameTag room}}
+				{{/each}}
 
-						{{#if $eq this.t 'p'}}
-							<i class="rc-checklist__item-icon icon-lock"></i>
-						{{/if}}
-
-						{{#if $eq this.t 'c'}}
-							<i class="rc-checklist__item-icon icon-hash"></i>
-						{{/if}}
-					</span>
-					<span class="rc-checklist__item-name"> <strong>{{this.name}}</strong></span>
-					<span class="rc-checklist__item-switch">{{> switch name=this.rid}}</span>
-				</span>
-			{{/each}}
+				{{> inputAutocomplete settings=autocompleteChannelSettings name="recipients" class="search rc-tags__input" placeholder=(_ "Forward_recipients_placeholder") autocomplete="off"}}
+			</div>
 
 			<input class="rc-button rc-button--primary" type="submit" data-button="forward" value="{{_ "Forward"}}" {{forwardDisabled}}>
 		</form>
 	</section>
+</template>
+
+<template name='nameTag'>
+	<span class="rc-tags__tag">
+		<span class="rc-tags__tag-text">{{name}}</span>
+		{{> icon block="rc-tags__tag-icon" icon="cross"}}
+	</span>
 </template>

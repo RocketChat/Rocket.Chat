@@ -2,39 +2,79 @@ import toastr from 'toastr';
 
 Template.forwardMessage.helpers({
 	selected() {
-		return Template.instance().forwardRoomsList;
+		return Template.instance().forwardRoomsList.get();
 	},
 	forwardDisabled() {
-		return Template.instance().forwardDisabled.get() ? 'disabled' : '';
+		return Template.instance().forwardRoomsList.get().length === 0 ? 'disabled' : '';
+	},
+
+	autocompleteChannelSettings() {
+		return {
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					collection: 'CachedChannelList',
+					subscription: 'channelAndPrivateAutocomplete',
+					field: 'name',
+					matchAll: true,
+					filter: {
+						exceptions: Template.instance().forwardRoomsList.get().map(u => u.name)
+					},
+					template: Template.roomSearch,
+					noMatchTemplate: Template.roomSearchEmpty,
+					doNotChangeWidth: false,
+					selector(match) {
+						return { name: match };
+					},
+					sort: 'name'
+				}
+			]
+		};
 	}
 });
 
 Template.forwardMessage.onCreated(function() {
 	this.data.message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
-	this.forwardRoomsList = [];
-	this.forwardDisabled = new ReactiveVar(true);
+	this.forwardRoomsList = new ReactiveVar([]);
+	this.userFilter = new ReactiveVar('');
+});
+
+Template.forwardMessage.onRendered(function() {
+	this.firstNode.querySelector('[name="recipients"]').focus();
 });
 
 Template.forwardMessage.events({
-	'change .rc-switch__input'(event, instance) {
-		if (event.target.checked) {
-			instance.forwardRoomsList.push(event.target.name);
-		} else {
-			instance.forwardRoomsList = instance.forwardRoomsList.filter(rid => rid !== event.target.name);
+	'keydown [name="recipients"]'(e, t) {
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const rooms = t.forwardRoomsList;
+			const roomsArr = rooms.get();
+			roomsArr.pop();
+			return rooms.set(roomsArr);
 		}
-
-		instance.forwardDisabled.set(instance.forwardRoomsList.length === 0);
+	},
+	'click .rc-tags__tag'({target}, t) {
+		const {name} = Blaze.getData(target);
+		t.forwardRoomsList.set(t.forwardRoomsList.get().filter(room => room.name !== name));
+	},
+	'autocompleteselect input[name=recipients]'(event, template, item) {
+		const rooms = template.forwardRoomsList;
+		const roomsArr = rooms.get();
+		roomsArr.push(item);
+		rooms.set(roomsArr);
+		event.currentTarget.value = '';
 	},
 
 	'submit .forward-message__content'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
+		const rooms = instance.forwardRoomsList.get();
 
-		if (instance.forwardRoomsList.length > 0) {
-			instance.forwardRoomsList.forEach(rid => {
+		if (rooms.length > 0) {
+			rooms.forEach(room => {
 				Meteor.call('sendMessage', {
 					_id: Random.id(),
-					rid,
+					rid: room._id,
 					msg: instance.data.message.msg
 				});
 			});
