@@ -348,26 +348,24 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post() {
-		let findResult;
-		const params = this.requestParams();
-		if ((params.roomId && params.roomId.trim()) || (params.roomName && params.roomName.trim())) {
-			const idOrName = params.roomId || params.roomName;
-			findResult = RocketChat.models.Rooms.findOneByIdOrName(idOrName);
-		} else {
+		const { roomId = '', roomName = '' } = this.requestParams();
+		const idOrName = roomId || roomName;
+		if (!idOrName.trim()) {
 			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 		}
-		if (!findResult || findResult.t !== 'p') {
+
+		const { _id: rid, t: type } = RocketChat.models.Rooms.findOneByIdOrName(idOrName) || {};
+
+		if (!rid || type !== 'p') {
 			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
-		const user = this.getUserFromParams();
+		const { username } = this.getUserFromParams();
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addUserToRoom', { rid: findResult._id, username: user.username });
-		});
+		Meteor.runAsUser(this.userId, () => Meteor.call('addUserToRoom', { rid, username }));
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
