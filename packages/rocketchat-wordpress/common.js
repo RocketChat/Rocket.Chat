@@ -46,10 +46,10 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 			}
 			break;
 		case 'wordpress-com':
-			config.identityPath = '/rest/v1/me';
+			config.identityPath = 'https://public-api.wordpress.com/rest/v1/me';
 			config.identityTokenSentVia = 'header';
-			config.authorizePath = '/oauth2/authorize';
-			config.tokenPath = '/oauth2/token';
+			config.authorizePath = 'https://public-api.wordpress.com/oauth2/authorize';
+			config.tokenPath = 'https://public-api.wordpress.com/oauth2/token';
 			config.scope = 'auth';
 			break;
 		default:
