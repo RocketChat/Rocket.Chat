@@ -111,7 +111,14 @@ Template.userInfo.helpers({
 	userTime() {
 		const user = Template.instance().user.get();
 		if (user && user.utcOffset != null) {
-			return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'));
+			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+				case 1:
+					return Template.instance().now.get().utcOffset(user.utcOffset).format('h:mm A');
+				case 2:
+					return Template.instance().now.get().utcOffset(user.utcOffset).format('H:mm');
+				default:
+					return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'));
+			}
 		}
 	},
 

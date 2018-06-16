@@ -23,7 +23,14 @@ Template.snippetPage.helpers({
 	time() {
 		const snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
-			return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+				case 1:
+					return moment(snippet.ts).format('h:mm A');
+				case 2:
+					return moment(snippet.ts).format('H:mm');
+				default:
+					return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+			}
 		}
 	}
 });

@@ -100,7 +100,14 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	time() {
-		return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
+		switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+			case 1:
+				return moment(this.created).format('h:mm A');
+			case 2:
+				return moment(this.created).format('H:mm');
+			default:
+				return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
+		}
 	},
 	date() {
 		return moment(this.created).format(RocketChat.settings.get('Message_DateFormat'));

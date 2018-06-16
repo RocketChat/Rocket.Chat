@@ -144,6 +144,19 @@
 									<label><input type="radio" name="unreadAlert" value="false" checked="{{checked 'unreadAlert' false}}"/> {{_ "Off"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="clockMode">
+								<label>{{_ "Message_TimeFormat"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="clockMode">
+											<option value="0" selected="{{selected 'clockMode' 0}}">{{_ "Default"}}</option>
+											<option value="1" selected="{{selected 'clockMode' 1}}">{{_ "12_Hour"}}</option>
+											<option value="2" selected="{{selected 'clockMode' 2}}">{{_ "24_Hour"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+								</div>
+							</div>
 							<div class="input-line double-col">
 								<label>{{_ "Use_Emojis"}}</label>
 								<div>

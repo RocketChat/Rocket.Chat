@@ -50,9 +50,23 @@ Template.messageAttachment.helpers({
 		const messageDate = new Date(this.ts);
 		const today = new Date();
 		if (messageDate.toDateString() === today.toDateString()) {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+				case 1:
+					return moment(this.ts).format('h:mm A');
+				case 2:
+					return moment(this.ts).format('H:mm');
+				default:
+					return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+			}
 		} else {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'));
+			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+				case 1:
+					return moment(this.ts).format('MMMM D, Y h:mm A');
+				case 2:
+					return moment(this.ts).format('MMMM D, Y H:mm');
+				default:
+					return moment(this.ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'));
+			}
 		}
 	},
 	injectIndex(data, previousIndex, index) {

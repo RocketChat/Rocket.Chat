@@ -98,7 +98,14 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+			case 1:
+				return moment(this.ts).format('h:mm A');
+			case 2:
+				return moment(this.ts).format('H:mm');
+			default:
+				return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		}
 	},
 	date() {
 		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
@@ -139,7 +146,14 @@ Template.message.helpers({
 	},
 	editTime() {
 		if (Template.instance().wasEdited) {
-			return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+				case 1:
+					return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } h:mm A`);
+				case 2:
+					return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } H:mm`);
+				default:
+					return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			}
 		}
 	},
 	editedBy() {

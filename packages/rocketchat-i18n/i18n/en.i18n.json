@@ -1,7 +1,9 @@
 {
   "#channel": "#channel",
   "0_Errors_Only": "0 - Errors Only",
+  "12_Hour": "12-hour clock",
   "1_Errors_and_Information": "1 - Errors and Information",
+  "24_Hour": "24-hour clock",
   "2_Erros_Information_and_Debug": "2 - Errors, Information and Debug",
   "403": "Forbidden",
   "500": "Internal Server Error",

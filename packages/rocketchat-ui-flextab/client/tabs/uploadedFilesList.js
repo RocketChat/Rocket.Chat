@@ -63,7 +63,14 @@ Template.uploadedFilesList.helpers({
 		}
 	},
 	format(timestamp) {
-		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+		switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
+			case 1:
+				return moment(timestamp).format('MMMM D, Y h:mm A');
+			case 2:
+				return moment(timestamp).format('MMMM D, Y H:mm');
+			default:
+				return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+		}
 	},
 	files() {
 		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
