@@ -14745,5 +14745,63 @@
         "ggazzo"
       ]
     }
+  ],
+  "0.65.2": [
+    {
+      "pr": "11049",
+      "title": "[FIX] flex-tab icons missing",
+      "userLogin": "ggazzo",
+      "milestone": "0.66.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "11129",
+      "title": "[FIX] Users model was not receiving options",
+      "userLogin": "sampaiodiego",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10998",
+      "title": "[FIX] Preview of large images not resizing to fit the area and having scrollbars",
+      "userLogin": "vynmera",
+      "milestone": "0.66.0",
+      "contributors": [
+        "vynmera",
+        "web-flow"
+      ]
+    },
+    {
+      "pr": "11152",
+      "title": "[FIX] Wordpress OAuth not providing enough info to log in ",
+      "userLogin": "Hudell",
+      "contributors": [
+        "Hudell",
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "10134",
+      "title": "[FIX] Fix spelling of \"collaborative\"",
+      "userLogin": "stuartpb",
+      "contributors": [
+        "stuartpb",
+        "web-flow",
+        "engelgabriel"
+      ]
+    },
+    {
+      "pr": "9534",
+      "title": "[FIX] i18n - add semantic markup",
+      "userLogin": "brylie",
+      "contributors": [
+        "brylie",
+        "web-flow",
+        "engelgabriel"
+      ]
+    }
   ]
 }
