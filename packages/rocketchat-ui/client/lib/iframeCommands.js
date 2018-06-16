@@ -54,9 +54,9 @@ const commands = {
 		});
 	},
 
-	'set-toolbar-button'({ id, icon, label }) {
+	'set-toolbar-button'({ id, icon, label: i18nTitle }) {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		toolbar.buttons[id] = { icon, label };
+		toolbar.buttons[id] = { icon, i18nTitle };
 		Session.set('toolbarButtons', toolbar);
 	},
 

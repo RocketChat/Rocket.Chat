@@ -348,16 +348,24 @@ RocketChat.API.v1.addRoute('groups.info', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('groups.invite', { authRequired: true }, {
 	post() {
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+		const { roomId = '', roomName = '' } = this.requestParams();
+		const idOrName = roomId || roomName;
+		if (!idOrName.trim()) {
+			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		}
 
-		const user = this.getUserFromParams();
+		const { _id: rid, t: type } = RocketChat.models.Rooms.findOneByIdOrName(idOrName) || {};
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addUserToRoom', { rid: findResult.rid, username: user.username });
-		});
+		if (!rid || type !== 'p') {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		const { username } = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('addUserToRoom', { rid, username }));
 
 		return RocketChat.API.v1.success({
-			group: RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			group: RocketChat.models.Rooms.findOneById(rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
 		});
 	}
 });
@@ -449,6 +457,11 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		if (findResult._room.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 

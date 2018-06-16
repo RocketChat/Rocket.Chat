@@ -5,7 +5,6 @@ const logger = new Logger('API', {});
 class API extends Restivus {
 	constructor(properties) {
 		super(properties);
-		this.logger = new Logger(`API ${ properties.version ? properties.version : 'default' } Logger`, {});
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -159,12 +158,12 @@ class API extends Restivus {
 							entrypoint: route
 						});
 
-						this.logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+						logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 						let result;
 						try {
 							result = originalAction.apply(this);
 						} catch (e) {
-							this.logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+							logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 							result = RocketChat.API.v1.failure(e.message, e.error);
 						}
 
@@ -188,7 +187,7 @@ class API extends Restivus {
 					}
 
 					//Allow the endpoints to make usage of the logger which respects the user's settings
-					endpoints[method].logger = this.logger;
+					endpoints[method].logger = logger;
 				});
 			}
 
