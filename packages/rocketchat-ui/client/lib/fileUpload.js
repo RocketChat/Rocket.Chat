@@ -1,6 +1,5 @@
 /* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
 /* exported fileUpload */
-import _ from 'underscore';
 import s from 'underscore.string';
 
 const readAsDataURL = (file, callback) => {
@@ -74,19 +73,6 @@ const getImageUploadPreview = (file, preview) => `\
 	</div>
 </div>`;
 
-const getGenericUploadPreview = (file, preview) => `\
-<div class='upload-preview'>
-<div>${ Handlebars._escape(file.name) } - ${ formatBytes(file.file.size) }</div>
-</div>
-<div class='upload-preview-title'>
-<div class="rc-input__wrapper">
-<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-</div>
-<div class="rc-input__wrapper">
-<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-</div>
-</div>`;
-
 const formatBytes = (bytes, decimals) => {
 	if (bytes === 0) {
 		return '0 Bytes';
@@ -108,6 +94,19 @@ const formatBytes = (bytes, decimals) => {
 
 	return `${ parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) } ${ sizes[i] }`;
 };
+
+const getGenericUploadPreview = (file) => `\
+<div class='upload-preview'>
+<div>${ Handlebars._escape(file.name) } - ${ formatBytes(file.file.size) }</div>
+</div>
+<div class='upload-preview-title'>
+<div class="rc-input__wrapper">
+<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+</div>
+<div class="rc-input__wrapper">
+<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+</div>
+</div>`;
 
 const getUploadPreview = (file, preview) => {
 	if (file.type === 'audio') {
@@ -194,7 +193,7 @@ fileUpload = (files) => {
 
 				upload.onProgress = (progress) => {
 					const uploads = Session.get('uploading') || [];
-					uploads.filter(u => u.id === upload.id).forEach(u =>  {
+					uploads.filter(u => u.id === upload.id).forEach(u => {
 						u.percentage = Math.round(progress * 100) || 0;
 					});
 					Session.set('uploading', uploads);
@@ -203,7 +202,7 @@ fileUpload = (files) => {
 				upload.start((error, file, storage) => {
 					if (error) {
 						const uploads = Session.get('uploading') || [];
-						uploads.filter(u => u.id === upload.id).forEach(u =>  {
+						uploads.filter(u => u.id === upload.id).forEach(u => {
 							u.error = error.message;
 							u.percentage = 0;
 						});
