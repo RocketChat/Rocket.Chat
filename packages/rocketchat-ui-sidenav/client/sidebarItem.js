@@ -180,7 +180,16 @@ Template.sidebarItem.events({
 
 Template.sidebarItemStatus.helpers({
 	statusClass() {
-		const instance = Template.instance();
-		return instance.data.t === 'd' ? Session.get(`user_${ instance.data.username }_status`) || 'offline' : instance.data.t === 'l' ? RocketChat.roomTypes.getUserStatus('l', instance.data.rid) || 'offline' : false;
+		const itemData = Template.instance().data;
+
+		if (itemData.t === 'd') {
+			return Session.get(`user_${ itemData.username }_status`) || 'offline';
+		}
+
+		if (itemData.t === 'l') {
+			return RocketChat.roomTypes.getUserStatus('l', itemData.rid) || 'offline';
+		}
+
+		return false;
 	}
 });
