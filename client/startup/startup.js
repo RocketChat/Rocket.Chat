@@ -90,7 +90,6 @@ Meteor.startup(function() {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
 				status: 1,
-				language: 1,
 				'settings.preferences.idleTimeLimit': 1,
 				'settings.preferences.enableAutoAway': 1
 			}
@@ -98,12 +97,6 @@ Meteor.startup(function() {
 
 		if (!user) {
 			return;
-		}
-
-		const userLanguage = user.language ? user.language : window.defaultUserLanguage();
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
-			window.setLanguage(userLanguage);
 		}
 
 		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
@@ -119,6 +112,30 @@ Meteor.startup(function() {
 		if (user.status !== status) {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
+		}
+	});
+
+	Tracker.autorun(() => {
+		if (!Meteor.userId()) {
+			return;
+		}
+
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				language: 1
+			}
+		});
+
+		if (!(user && user.language)) {
+			return;
+		}
+
+		window.setLanguage(user.language);
+
+		const userLanguage = user.language ? user.language : window.defaultUserLanguage();
+		if (localStorage.getItem('userLanguage') !== userLanguage) {
+			localStorage.setItem('userLanguage', userLanguage);
+			//window.setLanguage(userLanguage);
 		}
 	});
 });
