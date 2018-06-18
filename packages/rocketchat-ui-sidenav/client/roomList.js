@@ -124,7 +124,7 @@ const mergeSubRoom = (record/*, t*/) => {
 
 RocketChat.callbacks.add('cachedCollection-received-rooms', (room) => {
 	const sub = RocketChat.models.Subscriptions.findOne({ rid: room._id });
-	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room, sub.name)};
+	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room, sub && sub.name)};
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
 });
 
