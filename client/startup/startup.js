@@ -17,8 +17,6 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-
-
 	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
@@ -26,7 +24,7 @@ Meteor.startup(function() {
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
-	const defaultAppLanguage = function() {
+	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
 		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
 		const re = /([a-z]{2}-)([a-z]{2})/;
@@ -38,9 +36,7 @@ Meteor.startup(function() {
 		return lng;
 	};
 
-	window.defaultUserLanguage = function() {
-		return RocketChat.settings.get('Language') || defaultAppLanguage();
-	};
+	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || defaultAppLanguage();
 
 	const availableLanguages = TAPi18n.getLanguages();
 	const loadedLanguages = [];
