@@ -122,6 +122,16 @@ const mountPopover = (e, i, outerContext) => {
 	popover.open(config);
 };
 
+const wipeFailedUploads = () => {
+	const uploads = Session.get('uploading');
+
+	if (uploads) {
+		Session.set('uploading', uploads.filter(upload => !upload.error));
+	}
+};
+
+RocketChat.callbacks.add('enter-room', wipeFailedUploads);
+
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -283,7 +293,12 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) { return 'show'; }
+		const hasUnreadData = unreadData && (unreadData.count && unreadData.since);
+		const isUploading = uploading && uploading.length;
+
+		if (hasUnreadData || isUploading) {
+			return 'show';
+		}
 	},
 
 	formatUnreadSince() {
