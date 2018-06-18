@@ -66,18 +66,15 @@
 		flex-grow: 1;
 	}
 
-	&-name {
+	&-name,
+	&-username {
 		font-size: 1rem;
-		white-space: nowrap;
 		overflow: hidden;
 
 		white-space: nowrap;
 
 		text-overflow: ellipsis;
 
-		& .rc-icon {
-			font-size: 1rem;
-		}
 	}
 
 	&-creator {

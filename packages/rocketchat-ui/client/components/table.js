@@ -5,8 +5,10 @@ Template.table.onRendered(function() {
 	this.$('tbody').prepend(dummyTr).append(dummyTr);
 
 	const onResize = this.data.onResize;
-	onResize();
-	$(window).on('resize', onResize);
+	if (onResize) {
+		onResize();
+		$(window).on('resize', onResize);
+	}
 });
 
 Template.table.events({

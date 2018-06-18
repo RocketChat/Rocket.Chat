@@ -170,7 +170,7 @@ Template.directory.onRendered(function() {
 			this.end.set(!result);
 
 			if (!Array.isArray(result)) {
-				return;
+				result = [];
 			}
 
 			if (this.page.get() > 0) {

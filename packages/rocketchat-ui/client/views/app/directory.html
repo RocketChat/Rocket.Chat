@@ -37,9 +37,6 @@
 												{{>icon icon="hashtag"}}
 												{{name}}
 											</span>
-											{{#if description}}
-												<span class="rc-directory-channel-description">{{description}}</span>
-											{{/if}}
 										</div>
 									</div>
 								</td>
@@ -58,14 +55,14 @@
 				{{/table}}
 			{{/if}}
 			{{#if $eq searchType 'users'}}
-				{{#table onItemClick=onTableItemClick}}
+				{{#table onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
-								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name') }}</div>
+								<div class="table-fake-th">{{_ "Username"}} {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
-								<div class="table-fake-th">{{_ "Username"}} {{> icon icon=(sortIcon 'username') }}</div>
+								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name') }}</div>
 							</th>
 							<th class="js-sort rc-directory-td--createdAt {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
@@ -80,7 +77,8 @@
 										<div class="rc-directory-channel-avatar">{{> avatar username=username}}</div>
 										<div class="rc-directory-channel-info">
 											<span class="rc-directory-channel-username">
-												{{>icon icon="at"}}{{username}}
+												{{>icon icon="at"}}
+												{{username}}
 											</span>
 										</div>
 									</div>
