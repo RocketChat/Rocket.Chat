@@ -1,3 +1,5 @@
+/* globals toolbarSearch */
+
 import _ from 'underscore';
 
 const keys = {
@@ -49,13 +51,15 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 				return;
 			}
 
-			if (!preview || !Array.isArray(preview.items) || preview.items.length === 0) {
-				// TODO: Display no results found
-				template.open.set(false);
-				return;
+			if (!preview || !Array.isArray(preview.items)) {
+				template.preview.set({
+					i18nTitle: 'No_results_found_for',
+					items: []
+				});
+			} else {
+				template.preview.set(preview);
 			}
 
-			template.preview.set(preview);
 			template.commandName.set(command);
 			template.commandArgs.set(params);
 			template.isLoading.set(false);
@@ -105,33 +109,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 		template.commandArgs.set('');
 	};
 
-	template.verifySelection = () => {
-		const current = template.find('.popup-item.selected');
-
-		if (!current) {
-			const first = template.find('.popup-item');
-
-			if (first) {
-				first.className += ' selected sidebar-item__popup-active';
-			}
-		}
-	};
-
-	// Typing data
-	template.onInputKeyup = (event) => {
-		if (template.open.curValue === true && event.which === keys.ESC) {
-			template.open.set(false);
-			$('.toolbar').css('display', 'none');
-			event.preventDefault();
-			event.stopPropagation();
-			return;
-		}
-
-		if (event.which === keys.ARROW_UP || event.which === keys.ARROW_DOWN) {
-			// Arrow up and down are for navigating the choices
-			return;
-		}
-
+	template.selectionLogic = () => {
 		const inputValueAtCursor = template.inputBox.value.substr(0, getCursorPosition(template.inputBox));
 
 		if (!template.matchSelectorRegex.test(inputValueAtCursor)) {
@@ -172,6 +150,36 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 
 		// Fetch and display them
 		template.fetchPreviews(cmd, args);
+	};
+
+	template.verifySelection = () => {
+		const current = template.find('.popup-item.selected');
+
+		if (!current) {
+			const first = template.find('.popup-item');
+
+			if (first) {
+				first.className += ' selected sidebar-item__popup-active';
+			}
+		}
+	};
+
+	// Typing data
+	template.onInputKeyup = (event) => {
+		if (template.open.curValue === true && event.which === keys.ESC) {
+			template.open.set(false);
+			$('.toolbar').css('display', 'none');
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
+
+		if (event.which === keys.ARROW_UP || event.which === keys.ARROW_DOWN) {
+			// Arrow up and down are for navigating the choices
+			return;
+		}
+
+		template.selectionLogic();
 	};
 
 	// Using the keyboard to navigate the options
@@ -220,6 +228,23 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			next.className += ' selected sidebar-item__popup-active';
 		}
 	};
+
+	template.onFocus = () => {
+		template.clickingItem = false;
+		if (template.open.curValue) {
+			return;
+		}
+
+		template.selectionLogic();
+	};
+
+	template.onBlur = () => {
+		if (template.clickingItem) {
+			return;
+		}
+
+		return template.open.set(false);
+	};
 });
 
 Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashCommandPreviewRendered() {
@@ -230,11 +255,46 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	this.inputBox = this.data.getInput();
 	$(this.inputBox).on('keyup', this.onInputKeyup.bind(this));
 	$(this.inputBox).on('keydown', this.onInputKeydown.bind(this));
+	$(this.inputBox).on('focus', this.onFocus.bind(this));
+	$(this.inputBox).on('blur', this.onBlur.bind(this));
+
+	const self = this;
+	self.autorun(() => {
+		setTimeout(self.selectionLogic, 500);
+	});
 });
 
 Template.messagePopupSlashCommandPreview.onDestroyed(function() {
 	$(this.inputBox).off('keyup', this.onInputKeyup);
 	$(this.inputBox).off('keydown', this.onInputKeydown);
+	$(this.inputBox).off('focus', this.onFocus);
+	$(this.inputBox).off('blur', this.onBlur);
+});
+
+Template.messagePopupSlashCommandPreview.events({
+	'mouseenter .popup-item'(e) {
+		if (e.currentTarget.className.includes('selected')) {
+			return;
+		}
+
+		const template = Template.instance();
+		const current = template.find('.popup-item.selected');
+		if (current) {
+			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
+		}
+
+		e.currentTarget.className += ' selected sidebar-item__popup-active';
+	},
+	'mousedown .popup-item, touchstart .popup-item'() {
+		const template = Template.instance();
+		template.clickingItem = true;
+	},
+	'mouseup .popup-item, touchend .popup-item'() {
+		const template = Template.instance();
+		template.clickingItem = false;
+		template.enterKeyAction();
+		toolbarSearch.clear();
+	}
 });
 
 Template.messagePopupSlashCommandPreview.helpers({

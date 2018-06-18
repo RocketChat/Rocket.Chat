@@ -396,7 +396,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
 				action: 'Managing_assets'
 			});
@@ -414,7 +414,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
 				action: 'Managing_assets'
 			});
@@ -432,7 +432,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
 				action: 'Managing_assets'
 			});
