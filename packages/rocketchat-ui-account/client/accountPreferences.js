@@ -37,22 +37,21 @@ Template.accountPreferences.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.keys(languages).map((key) => {
-			const language = languages[key];
-			return _.extend(language, { key });
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
+
+		result.unshift({
+			'name': 'Default',
+			'en': 'Default',
+			'key': ''
 		});
 
-		return _.sortBy(result, 'key');
-	},
-	userLanguage(key) {
-		const user = Meteor.user();
-		let result = undefined;
-		if (user.language) {
-			result = user.language === key;
-		} else if (defaultUserLanguage()) {
-			result = defaultUserLanguage() === key;
-		}
 		return result;
+	},
+	isUserLanguage(key) {
+		const languageKey = Meteor.user().language;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	checked(property, value, defaultValue=undefined) {
 		return checkedSelected(property, value, defaultValue);

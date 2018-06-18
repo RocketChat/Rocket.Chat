@@ -17,7 +17,7 @@
 								<div class="rc-select">
 									<select id="language" class="required rc-select__element">
 										{{#each languages}}
-											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+											<option value="{{key}}" selected="{{isUserLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
 									</select>
 									{{> icon block="rc-select__arrow" icon="arrow-down" }}
