@@ -111,7 +111,7 @@
 		overflow: hidden;
 		flex: 1;
 
-		margin: 0 -4px;
+		margin: 0 -2px;
 
 		color: inherit;
 
@@ -190,7 +190,7 @@
 
 		height: 20px;
 
-		margin: 0 4px;
+		margin: 0 2px;
 
 		color: var(--sidebar-item-unread-color);
 		border-radius: var(--sidebar-item-radius);
@@ -230,6 +230,7 @@
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		margin: 0 2px;
 	}
 
 	&__name {
