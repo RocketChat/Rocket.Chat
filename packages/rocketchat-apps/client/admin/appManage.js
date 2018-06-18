@@ -295,11 +295,14 @@ Template.appManage.events({
 		}
 
 		const setting = t.settings.get()[this.id];
-		setting.value = value;
 
-		if (setting.oldValue !== setting.value) {
-			t.settings.get()[this.id].hasChanged = true;
-			t.settings.set(t.settings.get());
+		if (setting) {
+			setting.value = value;
+
+			if (setting.oldValue !== setting.value) {
+				t.settings.get()[this.id].hasChanged = true;
+				t.settings.set(t.settings.get());
+			}
 		}
 	}, 500)
 });
