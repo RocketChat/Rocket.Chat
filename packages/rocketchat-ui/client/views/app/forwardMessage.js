@@ -35,7 +35,17 @@ Template.forwardMessage.helpers({
 });
 
 Template.forwardMessage.onCreated(function() {
-	this.data.message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
+	const message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
+	this.data.message = message;
+	this.data.attachment = {
+		'text' : message.msg,
+		'translations': message.translations,
+		'author_name' : message.alias || message.u.username,
+		'author_icon' : getAvatarUrlFromUsername(message.u.username),
+		'message_link' : message.url,
+		'attachments' : message.attachments || [],
+		'ts': message.ts.toISOString()
+	};
 	this.forwardRoomsList = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 });
@@ -75,7 +85,7 @@ Template.forwardMessage.events({
 				Meteor.call('sendMessage', {
 					_id: Random.id(),
 					rid: room._id,
-					msg: instance.data.message.msg
+					attachments: [instance.data.attachment]
 				});
 			});
 
