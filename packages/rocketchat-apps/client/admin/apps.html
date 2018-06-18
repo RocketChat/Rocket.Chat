@@ -48,11 +48,20 @@
 									</div>
 								</td>
 								<td class="rc-table-td rc-table-td--users">{{category}}</td>
-								<td class="rc-table-td rc-table-td--description">{{description}}</td>
-								<td class="rc-table-td">
-									<button class="rc-button rc-button--nude rc-tooltip" aria-label="{{_ "Manage_the_App"}}">
-										{{> icon icon="menu"}}
-									</button>								</td>
+								<td class="rc-table-td rc-table-td--description">
+									<p>
+										<!-- {{#if summary}}
+											{{summary}}
+										{{else}} -->
+											{{description}}
+										<!-- {{/if}} -->
+									</p>
+									<span>
+										<!-- {{#if summary}} -->
+												{{description}}
+										<!-- {{/if}} -->
+									</span>
+								</td>
 								<td class="rc-table-td">
 									{{#if isActive status}}
 

@@ -30,8 +30,14 @@
 		width: 45px;
 		height: 45px;
 	}
-	.rc-directory-channel-info {
+	.rc-directory-channel-name {
 		font-weight: 600;
+	}
+	.rc-table-td--description {
+		color: var(--color-dark-medium);
+	}
+	.rc-table-td--description p {
+		font-weight: 500;
 	}
 	.rc-directory-content {
 		padding: 0;

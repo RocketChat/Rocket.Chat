@@ -26,6 +26,11 @@
 			font-size: 1.375rem;
 		}
 	}
+
+	.rc-table-td {
+		padding: 0.250rem 0;
+		font-size: 0.875rem;
+	}
 }
 
 .rc-directory-channel {
@@ -68,7 +73,6 @@
 
 	&-name,
 	&-username {
-		font-size: 1rem;
 		overflow: hidden;
 
 		white-space: nowrap;
@@ -82,6 +86,7 @@
 		color: var(--rc-color-primary-light);
 		overflow: hidden;
 		text-overflow: ellipsis;
+		font-weight: 500;
 	}
 
 	&-createdAt {
@@ -119,9 +124,7 @@
 		}
 	}
 }
-.rc-table-td {
-	padding: 0.250rem 0;
-}
+
 
 .rc-table-body .rc-table-tr {
 	box-shadow: none;
