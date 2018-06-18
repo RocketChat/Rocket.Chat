@@ -391,6 +391,8 @@ Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
+* [NodeJS v8.9.3](https://nodejs.org/download/release/v8.9.3/) - Version is important!
+* [Python v2.7](https://www.python.org/downloads/release/python-270/) - Version is important!
 
 Now just clone and start the app:
 
