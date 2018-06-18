@@ -18,14 +18,22 @@ Template.sidebarItem.helpers({
 	lastMessageTs() {
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
-	colorStyle() {
-		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
-	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
+	},
+	status() {
+		if (this.t === 'd') {
+			return Session.get(`user_${ this.username }_status`) || 'offline';
+		}
+
+		if (this.t === 'l') {
+			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
+
+		return false;
 	}
 });
 
@@ -175,21 +183,5 @@ Template.sidebarItem.events({
 		};
 
 		popover.open(config);
-	}
-});
-
-Template.sidebarItemStatus.helpers({
-	statusClass() {
-		const itemData = Template.instance().data;
-
-		if (itemData.t === 'd') {
-			return Session.get(`user_${ itemData.username }_status`) || 'offline';
-		}
-
-		if (itemData.t === 'l') {
-			return RocketChat.roomTypes.getUserStatus('l', itemData.rid) || 'offline';
-		}
-
-		return false;
 	}
 });

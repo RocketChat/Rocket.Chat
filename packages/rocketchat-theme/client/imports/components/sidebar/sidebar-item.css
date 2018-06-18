@@ -125,11 +125,29 @@
 		font-size: 1rem;
 		align-items: center;
 		fill: currentColor;
+
+		&-status {
+			&--online {
+				color: var(--status-online);
+			}
+
+			&--away {
+				color: var(--status-away);
+			}
+
+			&--busy {
+				color: var(--status-busy);
+			}
+
+			&--offline {
+				color: var(--status-invisible-sidebar);
+			}
+		}
 	}
 
 	&__room-type {
 		display: flex;
-		color: currentColor;
+		fill: currentColor;
 
 		font-size: 0.6rem;
 	}
