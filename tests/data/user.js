@@ -14,6 +14,7 @@ export const preferences = {
 		convertAsciiEmoji: true,
 		saveMobileBandwidth: true,
 		collapseMediaByDefault: false,
+		statusViewMode: 0,
 		autoImageLoad: true,
 		emailNotificationMode: 'mentions',
 		unreadAlert: true,

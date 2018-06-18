@@ -325,6 +325,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				convertAsciiEmoji: Match.Maybe(Boolean),
 				saveMobileBandwidth: Match.Maybe(Boolean),
 				collapseMediaByDefault: Match.Maybe(Boolean),
+				statusViewMode: Match.Maybe(Number),
 				autoImageLoad: Match.Maybe(Boolean),
 				emailNotificationMode: Match.Maybe(String),
 				unreadAlert: Match.Maybe(Boolean),

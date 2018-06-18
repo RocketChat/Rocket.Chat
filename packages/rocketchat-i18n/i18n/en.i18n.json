@@ -2304,6 +2304,8 @@
   "Stats_Total_Rooms": "Total Rooms",
   "Stats_Total_Users": "Total Users",
   "Status": "Status",
+  "Status_view_mode": "Status message view mode",
+  "Status_view_mode_info": "This changes the way status messages (such as joins) are displayed.",
   "Step": "Step",
   "Stop_Recording": "Stop Recording",
   "Store_Last_Message": "Store Last Message",

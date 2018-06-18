@@ -8,6 +8,7 @@ Meteor.methods({
 			convertAsciiEmoji: Match.Optional(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),
 			collapseMediaByDefault: Match.Optional(Boolean),
+			statusViewMode: Match.Optional(Number),
 			autoImageLoad: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),

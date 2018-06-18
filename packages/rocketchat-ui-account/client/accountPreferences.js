@@ -146,6 +146,7 @@ Template.accountPreferences.onCreated(function() {
 		data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
 		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
 		data.collapseMediaByDefault = JSON.parse($('input[name=collapseMediaByDefault]:checked').val());
+		data.statusViewMode = parseInt($('#statusViewMode').find('select').val());
 		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
 		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
 		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());

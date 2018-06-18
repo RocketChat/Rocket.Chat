@@ -179,6 +179,19 @@
 									<label><input type="radio" name="collapseMediaByDefault" value="false" checked="{{checked 'collapseMediaByDefault' false}}" /> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="statusViewMode">
+								<label>{{_ "Status_view_mode"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="statusViewMode">
+											<option value="0" selected="{{selected 'statusViewMode' 0}}">{{_ "Collapsed"}}</option>
+											<option value="1" selected="{{selected 'statusViewMode' 1}}">{{_ "Full"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+									<div class="info">{{_ "Status_view_mode_info"}}</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="hideUsernames">
 								<label>{{_ "Hide_usernames"}}</label>
 								<div>

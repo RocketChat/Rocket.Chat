@@ -311,6 +311,11 @@ Template.message.helpers({
 	},
 	isSnippet() {
 		return this.actionContext === 'snippeted';
+	},
+	small() {
+		if (RocketChat.MessageTypes.isSystemMessage(this) && (RocketChat.getUserPreference(Meteor.user(), 'statusViewMode', 0) === 0)) {
+			return 'small';
+		}
 	}
 });
 

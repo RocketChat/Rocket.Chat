@@ -94,6 +94,39 @@
 			left: 0;
 		}
 	}
+
+	&.small {
+		padding: 2px 50px 2px 70px;
+		min-height: 25px;
+
+		& .thumb {
+			width: 20px;
+			height: 20px;
+			margin-left: 16px;
+			top: 3px;
+
+			& .avatar {
+				width: 20px !important;
+				height: 20px !important;
+			}
+		}
+
+		& .body {
+			display: inline-block;
+			margin-left: -1px;
+		}
+
+		& .time {
+			font-size: 12px;
+			margin-left: 4px;
+		}
+	}
+}
+
+.compact .message.small {
+	& .thumb {
+		margin-left: 0;
+	}
 }
 
 .messages-box .rc-popover__list {
