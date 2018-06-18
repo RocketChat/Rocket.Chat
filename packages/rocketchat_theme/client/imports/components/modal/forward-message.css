@@ -13,7 +13,9 @@
 
 	&__title {
 		padding: 0.25rem 0;
+
 		color: var(--create-channel-title-color);
+
 		font-size: var(--create-channel-title-text-size);
 	}
 
@@ -28,6 +30,17 @@
 	&__content {
 		overflow-x: hidden;
 		overflow-y: auto;
+	}
+
+	&__recipients {
+		margin-top: 40px;
+
+		.-autocomplete-container {
+			left: 0;
+
+			width: inherit;
+			margin-top: 40px;
+		}
 	}
 }
 

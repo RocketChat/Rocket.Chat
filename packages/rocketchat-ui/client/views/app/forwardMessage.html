@@ -7,13 +7,15 @@
 		<form class="forward-message__content">
 			{{#nrr nrrargs 'messageAttachment' attachment}}{{/nrr}}
 
-			<label>{{_ "Choose_a_room"}}</label><br>
-			<div class="rc-tags">
-				{{#each room in selected}}
-					{{> nameTag room}}
-				{{/each}}
+			<div class="forward-message__recipients">
+				<label>{{_ "Choose_a_room"}}</label><br>
+				<div class="rc-tags">
+					{{#each room in selected}}
+						{{> nameTag room}}
+					{{/each}}
 
-				{{> inputAutocomplete settings=autocompleteChannelSettings name="recipients" class="search rc-tags__input" placeholder=(_ "Forward_recipients_placeholder") autocomplete="off"}}
+					{{> inputAutocomplete settings=autocompleteChannelSettings name="recipients" class="search rc-tags__input" placeholder=(_ "Forward_recipients_placeholder") autocomplete="off"}}
+				</div>
 			</div>
 
 			<input class="rc-button rc-button--primary" type="submit" data-button="forward" value="{{_ "Forward"}}" {{forwardDisabled}}>
