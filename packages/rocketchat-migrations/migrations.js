@@ -15,15 +15,16 @@ import moment from 'moment';
 
 	The ordering of migrations is determined by the version you set.
 
-	To run the migrations, set the MIGRATE environment variable to either
+	To run the migrations, set the MIGRATION_VERSION environment variable to either
 	'latest' or the version number you want to migrate to. Optionally, append
 	',exit' if you want the migrations to exit the meteor process, e.g if you're
 	migrating from a script (remember to pass the --once parameter).
 
 	e.g:
-	MIGRATE="latest" mrt # ensure we'll be at the latest version and run the app
-	MIGRATE="latest,exit" mrt --once # ensure we'll be at the latest version and exit
-	MIGRATE="2,exit" mrt --once # migrate to version 2 and exit
+	MIGRATION_VERSION="latest" mrt # ensure we'll be at the latest version and run the app
+	MIGRATION_VERSION="latest,exit" mrt --once # ensure we'll be at the latest version and exit
+	MIGRATION_VERSION="2,exit" mrt --once # migrate to version 2 and exit
+	MIGRATION_VERSION="2,rerun,exit" mrt --once # rerun migration script for version 2 and exit
 
 	Note: Migrations will lock ensuring only 1 app can be migrating at once. If
 	a migration crashes, the control record in the migrations collection will
@@ -162,12 +163,12 @@ Migrations.migrateTo = function(command) {
 	if (_.isUndefined(command) || command === '' || this._list.length === 0) { throw new Error(`Cannot migrate using invalid command: ${ command }`); }
 
 	let version;
-	let subcommand;
+	let subcommands;
 	if (typeof command === 'number') {
 		version = command;
 	} else {
 		version = command.split(',')[0];
-		subcommand = command.split(',')[1];
+		subcommands = command.split(',').slice(1);
 	}
 
 	const maxAttempts = Migrations.options.maxAttempts;
@@ -177,7 +178,7 @@ Migrations.migrateTo = function(command) {
 		if (version === 'latest') {
 			migrated = this._migrateTo(_.last(this._list).version);
 		} else {
-			migrated = this._migrateTo(parseInt(version), (subcommand === 'rerun'));
+			migrated = this._migrateTo(parseInt(version), (subcommands.includes('rerun')));
 		}
 		if (migrated) {
 			break;
@@ -214,7 +215,7 @@ Migrations.migrateTo = function(command) {
 	}
 
 	// remember to run meteor with --once otherwise it will restart
-	if (subcommand === 'exit') { process.exit(0); }
+	if (subcommands.includes('exit')) { process.exit(0); }
 };
 
 // just returns the current version
