@@ -5,7 +5,7 @@
 		</header>
 
 		<form class="forward-message__content">
-			{{> messagePreview message}}
+			{{#nrr nrrargs 'messageAttachment' attachment}}{{/nrr}}
 
 			<label>{{_ "Choose_a_room"}}</label><br>
 			<div class="rc-tags">
