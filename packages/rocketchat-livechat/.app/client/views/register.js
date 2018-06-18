@@ -11,7 +11,7 @@ Template.register.helpers({
 		return '';
 	},
 	showDepartments() {
-		return Department.find({ showOnRegistration: true }).count() > 1;
+		return Department.find({ showOnRegistration: true }).count() > 0;
 	},
 	departments() {
 		return Department.find({ showOnRegistration: true });
@@ -27,7 +27,7 @@ Template.register.helpers({
 	},
 	showEmailFieldRegisterForm() {
 		return Livechat.emailFieldRegistrationForm;
-	}	
+	}
 });
 
 Template.register.events({
@@ -41,10 +41,11 @@ Template.register.events({
 			}
 		};
 		const form = e.currentTarget;
-		
+
 		const fields = [];
 		let name;
 		let email;
+		let department;
 
 		if (Livechat.nameFieldRegistrationForm) {
 			fields.push('name');
@@ -56,22 +57,19 @@ Template.register.events({
 			email = instance.$('input[name=email]').val();
 		}
 
+		if (Department.find({ showOnRegistration: true }).count() > 0) {
+			fields.push('department');
+			department = instance.$('select[name=department]').val();
+		}
+
 		if (!instance.validateForm(form, fields)) {
 			return instance.showError(TAPi18n.__('You_must_complete_all_fields'));
 		} else {
-			let departmentId = instance.$('select[name=department]').val();
-			if (!departmentId) {
-				const department = Department.findOne({ showOnRegistration: true });
-				if (department) {
-					departmentId = department._id;
-				}
-			}
-
 			const guest = {
 				token: visitor.getToken(),
 				name,
 				email,
-				department: Livechat.department || departmentId
+				department: department || Livechat.department
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
@@ -105,7 +103,7 @@ Template.register.onCreated(function() {
 
 		return valid;
 	};
-	
+
 	this.showError = (msg) => {
 		$('.error').addClass('show');
 		this.error.set(msg);

@@ -111,6 +111,21 @@ RocketChat.Livechat = {
 
 		return { room, newRoom };
 	},
+	getOnline() {
+		const departments = [];
+		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
+			departments.push(department._id);
+		});
+
+		if (departments.length === 0) {
+			return RocketChat.models.Users.findOnlineAgents().count() > 0;
+		}
+
+		return departments.some((deptId) => {
+			const onlineAgents = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(deptId);
+			return onlineAgents.count() > 0;
+		});
+	},
 	sendMessage({ guest, message, roomInfo, agent }) {
 		const { room, newRoom } = this.getRoom(guest, message, roomInfo, agent);
 		if (guest.name) {
@@ -120,8 +135,19 @@ RocketChat.Livechat = {
 		// return messages;
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
+	allowRegisterWithoutAgents() {
+		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool' && RocketChat.settings.get('Livechat_guest_pool_with_no_agents');
+	},
 	registerGuest({ token, name, email, department, phone, username } = {}) {
 		check(token, String);
+
+		if (department) {
+			const agents = RocketChat.Livechat.getOnlineAgents(department);
+
+			if ((agents.count() === 0) && !RocketChat.Livechat.allowRegisterWithoutAgents()) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents for this department');
+			}
+		}
 
 		let userId;
 		const updateUser = {

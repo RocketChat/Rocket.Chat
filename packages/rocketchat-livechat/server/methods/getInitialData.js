@@ -85,7 +85,7 @@ Meteor.methods({
 		});
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
-		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
+		info.online = RocketChat.Livechat.getOnline();
 
 		return info;
 	}
