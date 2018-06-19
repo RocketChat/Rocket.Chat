@@ -448,12 +448,8 @@
     <symbol id="icon-loading" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-rolling">
         <circle cx="50" cy="50" fill="none" stroke="currentColor" stroke-width="5" r="26" stroke-dasharray="122.52211349000194 42.840704496667314" transform="rotate(150 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform></circle>
     </symbol>
-    <symbol id="icon-sort-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-        <path d="M287.968 288H32.038c-28.425 0-42.767 34.488-22.627 54.627l127.962 128c12.496 12.496 32.758 12.497 45.255 0l127.968-128C330.695 322.528 316.45 288 287.968 288zM160 448L32 320h256L160 448z" />
-    </symbol>
-    <symbol id="icon-sort-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-        <path d="M32.032 224h255.93c28.425 0 42.767-34.488 22.627-54.627l-127.962-128c-12.496-12.496-32.758-12.497-45.255 0l-127.968 128C-10.695 189.472 3.55 224 32.032 224zM160 64l128 128H32L160 64z" />
-    </symbol>
+    <symbol id="icon-sort-down" viewBox="0 0 16 16"><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path stroke="#CBCED1" d="M10.657 6L8 3.343 5.343 6"/><path stroke="#9EA2A8" d="M10.657 10L8 12.657 5.343 10"/></g></symbol>
+    <symbol id="icon-sort-up" viewBox="0 0 16 16"><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path stroke="#CBCED1" d="M10.657 10L8 12.657 5.343 10"/><path stroke="#9EA2A8" d="M10.657 6L8 3.343 5.343 6"/></g></symbol>
     <symbol id="icon-ban" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zM103.265 408.735c-80.622-80.622-84.149-208.957-10.9-293.743l304.644 304.643c-84.804 73.264-213.138 69.706-293.744-10.9zm316.37-11.727L114.992 92.365c84.804-73.263 213.137-69.705 293.743 10.9 80.622 80.621 84.149 208.957 10.9 293.743z" />
     </symbol>
