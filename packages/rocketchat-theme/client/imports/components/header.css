@@ -2,16 +2,13 @@
 	padding: 0 0.5rem;
 
 	&__wrap {
-
 		z-index: 2;
 
 		display: flex;
 
-		margin: 0 -0.5rem;
-
-
-		display: flex;
 		flex: 0 0 auto;
+
+		margin: 0 -0.5rem;
 
 		padding: var(--header-padding);
 
@@ -34,7 +31,6 @@
 	&__block {
 		display: flex;
 
-		margin: 0 0.5rem;
 		align-items: center;
 	}
 

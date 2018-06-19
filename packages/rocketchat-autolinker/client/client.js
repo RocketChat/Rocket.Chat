@@ -70,4 +70,4 @@ function AutoLinker(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', AutoLinker);
+RocketChat.callbacks.add('renderMessage', AutoLinker, RocketChat.callbacks.priority.LOW, 'autolinker');
