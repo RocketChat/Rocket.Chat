@@ -23,17 +23,6 @@ Template.sidebarItem.helpers({
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
-	},
-	status() {
-		if (this.t === 'd') {
-			return Session.get(`user_${ this.username }_status`) || 'offline';
-		}
-
-		if (this.t === 'l') {
-			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
-		}
-
-		return false;
 	}
 });
 
@@ -183,5 +172,22 @@ Template.sidebarItem.events({
 		};
 
 		popover.open(config);
+	}
+});
+
+Template.sidebarItemIcon.helpers({
+	isRoom() {
+		return this.rid || this._id;
+	},
+	status() {
+		if (this.t === 'd') {
+			return Session.get(`user_${ this.username }_status`) || 'offline';
+		}
+
+		if (this.t === 'l') {
+			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
+
+		return false;
 	}
 });

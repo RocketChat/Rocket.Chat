@@ -1,3 +1,13 @@
+<template name="sidebarItemIcon">
+	{{#if icon}}
+		<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}} {{#if status}}sidebar-item__icon-status--{{status}}{{/if}}">
+			{{> icon block="sidebar-item__icon" icon=icon}}
+		</div>
+	{{else}}
+		<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}"></div>
+	{{/if}}
+</template>
+
 <template name="sidebarItem">
 	<li class="sidebar-item{{#if or unread alert }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
@@ -23,13 +33,7 @@
 					<div class="sidebar-item__message-top">
 						<div class="sidebar-item__name">
 							{{#unless darken}}
-								{{#if icon}}
-									<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}} sidebar-item__icon-status--{{status}}">
-										{{> icon block="sidebar-item__icon" icon=icon}}
-									</div>
-								{{else}}
-									<div class="sidebar-item__user-status sidebar-item__user-status--{{status}}"></div>
-								{{/if}}
+								{{> sidebarItemIcon}}
 							{{/unless}}
 
 							<div class="sidebar-item__ellipsis">
