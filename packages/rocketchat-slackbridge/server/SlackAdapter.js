@@ -726,7 +726,7 @@ export default class SlackAdapter {
 				msgDataDefaults['imported'] = 'slackbridge';
 			}
 			try {
-				this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting);
+				this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
 			} catch (e) {
 				// http://www.mongodb.org/about/contributors/error-codes/
 				// 11000 == duplicate key error
