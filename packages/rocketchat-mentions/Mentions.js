@@ -3,6 +3,7 @@
 * @param {Object} message - The message object
 */
 import _ from 'underscore';
+import s from 'underscore.string';
 export default class {
 	constructor({pattern, useRealName, me}) {
 		this.pattern = pattern;
@@ -36,16 +37,16 @@ export default class {
 	replaceUsers(str, message, me) {
 		return str.replace(this.userMentionRegex, (match, username) => {
 			if (['all', 'here'].includes(username)) {
-				return `<a class="mention-link mention-link-me mention-link-all background-attention-color">${ match }</a>`;
+				return `<a class="mention-link mention-link-me mention-link-all">${ match }</a>`;
 			}
 
 			const mentionObj = _.findWhere(message.mentions, {username});
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
-			const name = this.useRealName && mentionObj && mentionObj.name;
+			const name = this.useRealName && mentionObj && s.escapeHTML(mentionObj.name);
 
-			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
+			return `<a class="mention-link ${ username === me ? 'mention-link-me':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
 		});
 	}
 	replaceChannels(str, message) {
