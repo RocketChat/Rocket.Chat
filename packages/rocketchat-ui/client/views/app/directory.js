@@ -21,7 +21,8 @@ function directorySearch(config, cb) {
 					users: result.usernames.length,
 					createdAt: timeAgo(result.ts),
 					description: result.description,
-					archived: result.archived
+					archived: result.archived,
+					topic: result.topic
 				};
 			}
 

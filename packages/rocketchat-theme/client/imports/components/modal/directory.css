@@ -63,6 +63,8 @@
 
 		text-overflow: ellipsis;
 		flex-grow: 1;
+
+		margin: 0 3px;
 	}
 
 	&-name,
@@ -88,10 +90,6 @@
 		text-overflow: ellipsis;
 
 		color: var(--rc-color-primary-light);
-	}
-
-	&-createdAt {
-		text-transform: capitalize;
 	}
 }
 
@@ -126,7 +124,6 @@
 	}
 }
 
-.rc-directory-td--createdAt,
 .rc-directory-td--users {
 	overflow: hidden;
 

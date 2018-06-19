@@ -21,8 +21,11 @@
 							<th class="rc-directory-td--users">
 								<div class="table-fake-th">{{_ "Users"}}</div>
 							</th>
-							<th class="js-sort rc-directory-td--createdAt {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
+							</th>
+							<th>
+								<div class="table-fake-th">{{_ "Topic"}}</div>
 							</th>
 						</tr>
 					</thead>
@@ -40,10 +43,9 @@
 										</div>
 									</div>
 								</td>
-								<td class="rc-directory-td--users">{{users}}</td>
-								<td class="rc-directory-td--createdAt">
-									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-								</td>
+								<td>{{users}}</td>
+								<td>{{createdAt}}</td>
+								<td>{{topic}}</td>
 							</tr>
 						{{/each}}
 						{{#if isLoading}}
@@ -64,7 +66,7 @@
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
 								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name') }}</div>
 							</th>
-							<th class="js-sort rc-directory-td--createdAt {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
 						</tr>
@@ -77,16 +79,13 @@
 										<div class="rc-directory-channel-avatar">{{> avatar username=username}}</div>
 										<div class="rc-directory-channel-info">
 											<span class="rc-directory-channel-username">
-												{{>icon icon="at"}}
 												{{username}}
 											</span>
 										</div>
 									</div>
 								</td>
 								<td>{{name}}</td>
-								<td class="rc-directory-td--createdAt">
-									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-								</td>
+								<td>{{createdAt}}</td>
 							</tr>
 						{{/each}}
 						{{#if isLoading}}
