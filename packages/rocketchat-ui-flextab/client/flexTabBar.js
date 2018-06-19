@@ -55,7 +55,9 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
+		return RocketChat.TabBar.getButtons().filter(button =>
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
+		);
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
@@ -199,6 +201,10 @@ Template.RoomsActionTab.onCreated(function() {
 
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
+	postButtons() {
+		const toolbar = Session.get('toolbarButtons') || {};
+		return Object.keys(toolbar.buttons || []).map(key =>({ id: key, ...toolbar.buttons[key] }));
+	},
 	active() {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';

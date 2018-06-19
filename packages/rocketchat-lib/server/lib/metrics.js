@@ -94,6 +94,10 @@ const setPrometheusData = () => {
 	RocketChat.metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	RocketChat.metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map(s => s.userId)).length, date);
 
+	if (!RocketChat.models.Statistics) {
+		return;
+	}
+
 	const statistics = RocketChat.models.Statistics.findLast();
 	if (!statistics) {
 		return;
@@ -117,7 +121,7 @@ const setPrometheusData = () => {
 	RocketChat.metrics.totalChannels.set(statistics.totalChannels, date);
 	RocketChat.metrics.totalPrivateGroups.set(statistics.totalPrivateGroups, date);
 	RocketChat.metrics.totalDirect.set(statistics.totalDirect, date);
-	RocketChat.metrics.totalLivechat.set(statistics.totlalLivechat, date);
+	RocketChat.metrics.totalLivechat.set(statistics.totalLivechat, date);
 
 	// Message statistics
 	RocketChat.metrics.totalMessages.set(statistics.totalMessages, date);
@@ -143,7 +147,7 @@ let timer;
 RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
 	if (value === true) {
 		server.listen({
-			port: 9100,
+			port: RocketChat.settings.get('Prometheus_Port'),
 			host: process.env.BIND_IP || '0.0.0.0'
 		});
 		timer = Meteor.setInterval(setPrometheusData, 5000);
