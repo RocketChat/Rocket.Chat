@@ -1,10 +1,4 @@
 Config:
-Reactions:
-* Disabled (default)
-** Try to react to Slack and Rocket messages
-* Enable it
-** Try to react to Slack and Rocket messages
-
 
 Sending Message
 * Send slack msg to rocket
@@ -56,6 +50,11 @@ Channel exists on both w/ rocketbot
 ** Send message from slack
 ** Send message from rocket
 
+Reactions:
+* Disabled (default)
+** Try to react to Slack and Rocket messages
+* Enable it
+** Try to react to Slack and Rocket messages
 
 
 
