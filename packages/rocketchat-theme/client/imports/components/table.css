@@ -50,6 +50,10 @@
 
 		font-size: 0.75rem;
 		line-height: 1rem;
+
+		overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 	}
 }
 
@@ -91,6 +95,7 @@
 
 .table-fake-th {
 	position: absolute;
+	display: flex;
 	top: 0;
 
 	padding: 0.5rem 0;
@@ -110,4 +115,12 @@
 
 .table-tr-dummy {
 	height: 1rem;
+}
+
+.table-column-date {
+	overflow: hidden;
+	width: 120px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-transform: capitalize;
 }
