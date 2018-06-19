@@ -2,7 +2,6 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import _ from 'underscore';
 import s from 'underscore.string';
 export default class {
 	constructor({pattern, useRealName, me}) {
@@ -56,7 +55,7 @@ export default class {
 				return match;
 			}
 
-			return `${ prefix }<a class="mention-link" data-channel="${ name }">${ `#${name}` }</a>`;
+			return `${ prefix }<a class="mention-link" data-channel="${ name }">${ `#${ name }` }</a>`;
 		});
 	}
 	getUserMentions(str) {
