@@ -138,10 +138,6 @@
 			&--busy {
 				color: var(--status-busy);
 			}
-
-			&--offline {
-				color: var(--status-invisible-sidebar);
-			}
 		}
 	}
 
