@@ -392,6 +392,8 @@ Prerequisites:
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
 
+> Meteor automatically installs a hidden [NodeJS v8](https://nodejs.org/download/release/v8.9.3/), [Python v2.7](https://www.python.org/downloads/release/python-270/) and [MongoDB v3.6](https://www.mongodb.com/mongodb-3.6) to be used when you run your app in development mode using the `meteor` command.
+
 Now just clone and start the app:
 
 ```sh
