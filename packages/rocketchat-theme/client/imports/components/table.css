@@ -95,6 +95,7 @@
 
 .table-fake-th {
 	position: absolute;
+	display: flex;
 	top: 0;
 
 	padding: 0.5rem 0;
