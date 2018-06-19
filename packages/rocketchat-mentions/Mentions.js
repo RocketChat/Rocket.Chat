@@ -36,7 +36,7 @@ export default class {
 	replaceUsers(str, message, me) {
 		return str.replace(this.userMentionRegex, (match, prefix, username) => {
 			if (['all', 'here'].includes(username)) {
-				return `${ prefix }<a class="mention-link mention-link-me mention-link-all">${ username }</a>`;
+				return `${ prefix }<a class="mention-link mention-link-me mention-link-all">@${ username }</a>`;
 			}
 
 			const mentionObj = message.mentions.find(m => m.username === username);
