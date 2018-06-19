@@ -663,21 +663,7 @@ export default class SlackAdapter {
 
 		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
 			const rocketChannel = this.rocket.getChannel(slackMessage);
-			const rocketUser = this.rocket.getUser(slackMessage.user); //RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
-
-			/*
-
-
-			const details = {
-				//message_id: `slack-${slackMessage.ts.replace(/\./g, '-')}`,
-				message_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
-				name: slackMessage.file.name,
-				size: slackMessage.file.size,
-				type: slackMessage.file.mimetype,
-				rid: rocketChannel._id
-			};
-			return this.uploadFileFromSlack(details, slackMessage.file.url_private_download, rocketUser, rocketChannel, new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), false);
-			*/
+			const rocketUser = this.rocket.getUser(slackMessage.user);
 
 			//Hack to notify that a file was attempted to be uploaded
 			delete slackMessage.subtype;
@@ -941,6 +927,8 @@ export default class SlackAdapter {
 					RocketChat.unarchiveRoom(rocketChannel);
 				}
 				return;
+			case 'file_share':
+				return this.processShareMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 			case 'file_comment':
 				logger.slack.error('File comment not implemented');
 				return;

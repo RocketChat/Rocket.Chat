@@ -1,38 +1,126 @@
 .rc-table {
-	font-size: 0.875rem;
-	color: var(--rc-color-primary);
 	width: 100%;
 
+	color: var(--rc-color-primary);
+
+	font-size: 0.875rem;
+
 	&--fixed {
-		table-layout:fixed;
+		table-layout: fixed;
 	}
 
-	&-head {
-		color: var(--rc-color-primary-light);
+	& tbody {
+		& tr {
+			cursor: pointer;
 
-		& .rc-icon {
-			fill: var(--rc-color-primary-light);
+			&:hover {
+				background-color: var(--rc-color-primary-lightest);
+			}
 		}
 	}
 
-	&-body .rc-table-tr {
-		cursor: pointer;
-
-		&:hover {
-			background-color: var(--rc-color-primary-lightest);
-		}
-	}
-
-	&-tr {
-		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
-	}
-
-	&-td {
-		padding: 1.25rem 1rem;
+	& th,
+	& td {
 		vertical-align: middle;
 
-		&--bold {
+		&.bold {
 			font-weight: 600;
 		}
 	}
+
+	& th {
+		height: 0;
+
+		padding-top: 0;
+		padding-bottom: 0;
+
+		white-space: nowrap;
+
+		color: transparent;
+
+		line-height: 0;
+
+		& > .rc-icon {
+			display: none;
+		}
+	}
+
+	& td {
+		padding: 0.25rem 0;
+
+		font-size: 0.75rem;
+		line-height: 1rem;
+
+		overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+	}
+}
+
+.table-wrapper {
+	position: relative;
+
+	height: 100%;
+}
+
+.table-content-wrapper {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.table-content {
+	display: flex;
+	flex-direction: column;
+
+	min-height: 0;
+	flex-grow: 1;
+}
+
+.table-scroll {
+	overflow: auto;
+
+	min-height: 0;
+
+	margin-top: 2rem;
+
+	border-top: 1px solid #d8d8d8;
+	flex-grow: 1;
+}
+
+.table-fake-th {
+	position: absolute;
+	display: flex;
+	top: 0;
+
+	padding: 0.5rem 0;
+
+	text-align: left;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1rem;
+
+	& .rc-icon {
+		fill: var(--rc-color-primary-light);
+	}
+}
+
+.table-tr-dummy {
+	height: 1rem;
+}
+
+.table-column-date {
+	overflow: hidden;
+	width: 120px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-transform: capitalize;
 }
