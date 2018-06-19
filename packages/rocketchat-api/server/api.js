@@ -1,6 +1,16 @@
-/* global Restivus, DDP, DDPCommon */
+/* global Restivus, DDP, DDPCommon, RateLimiter */
 import _ from 'underscore';
+
 const logger = new Logger('API', {});
+const loginRateLimiter = new RateLimiter();
+const loginRule = {
+	IPAddr: input => input,
+	type: 'method',
+	method: 'login'
+};
+const attempts = 10;
+const thirtySecondsInMS = 30000;
+loginRateLimiter.addRule(loginRule, attempts, thirtySecondsInMS);
 
 class API extends Restivus {
 	constructor(properties) {
@@ -239,20 +249,36 @@ class API extends Restivus {
 
 		const self = this;
 
-		this.addRoute('login', {authRequired: false}, {
+		this.addRoute('login', { authRequired: false }, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
 
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
-						close() {}
+						close() {
+						}
 					}
 				});
 
 				let auth;
 				try {
-					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+					const requestIp = this.request.headers['x-forwarded-for'];
+					const ruleForMatchAttempt = {
+						IPAddr: requestIp,
+						type: 'method',
+						method: 'login'
+					};
+					const attemptResult = loginRateLimiter.check(ruleForMatchAttempt);
+					loginRateLimiter.increment(ruleForMatchAttempt);
+					if (attemptResult.allowed) {
+						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+					} else {
+						throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying again.`, {
+							timeToReset: attemptResult.timeToReset,
+							seconds: Math.ceil(attemptResult.timeToReset / 1000)
+						});
+					}
 				} catch (error) {
 					let e = error;
 					if (error.reason === 'User not found') {
