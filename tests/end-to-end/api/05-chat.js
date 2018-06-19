@@ -364,7 +364,7 @@ describe('[Chat]', function() {
 		});
 	});
 	describe('[/chat.react]', () => {
-		it('should return statusCode: 400 and error when try unreact a message that\'s no reacted yet', (done) => {
+		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -373,9 +373,9 @@ describe('[Chat]', function() {
 					shouldReact: false
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
@@ -408,7 +408,7 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-		it('should return statusCode: 400 and error when try react a message that\'s already reacted', (done) => {
+		it('should return statusCode: 200 and success when try react a message that\'s already reacted', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -417,9 +417,9 @@ describe('[Chat]', function() {
 					shouldReact: true
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});

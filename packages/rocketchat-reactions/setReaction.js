@@ -39,7 +39,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const userAlreadyReacted = message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		const userAlreadyReacted = Boolean(message.reactions) && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
 		const removeUserReaction = () => {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
 		};
@@ -48,10 +48,10 @@ Meteor.methods({
 				delete message.reactions[reaction];
 			}
 		};
+		if (userAlreadyReacted === shouldReact) {
+			return;
+		}
 		if (userAlreadyReacted) {
-			if (shouldReact) {
-				throw new Meteor.Error('error-not-allowed', 'You already reacted with this message.', { method: 'setReaction' });
-			}
 			removeUserReaction();
 			removeMessageReactionIfNeed();
 
@@ -64,9 +64,6 @@ Meteor.methods({
 				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
-			if (shouldReact === false) {
-				throw new Meteor.Error('error-not-allowed', 'You still haven\'t reacted with this message.', { method: 'setReaction' });
-			}
 			if (!message.reactions) {
 				message.reactions = {};
 			}
