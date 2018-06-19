@@ -59,7 +59,7 @@ export default class {
 		});
 	}
 	getUserMentions(str) {
-		return str.match(this.userMentionRegex) || [];
+		return (str.match(this.userMentionRegex) || []).map(match => match.trim());
 	}
 	getChannelMentions(str) {
 		return (str.match(this.channelMentionRegex) || []).map(match => match.trim());
