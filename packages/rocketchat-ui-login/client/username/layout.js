@@ -6,4 +6,4 @@ Template.usernameLayout.helpers({
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
 	}
-});
+}); //Removed newline to try to get Codacy to understand that there has been a newline there for a long time now
