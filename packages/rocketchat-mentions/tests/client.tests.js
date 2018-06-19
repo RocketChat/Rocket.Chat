@@ -72,7 +72,7 @@ describe('Mention', function() {
 				'@rocket.cat',
 				' @rocket.cat ',
 				'hello @rocket.cat',
-				'hello,@rocket.cat',
+				//'hello,@rocket.cat', // this test case is ignored since is not compatible with the message box behavior
 				'@rocket.cat, hello',
 				'@rocket.cat,hello',
 				'hello @rocket.cat how are you?'
