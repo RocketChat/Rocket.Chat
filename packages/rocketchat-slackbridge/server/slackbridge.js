@@ -72,22 +72,6 @@ class SlackBridge {
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Choose whether SlackBridge should also send your messages back to Slack
-		RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-		//Send messages from all channels that exist in Slack and the bot has joined
-		RocketChat.settings.get('SlackBridge_Out_All', (key, value) => {
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-		//Choose which channels will send messages back to Slack
-		RocketChat.settings.get('SlackBridge_Out_Channels', (key, value) => {
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-
 		//Is this entire SlackBridge enabled
 		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {
 			if (value && this.apiToken) {
