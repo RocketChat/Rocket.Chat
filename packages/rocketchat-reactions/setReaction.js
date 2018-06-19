@@ -1,6 +1,14 @@
 /* globals msgStream */
 import _ from 'underscore';
 
+const removeUserReaction = (message, reaction, username) => {
+	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	if (message.reactions[reaction].usernames.length === 0) {
+		delete message.reactions[reaction];
+	}
+	return message;
+};
+
 Meteor.methods({
 	setReaction(reaction, messageId, shouldReact) {
 		if (!Meteor.userId()) {
@@ -40,20 +48,11 @@ Meteor.methods({
 		}
 
 		const userAlreadyReacted = Boolean(message.reactions) && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
-		const removeUserReaction = () => {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
-		};
-		const removeMessageReactionIfNeed = () => {
-			if (message.reactions[reaction].usernames.length === 0) {
-				delete message.reactions[reaction];
-			}
-		};
 		if (userAlreadyReacted === shouldReact) {
 			return;
 		}
 		if (userAlreadyReacted) {
-			removeUserReaction();
-			removeMessageReactionIfNeed();
+			removeUserReaction(message, reaction, user.username);
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
