@@ -116,26 +116,11 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(() => {
-		if (!Meteor.userId()) {
-			return;
-		}
+		const userLanguage = Meteor.user() && Meteor.user().language || RocketChat.settings.get('Language') || 'en';
 
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: {
-				language: 1
-			}
-		});
-
-		if (!(user && user.language)) {
-			return;
-		}
-
-		window.setLanguage(user.language);
-
-		const userLanguage = user.language ? user.language : window.defaultUserLanguage();
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
+		if (loadedLanguages.length === 0 || localStorage.getItem('userLanguage') !== userLanguage) {
 			localStorage.setItem('userLanguage', userLanguage);
-			//window.setLanguage(userLanguage);
+			window.setLanguage(userLanguage);
 		}
 	});
 });
