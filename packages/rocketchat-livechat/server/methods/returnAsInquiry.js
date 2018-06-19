@@ -13,7 +13,7 @@ Meteor.methods({
 			user = RocketChat.models.Users.findOne(room.servedBy._id);
 		}
 
-		if (!user._id || !RocketChat.authz.hasPermission(user._id, 'view-l-room')) {
+		if (!(user && user._id && RocketChat.authz.hasPermission(user._id, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:returnAsInquiry' });
 		}
 

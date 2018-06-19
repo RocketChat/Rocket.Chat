@@ -60,7 +60,7 @@ Meteor.methods({
 			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
 		});
 
-		// return room corresponding to inquiry (for redirecting agent to the room route)
-		return room;
+		// return inquiry (for redirecting agent to the room route)
+		return inquiry;
 	}
 });
