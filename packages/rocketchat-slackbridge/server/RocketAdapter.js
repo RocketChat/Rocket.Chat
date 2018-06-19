@@ -411,8 +411,11 @@ export default class RocketAdapter {
 			}
 			if (slackMessage.subtype === 'bot_message') {
 				Meteor.setTimeout(() => {
-					if (slackMessage.bot_id && slackMessage.ts && !RocketChat.models.Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts)) {
-						RocketChat.sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+					if (slackMessage.bot_id && slackMessage.ts) {
+						//Make sure that a message with the same bot_id and timestamp doesn't already exists
+						if (!RocketChat.models.Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts)) {
+							RocketChat.sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+						}
 					}
 				}, 500);
 			} else {
