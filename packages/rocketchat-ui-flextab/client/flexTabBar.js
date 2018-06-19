@@ -201,6 +201,10 @@ Template.RoomsActionTab.onCreated(function() {
 
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
+	postButtons() {
+		const toolbar = Session.get('toolbarButtons') || {};
+		return Object.keys(toolbar.buttons || []).map(key =>({ id: key, ...toolbar.buttons[key] }));
+	},
 	active() {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
