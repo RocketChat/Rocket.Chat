@@ -7,4 +7,3 @@ Template.usernameLayout.helpers({
 		}
 	}
 });
-
