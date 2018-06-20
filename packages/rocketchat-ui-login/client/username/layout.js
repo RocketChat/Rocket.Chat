@@ -1,8 +1,4 @@
-Template.loginLayout.onRendered(function() {
-	$('#initial-page-loading').remove();
-});
-
-Template.loginLayout.helpers({
+Template.usernameLayout.helpers({
 	backgroundUrl() {
 		const asset = RocketChat.settings.get('Assets_background');
 		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
