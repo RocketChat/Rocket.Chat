@@ -1,7 +1,9 @@
 <template name="apps">
 	<section class="rc-directory rc-apps-marketplace">
-		{{#header sectionName="Manage_Apps" hideHelp=true fixedHeight=true}}
+		{{#header sectionName="Apps" hideHelp=true fixedHeight=true}}
+			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus" data-button="install">{{> icon icon="plus"}}</button>
 		{{/header}}
+
 		<div class="rc-directory-content">
 			<!-- {{>tabs tabs=tabsData}} -->
 			<div class="rc-input rc-input--small rc-directory-search">
@@ -27,49 +29,40 @@
 							</th>
 							<th class="rc-directory-td--small">
 							</th>
-							<th class="rc-directory-td--small">
-							</th>
 						</tr>
 					</thead>
 					<tbody>
 						{{#each apps}}
 							<tr class="rc-table-tr manage" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
+								<td>
 									<div class="rc-directory-channel-wrapper">
 										<div class="rc-directory-channel-avatar" style="background-image:url({{iconFileContent}})"></div>
 										<div class="rc-directory-channel-info">
 											<span class="rc-directory-channel-name">
 												{{name}}
 											</span>
-											<!-- {{#if creator}} -->
-												<span class="rc-directory-channel-creator">by {{name}}</span>
-											<!-- {{/if}} -->
+											{{#if author.name}}
+												<span class="rc-directory-channel-subtitle">by {{author.name}}</span>
+											{{/if}}
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--users">{{category}}</td>
-								<td class="rc-table-td rc-table-td--description">
-									<p>
-										<!-- {{#if summary}}
-											{{summary}}
-										{{else}} -->
-											{{description}}
-										<!-- {{/if}} -->
-									</p>
-									<span>
-										<!-- {{#if summary}} -->
+								<td>{{category}}</td>
+								<td>
+										<p class="rc-directory-channel-name">
+											{{#if summary}}
+												{{summary}}
+											{{else}}
 												{{description}}
-										<!-- {{/if}} -->
-									</span>
+											{{/if}}
+										</p>
+										{{#if summary}}
+											<p>
+												{{description}}
+											</p>
+										{{/if}}
 								</td>
-								<td class="rc-table-td">
-									{{#if isActive status}}
-
-									{{else}}
-									<button class="rc-button rc-button--primary rc-tooltip" aria-label="{{_ "Download_Snippet"}}">
-										{{> icon icon="copy"}}
-									</button>
-									{{/if}}
+								<td>
 								</td>
 							</tr>
 						{{/each}}

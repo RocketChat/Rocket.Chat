@@ -4,6 +4,11 @@
 		display: inline-block !important;
 	}
 
+	.rc-header .rc-button {
+		margin: 0;
+		min-height: 0;
+	}
+
 	div.app-enable-loading .loading-animation {
 		justify-content: left;
 		margin-left: 50px;
@@ -20,25 +25,11 @@
 		font-size: 45px;
 	}
 
-	.hover-hidden {
-		display: none;
-	}
-	.rc-table-tr:hover .hover-hidden {
-		display: inherit;
-	}
 	.rc-directory-channel-avatar {
 		width: 45px;
 		height: 45px;
 	}
-	.rc-directory-channel-name {
-		font-weight: 600;
-	}
-	.rc-table-td--description {
-		color: var(--color-dark-medium);
-	}
-	.rc-table-td--description p {
-		font-weight: 500;
-	}
+
 	.rc-directory-content {
 		padding: 0;
 	}

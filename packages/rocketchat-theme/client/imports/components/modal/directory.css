@@ -84,12 +84,10 @@
 		}
 	}
 
-	&-creator {
-		margin-top: 0.275rem;
+	&-subtitle {
 		color: var(--rc-color-primary-light);
 		overflow: hidden;
 		text-overflow: ellipsis;
-		font-weight: 500;
 	}
 
 	&-description {
