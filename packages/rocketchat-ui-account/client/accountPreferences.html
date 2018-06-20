@@ -17,11 +17,27 @@
 								<div class="rc-select">
 									<select id="language" class="required rc-select__element">
 										{{#each languages}}
-											<option value="{{key}}" selected="{{userLanguage key}}" dir="auto">{{name}}</option>
+											<option value="{{key}}" selected="{{isUserLanguage key}}" dir="auto">{{name}}</option>
 										{{/each}}
 									</select>
-									{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									{{> icon block="rc-select__arrow" icon="arrow-down"}}
 								</div>
+							</div>
+						</div>
+					</div>
+					<div class="section">
+						<h1>{{_ "Global"}}</h1>
+						<div class="section-content border-component-color">
+							<div class="input-line double-col">
+								<label for="language">{{_ "Dont_ask_me_again_list"}}</label>
+								<div class="rc-select">
+									<select id="dont-ask" class="rc-select__element" multiple>
+										{{#each dontAskAgainList}}
+											<option value="{{action}}">{{label}}</option>
+										{{/each}}
+									</select>
+								</div>
+								<button class="rc-button rc-button--cancel js-dont-ask-remove"><span>{{_ "Remove"}}</span></button>
 							</div>
 						</div>
 					</div>
