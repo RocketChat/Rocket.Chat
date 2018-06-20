@@ -94,7 +94,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
-	api.addFiles('server/functions/sendClientCommand.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setCustomClientData.js', 'server');
@@ -122,7 +121,6 @@ Package.onUse(function(api) {
 	// SERVER MODELS
 	api.addFiles('server/models/_Base.js', 'server');
 	api.addFiles('server/models/Avatars.js', 'server');
-	api.addFiles('server/models/ClientCommands.js', 'server');
 	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/Reports.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
@@ -178,7 +176,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/joinRoom.js', 'server');
 	api.addFiles('server/methods/leaveRoom.js', 'server');
 	api.addFiles('server/methods/removeOAuthService.js', 'server');
-	api.addFiles('server/methods/replyClientCommand.js', 'server');
 	api.addFiles('server/methods/restartServer.js', 'server');
 	api.addFiles('server/methods/robotMethods.js', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
