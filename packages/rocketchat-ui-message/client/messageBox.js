@@ -271,7 +271,7 @@ Template.messageBox.helpers({
 		return RocketChat.Layout.isEmbedded();
 	},
 	isEmojiEnable() {
-		return RocketChat.getUserPreference(Meteor.user(), 'useEmojis');
+		return RocketChat.getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	dataReply() {
 		return Template.instance().dataReply.get();

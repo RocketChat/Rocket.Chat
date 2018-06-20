@@ -23,7 +23,7 @@ this.modal = {
 		this.config = config;
 
 		if (config.dontAskAgain) {
-			const dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			const dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
 			if (dontAskAgainList && dontAskAgainList.some(dontAsk => dontAsk.action === config.dontAskAgain.action)) {
 				this.confirm(true);
@@ -123,7 +123,7 @@ Template.rc_modal.events({
 				label: dontAskAgain.label
 			};
 
-			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			let dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 			if (dontAskAgainList) {
 				dontAskAgainList.push(dontAskAgainObject);
 			} else {

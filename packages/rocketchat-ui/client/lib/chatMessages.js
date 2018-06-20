@@ -452,8 +452,7 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	keydown(rid, event) {
-		const user = Meteor.user();
-		const sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
+		const sendOnEnter = RocketChat.getUserPreference(Meteor.userId(), 'sendOnEnter');
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;

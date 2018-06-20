@@ -22,8 +22,7 @@ Template.message.helpers({
 		}
 	},
 	roleTags() {
-		const user = Meteor.user();
-		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(Meteor.userId(), 'hideRoles')) {
 			return [];
 		}
 

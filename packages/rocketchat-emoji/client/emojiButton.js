@@ -4,7 +4,7 @@ Template.messageBox.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return false;
 		}
 

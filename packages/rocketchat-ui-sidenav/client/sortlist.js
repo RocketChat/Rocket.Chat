@@ -1,18 +1,18 @@
 /* globals popover */
 
 const checked = function(prop, field) {
-	const user = Meteor.userId();
+	const userId = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
-		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+		return RocketChat.getUserPreference(userId, 'sidebarShowFavorites');
 	}
 	if (prop === 'sidebarGroupByType') {
-		return RocketChat.getUserPreference(user, 'sidebarGroupByType');
+		return RocketChat.getUserPreference(userId, 'sidebarGroupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
-		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
+		return RocketChat.getUserPreference(userId, 'sidebarShowUnread');
 	}
 	if (prop === 'sidebarSortby') {
-		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical') === field;
+		return (RocketChat.getUserPreference(userId, 'sidebarSortby') || 'alphabetical') === field;
 	}
 };
 
