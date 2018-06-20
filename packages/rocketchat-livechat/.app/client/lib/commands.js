@@ -30,7 +30,7 @@ this.Commands = {
 				cancelButtonText: t('no'),
 				confirmButtonText: t('yes')
 			}).then((result) => {
-				if ((typeof result.value === 'boolean') && !response) {
+				if ((typeof result.value === 'boolean') && !result.value) {
 					return true;
 				}
 
