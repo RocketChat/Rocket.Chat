@@ -5496,10 +5496,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 
