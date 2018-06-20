@@ -9,13 +9,12 @@ COPY . /app
 
 WORKDIR /app
 
-RUN ls -l packages/rocketchat-katex
+ENV METEOR_ALLOW_SUPERUSER true
 
 RUN set -x \
-&& meteor npm i --unsafe-perm
-
-RUN set -x \
-&& TOOL_NODE_FLAGS=--max-old-space-size=4096 meteor build --allow-superuser --headless --directory /tmp/build
+&& meteor --version \
+&& meteor npm i \
+&& TOOL_NODE_FLAGS=--max-old-space-size=4096 meteor build --allow-superuser --server-only --directory /tmp/build
 
 FROM rocketchat/base:8
 
