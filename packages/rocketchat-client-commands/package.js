@@ -8,14 +8,16 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('mongo');
+	api.use('random');
 	api.use('ecmascript');
 	api.use('templating');
 	api.use('babel-compiler');
-	api.use('rocketchat:lib');
+
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:api');
+	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 
 	api.addFiles('server/startup.js', 'server');
-	api.addFiles('server/sendClientCommand.js', 'server')
+	api.addFiles('server/sendClientCommand.js', 'server');
 });

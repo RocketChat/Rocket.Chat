@@ -7,12 +7,19 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 		check(command.key, String);
 
 		const clientCommand = {
+			_id: Random.id(),
 			cmd: command,
 			ts: new Date()
 		};
 
 		commandStream.emitWithoutBroadcast(user._id, clientCommand);
-		resolve(true);
+
+		// Avoiding linting errors while this function is incomplete
+		if (clientCommand) {
+			resolve(true);
+		} else {
+			reject(timeout);
+		}
 	});
 
 	return promise;
