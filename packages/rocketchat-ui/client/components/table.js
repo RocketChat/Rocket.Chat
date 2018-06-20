@@ -4,25 +4,19 @@ Template.table.onRendered(function() {
 	const dummyTr = '<tr class="table-tr-dummy"></tr>';
 	this.$('tbody').prepend(dummyTr).append(dummyTr);
 
-	const onResize = this.data.onResize;
-	if (onResize) {
-		onResize();
-		$(window).on('resize', onResize);
+	this.onResize = this.data.onResize;
+	if (this.onResize) {
+		this.onResize();
+		$(window).on('resize', this.onResize);
 	}
 });
 
+Template.table.onDestroyed(function() {
+	$(window).on('off', this.onResize);
+});
+
 Template.table.events({
-	'click tbody tr'(e, t) {
-		const onItemClick = t.data.onItemClick;
-
-		return onItemClick && onItemClick(this);
-	},
-	'scroll .table-scroll': _.debounce((e, t) => {
-		const onScroll = t.data.onScroll;
-
-		return onScroll && onScroll(e.currentTarget);
-	}, 300),
-	'click .js-sort'(e, t) {
-		t.data.onSort(e.currentTarget.dataset.sort);
-	}
+	'click tbody tr'(e, t) { t.data.onItemClick && t.data.onItemClick(this); },
+	'scroll .table-scroll': _.debounce((e, t) => t.data.onScroll && t.data.onScroll(e.currentTarget), 300),
+	'click .js-sort'(e, t) { t.data.onSort(e.currentTarget.dataset.sort); }
 });
