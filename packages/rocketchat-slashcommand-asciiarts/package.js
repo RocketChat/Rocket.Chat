@@ -17,4 +17,5 @@ Package.onUse(function(api) {
 	api.addFiles('shrug.js', ['server', 'client']);
 	api.addFiles('tableflip.js', ['server', 'client']);
 	api.addFiles('unflip.js', ['server', 'client']);
+	api.addFiles('troutslap.js', ['server', 'client']);
 });
