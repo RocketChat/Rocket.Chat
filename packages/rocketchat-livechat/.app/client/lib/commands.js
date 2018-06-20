@@ -29,31 +29,27 @@ this.Commands = {
 				showCancelButton: true,
 				cancelButtonText: t('no'),
 				confirmButtonText: t('yes')
-			}).then((result) => {		
+			}).then((result) => {
 				if ((typeof result.value === 'boolean') && !response) {
 					return true;
-				} else {
-					if (!result.value) {
-						swal.showValidationError(t('please enter your email'));
-						return false;
-					}
-					if (result.value.trim() === '') {
-						swal.showValidationError(t('please enter your email'));
-						return false;
-					} else {
-						Meteor.call('livechat:sendTranscript', visitor.getToken(), visitor.getRoom(), result.value, (err) => {
-							if (err) {
-								console.error(err);
-							}
-							swal({
-								title: t('transcript_sent'),
-								type: 'success',
-								timer: 1000,
-								showConfirmButton: false
-							});
-						});
-					}
 				}
+
+				if (!result.value || result.value.trim() === '') {
+					swal.showValidationError(t('please enter your email'));
+					return false;
+				}
+
+				Meteor.call('livechat:sendTranscript', visitor.getToken(), visitor.getRoom(), result.value, (err) => {
+					if (err) {
+						console.error(err);
+					}
+					swal({
+						title: t('transcript_sent'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false
+					});
+				});
 			});
 		}
 	},
