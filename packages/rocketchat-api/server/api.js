@@ -31,6 +31,9 @@ class API extends Restivus {
 			customFields: 0,
 			settings: 0
 		};
+		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
+			services: 0
+		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
