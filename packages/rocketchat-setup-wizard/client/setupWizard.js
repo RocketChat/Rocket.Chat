@@ -161,14 +161,28 @@ Template.setupWizard.helpers({
 	currentStep() {
 		return Template.instance().state.get('currentStep');
 	},
-	itemModifier(step) {
-		const current = Template.instance().state.get('currentStep');
+	stepTitle(step) {
+		if (!step) {
+			step = Template.instance().state.get('currentStep');
+		}
 
-		if (current === step) {
+		switch (step) {
+			case 1: return t('Admin_Info');
+			case 2: return t('Organization_Info');
+			case 3: return t('Server_Info');
+			case 4: return t('Register_Server');
+		}
+	},
+	stepItemModifier(step, currentStep) {
+		if (!currentStep) {
+			currentStep = Template.instance().state.get('currentStep');
+		}
+
+		if (currentStep === step) {
 			return 'setup-wizard-info__steps-item--active';
 		}
 
-		if (current > step) {
+		if (currentStep > step) {
 			return 'setup-wizard-info__steps-item--past';
 		}
 
@@ -195,18 +209,6 @@ Template.setupWizard.helpers({
 		}
 
 		return '';
-	},
-	headerTitle(step) {
-		if (!step) {
-			step = Template.instance().state.get('currentStep');
-		}
-
-		switch (step) {
-			case 1: return t('Admin_Info');
-			case 2: return t('Organization_Info');
-			case 3: return t('Server_Info');
-			case 4: return t('Register_Server');
-		}
 	},
 	showStep() {
 		const currentStep = Template.instance().state.get('currentStep');

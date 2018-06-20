@@ -1,22 +1,3 @@
-<template name="setupWizardFinal">
-	<div class="setup-wizard">
-		<div class="setup-wizard-final">
-			<header class="setup-wizard-info__header setup-wizard-final__header">
-				<img class="setup-wizard-info__header-logo" src="images/logo/logo-black.svg">
-			</header>
-			<main class="setup-wizard-final__box">
-					<span class="setup-wizard-forms__header-step">{{_ "Launched_successfully"}}</span>
-					<h1 class="setup-wizard-info__content-title setup-wizard-final__box-title">{{_ "Your_workspace_is_ready"}}</h1>
-					<span class="setup-wizard-final__link-text">{{_ "Your_server_link"}}</span>
-					<span class="setup-wizard-final__link">{{siteUrl}}</span>
-					<button class="rc-button rc-button--primary js-finish">
-						<span>{{_ "Go_to_your_workspace"}}</span>
-					</button>
-			</main>
-		</div>
-	</div>
-</template>
-
 <template name="setupWizard">
 	<div class="rc-old connection-status">
 		{{> status}}
@@ -31,20 +12,22 @@
 				<h1 class="setup-wizard-info__content-title">{{_ "Setup_Wizard"}}</h1>
 				<p class="setup-wizard-info__content-text">{{_ "Setup_Wizard_Info"}}</p>
 				<ol class="setup-wizard-info__steps">
-					{{#unless hasAdmin}}<li class="setup-wizard-info__steps-item {{itemModifier 1}}">{{headerTitle 1}}</li>{{/unless}}
-					<li class="setup-wizard-info__steps-item {{itemModifier 2}}">{{headerTitle 2}}{{#unless hasAdmin}}<span class="setup-wizard-info__steps-item-bonding"></span>{{/unless}}</li>
-					<li class="setup-wizard-info__steps-item {{itemModifier 3}}">{{headerTitle 3}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
-					{{#unless hasAdmin}}<li class="setup-wizard-info__steps-item {{itemModifier 4}}">{{headerTitle 4}}<span class="setup-wizard-info__steps-item-bonding"></span></li>{{/unless}}
+					<li class="setup-wizard-info__steps-item {{stepItemModifier 1}}">{{stepTitle 1}}</li>
+					<li class="setup-wizard-info__steps-item {{stepItemModifier 2}}">{{stepTitle 2}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{stepItemModifier 3}}">{{stepTitle 3}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+					<li class="setup-wizard-info__steps-item {{stepItemModifier 4}}">{{stepTitle 4}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
 				</ol>
 			</div>
 		</section>
+
 		<section class="setup-wizard-forms">
 			<div class="setup-wizard-forms__wrapper">
 				<div class="setup-wizard-forms__box">
 					<header class="setup-wizard-forms__header">
 						<span class="setup-wizard-forms__header-step">{{_ "Step"}} {{currentStep}}</span>
-						<h1 class="setup-wizard-forms__header-title">{{headerTitle}}</h1>
+						<h1 class="setup-wizard-forms__header-title">{{stepTitle}}</h1>
 					</header>
+
 					<main class="setup-wizard-forms__content">
 						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 1}}setup-wizard-forms__content-step--active{{/if}}">
 							<div class="rc-input">
@@ -100,6 +83,7 @@
 								</label>
 							</div>
 						</div>
+
 						<div class="setup-wizard-forms__content-step {{showStep}}">
 							{{#each getSettings currentStep}}
 								{{#if $eq type 'select'}}
@@ -147,6 +131,7 @@
 								{{/if}}
 							{{/each}}
 						</div>
+
 						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 4}}setup-wizard-forms__content-step--active{{/if}}">
 							<p class="setup-wizard-forms__content-text">To receive free Rocket.Chat supplied features you need to register your server.</p>
 							<form class="setup-wizard-forms__content-register">
@@ -179,6 +164,7 @@
 							</form>
 						</div>
 					</main>
+
 					<footer class="setup-wizard-forms__footer">
 						{{#if showBackButton}}
 							<button class="rc-button rc-button--secondary setup-wizard-forms__footer-back">
@@ -192,5 +178,24 @@
 				</div>
 			</div>
 		</section>
+	</div>
+</template>
+
+<template name="setupWizardFinal">
+	<div class="setup-wizard">
+		<div class="setup-wizard-final">
+			<header class="setup-wizard-info__header setup-wizard-final__header">
+				<img class="setup-wizard-info__header-logo" src="images/logo/logo-black.svg">
+			</header>
+			<main class="setup-wizard-final__box">
+					<span class="setup-wizard-forms__header-step">{{_ "Launched_successfully"}}</span>
+					<h1 class="setup-wizard-info__content-title setup-wizard-final__box-title">{{_ "Your_workspace_is_ready"}}</h1>
+					<span class="setup-wizard-final__link-text">{{_ "Your_server_link"}}</span>
+					<span class="setup-wizard-final__link">{{siteUrl}}</span>
+					<button class="rc-button rc-button--primary js-finish">
+						<span>{{_ "Go_to_your_workspace"}}</span>
+					</button>
+			</main>
+		</div>
 	</div>
 </template>
