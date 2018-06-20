@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'underscore';
 
 function timeAgo(time) {
 	const now = new Date();
@@ -20,7 +21,8 @@ function directorySearch(config, cb) {
 					users: result.usernames.length,
 					createdAt: timeAgo(result.ts),
 					description: result.description,
-					archived: result.archived
+					archived: result.archived,
+					topic: result.topic
 				};
 			}
 
@@ -50,75 +52,105 @@ Template.directory.helpers({
 
 		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
 	},
+	searchSortBy(key) {
+		return Template.instance().searchSortBy.get() === key;
+	},
 	createChannelOrGroup() {
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
+	},
+	tabsData() {
+		const {
+			sortDirection,
+			searchType,
+			end,
+			page
+		} = Template.instance();
+		return {
+			tabs: [
+				{
+					label: t('Channels'),
+					value: 'channels',
+					condition() { return true; },
+					active: true
+				},
+				{
+					label: t('Users'),
+					value: 'users',
+					condition() { return true; }
+				}
+			],
+			onChange(value) {
+				end.set(false);
+				sortDirection.set('asc');
+				page.set(0);
+				searchType.set(value);
+			}
+		};
+	},
+	onTableItemClick() {
+		const { searchType } = Template.instance();
+		let type;
+		let routeConfig;
+		return function(item) {
+			if (searchType.get() === 'channels') {
+				type = 'c';
+				routeConfig = {name: item.name};
+			} else {
+				type = 'd';
+				routeConfig = {name: item.username};
+			}
+			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
+		};
+	},
+	isLoading() {
+		return Template.instance().isLoading.get();
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		if (instance.loading || instance.end.get()) {
+			return;
+		}
+		return function(currentTarget) {
+			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+				return instance.page.set(instance.page.get() + 1);
+			}
+		};
+	},
+	onTableResize() {
+		const { limit } = Template.instance();
+
+		return function() {
+			limit.set(Math.ceil((this.$('.table-scroll').height() / 40) + 5));
+		};
+	},
+	onTableSort() {
+		const { end, page, sortDirection, searchSortBy } = Template.instance();
+
+		return function(type) {
+			end.set(false);
+			page.set(0);
+
+			if (searchSortBy.get() === type) {
+				sortDirection.set(sortDirection.get() === 'asc' ? 'desc' : 'asc');
+				return;
+			}
+
+			searchSortBy.set(type);
+			sortDirection.set('asc');
+		};
 	}
 });
 
 Template.directory.events({
-	'input .js-search'(e, t) {
+	'input .js-search': _.debounce((e, t) => {
 		t.end.set(false);
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
-	},
-	'change .js-typeSelector'(e, t) {
-		t.end.set(false);
-		t.sortDirection.set('asc');
-		t.page.set(0);
-		t.searchType.set(e.currentTarget.value);
-	},
-	'click .rc-table-body .rc-table-tr'() {
-		let searchType;
-		let routeConfig;
-		if (Template.instance().searchType.get() === 'channels') {
-			searchType = 'c';
-			routeConfig = {name: this.name};
-		} else {
-			searchType = 'd';
-			routeConfig = {name: this.username};
-		}
-		FlowRouter.go(RocketChat.roomTypes.getRouteLink(searchType, routeConfig));
-	},
-	'scroll .rc-directory-content'({currentTarget}, instance) {
-		if (instance.loading || instance.end.get()) {
-			return;
-		}
-		if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
-			return instance.page.set(instance.page.get() + 1);
-		}
-	},
-	'click .js-sort'(e, t) {
-
-		const el = e.currentTarget;
-		const type = el.dataset.sort;
-
-		$('.js-sort').removeClass('rc-table-td--bold');
-		$(el).addClass('rc-table-td--bold');
-
-		t.end.set(false);
-		t.page.set(0);
-
-		if (t.searchSortBy.get() === type) {
-			t.sortDirection.set(t.sortDirection.get() === 'asc' ? 'desc' : 'asc');
-			return;
-		}
-
-		t.searchSortBy.set(type);
-		t.sortDirection.set('asc');
-	},
-	'click .rc-directory-plus'() {
-		FlowRouter.go('create-channel');
-	}
+	}, 300)
 });
 
 Template.directory.onRendered(function() {
-	this.resize = () => {
-		const height = this.$('.rc-directory-content').height();
-		this.limit.set(Math.ceil((height / 100) + 5));
-	};
-	this.resize();
-	$(window).on('resize', this.resize);
 	Tracker.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
@@ -132,11 +164,16 @@ Template.directory.onRendered(function() {
 			return;
 		}
 		this.loading = true;
+		this.isLoading.set(true);
 		directorySearch(searchConfig, (result) => {
 			this.loading = false;
-			if (!result) {
-				this.end.set(true);
+			this.isLoading.set(false);
+			this.end.set(!result);
+
+			if (!Array.isArray(result)) {
+				result = [];
 			}
+
 			if (this.page.get() > 0) {
 				return this.results.set([...this.results.get(), ...result]);
 			}
@@ -159,6 +196,8 @@ Template.directory.onCreated(function() {
 	this.end = new ReactiveVar(false);
 
 	this.results = new ReactiveVar([]);
+
+	this.isLoading = new ReactiveVar(false);
 });
 
 Template.directory.onRendered(function() {
