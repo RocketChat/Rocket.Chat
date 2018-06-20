@@ -25,6 +25,10 @@
 		font-size: 45px;
 	}
 
+	td {
+		font-size: 0.875rem;
+	}
+
 	.rc-directory-channel-avatar {
 		width: 45px;
 		height: 45px;
