@@ -107,7 +107,7 @@ Template.directory.helpers({
 	},
 	onTableScroll() {
 		const instance = Template.instance();
-		if (instance.loading || instance.end.get()) {
+		if (instance.isLoading.get() || instance.end.get()) {
 			return;
 		}
 		return function(currentTarget) {
@@ -180,10 +180,6 @@ Template.directory.onRendered(function() {
 			return this.results.set(result);
 		});
 	});
-});
-
-Template.directory.onDestroyed(function() {
-	$(window).on('off', this.resize);
 });
 
 Template.directory.onCreated(function() {
