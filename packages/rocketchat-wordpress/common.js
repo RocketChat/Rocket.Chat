@@ -16,6 +16,9 @@ const WordPress = new CustomOAuth('wordpress', config);
 const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	config.serverURL = RocketChat.settings.get('API_Wordpress_URL');
 	if (!config.serverURL) {
+		if (config.serverURL === undefined) {
+			return fillSettings();
+		}
 		return;
 	}
 
@@ -77,7 +80,7 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	}
 
 	return result;
-}), 500);
+}), Meteor.isServer ? 1000 : 100);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
