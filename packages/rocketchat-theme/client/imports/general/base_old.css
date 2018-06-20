@@ -4626,6 +4626,11 @@ body:not(.is-cordova) {
 	align-items: center;
 	flex-flow: row nowrap;
 
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
+
 	& .wrapper {
 		position: relative;
 		z-index: 10;
@@ -4790,13 +4795,8 @@ body:not(.is-cordova) {
 
 .rc-old .mention-link {
 	border-radius: 4px;
-
-	&.mention-link-me,
-	&.mention-link-all {
-		padding: 0 4px 2px;
-
-		font-weight: bold;
-	}
+	padding: 0 4px 2px;
+	font-weight: bold;
 }
 
 .rc-old .highlight-text {
@@ -5501,10 +5501,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 

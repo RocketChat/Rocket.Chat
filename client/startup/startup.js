@@ -17,8 +17,6 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-
-
 	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
@@ -26,7 +24,7 @@ Meteor.startup(function() {
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
-	const defaultAppLanguage = function() {
+	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
 		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
 		const re = /([a-z]{2}-)([a-z]{2})/;
@@ -38,9 +36,7 @@ Meteor.startup(function() {
 		return lng;
 	};
 
-	window.defaultUserLanguage = function() {
-		return RocketChat.settings.get('Language') || defaultAppLanguage();
-	};
+	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || defaultAppLanguage();
 
 	const availableLanguages = TAPi18n.getLanguages();
 	const loadedLanguages = [];
@@ -94,7 +90,6 @@ Meteor.startup(function() {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
 				status: 1,
-				language: 1,
 				'settings.preferences.idleTimeLimit': 1,
 				'settings.preferences.enableAutoAway': 1
 			}
@@ -102,12 +97,6 @@ Meteor.startup(function() {
 
 		if (!user) {
 			return;
-		}
-
-		const userLanguage = user.language ? user.language : window.defaultUserLanguage();
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
-			window.setLanguage(userLanguage);
 		}
 
 		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
@@ -123,6 +112,15 @@ Meteor.startup(function() {
 		if (user.status !== status) {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
+		}
+	});
+
+	Tracker.autorun(() => {
+		const userLanguage = Meteor.user() && Meteor.user().language || RocketChat.settings.get('Language') || 'en';
+
+		if (loadedLanguages.length === 0 || localStorage.getItem('userLanguage') !== userLanguage) {
+			localStorage.setItem('userLanguage', userLanguage);
+			window.setLanguage(userLanguage);
 		}
 	});
 });
