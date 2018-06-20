@@ -9,12 +9,8 @@ export const MsgTyping = (function() {
 	const usersTyping = {};
 	const dep = new Tracker.Dependency;
 
-	const useRealNames = function() {
-		return RocketChat.settings.get('UI_Use_Real_Name');
-	};
-
 	const shownName = function(user) {
-		if (useRealNames()) {
+		if (RocketChat.settings.get('UI_Use_Real_Name')) {
 			return user && user.name;
 		}
 		return user && user.username;

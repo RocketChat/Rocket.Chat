@@ -120,10 +120,6 @@ RocketChat.Notifications = new class {
 RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
-	const useRealNames = function() {
-		return RocketChat.settings.get('UI_Use_Real_Name');
-	};
-
 	if (e === 'webrtc') {
 		return true;
 	}
@@ -143,7 +139,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 				name: 1
 			}
 		});
-		if (user != null && (user.username === username || (useRealNames() && (user.name === username)))) {
+		if (user != null && (user.username === username || (RocketChat.settings.get('UI_Use_Real_Name') && (user.name === username)))) {
 			return true;
 		}
 	}
