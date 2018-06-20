@@ -95,7 +95,7 @@
 
 .table-fake-th {
 	position: absolute;
-	display: flex;
+	display: block;
 	top: 0;
 
 	padding: 0.5rem 0;
@@ -110,6 +110,11 @@
 
 	& .rc-icon {
 		fill: var(--rc-color-primary-light);
+	}
+
+	& > * {
+		display: inline-block;
+    vertical-align: middle;
 	}
 }
 
