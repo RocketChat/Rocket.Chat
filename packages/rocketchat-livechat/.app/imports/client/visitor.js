@@ -31,8 +31,8 @@ export default {
 		Livechat.agent = null;
 		Livechat.guestName = null;
 		Livechat.guestEmail = null;
-		
-		msgStream.unsubscribe('room-messages');		
+
+		msgStream.unsubscribe('room-messages');
 	},
 
 	getId() {
@@ -56,21 +56,21 @@ export default {
 	},
 
 	setToken(token) {
-		if ((!token) || (token == this.token.get())) {
+		if (!token || token == this.token.get()) {
 			return;
 		}
-		
+
 		this.reset();
-		
+
 		localStorage.setItem('visitorToken', token);
 		this.token.set(token);
-		
+
 		Meteor.call('livechat:loginByToken', token, (err, result) => {
 
 			if (!result) {
 				return;
 			}
-			
+
 			if (result._id) {
 				this.setId(result._id);
 				return result._id;
@@ -80,7 +80,7 @@ export default {
 
 	setName(name) {
 		Livechat.guestName = name;
-		
+
 		if (!this.getId()) {
 			return;
 		}
@@ -89,7 +89,7 @@ export default {
 			token: this.getToken(),
 			name
 		};
-			
+
 		Meteor.call('livechat:registerGuest', data);
 	},
 
@@ -104,7 +104,7 @@ export default {
 			token: this.getToken(),
 			email
 		};
-			
+
 		Meteor.call('livechat:registerGuest', data);
 	},
 

@@ -52,9 +52,9 @@ const api = {
 	},
 
 	registerGuest(data) {
-		if (!(typeof data === 'object')) {
+		if (typeof data !== 'object') {
 			return;
-		}	
+		}
 
 		if (!data.token) {
 			data.token = Random.id();
@@ -63,9 +63,9 @@ const api = {
 		Meteor.call('livechat:registerGuest', data, function(error, result) {
 			if (!error) {
 				visitor.setToken(result.token);
-			}	
+			}
 		});
-	}	
+	}
 };
 
 window.addEventListener('message', function(msg) {
