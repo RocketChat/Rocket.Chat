@@ -4,7 +4,7 @@ import visitor from '../../imports/client/visitor';
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;
 };
- 
+
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -90,78 +90,78 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
-	this.autorun(() => {	
+	this.autorun(() => {
 		// get all needed live chat info for the user
 		Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
 			if (err) {
-				console.error(err);
-			} else {
-				if (!result.enabled) {
-					Triggers.setDisabled();
-					return parentCall('removeWidget');
-				}
-
-				if (!result.online) {
-					Triggers.setDisabled();
-					Livechat.title = result.offlineTitle;
-					Livechat.offlineColor = result.offlineColor;
-					Livechat.offlineMessage = result.offlineMessage;
-					Livechat.displayOfflineForm = result.displayOfflineForm;
-					Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
-					Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
-					Livechat.online = false;
-				} else {
-					Livechat.title = result.title;
-					Livechat.onlineColor = result.color;
-					Livechat.online = true;
-					Livechat.transcript = result.transcript;
-					Livechat.transcriptMessage = result.transcriptMessage;
-					Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
-				}
-				Livechat.videoCall = result.videoCall;
-				Livechat.registrationForm = result.registrationForm;
-				Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
-				Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
-				if (result.room) {
-					Livechat.room = result.room._id;
-
-					visitor.setConnected();
-				}
-
-				if (result.visitor) {
-					visitor.setData(result.visitor);
-
-					if (visitor.name) {
-						Livechat.guestName = visitor.name;
-					}
-
-					if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-						Livechat.guestEmail = visitor.visitorEmails[0].address;
-					}			
-				}
-
-				if (result.agentData) {
-					Livechat.agent = result.agentData;
-				}
-
-				let language = result.language || defaultAppLanguage();
-
-				if (!availableLanguages[language]) {
-					language = language.split('-').shift();
-				}
-
-				TAPi18n.setLanguage(language);
-
-				Triggers.setTriggers(result.triggers);
-				Triggers.init();
-
-				result.departments.forEach((department) => {
-					Department.insert(department);
-				});
-				Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
-
-				Livechat.ready();
+				return console.error(err);
 			}
+
+			if (!result.enabled) {
+				Triggers.setDisabled();
+				return parentCall('removeWidget');
+			}
+
+			if (!result.online) {
+				Triggers.setDisabled();
+				Livechat.title = result.offlineTitle;
+				Livechat.offlineColor = result.offlineColor;
+				Livechat.offlineMessage = result.offlineMessage;
+				Livechat.displayOfflineForm = result.displayOfflineForm;
+				Livechat.offlineUnavailableMessage = result.offlineUnavailableMessage;
+				Livechat.offlineSuccessMessage = result.offlineSuccessMessage;
+				Livechat.online = false;
+			} else {
+				Livechat.title = result.title;
+				Livechat.onlineColor = result.color;
+				Livechat.online = true;
+				Livechat.transcript = result.transcript;
+				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
+			}
+			Livechat.videoCall = result.videoCall;
+			Livechat.registrationForm = result.registrationForm;
+			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
+			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
+			if (result.room) {
+				Livechat.room = result.room._id;
+
+				visitor.setConnected();
+			}
+
+			if (result.visitor) {
+				visitor.setData(result.visitor);
+
+				if (visitor.name) {
+					Livechat.guestName = visitor.name;
+				}
+
+				if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+					Livechat.guestEmail = visitor.visitorEmails[0].address;
+				}
+			}
+
+			if (result.agentData) {
+				Livechat.agent = result.agentData;
+			}
+
+			let language = result.language || defaultAppLanguage();
+
+			if (!availableLanguages[language]) {
+				language = language.split('-').shift();
+			}
+
+			TAPi18n.setLanguage(language);
+
+			Triggers.setTriggers(result.triggers);
+			Triggers.init();
+
+			result.departments.forEach((department) => {
+				Department.insert(department);
+			});
+			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
+
+			Livechat.ready();
 		});
 	});
 
