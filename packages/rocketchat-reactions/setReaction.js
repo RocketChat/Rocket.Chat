@@ -1,8 +1,16 @@
 /* globals msgStream */
 import _ from 'underscore';
 
+const removeUserReaction = (message, reaction, username) => {
+	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	if (message.reactions[reaction].usernames.length === 0) {
+		delete message.reactions[reaction];
+	}
+	return message;
+};
+
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
@@ -39,12 +47,12 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
-
-			if (message.reactions[reaction].usernames.length === 0) {
-				delete message.reactions[reaction];
-			}
+		const userAlreadyReacted = Boolean(message.reactions) && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		if (userAlreadyReacted === shouldReact) {
+			return;
+		}
+		if (userAlreadyReacted) {
+			removeUserReaction(message, reaction, user.username);
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
