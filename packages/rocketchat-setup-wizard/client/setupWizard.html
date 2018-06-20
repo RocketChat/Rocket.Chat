@@ -22,7 +22,7 @@
 
 		<section class="setup-wizard-forms">
 			<div class="setup-wizard-forms__wrapper">
-				<div class="setup-wizard-forms__box">
+				<form class="setup-wizard-forms__box" novalidate>
 					<header class="setup-wizard-forms__header">
 						<span class="setup-wizard-forms__header-step">{{_ "Step"}} {{currentStep}}</span>
 						<h1 class="setup-wizard-forms__header-title">{{stepTitle}}</h1>
@@ -41,7 +41,7 @@
 									</div>
 								</label>
 							</div>
-							<div class="rc-input">
+							<div class="rc-input {{#if invalidUsername}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Username"}}</div>
 									<div class="rc-input__wrapper">
@@ -51,8 +51,16 @@
 										<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{getValue 'registration-username'}}">
 									</div>
 								</label>
+								{{#if invalidUsername}}
+									<div class="rc-input__error">
+										<div class="rc-input__error-icon">
+											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										</div>
+										<div class="rc-input__error-message">{{_ "Invalid_username"}}</div>
+									</div>
+								{{/if}}
 							</div>
-							<div class="rc-input">
+							<div class="rc-input {{#if invalidEmail}}rc-input--error{{/if}}">
 								<label class="rc-input__label">
 									<div class="rc-input__title">{{_ "Organization_Email"}}</div>
 									<div class="rc-input__wrapper">
@@ -171,11 +179,11 @@
 								<span>{{_ "Back"}}</span>
 							</button>
 						{{/if}}
-						<button class="rc-button rc-button--primary setup-wizard-forms__footer-next" {{isDisabled}}>
+						<button type="submit" class="rc-button rc-button--primary setup-wizard-forms__footer-next" {{isDisabled}}>
 							<span>{{_ "Continue"}}</span>
 						</button>
 					</footer>
-				</div>
+				</form>
 			</div>
 		</section>
 	</div>
