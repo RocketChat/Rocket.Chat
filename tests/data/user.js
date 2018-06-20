@@ -23,6 +23,7 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationDuration: 0,
+		avatarShape: 0,
 		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,

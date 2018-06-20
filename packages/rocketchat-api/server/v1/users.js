@@ -328,6 +328,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				autoImageLoad: Match.Maybe(Boolean),
 				emailNotificationMode: Match.Maybe(String),
 				unreadAlert: Match.Maybe(Boolean),
+				avatarShape: Match.Maybe(Number),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
 				mobileNotifications: Match.Maybe(String),

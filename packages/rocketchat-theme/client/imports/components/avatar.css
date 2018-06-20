@@ -41,4 +41,12 @@
 		align-items: center;
 		justify-content: center;
 	}
+
+	.avatar-shape-circle & {
+		border-radius: 100%;
+	}
+
+	.avatar-shape-square & {
+		border-radius: 0;
+	}
 }

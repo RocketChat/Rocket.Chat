@@ -151,6 +151,7 @@ Template.accountPreferences.onCreated(function() {
 		data.muteFocusedConversations = JSON.parse($('#muteFocusedConversations').find('input:checked').val());
 		data.hideUsernames = JSON.parse($('#hideUsernames').find('input:checked').val());
 		data.messageViewMode = parseInt($('#messageViewMode').find('select').val());
+		data.avatarShape = parseInt($('#avatarShape').find('select').val());
 		data.hideFlexTab = JSON.parse($('#hideFlexTab').find('input:checked').val());
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();

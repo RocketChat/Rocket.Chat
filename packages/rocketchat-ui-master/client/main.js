@@ -180,6 +180,14 @@ Template.main.helpers({
 		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
 
 		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
+	},
+	avatarStyleClass() {
+		switch (RocketChat.getUserPreference(Meteor.userId(), 'avatarShape')) {
+			case 1:
+				return 'avatar-shape-circle';
+			case 2:
+				return 'avatar-shape-square';
+		}
 	}
 });
 

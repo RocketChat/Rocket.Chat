@@ -11,6 +11,7 @@ Meteor.methods({
 			autoImageLoad: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),
+			avatarShape: Match.Optional(Number),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
 			mobileNotifications: Match.Optional(String),

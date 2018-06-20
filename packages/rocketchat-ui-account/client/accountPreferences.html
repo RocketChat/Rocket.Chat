@@ -209,6 +209,19 @@
 									<label><input type="radio" name="hideAvatars" value="false" checked="{{checked 'hideAvatars' false}}"/> {{_ "False"}}</label>
 								</div>
 							</div>
+							<div class="input-line double-col" id="avatarShape">
+								<label>{{_ "Avatar_shape"}}</label>
+								<div>
+									<div class="rc-select">
+										<select class="input-monitor rc-select__element" name="avatarShape">
+											<option value="0" selected="{{selected 'avatarShape' 0}}">{{_ "Rounded_square"}}</option>
+											<option value="1" selected="{{selected 'avatarShape' 1}}">{{_ "Circle"}}</option>
+											<option value="2" selected="{{selected 'avatarShape' 2}}">{{_ "Square"}}</option>
+										</select>
+										{{> icon block="rc-select__arrow" icon="arrow-down" }}
+									</div>
+								</div>
+							</div>
 							<div class="input-line double-col" id="messageViewMode">
 								<label>{{_ "View_mode"}}</label>
 								<div>
