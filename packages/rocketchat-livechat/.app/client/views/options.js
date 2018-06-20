@@ -26,13 +26,13 @@ Template.options.events({
 			cancelButtonText: t('No'),
 			html: false
 		}).then((result) => {
-			if (result.value) {	
+			if (result.value) {
 				Meteor.call('livechat:closeByVisitor', { roomId: visitor.getRoom(), token: visitor.getToken() }, (error) => {
 					if (error) {
 						return console.log('Error ->', error);
-					}	
+					}
 				});
-			}	
+			}
 		});
 	},
 	'click .switch-department'() {
