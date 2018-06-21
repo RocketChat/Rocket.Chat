@@ -1,7 +1,9 @@
 .rc-table {
 	width: 100%;
 
-	color: var(--rc-color-primary);
+	color: var(--rc-color-primary-light);
+
+	font-weight: 500;
 
 	font-size: 0.875rem;
 
@@ -29,6 +31,7 @@
 	}
 
 	& th {
+		font-size: 0.75rem;
 		height: 0;
 
 		padding-top: 0;
@@ -48,12 +51,12 @@
 	& td {
 		padding: 0.25rem 0;
 
-		font-size: 0.75rem;
+		font-size: 0.9rem;
 		line-height: 1rem;
 
 		overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
@@ -80,6 +83,7 @@
 
 	min-height: 0;
 	flex-grow: 1;
+	margin-bottom: 1rem;
 }
 
 .table-scroll {
@@ -89,7 +93,7 @@
 
 	margin-top: 2rem;
 
-	border-top: 1px solid #d8d8d8;
+	border-top: 1px solid rgba(216, 216, 216, 0.4);
 	flex-grow: 1;
 }
 
@@ -105,7 +109,7 @@
 	color: var(--rc-color-primary-light);
 
 	font-size: 0.75rem;
-	font-weight: 400;
+	font-weight: 500;
 	line-height: 1rem;
 
 	& .rc-icon {

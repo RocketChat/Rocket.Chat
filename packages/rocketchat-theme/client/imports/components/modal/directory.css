@@ -26,6 +26,14 @@
 			font-size: 1.375rem;
 		}
 	}
+
+	&-topic {
+		color: var(--rc-color-primary-light);
+	}
+}
+
+.rc-directory-icon {
+	color: var(--color-dark-light);
 }
 
 .rc-directory-channel {
@@ -40,9 +48,9 @@
 	&-avatar {
 		flex: 0 0 auto;
 
-		width: 32px;
-		height: 32px;
-		padding: 3px;
+		width: 28px;
+		height: 28px;
+		padding: 2px;
 
 		background-repeat: no-repeat;
 		background-position: center center;
@@ -75,9 +83,12 @@
 
 		text-overflow: ellipsis;
 
+		color: var(--rc-color-primary);
+
 		& .rc-icon {
 			font-size: 1rem;
 		}
+
 	}
 
 	&-description {

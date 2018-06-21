@@ -5,11 +5,7 @@ function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
-	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
-		moment(time).format('L')
-	);
+	return (now.getDate() === time.getDate() && moment(time).format('LT')) || (yesterday.getDate() === time.getDate() && t('yesterday')) || moment(time).format('MMM D, YYYY');
 }
 
 function directorySearch(config, cb) {
@@ -20,6 +16,7 @@ function directorySearch(config, cb) {
 					name: result.name,
 					users: result.usernames.length,
 					createdAt: timeAgo(result.ts),
+					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic
@@ -38,6 +35,9 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	showLastMessage() {
+		return RocketChat.settings.get('Store_Last_Message');
+	},
 	searchResults() {
 		return Template.instance().results.get();
 	},
@@ -103,7 +103,7 @@ Template.directory.helpers({
 		};
 	},
 	isLoading() {
-		return Template.instance().isLoading.get();
+		return true ;//Template.instance().isLoading.get();
 	},
 	onTableScroll() {
 		const instance = Template.instance();
