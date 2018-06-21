@@ -192,10 +192,8 @@ Template.setupWizard.helpers({
 			case 4: return t('Register_Server');
 		}
 	},
-	stepItemModifier(step, currentStep) {
-		if (!currentStep) {
-			currentStep = Template.instance().state.get('currentStep');
-		}
+	stepItemModifier(step) {
+		const currentStep = Template.instance().state.get('currentStep');
 
 		if (currentStep === step) {
 			return 'setup-wizard-info__steps-item--active';
