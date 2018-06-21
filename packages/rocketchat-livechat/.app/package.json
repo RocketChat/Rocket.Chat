@@ -29,6 +29,7 @@
     "mime-type": "^3.0.5",
     "moment": "^2.22.2",
     "request": "^2.85.0",
+    "sweetalert2": "^7.20.7",
     "toastr": "^2.1.4",
     "underscore": "^1.9.1",
     "underscore.string": "^3.3.4"
