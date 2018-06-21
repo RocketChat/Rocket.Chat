@@ -61,8 +61,8 @@ const api = {
 		}
 
 		Meteor.call('livechat:registerGuest', data, function(error, result) {
-			if (!error) {
-				visitor.setToken(result.token);
+			if (!error && result.visitor && result.visitor.token) {
+				visitor.setToken(result.visitor.token);
 			}
 		});
 	}

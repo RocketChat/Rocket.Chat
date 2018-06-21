@@ -90,6 +90,13 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
+	const loadDepartments = departments => {
+		Department.remove({});
+		departments.forEach((department) => {
+			Department.insert(department);
+		});
+	};
+
 	this.autorun(() => {
 		// get all needed live chat info for the user
 		Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
@@ -156,9 +163,8 @@ Template.livechatWindow.onCreated(function() {
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
 
-			result.departments.forEach((department) => {
-				Department.insert(department);
-			});
+			loadDepartments(result.departments);
+
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 
 			Livechat.ready();

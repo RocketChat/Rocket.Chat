@@ -19,6 +19,8 @@ export default {
 	},
 
 	reset() {
+		msgStream.unsubscribe(this.roomSubscribed);
+
 		this.id.set(null);
 		this.token.set(null);
 		this.room.set(null);
@@ -31,8 +33,6 @@ export default {
 		Livechat.agent = null;
 		Livechat.guestName = null;
 		Livechat.guestEmail = null;
-
-		msgStream.unsubscribe('room-messages');
 	},
 
 	getId() {
