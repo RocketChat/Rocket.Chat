@@ -6,7 +6,7 @@ Meteor.methods({
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'uploadFileToDrive' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToDrive' });
 		}
 
 		const id = Meteor.userId();
@@ -27,15 +27,17 @@ Meteor.methods({
 			credentials: {
 				token: user.services.google.accessToken,
 				refreshToken: user.services.google.refreshToken,
-				scopes: user.services.google.scope
+				scopes: user.services.google.scope,
+				expiresAt: user.services.google.expiresAt
 			}
 		};
 
-		if (!client.credentials.token || !client.credentials.scopes || client.credentials.scopes.indexOf(driveScope) === -1) {
+		if (!client.credentials.token || !client.credentials.scopes || client.credentials.scopes.indexOf(driveScope) === -1 || client.credentials.expiresAt < Date.now() + 60 * 1000) {
 			throw new Meteor.Error('error-unauthenticated-user', 'Unauthenticated User', {method: 'uploadFileToDrive'});
 		}
 
 		const authObj = new google.auth.OAuth2(client.clientId, client.clientSecret, client.calllbackUrl);
+
 		authObj.credentials = {
 			access_token: client.credentials.token,
 			refresh_token: client.credentials.refreshToken
