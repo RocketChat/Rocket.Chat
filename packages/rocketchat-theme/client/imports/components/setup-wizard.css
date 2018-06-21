@@ -149,7 +149,7 @@
 					}
 
 					&::after {
-						background-color: var(--step-successful-color) !important;
+						background-color: var(--step-current-color) !important;
 					}
 
 					& .setup-wizard-info__steps-item-bonding {
