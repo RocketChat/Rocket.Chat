@@ -3,9 +3,4 @@ this.commandStream = commandStream;
 
 commandStream.allowWrite('none');
 
-commandStream.allowRead(function(eventName) {
-	if (eventName === this.userId) {
-		return true;
-	}
-	return false;
-});
+commandStream.allowRead('all');

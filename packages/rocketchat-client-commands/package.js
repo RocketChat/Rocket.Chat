@@ -20,4 +20,5 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup.js', 'server');
 	api.addFiles('server/sendClientCommand.js', 'server');
+	api.addFiles('server/replyClientCommand.js', 'server');
 });
