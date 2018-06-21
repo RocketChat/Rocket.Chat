@@ -1,7 +1,7 @@
 <template name="directory">
 	<section class="rc-directory">
 		{{> header sectionName="Directory" hideHelp=true}}
-		<div class="rc-directory-content">
+		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
 			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
@@ -16,16 +16,21 @@
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
-								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name')}}</div>
 							</th>
 							<th class="rc-directory-td--users">
-								<div class="table-fake-th">{{_ "Users"}}</div>
+								<div class="table-fake-th"><span>{{_ "Users"}}</span></div>
 							</th>
+							{{#if showLastMessage}}
+							<th class="table-column-date">
+								<div class="table-fake-th">{{_ "Last_Message"}}</div>
+							</th>
+							{{/if}}
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
-								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
+								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
 							<th>
-								<div class="table-fake-th">{{_ "Topic"}}</div>
+								<div class="table-fake-th"><span>{{_ "Topic"}}</span></div>
 							</th>
 						</tr>
 					</thead>
@@ -33,26 +38,24 @@
 						{{#each searchResults}}
 							<tr data-name="{{name}}">
 								<td>
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">
-												{{>icon icon="hashtag"}}
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{>icon icon="hashtag" block="rc-directory-icon"}}
 												{{name}}
 											</span>
 										</div>
 									</div>
 								</td>
 								<td>{{users}}</td>
-								<td>{{createdAt}}</td>
+								{{#if showLastMessage}}
+									<td class="table-column-date">{{lastMessage}}</td>
+								{{/if}}
+								<td class="table-column-date">{{createdAt}}</td>
 								<td>{{topic}}</td>
 							</tr>
 						{{/each}}
-						{{#if isLoading}}
-							<tr>
-									<td colspan="3" style="position: relative;">{{> loading}}</td>
-							</tr>
-						{{/if}}
 					</tbody>
 				{{/table}}
 			{{/if}}
@@ -61,13 +64,13 @@
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
-								<div class="table-fake-th">{{_ "Username"}} {{> icon icon=(sortIcon 'username') }}</div>
+								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
-								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name') }}</div>
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
 							</th>
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
-								<div class="table-fake-th">{{_ "Created_at"}} {{> icon icon=(sortIcon 'createdAt') }}</div>
+								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
 						</tr>
 					</thead>
@@ -75,10 +78,10 @@
 						{{#each searchResults}}
 							<tr data-name="{{name}}">
 								<td>
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=username}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-username">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=username}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
 												{{username}}
 											</span>
 										</div>
@@ -90,7 +93,7 @@
 						{{/each}}
 						{{#if isLoading}}
 							<tr>
-									<td colspan="3" style="position: relative;">{{> loading}}</td>
+								<td colspan="3" style="position: relative;">{{> loading}}</td>
 							</tr>
 						{{/if}}
 					</tbody>

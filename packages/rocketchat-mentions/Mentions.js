@@ -39,7 +39,7 @@ export default class {
 				return `${ prefix }<a class="mention-link mention-link-me mention-link-all">@${ username }</a>`;
 			}
 
-			const mentionObj = message.mentions.find(m => m.username === username);
+			const mentionObj = message.mentions && message.mentions.find(m => m.username === username);
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}

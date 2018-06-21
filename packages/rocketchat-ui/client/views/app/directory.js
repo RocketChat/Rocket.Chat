@@ -5,11 +5,7 @@ function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
-	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
-		moment(time).format('L')
-	);
+	return (now.getDate() === time.getDate() && moment(time).format('LT')) || (yesterday.getDate() === time.getDate() && t('yesterday')) || moment(time).format('MMM D, YYYY');
 }
 
 function directorySearch(config, cb) {
@@ -20,6 +16,7 @@ function directorySearch(config, cb) {
 					name: result.name,
 					users: result.usernames.length,
 					createdAt: timeAgo(result.ts),
+					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic
@@ -38,6 +35,9 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	showLastMessage() {
+		return RocketChat.settings.get('Store_Last_Message');
+	},
 	searchResults() {
 		return Template.instance().results.get();
 	},
@@ -107,7 +107,7 @@ Template.directory.helpers({
 	},
 	onTableScroll() {
 		const instance = Template.instance();
-		if (instance.loading || instance.end.get()) {
+		if (instance.isLoading.get() || instance.end.get()) {
 			return;
 		}
 		return function(currentTarget) {
@@ -182,10 +182,6 @@ Template.directory.onRendered(function() {
 	});
 });
 
-Template.directory.onDestroyed(function() {
-	$(window).on('off', this.resize);
-});
-
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
 	this.searchType = new ReactiveVar('channels');
@@ -202,5 +198,5 @@ Template.directory.onCreated(function() {
 
 Template.directory.onRendered(function() {
 	$('.main-content').removeClass('rc-old');
-	$('.rc-directory-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
 });
