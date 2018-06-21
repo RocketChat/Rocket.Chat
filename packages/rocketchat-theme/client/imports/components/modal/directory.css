@@ -4,6 +4,8 @@
 
 	padding: 0 1.5rem;
 
+	height: 100vh;
+
 	&-search {
 		width: 100%;
 
