@@ -1,5 +1,3 @@
-import s from 'underscore.string';
-
 const setSettingsAndGo = (settings, registerServer = true) => {
 	const settingsFilter = Object.entries(settings)
 		.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
@@ -21,40 +19,46 @@ const setSettingsAndGo = (settings, registerServer = true) => {
 };
 
 Template.setupWizard.onCreated(function() {
-	const userId = Meteor.userId();
-
-	this.autorun((c) => {
-		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
-		const user = Meteor.user();
-
-		// Wait for roles and setup wizard setting
-		if ((userId && (!user || !user.status)) || !Show_Setup_Wizard) {
-			return;
-		}
-
-		c.stop();
-
-		if ((!userId && Show_Setup_Wizard !== 'pending') || Show_Setup_Wizard === 'completed' || (userId && !RocketChat.authz.hasRole(userId, 'admin'))) {
-			FlowRouter.go('home');
-		}
-	});
+	this.state = new ReactiveDict();
+	this.hasAdmin = new ReactiveVar(false);
+	this.wizardSettings = new ReactiveVar([]);
+	this.invalidUsername = new ReactiveVar(false);
+	this.invalidEmail = new ReactiveVar(false);
 
 	if (localStorage.getItem('wizardFinal')) {
 		FlowRouter.go('setup-wizard-final');
 	}
 
-	this.hasAdmin = new ReactiveVar(false);
-	this.state = new ReactiveDict();
-	this.wizardSettings = new ReactiveVar([]);
-	this.invalidUsername = new ReactiveVar(false);
-	this.invalidEmail = new ReactiveVar(false);
-
 	const storage = JSON.parse(localStorage.getItem('wizard'));
 	if (storage) {
-		Object.entries(storage).forEach(([key, value]) => {
-			this.state.set(key, value);
-		});
+		Object.entries(storage)
+			.forEach(([key, value]) => this.state.set(key, value));
 	}
+
+	this.autorun(c => {
+		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
+		if (!showSetupWizard) {
+			// Setup Wizard state is not defined yet
+			return;
+		}
+
+		const userId = Meteor.userId();
+		const user = userId && RocketChat.models.Users.findOne(userId, { fields: { status: true } });
+		if (userId && (!user || !user.status)) {
+			// User and its status are not defined yet
+			return;
+		}
+
+		c.stop();
+
+		const isComplete = showSetupWizard === 'completed';
+		const noUserLoggedInAndIsNotPending = !userId && showSetupWizard !== 'pending';
+		const userIsLoggedButIsNotAdmin = userId && !RocketChat.authz.hasRole(userId, 'admin');
+		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
+			FlowRouter.go('home');
+			return;
+		}
+	});
 
 	this.autorun(() => {
 		const user = Meteor.user();
@@ -144,7 +148,7 @@ const processAdminInfoStep = (t) => {
 };
 
 Template.setupWizard.events({
-	'submit .setup-wizard-forms__box'(e, t) {
+	'submit .setup-wizard-forms__box'() {
 		return false;
 	},
 	'click .setup-wizard-forms__footer-next'(e, t) {
@@ -284,24 +288,34 @@ Template.setupWizard.helpers({
 });
 
 Template.setupWizardFinal.onCreated(function() {
-	this.autorun(() => {
+	const isSetupWizardDone = localStorage.getItem('wizardFinal');
+	if (isSetupWizardDone === null) {
+		FlowRouter.go('setup-wizard');
+	}
+
+	this.autorun(c => {
+		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
+		if (!showSetupWizard) {
+			// Setup Wizard state is not defined yet
+			return;
+		}
+
 		const userId = Meteor.userId();
+		const user = userId && RocketChat.models.Users.findOne(userId, { fields: { status: true } });
+		if (userId && (!user || !user.status)) {
+			// User and its status are not defined yet
+			return;
+		}
 
-		this.autorun((c) => {
-			const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
-			const user = Meteor.user();
+		c.stop();
 
-			// Wait for roles and setup wizard setting
-			if ((userId && (!user || !user.status)) || !Show_Setup_Wizard) {
-				return;
-			}
-
-			c.stop();
-
-			if ((!userId && Show_Setup_Wizard !== 'pending') || Show_Setup_Wizard === 'completed' || (userId && !RocketChat.authz.hasRole(userId, 'admin'))) {
-				FlowRouter.go('home');
-			}
-		});
+		const isComplete = showSetupWizard === 'completed';
+		const noUserLoggedInAndIsNotPending = !userId && showSetupWizard !== 'pending';
+		const userIsLoggedButIsNotAdmin = userId && !RocketChat.authz.hasRole(userId, 'admin');
+		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
+			FlowRouter.go('home');
+			return;
+		}
 	});
 });
 
