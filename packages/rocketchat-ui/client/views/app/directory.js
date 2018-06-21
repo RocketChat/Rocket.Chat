@@ -14,7 +14,7 @@ function directorySearch(config, cb) {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: result.usernames.length,
+					users: (result.usernames ? result.usernames.length : result.usersCount) || 0,
 					createdAt: timeAgo(result.ts),
 					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,

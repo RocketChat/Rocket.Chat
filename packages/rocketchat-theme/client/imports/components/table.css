@@ -12,7 +12,7 @@
 	}
 
 	& tbody {
-		& tr {
+		& tr:not(.table-loading) {
 			cursor: pointer;
 
 			&:hover {
@@ -202,4 +202,12 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	text-transform: capitalize;
+}
+
+.table-loading {
+	height: 10px;
+}
+
+.table-loading-td {
+	position: relative;
 }
