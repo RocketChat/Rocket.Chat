@@ -103,7 +103,7 @@ Template.directory.helpers({
 		};
 	},
 	isLoading() {
-		return true ;//Template.instance().isLoading.get();
+		return Template.instance().isLoading.get();
 	},
 	onTableScroll() {
 		const instance = Template.instance();

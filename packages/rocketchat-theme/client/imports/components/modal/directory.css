@@ -50,9 +50,9 @@
 	&-avatar {
 		flex: 0 0 auto;
 
-		width: 28px;
-		height: 28px;
-		padding: 2px;
+		width: 30px;
+		height: 30px;
+		padding: 2px 4px;
 
 		background-repeat: no-repeat;
 		background-position: center center;
@@ -74,7 +74,7 @@
 		text-overflow: ellipsis;
 		flex-grow: 1;
 
-		margin: 0 3px;
+		margin: 0 4px;
 	}
 
 	&-name,
@@ -89,6 +89,7 @@
 
 		& .rc-icon {
 			font-size: 1rem;
+			margin: 0 -4px;
 		}
 
 	}

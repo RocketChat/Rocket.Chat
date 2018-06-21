@@ -22,8 +22,8 @@
 								<div class="table-fake-th"><span>{{_ "Users"}}</span></div>
 							</th>
 							{{#if showLastMessage}}
-							<th class="js-sort table-column-date">
-								<div class="table-fake-th">{{_ "lastMessage"}}</div>
+							<th class="table-column-date">
+								<div class="table-fake-th">{{_ "Last_Message"}}</div>
 							</th>
 							{{/if}}
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
@@ -50,9 +50,9 @@
 								</td>
 								<td>{{users}}</td>
 								{{#if showLastMessage}}
-									<td>{{lastMessage}}</td>
+									<td class="table-column-date">{{lastMessage}}</td>
 								{{/if}}
-								<td>{{createdAt}}</td>
+								<td class="table-column-date">{{createdAt}}</td>
 								<td class="rc-directory-topic">{{topic}}</td>
 							</tr>
 						{{/each}}
