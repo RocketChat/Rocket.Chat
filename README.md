@@ -93,7 +93,7 @@ Install Rocket.Chat in seconds on Linux (Ubuntu and others) with:
 sudo snap install rocketchat-server
 ```
 
-[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
+[![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/vynmera/img/raw/master/ubuntu.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
 Installing snaps is very quick. By running that command you have your full Rocket.Chat server up and running. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto update when we release new versions.
 
