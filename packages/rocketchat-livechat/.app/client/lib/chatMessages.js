@@ -162,6 +162,8 @@ this.ChatMessages = class ChatMessages {
 				}
 
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
+				
 				sendMessage();
 			});
 		} else {

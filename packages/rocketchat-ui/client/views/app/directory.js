@@ -5,11 +5,7 @@ function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
-	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
-		moment(time).format('L')
-	);
+	return (now.getDate() === time.getDate() && moment(time).format('LT')) || (yesterday.getDate() === time.getDate() && t('yesterday')) || moment(time).format('MMM D, YYYY');
 }
 
 function directorySearch(config, cb) {
@@ -18,8 +14,9 @@ function directorySearch(config, cb) {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: result.usernames.length,
+					users: (result.usernames ? result.usernames.length : result.usersCount) || 0,
 					createdAt: timeAgo(result.ts),
+					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic
@@ -38,6 +35,9 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	showLastMessage() {
+		return RocketChat.settings.get('Store_Last_Message');
+	},
 	searchResults() {
 		return Template.instance().results.get();
 	},
@@ -198,5 +198,5 @@ Template.directory.onCreated(function() {
 
 Template.directory.onRendered(function() {
 	$('.main-content').removeClass('rc-old');
-	$('.rc-directory-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
 });

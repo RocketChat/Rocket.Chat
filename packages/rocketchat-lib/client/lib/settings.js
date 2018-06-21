@@ -83,6 +83,10 @@ Meteor.startup(function() {
 				});
 			}
 		}, 100);
+		const documentDomain = RocketChat.settings.get('Document_Domain');
+		if (documentDomain) {
+			window.document.domain = documentDomain;
+		}
 		return c.stop();
 	});
 });
