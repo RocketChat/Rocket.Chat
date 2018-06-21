@@ -1,7 +1,7 @@
 <template name="directory">
 	<section class="rc-directory">
 		{{> header sectionName="Directory" hideHelp=true}}
-		<div class="rc-directory-content">
+		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
 			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
@@ -38,10 +38,10 @@
 						{{#each searchResults}}
 							<tr data-name="{{name}}">
 								<td>
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
 												{{>icon icon="hashtag" block="rc-directory-icon"}}
 												{{name}}
 											</span>
@@ -53,7 +53,7 @@
 									<td class="table-column-date">{{lastMessage}}</td>
 								{{/if}}
 								<td class="table-column-date">{{createdAt}}</td>
-								<td class="rc-directory-topic">{{topic}}</td>
+								<td>{{topic}}</td>
 							</tr>
 						{{/each}}
 					</tbody>
@@ -78,10 +78,10 @@
 						{{#each searchResults}}
 							<tr data-name="{{name}}">
 								<td>
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=username}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-username">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=username}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
 												{{username}}
 											</span>
 										</div>

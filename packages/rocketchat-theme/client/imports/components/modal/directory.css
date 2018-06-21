@@ -38,82 +38,14 @@
 	color: var(--color-dark-light);
 }
 
-.rc-directory-channel {
-	&-wrapper {
-		display: flex;
-
-		overflow: hidden;
-
-		align-items: center;
-	}
-
-	&-avatar {
-		flex: 0 0 auto;
-
-		width: 30px;
-		height: 30px;
-		padding: 2px 4px;
-
-		background-repeat: no-repeat;
-		background-position: center center;
-
-		background-size: contain;
-	}
-
-	&-info {
-		display: flex;
-
-		overflow: hidden;
-
-		flex-direction: column;
-
-		width: 1%;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-		flex-grow: 1;
-
-		margin: 0 4px;
-	}
-
-	&-name,
-	&-username {
-		overflow: hidden;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-
-		color: var(--rc-color-primary);
-
-		& .rc-icon {
-			font-size: 1rem;
-			margin: 0 -4px;
-		}
-
-	}
-
-	&-description {
-
-		overflow: hidden;
-
-		max-width: 200px;
-		margin-top: 0.625rem;
-
-		text-overflow: ellipsis;
-
-		color: var(--rc-color-primary-light);
-	}
-}
-
-.rc-directory-content {
+.rc-table-content {
 	display: flex;
 	overflow-x: auto;
 	flex-direction: column;
 	flex: 1 1 100%;
 
 	height: 100vh;
+	padding: 0 1rem;
 
 	& .js-sort {
 		cursor: pointer;
@@ -152,7 +84,7 @@
 }
 
 @media (width <= 700px) {
-	.rc-directory-content {
+	.rc-table-content {
 		& th:not(:first-child),
 		& td:not(:first-child) {
 			display: none;
