@@ -198,5 +198,5 @@ Template.directory.onCreated(function() {
 
 Template.directory.onRendered(function() {
 	$('.main-content').removeClass('rc-old');
-	$('.rc-directory-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
 });
