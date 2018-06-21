@@ -63,6 +63,7 @@ Meteor.methods({
 						description: 1,
 						topic: 1,
 						name: 1,
+						lastMessage: 1,
 						ts: 1,
 						archived: 1,
 						usernames: 1
