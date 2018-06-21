@@ -14,8 +14,18 @@ Template.roomList.helpers({
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
 		}
-		const userId = Meteor.userId();
-		const sortBy = RocketChat.getUserPreference(userId, 'sidebarSortby') || 'alphabetical';
+
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				'settings.preferences.sidebarSortby': 1,
+				'settings.preferences.sidebarShowFavorites': 1,
+				'settings.preferences.sidebarShowUnread': 1,
+				'services.tokenpass': 1
+
+			}
+		});
+
+		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true
 		};
@@ -36,7 +46,7 @@ Template.roomList.helpers({
 			return ChatSubscription.find(query, {sort});
 		}
 
-		const favoritesEnabled = !!(RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(userId, 'sidebarShowFavorites'));
+		const favoritesEnabled = !!(RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites'));
 
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
@@ -57,7 +67,7 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			if (RocketChat.getUserPreference(userId, 'sidebarShowUnread')) {
+			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [{ alert: { $ne: true } }, { hideUnreadStatus: true }];
 			}
 			query.t = {$in: types};
