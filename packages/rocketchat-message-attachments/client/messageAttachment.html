@@ -46,10 +46,12 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank"{{#if title_link_download}} download=""{{/if}} rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
-						{{#if title_link_download}}
+						{{#unless title_link_download}}
+							<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
+						{{else}}
+							<a href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
-						{{/if}}
+						{{/unless}}
 					{{else}}
 						{{title}}
 					{{/if}}
