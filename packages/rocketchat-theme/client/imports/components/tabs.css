@@ -1,7 +1,7 @@
 .tabs {
 	margin-bottom: 0.5rem;
 
-	border-bottom: 1px solid rgba(216, 216, 216, 0.2);
+	border-bottom: 1px solid rgba(216, 216, 216, 0.4);
 }
 
 .tabs-wrapper {
@@ -24,8 +24,10 @@
 
 	border-bottom: 1px solid transparent;
 
-	font-size: 0.875rem;
+	font-size: 1rem;
 	line-height: 1.25rem;
+
+	font-weight: 500;
 
 	&.active {
 		color: var(--rc-color-button-primary);
