@@ -15874,5 +15874,64 @@
         "engelgabriel"
       ]
     }
+  ],
+  "0.66.0-rc.1": [
+    {
+      "pr": "11223",
+      "title": "Regression: Fix directory table loading",
+      "userLogin": "karlprieb",
+      "milestone": "0.66.0",
+      "contributors": [
+        "ggazzo",
+        "karlprieb"
+      ]
+    },
+    {
+      "pr": "11221",
+      "title": "[FIX] \"blank messages\" on iOS < 11",
+      "userLogin": "ggazzo",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "11215",
+      "title": "Regression: Fix latest and release-candidate docker images building",
+      "userLogin": "sampaiodiego",
+      "milestone": "0.66.0",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    },
+    {
+      "pr": "11199",
+      "title": "[FIX] \"blank\" screen on iOS < 11",
+      "userLogin": "ggazzo",
+      "milestone": "0.66.0",
+      "contributors": [
+        "ggazzo",
+        "web-flow",
+        "rodrigok"
+      ]
+    },
+    {
+      "pr": "11216",
+      "title": "Regression: check username or usersCount on browseChannels",
+      "userLogin": "ggazzo",
+      "milestone": "0.66.0",
+      "contributors": [
+        "ggazzo"
+      ]
+    },
+    {
+      "pr": "11211",
+      "title": "Regression: Sending message with a mention is not showing to sender",
+      "userLogin": "sampaiodiego",
+      "contributors": [
+        "sampaiodiego"
+      ]
+    }
   ]
 }
