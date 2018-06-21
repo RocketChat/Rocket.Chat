@@ -3,7 +3,6 @@ import {google} from 'googleapis';
 Meteor.methods({
 	checkDriveAccess() {
 		const driveScope = 'https://www.googleapis.com/auth/drive';
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'checkDriveAccess' });
 		}
@@ -20,7 +19,7 @@ Meteor.methods({
 		}
 
 		if (!user.services.google) {
-			return false;
+			throw new Meteor.Error('error-unauthenticated-user', 'Unauthenticated User', {method: 'checkDriveAccess'});
 		}
 
 		const client = {
@@ -36,14 +35,14 @@ Meteor.methods({
 		};
 
 		if (!client.credentials.token || !client.credentials.scopes || client.credentials.scopes.indexOf(driveScope) === -1) {
-			return false;
+			throw new Meteor.Error('error-unauthenticated-user', 'Unauthenticated User', {method: 'checkDriveAccess'});
 		}
 
 		if (client.credentials.expiresAt < Date.now() + 60 * 1000) {
 			const authObj = new google.auth.OAuth2(client.clientId, client.clientSecret, client.calllbackUrl);
 
 			authObj.setCredentials({
-				refresh_token: client.credentials.expiresAt
+				refresh_token: client.credentials.refreshToken
 			});
 
 			const refreshAccessTokenSync = Meteor.wrapAsync(authObj.refreshAccessToken, authObj);
@@ -60,7 +59,5 @@ Meteor.methods({
 				}
 			});
 		}
-
-		return true;
 	}
 });

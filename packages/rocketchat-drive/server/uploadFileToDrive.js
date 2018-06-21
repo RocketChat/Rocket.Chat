@@ -12,6 +12,10 @@ Meteor.methods({
 		const id = Meteor.userId();
 		const user = RocketChat.models.Users.findOne({_id: id});
 
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'checkDriveAccess' });
+		}
+
 		if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 			throw new Meteor.Error('error-google-unavailable', 'Google Services Unavailable', {method: 'uploadFileToDrive'});
 		}
@@ -61,7 +65,7 @@ Meteor.methods({
 			body: bufferStream
 		};
 
-		const res = await drive.files.create({
+		await drive.files.create({
 			resource: metaData,
 			media: mediaObj,
 			fields: 'id'
@@ -69,10 +73,8 @@ Meteor.methods({
 			if (err) {
 				console.log(err);
 			} else {
-				console.log(file);
+				console.log('UPLOADED FILE TO DRIVE:: STATUS:', file.status);
 			}
 		});
-
-		return res;
 	}
 });
