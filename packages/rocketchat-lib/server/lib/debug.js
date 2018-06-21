@@ -14,10 +14,13 @@ const logger = new Logger('Meteor', {
 
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function() {
+		const end = RocketChat.metrics.meteorMethods.startTimer({method: name});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
-		return originalHandler.apply(this, arguments);
+		const result = originalHandler.apply(this, arguments);
+		end();
+		return result;
 	};
 };
 
@@ -35,6 +38,13 @@ const originalMeteorPublish = Meteor.publish;
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
 		logger.publish(name, '-> userId:', this.userId, ', arguments: ', arguments);
+		const end = RocketChat.metrics.meteorSubscriptions.startTimer({subscription: name});
+
+		const originalReady = this.ready;
+		this.ready = function() {
+			end();
+			return originalReady.apply(this, arguments);
+		};
 
 		return func.apply(this, arguments);
 	});
