@@ -101,6 +101,7 @@
 	position: absolute;
 	display: block;
 	top: 0;
+	display: flex;
 
 	padding: 0.5rem 0;
 
