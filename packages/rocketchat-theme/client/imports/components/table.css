@@ -116,6 +116,11 @@
 	& .rc-icon {
 		fill: var(--rc-color-primary-light);
 	}
+
+	& > * {
+		display: inline-block;
+		vertical-align: middle;
+	}
 }
 
 .table-tr-dummy {
