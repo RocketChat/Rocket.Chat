@@ -184,8 +184,6 @@
 			height: calc(100% - 2rem);
 			margin: 1rem 1rem 1rem 0;
 
-			padding: 3rem;
-
 			border-radius: 2px;
 			background: #ffffff;
 			box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
@@ -197,6 +195,8 @@
 			flex-direction: column;
 
 			width: 350px;
+			min-height: min-content;
+			margin: 3rem;
 		}
 
 		&__header {
@@ -361,8 +361,9 @@
 
 		&__footer {
 			display: flex;
+			flex-direction: row;
 
-			margin: 0 -0.5rem;
+			margin: 0 -0.5rem 2rem -0.5rem;
 
 			& .rc-button {
 				margin: 0 0.5rem;
