@@ -1,6 +1,31 @@
 
 # 0.66.0 (Under Release Candidate Process)
 
+## 0.66.0-rc.1
+`2018-06-21  ·  2 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- "blank messages" on iOS < 11 ([#11221](https://github.com/RocketChat/Rocket.Chat/pull/11221))
+- "blank" screen on iOS < 11 ([#11199](https://github.com/RocketChat/Rocket.Chat/pull/11199))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Fix directory table loading ([#11223](https://github.com/RocketChat/Rocket.Chat/pull/11223))
+- Regression: Fix latest and release-candidate docker images building ([#11215](https://github.com/RocketChat/Rocket.Chat/pull/11215))
+- Regression: check username or usersCount on browseChannels ([#11216](https://github.com/RocketChat/Rocket.Chat/pull/11216))
+- Regression: Sending message with a mention is not showing to sender ([#11211](https://github.com/RocketChat/Rocket.Chat/pull/11211))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@karlprieb](https://github.com/karlprieb)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.66.0-rc.0
 `2018-06-20  ·  1 ️️️⚠️  ·  23 🎉  ·  52 🐛  ·  36 🔍  ·  45 👩‍💻👨‍💻`
 
