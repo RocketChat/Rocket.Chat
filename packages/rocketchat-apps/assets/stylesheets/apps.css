@@ -1,5 +1,5 @@
 .rc-apps-marketplace {
-	input.app-author-name {
+	.app-author-name {
 		width: auto !important;
 		display: inline-block !important;
 	}
@@ -9,12 +9,12 @@
 		min-height: 0;
 	}
 
-	div.app-enable-loading .loading-animation {
+	.app-enable-loading .loading-animation {
 		justify-content: left;
 		margin-left: 50px;
 	}
 
-	div.apps-error {
+	.apps-error {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -25,16 +25,17 @@
 		font-size: 45px;
 	}
 
-	td {
-		font-size: 0.875rem;
+	.rc-table-avatar {
+		width: 40px;
+		height: 40px;
+		margin: 0 7px;
 	}
 
-	.rc-directory-channel-avatar {
-		width: 45px;
-		height: 45px;
+	.rc-table-info {
+		margin: 0 7px;
 	}
 
-	.rc-directory-content {
+	.rc-table-content {
 		padding: 0;
 	}
 }

@@ -4,6 +4,8 @@
 
 	padding: 0 1.5rem;
 
+	height: 100vh;
+
 	&-search {
 		width: 100%;
 
@@ -27,83 +29,16 @@
 		}
 	}
 
-	.rc-table-td {
-		padding: 0.250rem 0;
-		font-size: 0.875rem;
-	}
-}
-
-.rc-directory-channel {
-	&-wrapper {
-		display: flex;
-
-		overflow: hidden;
-
-		align-items: center;
-	}
-
-	&-avatar {
-		width: 32px;
-		height: 32px;
-		padding: 3px;
-
-		flex: 0 0 auto;
-
-		background-repeat: no-repeat;
-		background-position: center center;
-
-		background-size: contain;
-	}
-
-	&-info {
-		display: flex;
-
-		overflow: hidden;
-
-		flex-direction: column;
-
-		width: 1%;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-		flex-grow: 1;
-
-		margin: 0 9px;
-	}
-
-	&-name,
-	&-username {
-		overflow: hidden;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-		& .rc-icon {
-			font-size: 1rem;
-		}
-	}
-
-	&-subtitle {
-		color: var(--rc-color-primary-light);
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	&-description {
-
-		overflow: hidden;
-
-		max-width: 200px;
-		margin-top: 0.625rem;
-
-		text-overflow: ellipsis;
-
+	&-topic {
 		color: var(--rc-color-primary-light);
 	}
 }
 
-.rc-directory-content {
+.rc-directory-icon {
+	color: var(--color-dark-light);
+}
+
+.rc-table-content {
 	display: flex;
 	overflow-x: auto;
 	flex-direction: column;
@@ -144,26 +79,15 @@
 	text-overflow: ellipsis;
 }
 
-.rc-directory-td--medium {
-	width: 200px;
-}
 .rc-directory-td--users {
 	width: 80px;
 }
 
-@media (width <= 500px) {
-	.rc-directory-content {
+@media (width <= 700px) {
+	.rc-table-content {
 		& th:not(:first-child),
 		& td:not(:first-child) {
 			display: none;
-		}
-	}
-
-	.rc-directory {
-		&-selector,
-		&-search,
-		&-plus {
-			padding: 0 0.3rem;
 		}
 	}
 }
