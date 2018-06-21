@@ -150,19 +150,11 @@
 	width: 80px;
 }
 
-@media (width <= 500px) {
+@media (width <= 700px) {
 	.rc-directory-content {
 		& th:not(:first-child),
 		& td:not(:first-child) {
 			display: none;
-		}
-	}
-
-	.rc-directory {
-		&-selector,
-		&-search,
-		&-plus {
-			padding: 0 0.3rem;
 		}
 	}
 }
