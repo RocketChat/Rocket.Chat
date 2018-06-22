@@ -7,10 +7,10 @@
 
 		<section class="setup-wizard-forms">
 			<div class="setup-wizard-forms__wrapper">
-				<form class="setup-wizard-forms__box" novalidate>
+				<form class="setup-wizard-forms__box {{formLoadStateClass}}" novalidate>
 					<header class="setup-wizard-forms__header">
 						<span class="setup-wizard-forms__header-step">{{_ "Step"}} {{currentStep}}</span>
-						<h1 class="setup-wizard-forms__header-title">{{stepTitle}}</h1>
+						<h1 class="setup-wizard-forms__header-title">{{stepTitle currentStep}}</h1>
 					</header>
 
 					<main class="setup-wizard-forms__content">
@@ -22,7 +22,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-sv" icon="user"}}
 										</div>
-										<input type="text" class="rc-input__element js-setting-data" name="registration-name" placeholder="{{_ 'Type_your_name'}}" value="{{getValue 'registration-name'}}">
+										<input type="text" class="rc-input__element js-setting-data" name="registration-name" placeholder="{{_ 'Type_your_name'}}" value="{{getFormValue 'registration-name'}}">
 									</div>
 								</label>
 							</div>
@@ -33,7 +33,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-sv" icon="at"}}
 										</div>
-										<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{getValue 'registration-username'}}">
+										<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{getFormValue 'registration-username'}}">
 									</div>
 								</label>
 								{{#if invalidUsername}}
@@ -52,7 +52,7 @@
 										<div class="rc-input__icon">
 											{{> icon block="rc-input__icon-sv" icon="mail"}}
 										</div>
-										<input type="email" class="rc-input__element js-setting-data" name="registration-email" placeholder="{{_ 'Type_your_email'}}" value="{{getValue 'registration-email'}}">
+										<input type="email" class="rc-input__element js-setting-data" name="registration-email" placeholder="{{_ 'Type_your_email'}}" value="{{getFormValue 'registration-email'}}">
 									</div>
 								</label>
 								{{#if invalidEmail}}
@@ -77,31 +77,31 @@
 							</div>
 						</div>
 
-						<div class="setup-wizard-forms__content-step {{showStep}}">
-							{{#each getSettings currentStep}}
+						<div class="setup-wizard-forms__content-step {{#if $or ($eq currentStep 2) ($eq currentStep 3)}}setup-wizard-forms__content-step--active{{/if}}">
+							{{#each stepSettings currentStep}}
+								{{#if $eq type 'string'}}
+									<div class="rc-input">
+										<label class="rc-input__label">
+											<div class="rc-input__title">{{_ i18nLabel}}</div>
+											<div class="rc-input__wrapper">
+												<input type="text" class="rc-input__element js-setting-data" name="{{_id}}" value="{{getFormValue _id}}">
+											</div>
+										</label>
+									</div>
+								{{/if}}
+
 								{{#if $eq type 'select'}}
 									<div class="rc-input">
 										<label class="rc-input__label">
 											<div class="rc-input__title">{{_ i18nLabel}}</div>
 											<div class="rc-select">
 												<select class="rc-select__element js-setting-data" name="{{_id}}">
-													<option value="" disabled selected="{{selectedValue _id undefined}}">{{_ "Select_an_option"}}</option>
+													<option value="" disabled selected="{{isFormValueSelected _id undefined}}">{{_ "Select_an_option"}}</option>
 													{{#each values}}
-														<option class="rc-select__option" value="{{key}}" selected="{{selectedValue ../_id key}}">{{_ i18nLabel}}</option>
+														<option class="rc-select__option" value="{{key}}" selected="{{isFormValueSelected ../_id key}}">{{_ i18nLabel}}</option>
 													{{/each}}
 												</select>
 												{{> icon block="rc-select__arrow" icon="arrow-down" }}
-											</div>
-										</label>
-									</div>
-								{{/if}}
-
-								{{#if $eq type 'string'}}
-									<div class="rc-input">
-										<label class="rc-input__label">
-											<div class="rc-input__title">{{_ i18nLabel}}</div>
-											<div class="rc-input__wrapper">
-												<input type="text" class="rc-input__element js-setting-data" name="{{_id}}" value="{{getValue _id}}">
 											</div>
 										</label>
 									</div>
@@ -114,7 +114,7 @@
 											<div class="rc-select">
 												<select class="rc-select__element js-setting-data" name="{{_id}}">
 													{{#each languages}}
-														<option class="rc-select__option" value="{{key}}" selected="{{selectedValue ../_id key}}" dir="auto">{{name}}</option>
+														<option class="rc-select__option" value="{{key}}" selected="{{isFormValueSelected ../_id key}}" dir="auto">{{name}}</option>
 													{{/each}}
 												</select>
 												{{> icon block="rc-select__arrow" icon="arrow-down" }}
@@ -142,18 +142,18 @@
 									</ul>
 								</label>
 								<label class="setup-wizard-forms__content-register-option">
-										<div class="setup-wizard-forms__content-register-radio">
-											<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data">
-											<span class="setup-wizard-forms__content-register-radio-fake"></span>
-											<span class="setup-wizard-forms__content-register-radio-text">Standalone Server</span>
-										</div>
-										<ul>
-											<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Mobile push notifications</li>
-											<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Omnichannel proxy</li>
-											<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Social Network oAuth proxy</li>
-											<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Apps Marketplace</li>
-										</ul>
-									</label>
+									<div class="setup-wizard-forms__content-register-radio">
+										<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data">
+										<span class="setup-wizard-forms__content-register-radio-fake"></span>
+										<span class="setup-wizard-forms__content-register-radio-text">Standalone Server</span>
+									</div>
+									<ul>
+										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Mobile push notifications</li>
+										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Omnichannel proxy</li>
+										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Social Network oAuth proxy</li>
+										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Apps Marketplace</li>
+									</ul>
+								</label>
 							</form>
 						</div>
 					</main>
@@ -164,7 +164,7 @@
 								<span>{{_ "Back"}}</span>
 							</button>
 						{{/if}}
-						<button type="submit" class="rc-button rc-button--primary setup-wizard-forms__footer-next" {{isDisabled}}>
+						<button type="submit" class="rc-button rc-button--primary setup-wizard-forms__footer-next" disabled={{isContinueDisabled}}>
 							<span>{{_ "Continue"}}</span>
 						</button>
 					</footer>

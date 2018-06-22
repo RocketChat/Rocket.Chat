@@ -1,4 +1,17 @@
-import steps from '../imports/steps';
+const steps = {
+  '1': {
+    name: 'Admin_Info'
+  },
+  '2': {
+    name: 'Organization_Info'
+  },
+  '3': {
+    name: 'Server_Info'
+  },
+  '4': {
+    name: 'Register_Server'
+  }
+};
 
 Template.setupWizard.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -228,28 +241,6 @@ Template.setupWizard.helpers({
 
 		return steps[step] && t(steps[step].name);
 	},
-	getValue(name) {
-		return Template.instance().state.get(name);
-	},
-	selectedValue(setting, optionValue) {
-		return Template.instance().state.get(setting) === optionValue;
-	},
-	isDisabled() {
-		const user = Meteor.user();
-		if (user && user.roles && !user.roles.includes('admin')) {
-			return 'disabled';
-		}
-
-		if (Template.instance().state.get('currentStep') === 1) {
-			const state = Template.instance().state.all();
-
-			if (Object.entries(state).filter(([key, value]) => /registration-/.test(key) && !value).length) {
-				return 'disabled';
-			}
-		}
-
-		return '';
-	},
 	showStep() {
 		const currentStep = Template.instance().state.get('currentStep');
 		if (currentStep === 2 || currentStep === 3) {
@@ -258,10 +249,27 @@ Template.setupWizard.helpers({
 
 		return '';
 	},
-	getSettings(step) {
+	formLoadStateClass() {
+		const currentStep = Template.instance().state.get('currentStep');
+
+		if (currentStep === 1 && RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+			return 'setup-wizard-forms__box--loaded';
+		}
+
+		if ((currentStep === 2 || currentStep == 3) && Template.instance().wizardSettings.get().length > 0) {
+			return 'setup-wizard-forms__box--loaded';
+		}
+	},
+	stepSettings(step) {
 		return Template.instance().wizardSettings.get()
 			.filter(setting => setting.wizard.step === step)
 			.sort((a, b) => a.wizard.order - b.wizard.order);
+	},
+	getFormValue(name) {
+		return Template.instance().state.get(name);
+	},
+	isFormValueSelected(name, optionValue) {
+		return Template.instance().state.get(name) === optionValue;
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -300,6 +308,19 @@ Template.setupWizard.helpers({
 
 		if (Template.instance().state.get('currentStep') > 1) {
 			return true;
+		}
+
+		return false;
+	},
+	isContinueDisabled() {
+		const currentStep = Template.instance().state.get('currentStep');
+		if (currentStep === 1) {
+			const validFields = Object.entries(Template.instance().state.all())
+				.filter(([key, value]) => /registration-/.test(key) && !value);
+
+			if (validFields.length) {
+				return true;
+			}
 		}
 
 		return false;

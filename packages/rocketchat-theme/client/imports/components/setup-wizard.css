@@ -197,6 +197,15 @@
 			width: 350px;
 			min-height: min-content;
 			margin: 3rem;
+
+			visibility: hidden;
+			opacity: 0;
+			transition: opacity 1s linear;
+
+			&--loaded {
+				visibility: visible;
+				opacity: 1;
+			}
 		}
 
 		&__header {
