@@ -1,17 +1,17 @@
-const steps = {
-  '1': {
+const steps = [
+  {
     name: 'Admin_Info'
   },
-  '2': {
+  {
     name: 'Organization_Info'
   },
-  '3': {
+  {
     name: 'Server_Info'
   },
-  '4': {
+  {
     name: 'Register_Server'
   }
-};
+];
 
 Template.setupWizard.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -24,18 +24,6 @@ Template.setupWizard.onCreated(function() {
 		FlowRouter.go('setup-wizard-final');
 		return;
 	}
-
-	this.loadState = () => {
-		const jsonString = localStorage.getItem('wizard');
-		const state = jsonString && JSON.parse(jsonString) || {};
-		Object.entries(state).forEach(entry => this.state.set(...entry));
-	};
-
-	this.saveState = () => {
-		const state = this.state.all();
-		state['registration-pass'] = '';
-		localStorage.setItem('wizard', JSON.stringify(state));
-	};
 
 	this.currentStep = () => this.state.get('currentStep');
 
@@ -53,6 +41,38 @@ Template.setupWizard.onCreated(function() {
 				c.stop();
 				return;
 			}
+		});
+	};
+
+	this.showRemainingInfoSteps = () => {
+		Meteor.call('getWizardSettings', (error, wizardSettings) => {
+			if (error) {
+				return handleError(error);
+			}
+
+			this.wizardSettings.set(wizardSettings);
+			this.state.set('currentStep', 2);
+
+			this.autorun(c => {
+				const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
+				const userId = Meteor.userId();
+
+				if (!userId) {
+					c.stop();
+					this.showAdminInfoStep();
+					return;
+				}
+
+				if (showSetupWizard === 'completed' || !RocketChat.authz.hasRole(userId, 'admin')) {
+					c.stop();
+					FlowRouter.go('home');
+					return;
+				}
+
+				const state = this.state.all();
+				state['registration-pass'] = '';
+				localStorage.setItem('wizard', JSON.stringify(state));
+			});
 		});
 	};
 
@@ -107,37 +127,24 @@ Template.setupWizard.onCreated(function() {
 		});
 	};
 
-	this.showRemainingInfoSteps = () => {
-		Meteor.call('getWizardSettings', (error, wizardSettings) => {
-			if (error) {
-				return handleError(error);
-			}
-
-			this.wizardSettings.set(wizardSettings);
-			this.state.set('currentStep', 2);
-
-			this.autorun(c => {
-				const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
-				const userId = Meteor.userId();
-
-				if (!userId) {
-					c.stop();
-					this.showAdminInfoStep();
-					return;
-				}
-
-				if (showSetupWizard === 'completed' || !RocketChat.authz.hasRole(userId, 'admin')) {
-					c.stop();
-					FlowRouter.go('home');
-					return;
-				}
-
-				this.saveState();
-			});
-		});
+	this.processOrganizationInfoStep = () => {
+		this.state.set('currentStep', 3);
+		return false;
 	};
 
-	this.loadState();
+	this.processServerInfoStep = () => {
+		setSettingsAndGo(this.state.all());
+		return false;
+	};
+
+	this.processRegisterServerStep = () => {
+		setSettingsAndGo(this.state.all(), JSON.parse(this.state.get('registerServer') || true));
+		return false;
+	};
+
+	const jsonString = localStorage.getItem('wizard');
+	const state = jsonString && JSON.parse(jsonString) || {};
+	Object.entries(state).forEach(entry => this.state.set(...entry));
 
 	this.autorun(c => {
 		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
@@ -209,17 +216,18 @@ Template.setupWizard.events({
 			return t.processAdminInfoStep();
 		}
 
-		if (hasAdmin && currentStep === 3) {
-			setSettingsAndGo(t.state.all());
-			return false;
+		if (currentStep === 2) {
+			return t.processOrganizationInfoStep();
+		}
+
+		if (currentStep === 3) {
+			return t.processServerInfoStep();
 		}
 
 		if (currentStep === 4) {
-			setSettingsAndGo(t.state.all(), JSON.parse(t.state.get('registerServer') || true));
-			return false;
+			return t.processRegisterServerStep();
 		}
 
-		t.state.set('currentStep', currentStep + 1);
 		return false;
 	},
 	'click .setup-wizard-forms__footer-back'(e, t) {
@@ -239,7 +247,7 @@ Template.setupWizard.helpers({
 			step = Template.instance().state.get('currentStep');
 		}
 
-		return steps[step] && t(steps[step].name);
+		return steps[step - 1] && t(steps[step - 1].name);
 	},
 	showStep() {
 		const currentStep = Template.instance().state.get('currentStep');
@@ -346,7 +354,7 @@ Template.setupWizardInfo.helpers({
 			step = Template.currentData().currentStep;
 		}
 
-		return steps[step] && t(steps[step].name);
+		return steps[step - 1] && t(steps[step - 1].name);
 	},
 });
 
