@@ -8,6 +8,9 @@ RocketChat.deleteUser = function(userId) {
 		switch (messageErasureType) {
 			case 'Delete' :
 				RocketChat.models.Messages.removeByUserId(userId);
+				RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
+					'u._id': userId
+				});
 				break;
 			case 'Unlink' :
 				const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
