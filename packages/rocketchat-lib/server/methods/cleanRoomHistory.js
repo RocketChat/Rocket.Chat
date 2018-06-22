@@ -22,7 +22,7 @@ Meteor.methods({
 				}
 			});
 
-			RocketChat.Notifications.notifyRoom(roomId, 'deleteMessageBulk', {
+			RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
 				rid: roomId,
 				ts: {
 					$gte: oldest,
@@ -38,7 +38,7 @@ Meteor.methods({
 				}
 			});
 
-			RocketChat.Notifications.notifyRoom(roomId, 'deleteMessageBulk', {
+			RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
 				rid: roomId,
 				ts: {
 					$gt: oldest,
