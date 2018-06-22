@@ -21,8 +21,24 @@ Meteor.methods({
 					$lte: latest
 				}
 			});
+
+			RocketChat.Notifications.notifyRoom(roomId, 'deleteMessageBulk', {
+				rid: roomId,
+				ts: {
+					$gte: oldest,
+					$lte: latest
+				}
+			});
 		} else {
 			RocketChat.models.Messages.remove({
+				rid: roomId,
+				ts: {
+					$gt: oldest,
+					$lt: latest
+				}
+			});
+
+			RocketChat.Notifications.notifyRoom(roomId, 'deleteMessageBulk', {
 				rid: roomId,
 				ts: {
 					$gt: oldest,
