@@ -2,7 +2,7 @@ import {google} from 'googleapis';
 import stream from 'stream';
 
 Meteor.methods({
-	async 'uploadFileToDrive'({fileData, metaData}) {
+	async 'uploadFileToDrive'({fileData, metaData}, toShare = false, rid = null) {
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 
 		if (!Meteor.userId()) {
@@ -68,12 +68,22 @@ Meteor.methods({
 		await drive.files.create({
 			resource: metaData,
 			media: mediaObj,
-			fields: 'id'
+			fields: 'webViewLink'
 		}, function(err, file) {
 			if (err) {
 				console.log(err);
 			} else {
 				console.log('UPLOADED FILE TO DRIVE:: STATUS:', file.status);
+				if (toShare) {
+					const msg = file.data.webViewLink;
+					const message = { _id: id, rid, msg };
+
+					if (msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
+						return;
+					}
+
+					Meteor.call('sendMessage', message);
+				}
 			}
 		});
 	}

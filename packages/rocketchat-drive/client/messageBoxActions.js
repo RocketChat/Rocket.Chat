@@ -7,20 +7,23 @@ Meteor.startup(function() {
 			return true;
 		},
 		action() {
+			const roomId = Session.get('openedRoom');
 			const type = 'docs';
 			const name = 'RocketChat Google Doc'; // placeholder for now, TODO: ask from user
-			Meteor.call('checkDriveAccess', (err, authorized) => {
-				if (!authorized) {
+			Meteor.call('checkDriveAccess', (error) => {
+				if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+					return toastr.error(t(error.error));
+				} else if (error) {
 					Meteor.loginWithGoogle({
 						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
 					}, function(error) {
 						if (error) {
 							console.log(error);
 						}
-						Meteor.call('createGoogleFile', {type, name});
+						Meteor.call('createGoogleFile', {type, name}, roomId);
 					});
 				} else {
-					Meteor.call('createGoogleFile', {type, name});
+					Meteor.call('createGoogleFile', {type, name}, roomId);
 				}
 			});
 		}

@@ -1,5 +1,5 @@
 Meteor.methods({
-	async createGoogleFile({type, name}) {
+	async createGoogleFile({type, name}, rid) {
 		const mimeTypes = {
 			'docs': 'application/vnd.google-apps.document',
 			'slides': 'application/vnd.google-apps.presentation',
@@ -12,6 +12,6 @@ Meteor.methods({
 			'name': `${ name }`
 		};
 
-		Meteor.call('uploadFileToDrive', {fileData, metaData});
+		Meteor.call('uploadFileToDrive', {fileData, metaData}, true, rid);
 	}
 });

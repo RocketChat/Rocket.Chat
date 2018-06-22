@@ -27,24 +27,22 @@ Meteor.startup(function() {
 				if (arrayBuffer) {
 					const fileData = new Uint8Array(arrayBuffer);
 					Meteor.call('checkDriveAccess', (error) => {
-						if (error) {
-							if (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable') {
-								return toastr.error(t(error.error));
-							} else {
-								Meteor.loginWithGoogle({
-									requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
-								}, function(error) {
+						if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+							return toastr.error(t(error.error));
+						} else if (error) {
+							Meteor.loginWithGoogle({
+								requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+							}, function(error) {
+								if (error) {
+									return;
+								}
+								Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
 									if (error) {
-										return;
+										return toastr.error(t(error.error));
 									}
-									Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
-										if (error) {
-											return toastr.error(t(error.error));
-										}
-										toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'));
-									});
+									toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'));
 								});
-							}
+							});
 						} else {
 							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
 								if (error) {
