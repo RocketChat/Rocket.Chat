@@ -2,15 +2,7 @@
 import _ from 'underscore';
 
 const logger = new Logger('API', {});
-const loginRateLimiter = new RateLimiter();
-const loginRule = {
-	IPAddr: input => input,
-	type: 'method',
-	method: 'login'
-};
-const attempts = 10;
-const thirtySecondsInMS = 30000;
-loginRateLimiter.addRule(loginRule, attempts, thirtySecondsInMS);
+const rateLimiterDictionary = {};
 
 class API extends Restivus {
 	constructor(properties) {
@@ -136,6 +128,32 @@ class API extends Restivus {
 		};
 	}
 
+	addRateLimiterRuleForRoutes({ routes, rateLimiterOptions, endpoints, apiVersion }) {
+		if (!rateLimiterOptions.numRequestsAllowed) {
+			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
+		}
+		if (!rateLimiterOptions.intervalTimeInMS) {
+			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
+		}
+		const nameRoute = route => {
+			const routeActions = Object.keys(endpoints);
+			return routeActions.map(endpoint => `/api/${ apiVersion }/${ route }${ endpoint }`);
+		};
+		const addRateLimitRuleToEveryRoute = routes => {
+			routes.map(route => {
+				rateLimiterDictionary[route] = new RateLimiter();
+				const rateLimitRule = {
+					IPAddr: input => input,
+					route
+				};
+				rateLimiterDictionary[route].addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+			});
+		};
+		routes
+			.map(nameRoute)
+			.map(addRateLimitRuleToEveryRoute);
+	}
+
 	addRoute(routes, options, endpoints) {
 		//Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
@@ -149,15 +167,22 @@ class API extends Restivus {
 		}
 
 		const version = this._config.version;
-
+		const shouldAddRateLimitToRoute = options.rateLimiterOptions && version;
+		if (shouldAddRateLimitToRoute) {
+			this.addRateLimiterRuleForRoutes({
+				routes,
+				rateLimiterOptions: options.rateLimiterOptions,
+				endpoints,
+				apiVersion: version
+			});
+		}
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			if (this.hasHelperMethods()) {
 				Object.keys(endpoints).forEach((method) => {
 					if (typeof endpoints[method] === 'function') {
-						endpoints[method] = {action: endpoints[method]};
+						endpoints[method] = { action: endpoints[method] };
 					}
-
 					//Add a try/catch for each endpoint
 					const originalAction = endpoints[method].action;
 					endpoints[method].action = function _internalRouteActionHandler() {
@@ -169,8 +194,24 @@ class API extends Restivus {
 						});
 
 						logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+						const requestIp = this.request.headers['x-forwarded-for'];
+						const objectForRateLimitMatch = {
+							IPAddr: requestIp,
+							route: `${ this.request.route }${ this.request.method.toLowerCase() }`
+						};
 						let result;
 						try {
+							const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route);
+							if (shouldVerifyRateLimit) {
+								rateLimiterDictionary[objectForRateLimitMatch.route].increment(objectForRateLimitMatch);
+								const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].check(objectForRateLimitMatch);
+								if (!attemptResult.allowed) {
+									throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying this endpoint again.`, {
+										timeToReset: attemptResult.timeToReset,
+										seconds: Math.ceil(attemptResult.timeToReset / 1000)
+									});
+								}
+							}
 							result = originalAction.apply(this);
 						} catch (e) {
 							logger.debug(`${ method } ${ route } threw an error:`, e.stack);
@@ -249,7 +290,10 @@ class API extends Restivus {
 
 		const self = this;
 
-		this.addRoute('login', { authRequired: false }, {
+		this.addRoute('login', {
+			authRequired: false,
+			rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 }
+		}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
@@ -263,22 +307,7 @@ class API extends Restivus {
 
 				let auth;
 				try {
-					const requestIp = this.request.headers['x-forwarded-for'];
-					const ruleForMatchAttempt = {
-						IPAddr: requestIp,
-						type: 'method',
-						method: 'login'
-					};
-					const attemptResult = loginRateLimiter.check(ruleForMatchAttempt);
-					loginRateLimiter.increment(ruleForMatchAttempt);
-					if (attemptResult.allowed) {
-						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
-					} else {
-						throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying again.`, {
-							timeToReset: attemptResult.timeToReset,
-							seconds: Math.ceil(attemptResult.timeToReset / 1000)
-						});
-					}
+					auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
 				} catch (error) {
 					let e = error;
 					if (error.reason === 'User not found') {
