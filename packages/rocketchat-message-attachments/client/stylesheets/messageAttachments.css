@@ -84,6 +84,13 @@ html.rtl .attachment {
 		margin-top: 4px;
 
 		line-height: 0;
+
+		& img {
+			width: auto;
+			height: auto;
+			max-width: 100%;
+			max-height: 200px;
+		}
 	}
 
 	& .attachment-fields {
