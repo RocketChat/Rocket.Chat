@@ -1,3 +1,5 @@
+import steps from '../imports/steps';
+
 Template.setupWizard.onCreated(function() {
 	this.state = new ReactiveDict();
 	this.hasAdmin = new ReactiveVar(false);
@@ -224,25 +226,7 @@ Template.setupWizard.helpers({
 			step = Template.instance().state.get('currentStep');
 		}
 
-		switch (step) {
-			case 1: return t('Admin_Info');
-			case 2: return t('Organization_Info');
-			case 3: return t('Server_Info');
-			case 4: return t('Register_Server');
-		}
-	},
-	stepItemModifier(step) {
-		const currentStep = Template.instance().state.get('currentStep');
-
-		if (currentStep === step) {
-			return 'setup-wizard-info__steps-item--active';
-		}
-
-		if (currentStep > step) {
-			return 'setup-wizard-info__steps-item--past';
-		}
-
-		return '';
+		return steps[step] && t(steps[step].name);
 	},
 	getValue(name) {
 		return Template.instance().state.get(name);
@@ -320,6 +304,29 @@ Template.setupWizard.helpers({
 
 		return false;
 	}
+});
+
+Template.setupWizardInfo.helpers({
+	stepItemModifier(step) {
+		const { currentStep } = Template.currentData();
+
+		if (currentStep === step) {
+			return 'setup-wizard-info__steps-item--active';
+		}
+
+		if (currentStep > step) {
+			return 'setup-wizard-info__steps-item--past';
+		}
+
+		return '';
+	},
+	stepTitle(step) {
+		if (!step) {
+			step = Template.currentData().currentStep;
+		}
+
+		return steps[step] && t(steps[step].name);
+	},
 });
 
 Template.setupWizardFinal.onCreated(function() {
