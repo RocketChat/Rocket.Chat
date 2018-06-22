@@ -76,7 +76,7 @@ Meteor.methods({
 				console.log('UPLOADED FILE TO DRIVE:: STATUS:', file.status);
 				if (toShare) {
 					const msg = file.data.webViewLink;
-					const message = { _id: id, rid, msg };
+					const message = { _id: Random.id(), rid, msg };
 
 					if (msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
 						return;
