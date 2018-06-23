@@ -1,0 +1,9 @@
+.rc-datetime__left {
+	display: inline-block;
+	width: 52%;
+}
+
+.rc-datetime__right {
+	display: inline-block;
+	width: calc(48% - 0.22rem);
+}

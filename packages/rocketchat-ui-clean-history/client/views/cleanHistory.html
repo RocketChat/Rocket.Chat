@@ -1,0 +1,65 @@
+<template name="cleanHistory">
+	<main class="rc-user-info__scroll">
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Newer_than"}}</div>
+				<div class="rc-input__wrapper rc-datetime__left">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="date" class="rc-input__element" value="" name="from__date" autocomplete="off" placeholder="YYYY-MM-DD"/>
+				</div>
+				<div class="rc-input__wrapper rc-datetime__right">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="time" class="rc-input__element" value="" name="from__time" autocomplete="off" placeholder="HH:MM"/>
+				</div>
+			</label>
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Older_than"}}</div>
+				<div class="rc-input__wrapper rc-datetime__left">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="date" class="rc-input__element" value="" name="to__date" autocomplete="off" placeholder="YYYY-MM-DD"/>
+				</div>
+				<div class="rc-input__wrapper rc-datetime__right">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="time" class="rc-input__element" value="" name="to__time" autocomplete="off" placeholder="HH:MM"/>
+				</div>
+			</label>
+		</div>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="inclusive" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Inclusive"}}</span>
+		</label>
+		{{#unless validate}}
+		<div class="mail-messages__instructions mail-messages__instructions--warning">
+			<div class="mail-messages__instructions-wrapper">
+				{{> icon block="mail-messages__instructions-icon" icon="warning"}}
+				<div class="mail-messages__instructions-text">
+						{{warningBox}}
+				</div>
+			</div>
+		</div>
+		{{else}}
+		<div class="mail-messages__instructions mail-messages__instructions--warning">
+			<div class="mail-messages__instructions-wrapper">
+				{{> icon block="mail-messages__instructions-icon" icon="modal-error"}}
+				<div class="mail-messages__instructions-text">
+						{{validate}}
+				</div>
+			</div>
+		</div>
+		{{/unless}}
+	</main>
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--cancel js-prune" title="{{_ 'Prune'}}" disabled="{{#with validate}}{{.}}{{/with}}">{{_ 'Prune'}}</button>
+	</div>
+</template>

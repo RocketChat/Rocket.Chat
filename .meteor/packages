@@ -193,3 +193,4 @@ rocketchat:search
 chatpal:search
 rocketchat:lazy-load
 tap:i18n
+rocketchat:ui-clean-history
