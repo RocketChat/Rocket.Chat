@@ -1,0 +1,81 @@
+<template name="livechatAnalytics">
+	{{#requiresPermission 'view-livechat-manager'}}
+	<form class="form-inline">
+	<div class="form-group rc-select">
+		<select id="lc-analytics-content" class="required input-monitor rc-select__element">
+				<option class="rc-select__option" value="value-1" selected="true" dir="auto">name-1 Longer name</option>
+				<option class="rc-select__option" value="value-2" dir="auto">name-2</option>
+		</select>
+		<i class="icon-angle-down"></i>
+	</div>
+	<!-- <div class="form-group">
+		<input type="text" class="form-control rc-input__element lc-daterange" id="from" name="from" >
+		<span class="input-group-addon">to</span>
+		<input type="text" class="form-control rc-input__element lc-daterange" id="to" name="to">
+	</div> -->
+	<!-- <div class="form-group">
+		<button class="lc-daterange-prev"><i class="icon-angle-left"></i></button>
+	</div> -->
+	<div class="form-group lc-analytics-header">
+		<button class="lc-daterange-prev"><i class="icon-angle-left"></i></button>
+		<button class="rc-tooltip rc-tooltip--down js-button lc-date-picker-btn" value="this-week">
+			<span class="lc-datarange-from">Jun 3 2018</span>
+			<span class="fade">to</span>
+			<span class="lc-datarange-to">Jun 9 2018</span>
+		</button>
+		<button class="lc-daterange-next"><i class="icon-angle-right"></i></button>
+	</div>
+	<!-- <div class="form-group">
+		<button class="lc-daterange-next"><i class="icon-angle-right"></i></button>
+	</div> -->
+</form>
+<div id="lc-analytics-content">
+	<div class="section">
+		<div class="section-content border-component-color">
+			<div class="rc-select">
+				<select id="lc-analytics-content-type" class="required input-monitor rc-select__element">
+						<option class="rc-select__option" value="content-value-1" selected="true" dir="auto">content-name-1</option>
+						<option class="rc-select__option" value="content-value-2" dir="auto">content-name-2</option>
+				</select>
+				<i class="icon-angle-down"></i>
+			</div>
+			<div class="lc-analytics-chart">
+					<canvas id="lc-analytics-chart"></canvas>
+			</div>
+		</div>
+	</div>
+	<div class="lc-analytics-overview">
+			<div class="lc-analytics-ov-col">
+				<div class="lc-analytics-ov-case">
+					<span class="title">Total Conversations</span>
+					<span class="value">2495</span>
+				</div>
+				<div class="lc-analytics-ov-case">
+					<span class="title">Open Conversations</span>
+					<span class="value">25</span>
+				</div>
+			</div>
+			<div class="lc-analytics-ov-col">
+				<div class="lc-analytics-ov-case">
+					<span class="title">Total Messages</span>
+					<span class="value">24950</span>
+				</div>
+				<div class="lc-analytics-ov-case">
+					<span class="title">Busiest Day</span>
+					<span class="value">Wednesday</span>
+				</div>
+			</div>
+			<div class="lc-analytics-ov-col">
+				<div class="lc-analytics-ov-case">
+					<span class="title">Conversations per day</span>
+					<span class="value">230</span>
+				</div>
+				<div class="lc-analytics-ov-case">
+					<span class="title">Busiest Time</span>
+					<span class="value">2pm-3pm</span>
+				</div>
+			</div>
+	</div>
+	</div>
+	{{/requiresPermission}}
+</template>

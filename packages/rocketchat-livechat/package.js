@@ -71,6 +71,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
 	// client views
+	api.addFiles('client/views/app/daterange.html', 'client');
+	api.addFiles('client/views/app/daterange.js', 'client');
+	api.addFiles('client/views/app/livechatAnalytics.html', 'client');
+	api.addFiles('client/views/app/livechatAnalytics.js', 'client');
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
 	api.addFiles('client/views/app/livechatCurrentChats.html', 'client');
@@ -90,6 +94,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatNotSubscribed.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
+	api.addFiles('client/views/app/livechatRealTimeMonitoring.html', 'client');
+	api.addFiles('client/views/app/livechatRealTimeMonitoring.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatTriggersForm.html', 'client');

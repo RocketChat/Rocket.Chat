@@ -127,6 +127,7 @@
 		"bunyan": "^1.8.12",
 		"busboy": "^0.2.14",
 		"cas": "https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62",
+		"chart.js": "^2.7.2",
 		"clipboard": "^1.7.1",
 		"codemirror": "^5.35.0",
 		"coffeescript": "^1.12.7",

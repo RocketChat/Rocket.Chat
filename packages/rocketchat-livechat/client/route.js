@@ -20,6 +20,22 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
+	name: 'livechat-analytics',
+	path: '/livechat-analytics',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Analytics',
+	pageTemplate: 'livechatAnalytics'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-real-time-monitoring',
+	path: '/livechat-real-time-monitoring',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Real_Time_Monitoring',
+	pageTemplate: 'livechatRealTimeMonitoring'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
 	name: 'livechat-users',
 	path: '/users',
 	sideNav: 'livechatFlex',
@@ -145,5 +161,3 @@ AccountBox.addRoute({
 	i18nPageTitle: 'Livechat_Queue',
 	pageTemplate: 'livechatQueue'
 });
-
-
