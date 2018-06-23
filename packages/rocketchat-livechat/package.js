@@ -71,6 +71,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
 	// client views
+	api.addFiles('client/views/app/customDaterange.html', 'client');
+	api.addFiles('client/views/app/customDaterange.js', 'client');
 	api.addFiles('client/views/app/daterange.html', 'client');
 	api.addFiles('client/views/app/daterange.js', 'client');
 	api.addFiles('client/views/app/livechatAnalytics.html', 'client');

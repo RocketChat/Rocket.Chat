@@ -1,5 +1,7 @@
 /* globals popover */
 
+import moment from 'moment';
+
 Template.daterange.onRendered(function() {});
 
 Template.daterange.events({
@@ -14,6 +16,25 @@ Template.daterange.events({
 
 		document.getElementsByClassName('lc-date-picker-btn')[0].value = value;
 
-		popover.close();
+		const today = moment().format('MMM D YYYY');
+
+		console.log(today);
+
+		if (value === 'custom') {
+			popover.close();
+			const target = document.getElementsByClassName('lc-date-picker-btn')[0];
+			const options = [];
+			const config = {
+				template: 'customDaterange',
+				currentTarget: target,
+				data: {
+					options
+				},
+				offsetVertical: target.clientHeight + 10
+			};
+			popover.open(config);
+		} else {
+			popover.close();
+		}
 	}
 });
