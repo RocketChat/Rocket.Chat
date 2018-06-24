@@ -19,6 +19,30 @@ const getTimeZoneOffset = function() {
 	return `${ offset < 0 ? '+' : '-' }${ (`00${ Math.floor(absOffset / 60) }`).slice(-2) }:${ (`00${ (absOffset % 60) }`).slice(-2) }`;
 };
 
+const purgeWorker = function(roomId, fromDate, toDate, inclusive, limit) {
+	Meteor.call('cleanRoomHistory', {
+		roomId,
+		latest: toDate,
+		oldest: fromDate,
+		inclusive,
+		limit
+	}, function(error, count) {
+		if (error) {
+			return handleError(error);
+		}
+
+		Session.set('cleanHistoryPrunedCount', Session.get('cleanHistoryPrunedCount') + count);
+
+		const hasMore = (count === limit);
+
+		if (hasMore) {
+			purgeWorker(roomId, fromDate, toDate, inclusive, limit);
+		} else {
+			Session.set('cleanHistoryFinished', true);
+		}
+	});
+};
+
 Template.cleanHistory.helpers({
 	roomId() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -32,6 +56,15 @@ Template.cleanHistory.helpers({
 	},
 	validate() {
 		return Template.instance().validate.get();
+	},
+	busy() {
+		return Session.get('cleanHistoryBusy');
+	},
+	finished() {
+		return Session.get('cleanHistoryFinished');
+	},
+	prunedCount() {
+		return Session.get('cleanHistoryPrunedCount');
 	}
 });
 
@@ -44,6 +77,9 @@ Template.cleanHistory.onCreated(function() {
 	Session.set('cleanHistoryToDate', '');
 	Session.set('cleanHistoryToTime', '');
 	Session.set('cleanHistoryInclusive', false);
+	Session.set('cleanHistoryBusy', false);
+	Session.set('cleanHistoryFinished', false);
+	Session.set('cleanHistoryPrunedCount', 0);
 });
 
 Template.cleanHistory.onRendered(function() {
@@ -127,7 +163,7 @@ Template.cleanHistory.events({
 		const metaFromTime = Session.get('cleanHistoryFromTime');
 		const metaToDate = Session.get('cleanHistoryToDate');
 		const metaToTime = Session.get('cleanHistoryToTime');
-		const metaCleanHistory = Session.get('cleanHistoryInclusive');
+		const metaCleanHistoryInclusive = Session.get('cleanHistoryInclusive');
 
 		let fromDate = new Date('0001-01-01T00:00:00Z');
 		let toDate = new Date('9999-12-31T23:59:59Z');
@@ -157,18 +193,9 @@ Template.cleanHistory.events({
 			closeOnConfirm: true,
 			html: false
 		}, async function() {
-			Meteor.call('cleanRoomHistory', {
-				roomId,
-				latest: toDate,
-				oldest: fromDate,
-				inclusive: metaCleanHistory
-			}, function(error) {
-				if (error) {
-					console.log(error);
-					return handleError(error);
-				}
-				console.log('yay!');
-			});
+			Session.set('cleanHistoryBusy', true);
+
+			purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, 250);
 		});
 	}
 });
