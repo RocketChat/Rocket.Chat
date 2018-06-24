@@ -13,6 +13,12 @@ const getRoomName = function() {
 	}
 };
 
+const getTimeZoneOffset = function() {
+	const offset = new Date().getTimezoneOffset();
+	const absOffset = Math.abs(offset);
+	return `${ offset < 0 ? '+' : '-' }${ ('00' + Math.floor(absOffset / 60)).slice(-2) }:${ ('00' + (absOffset % 60)).slice(-2) }`;
+}
+
 Template.cleanHistory.helpers({
 	roomId() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -53,11 +59,11 @@ Template.cleanHistory.onRendered(function() {
 		let toDate = new Date('9999-12-31T23:59:59Z');
 
 		if (metaFromDate) {
-			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00Z`);
+			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00${ getTimeZoneOffset() }`);
 		}
 
 		if (metaToDate) {
-			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00Z`);
+			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00${ getTimeZoneOffset() }`);
 		}
 
 		const user = Meteor.users.findOne(Meteor.userId());
@@ -127,11 +133,11 @@ Template.cleanHistory.events({
 		let toDate = new Date('9999-12-31T23:59:59Z');
 
 		if (metaFromDate) {
-			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00Z`);
+			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00${ getTimeZoneOffset() }`);
 		}
 
 		if (metaToDate) {
-			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00Z`);
+			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00${ getTimeZoneOffset() }`);
 		}
 
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
