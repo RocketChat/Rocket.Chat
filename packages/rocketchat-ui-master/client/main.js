@@ -116,6 +116,10 @@ Template.body.onRendered(function() {
 
 RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
+	removeSidenav() {
+		const { modal } = this;
+		return (modal || typeof modal === 'function' ? modal() : modal) || RocketChat.Layout.isEmbedded();
+	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
 	},
@@ -197,14 +201,12 @@ Template.main.onRendered(function() {
 	});
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
-		const user = Meteor.user();
 		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
 
 		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
 			FlowRouter.go('setup-wizard');
 		}
-
-		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
+		if (RocketChat.getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});
