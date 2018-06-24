@@ -1,5 +1,4 @@
 import toastr from 'toastr';
-global.Buffer = global.Buffer || require('buffer').Buffer;
 
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
@@ -27,7 +26,7 @@ Meteor.startup(function() {
 				if (arrayBuffer) {
 					const fileData = new Uint8Array(arrayBuffer);
 					Meteor.call('checkDriveAccess', (error) => {
-						if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+						if (error && error.error !== 'error-unauthenticated-user') {
 							return toastr.error(t(error.error));
 						} else if (error) {
 							Meteor.loginWithGoogle({
@@ -40,7 +39,7 @@ Meteor.startup(function() {
 									if (error) {
 										return toastr.error(t(error.error));
 									}
-									toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'));
+									toastr.success(t('Success_Drive_Upload'));
 								});
 							});
 						} else {
@@ -48,7 +47,7 @@ Meteor.startup(function() {
 								if (error) {
 									return toastr.error(t(error.error));
 								}
-								toastr.success(t('Successfully_uploaded_file_to_drive_exclamation_mark'));
+								toastr.success(t('Success_Drive_Upload'));
 							});
 						}
 					});
@@ -63,6 +62,9 @@ Meteor.startup(function() {
 				return false;
 			}
 			if (!message.file) {
+				return false;
+			}
+			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
 			return true;

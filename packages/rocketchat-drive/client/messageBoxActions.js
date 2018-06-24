@@ -4,6 +4,9 @@ Meteor.startup(function() {
 		// icon to be added
 		icon: 'google-doc',
 		condition() {
+			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
+				return false;
+			}
 			return true;
 		},
 		action() {
@@ -11,7 +14,7 @@ Meteor.startup(function() {
 			const type = 'docs';
 			const name = 'RocketChat Google Doc';
 			Meteor.call('checkDriveAccess', (error) => {
-				if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+				if (error && error.error !== 'error-unauthenticated-user') {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
@@ -34,6 +37,9 @@ Meteor.startup(function() {
 		// icon to be added
 		icon: 'google-slide',
 		condition() {
+			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
+				return false;
+			}
 			return true;
 		},
 		action() {
@@ -41,7 +47,7 @@ Meteor.startup(function() {
 			const type = 'slides';
 			const name = 'RocketChat Google Slide';
 			Meteor.call('checkDriveAccess', (error) => {
-				if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+				if (error && error.error !== 'error-unauthenticated-user') {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
@@ -64,6 +70,9 @@ Meteor.startup(function() {
 		// icon to be added
 		icon: 'google-sheet',
 		condition() {
+			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
+				return false;
+			}
 			return true;
 		},
 		action() {
@@ -71,7 +80,7 @@ Meteor.startup(function() {
 			const type = 'sheets';
 			const name = 'RocketChat Google Sheet';
 			Meteor.call('checkDriveAccess', (error) => {
-				if (error && (error.error === 'error-invalid-user' || error.error === 'error-google-unavailable')) {
+				if (error && error.error !== 'error-unauthenticated-user') {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
