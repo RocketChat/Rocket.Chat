@@ -7,6 +7,6 @@ Meteor.startup(() => {
 		icon: 'trash',
 		template: 'cleanHistory',
 		order: 250,
-		condition: () => RocketChat.authz.hasAllPermission('delete-message', Session.get('openedRoom'))
+		condition: () => RocketChat.authz.hasAllPermission('clean-channel-history', Session.get('openedRoom'))
 	});
 });

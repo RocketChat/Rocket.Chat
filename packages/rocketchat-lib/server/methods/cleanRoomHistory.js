@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'clean-channel-history')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'clean-channel-history', roomId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
