@@ -1,3 +1,5 @@
+/* globals FileUpload */
+
 Meteor.methods({
 	cleanRoomHistory({ roomId, latest, oldest, inclusive, limit }) {
 		check(roomId, String);
@@ -29,10 +31,17 @@ Meteor.methods({
 			}
 		}, {
 			fields: {
+				file: 1,
 				_id: 1
 			},
 			limit
-		}).fetch().map(function(document) { return document._id; });
+		}).fetch().map(function(document) {
+			if (document.file && document.file._id) {
+				FileUpload.getStore('Uploads').deleteById(document.file._id);
+			}
+
+			return document._id;
+		});
 
 		const count = messagesToDelete.length;
 
