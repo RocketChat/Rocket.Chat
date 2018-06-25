@@ -14,63 +14,10 @@
 					</header>
 
 					<main class="setup-wizard-forms__content">
-						{{> setupWizardAdminInfo
-								currentStep=currentStep
-								name=(getFormValue 'registration-name')
-								username=(getFormValue 'registration-username')
-								email=(getFormValue 'registration-email')
-								invalidUsername=invalidUsername
-								invalidEmail=invalidEmail}}
-
-						<div class="setup-wizard-forms__content-step {{#if $or ($eq currentStep 2) ($eq currentStep 3)}}setup-wizard-forms__content-step--active{{/if}}">
-							{{#each stepSettings currentStep}}
-								{{#if $eq type 'string'}}
-									<div class="rc-input">
-										<label class="rc-input__label">
-											<div class="rc-input__title">{{_ i18nLabel}}</div>
-											<div class="rc-input__wrapper">
-												<input type="text" class="rc-input__element js-setting-data" name="{{_id}}" value="{{getFormValue _id}}">
-											</div>
-										</label>
-									</div>
-								{{/if}}
-
-								{{#if $eq type 'select'}}
-									<div class="rc-input">
-										<label class="rc-input__label">
-											<div class="rc-input__title">{{_ i18nLabel}}</div>
-											<div class="rc-select">
-												<select class="rc-select__element js-setting-data" name="{{_id}}">
-													<option value="" disabled selected="{{isFormValueSelected _id undefined}}">{{_ "Select_an_option"}}</option>
-													{{#each values}}
-														<option class="rc-select__option" value="{{key}}" selected="{{isFormValueSelected ../_id key}}">{{_ i18nLabel}}</option>
-													{{/each}}
-												</select>
-												{{> icon block="rc-select__arrow" icon="arrow-down" }}
-											</div>
-										</label>
-									</div>
-								{{/if}}
-
-								{{#if $eq type 'language'}}
-									<div class="rc-input">
-										<label class="rc-input__label">
-											<div class="rc-input__title">{{_ i18nLabel}}</div>
-											<div class="rc-select">
-												<select class="rc-select__element js-setting-data" name="{{_id}}">
-													{{#each languages}}
-														<option class="rc-select__option" value="{{key}}" selected="{{isFormValueSelected ../_id key}}" dir="auto">{{name}}</option>
-													{{/each}}
-												</select>
-												{{> icon block="rc-select__arrow" icon="arrow-down" }}
-											</div>
-										</label>
-									</div>
-								{{/if}}
-							{{/each}}
-						</div>
-
-						{{> setupWizardRegisterServer currentStep=currentStep}}
+						{{> setupWizardAdminInfo adminInfoArgs}}
+						{{> setupWizardCustomStep (customStepArgs 2)}}
+						{{> setupWizardCustomStep (customStepArgs 3)}}
+						{{> setupWizardRegisterServer registerServerArgs}}
 					</main>
 
 					<footer class="setup-wizard-forms__footer">
@@ -204,6 +151,57 @@
 				</ul>
 			</label>
 		</form>
+	</div>
+</template>
+
+<template name="setupWizardCustomStep">
+	<div class="setup-wizard-forms__content-step {{#if $eq currentStep step}}setup-wizard-forms__content-step--active{{/if}}">
+		{{#each settings}}
+			{{#if $eq type 'string'}}
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}</div>
+						<div class="rc-input__wrapper">
+							<input type="text" class="rc-input__element js-setting-data" name="{{id}}" value="{{value}}">
+						</div>
+					</label>
+				</div>
+			{{/if}}
+
+			{{#if $eq type 'select'}}
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}</div>
+						<div class="rc-select">
+							<select class="rc-select__element js-setting-data" name="{{id}}">
+								<option value="" disabled selected="{{this.isValueSelected undefined}}">{{_ "Select_an_option"}}</option>
+								{{#each options}}
+									<option class="rc-select__option" value="{{optionValue}}" selected="{{this.isValueSelected optionValue}}">{{_ optionLabel}}</option>
+								{{/each}}
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</label>
+				</div>
+			{{/if}}
+
+			{{#if $eq type 'language'}}
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ label}}</div>
+						<div class="rc-select">
+							<select class="rc-select__element js-setting-data" name="{{id}}">
+								<option value="" disabled selected="{{this.isValueSelected undefined}}">{{_ "Default"}}</option>
+								{{#each options}}
+									<option class="rc-select__option" value="{{optionValue}}" selected="{{this.isValueSelected optionValue}}" dir="auto">{{_ optionLabel}}</option>
+								{{/each}}
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</div>
+					</label>
+				</div>
+			{{/if}}
+		{{/each}}
 	</div>
 </template>
 

@@ -29,8 +29,6 @@ Template.setupWizard.onCreated(function() {
 		return;
 	}
 
-	this.currentStep = () => this.state.get('currentStep');
-
 	this.showRemainingInfoSteps = () => {
 		Meteor.call('getWizardSettings', (error, wizardSettings) => {
 			if (error) {
@@ -46,7 +44,7 @@ Template.setupWizard.onCreated(function() {
 
 				if (!userId) {
 					c.stop();
-					this.showAdminInfoStep();
+					this.state.set('currentStep', 1);
 					return;
 				}
 
@@ -163,7 +161,6 @@ Template.setupWizard.onCreated(function() {
 		} else {
 			this.hasAdmin.set(false);
 			this.state.set('currentStep', 1);
-			this.showAdminInfoStep();
 		}
 	});
 });
@@ -237,14 +234,6 @@ Template.setupWizard.helpers({
 
 		return steps[step - 1] && t(steps[step - 1].name);
 	},
-	showStep() {
-		const currentStep = Template.instance().state.get('currentStep');
-		if (currentStep === 2 || currentStep === 3) {
-			return 'setup-wizard-forms__content-step--active';
-		}
-
-		return '';
-	},
 	formLoadStateClass() {
 		const currentStep = Template.instance().state.get('currentStep');
 
@@ -256,42 +245,8 @@ Template.setupWizard.helpers({
 			return 'setup-wizard-forms__box--loaded';
 		}
 	},
-	stepSettings(step) {
-		return Template.instance().wizardSettings.get()
-			.filter(setting => setting.wizard.step === step)
-			.sort((a, b) => a.wizard.order - b.wizard.order);
-	},
-	getFormValue(name) {
-		return Template.instance().state.get(name);
-	},
-	isFormValueSelected(name, optionValue) {
-		return Template.instance().state.get(name) === optionValue;
-	},
-	languages() {
-		const languages = TAPi18n.getLanguages();
-
-		const result = Object.entries(languages).map(language => {
-			const obj = language[1];
-			obj.key = language[0];
-			return obj;
-		}).sort((a, b) => a.key - b.key);
-
-		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
-		});
-
-		return result;
-	},
 	hasAdmin() {
 		return Template.instance().hasAdmin.get();
-	},
-	invalidUsername() {
-		return Template.instance().invalidUsername.get();
-	},
-	invalidEmail() {
-		return Template.instance().invalidEmail.get();
 	},
 	showBackButton() {
 		if (Template.instance().hasAdmin.get()) {
@@ -320,6 +275,58 @@ Template.setupWizard.helpers({
 		}
 
 		return false;
+	},
+	adminInfoArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+			name: t.state.get('registration-name'),
+			username: t.state.get('registration-username'),
+			email: t.state.get('registration-email'),
+			invalidUsername: t.invalidUsername.get(),
+			invalidEmail: t.invalidEmail.get()
+		};
+	},
+	registerServerArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep')
+		};
+	},
+	customStepArgs(step) {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+			step,
+			settings: t.wizardSettings.get()
+				.filter(setting => setting.wizard.step === step)
+				.sort((a, b) => a.wizard.order - b.wizard.order)
+				.map(({ type, _id, i18nLabel, values }) => ({
+					type,
+					id: _id,
+					label: i18nLabel,
+					value: t.state.get(_id),
+					options: (
+						type === 'select' &&
+						values &&
+						values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
+					) || (
+						type === 'language' &&
+						([{
+							optionLabel: 'Default',
+							optionValue: ''
+						}].concat(
+							Object.entries(TAPi18n.getLanguages())
+								.map(([ key, { name } ]) => ({ optionLabel: name, optionValue: key }))
+								.sort((a, b) => a.key - b.key)
+						))
+					),
+					isValueSelected: (value) => value === t.state.get(_id)
+				}))
+		};
 	}
 });
 
@@ -344,21 +351,6 @@ Template.setupWizardInfo.helpers({
 
 		return steps[step - 1] && t(steps[step - 1].name);
 	},
-});
-
-Template.setupWizardAdminInfo.onCreated(function () {
-	this.tracker = this.autorun(c => {
-		if (RocketChat.settings.get('Show_Setup_Wizard') === 'completed') {
-			c.stop();
-			FlowRouter.go('home');
-			return;
-		}
-
-		if (this.currentStep !== 1) {
-			c.stop();
-			return;
-		}
-	});
 });
 
 Template.setupWizardFinal.onCreated(function() {
