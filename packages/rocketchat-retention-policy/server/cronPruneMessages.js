@@ -19,17 +19,31 @@ function processPruneMessages() {
 		allowedTypes.push('d');
 	}
 
-	const secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge');
-	const now = new Date();
-	const toDate = new Date(now.getTime() - secondsAgo * 1000);
-	const fromDate = new Date('0001-01-01T00:00:00Z');
-
 	RocketChat.models.Rooms.find({
 		t: {
 			$in: allowedTypes
 		}
 	}).forEach(function(room) {
 		console.log(`Pruning ${ room._id }`);
+
+		let secondsAgo;
+
+		switch (room.t) {
+			case 'p':
+				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+				break;
+			case 'd':
+				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+				break;
+			case 'c':
+			default:
+				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+				break;
+		}
+
+		const now = new Date();
+		const toDate = new Date(now.getTime() - secondsAgo * 1000);
+		const fromDate = new Date('0001-01-01T00:00:00Z');
 
 		const messagesToDelete = RocketChat.models.Messages.find({
 			rid: room._id,

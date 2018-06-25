@@ -414,7 +414,17 @@ Template.room.helpers({
 		moment.relativeTimeThreshold('d', 31);
 		moment.relativeTimeThreshold('M', 12);
 
-		return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge') * 1000).humanize();
+		const room = Session.get(`roomData${ this._id }`);
+
+		if ((room && room.t === 'c')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Channels') * 1000).humanize();
+		}
+		if ((room && room.t === 'p')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Groups') * 1000).humanize();
+		}
+		if ((room && room.t === 'd')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_DMs') * 1000).humanize();
+		}
 	}
 });
 
