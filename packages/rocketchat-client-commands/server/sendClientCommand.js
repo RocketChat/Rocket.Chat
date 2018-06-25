@@ -25,7 +25,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 
 		// rejects with timeout error if timeout was not cleared after response
 		const timeoutFunction = setTimeout(() => {
-			RocketChat.removeAllListeners(`client-command-response-${ command._id }`);
+			RocketChat.removeAllListeners(`client-command-response-${ clientCommand._id }`);
 			const error = new Meteor.Error('error-client-command-response-timeout',
 				`${ _.escape(user.name) } didn't respond to the command in time`, {
 					method: 'sendClientCommand',
@@ -39,12 +39,12 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 
 		// adds listener for a response event coming from replyClientCommand
 		// if the response times out, the listener is removed by timeoutFunction
-		RocketChat.on(`client-command-response-${ command._id }`, (replyUser, response) => {
+		RocketChat.on(`client-command-response-${ clientCommand._id }`, (replyUser, response) => {
 			if (user._id !== replyUser._id) {
 				return;
 			}
 			clearTimeout(timeoutFunction);
-			RocketChat.removeAllListeners(`client-command-response-${ command._id }`);
+			RocketChat.removeAllListeners(`client-command-response-${ clientCommand._id }`);
 			resolve(response);
 		});
 	});
