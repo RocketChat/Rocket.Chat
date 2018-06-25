@@ -8,6 +8,7 @@ Meteor.methods({
 			});
 		}
 
+		// if the send fails, throw will be catched by the caller of resumeBot
 		await RocketChat.sendClientCommand(bot, { key: 'resumeMessageStream' });
 		const update = RocketChat.models.Users.update({ _id: bot._id }, {
 			$set: {

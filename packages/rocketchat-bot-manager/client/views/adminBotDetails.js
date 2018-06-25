@@ -48,9 +48,10 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		return false;
 	};
 
+	// check  bot aliveness each 1500ms
 	this.autorun(() => {
 		let finished = true;
-		this.interval = Meteor.setInterval(async() => {
+		this.interval = Meteor.setInterval(() => {
 			if (!finished || !this.isOnline()) {
 				return;
 			}
@@ -109,7 +110,8 @@ Template.adminBotDetails.helpers({
 
 	getFramework() {
 		const bot = Template.instance().bot.get();
-		if (bot.customClientData && bot.customClientData.framework) {
+		const isOnline = Template.instance().isOnline();
+		if (isOnline && bot.customClientData && bot.customClientData.framework) {
 			return bot.customClientData.framework;
 		}
 		return 'Undefined';
@@ -123,14 +125,13 @@ Template.adminBotDetails.helpers({
 	canPause() {
 		const bot = Template.instance().bot.get();
 		const isOnline = Template.instance().isOnline();
-		// customClientData, renamed to customClientData in this template, will always be empty when user is offline
-		// therefore there's no need to check for online status
 		return isOnline && bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		if (bot.customClientData) {
+		const isOnline = Template.instance().isOnline();
+		if (isOnline && bot.customClientData) {
 			return bot.customClientData.pausedMsgStream;
 		}
 	},
@@ -141,14 +142,16 @@ Template.adminBotDetails.helpers({
 
 	ipAddress() {
 		const bot = Template.instance().bot.get();
-		if (bot.customClientData) {
+		const isOnline = Template.instance().isOnline();
+		if (isOnline && bot.customClientData) {
 			return bot.customClientData.ipAddress;
 		}
 	},
 
 	canPing() {
 		const bot = Template.instance().bot.get();
-		return bot.customClientData && bot.customClientData.canListenToHeartbeat;
+		const isOnline = Template.instance().isOnline();
+		return isOnline && bot.customClientData && bot.customClientData.canListenToHeartbeat;
 	},
 
 	ping() {
@@ -164,8 +167,9 @@ Template.adminBotDetails.helpers({
 
 	activeUptime() {
 		const bot = Template.instance().bot.get();
+		const isOnline = Template.instance().isOnline();
 		let diff = (new Date()).getTime() - bot.lastLogin.getTime();
-		if (bot.customClientData.lastResumed) {
+		if (isOnline && bot.customClientData.lastResumed) {
 			diff = (new Date()).getTime() - bot.customClientData.lastResumed.getTime();
 		}
 		return Template.instance().humanReadableTime(diff / 1000);

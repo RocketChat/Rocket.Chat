@@ -16,7 +16,7 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(userId);
 		if (!user || user.type !== 'bot') {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-invalid-bot', 'Invalid bot', {
 				method: 'deleteBot'
 			});
 		}

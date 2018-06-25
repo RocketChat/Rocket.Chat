@@ -24,7 +24,8 @@ Template.adminBotInfo.helpers({
 
 	framework() {
 		const bot = Template.instance().bot.get();
-		if (bot.customClientData && bot.customClientData.framework) {
+		const isOnline = Template.instance().isOnline();
+		if (isOnline && bot.customClientData && bot.customClientData.framework) {
 			return bot.customClientData.framework;
 		}
 		return TAPi18n.__('Undefined');
@@ -43,24 +44,20 @@ Template.adminBotInfo.helpers({
 
 	canPauseResumeMsgStream() {
 		const bot = Template.instance().bot.get();
-		// customClientData will always be empty when user is offline
-		// therefore there's no need to check for online status
-		return bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
+		const isOnline = Template.instance().isOnline();
+		return isOnline && bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		if (bot.customClientData) {
+		const isOnline = Template.instance().isOnline();
+		if (isOnline && bot.customClientData) {
 			return bot.customClientData.pausedMsgStream;
 		}
 	},
 
 	isOnline() {
-		const bot = Template.instance().bot.get();
-		if (bot.statusConnection && bot.statusConnection !== 'offline') {
-			return true;
-		}
-		return false;
+		return Template.instance().isOnline();
 	},
 
 	isLoading() {
@@ -148,6 +145,14 @@ Template.adminBotInfo.onCreated(function() {
 		const bot = this.bot.get();
 		return this.loadedBotUsername.set((bot != null ? bot.username : undefined) || (data != null ? data.username : undefined));
 	});
+
+	this.isOnline = () => {
+		const bot = this.bot.get();
+		if (bot.statusConnection && bot.statusConnection !== 'offline') {
+			return true;
+		}
+		return false;
+	};
 
 	return this.autorun(() => {
 		let filter;
