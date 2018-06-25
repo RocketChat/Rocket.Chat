@@ -10,7 +10,7 @@
 				<form class="setup-wizard-forms__box {{formLoadStateClass}}" novalidate>
 					<header class="setup-wizard-forms__header">
 						<span class="setup-wizard-forms__header-step">{{_ "Step"}} {{currentStep}}</span>
-						<h1 class="setup-wizard-forms__header-title">{{stepTitle currentStep}}</h1>
+						<h1 class="setup-wizard-forms__header-title">{{_ currentStepTitle}}</h1>
 					</header>
 
 					<main class="setup-wizard-forms__content">
@@ -46,10 +46,10 @@
 			<h1 class="setup-wizard-info__content-title">{{_ "Setup_Wizard"}}</h1>
 			<p class="setup-wizard-info__content-text">{{_ "Setup_Wizard_Info"}}</p>
 			<ol class="setup-wizard-info__steps">
-				<li class="setup-wizard-info__steps-item {{stepItemModifier 1}}">{{stepTitle 1}}</li>
-				<li class="setup-wizard-info__steps-item {{stepItemModifier 2}}">{{stepTitle 2}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
-				<li class="setup-wizard-info__steps-item {{stepItemModifier 3}}">{{stepTitle 3}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
-				<li class="setup-wizard-info__steps-item {{stepItemModifier 4}}">{{stepTitle 4}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+				<li class="setup-wizard-info__steps-item {{stepItemModifier 1}}">{{_ (stepTitle 1)}}</li>
+				<li class="setup-wizard-info__steps-item {{stepItemModifier 2}}">{{_ (stepTitle 2)}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+				<li class="setup-wizard-info__steps-item {{stepItemModifier 3}}">{{_ (stepTitle 3)}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
+				<li class="setup-wizard-info__steps-item {{stepItemModifier 4}}">{{_ (stepTitle 4)}}<span class="setup-wizard-info__steps-item-bonding"></span></li>
 			</ol>
 		</div>
 	</section>
@@ -113,7 +113,7 @@
 					<div class="rc-input__icon">
 						{{> icon block="rc-input__icon-sv" icon="key"}}
 					</div>
-					<input type="password" class="rc-input__element js-setting-data" name="registration-pass" placeholder="{{_ 'Type_your_password'}}">
+					<input type="password" class="rc-input__element js-setting-data" name="registration-pass" placeholder="{{_ 'Type_your_password'}}" value="{{password}}">
 				</div>
 			</label>
 		</div>
