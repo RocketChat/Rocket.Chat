@@ -92,9 +92,9 @@
 	&-avatar {
 		flex: 0 0 auto;
 
-		width: 30px;
-		height: 30px;
-		padding: 2px 4px;
+		width: 26px;
+		height: 26px;
+		margin: 2px 4px;
 		border-radius: 2px;
 
 		flex: 0 0 auto;
