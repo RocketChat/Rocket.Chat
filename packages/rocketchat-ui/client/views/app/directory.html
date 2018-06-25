@@ -55,6 +55,12 @@
 								<td class="table-column-date">{{createdAt}}</td>
 								<td>{{topic}}</td>
 							</tr>
+						{{else}}
+							{{# with searchText}}
+								<tr>
+									<td>{{_ "No_results_found_for"}} {{.}}</td>
+								</tr>
+							{{/with}}
 						{{/each}}
 						{{#if isLoading}}
 							<tr class="table-loading">
@@ -69,10 +75,10 @@
 					<thead>
 						<tr>
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
-								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
 							</th>
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
-								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
+								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
@@ -87,14 +93,20 @@
 										<div class="rc-table-avatar">{{> avatar username=username}}</div>
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{username}}
+												{{name}}
 											</span>
 										</div>
 									</div>
 								</td>
-								<td>{{name}}</td>
+								<td>{{username}}</td>
 								<td>{{createdAt}}</td>
 							</tr>
+						{{else}}
+							{{# with searchText}}
+								<tr>
+									<td>{{_ "No_results_found_for"}} {{.}}</td>
+								</tr>
+							{{/with}}
 						{{/each}}
 						{{#if isLoading}}
 							<tr class="table-loading">
