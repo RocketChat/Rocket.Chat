@@ -89,7 +89,7 @@ Template.forwardMessage.events({
 				});
 			});
 
-			toastr.success(TAPi18n.__('Message_Has_Been_Forward'));
+			toastr.success(TAPi18n.__('Message_Has_Been_Forwarded'));
 
 			history.back();
 		} else {
