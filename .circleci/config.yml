@@ -281,33 +281,63 @@ jobs:
             rm Rocket.Chat.tar.gz
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
-
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-
             if [[ $CIRCLE_TAG ]]; then
-              docker build -t rocketchat/rocket.chat:latest .
-              docker push rocketchat/rocket.chat:latest
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              docker tag rocketchat/rocket.chat:latest rocketchat/rocket.chat:$CIRCLE_TAG
+              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
               docker push rocketchat/rocket.chat:$CIRCLE_TAG
 
-              exit 0
-            fi;
-
-            if [[ $CIRCLE_PR_NUMBER ]]; then
-              docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
-              docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+              if [[ $CIRCLE_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
+                docker push rocketchat/rocket.chat:latest
+              else
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
+                docker push rocketchat/rocket.chat:release-candidate
+              fi
 
               exit 0
             fi;
 
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
               docker build -t rocketchat/rocket.chat:develop .
               docker push rocketchat/rocket.chat:develop
 
               exit 0
             fi;
+
+  pr-image-build:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image for PRs
+          command: |
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ -z $CIRCLE_PR_NUMBER ]]; then
+              exit 0
+            fi;
+
+            cd /tmp/build
+            cp ~/repo/.docker/Dockerfile .
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
+            docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
 
 workflows:
   version: 2

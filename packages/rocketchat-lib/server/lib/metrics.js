@@ -147,7 +147,7 @@ let timer;
 RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
 	if (value === true) {
 		server.listen({
-			port: 9100,
+			port: RocketChat.settings.get('Prometheus_Port'),
 			host: process.env.BIND_IP || '0.0.0.0'
 		});
 		timer = Meteor.setInterval(setPrometheusData, 5000);

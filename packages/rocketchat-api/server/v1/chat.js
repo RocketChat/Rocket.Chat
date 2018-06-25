@@ -274,7 +274,7 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 		}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id));
+		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.bodyParams.shouldReact));
 
 		return RocketChat.API.v1.success();
 	}
