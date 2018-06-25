@@ -14,68 +14,13 @@
 					</header>
 
 					<main class="setup-wizard-forms__content">
-						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 1}}setup-wizard-forms__content-step--active{{/if}}">
-							<div class="rc-input">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Name"}}</div>
-									<div class="rc-input__wrapper">
-										<div class="rc-input__icon">
-											{{> icon block="rc-input__icon-sv" icon="user"}}
-										</div>
-										<input type="text" class="rc-input__element js-setting-data" name="registration-name" placeholder="{{_ 'Type_your_name'}}" value="{{getFormValue 'registration-name'}}">
-									</div>
-								</label>
-							</div>
-							<div class="rc-input {{#if invalidUsername}}rc-input--error{{/if}}">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Username"}}</div>
-									<div class="rc-input__wrapper">
-										<div class="rc-input__icon">
-											{{> icon block="rc-input__icon-sv" icon="at"}}
-										</div>
-										<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{getFormValue 'registration-username'}}">
-									</div>
-								</label>
-								{{#if invalidUsername}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "Invalid_username"}}</div>
-									</div>
-								{{/if}}
-							</div>
-							<div class="rc-input {{#if invalidEmail}}rc-input--error{{/if}}">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Organization_Email"}}</div>
-									<div class="rc-input__wrapper">
-										<div class="rc-input__icon">
-											{{> icon block="rc-input__icon-sv" icon="mail"}}
-										</div>
-										<input type="email" class="rc-input__element js-setting-data" name="registration-email" placeholder="{{_ 'Type_your_email'}}" value="{{getFormValue 'registration-email'}}">
-									</div>
-								</label>
-								{{#if invalidEmail}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "Invalid_email"}}</div>
-									</div>
-								{{/if}}
-							</div>
-							<div class="rc-input">
-								<label class="rc-input__label">
-									<div class="rc-input__title">{{_ "Password"}}</div>
-									<div class="rc-input__wrapper">
-										<div class="rc-input__icon">
-											{{> icon block="rc-input__icon-sv" icon="key"}}
-										</div>
-										<input type="password" class="rc-input__element js-setting-data" name="registration-pass" placeholder="{{_ 'Type_your_password'}}">
-									</div>
-								</label>
-							</div>
-						</div>
+						{{> setupWizardAdminInfo
+								currentStep=currentStep
+								name=(getFormValue 'registration-name')
+								username=(getFormValue 'registration-username')
+								email=(getFormValue 'registration-email')
+								invalidUsername=invalidUsername
+								invalidEmail=invalidEmail}}
 
 						<div class="setup-wizard-forms__content-step {{#if $or ($eq currentStep 2) ($eq currentStep 3)}}setup-wizard-forms__content-step--active{{/if}}">
 							{{#each stepSettings currentStep}}
@@ -125,37 +70,8 @@
 							{{/each}}
 						</div>
 
-						<div class="setup-wizard-forms__content-step {{#if $eq currentStep 4}}setup-wizard-forms__content-step--active{{/if}}">
-							<p class="setup-wizard-forms__content-text">To receive free Rocket.Chat supplied features you need to register your server.</p>
-							<form class="setup-wizard-forms__content-register">
-								<label class="setup-wizard-forms__content-register-option">
-									<div class="setup-wizard-forms__content-register-radio">
-										<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked>
-										<span class="setup-wizard-forms__content-register-radio-fake"></span>
-										<span class="setup-wizard-forms__content-register-radio-text">Registered Server</span>
-									</div>
-									<ul>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Omnichannel proxy</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Social Network oAuth proxy</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Apps Marketplace</li>
-									</ul>
-								</label>
-								<label class="setup-wizard-forms__content-register-option">
-									<div class="setup-wizard-forms__content-register-radio">
-										<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data">
-										<span class="setup-wizard-forms__content-register-radio-fake"></span>
-										<span class="setup-wizard-forms__content-register-radio-text">Standalone Server</span>
-									</div>
-									<ul>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Mobile push notifications</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Omnichannel proxy</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Social Network oAuth proxy</li>
-										<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Apps Marketplace</li>
-									</ul>
-								</label>
-							</form>
-						</div>
+						{{> setupWizardRegisterServer
+								currentStep=currentStep}}
 					</main>
 
 					<footer class="setup-wizard-forms__footer">
@@ -191,6 +107,105 @@
 			</ol>
 		</div>
 	</section>
+</template>
+
+<template name="setupWizardAdminInfo">
+	<div class="setup-wizard-forms__content-step {{#if $eq currentStep 1}}setup-wizard-forms__content-step--active{{/if}}">
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Name"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-sv" icon="user"}}
+					</div>
+					<input type="text" class="rc-input__element js-setting-data" name="registration-name" placeholder="{{_ 'Type_your_name'}}" value="{{name}}">
+				</div>
+			</label>
+		</div>
+		<div class="rc-input {{#if invalidUsername}}rc-input--error{{/if}}">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Username"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-sv" icon="at"}}
+					</div>
+					<input type="text" class="rc-input__element js-setting-data" name="registration-username" placeholder="{{_ 'Type_your_username'}}" value="{{username}}">
+				</div>
+			</label>
+			{{#if invalidUsername}}
+				<div class="rc-input__error">
+					<div class="rc-input__error-icon">
+						{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+					</div>
+					<div class="rc-input__error-message">{{_ "Invalid_username"}}</div>
+				</div>
+			{{/if}}
+		</div>
+		<div class="rc-input {{#if invalidEmail}}rc-input--error{{/if}}">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Organization_Email"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-sv" icon="mail"}}
+					</div>
+					<input type="email" class="rc-input__element js-setting-data" name="registration-email" placeholder="{{_ 'Type_your_email'}}" value="{{email}}">
+				</div>
+			</label>
+			{{#if invalidEmail}}
+				<div class="rc-input__error">
+					<div class="rc-input__error-icon">
+						{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+					</div>
+					<div class="rc-input__error-message">{{_ "Invalid_email"}}</div>
+				</div>
+			{{/if}}
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Password"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-sv" icon="key"}}
+					</div>
+					<input type="password" class="rc-input__element js-setting-data" name="registration-pass" placeholder="{{_ 'Type_your_password'}}">
+				</div>
+			</label>
+		</div>
+	</div>
+</template>
+
+<template name="setupWizardRegisterServer">
+	<div class="setup-wizard-forms__content-step {{#if $eq currentStep 4}}setup-wizard-forms__content-step--active{{/if}}">
+		<p class="setup-wizard-forms__content-text">To receive free Rocket.Chat supplied features you need to register your server.</p>
+		<form class="setup-wizard-forms__content-register">
+			<label class="setup-wizard-forms__content-register-option">
+				<div class="setup-wizard-forms__content-register-radio">
+					<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked>
+					<span class="setup-wizard-forms__content-register-radio-fake"></span>
+					<span class="setup-wizard-forms__content-register-radio-text">Registered Server</span>
+				</div>
+				<ul>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Omnichannel proxy</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Social Network oAuth proxy</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Apps Marketplace</li>
+				</ul>
+			</label>
+			<label class="setup-wizard-forms__content-register-option">
+				<div class="setup-wizard-forms__content-register-radio">
+					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data">
+					<span class="setup-wizard-forms__content-register-radio-fake"></span>
+					<span class="setup-wizard-forms__content-register-radio-text">Standalone Server</span>
+				</div>
+				<ul>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Mobile push notifications</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Omnichannel proxy</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Social Network oAuth proxy</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Apps Marketplace</li>
+				</ul>
+			</label>
+		</form>
+	</div>
 </template>
 
 <template name="setupWizardFinal">
