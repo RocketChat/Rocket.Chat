@@ -41,10 +41,10 @@
 					{{#unless disableSendIcon}}
 						{{#if hasOembed}}
 							<div class="rc-message-box__embed">
-								<div class="rc-message-box__icon embed-on {{#if linkPreviewOn}}active{{/if}} js-embed-on">
+								<div class="rc-message-box__icon embed-on {{#if linkPreviewOn}}active{{/if}} js-embed-on rc-tooltip" aria-label="{{_ 'Link_preview_enabled'}}">
 									{{> icon block="rc-input__icon-svg" icon="eye-activated"}}
 								</div>
-								<div class="rc-message-box__icon embed-off {{#unless linkPreviewOn}}active{{/unless}} js-embed-off">
+								<div class="rc-message-box__icon embed-off {{#unless linkPreviewOn}}active{{/unless}} js-embed-off rc-tooltip" aria-label="{{_ 'Link_preview_disabled'}}">
 									{{> icon block="rc-input__icon-svg" icon="eye-hidden"}}
 								</div>
 							</div>

@@ -1273,6 +1273,8 @@
   "Leave_Room_Warning": "Are you sure you want to leave the room \"%s\"?",
   "Leave_the_current_channel": "Leave the current channel",
   "line": "line",
+  "Link_preview_enabled": "Link preview is enabled",
+  "Link_preview_disabled": "Link preview is disabled",
   "List_of_Channels": "List of Channels",
   "List_of_Direct_Messages": "List of Direct Messages",
   "Livechat_agents": "Livechat agents",
