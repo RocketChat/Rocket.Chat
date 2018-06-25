@@ -3,6 +3,7 @@ Meteor.methods({
 		check(commandId, String);
 		check(response, Object);
 
-		RocketChat.emit(`client-command-response-${ response._id }`, Meteor.user(), response);
+		// emits event with the caller user and the response object
+		RocketChat.emit(`client-command-response-${ commandId }`, Meteor.user(), response);
 	}
 });
