@@ -1,14 +1,18 @@
 const steps = [
   {
+		number: 1,
     name: 'Admin_Info'
   },
   {
+		number: 2,
     name: 'Organization_Info'
   },
   {
+		number: 3,
     name: 'Server_Info'
   },
   {
+		number: 4,
     name: 'Register_Server'
   }
 ];
@@ -26,23 +30,6 @@ Template.setupWizard.onCreated(function() {
 	}
 
 	this.currentStep = () => this.state.get('currentStep');
-
-	this.showAdminInfoStep = () => {
-		this.state.set('currentStep', 1);
-
-		this.autorun(c => {
-			if (RocketChat.settings.get('Show_Setup_Wizard') === 'completed') {
-				c.stop();
-				FlowRouter.go('home');
-				return;
-			}
-
-			if (this.currentStep() !== 1) {
-				c.stop();
-				return;
-			}
-		});
-	};
 
 	this.showRemainingInfoSteps = () => {
 		Meteor.call('getWizardSettings', (error, wizardSettings) => {
@@ -175,6 +162,7 @@ Template.setupWizard.onCreated(function() {
 			this.showRemainingInfoSteps();
 		} else {
 			this.hasAdmin.set(false);
+			this.state.set('currentStep', 1);
 			this.showAdminInfoStep();
 		}
 	});
@@ -356,6 +344,21 @@ Template.setupWizardInfo.helpers({
 
 		return steps[step - 1] && t(steps[step - 1].name);
 	},
+});
+
+Template.setupWizardAdminInfo.onCreated(function () {
+	this.tracker = this.autorun(c => {
+		if (RocketChat.settings.get('Show_Setup_Wizard') === 'completed') {
+			c.stop();
+			FlowRouter.go('home');
+			return;
+		}
+
+		if (this.currentStep !== 1) {
+			c.stop();
+			return;
+		}
+	});
 });
 
 Template.setupWizardFinal.onCreated(function() {
