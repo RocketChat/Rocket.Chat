@@ -1,6 +1,5 @@
 .setup-wizard {
-	--step-successful-color: var(--rc-color-success);
-	--step-current-color: var(--rc-color-button-primary);
+	--step-color: var(--rc-color-button-primary);
 
 	display: flex;
 
@@ -89,7 +88,6 @@
 
 				font-size: 0.875rem;
 				font-weight: 500;
-				text-transform: uppercase;
 
 				&:not(:last-child) {
 					margin-bottom: 2rem;
@@ -130,12 +128,12 @@
 				}
 
 				&--active {
-					color: var(--step-current-color);
+					color: var(--rc-color-button-primary);
 
 					&::before {
-						color: var(--rc-color-content);
-						background-color: var(--step-current-color);
-						border-color: var(--step-current-color);
+						color: var(--rc-color-button-primary);
+						background-color: transparent;
+						border-color: var(--rc-color-button-primary);
 					}
 				}
 
@@ -144,16 +142,16 @@
 
 					&::before {
 						color: var(--rc-color-content);
-						background-color: var(--step-successful-color);
-						border-color: var(--step-successful-color);
+						background-color: var(--rc-color-button-primary);
+						border-color: var(--rc-color-button-primary);
 					}
 
 					&::after {
-						background-color: var(--step-current-color) !important;
+						background-color: var(--rc-color-button-primary) !important;
 					}
 
 					& .setup-wizard-info__steps-item-bonding {
-						background-color: var(--step-successful-color);
+						background-color: var(--rc-color-button-primary);
 					}
 				}
 
