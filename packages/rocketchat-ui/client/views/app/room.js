@@ -388,6 +388,33 @@ Template.room.helpers({
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
+	},
+	hasPurge() {
+		const room = Session.get(`roomData${ this._id }`);
+
+		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+				return true;
+			}
+			if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+				return true;
+			}
+			if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+	purgeTimeout() {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
+
+		return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge') * 1000).humanize();
 	}
 });
 

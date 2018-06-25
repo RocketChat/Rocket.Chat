@@ -2799,6 +2799,14 @@
 		margin-top: 12px;
 
 		text-align: center;
+
+		& .start__purge-warning {
+			padding: 0.5rem;
+			margin-bottom: 0.5rem;
+			margin-top: -33px;
+			border-width: 1px 0 0 0;
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
+		}
 	}
 
 	& .new-message {
