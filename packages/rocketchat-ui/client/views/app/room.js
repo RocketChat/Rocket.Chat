@@ -138,6 +138,27 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const hideMessagesOfType = [];
+		const isActive = RocketChat.models.Subscriptions.findOne({rid: this._id}).isActive;
+
+		if (isActive === false) {
+			console.log(isActive);
+			const query = {
+				rid: this._id,
+				/* query for invintation messages only for current user */
+				$and: [
+					{'to': { $exists: true } },
+					{'to._id': Meteor.userId() }
+				]
+			};
+			const options = {
+				sort: {
+					ts: 1
+				}
+			};
+			console.log(query)
+			return ChatMessage.find(query, options);
+		}
+
 		RocketChat.settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
 			const type = record._id.replace('Message_HideType_', '');

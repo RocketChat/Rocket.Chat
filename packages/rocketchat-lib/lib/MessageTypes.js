@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import _ from 'underscore';
 
 RocketChat.MessageTypes = new class {
 	constructor() {
@@ -178,14 +179,63 @@ Meteor.startup(function() {
 			};
 		}
 	});
+	RocketChat.MessageTypes.registerType({
+		id: 'accept-invintation-in-the-room',
+		system: true,
+		message: 'Accept_invintation_in_the_room',
+		data(message) {
+			const inviter = `@${ message.inviter }`;
+			console.log(inviter)
+			return {
+				inviter
+			};
+		}
+	});
 
-	RocketChat.actionLinks.register('addUsersToRoom', function(message, params) {
+	RocketChat.actionLinks.register('inviteUsersToRoom', function(message, params) {
 		if (Meteor.isClient) {
-			Meteor.call('addUsersToRoom', params, function(err) {
+			_.extend(params, { mid: message._id });
+
+			Meteor.call('inviteUsersToRoom', params, function(err) {
 				if (err) {
 					return toastr.error(t(err.reason));
 				}
-				toastr.success(t('Users_added'));
+
+				toastr.success(t('Users_invited'));
+			});
+		}
+	});
+
+	RocketChat.actionLinks.register('acceptInvintationToRoom', function(message, params) {
+		if (Meteor.isClient) {
+			console.log('accepted');
+			// _.extend(params, { mid: message._id });
+
+			// Meteor.call('inviteUsersToRoom', params, function(err) {
+			// 	if (err) {
+			// 		return toastr.error(t(err.reason));
+			// 	}
+			// 	toastr.success(t('Users_invited'));
+			// });
+		}
+	});
+
+	RocketChat.actionLinks.register('declineInvintationToRoom', function(message, params) {
+		if (Meteor.isClient) {
+			const { rid } = params
+
+			if (message._id) {
+				Meteor.call('deleteMessage', { _id: message._id }, function(error) {
+					if (error) {
+						return handleError(error);
+					}
+				});
+			}
+
+			Meteor.call('leaveRoom', rid, function(error) {
+				if (error) {
+					return handleError(error);
+				}
 			});
 		}
 	});

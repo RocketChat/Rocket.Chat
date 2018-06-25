@@ -82,6 +82,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/isDocker.js', 'server');
 	api.addFiles('server/functions/addUserToDefaultChannels.js', 'server');
 	api.addFiles('server/functions/addUserToRoom.js', 'server');
+	api.addFiles('server/functions/inviteUserToRoom.js', 'server');
 	api.addFiles('server/functions/archiveRoom.js', 'server');
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
@@ -152,6 +153,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
 	api.addFiles('server/methods/addUserToRoom.js', 'server');
 	api.addFiles('server/methods/addUsersToRoom.js', 'server');
+	api.addFiles('server/methods/inviteUsersToRoom.js', 'server');
 	api.addFiles('server/methods/archiveRoom.js', 'server');
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');

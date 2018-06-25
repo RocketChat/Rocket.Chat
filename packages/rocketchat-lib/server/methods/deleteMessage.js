@@ -15,9 +15,11 @@ Meteor.methods({
 				u: 1,
 				rid: 1,
 				file: 1,
-				ts: 1
+				ts: 1,
+				to: 1
 			}
 		});
+
 		if (originalMessage == null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
@@ -27,7 +29,9 @@ Meteor.methods({
 		const forceDelete = RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', originalMessage.rid);
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
 		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
-		const deleteOwn = originalMessage && originalMessage.u && originalMessage.u._id === Meteor.userId();
+		const deleteOwn = originalMessage && originalMessage.u && originalMessage.u._id === Meteor.userId() ||
+							originalMessage.to && originalMessage.to._id === Meteor.userId();
+
 		if (!(hasPermission || (deleteAllowed && deleteOwn)) && !(forceDelete)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',

@@ -658,6 +658,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.createWithTypeRoomIdMessageAndUser('mentioned-users-not-in-the-room', roomId, message, user, extraData);
 	}
 
+	createAcceptInvintationInTheRoom(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('accept-invintation-in-the-room', roomId, message, user, extraData);
+	}
+
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('new-owner', roomId, message, user, extraData);
