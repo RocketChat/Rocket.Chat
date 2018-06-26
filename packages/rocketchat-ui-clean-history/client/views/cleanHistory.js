@@ -19,13 +19,15 @@ const getTimeZoneOffset = function() {
 	return `${ offset < 0 ? '+' : '-' }${ (`00${ Math.floor(absOffset / 60) }`).slice(-2) }:${ (`00${ (absOffset % 60) }`).slice(-2) }`;
 };
 
-const purgeWorker = function(roomId, fromDate, toDate, inclusive, limit) {
+const purgeWorker = function(roomId, fromDate, toDate, inclusive, limit, excludePinned, filesOnly) {
 	Meteor.call('cleanRoomHistory', {
 		roomId,
 		latest: toDate,
 		oldest: fromDate,
 		inclusive,
-		limit
+		limit,
+		excludePinned,
+		filesOnly
 	}, function(error, count) {
 		if (error) {
 			return handleError(error);
@@ -36,7 +38,7 @@ const purgeWorker = function(roomId, fromDate, toDate, inclusive, limit) {
 		const hasMore = (count === limit);
 
 		if (hasMore) {
-			purgeWorker(roomId, fromDate, toDate, inclusive, limit);
+			purgeWorker(roomId, fromDate, toDate, inclusive, limit, excludePinned, filesOnly);
 		} else {
 			Session.set('cleanHistoryFinished', true);
 		}
@@ -56,6 +58,9 @@ Template.cleanHistory.helpers({
 	},
 	validate() {
 		return Template.instance().validate.get();
+	},
+	filesOnly() {
+		return Session.get('cleanHistoryFilesOnly');
 	},
 	busy() {
 		return Session.get('cleanHistoryBusy');
@@ -77,6 +82,9 @@ Template.cleanHistory.onCreated(function() {
 	Session.set('cleanHistoryToDate', '');
 	Session.set('cleanHistoryToTime', '');
 	Session.set('cleanHistoryInclusive', false);
+	Session.set('cleanHistoryExcludePinned', false);
+	Session.set('cleanHistoryFilesOnly', false);
+
 	Session.set('cleanHistoryBusy', false);
 	Session.set('cleanHistoryFinished', false);
 	Session.set('cleanHistoryPrunedCount', 0);
@@ -90,6 +98,8 @@ Template.cleanHistory.onRendered(function() {
 		const metaFromTime = Session.get('cleanHistoryFromTime');
 		const metaToDate = Session.get('cleanHistoryToDate');
 		const metaToTime = Session.get('cleanHistoryToTime');
+		const metaCleanHistoryExcludePinned = Session.get('cleanHistoryExcludePinned');
+		const metaCleanHistoryFilesOnly = Session.get('cleanHistoryFilesOnly');
 
 		let fromDate = new Date('0001-01-01T00:00:00Z');
 		let toDate = new Date('9999-12-31T23:59:59Z');
@@ -103,27 +113,29 @@ Template.cleanHistory.onRendered(function() {
 		}
 
 		const user = Meteor.users.findOne(Meteor.userId());
+		const exceptPinned = metaCleanHistoryExcludePinned ? ` ${ TAPi18n.__('except_pinned', {}, user.language) }` : '';
+		const filesOrMessages = TAPi18n.__(metaCleanHistoryFilesOnly ? 'files' : 'messages', {}, user.language);
 
 		if (metaFromDate && metaToDate) {
 			t.warningBox.set(TAPi18n.__('Prune_Warning_between', {
 				postProcess: 'sprintf',
-				sprintf: [getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')]
-			}, user.language));
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')]
+			}, user.language) + exceptPinned);
 		} else if (metaFromDate) {
 			t.warningBox.set(TAPi18n.__('Prune_Warning_after', {
 				postProcess: 'sprintf',
-				sprintf: [getRoomName(), moment(fromDate).format('L LT')]
-			}, user.language));
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')]
+			}, user.language) + exceptPinned);
 		} else if (metaToDate) {
 			t.warningBox.set(TAPi18n.__('Prune_Warning_before', {
 				postProcess: 'sprintf',
-				sprintf: [getRoomName(), moment(toDate).format('L LT')]
-			}, user.language));
+				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')]
+			}, user.language) + exceptPinned);
 		} else {
 			t.warningBox.set(TAPi18n.__('Prune_Warning_all', {
 				postProcess: 'sprintf',
-				sprintf: [getRoomName()]
-			}, user.language));
+				sprintf: [filesOrMessages, getRoomName()]
+			}, user.language) + exceptPinned);
 		}
 
 		if (fromDate > toDate) {
@@ -158,12 +170,20 @@ Template.cleanHistory.events({
 	'change [name=inclusive]'(e) {
 		Session.set('cleanHistoryInclusive', e.target.checked);
 	},
+	'change [name=excludePinned]'(e) {
+		Session.set('cleanHistoryExcludePinned', e.target.checked);
+	},
+	'change [name=filesOnly]'(e) {
+		Session.set('cleanHistoryFilesOnly', e.target.checked);
+	},
 	'click .js-prune'() {
 		const metaFromDate = Session.get('cleanHistoryFromDate');
 		const metaFromTime = Session.get('cleanHistoryFromTime');
 		const metaToDate = Session.get('cleanHistoryToDate');
 		const metaToTime = Session.get('cleanHistoryToTime');
 		const metaCleanHistoryInclusive = Session.get('cleanHistoryInclusive');
+		const metaCleanHistoryExcludePinned = Session.get('cleanHistoryExcludePinned');
+		const metaCleanHistoryFilesOnly = Session.get('cleanHistoryFilesOnly');
 
 		let fromDate = new Date('0001-01-01T00:00:00Z');
 		let toDate = new Date('9999-12-31T23:59:59Z');
@@ -195,7 +215,7 @@ Template.cleanHistory.events({
 		}, async function() {
 			Session.set('cleanHistoryBusy', true);
 
-			purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, 250);
+			purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, 250, metaCleanHistoryExcludePinned, metaCleanHistoryFilesOnly);
 		});
 	}
 });

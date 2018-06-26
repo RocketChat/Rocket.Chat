@@ -45,7 +45,7 @@ function processPruneMessages() {
 		const toDate = new Date(now.getTime() - secondsAgo * 1000);
 		const fromDate = new Date('0001-01-01T00:00:00Z');
 
-		const messagesToDelete = RocketChat.models.Messages.find({
+		let messagesToDelete = RocketChat.models.Messages.find({
 			rid: room._id,
 			ts: {
 				$gt: fromDate,
@@ -54,27 +54,56 @@ function processPruneMessages() {
 		}, {
 			fields: {
 				file: 1,
+				pinned: 1,
 				_id: 1
 			}
 		}).fetch().map(function(document) {
 			if (document.file && document.file._id) {
-				FileUpload.getStore('Uploads').deleteById(document.file._id);
+				if (!RocketChat.settings.get('RetentionPolicy_ExcludePinned') || !document.pinned) {
+					FileUpload.getStore('Uploads').deleteById(document.file._id);
+
+					if (RocketChat.settings.get('RetentionPolicy_FilesOnly')) {
+						RocketChat.models.Messages.update({
+							_id: document._id
+						}, {
+							$set: {
+								file: null,
+								attachments: [{
+									color: '#F84040',
+									text: '_File removed by automatic prune_'
+								}]
+							}
+						});
+					}
+				}
 			}
 
 			return document._id;
 		});
 
-		RocketChat.models.Messages.remove({
-			_id: {
-				$in: messagesToDelete
-			}
-		});
+		if (RocketChat.settings.get('RetentionPolicy_ExcludePinned')) {
+			messagesToDelete = messagesToDelete.filter(function(messageId) {
+				const message = RocketChat.models.Messages.findOne({
+					_id: messageId
+				});
 
-		RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
-			_id: {
-				$in: messagesToDelete
-			}
-		});
+				return (message && !message.pinned);
+			});
+		}
+
+		if (!RocketChat.settings.get('RetentionPolicy_FilesOnly')) {
+			RocketChat.models.Messages.remove({
+				_id: {
+					$in: messagesToDelete
+				}
+			});
+
+			RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
+				_id: {
+					$in: messagesToDelete
+				}
+			});
+		}
 	});
 }
 

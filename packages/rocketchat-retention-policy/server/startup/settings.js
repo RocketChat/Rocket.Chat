@@ -42,4 +42,15 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 		i18nDescription: 'RetentionPolicy_MaxAge_Description'
 	});
 
+	this.add('RetentionPolicy_ExcludePinned', false, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'RetentionPolicy_ExcludePinned'
+	});
+	this.add('RetentionPolicy_FilesOnly', false, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'RetentionPolicy_FilesOnly',
+		i18nDescription: 'RetentionPolicy_FilesOnly_Description'
+	});
 });

@@ -40,6 +40,16 @@
 			{{> icon icon="check" block="rc-checkbox__icon"}}
 			<span class="rc-checkbox__text rc-text__small">{{_ "Inclusive"}}</span>
 		</label>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="excludePinned" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Exclude_pinned"}}</span>
+		</label>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="filesOnly" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Files_only"}}</span>
+		</label>
 		{{#unless validate}}
 		<div class="mail-messages__instructions mail-messages__instructions--warning">
 			<div class="mail-messages__instructions-wrapper">
@@ -66,14 +76,24 @@
 	{{else}}
 		{{#unless finished}}
 		<main class="rc-user-info__pruning">
-			<p class="pruning__header">{{_ "Pruning_messages"}}</p>
+			<p class="pruning__header">
+				{{#unless filesOnly}}
+					{{_ "Pruning_messages"}}
+				{{else}}
+					{{_ "Pruning_files"}}
+				{{/unless}}
+			</p>
 			<div class="pruning-wrapper">
 				{{> icon icon="loading-thin"}}
 				<div class="pruning__text">
 					{{prunedCount}}
 				</div>
 				<div class="pruning__text-sub">
-					{{_ "messages_pruned"}}
+					{{#unless filesOnly}}
+						{{_ "messages_pruned"}}
+					{{else}}
+						{{_ "files_pruned"}}
+					{{/unless}}
 				</div>
 			</div>
 		</main>
@@ -86,7 +106,11 @@
 					{{prunedCount}}
 				</div>
 				<div class="pruning__text-sub">
-					{{_ "messages_pruned"}}
+					{{#unless filesOnly}}
+						{{_ "messages_pruned"}}
+					{{else}}
+						{{_ "files_pruned"}}
+					{{/unless}}
 				</div>
 			</div>
 		</main>

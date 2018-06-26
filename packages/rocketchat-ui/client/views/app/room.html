@@ -111,7 +111,11 @@
 												{{#if hasPurge}}
 													<div class="start__purge-warning error-background error-border error-color">
 														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
-														{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+														{{#unless filesOnly}}
+															{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+														{{else}}
+															{{_ "RetentionPolicy_RoomWarning_FilesOnly" purgeTimeout}}
+														{{/unless}}
 														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
 													</div>
 												{{/if}}

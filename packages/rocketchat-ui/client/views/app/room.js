@@ -406,6 +406,9 @@ Template.room.helpers({
 
 		return false;
 	},
+	filesOnly() {
+		return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+	},
 	purgeTimeout() {
 		moment.relativeTimeThreshold('s', 60);
 		moment.relativeTimeThreshold('ss', 0);
