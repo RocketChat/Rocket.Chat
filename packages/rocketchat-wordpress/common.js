@@ -15,6 +15,12 @@ const WordPress = new CustomOAuth('wordpress', config);
 
 const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	config.serverURL = RocketChat.settings.get('API_Wordpress_URL');
+	if (!config.serverURL) {
+		if (config.serverURL === undefined) {
+			return fillSettings();
+		}
+		return;
+	}
 
 	delete config.identityPath;
 	delete config.identityTokenSentVia;
@@ -58,22 +64,23 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	}
 
 	const result = WordPress.configure(config);
-
-	const enabled = RocketChat.settings.get('Accounts_OAuth_Wordpress');
-	if (enabled) {
-		ServiceConfiguration.configurations.upsert({
-			service: 'wordpress'
-		}, {
-			$set: config
-		});
-	} else {
-		ServiceConfiguration.configurations.remove({
-			service: 'wordpress'
-		});
+	if (Meteor.isServer) {
+		const enabled = RocketChat.settings.get('Accounts_OAuth_Wordpress');
+		if (enabled) {
+			ServiceConfiguration.configurations.upsert({
+				service: 'wordpress'
+			}, {
+				$set: config
+			});
+		} else {
+			ServiceConfiguration.configurations.remove({
+				service: 'wordpress'
+			});
+		}
 	}
 
 	return result;
-}), 1000);
+}), Meteor.isServer ? 1000 : 100);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {

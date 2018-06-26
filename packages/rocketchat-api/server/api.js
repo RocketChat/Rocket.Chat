@@ -33,6 +33,9 @@ class API extends Restivus {
 			customFields: 0,
 			settings: 0
 		};
+		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
+			services: 0
+		};
 
 		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
@@ -178,63 +181,64 @@ class API extends Restivus {
 		}
 		routes.forEach((route) => {
 			//Note: This is required due to Restivus calling `addRoute` in the constructor of itself
-			if (this.hasHelperMethods()) {
-				Object.keys(endpoints).forEach((method) => {
-					if (typeof endpoints[method] === 'function') {
-						endpoints[method] = { action: endpoints[method] };
-					}
-					//Add a try/catch for each endpoint
-					const originalAction = endpoints[method].action;
-					endpoints[method].action = function _internalRouteActionHandler() {
-						const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
-							method,
-							version,
-							user_agent: this.request.headers['user-agent'],
-							entrypoint: route
-						});
+			Object.keys(endpoints).forEach((method) => {
+				if (typeof endpoints[method] === 'function') {
+					endpoints[method] = { action: endpoints[method] };
+				}
 
-						logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-						const requestIp = this.request.headers['x-forwarded-for'];
-						const objectForRateLimitMatch = {
-							IPAddr: requestIp,
-							route: `${ this.request.route }${ this.request.method.toLowerCase() }`
-						};
-						let result;
-						try {
-							const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route);
-							if (shouldVerifyRateLimit) {
-								rateLimiterDictionary[objectForRateLimitMatch.route].increment(objectForRateLimitMatch);
-								const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].check(objectForRateLimitMatch);
-								if (!attemptResult.allowed) {
-									throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying this endpoint again.`, {
-										timeToReset: attemptResult.timeToReset,
-										seconds: Math.ceil(attemptResult.timeToReset / 1000)
-									});
-								}
-							}
-							result = originalAction.apply(this);
-						} catch (e) {
-							logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-							result = RocketChat.API.v1.failure(e.message, e.error);
-						}
+				//Add a try/catch for each endpoint
+				const originalAction = endpoints[method].action;
+				endpoints[method].action = function _internalRouteActionHandler() {
+					const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+						method,
+						version,
+						user_agent: this.request.headers['user-agent'],
+						entrypoint: route
+					});
 
-						result = result || RocketChat.API.v1.success();
-
-						rocketchatRestApiEnd({
-							status: result.statusCode
-						});
-
-						return result;
+					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+					const requestIp = this.request.headers['x-forwarded-for'];
+					const objectForRateLimitMatch = {
+						IPAddr: requestIp,
+						route: `${ this.request.route }${ this.request.method.toLowerCase() }`
 					};
+					let result;
+					try {
+						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route);
+						if (shouldVerifyRateLimit) {
+							rateLimiterDictionary[objectForRateLimitMatch.route].increment(objectForRateLimitMatch);
+							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].check(objectForRateLimitMatch);
+							if (!attemptResult.allowed) {
+								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying this endpoint again.`, {
+									timeToReset: attemptResult.timeToReset,
+									seconds: Math.ceil(attemptResult.timeToReset / 1000)
+								});
+							}
+						}
+						result = originalAction.apply(this);
+					} catch (e) {
+						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						result = RocketChat.API.v1.failure(e.message, e.error);
+					}
 
+					result = result || RocketChat.API.v1.success();
+
+					rocketchatRestApiEnd({
+						status: result.statusCode
+					});
+
+					return result;
+				};
+
+				if (this.hasHelperMethods()) {
 					for (const [name, helperMethod] of this.getHelperMethods()) {
 						endpoints[method][name] = helperMethod;
 					}
+				}
 
-					//Allow the endpoints to make usage of the logger which respects the user's settings
-					endpoints[method].logger = logger;
-				});
-			}
+				//Allow the endpoints to make usage of the logger which respects the user's settings
+				endpoints[method].logger = logger;
+			});
 
 			super.addRoute(route, options, endpoints);
 		});
@@ -243,7 +247,7 @@ class API extends Restivus {
 	_initAuth() {
 		const loginCompatibility = (bodyParams) => {
 			// Grab the username or email that the user is logging in with
-			const {user, username, email, password, code} = bodyParams;
+			const { user, username, email, password, code } = bodyParams;
 
 			if (password == null) {
 				return bodyParams;
@@ -258,11 +262,11 @@ class API extends Restivus {
 			};
 
 			if (typeof user === 'string') {
-				auth.user = user.includes('@') ? {email: user} : {username: user};
+				auth.user = user.includes('@') ? { email: user } : { username: user };
 			} else if (username) {
-				auth.user = {username};
+				auth.user = { username };
 			} else if (email) {
-				auth.user = {email};
+				auth.user = { email };
 			}
 
 			if (auth.user == null) {

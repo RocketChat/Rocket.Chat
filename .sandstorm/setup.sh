@@ -25,11 +25,12 @@ ln -s "${PACKAGE}" meteor-spk
 
 #This will install capnp, the Cap’n Proto command-line tool.
 #It will also install libcapnp, libcapnpc, and libkj in /usr/local/lib and headers in /usr/local/include/capnp and /usr/local/include/kj.
-wget https://capnproto.org/capnproto-c++-0.5.3.tar.gz
-tar zxf capnproto-c++-0.5.3.tar.gz
-cd capnproto-c++-0.5.3
+curl -O https://capnproto.org/capnproto-c++-0.6.1.tar.gz
+tar zxf capnproto-c++-0.6.1.tar.gz
+cd capnproto-c++-0.6.1
 ./configure
 make -j6 check
+sudo make install
 # inlcude libcapnp and libkj library to dependencies.
 cp .libs/* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 
