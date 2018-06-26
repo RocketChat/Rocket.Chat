@@ -90,6 +90,10 @@ Template.setupWizard.onCreated(function() {
 			this.state.set('currentStep', 1);
 		}
 
+		if (typeof this.state.get('registerServer') === typeof undefined) {
+			this.state.set('registerServer', 'true');
+		}
+
 		const state = this.state.all();
 		state['registration-pass'] = '';
 		localStorage.setItem('wizard', JSON.stringify(state));
@@ -185,6 +189,7 @@ Template.setupWizard.events({
 		return false;
 	},
 	'input .js-setting-data'({ currentTarget: { name, value } }, t) {
+		console.log(name, value);
 		t.state.set(name, value);
 	}
 });
@@ -250,7 +255,8 @@ Template.setupWizard.helpers({
 		const t = Template.instance();
 
 		return {
-			currentStep: t.state.get('currentStep')
+			currentStep: t.state.get('currentStep'),
+			registerServer: t.state.get('registerServer') === 'true'
 		};
 	},
 	customStepArgs(step) {

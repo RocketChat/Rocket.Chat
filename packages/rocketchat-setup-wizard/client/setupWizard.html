@@ -122,32 +122,31 @@
 
 <template name="setupWizardRegisterServer">
 	<div class="setup-wizard-forms__content-step {{#if $eq currentStep 4}}setup-wizard-forms__content-step--active{{/if}}">
-		<p class="setup-wizard-forms__content-text">To receive free Rocket.Chat supplied features you need to register your server.</p>
+		<p class="setup-wizard-forms__content-text">Use the preconfigured gateways and proxies provided by Rocket.Chat Technologies Corp.</p>
 		<form class="setup-wizard-forms__content-register">
-			<label class="setup-wizard-forms__content-register-option">
+			<label class="setup-wizard-forms__content-register-option {{#if registerServer}}setup-wizard-forms__content-register-option--selected{{/if}}">
 				<div class="setup-wizard-forms__content-register-radio">
-					<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked>
+					<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked="{{registerServer}}">
 					<span class="setup-wizard-forms__content-register-radio-fake"></span>
-					<span class="setup-wizard-forms__content-register-radio-text">Registered Server</span>
+					<span class="setup-wizard-forms__content-register-radio-text">Register to access</span>
 				</div>
 				<ul>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications</li>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Omnichannel proxy</li>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Social Network oAuth proxy</li>
+					<li class="setup-wizard-forms__content-register-item ">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications gateway</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Livechat omnichannel proxy</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}OAuth proxy for social network</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Apps Marketplace</li>
 				</ul>
 			</label>
-			<label class="setup-wizard-forms__content-register-option">
+			<label class="setup-wizard-forms__content-register-option {{#if $not registerServer}}setup-wizard-forms__content-register-option--selected{{/if}}">
 				<div class="setup-wizard-forms__content-register-radio">
-					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data">
+					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked="{{$not registerServer}}">
 					<span class="setup-wizard-forms__content-register-radio-fake"></span>
-					<span class="setup-wizard-forms__content-register-radio-text">Standalone Server</span>
+					<span class="setup-wizard-forms__content-register-radio-text">Keep standalone, you'll need to</span>
 				</div>
 				<ul>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Mobile push notifications</li>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Omnichannel proxy</li>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Social Network oAuth proxy</li>
-					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="cross"}}Apps Marketplace</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Create accounts with service providers</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Update the preconfigured settings</li>
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Recompile the mobile apps with your own certificates</li>
 				</ul>
 			</label>
 		</form>
