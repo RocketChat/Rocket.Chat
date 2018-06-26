@@ -19,6 +19,11 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 
 	api.addFiles('server/startup.js', 'server');
-	api.addFiles('server/sendClientCommand.js', 'server');
-	api.addFiles('server/replyClientCommand.js', 'server');
+
+	api.addFiles('server/functions/sendClientCommand.js', 'server');
+	api.addFiles('server/functions/setCustomClientData.js', 'server');
+	api.addFiles('server/functions/resetCustomClientData.js', 'server');
+
+	api.addFiles('server/methods/replyClientCommand.js', 'server');
+	api.addFiles('server/methods/setCustomClientData.js', 'server');
 });

@@ -91,13 +91,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/getRoomByNameOrIdWithOptionToJoin.js', 'server');
 	api.addFiles('server/functions/loadMessageHistory.js', 'server');
 	api.addFiles('server/functions/removeUserFromRoom.js', 'server');
-	api.addFiles('server/functions/resetCustomClientData.js', 'server');
 	api.addFiles('server/functions/saveUser.js', 'server');
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
-	api.addFiles('server/functions/setCustomClientData.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.js', 'server');
 	api.addFiles('server/functions/setRealName.js', 'server');
@@ -187,7 +185,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/sendMessage.js', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
 	api.addFiles('server/methods/setAdminStatus.js', 'server');
-	api.addFiles('server/methods/setCustomClientData.js', 'server');
 	api.addFiles('server/methods/setRealName.js', 'server');
 	api.addFiles('server/methods/setUsername.js', 'server');
 	api.addFiles('server/methods/setEmail.js', 'server');
