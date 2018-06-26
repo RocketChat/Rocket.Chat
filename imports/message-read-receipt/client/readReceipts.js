@@ -24,6 +24,7 @@ Template.readReceipts.onCreated(function readReceiptsOnCreated() {
 	this.readReceipts = new ReactiveVar([]);
 });
 
+
 Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 	this.loading.set(true);
 	Meteor.call('getReadReceipts', { messageId: this.data.messageId }, (error, result) => {

@@ -1,79 +1,56 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
+/* globals fileUploadHandler, Handlebars, fileUpload, modal */
 /* exported fileUpload */
+
+
+import _ from 'underscore';
 import s from 'underscore.string';
+import buffer from 'buffer';
+import IPFS from 'ipfs-mini';
+import cp from 'crypto-js';
+import { Meteor } from 'meteor/meteor';
 
-const readAsDataURL = (file, callback) => {
+
+function storetoIPFS(file, key)
+{
+	const IPFSreader = new FileReader();
+	IPFSreader.onload = function ()
+	{
+		
+		const fileName = file.name;
+		const buf = new buffer.Buffer(IPFSreader.result);
+		
+		Meteor.call('addtoIPFS',buf,fileName ,(error, result) => {
+		});
+		
+	}
+	IPFSreader.readAsArrayBuffer(file);
+}
+
+function readAsDataURL(file, callback) 
+{
 	const reader = new FileReader();
-	reader.onload = e => callback(e.target.result, file);
-
+	reader.onload = ev => callback(ev.target.result, file);
 	return reader.readAsDataURL(file);
-};
+}
 
-const showUploadPreview = (file, callback) => {
+function getUploadPreview(file, callback) 
+{
 	// If greater then 10MB don't try and show a preview
+	
 	if (file.file.size > (10 * 1000000)) {
 		return callback(file, null);
-	}
-
-	if (file.file.type == null) {
-		return callback(file, null);
-	}
-
-	if ((file.file.type.indexOf('audio') > -1) || (file.file.type.indexOf('video') > -1) || (file.file.type.indexOf('image') > -1)) {
+	} else if (file.file.type == null) {
+		callback(file, null);
+	} else if ((file.file.type.indexOf('audio') > -1) || (file.file.type.indexOf('video') > -1) || (file.file.type.indexOf('image') > -1)) {
 		file.type = file.file.type.split('/')[0];
 
 		return readAsDataURL(file.file, content => callback(file, content));
+	} else {
+		return callback(file, null);
 	}
+}
 
-	return callback(file, null);
-};
-
-const getAudioUploadPreview = (file, preview) => `\
-<div class='upload-preview'>
-	<audio  style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="audio/wav">
-		Your browser does not support the audio element.
-	</audio>
-</div>
-<div class='upload-preview-title'>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	</div>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-	</div>
-</div>`;
-
-const getVideoUploadPreview = (file, preview) => `\
-<div class='upload-preview'>
-	<video  style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="video/webm">
-		Your browser does not support the video element.
-	</video>
-</div>
-<div class='upload-preview-title'>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	</div>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-	</div>
-</div>`;
-
-const getImageUploadPreview = (file, preview) => `\
-<div class='upload-preview'>
-	<div class='upload-preview-file' style='background-image: url(${ preview })'></div>
-</div>
-<div class='upload-preview-title'>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-	</div>
-	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-	</div>
-</div>`;
-
-const formatBytes = (bytes, decimals) => {
+function formatBytes(bytes, decimals) {
 	if (bytes === 0) {
 		return '0 Bytes';
 	}
@@ -93,45 +70,14 @@ const formatBytes = (bytes, decimals) => {
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
 
 	return `${ parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) } ${ sizes[i] }`;
-};
+}
 
-const getGenericUploadPreview = (file) => `\
-<div class='upload-preview'>
-<div>${ Handlebars._escape(file.name) } - ${ formatBytes(file.file.size) }</div>
-</div>
-<div class='upload-preview-title'>
-<div class="rc-input__wrapper">
-<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
-</div>
-<div class="rc-input__wrapper">
-<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-</div>
-</div>`;
-
-const getUploadPreview = (file, preview) => {
-	if (file.type === 'audio') {
-		return getAudioUploadPreview(file, preview);
-	}
-
-	if (file.type === 'video') {
-		return getVideoUploadPreview(file, preview);
-	}
-
-	if (file.type === 'image') {
-		return getImageUploadPreview(file, preview);
-	}
-
-	return getGenericUploadPreview(file, preview);
-};
-
-fileUpload = (files) => {
-	files = [].concat(files);
-
+fileUpload = function(filesToUpload) {
 	const roomId = Session.get('openedRoom');
-
-	const uploadNextFile = () => {
+	const files = [].concat(filesToUpload);
+	function consume() {
 		const file = files.pop();
-		if (!file) {
+		if ((file == null)) {
 			modal.close();
 			return;
 		}
@@ -154,11 +100,80 @@ fileUpload = (files) => {
 			});
 			return;
 		}
+		return getUploadPreview(file, function(file, preview) {
+			let text = '';
 
-		showUploadPreview(file, (file, preview) => {
+			if (file.type === 'audio') {
+				text = `\
+<div class='upload-preview'>
+	<audio  style="width: 100%;" controls="controls">
+		<source src="${ preview }" type="audio/wav">
+		Your browser does not support the audio element.
+	</audio>
+</div>
+<div class='upload-preview-title'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
+</div>`;
+			} else if (file.type === 'video') {
+				text = `\
+<div class='upload-preview'>
+	<video  style="width: 100%;" controls="controls">
+		<source src="${ preview }" type="video/webm">
+		Your browser does not support the video element.
+	</video>
+</div>
+<div class='upload-preview-title'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input type= 'password' class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
+</div>`;
+			} else if (file.type === 'image') {
+				text = `\
+<div class='upload-preview'>
+	<div class='upload-preview-file' style='background-image: url(${ preview })'></div>
+</div>
+<div class='upload-preview-title'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		 <input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		 <input type= 'password' class="rc-input__element" id='IPFSSeed' style='display: inherit;' value='' placeholder='${ t('Password') }'>
+	</div>
+</div>`;
+			} else {
+				const fileSize = formatBytes(file.file.size);
+
+				text = `\
+<div class='upload-preview'>
+	<div>${ Handlebars._escape(file.name) } - ${ fileSize }</div>
+</div>
+<div class='upload-preview-title'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		 <input type= 'password' class="rc-input__element" id='IPFSSeed' style='display: inherit;' value='' placeholder='${ t('Password') }'>
+	</div>
+</div>`;
+			}
+
 			return modal.open({
 				title: t('Upload_file_question'),
-				text: getUploadPreview(file, preview),
+				text,
 				showCancelButton: true,
 				closeOnConfirm: false,
 				closeOnCancel: false,
@@ -166,78 +181,107 @@ fileUpload = (files) => {
 				cancelButtonText: t('Cancel'),
 				html: true,
 				onRendered: () => $('#file-name').focus()
-			}, (isConfirm) => {
-				if (!isConfirm) {
-					return;
-				}
+			}, function(isConfirm) {
 
 				const record = {
 					name: document.getElementById('file-name').value || file.name || file.file.name,
 					size: file.file.size,
 					type: file.file.type,
 					rid: roomId,
-					description: document.getElementById('file-description').value
+					description: document.getElementById('file-description').value,
+					IPFSSeed: document.getElementById('IPFSSeed').value,
 				};
-
+				console.log(record.IPFSSeed);
+				consume();
+				if (!isConfirm) {
+					return;
+				}
 				const upload = fileUploadHandler('Uploads', record, file.file);
-
-				uploadNextFile();
-
-				const uploads = Session.get('uploading') || [];
-				uploads.push({
+				let uploading = Session.get('uploading') || [];
+				uploading.push({
 					id: upload.id,
 					name: upload.getFileName(),
 					percentage: 0
 				});
-				Session.set('uploading', uploads);
 
-				upload.onProgress = (progress) => {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter(u => u.id === upload.id).forEach(u => {
-						u.percentage = Math.round(progress * 100) || 0;
-					});
-					Session.set('uploading', uploads);
+				Session.set('uploading', uploading);
+
+				upload.onProgress = function(progress) {
+					uploading = Session.get('uploading');
+
+					const item = _.findWhere(uploading, {id: upload.id});
+					if (item != null) {
+						item.percentage = Math.round(progress * 100) || 0;
+						return Session.set('uploading', uploading);
+					}
 				};
 
-				upload.start((error, file, storage) => {
+				upload.start(function(error, file, storage) {
 					if (error) {
-						const uploads = Session.get('uploading') || [];
-						uploads.filter(u => u.id === upload.id).forEach(u => {
-							u.error = error.message;
-							u.percentage = 0;
+						let uploading = Session.get('uploading');
+						if (!Array.isArray(uploading)) {
+							uploading = [];
+						}
+
+						const item = _.findWhere(uploading, { id: upload.id });
+
+						if (_.isObject(item)) {
+							item.error = error.message;
+							item.percentage = 0;
+						} else {
+							uploading.push({
+								error: error.error,
+								percentage: 0
+							});
+						}
+
+						Session.set('uploading', uploading);
+						return;
+					}
+					storetoIPFS(upload.file,record.IPFSSeed);
+					if (file) {
+						Meteor.call('sendFileMessage', roomId, storage, file, () => {
+							Meteor.setTimeout(() => {
+								const uploading = Session.get('uploading');
+								if (uploading !== null) {
+									const item = _.findWhere(uploading, {
+										id: upload.id
+									});
+									return Session.set('uploading', _.without(uploading, item));
+								}
+							}, 2000);
 						});
-						Session.set('uploading', uploads);
-
-						return;
 					}
-
-					if (!file) {
-						return;
-					}
-
-					Meteor.call('sendFileMessage', roomId, storage, file, () => {
-						Meteor.setTimeout(() => {
-							const uploads = Session.get('uploading') || [];
-							Session.set('uploading', uploads.filter(u => u.id !== upload.id));
-						}, 2000);
-					});
 				});
 
-				Tracker.autorun((computation) => {
-					const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
-					if (!isCanceling) {
-						return;
+				Tracker.autorun(function(c) {
+					const cancel = Session.get(`uploading-cancel-${ upload.id }`);
+					if (cancel) {
+						let item;
+						upload.stop();
+						c.stop();
+
+						uploading = Session.get('uploading');
+						if (uploading != null) {
+							item = _.findWhere(uploading, {id: upload.id});
+							if (item != null) {
+								item.percentage = 0;
+							}
+							Session.set('uploading', uploading);
+						}
+
+						return Meteor.setTimeout(function() {
+							uploading = Session.get('uploading');
+							if (uploading != null) {
+								item = _.findWhere(uploading, {id: upload.id});
+								return Session.set('uploading', _.without(uploading, item));
+							}
+						}, 1000);
 					}
-
-					computation.stop();
-					upload.stop();
-
-					const uploads = Session.get('uploading') || {};
-					Session.set('uploading', uploads.filter(u => u.id !== upload.id));
 				});
 			});
 		});
-	};
+	}
 
-	uploadNextFile();
+	consume();
 };

@@ -17,6 +17,16 @@ RocketChat.TabBar.addButton({
 });
 
 RocketChat.TabBar.addButton({
+	groups: ['channel', 'group', 'direct'],
+	id: 'searchOn-IPFS',
+	i18nTitle: 'Get file from IPFS',
+	icon: 'magnifier',
+	template: 'getFileFromIPFS',
+	order: 3
+});
+
+
+RocketChat.TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'members-list',
 	i18nTitle: 'Members_List',
