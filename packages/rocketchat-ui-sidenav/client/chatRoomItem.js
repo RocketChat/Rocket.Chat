@@ -16,7 +16,8 @@ Template.chatRoomItem.helpers({
 		// 	unread = this.unread;
 		// }
 
-		const active = [this.rid, this._id].includes(id => id === openedRomm) && isActive;
+		const active = [this.rid, this._id].includes(id => id === openedRomm);
+
 		const archivedClass = this.archived ? 'archived' : false;
 
 		this.alert = !this.hideUnreadStatus && this.alert; //&& (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
@@ -29,7 +30,6 @@ Template.chatRoomItem.helpers({
 			icon,
 			avatar,
 			username : this.name,
-			isActive,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name: name || RocketChat.roomTypes.getRoomName(this.t, this),
 			unread,

@@ -141,10 +141,9 @@ Template.room.helpers({
 		const active = RocketChat.models.Subscriptions.findOne({rid: this._id}, {fields: {active: 1}}).active;
 
 		if (active === false) {
-			console.log(active);
 			const query = {
 				rid: this._id,
-				/* query for invintation messages only for current user */
+				/* query for invitation messages only for current user */
 				$and: [
 					{'to': { $exists: true } },
 					{'to._id': Meteor.userId() }

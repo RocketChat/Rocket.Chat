@@ -10,19 +10,20 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 	}
 	console.log('invite user')
 	// TODO: send message to user
-	RocketChat.models.Messages.createAcceptInvintationInTheRoom(rid, {_id: 'rocket.cat', username: 'rocket.cat'}, {
+	RocketChat.models.Messages.createAcceptInvitationInTheRoom(rid, {_id: 'rocket.cat', username: 'rocket.cat'}, {
 		to: {
 			_id: user._id
 		},
 		inviter: inviterUsername,
 		actionLinks: [
 			{
-				icon: 'icon-plus', i18nLabel: 'Accept', method_id: 'acceptInvintationToRoom', params: {
-					rid
+				icon: 'icon-plus', i18nLabel: 'Accept', method_id: 'acceptInvitationToRoom', params: {
+					rid,
+					userId: user._id
 				}
 			},
 			{
-				icon: 'icon-plus', i18nLabel: 'Decline', method_id: 'declineInvintationToRoom', params: {
+				icon: 'icon-plus', i18nLabel: 'Decline', method_id: 'declineInvitationToRoom', params: {
 					rid
 				}
 			}
@@ -41,54 +42,6 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 		userMentions: 0,
 		groupMentions: 0
 	});
-	// RocketChat.models.Messages.createMentionedUsersAreNotInTheRoom(room._id, {_id: 'rocket.cat', username: 'rocket.cat'}, {
-	// 	to: {
-	// 		_id: user._id,
-	// 		username: user.username
-	// 	},
-	// 	actionLinks: [
-	// 		{
-	// 			icon: 'icon-plus', i18nLabel: 'Accept', method_id: 'acceptInvitation', params: {
-	// 				rid: room._id
-	// 			}
-	// 		}
-	// 	]
-	// });
-
-	// if (room.t === 'c' || room.t === 'p') {
-	// 	RocketChat.callbacks.run('beforeJoinRoom', user, room);
-	// }
-	//
-	// const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
-	// RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
-	// RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
-	// 	ts: now,
-	// 	open: true,
-	// 	alert: true,
-	// 	unread: 1,
-	// 	userMentions: 1,
-	// 	groupMentions: 0
-	// });
-	//
-	// if (!silenced) {
-	// 	if (inviter) {
-	// 		RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rid, user, {
-	// 			ts: now,
-	// 			u: {
-	// 				_id: inviter._id,
-	// 				username: inviter.username
-	// 			}
-	// 		});
-	// 	} else {
-	// 		RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
-	// 	}
-	// }
-	//
-	// if (room.t === 'c' || room.t === 'p') {
-	// 	Meteor.defer(function() {
-	// 		RocketChat.callbacks.run('afterJoinRoom', user, room);
-	// 	});
-	// }
 
 	return true;
 };

@@ -150,6 +150,7 @@ Package.onUse(function(api) {
 
 	// SERVER METHODS
 	api.addFiles('server/methods/addOAuthService.js', 'server');
+	api.addFiles('server/methods/acceptInvitation.js', 'server');
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
 	api.addFiles('server/methods/addUserToRoom.js', 'server');
 	api.addFiles('server/methods/addUsersToRoom.js', 'server');
