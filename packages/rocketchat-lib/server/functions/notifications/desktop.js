@@ -23,8 +23,8 @@ export function notifyDesktopUser({
 	if (room.t === 'd') {
 		title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
 		text = notificationMessage;
-	} else if (room.name) {
-		title = `#${ room.name }`;
+	} else if (RocketChat.roomTypes.getRoomName(room.t, room)) {
+		title = `#${ RocketChat.roomTypes.getRoomName(room.t, room) }`;
 		text = `${ UI_Use_Real_Name ? user.name : user.username }: ${ notificationMessage }`;
 	} else {
 		return;
