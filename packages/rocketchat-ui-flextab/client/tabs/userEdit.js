@@ -52,7 +52,20 @@ Template.userEdit.events({
 	'click #randomPassword'(e) {
 		e.stopPropagation();
 		e.preventDefault();
-		$('#password').val(Random.id());
+		e.target.classList.add('loading');
+		$('#password').val('');
+		setTimeout(() => {
+			$('#password').val(Random.id());
+			e.target.classList.remove('loading');
+		}, 1000);
+	},
+
+	'mouseover #password'(e) {
+		e.target.type = 'text';
+	},
+
+	'mouseout #password'(e) {
+		e.target.type = 'password';
 	},
 
 	'click #addRole'(e, instance) {
@@ -73,7 +86,6 @@ Template.userEdit.events({
 		t.save(e.currentTarget);
 	}
 });
-
 
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;

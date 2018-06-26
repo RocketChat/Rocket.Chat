@@ -69,6 +69,42 @@ describe('miscellaneous', function() {
 			.end(done);
 	});
 
+	it('/login by user', (done) => {
+		request.post(api('login'))
+			.send({
+				user: adminEmail,
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
+			.end(done);
+	});
+
+	it('/login by username', (done) => {
+		request.post(api('login'))
+			.send({
+				username: adminUsername,
+				password: adminPassword
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('data').and.to.be.an('object');
+				expect(res.body.data).to.have.property('userId');
+				expect(res.body.data).to.have.property('authToken');
+				expect(res.body.data).to.have.property('me');
+			})
+			.end(done);
+	});
+
 	it('/me', (done) => {
 		request.get(api('me'))
 			.set(credentials)
