@@ -53,9 +53,10 @@ function Invite(command, params, item) {
 	users.forEach(function(user) {
 
 		try {
-			return Meteor.call('addUserToRoom', {
+			return Meteor.call('inviteUserToRoom', {
 				rid: item.rid,
-				username: user.username
+				user,
+				inviter: Meteor.userId()
 			});
 		} catch ({error}) {
 			if (error === 'cant-invite-for-direct-room') {

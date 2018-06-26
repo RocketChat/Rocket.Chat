@@ -153,6 +153,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/acceptInvitation.js', 'server');
 	api.addFiles('server/methods/refreshOAuthService.js', 'server');
 	api.addFiles('server/methods/addUserToRoom.js', 'server');
+	api.addFiles('server/methods/inviteUserToRoom.js', 'server');
 	api.addFiles('server/methods/addUsersToRoom.js', 'server');
 	api.addFiles('server/methods/inviteUsersToRoom.js', 'server');
 	api.addFiles('server/methods/archiveRoom.js', 'server');

@@ -13,36 +13,6 @@ Meteor.methods({
 			});
 		}
 
-		// Get user and room details
-		const room = RocketChat.models.Rooms.findOneById(data.rid);
-		const userId = Meteor.userId();
-		const user = Meteor.user();
-		const userInRoom = Array.isArray(room.usernames) && room.usernames.includes(user.username);
-
-		// Can't invite to direct room ever
-		if (room.t === 'd') {
-			throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
-				method: 'inviteUsersToRoom'
-			});
-		}
-
-		// Can add to any room you're in, with permission, otherwise need specific room type permission
-		let canAddUser = false;
-		if (userInRoom && RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
-			canAddUser = true;
-		} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
-			canAddUser = true;
-		} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
-			canAddUser = true;
-		}
-
-		// Inviting wasn't allowed
-		if (!canAddUser) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'inviteUsersToRoom'
-			});
-		}
-
 		// No users to be invited
 		if (!Array.isArray(data.users)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
@@ -54,9 +24,7 @@ Meteor.methods({
 		data.users.forEach((username) => {
 			const newUser = RocketChat.models.Users.findOneByUsername(username);
 			if (!newUser) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
-					method: 'inviteUsersToRoom'
-				});
+				return false;
 			}
 
 			RocketChat.inviteUserToRoom(data.rid, newUser, data.inviter);

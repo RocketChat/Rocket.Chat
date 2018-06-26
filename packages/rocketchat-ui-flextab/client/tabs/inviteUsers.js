@@ -91,14 +91,15 @@ Template.inviteUsers.events({
 	'click .js-add'(e, instance) {
 		const users = instance.selectedUsers.get().map(({username}) => username);
 
-		Meteor.call('addUsersToRoom', {
+		Meteor.call('inviteUsersToRoom', {
 			rid: Session.get('openedRoom'),
-			users
+			users,
+			inviter: Meteor.userId()
 		}, function(err) {
 			if (err) {
 				return toastr.error(err);
 			}
-			toastr.success(t('Users_added'));
+			toastr.success(t('Users_invited'));
 			instance.selectedUsers.set([]);
 		});
 	}

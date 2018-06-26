@@ -53,16 +53,17 @@ function inviteAll(type) {
 					}, currentUser.language)
 				});
 			} else {
-				Meteor.call('addUsersToRoom', {
+				Meteor.call('inviteUsersToRoom', {
 					rid: targetChannel._id,
-					users
+					users,
+					inviter: Meteor.userId()
 				});
 			}
 			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
-				msg: TAPi18n.__('Users_added', null, currentUser.language)
+				msg: TAPi18n.__('Users_invited', null, currentUser.language)
 			});
 		} catch (e) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;

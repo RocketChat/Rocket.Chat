@@ -1,6 +1,37 @@
 RocketChat.inviteUserToRoom = function(rid, user, inviter) {
-	const now = new Date();
+// Get user and room details
 	const room = RocketChat.models.Rooms.findOneById(rid);
+	const userId = inviter;
+	const inviterUser = RocketChat.models.Users.findOneById(inviter)
+	const userInRoom = Array.isArray(room.usernames) && room.usernames.includes(inviterUser.username);
+
+	// Can't invite to direct room ever
+	if (room.t === 'd') {
+		throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
+			method: 'inviteUserToRoom'
+		});
+	}
+
+	// Can add to any room you're in, with permission, otherwise need specific room type permission
+	let canAddUser = false;
+	if (userInRoom && RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+		canAddUser = true;
+	} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
+		canAddUser = true;
+	} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
+		canAddUser = true;
+	}
+	// Inviting wasn't allowed
+	if (!canAddUser) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'inviteUserToRoom'
+		});
+	}
+
+	if (!inviter) {
+		throw new Error('The \'inviter\' parameter on \'inviteUserToRoom\' function is missing.');
+	}
+	const now = new Date();
 
 	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	const inviterUsername = RocketChat.models.Users.findOneById(inviter).username;
