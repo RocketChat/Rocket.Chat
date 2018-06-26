@@ -2,7 +2,7 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 // Get user and room details
 	const room = RocketChat.models.Rooms.findOneById(rid);
 	const userId = inviter;
-	const inviterUser = RocketChat.models.Users.findOneById(inviter)
+	const inviterUser = RocketChat.models.Users.findOneById(inviter);
 	const userInRoom = Array.isArray(room.usernames) && room.usernames.includes(inviterUser.username);
 
 	// Can't invite to direct room ever
