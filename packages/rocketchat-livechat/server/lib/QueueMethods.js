@@ -14,14 +14,13 @@ RocketChat.QueueMethods = {
 			}
 		}
 
-		const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
+		RocketChat.models.Rooms.updateLivechatRoomCount();
 
 		const room = _.extend({
 			_id: message.rid,
 			msgs: 1,
 			lm: new Date(),
-			code: roomCode,
-			label: guest.name || guest.username,
+			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
 			// usernames: [agent.username, guest.username],
 			t: 'l',
 			ts: new Date(),
@@ -42,13 +41,12 @@ RocketChat.QueueMethods = {
 		}, roomInfo);
 		const subscriptionData = {
 			rid: message.rid,
-			name: guest.name || guest.username,
+			fname: guest.name || guest.username,
 			alert: true,
 			open: true,
 			unread: 1,
 			userMentions: 1,
 			groupMentions: 0,
-			code: roomCode,
 			u: {
 				_id: agent.agentId,
 				username: agent.username
@@ -89,7 +87,7 @@ RocketChat.QueueMethods = {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
-		const roomCode = RocketChat.models.Rooms.getNextLivechatRoomCode();
+		RocketChat.models.Rooms.updateLivechatRoomCount();
 
 		const agentIds = [];
 
@@ -106,7 +104,6 @@ RocketChat.QueueMethods = {
 			message: message.msg,
 			name: guest.name || guest.username,
 			ts: new Date(),
-			code: roomCode,
 			department: guest.department,
 			agents: agentIds,
 			status: 'open',
@@ -122,8 +119,7 @@ RocketChat.QueueMethods = {
 			_id: message.rid,
 			msgs: 1,
 			lm: new Date(),
-			code: roomCode,
-			label: guest.name || guest.username,
+			fname: guest.name || guest.username,
 			// usernames: [guest.username],
 			t: 'l',
 			ts: new Date(),

@@ -70,6 +70,9 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
+	//client startup
+	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
+
 	// client views
 	api.addFiles('client/views/app/customDaterange.html', 'client');
 	api.addFiles('client/views/app/customDaterange.js', 'client');
@@ -166,6 +169,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/removeRoom.js', 'server');
 	api.addFiles('server/methods/saveAppearance.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
@@ -189,6 +193,7 @@ Package.onUse(function(api) {
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');

@@ -2,26 +2,34 @@
   &.livestream {
     justify-content: flex-start;
   }
+  & .rc-button--stack {
+    width: 100%;
+  }
 }
 
 .thumbnail-container {
   position: relative;
   height: 270px;
 
-  & .--absolute-center {
-    position: absolute;
-    top: calc(50% - 25px);
-    left: calc(50% - 25px);
+  & .popout {
+    &--absolute-center {
+      position: absolute;
+      top: calc(50% - 25px);
+      left: calc(50% - 25px);
 
-    font-size: 50px;
-  }
-  & .--play-solid {
-    fill: var(--rc-color-primary-lightest);;
+      font-size: 50px;
+    }
+    &--play-solid {
+      fill: white;
+    }
   }
 }
 .liveStreamTab__form {
   & .rc-switch {
     padding: 15px 5px;
+  }
+  & .rc-input__label p {
+    padding: 10px 0;
   }
 }
 
@@ -37,7 +45,7 @@
   & .current-setting {
     display: inline-block;
     text-decoration: none;
-    color: var(--rc-color-primary-dark);
+    color: black;
   }
 
   & .rc-button {

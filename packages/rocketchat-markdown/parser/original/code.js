@@ -39,7 +39,7 @@ const codeblocks = (message) => {
 		for (let index = 0; index < msgParts.length; index++) {
 			// Verify if this part is code
 			const part = msgParts[index];
-			const codeMatch = part.match(/^```(.*[\r\n\ ]?)([\s\S]*?)```+?$/);
+			const codeMatch = part.match(/^```[\r\n]*(.*[\r\n\ ]?)[\r\n]*([\s\S]*?)```+?$/);
 
 			if (codeMatch != null) {
 				// Process highlight if this part is code
@@ -59,7 +59,7 @@ const codeblocks = (message) => {
 					highlight: true,
 					token,
 					text: `<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`,
-					noHtml: `\`\`\`\n${ s.stripTags(result.value) }\n\`\`\``
+					noHtml: codeMatch[0]
 				});
 
 				msgParts[index] = token;
