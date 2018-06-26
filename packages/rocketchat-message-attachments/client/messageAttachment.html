@@ -50,6 +50,9 @@
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
 						{{/if}}
+						{{#if googleAvailable}}
+							<button class ="button icon-drive-upload" data-url="{{fixCordova title_link}}" data-title="{{title}}" data-type="{{fileType}}">Drive</button>
+						{{/if}}
 					{{else}}
 						{{title}}
 					{{/if}}

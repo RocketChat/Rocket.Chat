@@ -61,5 +61,22 @@ Template.messageAttachment.helpers({
 
 	isFile() {
 		return this.type === 'file';
+	},
+
+	googleAvailable() {
+		return RocketChat.settings.get('Accounts_OAuth_Google');
+	},
+
+	fileType() {
+		if (this.audio_url) {
+			return 'audio';
+		}
+		if (this.video_url) {
+			return 'video';
+		}
+		if (this.image_url) {
+			return 'image';
+		}
+		return 'file';
 	}
 });
