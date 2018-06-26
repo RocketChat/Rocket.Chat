@@ -7,21 +7,27 @@ Template.setupWizard.onCreated(function() {
 		return;
 	}
 
-	const setSettingsAndGo = (settings, registerServer = true) => {
-		const settingsFilter = Object.entries(settings)
-			.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
-			.map(([_id, value]) => ({_id, value}));
+	const setSettingsAndGo = () => {
+		const settings = Object.entries(this.state.all())
+			.filter(([ key ]) => !/registration-|registerServer|optIn|currentStep|invalidUsername|invalidEmail/.test(key))
+			.map(([ _id, value ]) => ({ _id, value }))
+			.concat([
+				{
+					_id: 'Statistics_reporting',
+					value: this.state.get('registerServer')
+				},
+				// {
+				// 	_id: 'Opt_In',
+				// 	value: this.state.get('optIn')
+				// }
+			]);
 
-		settingsFilter.push({
-			_id: 'Statistics_reporting',
-			value: registerServer
-		});
-
-		RocketChat.settings.batchSet(settingsFilter, function(err) {
-			if (err) {
-				return handleError(err);
+		RocketChat.settings.batchSet(settings, error => {
+			if (error) {
+				return handleError(error);
 			}
 
+			localStorage.removeItem('wizard');
 			localStorage.setItem('wizardFinal', true);
 			FlowRouter.go('setup-wizard-final');
 		});
@@ -75,7 +81,7 @@ Template.setupWizard.onCreated(function() {
 	};
 
 	this.registerServer = () => {
-		setSettingsAndGo(this.state.all(), JSON.parse(this.state.get('registerServer') || true));
+		setSettingsAndGo();
 		return false;
 	};
 
@@ -91,7 +97,11 @@ Template.setupWizard.onCreated(function() {
 		}
 
 		if (typeof this.state.get('registerServer') === typeof undefined) {
-			this.state.set('registerServer', 'true');
+			this.state.set('registerServer', true);
+		}
+
+		if (typeof this.state.get('optIn') === typeof undefined) {
+			this.state.set('optIn', true);
 		}
 
 		const state = this.state.all();
@@ -189,8 +199,26 @@ Template.setupWizard.events({
 		return false;
 	},
 	'input .js-setting-data'({ currentTarget: { name, value } }, t) {
-		console.log(name, value);
 		t.state.set(name, value);
+	},
+	'click input[name="registerServer"]'({ currentTarget: { value } }, t) {
+		const oldValue = t.state.get('registerServer');
+		const newValue = value === 'true';
+		t.state.set('registerServer', newValue);
+
+		if (!oldValue && newValue) {
+			t.state.set('optIn', true);
+		}
+
+		if (!newValue) {
+			t.state.set('optIn', false);
+		}
+
+		return false;
+	},
+	'click input[name="optIn"]'({ currentTarget: { checked } }, t) {
+		t.state.set('optIn', checked);
+		return false;
 	}
 });
 
@@ -223,8 +251,11 @@ Template.setupWizard.helpers({
 		}
 	},
 	showBackButton() {
-		if (Template.instance().state.get('currentStep') === 3) {
-			return true;
+		switch (Template.instance().state.get('currentStep')) {
+			case 3:
+				return true;
+			case 4:
+				return true;
 		}
 
 		return false;
@@ -256,7 +287,8 @@ Template.setupWizard.helpers({
 
 		return {
 			currentStep: t.state.get('currentStep'),
-			registerServer: t.state.get('registerServer') === 'true'
+			registerServer: t.state.get('registerServer'),
+			optIn: t.state.get('optIn')
 		};
 	},
 	customStepArgs(step) {

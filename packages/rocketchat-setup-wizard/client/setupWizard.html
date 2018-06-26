@@ -126,24 +126,33 @@
 		<form class="setup-wizard-forms__content-register">
 			<label class="setup-wizard-forms__content-register-option {{#if registerServer}}setup-wizard-forms__content-register-option--selected{{/if}}">
 				<div class="setup-wizard-forms__content-register-radio">
-					<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked="{{registerServer}}">
+					<input type="radio" name="registerServer" value="true" class="setup-wizard-forms__content-register-radio-element" checked="{{registerServer}}">
 					<span class="setup-wizard-forms__content-register-radio-fake"></span>
 					<span class="setup-wizard-forms__content-register-radio-text">Register to access</span>
 				</div>
-				<ul>
-					<li class="setup-wizard-forms__content-register-item ">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications gateway</li>
+				<ul class="setup-wizard-forms__content-register-items">
+					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Mobile push notifications gateway</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Livechat omnichannel proxy</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}OAuth proxy for social network</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="check"}}Apps Marketplace</li>
 				</ul>
+				<div>
+					<label class="setup-wizard-forms__content-register-checkbox">
+						<input type="checkbox" name="optIn" value="true" class="setup-wizard-forms__content-register-checkbox-element" checked="{{optIn}}" disabled={{$not registerServer}}>
+						<span class="setup-wizard-forms__content-register-checkbox-fake">
+								{{> icon block="setup-wizard-forms__content-register-checkbox-fake-icon" icon="check"}}
+						</span>
+						<span class="setup-wizard-forms__content-register-checkbox-text">Newsletter, offers and product updates</span>
+					</label>
+				</div>
 			</label>
 			<label class="setup-wizard-forms__content-register-option {{#if $not registerServer}}setup-wizard-forms__content-register-option--selected{{/if}}">
 				<div class="setup-wizard-forms__content-register-radio">
-					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element js-setting-data" checked="{{$not registerServer}}">
+					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element" checked="{{$not registerServer}}">
 					<span class="setup-wizard-forms__content-register-radio-fake"></span>
 					<span class="setup-wizard-forms__content-register-radio-text">Keep standalone, you'll need to</span>
 				</div>
-				<ul>
+				<ul class="setup-wizard-forms__content-register-items">
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Create accounts with service providers</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Update the preconfigured settings</li>
 					<li class="setup-wizard-forms__content-register-item">{{> icon block="setup-wizard-forms__content-register-radio-icon" icon="circle"}}Recompile the mobile apps with your own certificates</li>

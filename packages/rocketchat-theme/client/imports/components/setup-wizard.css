@@ -346,6 +346,63 @@
 					}
 				}
 
+				&-checkbox {
+					position: relative;
+
+					display: flex;
+
+					margin: 0 -0.5rem 1rem;
+
+					cursor: inherit;
+
+					&-element {
+						position: absolute;
+						z-index: -1;
+						top: 0;
+						left: 0;
+
+						width: 0;
+						height: 0;
+
+						&:checked + .setup-wizard-forms__content-register-checkbox-fake {
+							position: relative;
+
+							border-color: var(--highlight-color);
+							background-color: var(--highlight-color);
+							color: var(--rc-color-content);
+
+							.setup-wizard-forms__content-register-checkbox-fake-icon {
+								display: block;
+							}
+						}
+					}
+
+					&-fake {
+						display: block;
+
+						width: 16px;
+						height: 16px;
+						margin: 2px 0.5rem;
+
+						border: 2px solid #cfd8e6;
+						border-radius: 2px;
+
+						&-icon {
+							width: 100%;
+							height: 100%;
+							display: none;
+						}
+					}
+
+					&-text {
+						color: #666666;
+					}
+				}
+
+				&-items + * {
+					margin-top: 1rem;
+				}
+
 				&-item {
 
 					display: flex;
