@@ -1,7 +1,7 @@
 RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 	const now = new Date();
 	const room = RocketChat.models.Rooms.findOneById(rid);
-	
+
 	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	const inviterUsername = RocketChat.models.Users.findOneById(inviter).username;
 	if (subscription) {

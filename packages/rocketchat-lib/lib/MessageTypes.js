@@ -219,7 +219,7 @@ Meteor.startup(function() {
 
 	RocketChat.actionLinks.register('declineInvitationToRoom', function(message, params) {
 		if (Meteor.isClient) {
-			const { rid } = params
+			const { rid } = params;
 
 			if (message._id) {
 				Meteor.call('deleteMessage', { _id: message._id }, function(error) {
