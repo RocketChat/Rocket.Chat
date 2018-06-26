@@ -99,6 +99,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
 		});
 	}
+	Meteor.defer(() => {
+		RocketChat.callbacks.run('afterCreateRoom', owner, room);
+	});
 
 	if (Apps && Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message

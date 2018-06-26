@@ -20,7 +20,7 @@ const validateAttachmentsFields = attachmentFields => {
 		short: Boolean
 	}));
 
-	check(attachmentFields, Match.ObjectIncluding({
+	check(attachmentFields, objectMaybeIncluding({
 		title: String,
 		value: String
 	}));
@@ -30,7 +30,7 @@ const validateAttachment = attachment => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: String,
+		ts: Match.OneOf(String, Match.Integer),
 		thumb_url: String,
 		message_link: String,
 		collapsed: Boolean,

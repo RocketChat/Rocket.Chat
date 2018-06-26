@@ -284,11 +284,16 @@ jobs:
             if [[ $CIRCLE_TAG ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              docker build -t rocketchat/rocket.chat:latest .
-              docker push rocketchat/rocket.chat:latest
-
-              docker tag rocketchat/rocket.chat:latest rocketchat/rocket.chat:$CIRCLE_TAG
+              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
               docker push rocketchat/rocket.chat:$CIRCLE_TAG
+
+              if [[ $CIRCLE_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
+                docker push rocketchat/rocket.chat:latest
+              else
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
+                docker push rocketchat/rocket.chat:release-candidate
+              fi
 
               exit 0
             fi;
