@@ -143,7 +143,7 @@ Template.room.helpers({
 		if (active === false) {
 			const query = {
 				rid: this._id,
-				/* query for invitation messages only for current user */
+				/* query for invitation message only for current user */
 				$and: [
 					{'to': { $exists: true } },
 					{'to._id': Meteor.userId() }

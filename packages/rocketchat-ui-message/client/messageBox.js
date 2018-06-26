@@ -79,6 +79,24 @@ function applyMd(e, t) {
 	$(box).change();
 }
 
+function isSubscriptionActive(id) {
+	const roomData = Session.get(`roomData${ id }`);
+
+	if (roomData) {
+		const subscription = ChatSubscription.findOne({
+			rid: id
+		}, {
+			fields: {
+				active: 1
+			}
+		});
+		if (subscription.active === false) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 const markdownButtons = [
 	{
@@ -200,14 +218,8 @@ Template.messageBox.helpers({
 			}
 		}
 		if (roomData.t === 'p') {
-			const subscription = ChatSubscription.findOne({
-				rid: this._id
-			}, {
-				fields: {
-					active: 1
-				}
-			});
-			if (subscription.active === false) {
+			const isActive = isSubscriptionActive(this._id);
+			if (isActive === false) {
 				return false;
 			}
 		}
@@ -230,18 +242,7 @@ Template.messageBox.helpers({
 		}
 	},
 	isActive() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (roomData && roomData.t === 'p') {
-			const subscription = ChatSubscription.findOne({
-				rid: this._id
-			}, {
-				fields: {
-					active: 1
-				}
-			});
-
-			return subscription && subscription.active;
-		}
+		return isSubscriptionActive(this._id);
 	},
 	getPopupConfig() {
 		const template = Template.instance();
