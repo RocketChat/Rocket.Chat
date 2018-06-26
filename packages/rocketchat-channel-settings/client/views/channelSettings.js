@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import moment from 'moment';
 import s from 'underscore.string';
 import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
 const common = {
@@ -520,6 +521,44 @@ Template.channelSettingsInfo.helpers({
 				return 'livechat';
 			default:
 				return null;
+		}
+	},
+
+	hasPurge() {
+		const room = Template.instance().room;
+
+		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+				return true;
+			}
+			if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+				return true;
+			}
+			if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+	purgeTimeout() {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
+
+		const room = Template.instance().room;
+
+		if ((room && room.t === 'c')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Channels') * 1000).humanize();
+		}
+		if ((room && room.t === 'p')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Groups') * 1000).humanize();
+		}
+		if ((room && room.t === 'd')) {
+			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_DMs') * 1000).humanize();
 		}
 	}
 });
