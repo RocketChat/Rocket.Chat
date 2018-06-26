@@ -185,7 +185,7 @@ Meteor.startup(function() {
 		message: 'Accept_invintation_in_the_room',
 		data(message) {
 			const inviter = `@${ message.inviter }`;
-			console.log(inviter)
+
 			return {
 				inviter
 			};

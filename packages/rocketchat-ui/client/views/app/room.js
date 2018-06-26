@@ -138,10 +138,10 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const hideMessagesOfType = [];
-		const isActive = RocketChat.models.Subscriptions.findOne({rid: this._id}).isActive;
+		const active = RocketChat.models.Subscriptions.findOne({rid: this._id}, {fields: {active: 1}}).active;
 
-		if (isActive === false) {
-			console.log(isActive);
+		if (active === false) {
+			console.log(active);
 			const query = {
 				rid: this._id,
 				/* query for invintation messages only for current user */
@@ -155,7 +155,7 @@ Template.room.helpers({
 					ts: 1
 				}
 			};
-			console.log(query)
+
 			return ChatMessage.find(query, options);
 		}
 

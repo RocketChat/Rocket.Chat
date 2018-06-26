@@ -217,6 +217,20 @@ Template.messageBox.helpers({
 			}
 		}
 	},
+	isActive() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (roomData && roomData.t === 'p') {
+			const subscription = ChatSubscription.findOne({
+				rid: this._id
+			}, {
+				fields: {
+					active: 1
+				}
+			});
+
+			return subscription && subscription.active;
+		}
+	},
 	getPopupConfig() {
 		const template = Template.instance();
 		return {

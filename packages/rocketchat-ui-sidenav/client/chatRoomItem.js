@@ -11,12 +11,12 @@ Template.chatRoomItem.helpers({
 
 		const openedRomm = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
+		const isActive = this.active;
 		// if (this.unread > 0 && (!hasFocus || openedRomm !== this.rid)) {
 		// 	unread = this.unread;
 		// }
 
-		const active = [this.rid, this._id].includes(id => id === openedRomm);
-
+		const active = [this.rid, this._id].includes(id => id === openedRomm) && isActive;
 		const archivedClass = this.archived ? 'archived' : false;
 
 		this.alert = !this.hideUnreadStatus && this.alert; //&& (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
@@ -29,6 +29,7 @@ Template.chatRoomItem.helpers({
 			icon,
 			avatar,
 			username : this.name,
+			isActive,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name: name || RocketChat.roomTypes.getRoomName(this.t, this),
 			unread,
@@ -49,7 +50,7 @@ Template.chatRoomItem.helpers({
 RocketChat.callbacks.add('enter-room', (sub) => {
 	const items = $('.rooms-list .sidebar-item');
 	items.filter('.sidebar-item--active').removeClass('sidebar-item--active');
-	if (sub) {
+	if (sub && sub.active) {
 		items.filter(`[data-id=${ sub._id }]`).addClass('sidebar-item--active');
 	}
 	return sub;

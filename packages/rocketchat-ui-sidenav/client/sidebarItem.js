@@ -1,6 +1,10 @@
 /* globals menu popover renderMessageBody */
 import moment from 'moment';
 
+Template.registerHelper('not', (condition)=>{
+	return !condition;
+});
+
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();

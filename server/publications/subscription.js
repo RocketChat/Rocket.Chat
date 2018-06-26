@@ -9,7 +9,7 @@ const fields = {
 	f: 1,
 	u: 1,
 	open: 1,
-	isActive: 1,
+	active: 1,
 	alert: 1,
 	roles: 1,
 	unread: 1,
