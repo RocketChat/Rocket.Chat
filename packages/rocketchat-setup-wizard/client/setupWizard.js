@@ -7,6 +7,26 @@ Template.setupWizard.onCreated(function() {
 		return;
 	}
 
+	const setSettingsAndGo = (settings, registerServer = true) => {
+		const settingsFilter = Object.entries(settings)
+			.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
+			.map(([_id, value]) => ({_id, value}));
+
+		settingsFilter.push({
+			_id: 'Statistics_reporting',
+			value: registerServer
+		});
+
+		RocketChat.settings.batchSet(settingsFilter, function(err) {
+			if (err) {
+				return handleError(err);
+			}
+
+			localStorage.setItem('wizardFinal', true);
+			FlowRouter.go('setup-wizard-final');
+		});
+	};
+
 	this.registerAdminUser = () => {
 		const usernameValue = this.state.get('registration-username');
 		const usernameRegex = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
@@ -63,6 +83,36 @@ Template.setupWizard.onCreated(function() {
 	const state = jsonString && JSON.parse(jsonString) || {};
 	Object.entries(state).forEach(entry => this.state.set(...entry));
 
+	let variablesUndefined = true;
+
+	const updateState = () => {
+		if (!this.state.get('currentStep')) {
+			this.state.set('currentStep', 1);
+		}
+
+		const state = this.state.all();
+		state['registration-pass'] = '';
+		localStorage.setItem('wizard', JSON.stringify(state));
+
+		if (Meteor.userId()) {
+			Meteor.call('getWizardSettings', (error, wizardSettings) => {
+				if (error) {
+					return handleError(error);
+				}
+
+				this.wizardSettings.set(wizardSettings);
+			});
+
+			if (this.state.get('currentStep') === 1) {
+				this.state.set('currentStep', 2);
+			} else {
+				this.state.set('registration-pass', '');
+			}
+		} else if (this.state.get('currentStep') !== 1) {
+			this.state.set('currentStep', 1);
+		}
+	};
+
 	const waitForVariables = c => {
 		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 		if (!showSetupWizard) {
@@ -86,68 +136,16 @@ Template.setupWizard.onCreated(function() {
 			return;
 		}
 
-		autorun = updateState;
+		variablesUndefined = false;
 		updateState(c);
 	};
 
-	const updateState = c => {
-		if (!this.state.get('currentStep')) {
-			this.state.set('currentStep', 1);
-		}
-
-		const state = this.state.all();
-		state['registration-pass'] = '';
-		localStorage.setItem('wizard', JSON.stringify(state));
-
-		if (Meteor.userId()) {
-			Meteor.call('getWizardSettings', (error, wizardSettings) => {
-				if (error) {
-					return handleError(error);
-				}
-
-				this.wizardSettings.set(wizardSettings);
-			});
-
-			if (this.state.get('currentStep') === 1) {
-				this.state.set('currentStep', 2);
-			} else {
-				this.state.set('registration-pass', '');
-			}
-		} else {
-			if (this.state.get('currentStep') !== 1) {
-				this.state.set('currentStep', 1);
-			}
-		}
-	};
-
-	let autorun = waitForVariables;
-
-	this.autorun(c => autorun(c));
+	this.autorun(c => variablesUndefined ? waitForVariables(c) : updateState(c));
 });
 
 Template.setupWizard.onRendered(function() {
 	$('#initial-page-loading').remove();
 });
-
-const setSettingsAndGo = (settings, registerServer = true) => {
-	const settingsFilter = Object.entries(settings)
-		.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
-		.map(([_id, value]) => ({_id, value}));
-
-	settingsFilter.push({
-		_id: 'Statistics_reporting',
-		value: registerServer
-	});
-
-	RocketChat.settings.batchSet(settingsFilter, function(err) {
-		if (err) {
-			return handleError(err);
-		}
-
-		localStorage.setItem('wizardFinal', true);
-		FlowRouter.go('setup-wizard-final');
-	});
-};
 
 Template.setupWizard.events({
 	'submit .setup-wizard-forms__box'() {
@@ -216,17 +214,7 @@ Template.setupWizard.helpers({
 			case 3:
 				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
 			case 4:
-				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
-		}
-
-		const currentStep = Template.instance().state.get('currentStep');
-
-		if (currentStep === 1 && RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
-			return 'setup-wizard-forms__box--loaded';
-		}
-
-		if ((currentStep === 2 || currentStep == 3) && Template.instance().wizardSettings.get().length > 0) {
-			return 'setup-wizard-forms__box--loaded';
+				return 'setup-wizard-forms__box--loaded';
 		}
 	},
 	showBackButton() {
