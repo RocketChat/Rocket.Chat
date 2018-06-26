@@ -1499,6 +1499,8 @@
   "LDAP_Enable_Description": "Attempt to utilize LDAP for authentication.",
   "LDAP_Encryption": "Encryption",
   "LDAP_Encryption_Description": "The encryption method used to secure communications to the LDAP server. Examples include `plain` (no encryption), `SSL/LDAPS` (encrypted from the start), and `StartTLS` (upgrade to encrypted communication once connected).",
+  "LDAP_Find_User_After_Login": "Find user after login",
+  "LDAP_Find_User_After_Login_Description": "Will perform a search of the user's DN after bind to ensure the bind was successful preventing login with empty passwords when allowed by the AD configuration.",
   "LDAP_Group_Filter_Enable": "Enable LDAP User Group Filter",
   "LDAP_Group_Filter_Enable_Description": "Restrict access to users in a LDAP group<br/>Useful for OpenLDAP servers without overlays that not permit *memberOf* filter",
   "LDAP_Group_Filter_Group_Id_Attribute": "Group ID Attribute",
