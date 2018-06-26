@@ -310,6 +310,18 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByRoomIdAndTypeAndUserTo(roomId, type, userId, options) {
+		const query = {
+			rid: roomId,
+			t: type,
+			'to._id': userId
+		};
+
+		if (options == null) { options = {}; }
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId
