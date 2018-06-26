@@ -1,4 +1,5 @@
-/* globals LivechatVideoCall, Livechat, swal */
+/* globals LivechatVideoCall, Livechat */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 // Functions to call on messages of type 'command'
@@ -22,38 +23,33 @@ this.Commands = {
 			swal({
 				title: t('Chat_ended'),
 				text: transcriptMessage,
-				type: 'input',
+				input: 'email',
 				inputValue: email,
+				inputPlaceholder: t('Type_your_email'),
 				showCancelButton: true,
 				cancelButtonText: t('no'),
-				confirmButtonText: t('yes'),
-				closeOnCancel: true,
-				closeOnConfirm: false
-			}, (response) => {
-				if ((typeof response === 'boolean') && !response) {
+				confirmButtonText: t('yes')
+			}).then((result) => {
+				if ((typeof result.value === 'boolean') && !result.value) {
 					return true;
-				} else {
-					if (!response) {
-						swal.showInputError(t('please enter your email'));
-						return false;
-					}
-					if (response.trim() === '') {
-						swal.showInputError(t('please enter your email'));
-						return false;
-					} else {
-						Meteor.call('livechat:sendTranscript', visitor.getToken(), visitor.getRoom(), response, (err) => {
-							if (err) {
-								console.error(err);
-							}
-							swal({
-								title: t('transcript_sent'),
-								type: 'success',
-								timer: 1000,
-								showConfirmButton: false
-							});
-						});
-					}
 				}
+
+				if (!result.value || result.value.trim() === '') {
+					swal.showValidationError(t('please enter your email'));
+					return false;
+				}
+
+				Meteor.call('livechat:sendTranscript', visitor.getToken(), visitor.getRoom(), result.value, (err) => {
+					if (err) {
+						console.error(err);
+					}
+					swal({
+						title: t('transcript_sent'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false
+					});
+				});
 			});
 		}
 	},
