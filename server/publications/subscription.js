@@ -67,6 +67,11 @@ Meteor.methods({
 });
 
 RocketChat.models.Subscriptions.on('changed', function(type, subscription) {
+	/* When subscription is inactive (ex., invitation has not been accepted ) trigger subscription updates ONLY to notify user about invitation */
+	if (subscription.active === false && type === 'updated' && subscription.alert === true) {
+		return;
+	}
+
 	RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', type, RocketChat.models.Subscriptions.processQueryOptionsOnResult(subscription, {
 		fields
 	}));

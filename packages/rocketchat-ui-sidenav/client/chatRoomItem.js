@@ -12,7 +12,6 @@ Template.chatRoomItem.helpers({
 		const openedRomm = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
 
-		const isActive = this.active !== false;
 		// if (this.unread > 0 && (!hasFocus || openedRomm !== this.rid)) {
 		// 	unread = this.unread;
 		// }
@@ -30,7 +29,6 @@ Template.chatRoomItem.helpers({
 			...this,
 			icon,
 			avatar,
-			isActive,
 			username : this.name,
 			route: RocketChat.roomTypes.getRouteLink(this.t, this),
 			name: name || RocketChat.roomTypes.getRoomName(this.t, this),

@@ -36,7 +36,6 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 		open: true,
 		alert: true,
 		active: false,
-		blocked: true,
 		unread: 1,
 		userMentions: 0,
 		groupMentions: 0

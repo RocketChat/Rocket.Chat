@@ -199,6 +199,18 @@ Template.messageBox.helpers({
 				return false;
 			}
 		}
+		if (roomData.t === 'p') {
+			const subscription = ChatSubscription.findOne({
+				rid: this._id
+			}, {
+				fields: {
+					active: 1
+				}
+			});
+			if (subscription.active === false) {
+				return false;
+			}
+		}
 		return true;
 	},
 	isBlockedOrBlocker() {

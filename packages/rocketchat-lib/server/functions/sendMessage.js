@@ -57,6 +57,10 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+	if (subscription && (subscription.active === false)) {
+		return false;
+	}
 
 	check(message, objectMaybeIncluding({
 		_id: String,
