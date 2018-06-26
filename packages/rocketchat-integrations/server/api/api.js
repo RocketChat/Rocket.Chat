@@ -62,6 +62,9 @@ const Api = new Restivus({
 const compiledScripts = {};
 function buildSandbox(store = {}) {
 	const sandbox = {
+		scriptTimeout(reject) {
+			return setTimeout(() => reject('timed out'), 3000);
+		},
 		_,
 		s,
 		console,
@@ -243,13 +246,14 @@ function executeIntegrationRest() {
 			const result = Future.fromPromise(vm.runInNewContext(`
 				new Promise((resolve, reject) => {
 					Fiber(() => {
+						scriptTimeout(reject);
 						try {
 							resolve(script.process_incoming_request({ request: request }));
 						} catch(e) {
 							reject(e);
 						}
 					}).run();
-				}).catch((error) => console.error(error));
+				}).catch((error) => { throw new Error(error); });
 			`, sandbox, {
 				timeout: 3000
 			})).wait();
