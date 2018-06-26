@@ -249,7 +249,7 @@ function executeIntegrationRest() {
 							reject(e);
 						}
 					}).run();
-				});
+				}).catch((error) => console.error(error));
 			`, sandbox, {
 				timeout: 3000
 			})).wait();
