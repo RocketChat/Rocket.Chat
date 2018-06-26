@@ -3,6 +3,10 @@ import _ from 'underscore';
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
+const defaultRateLimiterOptions = {
+	numRequestsAllowed: 10,
+	intervalTimeInMS: 60000
+};
 
 class API extends Restivus {
 	constructor(properties) {
@@ -144,12 +148,15 @@ class API extends Restivus {
 		};
 		const addRateLimitRuleToEveryRoute = routes => {
 			routes.map(route => {
-				rateLimiterDictionary[route] = new RateLimiter();
+				rateLimiterDictionary[route] = {
+					rateLimiter: new RateLimiter(),
+					options: rateLimiterOptions
+				};
 				const rateLimitRule = {
 					IPAddr: input => input,
 					route
 				};
-				rateLimiterDictionary[route].addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
 			});
 		};
 		routes
@@ -170,11 +177,11 @@ class API extends Restivus {
 		}
 
 		const version = this._config.version;
-		const shouldAddRateLimitToRoute = options.rateLimiterOptions && version;
+		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && version);
 		if (shouldAddRateLimitToRoute) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
-				rateLimiterOptions: options.rateLimiterOptions,
+				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
 				endpoints,
 				apiVersion: version
 			});
@@ -185,7 +192,6 @@ class API extends Restivus {
 				if (typeof endpoints[method] === 'function') {
 					endpoints[method] = { action: endpoints[method] };
 				}
-
 				//Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				endpoints[method].action = function _internalRouteActionHandler() {
@@ -197,7 +203,7 @@ class API extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
-					const requestIp = this.request.headers['x-forwarded-for'];
+					const requestIp = this.request.headers['x-forwarded-for'] || this.request.connection.remoteAddress || this.request.socket.remoteAddress || this.request.connection.socket.remoteAddress;
 					const objectForRateLimitMatch = {
 						IPAddr: requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`
@@ -206,12 +212,16 @@ class API extends Restivus {
 					try {
 						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route);
 						if (shouldVerifyRateLimit) {
-							rateLimiterDictionary[objectForRateLimitMatch.route].increment(objectForRateLimitMatch);
-							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].check(objectForRateLimitMatch);
+							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+							const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
+							this.response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+							this.response.setHeader('X-RateLimit-Remaining', timeToResetAttempsInSeconds);
+							this.response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 							if (!attemptResult.allowed) {
-								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(attemptResult.timeToReset / 1000) } seconds before trying this endpoint again.`, {
+								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
 									timeToReset: attemptResult.timeToReset,
-									seconds: Math.ceil(attemptResult.timeToReset / 1000)
+									seconds: timeToResetAttempsInSeconds
 								});
 							}
 						}
@@ -220,7 +230,6 @@ class API extends Restivus {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 						result = RocketChat.API.v1.failure(e.message, e.error);
 					}
-
 					result = result || RocketChat.API.v1.success();
 
 					rocketchatRestApiEnd({
