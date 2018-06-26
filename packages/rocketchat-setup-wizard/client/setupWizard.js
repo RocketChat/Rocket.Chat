@@ -156,12 +156,12 @@ Template.setupWizard.events({
 	'click .setup-wizard-forms__footer-next'(e, t) {
 		switch (t.state.get('currentStep')) {
 			case 1:
-				return this.registerAdminUser();
+				return t.registerAdminUser();
 			case 2:
-				this.state.set('currentStep', 3);
+				t.state.set('currentStep', 3);
 				return false;
 			case 3:
-				this.state.set('currentStep', 4);
+				t.state.set('currentStep', 4);
 				return false;
 			case 4:
 				return t.registerServer();
@@ -325,57 +325,5 @@ Template.setupWizardInfo.helpers({
 			case 4:
 				return 'Register_Server';
 		}
-	}
-});
-
-Template.setupWizardFinal.onCreated(function() {
-	const isSetupWizardDone = localStorage.getItem('wizardFinal');
-	if (isSetupWizardDone === null) {
-		FlowRouter.go('setup-wizard');
-	}
-
-	this.autorun(c => {
-		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
-		if (!showSetupWizard) {
-			// Setup Wizard state is not defined yet
-			return;
-		}
-
-		const userId = Meteor.userId();
-		const user = userId && RocketChat.models.Users.findOne(userId, { fields: { status: true } });
-		if (userId && (!user || !user.status)) {
-			// User and its status are not defined yet
-			return;
-		}
-
-		c.stop();
-
-		const isComplete = showSetupWizard === 'completed';
-		const noUserLoggedInAndIsNotPending = !userId && showSetupWizard !== 'pending';
-		const userIsLoggedButIsNotAdmin = userId && !RocketChat.authz.hasRole(userId, 'admin');
-		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
-			FlowRouter.go('home');
-			return;
-		}
-	});
-});
-
-Template.setupWizardFinal.onRendered(function() {
-	$('#initial-page-loading').remove();
-});
-
-Template.setupWizardFinal.events({
-	'click .js-finish'() {
-		RocketChat.settings.set('Show_Setup_Wizard', 'completed', function() {
-			localStorage.removeItem('wizard');
-			localStorage.removeItem('wizardFinal');
-			FlowRouter.go('home');
-		});
-	}
-});
-
-Template.setupWizardFinal.helpers({
-	siteUrl() {
-		return RocketChat.settings.get('Site_Url');
 	}
 });
