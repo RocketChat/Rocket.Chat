@@ -1,6 +1,7 @@
 FROM rocketchat/base:8
 
 ADD . /app
+ADD entrypoint.sh /app/bundle/
 
 MAINTAINER buildmaster@rocket.chat
 
@@ -36,8 +37,6 @@ ENV DEPLOY_METHOD=docker-preview \
     Accounts_AvatarStorePath=/app/uploads
 
 EXPOSE 3000
-
-ADD entrypoint.sh .
 
 RUN chmod +x /app/bundle/entrypoint.sh
 
