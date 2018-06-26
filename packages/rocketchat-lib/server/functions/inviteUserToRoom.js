@@ -8,8 +8,7 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 	if (subscription) {
 		return;
 	}
-	console.log('invite user')
-	// TODO: send message to user
+
 	RocketChat.models.Messages.createAcceptInvitationInTheRoom(rid, {_id: 'rocket.cat', username: 'rocket.cat'}, {
 		to: {
 			_id: user._id
@@ -17,13 +16,13 @@ RocketChat.inviteUserToRoom = function(rid, user, inviter) {
 		inviter: inviterUsername,
 		actionLinks: [
 			{
-				icon: 'icon-plus', i18nLabel: 'Accept', method_id: 'acceptInvitationToRoom', params: {
+				icon: 'icon-ok', i18nLabel: 'Accept', method_id: 'acceptInvitationToRoom', params: {
 					rid,
 					userId: user._id
 				}
 			},
 			{
-				icon: 'icon-plus', i18nLabel: 'Decline', method_id: 'declineInvitationToRoom', params: {
+				icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'declineInvitationToRoom', params: {
 					rid
 				}
 			}

@@ -208,8 +208,6 @@ Meteor.startup(function() {
 
 	RocketChat.actionLinks.register('acceptInvitationToRoom', function(message, params) {
 		if (Meteor.isClient) {
-			console.log('accepted');
-
 			Meteor.call('acceptInvitation', { message, params }, function(err) {
 				if (err) {
 					return toastr.error(t(err.reason));
