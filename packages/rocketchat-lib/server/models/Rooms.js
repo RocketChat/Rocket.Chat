@@ -1,15 +1,31 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
+class Document {
+	constructor(doc) {
+		return Object.assign(this, doc);
+	}
+
+	get usernames() {
+		console.warn('DEPRECATION: Room.usernames is deprecated');
+		return RocketChat.models.Subscriptions.findByRoomId(this._id, {
+			fields: {
+				'u.username': 1
+			}
+		}).fetch().filter(s => s.u && s.u.username).map(s => s.u.username);
+	}
+}
+
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
 
 		this.tryEnsureIndex({ 'name': 1 }, { unique: 1, sparse: 1 });
 		this.tryEnsureIndex({ 'default': 1 });
-		this.tryEnsureIndex({ 'usernames': 1 });
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
+
+		this.model._transform = doc => new Document(doc);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
