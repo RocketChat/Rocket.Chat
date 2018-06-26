@@ -68,6 +68,11 @@ Template.userInfo.helpers({
 		return userStatus;
 	},
 
+	isBot() {
+		const user = Template.instance().user.get();
+		return user.type === 'bot';
+	},
+
 	email() {
 		const user = Template.instance().user.get();
 		return user && user.emails && user.emails[0] && user.emails[0].address;

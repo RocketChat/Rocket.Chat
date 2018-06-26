@@ -347,7 +347,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'channel',
 				icon : 'mute',
-				name: t('Mute_user'),
+				name: isBot() ? t('Mute_bot') : t('Mute_user'),
 				action: prevent(getUser, ({username}) => {
 					const rid = Session.get('openedRoom');
 					const room = ChatRoom.findOne(rid);
