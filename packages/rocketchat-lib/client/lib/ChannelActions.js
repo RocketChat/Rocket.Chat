@@ -23,6 +23,10 @@ export function hide(type, rid, name) {
 		confirmButtonText: t('Yes_hide_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
+		dontAskAgain: {
+			action: 'hideRoom',
+			label: t('Hide_room')
+		},
 		html: false
 	}, async function() {
 		await handleHideRoom(rid);
