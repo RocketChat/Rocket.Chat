@@ -122,8 +122,17 @@ const mergeRoomSub = room => {
 	if (!sub) {
 		return room;
 	}
-	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room, sub.name)};
-	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
+
+	RocketChat.models.Subscriptions.update({
+		rid: room._id
+	}, {
+		$set: {
+			lastMessage: room.lastMessage,
+			lm: room._updatedAt,
+			...getLowerCaseNames(room, sub.name)
+		}
+	});
+
 	return room;
 };
 
