@@ -945,6 +945,7 @@
   "Hide_all_direct_messages": "Hide all direct messages",
   "Hide_counter": "Hide counter",
   "Hide_flextab": "Hide Right Sidebar with Click",
+  "Hide_All_Direct_Warning": "Are you sure you want to hide all direct groups?",
   "Hide_Group_Warning": "Are you sure you want to hide the group \"%s\"?",
   "Hide_Livechat_Warning": "Are you sure you want to hide the livechat with \"%s\"?",
   "Go_to_your_workspace": "Go to your workspace",

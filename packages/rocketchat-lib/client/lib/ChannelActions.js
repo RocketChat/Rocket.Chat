@@ -31,13 +31,30 @@ export function hide(type, rid, name) {
 }
 
 export function hideAllDirect() {
-	Meteor.call('getRoomsByType', 'd', (err, directRooms) => {
-		if (!err) {
-			directRooms.forEach(async function({ _id }) {
-				await handleHideRoom(_id);
-			});
-		}
+	const directRoomType = 'd';
+	const warnText = t('Hide_All_Direct_Warning');
+
+	modal.open({
+		title: t('Are_you_sure'),
+		text: warnText ? t(warnText, name) : '',
+		type: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Yes_hide_it'),
+		cancelButtonText: t('Cancel'),
+		closeOnConfirm: true,
+		html: false
+	}, async function() {
+		Meteor.call('getRoomsByType', directRoomType, (err, directRooms) => {
+			if (!err) {
+				directRooms.forEach(async function({ _id }) {
+					await handleHideRoom(_id);
+				});
+			}
+		});
 	});
+
+	return false;
 }
 
 const leaveRoom = async rid => {
