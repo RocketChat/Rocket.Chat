@@ -1,6 +1,5 @@
 /* globals RocketChat */
 import { UiTextContext } from 'meteor/rocketchat:lib';
-import _ from 'underscore';
 
 Template.roomList.helpers({
 	rooms() {
