@@ -557,6 +557,10 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 			returnUsernames: true
 		});
 
+		if (findResult.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
@@ -735,6 +739,28 @@ RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+		});
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.setDefault', { authRequired: true }, {
+	post() {
+		if (typeof this.bodyParams.default === 'undefined') {
+			return RocketChat.API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		if (findResult.default === this.bodyParams.default) {
+			return RocketChat.API.v1.failure('The channel default setting is the same as what it would be changed to.', 'error-channels-setdefault-missing-default-param');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'default', this.bodyParams.default.toString());
 		});
 
 		return RocketChat.API.v1.success({

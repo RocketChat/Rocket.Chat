@@ -85,11 +85,9 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.entries(languages).map(language => {
-			const obj = language[1];
-			obj.key = language[0];
-			return obj;
-		}).sort((a, b) => a.key - b.key);
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
 			'name': 'Default',
@@ -99,9 +97,9 @@ Template.admin.helpers({
 
 		return result;
 	},
-	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	isAppLanguage(key) {
+		const languageKey = RocketChat.settings.get('Language');
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');

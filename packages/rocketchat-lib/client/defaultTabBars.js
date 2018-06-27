@@ -33,7 +33,7 @@ RocketChat.TabBar.addButton({
 			return true;
 		}
 
-		return RocketChat.authz.hasRole(Meteor.userId(), ['admin', 'moderator', 'owner'], rid);
+		return RocketChat.authz.hasAllPermission('view-broadcast-member-list', rid);
 	}
 });
 
