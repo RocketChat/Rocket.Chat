@@ -47,6 +47,10 @@ export function hideAllDirect() {
 		confirmButtonText: t('Yes_hide_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
+		dontAskAgain: {
+			action: 'hideAllDirectRooms',
+			label: t('Hide_All_Direct_Rooms')
+		},
 		html: false
 	}, async function() {
 		Meteor.call('getRoomsByType', directRoomType, (err, directRooms) => {
