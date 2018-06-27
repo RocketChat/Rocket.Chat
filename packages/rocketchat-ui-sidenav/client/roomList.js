@@ -110,26 +110,26 @@ const getLowerCaseNames = (room, nameDefault = '') => {
 	};
 };
 
-// RocketChat.Notifications['onUser']('rooms-changed', );
-
-const mergeSubRoom = (record/*, t*/) => {
-	const room = Tracker.nonreactive(() => RocketChat.models.Rooms.findOne({ _id: record.rid }));
-	if (!room) {
-		return record;
-	}
-	record.lastMessage = room.lastMessage;
-	record.lm = room._updatedAt;
-	return _.extend(record, getLowerCaseNames(record));
+const mergeSubRoom = subscription => {
+	const room = RocketChat.models.Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
+	subscription.lastMessage = room.lastMessage;
+	subscription.lm = room._updatedAt;
+	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
-RocketChat.callbacks.add('cachedCollection-received-rooms', (room) => {
+const mergeRoomSub = room => {
 	const sub = RocketChat.models.Subscriptions.findOne({ rid: room._id });
 	if (!sub) {
-		return;
+		return room;
 	}
 	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room, sub.name)};
 	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
-});
+	return room;
+};
+
+RocketChat.callbacks.add('cachedCollection-received-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-sync-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-loadFromServer-rooms', mergeRoomSub);
 
 RocketChat.callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
 RocketChat.callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
