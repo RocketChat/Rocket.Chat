@@ -131,6 +131,8 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
+			Livechat.agentTypingAlias = result.agentTypingAlias;
+
 			if (result.room) {
 				Livechat.room = result.room._id;
 
