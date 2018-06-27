@@ -1,6 +1,34 @@
 
 # 0.66.0 (Under Release Candidate Process)
 
+## 0.66.0-rc.3
+`2018-06-26  ·  4 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- The process was freezing in some cases when HTTP calls exceeds timeout on integrations ([#11253](https://github.com/RocketChat/Rocket.Chat/pull/11253))
+- LDAP was accepting login with empty passwords for certain AD configurations ([#11264](https://github.com/RocketChat/Rocket.Chat/pull/11264))
+- Update capnproto dependence for Sandstorm Build ([#11263](https://github.com/RocketChat/Rocket.Chat/pull/11263) by [@peterlee0127](https://github.com/peterlee0127))
+- Internal Server Error on first login with CAS integration ([#11257](https://github.com/RocketChat/Rocket.Chat/pull/11257))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Add Dockerfile with MongoDB ([#10971](https://github.com/RocketChat/Rocket.Chat/pull/10971))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@peterlee0127](https://github.com/peterlee0127)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.66.0-rc.2
 `2018-06-25  ·  6 🔍  ·  3 👩‍💻👨‍💻`
 
