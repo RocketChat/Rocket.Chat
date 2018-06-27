@@ -276,7 +276,6 @@ jobs:
           name: Build Docker image
           command: |
             cd /tmp/build
-            cp ~/repo/.docker/Dockerfile .
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
 
@@ -284,15 +283,29 @@ jobs:
             if [[ $CIRCLE_TAG ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
               docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
               docker push rocketchat/rocket.chat:$CIRCLE_TAG
+
+              echo "Build preview Docker image"
+              cp ~/repo/.docker-mongo/Dockerfile .
+              cp ~/repo/.docker-mongo/entrypoint.sh .
+              docker build -t rocketchat/rocket.chat-preview:$CIRCLE_TAG .
+              docker push rocketchat/rocket.chat-preview:$CIRCLE_TAG
 
               if [[ $CIRCLE_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
                 docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
                 docker push rocketchat/rocket.chat:latest
+
+                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
+                docker push rocketchat/rocket.chat.preview:latest
               else
                 docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
                 docker push rocketchat/rocket.chat:release-candidate
+
+                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
+                docker push rocketchat/rocket.chat.preview:release-candidate
               fi
 
               exit 0
@@ -301,8 +314,16 @@ jobs:
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
               docker build -t rocketchat/rocket.chat:develop .
               docker push rocketchat/rocket.chat:develop
+
+              echo "Build preview Docker image"
+              cp ~/repo/.docker-mongo/Dockerfile .
+              cp ~/repo/.docker-mongo/entrypoint.sh .
+              docker build -t rocketchat/rocket.chat.preview:develop .
+              docker push rocketchat/rocket.chat.preview:develop
 
               exit 0
             fi;
@@ -330,14 +351,21 @@ jobs:
             fi;
 
             cd /tmp/build
-            cp ~/repo/.docker/Dockerfile .
             tar xzf Rocket.Chat.tar.gz
             rm Rocket.Chat.tar.gz
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
+            echo "Build official Docker image"
+            cp ~/repo/.docker/Dockerfile .
             docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
             docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+
+            echo "Build preview Docker image"
+            cp ~/repo/.docker-mongo/Dockerfile .
+            cp ~/repo/.docker-mongo/entrypoint.sh .
+            docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
+            docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
   version: 2
