@@ -7,7 +7,7 @@ tar xvf rocket.chat.tgz --strip 1 > /dev/null
 cd programs/server
 rm -rf npm/node_modules/meteor/emojione_emojione/node_modules/grunt-contrib-qunit
 
-if [[ $(uname -m) == *armv6l* ]]
+if [[ $(uname -m) == *armv6l* ]] || [[ $(uname -m) == *armv7l* ]]
 then
   rm -rf npm/node_modules/sharp/vendor
 fi
