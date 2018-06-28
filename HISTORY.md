@@ -1,6 +1,30 @@
 
 # 0.66.0 (Under Release Candidate Process)
 
+## 0.66.0-rc.4
+`2018-06-27  ·  2 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Armhf snap build ([#11268](https://github.com/RocketChat/Rocket.Chat/pull/11268))
+- Reaction Toggle was not working when omitting the last parameter from the API (DDP and REST) ([#11276](https://github.com/RocketChat/Rocket.Chat/pull/11276))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: sidebar sorting was being wrong in some cases where the rooms records were returned before the subscriptions ([#11273](https://github.com/RocketChat/Rocket.Chat/pull/11273))
+- Fix Docker image build on tags ([#11271](https://github.com/RocketChat/Rocket.Chat/pull/11271))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.66.0-rc.3
 `2018-06-26  ·  4 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
 
