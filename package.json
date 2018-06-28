@@ -165,6 +165,7 @@
 		"poplib": "^0.1.7",
 		"prom-client": "^11.0.0",
 		"querystring": "^0.2.0",
+		"queue-fifo": "^0.2.4",
 		"redis": "^2.8.0",
 		"semver": "^5.5.0",
 		"sharp": "^0.20.3",
