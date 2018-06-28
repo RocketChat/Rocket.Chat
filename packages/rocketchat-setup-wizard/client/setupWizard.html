@@ -3,7 +3,7 @@
 		{{> status}}
 	</div>
 	<div class="setup-wizard">
-		{{> setupWizardInfo currentStep=currentStep}}
+		{{> setupWizardInfo infoArgs}}
 
 		<section class="setup-wizard-forms">
 			<div class="setup-wizard-forms__wrapper">
@@ -146,9 +146,9 @@
 					</label>
 				</div>
 			</label>
-			<label class="setup-wizard-forms__content-register-option {{#if $not registerServer}}setup-wizard-forms__content-register-option--selected{{/if}}">
+			<label class="setup-wizard-forms__content-register-option {{#if $not registerServer}}setup-wizard-forms__content-register-option--selected{{/if}} {{#if $not allowStandaloneServer}}setup-wizard-forms__content-register-option--disabled{{/if}}">
 				<div class="setup-wizard-forms__content-register-radio">
-					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element" checked="{{$not registerServer}}">
+					<input type="radio" name="registerServer" value="false" class="setup-wizard-forms__content-register-radio-element" checked="{{$not registerServer}}" disabled={{$not allowStandaloneServer}}>
 					<span class="setup-wizard-forms__content-register-radio-fake"></span>
 					<span class="setup-wizard-forms__content-register-radio-text">{{_ "Keep standalone, you'll need to"}}</span>
 				</div>

@@ -286,6 +286,10 @@
 						border-color: var(--highlight-color);
 					}
 
+					&--disabled {
+						opacity: 0.25;
+					}
+
 					&:first-child {
 						margin-bottom: 1rem;
 					}

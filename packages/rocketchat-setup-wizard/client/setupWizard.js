@@ -80,7 +80,12 @@ const persistSettings = (state, callback) => {
 
 Template.setupWizard.onCreated(function() {
 	this.state = new ReactiveDict();
+	this.state.set('currentStep', 1);
+	this.state.set('registerServer', true);
+	this.state.set('optIn', true);
+
 	this.wizardSettings = new ReactiveVar([]);
+	this.allowStandaloneServer = new ReactiveVar(false);
 
 	if (localStorage.getItem('wizardFinal')) {
 		FlowRouter.go('setup-wizard-final');
@@ -102,29 +107,18 @@ Template.setupWizard.onCreated(function() {
 			return;
 		}
 
-		if (!this.state.get('currentStep')) {
-			this.state.set('currentStep', 1);
-		}
-
-		if (typeof this.state.get('registerServer') === 'undefined') {
-			this.state.set('registerServer', true);
-		}
-
-		if (typeof this.state.get('optIn') === 'undefined') {
-			this.state.set('optIn', true);
-		}
-
 		const state = this.state.all();
 		state['registration-pass'] = '';
 		localStorage.setItem('wizard', JSON.stringify(state));
 
 		if (Meteor.userId()) {
-			Meteor.call('getWizardSettings', (error, wizardSettings) => {
+			Meteor.call('getSetupWizardParameters', (error, { settings, allowStandaloneServer }) => {
 				if (error) {
 					return handleError(error);
 				}
 
-				this.wizardSettings.set(wizardSettings);
+				this.wizardSettings.set(settings);
+				this.allowStandaloneServer.set(allowStandaloneServer);
 			});
 
 			if (this.state.get('currentStep') === 1) {
@@ -271,6 +265,13 @@ Template.setupWizard.helpers({
 
 		return false;
 	},
+	infoArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep')
+		};
+	},
 	adminInfoArgs() {
 		const t = Template.instance();
 
@@ -289,7 +290,8 @@ Template.setupWizard.helpers({
 
 		return {
 			currentStep: t.state.get('currentStep'),
-			registerServer: t.state.get('registerServer'),
+			allowStandaloneServer: t.allowStandaloneServer.get(),
+			registerServer: t.allowStandaloneServer.get() ? t.state.get('registerServer') : true,
 			optIn: t.state.get('optIn')
 		};
 	},
