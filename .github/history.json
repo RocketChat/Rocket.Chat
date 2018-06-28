@@ -16697,6 +16697,36 @@
           ]
         }
       ]
+    },
+    "0.66.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11277",
+          "title": "Merge master into develop & Set version to 0.66.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "brylie",
+            "web-flow",
+            "stuartpb",
+            "engelgabriel",
+            "Hudell",
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "9534",
+          "title": "[FIX] i18n - add semantic markup",
+          "userLogin": "brylie",
+          "contributors": [
+            "brylie",
+            "web-flow",
+            "engelgabriel"
+          ]
+        }
+      ]
     }
   }
 }
