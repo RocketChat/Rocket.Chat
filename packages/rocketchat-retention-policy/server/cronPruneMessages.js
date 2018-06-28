@@ -1,48 +1,72 @@
 /* globals SyncedCron */
 
-function processPruneMessages() {
-	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
-		console.log('Not pruning - disabled');
-		return;
-	}
+function getFinalPruneMode(room) {
+	let hasPurge = false;
 
-	console.log('Pruning started');
-
-	const allowedTypes = [];
-	if (RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
-		allowedTypes.push('c');
-	}
-	if (RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
-		allowedTypes.push('p');
-	}
-	if (RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
-		allowedTypes.push('d');
-	}
-
-	RocketChat.models.Rooms.find({
-		t: {
-			$in: allowedTypes
+	if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		hasPurge = room.retention.enabled;
+	} else if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+			hasPurge = true;
 		}
-	}).forEach(function(room) {
-		console.log(`Pruning ${ room._id }`);
+		if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+			hasPurge = true;
+		}
+		if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+			hasPurge = true;
+		}
+	}
 
-		let secondsAgo;
+	let filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
 
-		switch (room.t) {
-			case 'p':
-				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
-				break;
-			case 'd':
-				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
-				break;
-			case 'c':
-			default:
-				secondsAgo = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
-				break;
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		filesOnly = room.retention.filesOnly;
+	}
+
+	let excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		excludePinned = room.retention.excludePinned;
+	}
+
+	let globalTimeout;
+
+	if ((room && room.t === 'c')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if ((room && room.t === 'p')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if ((room && room.t === 'd')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
+
+	let maxAge = globalTimeout;
+
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		maxAge = room.retention.maxAge;
+	} else if (room.retention && room.retention.enabled) {
+		maxAge = Math.min(room.retention.maxAge, globalTimeout);
+	}
+
+	return {
+		hasPurge,
+		maxAge,
+		excludePinned,
+		filesOnly
+	};
+}
+
+function processPruneMessages() {
+	RocketChat.models.Rooms.find().forEach(function(room) {
+		const properties = getFinalPruneMode(room);
+
+		if (!properties.hasPurge) {
+			return;
 		}
 
 		const now = new Date();
-		const toDate = new Date(now.getTime() - secondsAgo * 1000);
+		const toDate = new Date(now.getTime() - properties.maxAge * 1000);
 		const fromDate = new Date('0001-01-01T00:00:00Z');
 
 		let messagesToDelete = RocketChat.models.Messages.find({
@@ -59,10 +83,10 @@ function processPruneMessages() {
 			}
 		}).fetch().map(function(document) {
 			if (document.file && document.file._id) {
-				if (!RocketChat.settings.get('RetentionPolicy_ExcludePinned') || !document.pinned) {
+				if (!properties.excludePinned || !document.pinned) {
 					FileUpload.getStore('Uploads').deleteById(document.file._id);
 
-					if (RocketChat.settings.get('RetentionPolicy_FilesOnly')) {
+					if (properties.filesOnly) {
 						RocketChat.models.Messages.update({
 							_id: document._id
 						}, {
@@ -81,7 +105,7 @@ function processPruneMessages() {
 			return document._id;
 		});
 
-		if (RocketChat.settings.get('RetentionPolicy_ExcludePinned')) {
+		if (properties.excludePinned) {
 			messagesToDelete = messagesToDelete.filter(function(messageId) {
 				const message = RocketChat.models.Messages.findOne({
 					_id: messageId
@@ -91,7 +115,7 @@ function processPruneMessages() {
 			});
 		}
 
-		if (!RocketChat.settings.get('RetentionPolicy_FilesOnly')) {
+		if (!properties.filesOnly) {
 			RocketChat.models.Messages.remove({
 				_id: {
 					$in: messagesToDelete

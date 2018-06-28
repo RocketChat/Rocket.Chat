@@ -164,7 +164,7 @@
 			{{/if}}
 		{{/with}}
 
-		 {{#with settings.sysMes}}
+		{{#with settings.sysMes}}
 			{{#if canView}}
 				<div class="rc-user-info__row">
 					<div class="rc-switch rc-switch--blue">
@@ -200,7 +200,7 @@
 			{{/if}}
 		{{/with}}
 		{{#with settings.joinCode}}
-			<div class="rc-user-info__row">
+			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-input">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
@@ -211,6 +211,84 @@
 				</div>
 			</div>
 		{{/with}}
+
+		{{#if hasRetentionPermission}}
+			{{#with settings.retentionEnabled}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionEnabled" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionMaxAge}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							</div>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionExcludePinned}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionFilesOnly}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionOverrideGlobal}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/with}}
+			{{#if hasGlobalPurge}}
+				<p>{{_ "Global_purge_override_warning"}}</p>
+			{{/if}}
+		{{/if}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
@@ -275,9 +353,17 @@
 						{{> icon block="mail-messages__instructions-icon" icon="warning-empty"}}
 						<div class="mail-messages__instructions-text">
 							{{#unless filesOnly}}
-								{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+								{{#unless excludePinned}}
+									{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+								{{else}}
+									{{_ "RetentionPolicy_RoomWarning_Unpinned" purgeTimeout}}
+								{{/unless}}
 							{{else}}
-								{{_ "RetentionPolicy_RoomWarning_FilesOnly" purgeTimeout}}
+								{{#unless excludePinned}}
+									{{_ "RetentionPolicy_RoomWarning_FilesOnly" purgeTimeout}}
+								{{else}}
+									{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" purgeTimeout}}
+								{{/unless}}
 							{{/unless}}
 						</div>
 					</div>

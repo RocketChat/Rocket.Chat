@@ -756,6 +756,71 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	saveRetentionEnabledById(_id, value) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				'retention.enabled': value === true
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionMaxAgeById(_id, value) {
+		const query = {_id};
+
+		value = Number(value);
+		if (!value) {
+			value = 2592000;
+		}
+
+		const update = {
+			$set: {
+				'retention.maxAge': value
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionExcludePinnedById(_id, value) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				'retention.excludePinned': value === true
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionFilesOnlyById(_id, value) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				'retention.filesOnly': value === true
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	saveRetentionOverrideGlobalById(_id, value) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				'retention.overrideGlobal': value === true
+			}
+		};
+
+		return this.update(query, update);
+	}
+
 	setTopicAndTagsById(_id, topic, tags) {
 		const setData = {};
 		const unsetData = {};

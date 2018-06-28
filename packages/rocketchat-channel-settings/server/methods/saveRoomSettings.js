@@ -1,4 +1,4 @@
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions'];
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		if (!Meteor.userId()) {
@@ -134,6 +134,52 @@ Meteor.methods({
 					break;
 				case 'default':
 					RocketChat.models.Rooms.saveDefaultById(rid, value);
+					break;
+				case 'retentionEnabled':
+					if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room-retention-policy', rid) && value !== room.retention.enabled) {
+						throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+							method: 'saveRoomSettings',
+							action: 'Editing_room'
+						});
+					}
+					RocketChat.models.Rooms.saveRetentionEnabledById(rid, value);
+					break;
+				case 'retentionMaxAge':
+					if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room-retention-policy', rid) && value !== room.retention.maxAge) {
+						throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+							method: 'saveRoomSettings',
+							action: 'Editing_room'
+						});
+					}
+					RocketChat.models.Rooms.saveRetentionMaxAgeById(rid, value);
+					break;
+				case 'retentionExcludePinned':
+					if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room-retention-policy', rid) && value !== room.retention.excludePinned) {
+						throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+							method: 'saveRoomSettings',
+							action: 'Editing_room'
+						});
+					}
+					RocketChat.models.Rooms.saveRetentionExcludePinnedById(rid, value);
+					break;
+				case 'retentionFilesOnly':
+					if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room-retention-policy', rid) && value !== room.retention.filesOnly) {
+						throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
+							method: 'saveRoomSettings',
+							action: 'Editing_room'
+						});
+					}
+					RocketChat.models.Rooms.saveRetentionFilesOnlyById(rid, value);
+					break;
+				case 'retentionOverrideGlobal':
+					if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting', rid) && value !== room.retention.overrideGlobal) {
+						throw new Meteor.Error('error-override-global-retention-not-allowed', 'Overriding global retention policy is not allowed', {
+							method: 'saveRoomSettings',
+							action: 'Editing_room'
+						});
+					}
+					RocketChat.models.Rooms.saveRetentionOverrideGlobalById(rid, value);
+					break;
 			}
 		});
 

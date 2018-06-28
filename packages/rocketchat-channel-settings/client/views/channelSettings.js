@@ -377,6 +377,128 @@ Template.channelSettingsEditing.onCreated(function() {
 					return RocketChat.callbacks.run('roomCodeChanged', room);
 				});
 			}
+		},
+		retentionEnabled: {
+			type: 'boolean',
+			label: 'RetentionPolicyRoom_Enabled',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.enabled;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionEnabled', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('Retention_setting_changed_successfully')
+						);
+					}
+				);
+			}
+		},
+		retentionMaxAge: {
+			type: 'number',
+			label: 'RetentionPolicyRoom_MaxAge',
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.maxAge;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionMaxAge', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('Retention_setting_changed_successfully')
+						);
+					}
+				);
+			}
+		},
+		retentionExcludePinned: {
+			type: 'boolean',
+			label: 'RetentionPolicyRoom_ExcludePinned',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.excludePinned;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionExcludePinned', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('Retention_setting_changed_successfully')
+						);
+					}
+				);
+			}
+		},
+		retentionFilesOnly: {
+			type: 'boolean',
+			label: 'RetentionPolicyRoom_FilesOnly',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.filesOnly;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionFilesOnly', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('Retention_setting_changed_successfully')
+						);
+					}
+				);
+			}
+		},
+		retentionOverrideGlobal: {
+			type: 'boolean',
+			label: 'RetentionPolicyRoom_OverrideGlobal',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.overrideGlobal;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+			},
+			disabled() {
+				return !RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('Retention_setting_changed_successfully')
+						);
+					}
+				);
+			}
 		}
 	};
 	Object.keys(this.settings).forEach(key => {
@@ -435,6 +557,28 @@ Template.channelSettingsEditing.helpers({
 	},
 	unscape(value) {
 		return s.unescapeHTML(value);
+	},
+	hasGlobalPurge() {
+		const room = Template.instance().room;
+
+		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+				return true;
+			}
+			if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+				return true;
+			}
+			if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+	hasRetentionPermission() {
+		const room = Template.instance().room;
+
+		return RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id);
 	}
 });
 
@@ -527,6 +671,10 @@ Template.channelSettingsInfo.helpers({
 	hasPurge() {
 		const room = Template.instance().room;
 
+		if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.enabled;
+		}
+
 		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
 			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
 				return true;
@@ -542,7 +690,22 @@ Template.channelSettingsInfo.helpers({
 		return false;
 	},
 	filesOnly() {
+		const room = Template.instance().room;
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.filesOnly;
+		}
+
 		return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+	},
+	excludePinned() {
+		const room = Template.instance().room;
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.excludePinned;
+		}
+
+		return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 	},
 	purgeTimeout() {
 		moment.relativeTimeThreshold('s', 60);
@@ -553,15 +716,26 @@ Template.channelSettingsInfo.helpers({
 		moment.relativeTimeThreshold('M', 12);
 
 		const room = Template.instance().room;
+		let globalTimeout;
 
 		if ((room && room.t === 'c')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Channels') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
 		}
 		if ((room && room.t === 'p')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Groups') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
 		}
 		if ((room && room.t === 'd')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_DMs') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
 		}
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return moment.duration(room.retention.maxAge * 1000).humanize();
+		}
+
+		if (room.retention && room.retention.enabled) {
+			return moment.duration(Math.min(room.retention.maxAge, globalTimeout) * 1000).humanize();
+		}
+
+		return moment.duration(globalTimeout * 1000).humanize();
 	}
 });

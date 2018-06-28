@@ -392,6 +392,10 @@ Template.room.helpers({
 	hasPurge() {
 		const room = Session.get(`roomData${ this._id }`);
 
+		if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.enabled;
+		}
+
 		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
 			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
 				return true;
@@ -407,7 +411,22 @@ Template.room.helpers({
 		return false;
 	},
 	filesOnly() {
+		const room = Session.get(`roomData${ this._id }`);
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.filesOnly;
+		}
+
 		return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+	},
+	excludePinned() {
+		const room = Session.get(`roomData${ this._id }`);
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return room.retention.excludePinned;
+		}
+
+		return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 	},
 	purgeTimeout() {
 		moment.relativeTimeThreshold('s', 60);
@@ -418,16 +437,27 @@ Template.room.helpers({
 		moment.relativeTimeThreshold('M', 12);
 
 		const room = Session.get(`roomData${ this._id }`);
+		let globalTimeout;
 
 		if ((room && room.t === 'c')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Channels') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
 		}
 		if ((room && room.t === 'p')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_Groups') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
 		}
 		if ((room && room.t === 'd')) {
-			return moment.duration(RocketChat.settings.get('RetentionPolicy_MaxAge_DMs') * 1000).humanize();
+			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
 		}
+
+		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+			return moment.duration(room.retention.maxAge * 1000).humanize();
+		}
+
+		if (room.retention && room.retention.enabled) {
+			return moment.duration(Math.min(room.retention.maxAge, globalTimeout) * 1000).humanize();
+		}
+
+		return moment.duration(globalTimeout * 1000).humanize();
 	}
 });
 
