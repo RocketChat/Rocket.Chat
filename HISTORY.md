@@ -1,106 +1,10 @@
 
-# 0.66.0 (Under Release Candidate Process)
+# 0.66.0
+`2018-06-27  ·  1 ️️️⚠️  ·  23 🎉  ·  61 🐛  ·  50 🔍  ·  45 👩‍💻👨‍💻`
 
-## 0.66.0-rc.4
-`2018-06-27  ·  2 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Armhf snap build ([#11268](https://github.com/RocketChat/Rocket.Chat/pull/11268))
-- Reaction Toggle was not working when omitting the last parameter from the API (DDP and REST) ([#11276](https://github.com/RocketChat/Rocket.Chat/pull/11276))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: sidebar sorting was being wrong in some cases where the rooms records were returned before the subscriptions ([#11273](https://github.com/RocketChat/Rocket.Chat/pull/11273))
-- Fix Docker image build on tags ([#11271](https://github.com/RocketChat/Rocket.Chat/pull/11271))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Hudell](https://github.com/Hudell)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.66.0-rc.3
-`2018-06-26  ·  4 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- The process was freezing in some cases when HTTP calls exceeds timeout on integrations ([#11253](https://github.com/RocketChat/Rocket.Chat/pull/11253))
-- LDAP was accepting login with empty passwords for certain AD configurations ([#11264](https://github.com/RocketChat/Rocket.Chat/pull/11264))
-- Update capnproto dependence for Sandstorm Build ([#11263](https://github.com/RocketChat/Rocket.Chat/pull/11263) by [@peterlee0127](https://github.com/peterlee0127))
-- Internal Server Error on first login with CAS integration ([#11257](https://github.com/RocketChat/Rocket.Chat/pull/11257))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Add Dockerfile with MongoDB ([#10971](https://github.com/RocketChat/Rocket.Chat/pull/10971))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@peterlee0127](https://github.com/peterlee0127)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Hudell](https://github.com/Hudell)
-- [@engelgabriel](https://github.com/engelgabriel)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.66.0-rc.2
-`2018-06-25  ·  6 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Prometheus was not being enabled in some cases ([#11249](https://github.com/RocketChat/Rocket.Chat/pull/11249))
-- Regression: Skip operations if no actions on livechat migration ([#11232](https://github.com/RocketChat/Rocket.Chat/pull/11232))
-- Regression: Directory sort users, fix null results, text for empty results ([#11224](https://github.com/RocketChat/Rocket.Chat/pull/11224))
-- LingoHub based on develop ([#11246](https://github.com/RocketChat/Rocket.Chat/pull/11246))
-- Update Meteor to 1.6.1.3 ([#11247](https://github.com/RocketChat/Rocket.Chat/pull/11247))
-- New history source format & add Node and NPM versions ([#11237](https://github.com/RocketChat/Rocket.Chat/pull/11237))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.66.0-rc.1
-`2018-06-21  ·  2 🐛  ·  4 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- "blank messages" on iOS < 11 ([#11221](https://github.com/RocketChat/Rocket.Chat/pull/11221))
-- "blank" screen on iOS < 11 ([#11199](https://github.com/RocketChat/Rocket.Chat/pull/11199))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix directory table loading ([#11223](https://github.com/RocketChat/Rocket.Chat/pull/11223))
-- Regression: Fix latest and release-candidate docker images building ([#11215](https://github.com/RocketChat/Rocket.Chat/pull/11215))
-- Regression: check username or usersCount on browseChannels ([#11216](https://github.com/RocketChat/Rocket.Chat/pull/11216))
-- Regression: Sending message with a mention is not showing to sender ([#11211](https://github.com/RocketChat/Rocket.Chat/pull/11211))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@karlprieb](https://github.com/karlprieb)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.66.0-rc.0
-`2018-06-20  ·  1 ️️️⚠️  ·  23 🎉  ·  52 🐛  ·  36 🔍  ·  45 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -134,6 +38,7 @@
 
 ### 🐛 Bug fixes
 
+- i18n - add semantic markup ([#9534](https://github.com/RocketChat/Rocket.Chat/pull/9534) by [@brylie](https://github.com/brylie))
 - Wordpress oauth configuration not loading properly ([#11187](https://github.com/RocketChat/Rocket.Chat/pull/11187))
 - REST API: Add more test cases for `/login` ([#10999](https://github.com/RocketChat/Rocket.Chat/pull/10999))
 - Wrong font-family order ([#11191](https://github.com/RocketChat/Rocket.Chat/pull/11191) by [@myfonj](https://github.com/myfonj))
@@ -186,10 +91,19 @@
 - Remove outdated 2FA warning for mobile clients ([#10916](https://github.com/RocketChat/Rocket.Chat/pull/10916))
 - Update Sandstorm build config ([#10867](https://github.com/RocketChat/Rocket.Chat/pull/10867) by [@ocdtrekkie](https://github.com/ocdtrekkie))
 - i18n - add semantic markup ([#9534](https://github.com/RocketChat/Rocket.Chat/pull/9534) by [@brylie](https://github.com/brylie))
+- "blank messages" on iOS < 11 ([#11221](https://github.com/RocketChat/Rocket.Chat/pull/11221))
+- "blank" screen on iOS < 11 ([#11199](https://github.com/RocketChat/Rocket.Chat/pull/11199))
+- The process was freezing in some cases when HTTP calls exceeds timeout on integrations ([#11253](https://github.com/RocketChat/Rocket.Chat/pull/11253))
+- LDAP was accepting login with empty passwords for certain AD configurations ([#11264](https://github.com/RocketChat/Rocket.Chat/pull/11264))
+- Update capnproto dependence for Sandstorm Build ([#11263](https://github.com/RocketChat/Rocket.Chat/pull/11263) by [@peterlee0127](https://github.com/peterlee0127))
+- Internal Server Error on first login with CAS integration ([#11257](https://github.com/RocketChat/Rocket.Chat/pull/11257))
+- Armhf snap build ([#11268](https://github.com/RocketChat/Rocket.Chat/pull/11268))
+- Reaction Toggle was not working when omitting the last parameter from the API (DDP and REST) ([#11276](https://github.com/RocketChat/Rocket.Chat/pull/11276))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Merge master into develop & Set version to 0.66.0-develop ([#11277](https://github.com/RocketChat/Rocket.Chat/pull/11277) by [@brylie](https://github.com/brylie) & [@stuartpb](https://github.com/stuartpb))
 - [IMPROVE] Listing of apps in the admin page ([#11166](https://github.com/RocketChat/Rocket.Chat/pull/11166))
 - Regression: Directory css ([#11206](https://github.com/RocketChat/Rocket.Chat/pull/11206))
 - LingoHub based on develop ([#11208](https://github.com/RocketChat/Rocket.Chat/pull/11208))
@@ -226,6 +140,19 @@
 - Develop sync commits ([#10909](https://github.com/RocketChat/Rocket.Chat/pull/10909) by [@nsuchy](https://github.com/nsuchy))
 - Develop sync2 ([#10908](https://github.com/RocketChat/Rocket.Chat/pull/10908) by [@nsuchy](https://github.com/nsuchy))
 - Merge master into develop & Set version to 0.66.0-develop ([#10903](https://github.com/RocketChat/Rocket.Chat/pull/10903) by [@nsuchy](https://github.com/nsuchy))
+- Regression: Fix directory table loading ([#11223](https://github.com/RocketChat/Rocket.Chat/pull/11223))
+- Regression: Fix latest and release-candidate docker images building ([#11215](https://github.com/RocketChat/Rocket.Chat/pull/11215))
+- Regression: check username or usersCount on browseChannels ([#11216](https://github.com/RocketChat/Rocket.Chat/pull/11216))
+- Regression: Sending message with a mention is not showing to sender ([#11211](https://github.com/RocketChat/Rocket.Chat/pull/11211))
+- Regression: Prometheus was not being enabled in some cases ([#11249](https://github.com/RocketChat/Rocket.Chat/pull/11249))
+- Regression: Skip operations if no actions on livechat migration ([#11232](https://github.com/RocketChat/Rocket.Chat/pull/11232))
+- Regression: Directory sort users, fix null results, text for empty results ([#11224](https://github.com/RocketChat/Rocket.Chat/pull/11224))
+- LingoHub based on develop ([#11246](https://github.com/RocketChat/Rocket.Chat/pull/11246))
+- Update Meteor to 1.6.1.3 ([#11247](https://github.com/RocketChat/Rocket.Chat/pull/11247))
+- New history source format & add Node and NPM versions ([#11237](https://github.com/RocketChat/Rocket.Chat/pull/11237))
+- Add Dockerfile with MongoDB ([#10971](https://github.com/RocketChat/Rocket.Chat/pull/10971))
+- Regression: sidebar sorting was being wrong in some cases where the rooms records were returned before the subscriptions ([#11273](https://github.com/RocketChat/Rocket.Chat/pull/11273))
+- Fix Docker image build on tags ([#11271](https://github.com/RocketChat/Rocket.Chat/pull/11271))
 
 </details>
 
