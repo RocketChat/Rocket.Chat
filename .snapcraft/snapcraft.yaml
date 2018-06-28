@@ -39,7 +39,7 @@ apps:
 parts:
     node:
         plugin: dump 
-        prepare: wget https://nodejs.org/dist/v8.9.4/node-v8.9.4-linux-x64.tar.xz; tar xvf node-v8.9.4-linux-x64.tar.xz --strip 1; 
+        prepare: ./resources/preparenode  
         build-packages:
             # For fibers
             - python

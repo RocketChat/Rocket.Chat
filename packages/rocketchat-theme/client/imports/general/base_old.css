@@ -2893,8 +2893,9 @@
 	}
 }
 
-.rc-old .message {
+.message {
 	position: relative;
+	z-index: 1;
 
 	min-height: 40px;
 	padding: 8px 50px 4px 70px;
@@ -3270,6 +3271,12 @@
 		padding-left: 2px;
 
 		font-weight: 400;
+	}
+
+	&.livechat_navigation_history {
+		& .thumb, & .user, & .info {
+			display: none;
+		}
 	}
 }
 
@@ -4620,6 +4627,11 @@ body:not(.is-cordova) {
 	align-items: center;
 	flex-flow: row nowrap;
 
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
+
 	& .wrapper {
 		position: relative;
 		z-index: 10;
@@ -4784,13 +4796,8 @@ body:not(.is-cordova) {
 
 .rc-old .mention-link {
 	border-radius: 4px;
-
-	&.mention-link-me,
-	&.mention-link-all {
-		padding: 0 4px 2px;
-
-		font-weight: bold;
-	}
+	padding: 0 4px 2px;
+	font-weight: bold;
 }
 
 .rc-old .highlight-text {
@@ -5002,7 +5009,7 @@ body:not(.is-cordova) {
 	padding-left: 10px;
 }
 
-.rc-old .webrtc-video {
+.webrtc-video {
 	&.webrtc-video-overlay,
 	& .main-video,
 	& .state-overlay::before,
@@ -5019,12 +5026,28 @@ body:not(.is-cordova) {
 		left: 0;
 
 		display: flex;
+		overflow-y: auto;
 		flex-direction: column;
-		justify-content: center;
 
-		& .main-video .webrtc-video-element {
-			width: auto;
-			max-width: 100%;
+		padding: var(--default-small-padding);
+
+		background-color: #ffffff;
+
+		& .main-video {
+			display: flex;
+			flex-direction: column;
+
+			min-height: 140px;
+			margin-bottom: 4px;
+			align-items: center;
+			flex-grow: 1;
+
+			.webrtc-video-element {
+				width: auto;
+				max-width: 100%;
+				height: 100%;
+				min-height: 140px;
+			}
 		}
 	}
 
@@ -5041,6 +5064,7 @@ body:not(.is-cordova) {
 
 			margin-top: -28px;
 			margin-bottom: 2px;
+			padding: 0 8px;
 
 			text-align: center;
 
@@ -5066,6 +5090,7 @@ body:not(.is-cordova) {
 
 			width: 93px;
 			margin-right: 3px;
+			margin-bottom: 3px;
 
 			text-align: center;
 
@@ -5128,7 +5153,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .webrtc-video-element {
+.webrtc-video-element {
 	background-color: #000000;
 }
 
@@ -5477,10 +5502,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 
@@ -5658,7 +5679,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.room-leader a.chat-now {
+.room-leader .chat-now {
 	position: absolute;
 	top: 15px;
 	right: 25px;
@@ -5685,7 +5706,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 1;
+	z-index: 10;
 	right: 0;
 	left: 0;
 
