@@ -8,10 +8,21 @@ Meteor.startup(function() {
 		}
 
 		const sub = RocketChat.models.Subscriptions.findOne({ rid, open: true });
-		if (!sub) {
-			toastr.success(t('Conversation_finished'));
-			Session.set('openedRoom');
-			FlowRouter.go('home');
+		if (sub) {
+			return;
 		}
+
+		Meteor.call('livechat:getClosedRoomData', rid, (error, result) => {
+			if (error) {
+				return toastr.error(t(error.error));
+			}
+
+			if (result && result.closer && result.closer === 'visitor') {
+				toastr.success(t('The_conversation_was_closed_by_the_visitor'));
+			}
+		});
+
+		Session.delete('openedRoom');
+		FlowRouter.go('home');
 	});
 });

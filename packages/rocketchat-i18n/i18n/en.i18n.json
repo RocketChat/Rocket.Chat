@@ -2357,6 +2357,7 @@
   "Thank_you_for_your_feedback": "Thank you for your feedback",
   "The_application_name_is_required": "The application name is required",
   "The_channel_name_is_required": "The channel name is required",
+  "The_conversation_was_closed_by_the_visitor": "The conversation was closed by the visitor",
   "The_emails_are_being_sent": "The emails are being sent.",
   "The_field_is_required": "The field %s is required.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "The image resize will not work because we can not detect ImageMagick or GraphicsMagick installed on your server.",
