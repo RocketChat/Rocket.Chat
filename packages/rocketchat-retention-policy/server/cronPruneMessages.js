@@ -171,9 +171,12 @@ function getSchedule(precision) {
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision) {
+	const schedule = getSchedule(precision);
+
+	SyncedCron.remove(pruneCronName);
 	SyncedCron.add({
 		name: pruneCronName,
-		schedule: (parser) => parser.cron(getSchedule(precision), true),
+		schedule: (parser) => parser.cron(schedule, true),
 		job: processPruneMessages
 	});
 }
@@ -187,7 +190,6 @@ Meteor.startup(function() {
 			_id: 'RetentionPolicy_Precision'
 		}).observe({
 			changed(record) {
-				SyncedCron.remove(pruneCronName);
 				deployCron(record.value);
 			}
 		});
