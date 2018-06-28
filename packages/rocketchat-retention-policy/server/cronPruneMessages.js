@@ -1,6 +1,6 @@
 /* globals SyncedCron */
 
-function getFinalPruneMode(room) {
+function roomHasPurge(room) {
 	let hasPurge = false;
 
 	if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
@@ -17,18 +17,30 @@ function getFinalPruneMode(room) {
 		}
 	}
 
+	return hasPurge;
+}
+
+function roomFilesOnly(room) {
 	let filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
 
 	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
 		filesOnly = room.retention.filesOnly;
 	}
 
+	return filesOnly;
+}
+
+function roomExcludePinned(room) {
 	let excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 
 	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
 		excludePinned = room.retention.excludePinned;
 	}
 
+	return excludePinned;
+}
+
+function roomMaxAge(room) {
 	let globalTimeout;
 
 	if ((room && room.t === 'c')) {
@@ -49,11 +61,15 @@ function getFinalPruneMode(room) {
 		maxAge = Math.min(room.retention.maxAge, globalTimeout);
 	}
 
+	return maxAge;
+}
+
+function getFinalPruneMode(room) {
 	return {
-		hasPurge,
-		maxAge,
-		excludePinned,
-		filesOnly
+		hasPurge: roomHasPurge(room),
+		maxAge: roomMaxAge(room),
+		excludePinned: roomExcludePinned(room),
+		filesOnly: roomFilesOnly(room)
 	};
 }
 
