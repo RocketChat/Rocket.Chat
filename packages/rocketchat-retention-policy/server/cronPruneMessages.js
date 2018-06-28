@@ -109,8 +109,8 @@ function processPruneMessages() {
 							$set: {
 								file: null,
 								attachments: [{
-									color: '#F84040',
-									text: '_File removed by automatic prune_'
+									color: '#FD745E',
+									text: `_${ TAPi18n.__('File_removed_by_automatic_prune') }_`
 								}]
 							}
 						});
@@ -147,14 +147,49 @@ function processPruneMessages() {
 	});
 }
 
+function getSchedule(precision) {
+	switch (precision ? precision : RocketChat.settings.get('RetentionPolicy_Precision')) {
+		case '0':
+			return '* * * * * *';
+		case '1':
+			return '*/10 * * * * *';
+		case '2':
+			return '0 * * * * *';
+		case '3':
+			return '0 */5 * * * *';
+		case '4':
+			return '0 */30 * * * *';
+		case '5':
+			return '0 0 * * * *';
+		case '6':
+			return '0 0 */6 * * *';
+		case '7':
+			return '0 0 0 * * *';
+	}
+}
+
+const pruneCronName = 'Prune old messages by retention policy';
+
+function deployCron(precision) {
+	SyncedCron.add({
+		name: pruneCronName,
+		schedule: (parser) => parser.cron(getSchedule(precision), true),
+		job: processPruneMessages
+	});
+}
+
 Meteor.startup(function() {
 	Meteor.defer(function() {
 		processPruneMessages();
+		deployCron();
 
-		SyncedCron.add({
-			name: 'Prune old messages by retention policy',
-			schedule: (parser) => parser.cron('* * * * * *', true),
-			job: processPruneMessages
+		RocketChat.models.Settings.find({
+			_id: 'RetentionPolicy_Precision'
+		}).observe({
+			changed(record) {
+				SyncedCron.remove(pruneCronName);
+				deployCron(record.value);
+			}
 		});
 	});
 });

@@ -130,6 +130,70 @@ const wipeFailedUploads = () => {
 	}
 };
 
+function roomHasPurge(room) {
+	let hasPurge = false;
+
+	if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		hasPurge = room.retention.enabled;
+	} else if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+			hasPurge = true;
+		}
+		if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+			hasPurge = true;
+		}
+		if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+			hasPurge = true;
+		}
+	}
+
+	return hasPurge;
+}
+
+function roomFilesOnly(room) {
+	let filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
+
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		filesOnly = room.retention.filesOnly;
+	}
+
+	return filesOnly;
+}
+
+function roomExcludePinned(room) {
+	let excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		excludePinned = room.retention.excludePinned;
+	}
+
+	return excludePinned;
+}
+
+function roomMaxAge(room) {
+	let globalTimeout;
+
+	if ((room && room.t === 'c')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if ((room && room.t === 'p')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if ((room && room.t === 'd')) {
+		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
+
+	let maxAge = globalTimeout;
+
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+		maxAge = room.retention.maxAge;
+	} else if (room.retention && room.retention.enabled) {
+		maxAge = Math.min(room.retention.maxAge, globalTimeout);
+	}
+
+	return maxAge;
+}
+
 RocketChat.callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
@@ -390,43 +454,13 @@ Template.room.helpers({
 		}
 	},
 	hasPurge() {
-		const room = Session.get(`roomData${ this._id }`);
-
-		if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
-			return room.retention.enabled;
-		}
-
-		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
-			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
-				return true;
-			}
-			if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
-				return true;
-			}
-			if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
-				return true;
-			}
-		}
-
-		return false;
+		return roomHasPurge(Session.get(`roomData${ this._id }`));
 	},
 	filesOnly() {
-		const room = Session.get(`roomData${ this._id }`);
-
-		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
-			return room.retention.filesOnly;
-		}
-
-		return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+		return roomFilesOnly(Session.get(`roomData${ this._id }`));
 	},
 	excludePinned() {
-		const room = Session.get(`roomData${ this._id }`);
-
-		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
-			return room.retention.excludePinned;
-		}
-
-		return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+		return roomExcludePinned(Session.get(`roomData${ this._id }`));
 	},
 	purgeTimeout() {
 		moment.relativeTimeThreshold('s', 60);
@@ -436,28 +470,7 @@ Template.room.helpers({
 		moment.relativeTimeThreshold('d', 31);
 		moment.relativeTimeThreshold('M', 12);
 
-		const room = Session.get(`roomData${ this._id }`);
-		let globalTimeout;
-
-		if ((room && room.t === 'c')) {
-			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
-		}
-		if ((room && room.t === 'p')) {
-			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
-		}
-		if ((room && room.t === 'd')) {
-			globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
-		}
-
-		if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
-			return moment.duration(room.retention.maxAge * 1000).humanize();
-		}
-
-		if (room.retention && room.retention.enabled) {
-			return moment.duration(Math.min(room.retention.maxAge, globalTimeout) * 1000).humanize();
-		}
-
-		return moment.duration(globalTimeout * 1000).humanize();
+		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000).humanize();
 	}
 });
 

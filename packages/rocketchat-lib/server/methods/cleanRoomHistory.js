@@ -59,8 +59,8 @@ Meteor.methods({
 							$set: {
 								file: null,
 								attachments: [{
-									color: '#F84040',
-									text: '_File removed by prune_'
+									color: '#FD745E',
+									text: `_${ TAPi18n.__('File_removed_by_prune') }_`
 								}]
 							}
 						});
