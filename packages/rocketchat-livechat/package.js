@@ -72,6 +72,7 @@ Package.onUse(function(api) {
 
 	//client startup
 	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
+	api.addFiles('client/startup/redirectHiddenRoom.js', 'client');
 
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
@@ -139,6 +140,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/hooks/RDStation.js', 'server');
 	api.addFiles('server/hooks/sendToCRM.js', 'server');
 	api.addFiles('server/hooks/sendToFacebook.js', 'server');
+	api.addFiles('server/hooks/hideClosedRoom.js', 'server');
 
 	// methods
 	api.addFiles('server/methods/addAgent.js', 'server');
