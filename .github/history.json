@@ -16653,6 +16653,50 @@
           ]
         }
       ]
+    },
+    "0.66.0-rc.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11268",
+          "title": "[FIX] Armhf snap build",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11273",
+          "title": "Regression: sidebar sorting was being wrong in some cases where the rooms records were returned before the subscriptions",
+          "userLogin": "ggazzo",
+          "milestone": "0.66.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11276",
+          "title": "[FIX] Reaction Toggle was not working when omitting the last parameter from the API (DDP and REST)",
+          "userLogin": "Hudell",
+          "milestone": "0.66.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11271",
+          "title": "Fix Docker image build on tags",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
