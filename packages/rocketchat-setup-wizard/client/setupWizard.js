@@ -62,11 +62,11 @@ const persistSettings = (state, callback) => {
 			{
 				_id: 'Statistics_reporting',
 				value: state['registerServer']
-			}//,
-			// {
-			// 	_id: 'Opt_In',
-			// 	value: state['optIn']
-			// }
+			},
+			{
+				_id: 'Allow_Marketing_Emails',
+				value: state['optIn']
+			}
 		]);
 
 	RocketChat.settings.batchSet(settings, error => {
