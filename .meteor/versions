@@ -244,6 +244,7 @@ rocketchat:user-data-download@1.0.0
 rocketchat:version@1.0.0
 rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
+rocketchat:webdav@0.0.1
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.13
