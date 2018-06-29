@@ -5,7 +5,7 @@
 
 .rc-datetime__right {
 	display: inline-block;
-	width: calc(48% - 0.22rem);
+	width: calc(48% - 0.3rem);
 }
 
 .rc-user-info__pruning {
