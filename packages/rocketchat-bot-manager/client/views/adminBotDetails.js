@@ -2,6 +2,7 @@ import toastr from 'toastr';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
+	this.now = new ReactiveVar(new Date());
 	this.changed = new ReactiveVar(false);
 	this.ping = new ReactiveVar(undefined);
 
@@ -52,6 +53,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.autorun(() => {
 		let finished = true;
 		this.interval = Meteor.setInterval(() => {
+			this.now.set(new Date());
 			if (!finished || !this.isOnline()) {
 				return;
 			}
@@ -64,7 +66,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 				}
 				finished = true;
 			});
-		}, 1500);
+		}, 1000);
 	});
 
 	this.humanReadableTime = (time) => {
@@ -161,16 +163,18 @@ Template.adminBotDetails.helpers({
 
 	connectedUptime() {
 		const bot = Template.instance().bot.get();
-		const diff = (new Date()).getTime() - bot.lastLogin.getTime();
+		const now = Template.instance().now.get();
+		const diff = now.getTime() - bot.lastLogin.getTime();
 		return Template.instance().humanReadableTime(diff / 1000);
 	},
 
 	activeUptime() {
 		const bot = Template.instance().bot.get();
+		const now = Template.instance().now.get();
 		const isOnline = Template.instance().isOnline();
-		let diff = (new Date()).getTime() - bot.lastLogin.getTime();
+		let diff = now.getTime() - bot.lastLogin.getTime();
 		if (isOnline && bot.customClientData.msgStreamLastActive) {
-			diff = (new Date()).getTime() - bot.customClientData.msgStreamLastActive.getTime();
+			diff = now.getTime() - bot.customClientData.msgStreamLastActive.getTime();
 		}
 		return Template.instance().humanReadableTime(diff / 1000);
 	},
