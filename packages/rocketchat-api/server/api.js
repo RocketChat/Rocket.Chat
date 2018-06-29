@@ -4,8 +4,8 @@ import _ from 'underscore';
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
 const defaultRateLimiterOptions = {
-	numRequestsAllowed: 10,
-	intervalTimeInMS: 60000
+	numRequestsAllowed: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	intervalTimeInMS: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default')
 };
 
 class API extends Restivus {
@@ -210,7 +210,6 @@ class API extends Restivus {
 					};
 					let result;
 					try {
-
 						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
 							&& !RocketChat.authz.hasPermission(this.userId, 'api-bypass-rate-limit')
 							&& ((process.env.NODE_ENV === 'development' && RocketChat.settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
