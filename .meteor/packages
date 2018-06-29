@@ -151,6 +151,7 @@ rocketchat:ui-vrecord
 rocketchat:user-data-download
 rocketchat:version
 rocketchat:videobridge
+rocketchat:webdav
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:nrr
