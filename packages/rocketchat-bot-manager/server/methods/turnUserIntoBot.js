@@ -3,7 +3,7 @@ Meteor.methods({
 		check(userId, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'insertOrUpdateBot' });
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'turnUserIntoBot' });
 		}
 
 		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {

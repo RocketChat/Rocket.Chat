@@ -498,7 +498,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 					}, () => {
 						Meteor.call('turnUserIntoBot', _id, success(() => {
 							modal.open({
-								title: t('Deleted'),
+								title: t('Changed'),
 								text: t('User_is_now_a_bot'),
 								type: 'success',
 								timer: 2000,

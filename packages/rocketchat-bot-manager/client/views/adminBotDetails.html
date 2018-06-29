@@ -2,6 +2,7 @@
 	<section class="page-container page-home page-static page-settings">
 		{{#header sectionName=pageTitle buttons=true}}
     <div class="rc-header__section-button">
+      <button class="rc-button rc-button--cancel change" disabled="{{not canChange}}"><span>{{_ "Change_account"}}</span></button>
       <button class="rc-button rc-button--cancel delete" disabled="{{not canDelete}}"><span>{{_ "Delete_account"}}</span></button>
       <button class="rc-button rc-button--primary save" disabled="{{not isChanged}}"><span>{{_ "Save_changes"}}</span></button>
     </div>

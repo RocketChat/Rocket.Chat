@@ -40,6 +40,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/pingBot.js', 'server');
 	api.addFiles('server/methods/resumeBot.js', 'server');
 	api.addFiles('server/methods/turnUserIntoBot.js', 'server');
+	api.addFiles('server/methods/turnBotIntoUser.js', 'server');
 
 	api.addFiles('server/startup.js', 'server');
 });

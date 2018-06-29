@@ -202,6 +202,10 @@ Template.adminBotDetails.helpers({
 
 	canDelete() {
 		return RocketChat.authz.hasAllPermission('delete-bot-account');
+	},
+
+	canChange() {
+		return RocketChat.authz.hasAllPermission('edit-bot-account');
 	}
 });
 
@@ -310,6 +314,43 @@ Template.adminBotDetails.events({
 				modal.open({
 					title: t('Deleted'),
 					text: t('Your_entry_has_been_deleted'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false
+				});
+
+				FlowRouter.go('admin-bots');
+			});
+		});
+	},
+
+	'click .rc-header__section-button > .change': (e, instance) => {
+		const bot = instance.bot.get();
+
+		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+			const error = new Meteor.Error('error-action-not-allowed', 'Changing bot type is not allowed');
+			return handleError(error);
+		}
+
+		modal.open({
+			title: t('Are_you_sure'),
+			text: t('The_bot_will_become_a_user_and_its_roles_will_be_reset'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#DD6B55',
+			confirmButtonText: t('Yes_transform_it'),
+			cancelButtonText: t('Cancel'),
+			closeOnConfirm: false,
+			html: false
+		}, () => {
+			Meteor.call('turnBotIntoUser', bot._id, (err) => {
+				if (err) {
+					return handleError(err);
+				}
+
+				modal.open({
+					title: t('Changed'),
+					text: t('Bot_is_now_a_user'),
 					type: 'success',
 					timer: 1000,
 					showConfirmButton: false
