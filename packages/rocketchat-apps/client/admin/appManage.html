@@ -2,7 +2,7 @@
 <template name="appManage">
 	{{#with app}}
 
-		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true fullpage=true}}
+		{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
 		<div class="rc-header__block rc-header__block-action">
 			<div class="rc-switch rc-switch--blue">
 				<label class="rc-switch__label">
@@ -22,34 +22,47 @@
 			{{#requiresPermission 'manage-apps'}}
 				{{#if isReady}}
 					<div class="rc-apps-details">
-						<div class="rc-apps-container">
+						<div class="rc-apps-container rc-apps-container__header">
 							<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
 							<div class="rc-apps-details__content">
 								<div class="rc-apps-details__row">
 									<div class="rc-apps-details__name">{{name}}</div>
-									<div class="rc-apps-details__version">v{{version}}</div>
 								</div>
-								<div class="rc-apps-details__row">{{description}}</div>
 								<div class="rc-apps-details__row">
 									{{#if author.name}}
-									<div class="rc-apps-details__item">
-										{{> icon icon='user'}}
-										{{author.name}}
+									<div class="rc-apps-details__version">
+										by {{author.name}} | Version {{version}}
 									</div>
 									{{/if}}
-									{{#if author.homepage}}
-									<a href="{{author.homepage}}" target="_blank" class="rc-apps-details__item">
-										{{> icon icon='permalink'}}
-										{{_ "App_author_homepage"}}
-									</a>
-									{{/if}}
-									{{#if author.support}}
-									<a href="{{author.support}}" target="_blank" class="rc-apps-details__item">
-										{{> icon icon='at'}}
-										{{_ "App_support_url"}}
-									</a>
-									{{/if}}
 								</div>
+								<div class="rc-apps-details__row">
+									{{#unless isInstalled}}
+										<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+									{{else}}
+
+									{{/unless}}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="rc-apps-container">
+						<div class="rc-apps-details__content">
+							<div class="rc-apps-details__row">
+								<h2> Categories </h2>
+
+							</div>
+							<div class="rc-apps-details__row">
+								<h2> Contact </h2>
+
+							</div>
+							<div class="rc-apps-details__row">
+								<h2> Details </h2>
+							</div>
+							<div class="rc-apps-details__row">
+								<b> {{ description }} </b>
+							</div>
+							<div class="rc-apps-details__row">
+								{{ description }}
 							</div>
 						</div>
 					</div>
