@@ -15,5 +15,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/final.html', 'client');
 	api.addFiles('client/final.js', 'client');
 
-	api.addFiles('server/setupWizard.js', 'server');
+	api.addFiles('server/getSetupWizardParameters.js', 'server');
 });

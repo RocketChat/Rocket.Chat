@@ -97,11 +97,12 @@ Template.setupWizard.onCreated(function() {
 	Object.entries(state).forEach(entry => this.state.set(...entry));
 
 	this.autorun(c => {
-		if (typeof cannotSetup() === 'undefined') {
+		const cantSetup = cannotSetup();
+		if (typeof cantSetup === 'undefined') {
 			return;
 		}
 
-		if (cannotSetup()) {
+		if (cantSetup) {
 			c.stop();
 			FlowRouter.go('home');
 			return;
@@ -238,7 +239,6 @@ Template.setupWizard.helpers({
 			case 1:
 				return RocketChat.settings.get('Show_Setup_Wizard') === 'pending' && 'setup-wizard-forms__box--loaded';
 			case 2:
-				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
 			case 3:
 				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
 			case 4:
