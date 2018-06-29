@@ -332,32 +332,46 @@ Template.adminBotDetails.events({
 			return handleError(error);
 		}
 
-		modal.open({
-			title: t('Are_you_sure'),
-			text: t('The_bot_will_become_a_user_and_its_roles_will_be_reset'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_transform_it'),
-			cancelButtonText: t('Cancel'),
-			closeOnConfirm: false,
-			html: false
-		}, () => {
-			Meteor.call('turnBotIntoUser', bot._id, (err) => {
-				if (err) {
-					return handleError(err);
-				}
+		const warningModal = (email) => {
+			modal.open({
+				title: t('Are_you_sure'),
+				text: t('The_bot_will_become_a_user_and_its_roles_will_be_reset'),
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Yes_convert_it'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: false,
+				html: false
+			}, () => {
+				Meteor.call('turnBotIntoUser', bot._id, email, (err) => {
+					if (err) {
+						return handleError(err);
+					}
 
-				modal.open({
-					title: t('Changed'),
-					text: t('Bot_is_now_a_user'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false
+					modal.open({
+						title: t('Converted'),
+						text: t('Bot_is_now_a_user'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false
+					});
+
+					FlowRouter.go('admin-bots');
 				});
-
-				FlowRouter.go('admin-bots');
 			});
-		});
+		};
+		if (!bot.emails) {
+			modal.open({
+				title: t('Insert_email'),
+				text: t('All_accounts_must_have_an_email'),
+				type: 'input',
+				showCancelButton: true,
+				closeOnConfirm: false,
+				inputPlaceholder: 'example@rocket.chat'
+			}, (email) => warningModal(email));
+		} else {
+			warningModal();
+		}
 	}
 });

@@ -482,8 +482,8 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return {
 				group: 'admin',
 				icon: 'hubot',
-				id: 'turn-into-bot',
-				name: t('Transform_into_bot'),
+				id: 'convert-to-bot',
+				name: t('Convert_to_bot'),
 				action: prevent(getUser, ({_id}) => {
 					modal.open({
 						title: t('Are_you_sure'),
@@ -491,14 +491,14 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 						type: 'warning',
 						showCancelButton: true,
 						confirmButtonColor: '#DD6B55',
-						confirmButtonText: t('Yes_transform_it'),
+						confirmButtonText: t('Yes_convert_it'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: false,
 						html: false
 					}, () => {
 						Meteor.call('turnUserIntoBot', _id, success(() => {
 							modal.open({
-								title: t('Changed'),
+								title: t('Converted'),
 								text: t('User_is_now_a_bot'),
 								type: 'success',
 								timer: 2000,
