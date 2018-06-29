@@ -177,7 +177,7 @@ class API extends Restivus {
 		}
 
 		const version = this._config.version;
-		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && version);
+		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && version && !process.env.TEST_MODE);
 		if (shouldAddRateLimitToRoute) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
@@ -210,7 +210,10 @@ class API extends Restivus {
 					};
 					let result;
 					try {
-						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route);
+
+						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
+							&& !RocketChat.authz.hasPermission(this.userId, 'api-bypass-rate-limit')
+							&& ((process.env.NODE_ENV === 'development' && RocketChat.settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
 						if (shouldVerifyRateLimit) {
 							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
@@ -304,8 +307,7 @@ class API extends Restivus {
 		const self = this;
 
 		this.addRoute('login', {
-			authRequired: false,
-			rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 }
+			authRequired: false
 		}, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
