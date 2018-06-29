@@ -169,8 +169,8 @@ Template.adminBotDetails.helpers({
 		const bot = Template.instance().bot.get();
 		const isOnline = Template.instance().isOnline();
 		let diff = (new Date()).getTime() - bot.lastLogin.getTime();
-		if (isOnline && bot.customClientData.lastResumed) {
-			diff = (new Date()).getTime() - bot.customClientData.lastResumed.getTime();
+		if (isOnline && bot.customClientData.msgStreamLastActive) {
+			diff = (new Date()).getTime() - bot.customClientData.msgStreamLastActive.getTime();
 		}
 		return Template.instance().humanReadableTime(diff / 1000);
 	},

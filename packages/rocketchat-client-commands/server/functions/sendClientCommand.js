@@ -35,7 +35,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 		}, msTimeout);
 
 		// emits the command to the user
-		commandStream.emitWithoutBroadcast(user._id, clientCommand);
+		commandStream.emit(user._id, clientCommand);
 
 		// adds listener for a response event coming from replyClientCommand
 		// if the response times out, the listener is removed by timeoutFunction
