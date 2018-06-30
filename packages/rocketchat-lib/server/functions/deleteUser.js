@@ -7,7 +7,22 @@ RocketChat.deleteUser = function(userId) {
 
 		switch (messageErasureType) {
 			case 'Delete' :
+				RocketChat.models.Messages.find({
+					'u._id': userId,
+					file: {
+						$exists: true
+					}
+				}, {
+					fields: {
+						file: 1
+					}
+				}).fetch().map(function(document) {
+					if (document.file && document.file._id) {
+						FileUpload.getStore('Uploads').deleteById(document.file._id);
+					}
+				});
 				RocketChat.models.Messages.removeByUserId(userId);
+
 				RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
 					'u._id': userId
 				});
