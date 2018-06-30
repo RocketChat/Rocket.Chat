@@ -534,7 +534,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
+		this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
@@ -558,11 +558,20 @@ RocketChat.settings.addGroup('OAuth', function() {
 			type: 'string',
 			enableQuery
 		});
-		return this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
+		this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
 			type: 'relativeUrl',
 			readonly: true,
 			force: true,
 			enableQuery
+		});
+		this.add('Accounts_OAuth_Google_Picker', false, {
+			type: 'boolean',
+			'public': true
+		});
+		return this.add('Accounts_OAuth_Google_Picker_key', '', {
+			type: 'string',
+			enableQuery,
+			'public': true
 		});
 	});
 	this.section('GitHub', function() {
