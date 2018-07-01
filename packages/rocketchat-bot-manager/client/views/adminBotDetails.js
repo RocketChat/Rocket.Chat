@@ -1,5 +1,4 @@
 import toastr from 'toastr';
-import _ from 'underscore';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
@@ -179,8 +178,11 @@ Template.adminBotDetails.helpers({
 		const now = Template.instance().now.get();
 		const isOnline = Template.instance().isOnline();
 		let diff = now.getTime() - bot.lastLogin.getTime();
-		if (isOnline && bot.customClientData.msgStreamLastActive) {
-			diff = now.getTime() - bot.customClientData.msgStreamLastActive.getTime();
+		if (isOnline && bot.customClientData.pausedMsgStream) {
+			diff = 0;
+		} else if (isOnline && bot.customClientData.msgStreamLastActive) {
+			// Use min in case the bot relogs in but does not reset stream last active
+			diff = Math.min(diff, now.getTime() - bot.customClientData.msgStreamLastActive.getTime());
 		}
 		return Template.instance().humanReadableTime(diff / 1000);
 	},
