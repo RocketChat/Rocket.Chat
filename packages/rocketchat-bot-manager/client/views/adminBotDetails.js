@@ -1,8 +1,10 @@
 import toastr from 'toastr';
+import _ from 'underscore';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
 	this.now = new ReactiveVar(new Date());
+	this.statistics = new ReactiveVar({});
 	this.changed = new ReactiveVar(false);
 	this.ping = new ReactiveVar(undefined);
 
@@ -38,6 +40,10 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 					FlowRouter.go('admin-bots');
 				}
 			}
+
+			Meteor.call('getBotStatistics', username, (err, statistics) => {
+				this.statistics.set(statistics);
+			});
 		}
 	});
 
@@ -198,6 +204,10 @@ Template.adminBotDetails.helpers({
 
 	roleName() {
 		return this.description || this._id;
+	},
+
+	statistics() {
+		return Template.instance().statistics.get();
 	},
 
 	canDelete() {
