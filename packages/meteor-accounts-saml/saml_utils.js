@@ -451,9 +451,8 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 					const key = profileKeys[i];
 
 					if (key.match(/\./)) {
-						const value = profile[key];
+						profile[key.replace(/\./g, '-')] = profile[key];
 						delete profile[key];
-						profile[key.replace(/\./g, '-')] = value;
 					}
 				}
 
