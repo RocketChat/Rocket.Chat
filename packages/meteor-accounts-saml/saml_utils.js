@@ -323,6 +323,48 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	});
 };
 
+SAML.prototype.mapAttributes = function(attributeStatement, profile) {
+	debugLog(`Attribute Statement found in SAML response: ${ attributeStatement }`);
+	const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
+	debugLog(`Attributes will be processed: ${ attributes.length }`);
+
+	if (attributes) {
+		for (let i = 0; i < attributes.length; i++) {
+			const values = attributes[i].getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue');
+			let value;
+			if (values.length === 1) {
+				value = values[0].textContent;
+			} else {
+				value = [];
+				for (let j=0;j<values.length;j++) {
+					value.push(values[j].textContent);
+				}
+			}
+
+			const key = attributes[i].getAttribute('Name');
+
+			debugLog(`Name:  ${ attributes[i] }`);
+			debugLog(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
+			profile[key] = value;
+		}
+	} else {
+		debugLog('No Attributes found in SAML attribute statement.');
+	}
+
+	if (!profile.mail && profile['urn:oid:0.9.2342.19200300.100.1.3']) {
+		// See http://www.incommonfederation.org/attributesummary.html for definition of attribute OIDs
+		profile.mail = profile['urn:oid:0.9.2342.19200300.100.1.3'];
+	}
+
+	if (!profile.email && profile['urn:oid:1.2.840.113549.1.9.1']) {
+		profile.email = profile['urn:oid:1.2.840.113549.1.9.1'];
+	}
+
+	if (!profile.email && profile.mail) {
+		profile.email = profile.mail;
+	}
+};
+
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	const self = this;
 	const xml = new Buffer(samlResponse, 'base64').toString('utf8');
@@ -395,48 +437,24 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 				const attributeStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeStatement')[0];
 				if (attributeStatement) {
-					debugLog(`Attribute Statement found in SAML response: ${ attributeStatement }`);
-					const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
-					debugLog(`Attributes will be processed: ${ attributes.length }`);
-
-					if (attributes) {
-						for (let i = 0; i < attributes.length; i++) {
-							const values = attributes[i].getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeValue');
-							let value;
-							if (values.length === 1) {
-								value = values[0].textContent;
-							} else {
-								value = [];
-								for (let j=0;j<values.length;j++) {
-									value.push(values[j].textContent);
-								}
-							}
-
-							let key = attributes[i].getAttribute('Name');
-							key=key.replace(/\./g, '-');
-
-							debugLog(`Name:  ${ attributes[i] }`);
-							debugLog(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
-							profile[key] = value;
-						}
-					} else {
-						debugLog('No Attributes found in SAML attribute statement.');
-					}
-
-					if (!profile.mail && profile['urn:oid:0.9.2342.19200300.100.1.3']) {
-						// See http://www.incommonfederation.org/attributesummary.html for definition of attribute OIDs
-						profile.mail = profile['urn:oid:0.9.2342.19200300.100.1.3'];
-					}
-
-					if (!profile.email && profile.mail) {
-						profile.email = profile.mail;
-					}
+					this.mapAttributes(attributeStatement, profile);
 				} else {
 					debugLog('No Attribute Statement found in SAML response.');
 				}
 
 				if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
 					profile.email = profile.nameID;
+				}
+
+				const profileKeys = Object.keys(profile);
+				for (let i = 0; i < profileKeys.length; i++) {
+					const key = profileKeys[i];
+
+					if (key.match(/\./)) {
+						const value = profile[key];
+						delete profile[key];
+						profile[key.replace(/\./g, '-')] = value;
+					}
 				}
 
 				debugLog(`NameID: ${ JSON.stringify(profile) }`);
