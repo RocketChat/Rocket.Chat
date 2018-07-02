@@ -5,21 +5,18 @@ function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
-	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
-		moment(time).format('L')
-	);
+	return (now.getDate() === time.getDate() && moment(time).format('LT')) || (yesterday.getDate() === time.getDate() && t('yesterday')) || moment(time).format('MMM D, YYYY');
 }
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
-		cb(result.results && result.results.length && result.results.map(result => {
+		cb(result && result.results && result.results.length && result.results.map(result => {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: result.usernames.length,
+					users: (result.usernames ? result.usernames.length : result.usersCount) || 0,
 					createdAt: timeAgo(result.ts),
+					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic
@@ -38,6 +35,12 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	searchText() {
+		return Template.instance().searchText.get();
+	},
+	showLastMessage() {
+		return RocketChat.settings.get('Store_Last_Message');
+	},
 	searchResults() {
 		return Template.instance().results.get();
 	},
@@ -45,12 +48,11 @@ Template.directory.helpers({
 		return Template.instance().searchType.get();
 	},
 	sortIcon(key) {
-		const {
-			sortDirection,
-			searchSortBy
-		} = Template.instance();
+		const { sortDirection, searchSortBy } = Template.instance();
 
-		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
+		return key === searchSortBy.get() && sortDirection.get() === 'asc'
+			? 'sort-up'
+			: 'sort-down';
 	},
 	searchSortBy(key) {
 		return Template.instance().searchSortBy.get() === key;
@@ -62,6 +64,8 @@ Template.directory.helpers({
 		const {
 			sortDirection,
 			searchType,
+			searchSortBy,
+			results,
 			end,
 			page
 		} = Template.instance();
@@ -70,17 +74,23 @@ Template.directory.helpers({
 				{
 					label: t('Channels'),
 					value: 'channels',
-					condition() { return true; },
+					condition() {
+						return true;
+					},
 					active: true
 				},
 				{
 					label: t('Users'),
 					value: 'users',
-					condition() { return true; }
+					condition() {
+						return true;
+					}
 				}
 			],
 			onChange(value) {
+				results.set([]);
 				end.set(false);
+				searchSortBy.set('name');
 				sortDirection.set('asc');
 				page.set(0);
 				searchType.set(value);
@@ -94,10 +104,10 @@ Template.directory.helpers({
 		return function(item) {
 			if (searchType.get() === 'channels') {
 				type = 'c';
-				routeConfig = {name: item.name};
+				routeConfig = { name: item.name };
 			} else {
 				type = 'd';
-				routeConfig = {name: item.username};
+				routeConfig = { name: item.username };
 			}
 			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
 		};
@@ -111,7 +121,10 @@ Template.directory.helpers({
 			return;
 		}
 		return function(currentTarget) {
-			if (currentTarget.offsetHeight + currentTarget.scrollTop >= currentTarget.scrollHeight - 100) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
 				return instance.page.set(instance.page.get() + 1);
 			}
 		};
@@ -120,7 +133,7 @@ Template.directory.helpers({
 		const { limit } = Template.instance();
 
 		return function() {
-			limit.set(Math.ceil((this.$('.table-scroll').height() / 40) + 5));
+			limit.set(Math.ceil(this.$('.table-scroll').height() / 40 + 5));
 		};
 	},
 	onTableSort() {
@@ -198,5 +211,5 @@ Template.directory.onCreated(function() {
 
 Template.directory.onRendered(function() {
 	$('.main-content').removeClass('rc-old');
-	$('.rc-directory-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
 });
