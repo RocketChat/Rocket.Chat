@@ -64,10 +64,14 @@ export class AppMessageBridge {
 				editor: undefined
 			});
 
-			const users = RocketChat.models.Subscriptions.find({ rid: room._id, u: { $exists: 1 }, 'u._id': { $exists: 1 } }, { fields: { 'u._id': 1 } })
+			const users = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
 				.fetch()
 				.map(s => s.u._id);
-			RocketChat.models.Users.find({ _id: { $in: users } }).fetch().forEach(({ _id }) => RocketChat.Notifications.notifyUser(_id, 'message', rmsg));
+			RocketChat.models.Users.findByIds(users, { fields: { _id: 1 } })
+				.fetch()
+				.forEach(({ _id }) =>
+					RocketChat.Notifications.notifyUser(_id, 'message', rmsg)
+				);
 		}
 	}
 }

@@ -9,10 +9,7 @@ class Document {
 	get usernames() {
 		// TODO: Remove deprecation on version 0.70
 		console.warn('DEPRECATION: Room.usernames is deprecated and will be removed on version 0.70.0');
-		return RocketChat.models.Subscriptions.find({
-			rid: this._id,
-			'u.username': { $exists: 1 }
-		}, {
+		return RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._id, {
 			fields: {
 				'u.username': 1
 			}

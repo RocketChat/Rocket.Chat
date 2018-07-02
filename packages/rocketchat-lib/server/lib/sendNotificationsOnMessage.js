@@ -238,26 +238,22 @@ function sendAllNotifications(message, room) {
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {
 		const mentions = message.mentions.filter(({ _id }) => _id !== 'here' && _id !== 'all').map(({ _id }) => _id);
-		Promise.all(RocketChat.models.Subscriptions.find({
-			rid: room._id,
-			_id: { $in: mentions }
-		}).fetch().map(async(subscription) => {
-			await callJoinRoom(subscription.u, room._id);
-			return subscription;
-		})).then(subscriptions => {
-			subscriptions.forEach(subscription => {
-				sendNotification({
-					subscription,
-					sender,
-					hasMentionToAll,
-					hasMentionToHere,
-					message,
-					notificationMessage,
-					room,
-					mentionIds
-				});
-			});
-		});
+		Promise.all(RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, mentions)
+			.fetch()
+			.map(async subscription => {
+				await callJoinRoom(subscription.u, room._id);
+				return subscription;
+			})).then(subscriptions => subscriptions.forEach(subscription =>
+			sendNotification({
+				subscription,
+				sender,
+				hasMentionToAll,
+				hasMentionToHere,
+				message,
+				notificationMessage,
+				room,
+				mentionIds
+			})));
 	}
 
 	return message;

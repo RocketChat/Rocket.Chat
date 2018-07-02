@@ -21,11 +21,11 @@ RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 		}
 	};
 	if (readOnly) {
-		RocketChat.models.Subscriptions.find({ rid: _id, 'u._id' : { $exists : 1 }, 'u.username' : { $exists : 1 } }).forEach(function(subscription) {
-			if (RocketChat.authz.hasPermission(subscription.u._id, 'post-readonly')) {
+		RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
+			if (RocketChat.authz.hasPermission(user._id, 'post-readonly')) {
 				return;
 			}
-			return update.$set.muted.push(subscription.u.username);
+			return update.$set.muted.push(user.username);
 		});
 	} else {
 		update.$unset = {

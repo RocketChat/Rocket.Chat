@@ -14,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = RocketChat.models.Subscriptions.find({ rid, 'u.username': { $exists: 1 } }, { fields: { 'u._id': 1 } }).fetch();
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } }).fetch();
 		const userIds = subscriptions.map(s => s.u._id); // TODO: CACHE: expensive
 		const options = { fields: { username: 1, name: 1 } };
 

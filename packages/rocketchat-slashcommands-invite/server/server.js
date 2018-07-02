@@ -49,9 +49,7 @@ function Invite(command, params, item) {
 		});
 		return false;
 	});
-	if (usernames.length === 0) {
-		return;
-	}
+
 	users.forEach(function(user) {
 
 		try {

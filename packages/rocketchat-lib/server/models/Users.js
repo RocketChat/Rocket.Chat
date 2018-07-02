@@ -62,6 +62,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findByIds(users, options) {
+		const query = { _id: { $in: users } };
+		return this.find(query, options);
+	}
+
 	findUsersNotOffline(options) {
 		const query = {
 			username: {

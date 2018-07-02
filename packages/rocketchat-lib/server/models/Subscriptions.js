@@ -181,6 +181,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query);
 	}
 
+	findByRoomIdWhenUserIdExists(rid, options) {
+		const query = { rid, 'u._id': { $exists: 1 } };
+
+		return this.find(query, options);
+	}
+
+	findByRoomIdWhenUsernameExists(rid, options) {
+		const query = { rid, 'u.username': { $exists: 1 } };
+
+		return this.find(query, options);
+	}
+
 	findUnreadByUserId(userId) {
 		const query = {
 			'u._id': userId,

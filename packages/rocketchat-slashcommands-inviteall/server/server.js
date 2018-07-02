@@ -32,7 +32,7 @@ function inviteAll(type) {
 				}, currentUser.language)
 			});
 		}
-		const cursor = RocketChat.models.Subscriptions.find({ rid: baseChannel._id, 'u.username': { $exists: 1 } }, { fields: { 'u.username': 1 } });
+		const cursor = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, { fields: { 'u.username': 1 } });
 
 		try {
 			if (cursor.count() > RocketChat.settings.get('API_User_Limit')) {
