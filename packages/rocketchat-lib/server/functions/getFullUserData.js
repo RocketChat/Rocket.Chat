@@ -3,8 +3,6 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 RocketChat.getFullUserData = function({userId, filter, limit}) {
-	const additionalFields = RocketChat.settings.get('Accounts_AdditionalUserPublicFields').replace(/\s+/g, '').split(',')
-
 	let fields = {
 		name: 1,
 		username: 1,
@@ -14,7 +12,10 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 		reason: 1
 	};
 
-	additionalFields.forEach(e => fields[e] = 1)
+	fields['emails'] = RocketChat.authz.hasPermission(userId, 'view-other-user-emails') ? 1 : 0;
+	fields['phone'] = RocketChat.authz.hasPermission(userId, 'view-other-user-phone') ? 1 : 0;
+	fields['roles'] = RocketChat.authz.hasPermission(userId, 'view-other-user-roles') ? 1 : 0;
+	fields['utcOffset'] = RocketChat.authz.hasPermission(userId, 'view-other-user-utcoffset') ? 1 : 0;
 
 	if (RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
 		fields = _.extend(fields, {
