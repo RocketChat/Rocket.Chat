@@ -2616,6 +2616,24 @@
 	position: relative;
 }
 
+.rc-old .message-popup-items {
+	.popup-slash-command {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+
+		&-format {
+			flex-grow: 1;
+		}
+
+		&-description {
+			flex-grow: 2;
+			font-style: italic;
+			text-align: right;
+		}
+	}
+}
+
 .rc-old .message-popup-items.preview-items {
 	display: flex;
 	overflow-y: auto;
@@ -2771,10 +2789,6 @@
 
 	border-width: 1px;
 	border-radius: 10px;
-}
-
-.rc-old .popup-slash-command-description {
-	float: right;
 }
 
 .messages-box {
