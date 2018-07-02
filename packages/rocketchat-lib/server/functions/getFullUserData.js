@@ -3,15 +3,18 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 RocketChat.getFullUserData = function({userId, filter, limit}) {
+	const additionalFields = RocketChat.settings.get('Accounts_AdditionalUserPublicFields').replace(/\s+/g, '').split(',')
+
 	let fields = {
 		name: 1,
 		username: 1,
 		status: 1,
-		utcOffset: 1,
 		type: 1,
 		active: 1,
 		reason: 1
 	};
+
+	additionalFields.forEach(e => fields[e] = 1)
 
 	if (RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
 		fields = _.extend(fields, {
