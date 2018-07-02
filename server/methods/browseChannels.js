@@ -56,17 +56,23 @@ Meteor.methods({
 				return;
 			}
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
-					...options,
-					sort,
-					fields: {
-						description: 1,
-						name: 1,
-						ts: 1,
-						archived: 1,
-						usernames: 1
-					}
-				}).fetch(),
+				results: RocketChat.models.Rooms.findByNameAndType(
+					regex,
+					'c',
+					{
+						...options,
+						sort,
+						fields: {
+							description: 1,
+							topic: 1,
+							name: 1,
+							lastMessage: 1,
+							ts: 1,
+							archived: 1,
+							usernames: 1,
+							usersCount: 1
+						}
+					}).fetch(),
 				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count()
 			};
 		}

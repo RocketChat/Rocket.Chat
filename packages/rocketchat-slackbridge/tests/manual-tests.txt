@@ -1,0 +1,58 @@
+Config:
+
+
+
+Sending Message
+* Send slack msg to rocket
+* Send rocket msg to slack
+* Repeat on a channel that rocketbot isn't a member
+
+
+Edit Message:
+* Edit slack msg from slack
+* Edit rocket msg from rocket
+* Edit slack msg from rocket - Expected fail, slack not updated (slack says can't update message)
+* Edit rocket msg from slack - Expected fail, can't even edit
+* Repeat on a channel that rocketbot isn't a member
+
+
+Delete Message:
+* Delete slack message in slack
+* Delete rocket message in rocket
+* Delete rocket message in slack
+* Delete slack message in rocket - Expected fail, slack not updated, deleted in rocket
+* Repeat on a channel that rocketbot isn't a member
+
+
+React to a Message:
+* React to a slack message in slack
+* React to a rocket message in slack
+* React to a rocket message in rocket
+* React to a slack message in rocket
+* Repeat on a channel that rocketbot isn't a member
+
+
+Channels:
+Channel exists on both, but no rocketbot.
+* Add rocket bot to slack, send messages from both
+
+Channel exists on rocket only
+* Create slack channel, add rocket bot:
+** Send message from rocket
+** Send message from slack
+
+Channel exists on slack only
+* Add rocket bot to slack:
+** Send message from slack
+** Send message from rocket
+
+Channel exists on both w/ rocketbot
+* Remove rocket channel, send messages from slack (same as ch exists on slack only)
+* Remove rocketbot from slack:
+** Send message from slack
+** Send message from rocket
+
+
+
+
+
