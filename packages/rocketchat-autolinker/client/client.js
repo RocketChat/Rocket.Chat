@@ -7,14 +7,7 @@ import s from 'underscore.string';
 
 import Autolinker from 'autolinker';
 
-function htmlDecode(input) {
-	const e = document.createElement('div');
-	e.innerHTML = input;
-	return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
-}
-
 function AutoLinker(message) {
-	message.html = htmlDecode(message.html);
 	if (RocketChat.settings.get('AutoLinker') !== true) {
 		return message;
 	}
@@ -77,4 +70,4 @@ function AutoLinker(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', AutoLinker);
+RocketChat.callbacks.add('renderMessage', AutoLinker, RocketChat.callbacks.priority.LOW, 'autolinker');

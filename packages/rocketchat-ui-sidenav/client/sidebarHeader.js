@@ -51,7 +51,7 @@ const toolbarButtons = (user) => {
 	},
 	{
 		name: t('View_mode'),
-		icon: () => RocketChat.getUserPreference(user, 'sidebarViewMode') ? viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode')] : viewModeIcon.condensed,
+		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode') || 'condensed'],
 		action: (e) => {
 			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
 			const config = {
@@ -105,14 +105,8 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -125,18 +119,11 @@ const toolbarButtons = (user) => {
 			const options = [];
 			const config = {
 				template: 'sortlist',
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				}),
+				currentTarget: e.currentTarget,
 				data: {
-					// value: instance.form[key].get(),
 					options
-				}
+				},
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 			popover.open(config);
 		}
@@ -153,10 +140,10 @@ const toolbarButtons = (user) => {
 	{
 		name: t('Options'),
 		icon: 'menu',
-		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ]),
+		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ]),
 		action: (e) => {
 			let adminOption;
-			if (RocketChat.authz.hasAtLeastOnePermission(['view-statistics', 'view-room-administration', 'view-user-administration', 'view-privileged-setting' ])) {
+			if (RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ])) {
 				adminOption = {
 					icon: 'customize',
 					name: t('Administration'),
@@ -209,14 +196,8 @@ const toolbarButtons = (user) => {
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);
@@ -225,24 +206,20 @@ const toolbarButtons = (user) => {
 };
 Template.sidebarHeader.helpers({
 	myUserInfo() {
-		if (Meteor.user() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		const id = Meteor.userId();
+
+		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				username: 'anonymous',
 				status: 'online'
 			};
 		}
-
-		const user = Meteor.user() || {};
-		const { username } = user;
-		const userStatus = Session.get(`user_${ username }_status`);
-
-		return {
-			username,
-			status: userStatus
-		};
+		return id && Meteor.users.findOne(id, {fields: {
+			username: 1, status: 1
+		}});
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.user()).filter(button => !button.condition || button.condition());
+		return toolbarButtons(Meteor.userId()).filter(button => !button.condition || button.condition());
 	}
 });
 
@@ -323,14 +300,8 @@ Template.sidebarHeader.events({
 						]
 					}
 				],
-				mousePosition: () => ({
-					x: e.currentTarget.getBoundingClientRect().left,
-					y: e.currentTarget.getBoundingClientRect().bottom + 50
-				}),
-				customCSSProperties: () => ({
-					top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-					left: `${ e.currentTarget.getBoundingClientRect().left - 10 }px`
-				})
+				currentTarget: e.currentTarget,
+				offsetVertical: e.currentTarget.clientHeight + 10
 			};
 
 			popover.open(config);

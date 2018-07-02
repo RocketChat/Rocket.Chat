@@ -31,6 +31,8 @@ Meteor.methods({
 			throw new Meteor.Error ('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
 		}
 
+		RocketChat.passwordPolicy.validate(formData.pass);
+
 		RocketChat.validateEmailDomain(formData.email);
 
 		const userData = {

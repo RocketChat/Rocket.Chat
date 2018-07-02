@@ -51,6 +51,11 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneById(userId, options) {
+		const query =	{_id: userId};
+
+		return this.findOne(query, options);
+	}
 
 	// FIND
 	findById(userId) {

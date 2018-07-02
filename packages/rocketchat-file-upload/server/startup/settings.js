@@ -33,6 +33,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			key: 'GoogleCloudStorage',
 			i18nLabel: 'GoogleCloudStorage'
 		}, {
+			key: 'Webdav',
+			i18nLabel: 'WebDAV'
+		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem'
 		}],
@@ -112,7 +115,14 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			},
 			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description'
 		});
-		this.add('FileUpload_S3_Proxy', false, {
+		this.add('FileUpload_S3_Proxy_Avatars', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3'
+			}
+		});
+		this.add('FileUpload_S3_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
@@ -147,7 +157,14 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'GoogleCloudStorage'
 			}
 		});
-		this.add('FileUpload_GoogleStorage_Proxy', false, {
+		this.add('FileUpload_GoogleStorage_Proxy_Avatars', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleCloudStorage'
+			}
+		});
+		this.add('FileUpload_GoogleStorage_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
@@ -162,6 +179,52 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'FileSystem'
+			}
+		});
+	});
+
+	this.section('WebDAV', function() {
+		this.add('FileUpload_Webdav_Upload_Folder_Path', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
+			}
+		});
+		this.add('FileUpload_Webdav_Server_URL', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
+			}
+		});
+		this.add('FileUpload_Webdav_Username', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
+			}
+		});
+		this.add('FileUpload_Webdav_Password', '', {
+			type: 'password',
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
+			}
+		});
+		this.add('FileUpload_Webdav_Proxy_Avatars', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
+			}
+		});
+		this.add('FileUpload_Webdav_Proxy_Uploads', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'Webdav'
 			}
 		});
 	});
