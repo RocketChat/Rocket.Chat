@@ -2614,22 +2614,31 @@
 
 .rc-old .message-popup-position {
 	position: relative;
-}
 
-.rc-old .message-popup-items {
-	.popup-slash-command {
+	.message-popup {
 		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
+		flex-direction: column;
+		align-items: stretch;
+		max-height: 20rem;
 
-		&-format {
-			flex-grow: 1;
-		}
+		.message-popup-items {
+			overflow-y: auto;
 
-		&-description {
-			flex-grow: 2;
-			font-style: italic;
-			text-align: right;
+			.popup-slash-command {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				&-format {
+					flex-grow: 1;
+				}
+
+				&-description {
+					flex-grow: 2;
+					font-style: italic;
+					text-align: right;
+				}
+			}
 		}
 	}
 }
