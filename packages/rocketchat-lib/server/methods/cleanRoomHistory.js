@@ -1,3 +1,5 @@
+/* globals FileUpload */
+
 Meteor.methods({
 	cleanRoomHistory({ roomId, latest, oldest, inclusive }) {
 		check(roomId, String);
@@ -14,6 +16,17 @@ Meteor.methods({
 		}
 		const gt = inclusive ? '$gte' : '$gt';
 		const lt = inclusive ? '$lte' : '$lt';
+		RocketChat.models.Messages.find({
+			rid: roomId,
+			ts: {
+				[gt]: oldest,
+				[lt]: latest
+			}
+		}).fetch().map(file => {
+			if (file.file && file.file._id) {
+				FileUpload.getStore('Uploads').deleteById(file.file._id);
+			}
+		});
 		RocketChat.models.Messages.remove({
 			rid: roomId,
 			ts: {
