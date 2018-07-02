@@ -63,13 +63,16 @@ Meteor.methods({
 		}
 
 		if ((room.muted || []).includes(user.username)) {
-			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
-				_id: Random.id(),
-				rid: room._id,
-				ts: new Date,
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
-			});
-			throw new Meteor.Error('You can\'t send messages because you have been muted');
+			if (!room.ro || !RocketChat.authz.hasPermission(Meteor.userId(), 'post-readonly')) {
+				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+					_id: Random.id(),
+					rid: room._id,
+					ts: new Date,
+					msg: TAPi18n.__('You_have_been_muted', {}, user.language)
+				});
+
+				throw new Meteor.Error('You can\'t send messages because you have been muted');
+			}
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {

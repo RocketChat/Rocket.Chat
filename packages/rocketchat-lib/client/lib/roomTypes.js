@@ -59,7 +59,7 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 				_id: 1
 			}
 		});
-		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner);
+		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner && !RocketChat.authz.hasAtLeastOnePermission('post-readonly'));
 	}
 	archived(roomId) {
 		const fields = {

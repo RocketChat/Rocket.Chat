@@ -70,8 +70,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			continue;
 		}
 
-		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly') && !isTheOwner) {
+		// make all room members (Except the owner) muted by default
+		if (readOnly === true && !isTheOwner) {
 			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 

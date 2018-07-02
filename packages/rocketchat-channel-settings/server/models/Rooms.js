@@ -25,12 +25,10 @@ RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 				return;
 			}
 			const user = subscription._user;
-			if (RocketChat.authz.hasPermission(user._id, 'post-readonly') === false) {
-				if (!update.$set.muted) {
-					update.$set.muted = [];
-				}
-				return update.$set.muted.push(user.username);
+			if (!update.$set.muted) {
+				update.$set.muted = [];
 			}
+			return update.$set.muted.push(user.username);
 		});
 	} else {
 		update.$unset = {
