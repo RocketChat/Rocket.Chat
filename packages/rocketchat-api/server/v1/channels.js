@@ -662,43 +662,13 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Channel does not exists');
 		}
 
-		const ids = RocketChat.models.Subscriptions.find({ rid: room._id }, { fields: { 'u._id': 1 } }).fetch().map(sub => sub.u._id);
-
-		const online = RocketChat.models.Users.find({
-			username: { $exists: 1 },
-			_id: { $in: ids },
-			status: { $in: ['online', 'away', 'busy'] }
-		}, {
-			fields: { username: 1 }
-		}).fetch();
-
-		return RocketChat.API.v1.success({
-			online
-		});
-	}
-});
-RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
-	get() {
-		const { query } = this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { t: 'c' });
-
-		const room = RocketChat.models.Rooms.findOne(ourQuery);
-
-		if (room == null) {
-			return RocketChat.API.v1.failure('Channel does not exists');
-		}
-
 		const online = RocketChat.models.Users.findUsersNotOffline({
 			fields: { username: 1 }
 		}).fetch();
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-<<<<<<< HEAD
 			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
-=======
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {fields: {_id: 1}});
->>>>>>> 8fad0cdd2d0e35006142e4ce99ae6a677317cbca
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
