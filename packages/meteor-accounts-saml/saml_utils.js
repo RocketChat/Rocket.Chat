@@ -15,6 +15,12 @@ SAML = function(options) {
 	this.options = this.initialize(options);
 };
 
+function debugLog() {
+	if (Meteor.settings.debug) {
+		console.log.apply(this, arguments);
+	}
+}
+
 // var stripPrefix = function(str) {
 // 	return str.replace(prefixMatch, '');
 // };
@@ -129,8 +135,8 @@ SAML.prototype.generateLogoutRequest = function(options) {
 		`<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">${ options.sessionIndex }</samlp:SessionIndex>` +
 		'</samlp:LogoutRequest>';
 
-	this.debugLog('------- SAML Logout request -----------');
-	this.debugLog(request);
+	debugLog('------- SAML Logout request -----------');
+	debugLog(request);
 
 	return {
 		request,
@@ -181,7 +187,7 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 
 		target += querystring.stringify(samlRequest);
 
-		this.debugLog(`requestToUrl: ${ target }`);
+		debugLog(`requestToUrl: ${ target }`);
 
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
@@ -278,7 +284,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	const compressedSAMLResponse = new Buffer(samlResponse, 'base64');
 	zlib.inflateRaw(compressedSAMLResponse, function(err, decoded) {
 		if (err) {
-			this.debugLog(`Error while inflating. ${ err }`);
+			debugLog(`Error while inflating. ${ err }`);
 		} else {
 			console.log(`constructing new DOM parser: ${ Object.prototype.toString.call(decoded) }`);
 			console.log(`>>>> ${ decoded }`);
@@ -291,7 +297,7 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 					let inResponseTo;
 					try {
 						inResponseTo = response.getAttribute('InResponseTo');
-						this.debugLog(`In Response to: ${ inResponseTo }`);
+						debugLog(`In Response to: ${ inResponseTo }`);
 					} catch (e) {
 						if (Meteor.settings.debug) {
 							console.log(`Caught error: ${ e }`);
@@ -317,38 +323,32 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	});
 };
 
-SAML.prototype.debugLog = function() {
-	if (Meteor.settings.debug) {
-		console.log.apply(this, arguments);
-	}
-};
-
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	const self = this;
 	const xml = new Buffer(samlResponse, 'base64').toString('utf8');
 	// We currently use RelayState to save SAML provider
-	this.debugLog(`Validating response with relay state: ${ xml }`);
+	debugLog(`Validating response with relay state: ${ xml }`);
 
 	const doc = new xmldom.DOMParser().parseFromString(xml, 'text/xml');
 
 	if (doc) {
-		this.debugLog('Verify status');
+		debugLog('Verify status');
 		const statusValidateObj = self.validateStatus(doc);
 
 		if (statusValidateObj.success) {
-			this.debugLog('Status ok');
+			debugLog('Status ok');
 
 			// Verify signature
-			this.debugLog('Verify signature');
+			debugLog('Verify signature');
 			if (self.options.cert && !self.validateSignature(xml, self.options.cert)) {
-				this.debugLog('Signature WRONG');
+				debugLog('Signature WRONG');
 				return callback(new Error('Invalid signature'), null, false);
 			}
-			this.debugLog('Signature OK');
+			debugLog('Signature OK');
 
 			const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
 			if (response) {
-				this.debugLog('Got response');
+				debugLog('Got response');
 
 				const assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
 				if (!assertion) {
@@ -385,19 +385,19 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 					if (authnStatement.hasAttribute('SessionIndex')) {
 
 						profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
-						this.debugLog(`Session Index: ${ profile.sessionIndex }`);
+						debugLog(`Session Index: ${ profile.sessionIndex }`);
 					} else {
-						this.debugLog('No Session Index Found');
+						debugLog('No Session Index Found');
 					}
 				} else {
-					this.debugLog('No AuthN Statement found');
+					debugLog('No AuthN Statement found');
 				}
 
 				const attributeStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeStatement')[0];
 				if (attributeStatement) {
-					this.debugLog(`Attribute Statement found in SAML response: ${ attributeStatement }`);
+					debugLog(`Attribute Statement found in SAML response: ${ attributeStatement }`);
 					const attributes = attributeStatement.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Attribute');
-					this.debugLog(`Attributes will be processed: ${ attributes.length }`);
+					debugLog(`Attributes will be processed: ${ attributes.length }`);
 
 					if (attributes) {
 						for (let i = 0; i < attributes.length; i++) {
@@ -415,12 +415,12 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 							let key = attributes[i].getAttribute('Name');
 							key=key.replace(/\./g, '-');
 
-							this.debugLog(`Name:  ${ attributes[i] }`);
-							this.debugLog(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
+							debugLog(`Name:  ${ attributes[i] }`);
+							debugLog(`Adding attribute from SAML response to profile: ${ key } = ${ value }`);
 							profile[key] = value;
 						}
 					} else {
-						this.debugLog('No Attributes found in SAML attribute statement.');
+						debugLog('No Attributes found in SAML attribute statement.');
 					}
 
 					if (!profile.mail && profile['urn:oid:0.9.2342.19200300.100.1.3']) {
@@ -432,14 +432,14 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 						profile.email = profile.mail;
 					}
 				} else {
-					this.debugLog('No Attribute Statement found in SAML response.');
+					debugLog('No Attribute Statement found in SAML response.');
 				}
 
 				if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
 					profile.email = profile.nameID;
 				}
 
-				this.debugLog(`NameID: ${ JSON.stringify(profile) }`);
+				debugLog(`NameID: ${ JSON.stringify(profile) }`);
 				callback(null, profile, false);
 			} else {
 				const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
