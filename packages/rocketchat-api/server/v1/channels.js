@@ -694,11 +694,7 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-<<<<<<< HEAD
 			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
-=======
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {fields: {_id: 1}});
->>>>>>> 8fad0cdd2d0e35006142e4ce99ae6a677317cbca
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
