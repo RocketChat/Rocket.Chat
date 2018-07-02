@@ -490,7 +490,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			const { sort, fields, query } = this.parseJsonQuery();
 			const hasPermissionToSeeAllPublicChannels = RocketChat.authz.hasPermission(this.userId, 'view-c-room');
 
-			const ourQuery = { ...query, ...{ t: 'c' } };
+			const ourQuery = { ...query, t: 'c' };
 
 			if (!hasPermissionToSeeAllPublicChannels) {
 				if (!RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
