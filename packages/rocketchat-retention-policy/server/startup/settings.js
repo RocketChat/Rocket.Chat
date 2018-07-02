@@ -3,7 +3,8 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 	this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'RetentionPolicy_Enabled'
+		i18nLabel: 'RetentionPolicy_Enabled',
+		alert: 'Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on at rocket.chat/docs/administrator-guides/retention-policies/'
 	});
 
 	this.add('RetentionPolicy_AppliesToChannels', true, {
