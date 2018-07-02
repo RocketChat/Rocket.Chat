@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), {fields: {_id: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
 		}
@@ -21,4 +21,3 @@ Meteor.methods({
 		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	}
 });
-

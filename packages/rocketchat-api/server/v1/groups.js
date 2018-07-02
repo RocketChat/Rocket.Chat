@@ -120,7 +120,6 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 		let msgs = null;
 		let latest = null;
 		let members = null;
-		let lm = null;
 
 		if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
@@ -147,7 +146,7 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 			user = params.userId;
 		}
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-		lm = room.lm ? room.lm : room._updatedAt;
+		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof subscription !== 'undefined' && subscription.open) {
 			if (subscription.ls) {
@@ -402,15 +401,17 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields} = this.parseJsonQuery();
 
-		// TODO: CACHE: Add Bracking notice since we removed the query param
-		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
+		// TODO: CACHE: Add Breacking notice since we removed the query param
+		const cursor = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
 			fields
-		}).fetch();
+		});
 
-		const totalCount = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId).count();
+		const totalCount = cursor.count();
+		const rooms = cursor.fetch();
+
 
 		return RocketChat.API.v1.success({
 			groups: rooms,
@@ -453,42 +454,36 @@ RocketChat.API.v1.addRoute('groups.listAll', { authRequired: true }, {
 RocketChat.API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
-		const room = RocketChat.models.Rooms.findOneById(findResult.rid, {fields: {broadcast: 1}});
+		const room = RocketChat.models.Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
 
 		if (room.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
+		const { sort = {} } = this.parseJsonQuery();
 
-		let subscriptionSort = {};
-
-		if (!Match.test(sort, Object) || !Match.test(sort.username, Number)) {
-			subscriptionSort = {'u.username': 1};
-		} else {
-			subscriptionSort = {'u.username': sort.username};
-		}
-
-		const members = RocketChat.models.Subscriptions.findByRoomId(findResult.rid, {
-			fields: {u: 1},
-			sort: subscriptionSort,
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(findResult.rid, {
+			fields: { 'u._id': 1 },
+			sort: { 'u.username': sort.username != null ? sort.username : 1 },
 			skip: offset,
 			limit: count
-		}).fetch()
-			.filter(s => s.u && s.u._id && s.u.username)
-			.map(s => s.u.username);
+		});
 
-		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
+		const total = subscriptions.count();
+
+		const members = subscriptions.fetch().map(s => s.u && s.u._id);
+
+		const users = RocketChat.models.Users.find({ _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: sort ? sort : { username: 1 }
+			sort: { username:  sort.username != null ? sort.username : 1 }
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
-			count: members.length,
+			count: users.length,
 			offset,
-			total: RocketChat.models.Subscriptions.findByRoomId(findResult.rid).count()
+			total
 		});
 	}
 });
@@ -516,7 +511,7 @@ RocketChat.API.v1.addRoute('groups.messages', { authRequired: true }, {
 		});
 	}
 });
-
+// TODO: CACHE: same as channels.online
 RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
@@ -536,7 +531,7 @@ RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, {fields: {_id: 1}});
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,

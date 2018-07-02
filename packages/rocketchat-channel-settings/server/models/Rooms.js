@@ -16,27 +16,27 @@ RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 	};
 	const update = {
 		$set: {
-			ro: readOnly
+			ro: readOnly,
+			muted: []
 		}
 	};
 	if (readOnly) {
-		RocketChat.models.Subscriptions.findByRoomId(_id).forEach(function(subscription) {
-			if (subscription.u == null || subscription.u._id == null || subscription.u.username == null) {
+		RocketChat.models.Subscriptions.find({ rid: _id, 'u._id' : { $exists : 1 }, 'u.username' : { $exists : 1 } }).forEach(function(subscription) {
+			if (RocketChat.authz.hasPermission(subscription.u._id, 'post-readonly')) {
 				return;
 			}
-
-			if (RocketChat.authz.hasPermission(subscription.u._id, 'post-readonly') === false) {
-				if (!update.$set.muted) {
-					update.$set.muted = [];
-				}
-				return update.$set.muted.push(subscription.u.username);
-			}
+			return update.$set.muted.push(subscription.u.username);
 		});
 	} else {
 		update.$unset = {
 			muted: ''
 		};
 	}
+
+	if (update.$set.muted.length === 0) {
+		delete update.$set.muted;
+	}
+
 	return this.update(query, update);
 };
 

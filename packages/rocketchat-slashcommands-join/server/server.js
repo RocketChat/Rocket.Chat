@@ -29,7 +29,7 @@ RocketChat.slashCommands.add('join', function Join(command, params, item) {
 		});
 	}
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {fields: {_id: 1}});
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 	if (subscription) {
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 			method: 'slashCommands'

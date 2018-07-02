@@ -11,10 +11,11 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 	if (username === '') {
 		return;
 	}
-	const user = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const user = Meteor.users.findOne(userId);
 	const mutedUser = RocketChat.models.Users.findOneByUsername(username);
 	if (mutedUser == null) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -26,9 +27,9 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 		return;
 	}
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, {fields: {_id: 1}});
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,

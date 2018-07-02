@@ -9,11 +9,14 @@ class Document {
 	get usernames() {
 		// TODO: Remove deprecation on version 0.70
 		console.warn('DEPRECATION: Room.usernames is deprecated and will be removed on version 0.70.0');
-		return RocketChat.models.Subscriptions.findByRoomId(this._id, {
+		return RocketChat.models.Subscriptions.find({
+			rid: this._id,
+			'u.username': { $exists: 1 }
+		}, {
 			fields: {
 				'u.username': 1
 			}
-		}).fetch().filter(s => s.u && s.u.username).map(s => s.u.username);
+		}).fetch().map(s => s.u.username);
 	}
 }
 
@@ -125,7 +128,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		const data = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		const data = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
 			.map(item => item.rid);
 
 		const query = {
@@ -138,7 +141,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionTypeAndUserId(type, userId, options) {
-		const data = RocketChat.models.Subscriptions.findByUserIdAndType(userId, type, {fields: {rid: 1}}).fetch()
+		const data = RocketChat.models.Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
 			.map(item => item.rid);
 
 		const query = {
@@ -152,7 +155,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = RocketChat.models.Subscriptions.findByUserId(userId, {fields: {rid: 1}}).fetch()
+		const ids = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
 			.map(item => item.rid);
 
 		const query = {

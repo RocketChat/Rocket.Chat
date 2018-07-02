@@ -185,23 +185,26 @@ RocketChat.API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true },
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-
-		const members = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
-			sort: {'u.username':  sort.username != null ? sort.username : 1},
+		const cursor = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
+			sort: { 'u.username':  sort.username != null ? sort.username : 1 },
 			skip: offset,
 			limit: count
-		}).fetch().map(s => s.u && s.u.username);
+		});
+
+		const total = cursor.count();
+
+		const members = cursor.fetch().map(s => s.u && s.u.username);
 
 		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: {username:  sort.username != null ? sort.username : 1}
+			sort: { username:  sort.username != null ? sort.username : 1 }
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
 			count: members.length,
 			offset,
-			total: RocketChat.models.Subscriptions.findByRoomId(findResult._id).count()
+			total
 		});
 	}
 });
@@ -275,23 +278,25 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields } = this.parseJsonQuery();
+		const { sort = { name: 1 }, fields } = this.parseJsonQuery();
 
-		// TODO: CACHE: Add Bracking notice since we removed the query param
-		const rooms = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId, {
-			sort: sort ? sort : { name: 1 },
+		// TODO: CACHE: Add Breacking notice since we removed the query param
+
+		const cursor = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId, {
+			sort,
 			skip: offset,
 			limit: count,
 			fields
-		}).fetch();
+		});
 
-		const totalCount = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('d', this.userId).count();
+		const total = cursor.count();
+		const rooms = cursor.fetch();
 
 		return RocketChat.API.v1.success({
 			ims: rooms,
 			offset,
 			count: rooms.length,
-			total: totalCount
+			total
 		});
 	}
 });

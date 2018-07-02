@@ -16,7 +16,7 @@ Meteor.methods({
 		// Get user and room details
 		const room = RocketChat.models.Rooms.findOneById(data.rid);
 		const userId = Meteor.userId();
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {fields: {_id: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, { fields: { _id: 1 } });
 		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
@@ -51,6 +51,7 @@ Meteor.methods({
 		}
 
 		// Validate each user, then add to room
+		const user = Meteor.user();
 		data.users.forEach((username) => {
 			const newUser = RocketChat.models.Users.findOneByUsername(username);
 			if (!newUser) {
@@ -58,8 +59,6 @@ Meteor.methods({
 					method: 'addUsersToRoom'
 				});
 			}
-
-			const user = Meteor.user();
 			RocketChat.addUserToRoom(data.rid, newUser, user);
 		});
 

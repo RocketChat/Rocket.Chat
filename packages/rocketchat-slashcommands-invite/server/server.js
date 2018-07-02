@@ -19,9 +19,10 @@ function Invite(command, params, item) {
 			$in: usernames
 		}
 	});
-	const currentUser = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const currentUser = Meteor.users.findOne(userId);
 	if (users.count() === 0) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -33,11 +34,11 @@ function Invite(command, params, item) {
 		return;
 	}
 	users = users.fetch().filter(function(user) {
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {fields: {_id: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, { fields: { _id: 1 } });
 		if (subscription == null) {
 			return true;
 		}
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -60,14 +61,14 @@ function Invite(command, params, item) {
 			});
 		} catch ({error}) {
 			if (error === 'cant-invite-for-direct-room') {
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				RocketChat.Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language)
 				});
 			} else {
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				RocketChat.Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,

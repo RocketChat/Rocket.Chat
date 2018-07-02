@@ -70,7 +70,7 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 
-			if (!RocketChat.authz.hasAllPermission(userId, 'manage-integrations', 'manage-own-integrations') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, userId, {fields: {_id: 1}})) {
+			if (!RocketChat.authz.hasAllPermission(userId, 'manage-integrations', 'manage-own-integrations') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 		}

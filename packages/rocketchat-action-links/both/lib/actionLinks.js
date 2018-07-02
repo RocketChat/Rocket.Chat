@@ -5,7 +5,8 @@ RocketChat.actionLinks = {
 		RocketChat.actionLinks.actions[name] = funct;
 	},
 	getMessage(name, messageId) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
 		}
 
@@ -16,7 +17,7 @@ RocketChat.actionLinks = {
 
 		const subscription = RocketChat.models.Subscriptions.findOne({
 			rid: message.rid,
-			'u._id': Meteor.userId()
+			'u._id': userId
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });

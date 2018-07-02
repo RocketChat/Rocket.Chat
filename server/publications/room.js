@@ -74,7 +74,9 @@ Meteor.methods({
 	},
 
 	getRoomByTypeAndName(type, name) {
-		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+		const userId = Meteor.userId();
+
+		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 
@@ -94,11 +96,11 @@ Meteor.methods({
 
 		room = room[0];
 
-		if (!Meteor.call('canAccessRoom', room._id, Meteor.userId())) {
+		if (!Meteor.call('canAccessRoom', room._id, userId)) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(Meteor.userId(), 'preview-c-room')) {
+		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(userId, 'preview-c-room')) {
 			delete room.lastMessage;
 		}
 

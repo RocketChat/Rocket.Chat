@@ -38,7 +38,7 @@ RocketChat.Notifications = new class {
 			if (this.userId == null) {
 				return false;
 			}
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {fields: {_id: 1}});
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
 			return subscription != null;
 		});
 		this.streamRoomUsers.allowRead('none');

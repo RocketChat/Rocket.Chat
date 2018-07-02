@@ -11,7 +11,7 @@ msgStream.allowRead(function(eventName, args) {
 			return false;
 		}
 
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, {fields: {_id: 1}})) {
+		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
@@ -32,7 +32,7 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 			return false;
 		}
 
-		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, {fields: {_id: 1}}) != null;
+		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
 		options.roomType = room.t;
 
 		return true;
@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		}
 	}
 
-	return RocketChat.models.Messages.on('change', function({clientAction, id, data/*, oplog*/}) {
+	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/*, oplog*/ }) {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':

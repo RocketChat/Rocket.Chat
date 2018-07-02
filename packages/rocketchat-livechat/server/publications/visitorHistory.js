@@ -9,7 +9,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, {fields: {_id: 1}});
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } });
 	if (!subscription) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorHistory' }));
 	}

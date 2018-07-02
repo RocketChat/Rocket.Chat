@@ -223,7 +223,7 @@ class ModelsBaseDb extends EventEmitter {
 
 		let ids = [];
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			const findOptions = {fields: {_id: 1}};
+			const findOptions = { fields: { _id: 1 } };
 			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
 			if (!Array.isArray(records)) {
 				records = [records];

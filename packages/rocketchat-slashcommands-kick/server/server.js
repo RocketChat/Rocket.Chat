@@ -9,11 +9,12 @@ const Kick = function(command, params, {rid}) {
 	if (username === '') {
 		return;
 	}
-	const user = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const user = Meteor.users.findOne(userId);
 	const kickedUser = RocketChat.models.Users.findOneByUsername(username);
 
 	if (kickedUser == null) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
@@ -24,9 +25,9 @@ const Kick = function(command, params, {rid}) {
 		});
 	}
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {fields: {_id: 1}});
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,

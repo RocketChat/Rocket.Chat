@@ -14,9 +14,8 @@ const resolver = {
 			return root.name;
 		},
 		members: (root) => {
-			return RocketChat.models.Subscriptions.findByRoomId(root._id, {fields: {u: 1}}).fetch().filter(s => s.u && s.u._id).map(
-				s => RocketChat.models.Users.findOneById(s.u._id)
-			);
+			const ids = RocketChat.models.Subscriptions.find({ rid: root._id, 'u._id': { $exists: 1 } }, { fields: { u: 1 } }).fetch();
+			return RocketChat.models.Users.find({ _id: { $in: ids } }).fetch();
 		},
 		owners: (root) => {
 			// there might be no owner

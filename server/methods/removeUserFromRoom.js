@@ -29,7 +29,7 @@ Meteor.methods({
 
 		const removedUser = RocketChat.models.Users.findOneByUsername(data.username);
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {fields: {_id: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'removeUserFromRoom'

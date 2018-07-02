@@ -26,7 +26,7 @@ RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 		});
 	}
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, unmutedUser._id, {fields: {_id: 1}});
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, unmutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
 		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
