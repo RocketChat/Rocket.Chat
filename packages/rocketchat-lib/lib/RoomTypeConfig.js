@@ -8,12 +8,7 @@ export const RoomSettingsEnum = {
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
-	SYSTEM_MESSAGES: 'systemMessages',
-	RETENTION_ENABLED: 'retentionEnabled',
-	RETENTION_MAX_AGE: 'retentionMaxAge',
-	RETENTION_EXCLUDE_PINNED: 'retentionExcludePinned',
-	RETENTION_FILES_ONLY: 'retentionFilesOnly',
-	RETENTION_OVERRIDE_GLOBAL: 'retentionOverrideGlobal'
+	SYSTEM_MESSAGES: 'systemMessages'
 };
 
 export const UiTextContext = {

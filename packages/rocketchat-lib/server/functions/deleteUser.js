@@ -6,7 +6,7 @@ RocketChat.deleteUser = function(userId) {
 		const messageErasureType = RocketChat.settings.get('Message_ErasureType');
 
 		switch (messageErasureType) {
-			case 'Delete' :
+			case 'Delete':
 				RocketChat.models.Messages.find({
 					'u._id': userId,
 					file: {
@@ -27,7 +27,7 @@ RocketChat.deleteUser = function(userId) {
 					'u._id': userId
 				});
 				break;
-			case 'Unlink' :
+			case 'Unlink':
 				const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
 				const nameAlias = TAPi18n.__('Removed_User');
 				RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);

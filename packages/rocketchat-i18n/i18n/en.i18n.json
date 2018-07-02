@@ -2112,7 +2112,7 @@
   "RetentionPolicy_RoomWarning": "Messages older than %s are automatically pruned here",
   "RetentionPolicy_RoomWarning_Unpinned": "Unpinned messages older than %s are automatically pruned here",
   "RetentionPolicy_RoomWarning_FilesOnly": "Files older than %s are automatically pruned here (messages stay intact)",
-  "RetentionPolicy_RoomWarning_UnpinnedFilesOnly": "Unpinned files older than %s are automatically pruned here",
+  "RetentionPolicy_RoomWarning_UnpinnedFilesOnly": "Unpinned files older than %s are automatically pruned here (messages stay intact)",
   "RetentionPolicy_Description": "Automatically prunes old messages across your Rocket.Chat instance.",
   "RetentionPolicy_Enabled": "Enabled",
   "RetentionPolicy_AppliesToChannels": "Applies to channels",
