@@ -536,7 +536,7 @@ RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, {fields: {_id: 1}});
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {fields: {_id: 1}});
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
