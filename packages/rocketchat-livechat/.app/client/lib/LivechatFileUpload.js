@@ -1,21 +1,20 @@
-/* globals, fileUpload, swal, Livechat, Handlebars */
+/* globals, fileUpload, Livechat, Handlebars */
 /* exported LivechatFileUpload */
 import visitor from '../../imports/client/visitor';
-import s from 'underscore.string';
-import request from 'request';
+import swal from 'sweetalert2';
 
-function sendFileRequest(file, roomId, visitorToken) {
+function sendFileRequest(file, roomId, token) {
 	const url = `${ Meteor.absoluteUrl() }api/v1/livechat/upload/${ roomId }`;
 	const form = new FormData();
 	form.append('file', file)
-	
+
 	const request = new XMLHttpRequest();
 	request.open("POST", url);
-	request.setRequestHeader("X-Visitor-Token", visitorToken);
+	request.setRequestHeader("X-Visitor-Token", token);
 
 	request.onload = () => {
-		if (request.status !== 200) {	
-			showError(request.statusText);					
+		if (request.status !== 200) {
+			showError(request.statusText);
 		}
 	};
 	/*
@@ -27,7 +26,7 @@ function sendFileRequest(file, roomId, visitorToken) {
 		showError(request.statusText);
 	};
 
-	request.send(form);		  
+	request.send(form);
 }
 
 function readAsDataURL(file, callback) {
@@ -76,8 +75,8 @@ function formatBytes(bytes, decimals) {
 function sendFileMessage(file, roomId) {
 	if (visitor.isSubscribed(roomId)) {
 		return sendFileRequest(file, roomId, visitor.getToken());
-	}	
-	
+	}
+
 	Meteor.call('livechat:startFileUploadRoom', roomId, visitor.getToken(), (error, result) => {
 		if (error) {
 			return showError(error.message);
@@ -93,38 +92,35 @@ function sendFileMessage(file, roomId) {
 sendFileUpload = file => {
 
 	return getUploadPreview(file, function(file, preview) {
-		let text = '';
+		let html = '';
 		if (file.type === 'audio') {
-			text = `<div class='upload-preview'><audio  style="width: 100%;" controls="controls"><source src="${ preview }" type="audio/wav">Your browser does not support the audio element.</audio></div>`;
+			html = `<div class='upload-preview'><audio  style="width: 100%;" controls="controls"><source src="${ preview }" type="audio/wav">Your browser does not support the audio element.</audio></div>`;
 		} else if (file.type === 'video') {
-			text = `<div class='upload-preview'><video  style="width: 100%;" controls="controls"><source src="${ preview }" type="video/webm">Your browser does not support the video element.</video></div>`;
+			html = `<div class='upload-preview'><video  style="width: 100%;" controls="controls"><source src="${ preview }" type="video/webm">Your browser does not support the video element.</video></div>`;
 		} else if (file.type === 'image') {
-			text = `<div class='upload-preview'><div class='upload-preview-file' style='background-image: url(${ preview })'></div></div>`;
+			html = `<div class='upload-preview'><div class='upload-preview-file' style='background-image: url(${ preview })'></div></div>`;
 		} else {
 			const fileSize = formatBytes(file.file.size);
-			text = `<div class='upload-preview'><div>${ Handlebars._escape(file.name) } - ${ fileSize }</div></div>`;
+			html = `<div class='upload-preview'><div>${ Handlebars._escape(file.name) } - ${ fileSize }</div></div>`;
 		}
 
 		swal({
 			title: t('Upload_file_question'),
-			text,
-			html: true,
+			html,
 			showCancelButton: true,
 			cancelButtonText: t('No'),
-			confirmButtonText: t('Yes'),
-			closeOnCancel: true,
-			closeOnConfirm: true
-		}, (isConfirm) => {
-			if (!isConfirm) {
+			confirmButtonText: t('Yes')
+		}).then((result) => {
+			if (!result.value) {
 				return;
-			}	
-				
+			}
+
 			const roomId = visitor.getRoom(true);
 
 			if (visitor.getId()) {
 				return sendFileMessage(file.file, roomId);
-			}	
-				
+			}
+
 			const guest = {
 				token: visitor.getToken()
 			};
@@ -142,23 +138,24 @@ sendFileUpload = file => {
 				sendFileMessage(file.file, roomId);
 			});
 		});
-	});			
+	});
 }
 
 fileUpload = file => {
 
-	if (file.file.size === 0) {
+	if (file.size === 0) {
 		swal({
 			title: t('FileUpload_File_Empty'),
+			text: reason,
 			type: 'error',
 			timer: 1000,
 			showConfirmButton: false
 		});
-	
+
 		return;
 	}
-
-	Meteor.call('livechat:validateFileUpload', file.file.type, file.file.size, (error, result) => {
+	/*
+	Meteor.call('livechat:validateFileUpload', file.type, file.size, (error, result) => {
 		if (error) {
 			return;
 		}
@@ -172,16 +169,16 @@ fileUpload = file => {
 				case 'sizeNotAllowed':
 				reason = t('File_exceeds_allowed_size_of_bytes', {size: result.sizeAllowed});
 			}
-				
+
 			swal({
-				title: reason,
+				text: reason,
 				type: 'error',
 				timer: 4000
 			});
 
 			return;
 		}
-
+		*/
 		return sendFileUpload(file);
-	});
+	/*});*/
 };

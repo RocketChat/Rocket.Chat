@@ -14,7 +14,7 @@ FileUpload = {
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
 		const directMessageAllow = RocketChat.settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = RocketChat.settings.get('FileUpload_Enabled');
-		if ((!user || (RocketChat.authz.canAccessRoom(room, user) !== true)) && (RocketChat.authz.canAccessRoom(room, file) !== true)) {
+		if ((!user || RocketChat.authz.canAccessRoom(room, user) !== true) && RocketChat.authz.canAccessRoom(room, user, file) !== true) {
 			return false;
 		}
 		const language = (user) ? user.language : 'en';

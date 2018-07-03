@@ -69,12 +69,12 @@ Template.message.helpers({
 	},
 
 	hasAttachments() {
-		return ((this.attachments) && (this.attachments.length > 0));
+		return this.attachments && this.attachments.length > 0;
 	},
-	
+
 	injectIndex(data, index) {
 		data.index = index;
-	}	
+	}
 });
 
 Template.message.onViewRendered = function(context) {

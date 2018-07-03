@@ -4,24 +4,19 @@ Meteor.startup(() => {
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		return room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
+		return room && room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user, extraData) {
-		return room.t === 'l' && extraData && extraData.token && room.v && room.v.token === extraData.token;
-	});
+		console.log('extra');
+		console.log(extraData);
 
-	RocketChat.authz.addRoomAccessValidator(function(room, file) {
-		return room.t === 'l' && file && file.visitorToken && room.v && room.v.token === file.visitorToken;
-	});
-
-	RocketChat.authz.addRoomAccessValidator(function(file) {
-		if (!file || !file.rid || !file.visitorToken) {
-			return;
+		if (!room && extraData && extraData.rid) {
+			room = RocketChat.models.Rooms.findOneById(extraData.rid);
 		}
-
-		const room = RocketChat.models.Rooms.findOneById(file.rid);
-		return room && room.t === 'l' && room.v && room.v.token === file.visitorToken;
+		console.log('room');
+		console.log(room);
+		return room && room.t === 'l' && extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	});
 
 	RocketChat.callbacks.add('beforeLeaveRoom', function(user, room) {

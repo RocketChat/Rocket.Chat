@@ -17,8 +17,8 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		if (doc && doc.store && doc.store.split(':').pop() === 'UserDataFiles') {
 			return true;
 		}
-
-		if (RocketChat.authz.canAccessRoom(doc)) {
+		console.log('aqui');
+		if (RocketChat.authz.canAccessRoom(null, null, doc)) {
 			return true;
 		}
 
