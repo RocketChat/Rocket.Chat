@@ -30,10 +30,10 @@
                       <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
                       <button class="button primary pause danger" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
                     {{else}}
-                      <div class="settings-description">{{_ "Online"}}</div>
+                    <button class="button primary" disabled="true" style="background-color: #18b230"><span>{{_ "Online"}}</span></button>
                     {{/if}}
                   {{else}}
-                    <div class="settings-description">{{_ "Offline"}}</div>
+                    <button class="button primary danger" disabled="true" style="background-color: #bc2031"><span>{{_ "Offline"}}</span></button>
                   {{/if}}
                 </div>
               </div>
@@ -72,21 +72,21 @@
               </div>
             -->
               <div class="input-line double-col">
-                <label>{{_ "Name"}}</label>
+                <label>{{_ "Account_name"}}</label>
                 <div>
                   <input type="text" class="rc-input__element" name="name" value="{{getName}}" />
                   <div class="settings-description">{{_ "Bot_name"}}</div>
                 </div>
               </div>
               <div class="input-line double-col">
-                <label>{{_ "Username"}}</label>
+                <label>{{_ "Account_username"}}</label>
                 <div>
                   <input type="text" class="rc-input__element" name="username" value="{{getUsername}}" />
                   <div class="settings-description">{{_ "Bot_username"}}</div>
                 </div>
               </div>
               <div class="input-line double-col">
-                <label>{{_ "Password"}}</label>
+                <label>{{_ "Account_password"}}</label>
                 <div>
                   <input name="password" class="rc-input__element" type="password" autocomplete="off" value=""/>
                   <div class="settings-description">{{_ "Bot_password"}}</div>
@@ -95,7 +95,8 @@
               <div class="input-line double-col">
                 <label>{{_ "Bot_framework"}}</label>
                 <div>
-                  <div class="settings-description">{{getFramework}}</div>
+                  <input type="text" class="rc-input__element" disabled="true" name="framework" value="{{getFramework}}" />
+                  <div class="settings-description">{{_ "Bot_framework_description"}}</div>
                 </div>
               </div>
               {{#if isOnline}}
@@ -120,11 +121,14 @@
               {{/if}}
               <div class="input-line double-col">
                 <label>{{_ "Roles"}}</label>
-                <ul id="roles" class="chip-container current-user-roles">
-                  {{#each getRoles}}
-                  <li class="remove-role" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
-                  {{/each}}
-                </ul>
+                <div>
+                  <ul id="roles" class="chip-container current-user-roles">
+                    {{#each getRoles}}
+                    <li class="remove-role" title="{{this}}"><i class="icon icon-cancel-circled"></i>{{this}}</li>
+                    {{/each}}
+                  </ul>
+                  <div class="settings-description">{{_ "Bot_roles"}}</div>
+                </div>
               </div>
               <div class="input-line double-col">
                 <label>{{_ "Add_Role"}}</label>
