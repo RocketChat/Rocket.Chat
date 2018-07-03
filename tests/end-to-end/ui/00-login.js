@@ -123,6 +123,24 @@ describe('[Setup Wizard]', () => {
 		});
 	});
 
+	describe('[Render - Step 3]', () => {
+		it('it should have option for registered server', () => {
+			setupWizard.registeredServer.isExisting().should.be.true;
+		});
+
+		it('it should have option for standalone server', () => {
+			setupWizard.standaloneServer.isExisting().should.be.true;
+		});
+
+		it('it should check option for registered server by default', () => {
+			setupWizard.registeredServer.isSelected().should.be.true;
+		});
+
+		after(() => {
+			setupWizard.goNext();
+		});
+	});
+
 	describe('[Render - Final Step]', () => {
 		it('it should render "Go to your workspace button', () => {
 			setupWizard.goToWorkspace.waitForVisible(15000);
