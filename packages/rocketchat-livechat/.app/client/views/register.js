@@ -29,10 +29,10 @@ Template.register.helpers({
 		return Livechat.emailFieldRegistrationForm;
 	},
 	getName() {
-		return Template.instance().guestName.get();
+		return Livechat.guestName;
 	},
 	getEmail() {
-		return Template.instance().guestEmail.get();
+		return Livechat.guestEmail;
 	}
 });
 
@@ -121,15 +121,4 @@ Template.register.onCreated(function() {
 		$('.error').removeClass('show');
 		this.error.set();
 	};
-
-	this.guestName = new ReactiveVar(null);
-	this.autorun(() => {
-		this.guestName.set(Livechat.guestName);
-	});
-
-	this.guestEmail = new ReactiveVar(null);
-	this.autorun(() => {
-		this.guestEmail.set(Livechat.guestEmail);
-	});
-
 });
