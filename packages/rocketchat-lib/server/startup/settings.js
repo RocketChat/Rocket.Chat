@@ -2902,6 +2902,9 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				order: 2
 			}
 		});
+		this.add('Allow_Marketing_Emails', true, {
+			type: 'boolean'
+		});
 	});
 });
 
