@@ -12,6 +12,13 @@ Meteor.methods({
 				method: 'turnBotIntoUser'
 			});
 		}
+		const bot = RocketChat.models.Users.findByIdOrUsername(botId);
+		if (!bot.emails && !email) {
+			throw new Meteor.Error('error-missing-email', 'Can\'t convert bot account to user account without an e-mail', {
+				method: 'turnBotIntoUser'
+			});
+		}
+
 		const userData = {
 			_id: botId,
 			email
