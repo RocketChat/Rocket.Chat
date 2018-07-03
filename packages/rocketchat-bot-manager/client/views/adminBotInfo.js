@@ -3,7 +3,7 @@ import toastr from 'toastr';
 
 Template.adminBotInfo.helpers({
 	hideHeader() {
-		return ['Template.adminBotInfo', 'adminBotInfo'].includes(Template.parentData(2).viewName);
+		return ['Template.adminBotInfo', 'adminBotInfo'].includes(Template.parentData(1).viewName);
 	},
 
 	name() {

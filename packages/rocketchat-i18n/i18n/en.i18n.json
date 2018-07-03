@@ -390,6 +390,7 @@
   "Blockchain": "Blockchain",
   "Body": "Body",
   "bold": "bold",
+  "Bot_deployment_help": "If you need help with the deployment, check the docs",
   "Bot_details": "Bot Details",
   "Bot_framework": "Framework/Adapter",
   "Bot_framework_description": "Framework or Adapter the bot is running on",
