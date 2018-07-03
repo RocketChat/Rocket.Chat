@@ -23,11 +23,31 @@ RocketChat.getFullUserData = function({userId, filter, limit}) {
 			services: 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
-			roles: 1,
-			customFields: 1
+			roles: 1
 		});
 	} else if (limit !== 0) {
 		limit = 1;
+	}
+
+	const metaCustomFields = RocketChat.settings.get('Accounts_CustomFields').trim();
+	let sCustomFields;
+
+	if (metaCustomFields !== '') {
+		try {
+			sCustomFields = JSON.parse(metaCustomFields);
+
+			if (sCustomFields) {
+				Object.keys(sCustomFields).forEach((key) => {
+					const element = sCustomFields[key];
+
+					if (element.public || RocketChat.authz.hasPermission(userId, 'view-full-other-user-info')) {
+						fields[`customFields.${ key }`] = 1;
+					}
+				});
+			}
+		} catch (e) {
+			console.log(`Invalid custom account fields: ${ e }`);
+		}
 	}
 
 	filter = s.trim(filter);
