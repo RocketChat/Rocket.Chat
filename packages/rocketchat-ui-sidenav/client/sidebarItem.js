@@ -85,7 +85,7 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	},
-	'mouseover .sidebar-item__link'(e) {
+	'mouseenter .sidebar-item__link'(e) {
 		const element = e.currentTarget;
 		const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
 		const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
