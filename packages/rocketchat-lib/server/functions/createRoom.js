@@ -27,7 +27,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		if (members.length > limit) {
 			throw new Meteor.Error('error-group-limit-exceeded', `Group members count (${ members.length + 1 }) exceeds limit`, { function: 'RocketChat.createRoom', room_name: name });
 		}
-  }
+	}
 
 	if (extraData.broadcast) {
 		readOnly = true;
