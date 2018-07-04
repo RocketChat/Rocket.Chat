@@ -34,8 +34,6 @@
 		overflow-y: auto;
 
 		flex: 1 1;
-
-		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
@@ -81,6 +79,7 @@
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 28px;
+		width: 100%;
 	}
 
 	&__username {
@@ -95,6 +94,8 @@
 
 		margin: 0 -1.5rem;
 		padding: 0 1.5rem;
+
+		height: 100%;
 
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
@@ -143,15 +144,15 @@
 			}
 		}
 
-		& .rc-switch-double__label {
-			color: #a1a1a1;
-		}
-
 		&--separator {
 
 			margin: 14px 0;
 
 			border-bottom: 1px solid #d7d7d7;
+		}
+
+		&--view-all-button {
+			padding: 15px 0 0;
 		}
 	}
 
@@ -295,6 +296,8 @@
 
 	word-break: break-word;
 
+	color: #444;
+
 	&__description {
 		margin: 5px 2px;
 
@@ -315,7 +318,7 @@
 		}
 
 		&.disabled {
-			color: inherit;
+			opacity: 0.3;
 		}
 	}
 
