@@ -8,14 +8,9 @@ Meteor.startup(() => {
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user, extraData) {
-		console.log('extra');
-		console.log(extraData);
-
 		if (!room && extraData && extraData.rid) {
 			room = RocketChat.models.Rooms.findOneById(extraData.rid);
 		}
-		console.log('room');
-		console.log(room);
 		return room && room.t === 'l' && extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	});
 

@@ -8,7 +8,7 @@ Meteor.methods({
 		if (!RocketChat.fileUploadIsValidContentType(type)) {
 			return {
 				result: false,
-				reason: 'typeNotAllowed'
+				reason: 'error-type-not-allowed'
 			};
 		}
 
@@ -24,7 +24,7 @@ Meteor.methods({
 		if (maxFileSize >= -1 && size > maxFileSize) {
 			return {
 				result: false,
-				reason: 'sizeNotAllowed',
+				reason: 'error-size-not-allowed',
 				sizeAllowed: filesize(maxFileSize)
 			};
 		}

@@ -53,6 +53,14 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const file = files[0];
+		console.log(file);
+		const validate = Meteor.call('livechat:validateFileUpload', file.mimetype, file.fileBuffer.length);
+		console.log(validate);
+		/*
+		if (!result) {
+			return RocketChat.API.v1.success(result);
+		}
+		*/
 
 		const fileStore = FileUpload.getStore('Uploads');
 
