@@ -41,7 +41,8 @@ export default class LDAP {
 			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
 			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
 			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
-			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name'),
+			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login')
 		};
 	}
 
@@ -479,6 +480,16 @@ export default class LDAP {
 
 		try {
 			this.bindSync(dn, password);
+			if (this.options.find_user_after_login) {
+				const searchOptions = {
+					scope: this.options.User_Search_Scope || 'sub'
+				};
+				const result = this.searchAllSync(dn, searchOptions);
+				if (result.length === 0) {
+					logger.auth.info('Bind successful but user was not found via search', dn, searchOptions);
+					return false;
+				}
+			}
 			logger.auth.info('Authenticated', dn);
 			return true;
 		} catch (error) {

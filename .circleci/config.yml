@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.9
 
     steps:
       - checkout
@@ -134,7 +134,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -152,10 +152,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
             sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
             echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
             sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell
+            sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
       - run:
           name: Configure Replica Set
@@ -179,7 +181,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:8.9-browsers
       - image: circleci/mongo:3.4
 
     environment:
@@ -191,6 +193,14 @@ jobs:
           at: /tmp
 
       - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
 
       - run:
           name: NPM install
@@ -208,7 +218,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:4.8
+      - image: circleci/node:8.9
 
     steps:
       - attach_workspace:
@@ -245,8 +255,117 @@ jobs:
             aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
             bash .circleci/update-releases.sh
-            bash .circleci/docker.sh
             bash .circleci/snap.sh
+            bash .circleci/redhat-registry.sh
+
+  image-build:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image
+          command: |
+            cd /tmp/build
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            export CIRCLE_TAG=${CIRCLE_TAG:=}
+            if [[ $CIRCLE_TAG ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
+              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
+              docker push rocketchat/rocket.chat:$CIRCLE_TAG
+
+              echo "Build preview Docker image"
+              cp ~/repo/.docker-mongo/Dockerfile .
+              cp ~/repo/.docker-mongo/entrypoint.sh .
+              docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
+              docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
+
+              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
+                docker push rocketchat/rocket.chat:latest
+
+                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
+                docker push rocketchat/rocket.chat.preview:latest
+              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
+                docker push rocketchat/rocket.chat:release-candidate
+
+                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
+                docker push rocketchat/rocket.chat.preview:release-candidate
+              fi
+
+              exit 0
+            fi;
+
+            if [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+              echo "Build official Docker image"
+              cp ~/repo/.docker/Dockerfile .
+              docker build -t rocketchat/rocket.chat:develop .
+              docker push rocketchat/rocket.chat:develop
+
+              echo "Build preview Docker image"
+              cp ~/repo/.docker-mongo/Dockerfile .
+              cp ~/repo/.docker-mongo/entrypoint.sh .
+              docker build -t rocketchat/rocket.chat.preview:develop .
+              docker push rocketchat/rocket.chat.preview:develop
+
+              exit 0
+            fi;
+
+  pr-image-build:
+    <<: *defaults
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - attach_workspace:
+          at: /tmp
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image for PRs
+          command: |
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ -z $CIRCLE_PR_NUMBER ]]; then
+              exit 0
+            fi;
+
+            cd /tmp/build
+            tar xzf Rocket.Chat.tar.gz
+            rm Rocket.Chat.tar.gz
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            echo "Build official Docker image"
+            cp ~/repo/.docker/Dockerfile .
+            docker build -t rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER .
+            docker push rocketchat/rocket.chat:pr-$CIRCLE_PR_NUMBER
+
+            echo "Build preview Docker image"
+            cp ~/repo/.docker-mongo/Dockerfile .
+            cp ~/repo/.docker-mongo/entrypoint.sh .
+            docker build -t rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER .
+            docker push rocketchat/rocket.chat.preview:pr-$CIRCLE_PR_NUMBER
 
 workflows:
   version: 2
@@ -275,6 +394,31 @@ workflows:
           filters:
             branches:
               only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - image-build:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - hold:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+      - pr-image-build:
+          requires:
+            - hold
+          filters:
+            branches:
+              ignore: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
 

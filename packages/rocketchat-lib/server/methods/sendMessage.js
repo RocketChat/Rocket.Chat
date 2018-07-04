@@ -10,6 +10,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!message.rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
+		}
+
 		if (message.ts) {
 			const tsDiff = Math.abs(moment(message.ts).diff());
 			if (tsDiff > 60000) {
@@ -25,10 +29,14 @@ Meteor.methods({
 			message.ts = new Date();
 		}
 
-		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage'
-			});
+		if (message.msg) {
+			const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message.msg);
+
+			if (RocketChat.messageProperties.length(adjustedMessage) > RocketChat.settings.get('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+					method: 'sendMessage'
+				});
+			}
 		}
 
 		const user = RocketChat.models.Users.findOneById(Meteor.userId(), {
@@ -44,24 +52,24 @@ Meteor.methods({
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
-		if (subscription && subscription.blocked || subscription.blocker) {
+		if (subscription && (subscription.blocked || subscription.blocker)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date,
 				msg: TAPi18n.__('room_is_blocked', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
-		if ((room.muted||[]).includes(user.username)) {
+		if ((room.muted || []).includes(user.username)) {
 			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date,
 				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {
