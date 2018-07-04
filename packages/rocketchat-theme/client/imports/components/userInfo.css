@@ -96,6 +96,8 @@
 		margin: 0 -1.5rem;
 		padding: 0 1.5rem;
 
+		height: 100%;
+
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
 			color: #9ea2a8;
@@ -143,8 +145,8 @@
 			}
 		}
 
-		& .rc-switch-double__label {	
-			color: #a1a1a1;	
+		& .rc-switch-double__label {
+			color: #a1a1a1;
 		}
 
 		&--separator {
