@@ -34,6 +34,8 @@
 		overflow-y: auto;
 
 		flex: 1 1;
+
+		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
@@ -139,6 +141,10 @@
 			& > .rc-switch__label > .rc-switch__text {
 				flex: 1;
 			}
+		}
+
+		& .rc-switch-double__label {	
+			color: #a1a1a1;	
 		}
 
 		&--separator {
