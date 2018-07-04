@@ -88,6 +88,10 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
+	findWithUsername(username, options) {
+		return this.find({ usernames: username }, options);
+	}
+
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
@@ -532,6 +536,18 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	setFnameById(_id, fname) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				fname
+			}
+		};
+
+		return this.update(query, update);
+	}
+
 	incMsgCountById(_id, inc) {
 		if (inc == null) { inc = 1; }
 		const query = {_id};
@@ -679,12 +695,25 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	setAnnouncementById(_id, announcement) {
+	setAnnouncementById(_id, announcement, announcementDetails) {
 		const query = {_id};
 
 		const update = {
 			$set: {
-				announcement
+				announcement,
+				announcementDetails
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	setCustomFieldsById(_id, customFields) {
+		const query = {_id};
+
+		const update = {
+			$set: {
+				customFields
 			}
 		};
 

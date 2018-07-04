@@ -1,95 +1,93 @@
 .rc-directory {
+	display: flex;
+	flex-direction: column;
 
-	&-header {
-		display: flex;
-	}
+	padding: 0 1.5rem;
 
+	height: 100vh;
 
-	/* TODO: -plus and -search should be "globals" */
-
-	&-plus {
-		width: 36px;
-		min-width: 36px;
-		height: 36px;
-		min-height: 36px;
-		padding: 0;
-	}
 	&-search {
-		max-width: 230px;
-	}
-
-	&-selector,
-	&-search,
-	&-plus {
-		margin: 0 0.5rem;
-	}
-}
-
-.rc-directory-header .rc-input__wrapper {
-	padding: 0;
-}
-
-.rc-directory-channel {
-	&-wrapper {
-		display: flex;
-		align-items: center;
-		margin: 0 -9px;
-	}
-
-	&-avatar {
-		width: 60px;
-		height: 60px;
-		margin: 0 9px;
-
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-position: center center;
-	}
-
-	&-info {
-		display: flex;
-		margin: 0 9px;
-		flex-direction: column;
 		width: 100%;
+
+		& .rc-icon {
+			width: 0.875rem;
+		}
 	}
 
-	&-name {
-		font-size: 1rem;
-		font-weight: 500;
+	& .rc-header {
+		padding: 1.25rem 0.5rem 0.75rem;
+
+		&__wrap {
+
+			padding: 0.75rem 0;
+
+			box-shadow: none;
+		}
+
+		&__block {
+			font-size: 1.375rem;
+		}
 	}
 
-	&-description {
-		margin-top: 0.625rem;
+	&-topic {
 		color: var(--rc-color-primary-light);
-		overflow: hidden;
-    text-overflow: ellipsis;
-		max-width: 200px;
-	}
-
-	&-createdAt {
-		text-transform: capitalize;
 	}
 }
 
-.rc-directory-content {
-	width: 100%;
+.rc-directory-icon {
+	color: var(--color-dark-light);
+}
+
+.rc-table-content {
+	display: flex;
 	overflow-x: auto;
+	flex-direction: column;
+	flex: 1 1 100%;
+
+	height: 100vh;
+	padding: 0 1rem;
 
 	& .js-sort {
 		cursor: pointer;
+
+		&.is-sorting .table-fake-th .rc-icon {
+			opacity: 1;
+		}
+	}
+
+	& .table-fake-th {
+		&:hover .rc-icon {
+			opacity: 1;
+		}
+
+		& .rc-icon {
+			transition: opacity 0.3s;
+
+			opacity: 0;
+
+			font-size: 1rem;
+		}
 	}
 }
 
-@media (width <= 500px) {
-	.rc-directory-content .rc-table-head {
-		display: none;
-	}
+.rc-directory-td--users {
+	overflow: hidden;
 
-	.rc-directory {
-		&-selector,
-		&-search,
-		&-plus {
-			padding: 0 0.3rem;
+	width: 120px;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rc-directory-td--users {
+	width: 80px;
+}
+
+@media (width <= 700px) {
+	.rc-table-content {
+		& th:not(:first-child),
+		& td:not(:first-child) {
+			display: none;
 		}
 	}
 }

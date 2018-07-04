@@ -42,7 +42,8 @@ Template.admin.onCreated(function() {
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
 			name: 'private-settings',
-			eventType: 'onLogged'
+			eventType: 'onLogged',
+			useCache: false
 		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
@@ -84,22 +85,21 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
-			const language = languages[key];
-			return _.extend(language, { key });
-		});
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
 
-		result = _.sortBy(result, 'key');
 		result.unshift({
 			'name': 'Default',
 			'en': 'Default',
 			'key': ''
 		});
+
 		return result;
 	},
-	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	isAppLanguage(key) {
+		const languageKey = RocketChat.settings.get('Language');
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');

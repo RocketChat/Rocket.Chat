@@ -61,12 +61,18 @@ Meteor.methods({
 		}
 
 		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
-			const user = Meteor.user();
-			const userPref = RocketChat.getUserPreference(user, 'mergeChannels') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
-			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref !== undefined ? userPref : globalPref;
+			const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+				fields: {
+					username: 1,
+					'settings.preferences.sidebarGroupByType': 1
+				}
+			});
+			const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
+			const globalPref = RocketChat.settings.get('UI_Group_Channels_By_Type');
+			// needs to negate globalPref because userPref represents its opposite
+			const groupByType = userPref !== undefined ? userPref : globalPref;
 
-			if (mergeChannels) {
+			if (!groupByType) {
 				roomTypes.push({
 					type: 'p',
 					username: user.username
