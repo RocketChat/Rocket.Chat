@@ -15,4 +15,5 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/recorder.js', 'client');
 	api.addFiles('client/audioRecorder.js', 'client');
+	api.addFiles('client/recognizer.js', 'client');
 });

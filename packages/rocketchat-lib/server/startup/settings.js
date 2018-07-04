@@ -1346,6 +1346,20 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'int',
 		'public': true
 	});
+	this.add('Message_MicAction', 'recognize', {
+		type: 'select',
+		values: [
+			{
+				key:'recognize',
+				i18nLabel: 'Recognize Speech'
+			},
+			{
+				key:'audio-message',
+				i18nLabel: 'Audio Message'
+			}
+		],
+		'public': true
+	});
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		'public': true

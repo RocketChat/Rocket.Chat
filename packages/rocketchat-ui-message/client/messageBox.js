@@ -1,9 +1,14 @@
-/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
+/* globals fileUpload KonchatNotification chatMessages popover SpeechRecognition AudioRecorder chatMessages fileUploadHandler*/
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
 
 let audioMessageIntervalId;
+
+const mic_action_class = {
+	'recognize': SpeechRecognition,
+	'audio-message': AudioRecorder
+};
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
@@ -488,7 +493,8 @@ Template.messageBox.events({
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 
 		chatMessages[RocketChat.openedRoom].recording = true;
-		AudioRecorder.start(function() {
+
+		mic_action_class[RocketChat.settings.get('Message_MicAction')].start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
 			audioMessageIntervalId = setInterval(()=> {
@@ -518,10 +524,10 @@ Template.messageBox.events({
 			clearInterval(audioMessageIntervalId);
 		}
 
-		AudioRecorder.stop();
+		mic_action_class[RocketChat.settings.get('Message_MicAction')].stop();
 		chatMessages[RocketChat.openedRoom].recording = false;
 	},
-	'click .js-audio-message-check'(event) {
+	'click .js-audio-message-check'(event, instance) {
 		event.preventDefault();
 		const timer = document.querySelector('.rc-message-box__timer');
 		const mic = document.querySelector('.rc-message-box__icon.mic');
@@ -536,10 +542,18 @@ Template.messageBox.events({
 		}
 
 		chatMessages[RocketChat.openedRoom].recording = false;
-		AudioRecorder.stop(function(blob) {
+		const mic_action = RocketChat.settings.get('Message_MicAction');
+
+		mic_action_class[mic_action].stop(function(blob) {
 
 			loader.classList.remove('active');
 			mic.classList.add('active');
+
+			if (mic_action === 'recognize') {
+				instance.find('.js-input-message').value = blob;
+				return;
+			}
+
 			const roomId = Session.get('openedRoom');
 			const record = {
 				name: `${ TAPi18n.__('Audio record') }.mp3`,
