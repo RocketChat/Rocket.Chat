@@ -47,7 +47,12 @@ Meteor.methods({
 			return false;
 		}
 
-		const userAlreadyReacted = Boolean(message.reactions) && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		// When shouldReact was not informed, toggle the reaction.
+		if (shouldReact === undefined) {
+			shouldReact = !userAlreadyReacted;
+		}
+
 		if (userAlreadyReacted === shouldReact) {
 			return;
 		}
