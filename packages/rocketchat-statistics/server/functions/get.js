@@ -2,8 +2,30 @@
 import _ from 'underscore';
 import os from 'os';
 
+const wizardFields = [
+	'Organization_Type',
+	'Organization_Name',
+	'Industry',
+	'Size',
+	'Country',
+	'Website',
+	'Site_Name',
+	'Language',
+	'Server_Type'
+];
+
 RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
+
+	// Setup Wizard
+	statistics.wizard = {};
+	wizardFields.forEach(field => {
+		const record = RocketChat.models.Settings.findOne(field);
+		if (record) {
+			const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
+			statistics.wizard[wizardField] = record.value;
+		}
+	});
 
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');
@@ -30,7 +52,7 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalChannels = RocketChat.models.Rooms.findByType('c').count();
 	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count();
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
-	statistics.totlalLivechat = RocketChat.models.Rooms.findByType('l').count();
+	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();

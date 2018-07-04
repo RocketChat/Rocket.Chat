@@ -130,8 +130,8 @@ class Administration extends Page {
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
-	get accountsIdleTimeoutLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
-	get accountsIdleTimeoutLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
+	get accountsidleTimeLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
+	get accountsidleTimeLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
 	get accountsNotificationDuration() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 	get accountsNotificationDurationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
@@ -185,15 +185,15 @@ class Administration extends Page {
 	get accountsHideAvatarsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideAvatars"]'); }
 	get accountsHideAvatarsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
-	get accountsRoomsListExhibitionMode() { return browser.element('[name="Accounts_Default_User_Preferences_roomsListExhibitionMode"]'); }
-	get accountsRoomsListExhibitionModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_roomsListExhibitionMode"]'); }
-
 	get accountsMergeChannelsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_mergeChannels"]'); }
 
 	get accountsSendOnEnter() { return browser.element('[name="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 	get accountsSendOnEnterReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_sendOnEnter"]'); }
+
+	get accountsMessageViewMode() { return browser.element('[name="Accounts_Default_User_Preferences_messageViewMode"]'); }
+	get accountsMessageViewModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_messageViewMode"]'); }
 
 	get accountsEmailNotificationMode() { return browser.element('[name="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 	get accountsEmailNotificationModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
