@@ -1,8 +1,16 @@
 /* globals msgStream */
 import _ from 'underscore';
 
+const removeUserReaction = (message, reaction, username) => {
+	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	if (message.reactions[reaction].usernames.length === 0) {
+		delete message.reactions[reaction];
+	}
+	return message;
+};
+
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
@@ -19,6 +27,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
+		reaction = `:${ reaction.replace(/:/g, '') }:`;
+
+		if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+			throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
+		}
+
 		const user = Meteor.user();
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
@@ -33,14 +47,17 @@ Meteor.methods({
 			return false;
 		}
 
-		reaction = `:${ reaction.replace(/:/g, '') }:`;
+		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		// When shouldReact was not informed, toggle the reaction.
+		if (shouldReact === undefined) {
+			shouldReact = !userAlreadyReacted;
+		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
-
-			if (message.reactions[reaction].usernames.length === 0) {
-				delete message.reactions[reaction];
-			}
+		if (userAlreadyReacted === shouldReact) {
+			return;
+		}
+		if (userAlreadyReacted) {
+			removeUserReaction(message, reaction, user.username);
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
