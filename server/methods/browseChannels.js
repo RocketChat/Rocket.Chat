@@ -22,22 +22,8 @@ const sortUsers = function(field, direction) {
 	}
 };
 
-const sortByUsersCount = function(sortDirection) {
-	if (!['asc', 'desc'].includes(sortDirection)) {
-		return;
-	}
-	return function(roomA, roomB) {
-		const numUsersInRoomA = roomA.usernames.length;
-		const numUsersInRoomB = roomB.usernames.length;
-
-		if (sortDirection === 'asc') { return numUsersInRoomA - numUsersInRoomB; }
-		if (sortDirection === 'desc') { return numUsersInRoomB - numUsersInRoomA; }
-	};
-};
-
-
 Meteor.methods({
-	browseChannels({text='', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
+	browseChannels({text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
@@ -48,7 +34,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'channels'? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -68,25 +54,26 @@ Meteor.methods({
 			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
-			const channels = RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
-				...options,
-				sort,
-				fields: {
-					description: 1,
-					name: 1,
-					ts: 1,
-					archived: 1,
-					usernames: 1
-				}
-			}).fetch();
-
-			if (sortBy === 'usersCount') {
-				const sortChannels = channels.slice();
-				sortChannels.sort(sortByUsersCount(sortDirection));
-				return sortChannels;
-			}
-
-			return channels;
+			return {
+				results: RocketChat.models.Rooms.findByNameAndType(
+					regex,
+					'c',
+					{
+						...options,
+						sort,
+						fields: {
+							description: 1,
+							topic: 1,
+							name: 1,
+							lastMessage: 1,
+							ts: 1,
+							archived: 1,
+							usernames: 1,
+							usersCount: 1
+						}
+					}).fetch(),
+				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count()
+			};
 		}
 
 		// type === users
@@ -94,16 +81,19 @@ Meteor.methods({
 			return;
 		}
 		const sort = sortUsers(sortBy, sortDirection);
-		return RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
-			...options,
-			sort,
-			fields: {
-				username: 1,
-				name: 1,
-				createdAt: 1,
-				emails: 1
-			}
-		}).fetch();
+		return {
+			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
+				...options,
+				sort,
+				fields: {
+					username: 1,
+					name: 1,
+					createdAt: 1,
+					emails: 1
+				}
+			}).fetch(),
+			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count()
+		};
 	}
 });
 

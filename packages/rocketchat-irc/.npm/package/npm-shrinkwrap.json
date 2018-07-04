@@ -1,0 +1,20 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "dbly-linked-list": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/dbly-linked-list/-/dbly-linked-list-0.2.0.tgz",
+      "integrity": "sha512-Ool7y15f6JRDs0YKx7Dh9uiTb1jS1SZLNdT3Y2q16DlaEghXbMsmODS/XittjR2xztt1gJUpz7jVxpqAPF8VGg=="
+    },
+    "lodash.isequal": {
+      "version": "4.5.0",
+      "resolved": "https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz",
+      "integrity": "sha1-QVxEePK8wwEgwizhDtMib30+GOA="
+    },
+    "queue-fifo": {
+      "version": "0.2.4",
+      "resolved": "https://registry.npmjs.org/queue-fifo/-/queue-fifo-0.2.4.tgz",
+      "integrity": "sha512-o2xWptfzdw4QLIozUUcRPnppoTNK+X1DxWGd8csnJ1gQUsATfQaDryaGB1MhAu1L48vqPMtH69PZ1kZD82zlVw=="
+    }
+  }
+}

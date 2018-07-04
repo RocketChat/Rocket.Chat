@@ -3,6 +3,7 @@
 // it is just to improve readability in this file
 
 import _ from 'underscore';
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
 const keys = {
 	TAB: 9,
@@ -65,7 +66,7 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| )${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
 	} else {
 		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
 	}
@@ -240,6 +241,7 @@ Template.messagePopup.onRendered(function() {
 	}
 	const self = this;
 	self.autorun(() => {
+		lazyloadtick();
 		const open = self.open.get();
 		if ($('.reply-preview').length) {
 			if (open === true) {
@@ -268,6 +270,9 @@ Template.messagePopup.onDestroyed(function() {
 });
 
 Template.messagePopup.events({
+	'scroll .rooms-list__list'() {
+		lazyloadtick();
+	},
 	'mouseenter .popup-item'(e) {
 		if (e.currentTarget.className.indexOf('selected') > -1) {
 			return;
