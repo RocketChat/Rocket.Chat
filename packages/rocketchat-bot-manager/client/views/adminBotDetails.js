@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import _ from 'underscore';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
@@ -34,15 +35,17 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 
 				if (bot) {
 					this.bot.set(bot);
+					Meteor.call('getBotStatistics', bot, (err, statistics) => {
+						if (err) {
+							return handleError(err);
+						}
+						this.statistics.set(statistics);
+					});
 				} else {
 					toastr.error(TAPi18n.__('Bot_not_found'));
 					FlowRouter.go('admin-bots');
 				}
 			}
-
-			Meteor.call('getBotStatistics', username, (err, statistics) => {
-				this.statistics.set(statistics);
-			});
 		}
 	});
 
@@ -221,6 +224,15 @@ Template.adminBotDetails.helpers({
 
 	canChange() {
 		return RocketChat.authz.hasAllPermission('edit-bot-account');
+	},
+
+	keyval(object) {
+		return _.map(object, function(value, key) {
+			return {
+				key,
+				value
+			};
+		});
 	}
 });
 
@@ -272,6 +284,17 @@ Template.adminBotDetails.events({
 		t.updateBot();
 	},
 
+	'click .refresh': (e, t) => {
+		Meteor.call('getBotStatistics', t.bot.get(), (err, statistics) => {
+			if (err) {
+				return handleError(err);
+			}
+
+			toastr.success(TAPi18n.__('Statistics_refreshed'));
+			t.statistics.set(statistics);
+		});
+	},
+
 	'click .expand': (e) => {
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
 		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
@@ -312,7 +335,7 @@ Template.adminBotDetails.events({
 
 		modal.open({
 			title: t('Are_you_sure'),
-			text: t('You_will_not_be_able_to_recover'),
+			text: t('You_will_not_be_able_to_recover_account'),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
@@ -328,7 +351,7 @@ Template.adminBotDetails.events({
 
 				modal.open({
 					title: t('Deleted'),
-					text: t('Your_entry_has_been_deleted'),
+					text: t('The_account_has_been_deleted'),
 					type: 'success',
 					timer: 1000,
 					showConfirmButton: false

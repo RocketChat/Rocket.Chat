@@ -148,6 +148,7 @@
             <div class="section-title">
               <div class="section-title-text">{{_ "Bot_statistics"}}</div>
               <div class="section-title-right">
+                <button class="button primary refresh"><span>{{_ "Refresh"}}</span></button>
                 <button class="button primary expand"><span>{{_ "Expand"}}</span></button>
               </div>
             </div>
@@ -159,6 +160,23 @@
                   <td class="border-component-color">{{statistics.totalMessages}}</td>
                 </tr>
               </table>
+              {{#if statistics.sdk}}
+                <h3>{{_ "Session"}}</h3>
+                <table class="statistics-table secondary-background-color">
+                  {{#each keyval statistics.sdk}}
+                    <tr class="admin-table-row">
+                      <th class="content-background-color border-component-color">{{_ key}}</th>
+                      <td class="border-component-color">{{value}}</td>
+                    </tr>
+                  {{/each}}
+                  {{#each keyval statistics.adapter}}
+                    <tr class="admin-table-row">
+                      <th class="content-background-color border-component-color">{{_ key}}</th>
+                      <td class="border-component-color">{{value}}</td>
+                    </tr>
+                  {{/each}}
+                </table>
+              {{/if}}
             </div>
           </div>
 				</div>
