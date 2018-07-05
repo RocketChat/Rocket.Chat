@@ -1,35 +1,34 @@
-/*globals defaultUserLanguage */
+Template.loginFooter.onCreated(function () {
+	this.suggestedLanguage = new ReactiveVar();
+
+	const suggestLanguage = language => TAPi18n._loadLanguage(language).then(() => this.suggestedLanguage.set(language));
+
+	const userLanguage = localStorage.getItem('userLanguage');
+	const serverLanguage = RocketChat.settings.get('Language') || 'en';
+
+	if (userLanguage !== serverLanguage) {
+		suggestLanguage(serverLanguage);
+		return;
+	}
+
+	if (!/^en/.test(userLanguage)) {
+		suggestLanguage('en');
+		return;
+	}
+});
+
 Template.loginFooter.helpers({
-	LanguageVersion() {
-		if (Template.instance().languageVersion.get()) {
-			return TAPi18n.__('Language_Version', {
-				lng: Template.instance().languageVersion.get()
-			});
-		}
+	languageVersion() {
+		const lng = Template.instance().suggestedLanguage.get();
+		return lng && TAPi18n.__('Language_Version', { lng });
 	}
 });
 
 Template.loginFooter.events({
-	'click button.switch-language'(e, t) {
-		const userLanguage = t.languageVersion.get();
-		localStorage.setItem('userLanguage', userLanguage);
-		TAPi18n.setLanguage(userLanguage);
-		moment.locale(userLanguage);
-		return t.languageVersion.set(userLanguage !== defaultUserLanguage() ? defaultUserLanguage() : 'en');
-	}
-});
-
-Template.loginFooter.onCreated(function() {
-	const self = this;
-	this.languageVersion = new ReactiveVar;
-	const userLanguage = localStorage.getItem('userLanguage');
-	if (userLanguage !== defaultUserLanguage()) {
-		return TAPi18n._loadLanguage(defaultUserLanguage()).done(function() {
-			return self.languageVersion.set(defaultUserLanguage());
-		});
-	} else if (userLanguage.indexOf('en') !== 0) {
-		return TAPi18n._loadLanguage('en').done(function() {
-			return self.languageVersion.set('en');
-		});
+	'click button.js-switch-language'(e, t) {
+		const language = t.suggestedLanguage.get();
+		localStorage.setItem('userLanguage', language);
+		window.setLanguage(language);
+		t.suggestedLanguage.set(undefined);
 	}
 });
