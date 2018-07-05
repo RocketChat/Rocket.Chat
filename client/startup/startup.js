@@ -21,8 +21,6 @@ Meteor.startup(function() {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
-
 	Tracker.autorun(function(computation) {
 		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return;

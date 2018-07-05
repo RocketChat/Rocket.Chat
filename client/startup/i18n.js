@@ -3,6 +3,8 @@
 import moment from 'moment';
 
 Meteor.startup(() => {
+  TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
+
   const availableLanguages = TAPi18n.getLanguages();
 
   const filterLanguage = language => {
@@ -22,6 +24,23 @@ Meteor.startup(() => {
 
   const getUserLanguage = () => (Meteor.userId() && Meteor.user() && Meteor.user().language) || getGlobalLanguage();
 
+  const loadMomentLocale = language => new Promise((resolve, reject) => {
+    if (language === 'en') {
+      resolve('en');
+      return;
+    }
+
+    Meteor.call('loadLocale', language, (error, localeSrc) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      Function(localeSrc).call({ moment });
+      resolve(language);
+    });
+  });
+
   const setLanguage = (language = 'en') => {
     language = filterLanguage(language);
 
@@ -35,16 +54,7 @@ Meteor.startup(() => {
 
     document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
     TAPi18n.setLanguage(language);
-
-    Meteor.call('loadLocale', language, (error, localeSrc) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      Function(localeSrc).call({ moment });
-      moment.locale(language);
-    });
+    loadMomentLocale(language).then(locale => moment.locale(locale), error => console.error(error));
   };
 
   window.setLanguage = setLanguage;
@@ -54,7 +64,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
     const userLanguage = getUserLanguage();
 
-		if (!isLanguageSet || localStorage.getItem('userLanguage') !== userLanguage) {
+    if (!isLanguageSet || localStorage.getItem('userLanguage') !== userLanguage) {
 			isLanguageSet = true;
 			localStorage.setItem('userLanguage', userLanguage);
 			setLanguage(userLanguage);
