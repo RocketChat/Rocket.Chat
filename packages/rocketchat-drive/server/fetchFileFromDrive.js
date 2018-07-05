@@ -56,12 +56,33 @@ Meteor.methods({
 				fileId,
 				alt: 'media'
 			}, {
-				responseType: 'stream'
+				responseType: 'arraybuffer'
 			}, function(err, response) {
-				console.log(response.data);
+				if (err) {
+					console.log(err);
+					return;
+				}
+
+				const arrayBuffer = response.data;
+				const byteArray = new Uint8Array(arrayBuffer);
+				console.log(byteArray);
 			});
 		} else {
-			// export
+			await drive.files.export({
+				fileId,
+				mimeType: 'text/csv'
+			}, {
+				responseType: 'arraybuffer'
+			}, function(err, response) {
+				if (err) {
+					console.log(err);
+					return;
+				}
+
+				const arrayBuffer = response.data;
+				const byteArray = new Uint8Array(arrayBuffer);
+				console.log(byteArray);
+			});
 		}
 	}
 });
