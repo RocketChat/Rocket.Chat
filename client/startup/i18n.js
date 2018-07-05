@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		const regex = /([a-z]{2})-([a-z]{2})/;
 		const matches = regex.exec(language);
 		if (matches) {
-			return `${matches[1]}-${matches[2].toUpperCase()}`;
+			return `${ matches[1] }-${ matches[2].toUpperCase() }`;
 		}
 
 		return language;

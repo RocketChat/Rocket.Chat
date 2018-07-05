@@ -1,4 +1,4 @@
-Template.loginFooter.onCreated(function () {
+Template.loginFooter.onCreated(function() {
 	this.suggestedLanguage = new ReactiveVar();
 
 	const suggestLanguage = language => TAPi18n._loadLanguage(language).then(() => this.suggestedLanguage.set(language));
