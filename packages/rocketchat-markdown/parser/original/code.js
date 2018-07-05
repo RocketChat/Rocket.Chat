@@ -8,12 +8,12 @@ import hljs from 'highlight.js';
 
 const inlinecode = (message) => {
 	// Support `text`
-	return message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {
+	return message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
 		const token = ` =!=${ Random.id() }=!=`;
 
 		message.tokens.push({
 			token,
-			text: `${ p1 }<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p2 }</code></span><span class=\"copyonly\">\`</span>${ p3 }`,
+			text: `<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p1 }</code></span><span class=\"copyonly\">\`</span>${ p2 }`,
 			noHtml: match
 		});
 
