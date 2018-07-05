@@ -95,6 +95,8 @@
 		margin: 0 -1.5rem;
 		padding: 0 1.5rem;
 
+		height: 100%;
+
 		&.archived .rc-user-info__name,
 		&.archived .rc-user-info__label {
 			color: #9ea2a8;
@@ -147,6 +149,10 @@
 			margin: 14px 0;
 
 			border-bottom: 1px solid #d7d7d7;
+		}
+
+		&--view-all-button {
+			padding: 15px 0 0;
 		}
 	}
 
