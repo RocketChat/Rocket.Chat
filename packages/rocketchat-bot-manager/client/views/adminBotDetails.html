@@ -16,7 +16,7 @@
 				<div class="rocket-form">
 					<div class="section">
 						<div class="section-title">
-							<div class="section-title-text">{{_ "Bot_details"}} - {{getName}}</div>
+							<div class="section-title-text">{{_ "Bot_Details"}} - {{getName}}</div>
 							<div class="section-title-right">
 								<button class="button primary collapse"><span>{{_ "Collapse"}}</span></button>
 							</div>
@@ -75,21 +75,21 @@
                 <label>{{_ "Account_name"}}</label>
                 <div>
                   <input type="text" class="rc-input__element" name="name" value="{{getName}}" />
-                  <div class="settings-description">{{_ "Bot_name"}}</div>
+                  <div class="settings-description">{{_ "Bot_name_description"}}</div>
                 </div>
               </div>
               <div class="input-line double-col">
                 <label>{{_ "Account_username"}}</label>
                 <div>
                   <input type="text" class="rc-input__element" name="username" value="{{getUsername}}" />
-                  <div class="settings-description">{{_ "Bot_username"}}</div>
+                  <div class="settings-description">{{_ "Bot_username_description"}}</div>
                 </div>
               </div>
               <div class="input-line double-col">
                 <label>{{_ "Account_password"}}</label>
                 <div>
                   <input name="password" class="rc-input__element" type="password" autocomplete="off" value=""/>
-                  <div class="settings-description">{{_ "Bot_password"}}</div>
+                  <div class="settings-description">{{_ "Bot_password_description"}}</div>
                 </div>
               </div>
               <div class="input-line double-col">
@@ -103,18 +103,30 @@
                 <div class="input-line double-col">
                   <label>{{_ "Connection_Status"}}</label>
                   <div>
-                    <div class="settings-description">{{_ "IP_Address"}}: {{ipAddress}}</div>
+                    <div class="settings-description">
+                      {{_ "IP_Address"}}: {{ipAddress}}
+                      <span class="rc-tooltip" aria-label="{{_ "Bot_IP_Address_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                    </div>
                     {{#if canPing}}
-                      <div class="settings-description">{{_ "Ping"}}: {{ping}}</div>
+                      <div class="settings-description">
+                        {{_ "Ping"}}: {{ping}}
+                        <span class="rc-tooltip" aria-label="{{_ "Bot_Ping_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                      </div>
                     {{/if}}
                   </div>
                 </div>
                 <div class="input-line double-col">
                   <label>{{_ "Uptime"}}</label>
                   <div>
-                    <div class="settings-description">{{_ "Connected"}}: {{connectedUptime}}</div>
+                    <div class="settings-description">
+                      {{_ "Connected"}}: {{connectedUptime}}
+                      <span class="rc-tooltip" aria-label="{{_ "Bot_Connected_Uptime_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                    </div>
                     {{#if canPause}}
-                      <div class="settings-description">{{_ "Active"}}: {{activeUptime}}</div>
+                      <div class="settings-description">
+                        {{_ "Active"}}: {{activeUptime}}
+                        <span class="rc-tooltip" aria-label="{{_ "Bot_Active_Uptime_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                      </div>
                     {{/if}}
                   </div>
                 </div>
@@ -146,7 +158,7 @@
 					</div>
           <div class="section section-collapsed">
             <div class="section-title">
-              <div class="section-title-text">{{_ "Bot_statistics"}}</div>
+              <div class="section-title-text">{{_ "Bot_Statistics"}}</div>
               <div class="section-title-right">
                 <button class="button primary refresh"><span>{{_ "Refresh"}}</span></button>
                 <button class="button primary expand"><span>{{_ "Expand"}}</span></button>
@@ -156,22 +168,33 @@
               <h3>{{_ "Usage"}}</h3>
               <table class="statistics-table secondary-background-color">
                 <tr class="admin-table-row">
-                  <th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
+                  <th class="content-background-color border-component-color">
+                    <span class="rc-tooltip" aria-label="{{_ "Bot_Stats_Total_Messages_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                    {{_ "Stats_Total_Messages"}}
+                  </th>
                   <td class="border-component-color">{{statistics.totalMessages}}</td>
                 </tr>
               </table>
               {{#if statistics.sdk}}
-                <h3>{{_ "Session"}}</h3>
+                <h3 class="rc-tooltip" aria-label="{{_ "Bot_Stats_Session_description"}}">
+                  {{_ "Session"}} {{> icon block="rc-input__icon-svg" icon="info-circled" }}
+                </h3>
                 <table class="statistics-table secondary-background-color">
                   {{#each keyval statistics.sdk}}
-                    <tr class="admin-table-row">
-                      <th class="content-background-color border-component-color">{{_ key}}</th>
-                      <td class="border-component-color">{{value}}</td>
-                    </tr>
+                  <tr class="admin-table-row">
+                    <th class="content-background-color border-component-color">
+                      <span class="rc-tooltip" aria-label="{{_ description}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                      {{_ key}}
+                    </th>
+                    <td class="border-component-color">{{value}}</td>
+                  </tr>
                   {{/each}}
                   {{#each keyval statistics.adapter}}
                     <tr class="admin-table-row">
-                      <th class="content-background-color border-component-color">{{_ key}}</th>
+                      <th class="content-background-color border-component-color">
+                        <span class="rc-tooltip" aria-label="{{_ description}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                        {{_ key}}
+                      </th>
                       <td class="border-component-color">{{value}}</td>
                     </tr>
                   {{/each}}

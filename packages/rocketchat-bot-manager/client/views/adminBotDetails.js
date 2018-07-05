@@ -230,7 +230,8 @@ Template.adminBotDetails.helpers({
 		return _.map(object, function(value, key) {
 			return {
 				key,
-				value
+				value,
+				description: `${ key }_description`
 			};
 		});
 	}
@@ -243,7 +244,9 @@ Template.adminBotDetails.events({
 
 	'click .resume': (e, t) => {
 		const bot = t.bot.get();
+		$(e.currentTarget).closest('button').addClass('disabled');
 		Meteor.call('resumeBot', bot, (err) => {
+			$(e.currentTarget).closest('button').removeClass('disabled');
 			if (err) {
 				return toastr.error(TAPi18n.__('Bot_resumed_error'));
 			}
@@ -253,7 +256,9 @@ Template.adminBotDetails.events({
 
 	'click .pause': (e, t) => {
 		const bot = t.bot.get();
+		$(e.currentTarget).closest('button').addClass('disabled');
 		Meteor.call('pauseBot', bot, (err) => {
+			$(e.currentTarget).closest('button').removeClass('disabled');
 			if (err) {
 				return toastr.error(TAPi18n.__('Bot_paused_error'));
 			}
@@ -285,12 +290,13 @@ Template.adminBotDetails.events({
 	},
 
 	'click .refresh': (e, t) => {
+		$(e.currentTarget).closest('button').addClass('disabled');
 		Meteor.call('getBotStatistics', t.bot.get(), (err, statistics) => {
+			$(e.currentTarget).closest('button').removeClass('disabled');
 			if (err) {
 				return handleError(err);
 			}
-
-			toastr.success(TAPi18n.__('Statistics_refreshed'));
+			toastr.success(TAPi18n.__('Bot_Stats_refreshed'));
 			t.statistics.set(statistics);
 		});
 	},
