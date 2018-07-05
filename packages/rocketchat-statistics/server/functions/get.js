@@ -11,7 +11,8 @@ const wizardFields = [
 	'Website',
 	'Site_Name',
 	'Language',
-	'Server_Type'
+	'Server_Type',
+	'Allow_Marketing_Emails'
 ];
 
 RocketChat.statistics.get = function _getStatistics() {
