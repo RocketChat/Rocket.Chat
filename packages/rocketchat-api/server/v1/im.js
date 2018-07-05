@@ -310,12 +310,16 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign({}, query, { t: 'd' });
+		const fieldsWithUsernames = () => {
+			delete fields.usernames;
+			return fields;
+		}
 
 		const rooms = RocketChat.models.Rooms.find(ourQuery, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields: fieldsWithUsernames()
 		}).fetch();
 
 		return RocketChat.API.v1.success({
