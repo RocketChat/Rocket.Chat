@@ -1,22 +1,6 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-class Document {
-	constructor(doc) {
-		return Object.assign(this, doc);
-	}
-
-	get usernames() {
-		// TODO: Remove deprecation on version 0.70
-		console.warn('DEPRECATION: Room.usernames is deprecated and will be removed on version 0.70.0');
-		return RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._id, {
-			fields: {
-				'u.username': 1
-			}
-		}).fetch().map(s => s.u.username);
-	}
-}
-
 class ModelRooms extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -25,8 +9,6 @@ class ModelRooms extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'default': 1 });
 		this.tryEnsureIndex({ 't': 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-
-		this.model._transform = doc => new Document(doc);
 	}
 
 	findOneByIdOrName(_idOrName, options) {
