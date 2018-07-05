@@ -422,7 +422,7 @@ Template.admin.events({
 				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
 
 				if (settings.some(({ _id }) => _id === 'Language')) {
-					const lng =  Meteor.user().language
+					const lng = Meteor.user().language
 						|| settings.filter(({ _id }) => _id === 'Language').shift().value
 						|| 'en';
 					TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
