@@ -30,9 +30,13 @@ const common = {
 function roomHasPurge(room) {
 	let hasPurge = false;
 
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
 	if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
 		hasPurge = room.retention.enabled;
-	} else if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	} else {
 		if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
 			hasPurge = true;
 		}
@@ -625,16 +629,18 @@ Template.channelSettingsEditing.helpers({
 	hasGlobalPurge() {
 		const room = Template.instance().room;
 
-		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
-			if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
-				return true;
-			}
-			if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
-				return true;
-			}
-			if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
-				return true;
-			}
+		if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			return false;
+		}
+
+		if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+			return true;
+		}
+		if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+			return true;
+		}
+		if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+			return true;
 		}
 
 		return false;
@@ -642,7 +648,7 @@ Template.channelSettingsEditing.helpers({
 	hasRetentionPermission() {
 		const room = Template.instance().room;
 
-		return RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id);
+		return RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id) && RocketChat.settings.get('RetentionPolicy_Enabled');
 	}
 });
 

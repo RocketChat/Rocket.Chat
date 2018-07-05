@@ -1,29 +1,41 @@
 /* globals SyncedCron */
 
-function roomHasPurge(room) {
-	let hasPurge = false;
-
-	if (room.retention && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
-		hasPurge = room.retention.enabled;
-	} else if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
-		if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
-			hasPurge = true;
-		}
-		if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
-			hasPurge = true;
-		}
-		if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
-			hasPurge = true;
-		}
+function roomHasGlobalPurge(room) {
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
 	}
 
-	return hasPurge;
+	if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+		return true;
+	}
+	if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+		return true;
+	}
+	if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+		return true;
+	}
+
+	return false;
+}
+
+function roomHasPurge(room) {
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	const hasGlobalPurge = roomHasGlobalPurge(room);
+
+	if (!hasGlobalPurge || (room.retention && room.retention.overrideGlobal)) {
+		return room.retention.enabled;
+	}
+
+	return hasGlobalPurge;
 }
 
 function roomFilesOnly(room) {
 	let filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
 
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !roomHasGlobalPurge(room))) {
 		filesOnly = room.retention.filesOnly;
 	}
 
@@ -33,7 +45,7 @@ function roomFilesOnly(room) {
 function roomExcludePinned(room) {
 	let excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !roomHasGlobalPurge(room))) {
 		excludePinned = room.retention.excludePinned;
 	}
 
@@ -55,7 +67,7 @@ function roomMaxAge(room) {
 
 	let maxAge = globalTimeout;
 
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !RocketChat.settings.get('RetentionPolicy_Enabled'))) {
+	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !roomHasGlobalPurge(room))) {
 		maxAge = room.retention.maxAge;
 	} else if (room.retention && room.retention.enabled) {
 		maxAge = Math.min(room.retention.maxAge, globalTimeout);
@@ -183,14 +195,27 @@ function deployCron(precision) {
 
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		processPruneMessages();
-		deployCron();
+		if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			deployCron();
+		}
 
 		RocketChat.models.Settings.find({
 			_id: 'RetentionPolicy_Precision'
 		}).observe({
 			changed(record) {
 				deployCron(record.value);
+			}
+		});
+
+		RocketChat.models.Settings.find({
+			_id: 'RetentionPolicy_Enabled'
+		}).observe({
+			changed(record) {
+				if (record.value) {
+					deployCron();
+				} else {
+					SyncedCron.remove(pruneCronName);
+				}
 			}
 		});
 	});
