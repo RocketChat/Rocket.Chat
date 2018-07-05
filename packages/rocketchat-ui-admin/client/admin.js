@@ -414,8 +414,8 @@ Template.admin.events({
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
 		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
-		if (!_.isEmpty(settings)) {
-			RocketChat.settings.batchSet(settings, function(err) {
+		if (settings && settings.length > 0) {
+			RocketChat.settings.batchSet(settings, (err) => {
 				if (err) {
 					return handleError(err);
 				}

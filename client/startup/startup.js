@@ -39,19 +39,8 @@ Meteor.startup(function() {
 	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || defaultAppLanguage();
 
 	const availableLanguages = TAPi18n.getLanguages();
-	const loadedLanguages = [];
 
-	window.setLanguage = function(language) {
-		if (!language) {
-			return;
-		}
-
-		if (loadedLanguages.indexOf(language) > -1) {
-			return;
-		}
-
-		loadedLanguages.push(language);
-
+	window.setLanguage = (language = 'en') => {
 		if (isRtl(language)) {
 			$('html').addClass('rtl');
 		} else {
@@ -115,10 +104,12 @@ Meteor.startup(function() {
 		}
 	});
 
+	let isLanguageSet = false;
 	Tracker.autorun(() => {
 		const userLanguage = Meteor.user() && Meteor.user().language || RocketChat.settings.get('Language') || 'en';
 
-		if (loadedLanguages.length === 0 || localStorage.getItem('userLanguage') !== userLanguage) {
+		if (!isLanguageSet || localStorage.getItem('userLanguage') !== userLanguage) {
+			isLanguageSet = true;
 			localStorage.setItem('userLanguage', userLanguage);
 			window.setLanguage(userLanguage);
 		}
