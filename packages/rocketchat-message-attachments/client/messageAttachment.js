@@ -69,14 +69,14 @@ Template.messageAttachment.helpers({
 
 	fileType() {
 		if (this.audio_url) {
-			return 'audio';
+			return 'audio/*';
 		}
 		if (this.video_url) {
-			return 'video';
+			return 'video/*';
 		}
 		if (this.image_url) {
-			return 'image';
+			return 'image/*';
 		}
-		return 'file';
+		return 'application/octet-stream';
 	}
 });

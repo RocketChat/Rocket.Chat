@@ -16,7 +16,8 @@ html.rtl .attachment {
 		padding-right: 5px;
 	}
 
-	& .attachment-download-icon {
+	& .attachment-download-icon,
+	& .icon-drive-upload {
 		margin-right: 5px;
 		margin-left: auto;
 	}
@@ -128,11 +129,17 @@ html.rtl .attachment {
 		max-width: 700px;
 	}
 
-	& .attachment-download-icon {
+	& .attachment-download-icon,
+	& .icon-drive-upload {
 		margin-left: 5px;
 		padding: 2px 5px;
 
 		border-width: 1px;
 		border-radius: 5px;
 	}
+
+	& .icon-drive-upload {
+		cursor: pointer;
+	}
+
 }

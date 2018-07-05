@@ -12,8 +12,21 @@ Meteor.startup(function() {
 			return true;
 		},
 		action() {
+			const roomId = Session.get('openedRoom');
+
 			const gapi = window.gapi || {};
 			const google = window.google || {};
+
+			function pickerCallback(data) {
+				let fileId = null;
+				if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+					const file = data[google.picker.Response.DOCUMENTS][0];
+					fileId = file[google.picker.Document.ID];
+				}
+				if (fileId) {
+					Meteor.call('fetchFileFromDrive', {roomId, fileId});
+				}
+			}
 
 			function createPicker() {
 				const user = RocketChat.models.Users.findOne({_id: Meteor.userId()});
@@ -21,6 +34,7 @@ Meteor.startup(function() {
 					addView(google.picker.ViewId.DOCS).
 					setOAuthToken(user.services.google.accessToken).
 					setDeveloperKey(RocketChat.settings.get('Accounts_OAuth_Google_Picker_key')).
+					setCallback(pickerCallback).
 					build();
 				picker.setVisible(true);
 			}

@@ -1,7 +1,7 @@
 import {google} from 'googleapis';
 
 Meteor.methods({
-	async 'fetchFileFromDrive'({roomId, fileId}) {
+	async 'fetchFileFromDrive'({roomId, fileId, googleFileType = null}) {
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 
 		if (!Meteor.userId()) {
@@ -51,11 +51,17 @@ Meteor.methods({
 			auth: authObj
 		});
 
-		await drive.files.get({
-			fileId,
-			alt: 'media'
-		}, {
-			responseType: 'stream'
-		});
+		if (!googleFileType) {
+			await drive.files.get({
+				fileId,
+				alt: 'media'
+			}, {
+				responseType: 'stream'
+			}, function(err, response) {
+				console.log(response.data);
+			});
+		} else {
+			// export
+		}
 	}
 });

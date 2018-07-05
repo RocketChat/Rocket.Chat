@@ -666,15 +666,9 @@ Template.room.events({
 		const title = e.target.getAttribute('data-title');
 		const type = e.target.getAttribute('data-type');
 
-		const mimeMap = {
-			'audio': 'application/vnd.google-apps.audio',
-			'video': 'application/vnd.google-apps.video',
-			'file': 'application/vnd.google-apps.file'
-		};
-
 		const metaData = {
 			'name': `${ title }`,
-			'mimeType': `${ mimeMap[type] }`
+			'mimeType': `${ type }`
 		};
 
 		const fileRequest = new XMLHttpRequest();
