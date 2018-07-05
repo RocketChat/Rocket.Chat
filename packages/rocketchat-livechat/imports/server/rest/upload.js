@@ -1,4 +1,5 @@
 import Busboy from 'busboy';
+import filesize from 'filesize';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
 RocketChat.API.v1.addRoute('livechat/upload/:rid', {
@@ -53,14 +54,28 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const file = files[0];
-		console.log(file);
-		const validate = Meteor.call('livechat:validateFileUpload', file.mimetype, file.fileBuffer.length);
-		console.log(validate);
-		/*
-		if (!result) {
-			return RocketChat.API.v1.success(result);
+
+		if (!RocketChat.fileUploadIsValidContentType(file.mimetype)) {
+			return RocketChat.API.v1.failure({
+				reason: 'error-type-not-allowed'
+			});
 		}
-		*/
+
+		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
+			try {
+				return parseInt(value);
+			} catch (e) {
+				return RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+			}
+		});
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize >= -1 && file.fileBuffer.length > maxFileSize) {
+			return RocketChat.API.v1.failure({
+				reason: 'error-size-not-allowed',
+				sizeAllowed: filesize(maxFileSize)
+			});
+		}
 
 		const fileStore = FileUpload.getStore('Uploads');
 

@@ -3,6 +3,25 @@
 import visitor from '../../imports/client/visitor';
 import swal from 'sweetalert2';
 
+const handleRequestError = response => {
+	if (!response.success) {
+		let reason = t('FileUpload_Error');
+		switch (response.reason) {
+			case 'error-type-not-allowed':
+			reason = t('FileUpload_MediaType_NotAccepted');
+				break;
+			case 'error-size-not-allowed':
+			reason = t('File_exceeds_allowed_size_of_bytes', {size: response.sizeAllowed});
+		}
+
+		swal({
+			text: reason,
+			type: 'error',
+			timer: 4000
+		});
+	}
+}
+
 function sendFileRequest(file, roomId, token) {
 	const url = `${ Meteor.absoluteUrl() }api/v1/livechat/upload/${ roomId }`;
 	const form = new FormData();
@@ -10,20 +29,17 @@ function sendFileRequest(file, roomId, token) {
 
 	const request = new XMLHttpRequest();
 	request.open("POST", url);
+	request.responseType = 'json';
 	request.setRequestHeader("X-Visitor-Token", token);
 
 	request.onload = () => {
 		if (request.status !== 200) {
-			showError(request.statusText);
+			handleRequestError(request.response);
 		}
 	};
-	/*
-	request.onprogress = () => {
-		console.log('LOADING', request.status);
-	};
-	*/
+
 	request.onerror = () => {
-		showError(request.statusText);
+		handleRequestError(request.response);
 	};
 
 	request.send(form);
@@ -154,31 +170,6 @@ fileUpload = file => {
 
 		return;
 	}
-	/*
-	Meteor.call('livechat:validateFileUpload', file.type, file.size, (error, result) => {
-		if (error) {
-			return;
-		}
 
-		if (!result.result) {
-			let reason = t('FileUpload_Error');
-			switch (result.reason) {
-				case 'typeNotAllowed':
-				reason = t('FileUpload_MediaType_NotAccepted');
-					break;
-				case 'sizeNotAllowed':
-				reason = t('File_exceeds_allowed_size_of_bytes', {size: result.sizeAllowed});
-			}
-
-			swal({
-				text: reason,
-				type: 'error',
-				timer: 4000
-			});
-
-			return;
-		}
-		*/
-		return sendFileUpload(file);
-	/*});*/
+	return sendFileUpload(file);
 };
