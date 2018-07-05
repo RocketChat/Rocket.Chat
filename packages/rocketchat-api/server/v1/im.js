@@ -313,7 +313,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 		const fieldsWithUsernames = () => {
 			delete fields.usernames;
 			return fields;
-		}
+		};
 
 		const rooms = RocketChat.models.Rooms.find(ourQuery, {
 			sort: sort ? sort : { name: 1 },
