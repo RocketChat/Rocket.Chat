@@ -69,7 +69,7 @@ Meteor.methods({
 
 		// propagate changed notification preferences
 		Meteor.defer(() => {
-			if (oldDesktopNotifications !== settings.desktopNotifications) {
+			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearDesktopNotificationUserPreferences(user._id);
 				} else {
@@ -77,7 +77,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldMobileNotifications !== settings.mobileNotifications) {
+			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
 				if (settings.mobileNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearMobileNotificationUserPreferences(user._id);
 				} else {
@@ -85,7 +85,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldEmailNotifications !== settings.emailNotificationMode) {
+			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
 					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
 				} else {
