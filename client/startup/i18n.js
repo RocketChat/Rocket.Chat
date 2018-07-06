@@ -44,7 +44,7 @@ Meteor.startup(() => {
 	const setLanguage = (language = 'en') => {
 		language = filterLanguage(language);
 
-		if (!availableLanguages[availableLanguages]) {
+		if (!availableLanguages[language]) {
 			language = language.split('-').shift();
 		}
 
