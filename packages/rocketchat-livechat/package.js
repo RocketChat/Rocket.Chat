@@ -46,10 +46,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/visitorStatus.js', 'server');
 	api.addFiles('permissions.js', 'server');
 	api.addFiles('messageTypes.js');
-	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
 
+	api.addFiles('client/roomType.js', 'client');
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
@@ -130,6 +130,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/triggers/livechatTriggerAction.js', 'client');
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.html', 'client');
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
+
+	// startup
+	api.addFiles('server/roomType.js', 'server');
 
 	// hooks
 	api.addFiles('server/hooks/externalMessage.js', 'server');
