@@ -8,7 +8,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 		const file = RocketChat.models.Uploads.findOneById(match[1]);
 
 		if (file) {
-			if (!Meteor.settings.public.sandstorm && !FileUpload.requestCanAccessFiles(req) && !RocketChat.authz.canAccessRoom(null, null, file)) {
+			if (!Meteor.settings.public.sandstorm && !FileUpload.requestCanAccessFiles(req)) {
 				res.writeHead(403);
 				return res.end();
 			}

@@ -20,6 +20,11 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 
 		return { title, text };
 	}
+
+	allowFileUpload(allowData) {
+		const { rc_token, rc_rid } = allowData;
+		return rc_token && rc_rid && RocketChat.models.Rooms.findOneOpenByVisitorToken(rc_token, rc_rid);
+	}
 }
 
 RocketChat.roomTypes.add(new LivechatRoomTypeServer());

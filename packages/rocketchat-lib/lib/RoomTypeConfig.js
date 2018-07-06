@@ -242,4 +242,15 @@ export class RoomTypeConfig {
 
 		return { title, text };
 	}
+
+	/**
+	 * Check if there is a user with the same id and loginToken
+	 * @param {object} allowData
+	 * @return {object} User's object from db
+	 */
+	allowFileUpload(allowData) {
+		const { rc_uid, rc_token } = allowData;
+		return rc_uid && rc_token && RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+	}
+
 }
