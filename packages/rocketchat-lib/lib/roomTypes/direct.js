@@ -111,4 +111,23 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 				return '';
 		}
 	}
+
+	/**
+	 * Returns details to use on notifications
+	 *
+	 * @param {object} room
+	 * @param {object} user
+	 * @param {string} notificationMessage
+	 * @return {object} Notification details
+	 */
+	getNotificationDetails(room, user, notificationMessage) {
+		if (!Meteor.isServer) {
+			return {};
+		}
+
+		const title = RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
+		const text = notificationMessage;
+
+		return { title, text };
+	}
 }
