@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:api');
-	api.use('rocketchat:grant');
 
 	api.use('templating', 'client');
 
@@ -24,4 +23,5 @@ Package.onUse(function(api) {
 	api.addFiles('server/fetchFileFromDrive.js', 'server');
 	api.addFiles('client/actionButton.js', 'client');
 	api.addFiles('client/messageBoxActions.js', 'client');
+	api.addFiles('client/lib/gapi.js', 'client');
 });

@@ -1,3 +1,7 @@
+/* globals fileUploadHandler, google, Handlebars */
+import gapi from './lib/gapi.js';
+import _ from 'underscore';
+
 Meteor.startup(function() {
 	RocketChat.messageBox.actions.add('Add_files_from', 'Google_drive', {
 		id: 'google-drive',
@@ -10,27 +14,120 @@ Meteor.startup(function() {
 			return true;
 		},
 		action() {
-			//const roomId = Session.get('openedRoom');
-			const google = window.google || []; // for now
-			const gapi = window.gapi || []; // for now
+			const roomId = Session.get('openedRoom');
 
 			function pickerCallback(data) {
 				let file = null;
 				if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
 					file = data[google.picker.Response.DOCUMENTS][0];
-					console.log(file);
 				}
 
 				if (file && file.id) {
-					Meteor.call('fetchFileFromDrive', file, function(error, data) {
+					Meteor.call('fetchFileFromDrive', file, function(error, response) {
 						if (error) {
-							console.log(error);
-							return;
+							return toastr.error(t(error.error));
+						} else if (!response.success) {
+							return toastr.error(t('Failed_to_fetch_file'));
 						} else {
-							const blob = new Blob([data], {type: 'application/octet-stream'});
+							const blob = new Blob([response.data], {type: file.mimeType || 'application/octet-stream'});
 							// converting to file object
-							blob.lastModifiedDate = new Date();
-							blob.name = file.name;
+							blob.lastModified = file.lastEditedUtc;
+							blob.lastModifiedDate = new Date(file.lastEditedUtc * 1000);
+							blob.name = file.name || '';
+
+							const text = `\
+							<div class='upload-preview-title'>
+								<div class="rc-input__wrapper">
+									<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
+								</div>
+								<div class="rc-input__wrapper">
+									<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+								</div>
+							</div>`;
+
+							return modal.open({
+								title: t('Upload_file_question'),
+								text,
+								showCancelButton: true,
+								closeOnConfirm: false,
+								closeOnCancel: false,
+								confirmButtonText: t('Send'),
+								cancelButtonText: t('Cancel'),
+								html: true,
+								onRendered: () => $('#file-name').focus()
+							}, function(isConfirm) {
+								const record = {
+									name: document.getElementById('file-name').value || blob.name,
+									size: blob.size,
+									type: blob.type,
+									rid: roomId,
+									description: document.getElementById('file-description').value
+								};
+
+								modal.close();
+								if (!isConfirm) {
+									return;
+								}
+
+								const upload = fileUploadHandler('Uploads', record, blob);
+
+								let uploading = Session.get('uploading') || [];
+								uploading.push({
+									id: upload.id,
+									name: upload.getFileName(),
+									percentage: 0
+								});
+
+								Session.set('uploading', uploading);
+
+								upload.onProgress = function(progress) {
+									uploading = Session.get('uploading');
+
+									const item = _.findWhere(uploading, {id: upload.id});
+									if (item != null) {
+										item.percentage = Math.round(progress * 100) || 0;
+										return Session.set('uploading', uploading);
+									}
+								};
+
+								upload.start(function(error, file, storage) {
+									if (error) {
+										let uploading = Session.get('uploading');
+										if (!Array.isArray(uploading)) {
+											uploading = [];
+										}
+
+										const item = _.findWhere(uploading, { id: upload.id });
+
+										if (_.isObject(item)) {
+											item.error = error.message;
+											item.percentage = 0;
+										} else {
+											uploading.push({
+												error: error.error,
+												percentage: 0
+											});
+										}
+
+										Session.set('uploading', uploading);
+										return;
+									}
+
+									if (file) {
+										Meteor.call('sendFileMessage', roomId, storage, file, () => {
+											Meteor.setTimeout(() => {
+												const uploading = Session.get('uploading');
+												if (uploading !== null) {
+													const item = _.findWhere(uploading, {
+														id: upload.id
+													});
+													return Session.set('uploading', _.without(uploading, item));
+												}
+											}, 2000);
+										});
+									}
+								});
+							});
 						}
 					});
 				}

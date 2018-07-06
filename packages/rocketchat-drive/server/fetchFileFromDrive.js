@@ -61,13 +61,13 @@ Meteor.methods({
 				responseType: 'arraybuffer'
 			}, function(err, response) {
 				if (err) {
-					console.log(err);
+					future['return']({success: false, data: []});
 					return;
 				}
 
 				const arrayBuffer = response.data;
 				const byteArray = new Uint8Array(arrayBuffer);
-				future['return'](byteArray);
+				future['return']({success: true, data: byteArray});
 			});
 		} else {
 			await drive.files.export({
@@ -77,13 +77,12 @@ Meteor.methods({
 				responseType: 'arraybuffer'
 			}, function(err, response) {
 				if (err) {
-					console.log(err);
+					future['return']({success: false, data: []});
 					return;
 				}
-
 				const arrayBuffer = response.data;
 				const byteArray = new Uint8Array(arrayBuffer);
-				future['return'](byteArray);
+				future['return']({success: true, data: byteArray});
 			});
 		}
 
