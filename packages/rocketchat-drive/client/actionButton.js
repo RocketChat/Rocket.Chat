@@ -35,19 +35,25 @@ Meteor.startup(function() {
 								if (error) {
 									return;
 								}
-								Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
+								Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
 									if (error) {
 										return toastr.error(t(error.error));
+									} else if (status === false) {
+										return toastr.error(t('Failed_Drive_Upload'));
+									} else {
+										toastr.success(t('Success_Drive_Upload'));
 									}
-									toastr.success(t('Success_Drive_Upload'));
 								});
 							});
 						} else {
 							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
 								if (error) {
 									return toastr.error(t(error.error));
+								} else if (status === false) {
+									return toastr.error(t('Failed_Drive_Upload'));
+								} else {
+									toastr.success(t('Success_Drive_Upload'));
 								}
-								toastr.success(t('Success_Drive_Upload'));
 							});
 						}
 					});

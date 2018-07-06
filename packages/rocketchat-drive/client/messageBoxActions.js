@@ -1,6 +1,7 @@
 /* globals fileUploadHandler, google, Handlebars */
 import gapi from './lib/gapi.js';
 import _ from 'underscore';
+import toastr from 'toastr';
 
 Meteor.startup(function() {
 	RocketChat.messageBox.actions.add('Add_files_from', 'Google_drive', {
@@ -27,9 +28,10 @@ Meteor.startup(function() {
 						if (error) {
 							return toastr.error(t(error.error));
 						} else if (!response.success) {
-							return toastr.error(t('Failed_to_fetch_file'));
+							return toastr.error(t('Failed_to_fetch_file_from_google_drive'));
 						} else {
-							const blob = new Blob([response.data], {type: file.mimeType || 'application/octet-stream'});
+
+							const blob = new Blob([response.data], {type: (!file.mimeType.match(/application\/vnd\.google-apps\./i) ? file.mimeType : 'application/pdf')});
 							// converting to file object
 							blob.lastModified = file.lastEditedUtc;
 							blob.lastModifiedDate = new Date(file.lastEditedUtc * 1000);

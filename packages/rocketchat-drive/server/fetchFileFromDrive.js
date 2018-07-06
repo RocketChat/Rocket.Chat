@@ -72,7 +72,7 @@ Meteor.methods({
 		} else {
 			await drive.files.export({
 				fileId: file.id,
-				mimeType: 'text/csv'
+				mimeType: 'application/pdf'
 			}, {
 				responseType: 'arraybuffer'
 			}, function(err, response) {

@@ -1,8 +1,10 @@
 import {google} from 'googleapis';
 import stream from 'stream';
+import Future from 'fibers/future';
 
 Meteor.methods({
 	async 'uploadFileToDrive'({fileData, metaData}, toShare = false, rid = null) {
+		const future = new Future();
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 
 		if (!Meteor.userId()) {
@@ -71,8 +73,10 @@ Meteor.methods({
 			fields: 'webViewLink'
 		}, function(err, file) {
 			if (err) {
-				console.log(err);
+				future['return'](false);
+				return true;
 			} else {
+				future['return'](true);
 				console.log('UPLOADED FILE TO DRIVE:: STATUS:', file.status);
 				if (toShare) {
 					const msg = file.data.webViewLink;
@@ -86,5 +90,7 @@ Meteor.methods({
 				}
 			}
 		});
+
+		return future.wait();
 	}
 });
