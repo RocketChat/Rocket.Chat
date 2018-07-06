@@ -1,22 +1,23 @@
 Template.loginFooter.onCreated(function() {
 	this.suggestedLanguage = new ReactiveVar();
 
-	const suggestLanguage = language => TAPi18n._loadLanguage(language).then(() => this.suggestedLanguage.set(language));
+	this.suggestAnotherLanguageFor = language => {
+		const loadAndSetSuggestedLanguage = language => TAPi18n._loadLanguage(language)
+			.then(() => this.suggestedLanguage.set(language));
 
-	this.autorun(() => {
-		const userLanguage = localStorage.getItem('userLanguage');
-		const serverLanguage = RocketChat.settings.get('Language') || 'en';
+		const serverLanguage = RocketChat.settings.get('Language');
 
-		if (userLanguage !== serverLanguage) {
-			suggestLanguage(serverLanguage);
-			return;
+		if (serverLanguage !== language) {
+			loadAndSetSuggestedLanguage(serverLanguage || 'en');
+		} else if (!/^en/.test(language)) {
+			loadAndSetSuggestedLanguage('en');
+		} else {
+			this.suggestedLanguage.set(undefined);
 		}
+	};
 
-		if (!/^en/.test(userLanguage)) {
-			suggestLanguage('en');
-			return;
-		}
-	});
+	const currentLanguage = localStorage.getItem('userLanguage');
+	this.suggestAnotherLanguageFor(currentLanguage);
 });
 
 Template.loginFooter.helpers({
@@ -29,8 +30,8 @@ Template.loginFooter.helpers({
 Template.loginFooter.events({
 	'click button.js-switch-language'(e, t) {
 		const language = t.suggestedLanguage.get();
-		localStorage.setItem('userLanguage', language);
 		window.setLanguage(language);
-		t.suggestedLanguage.set(undefined);
+		t.suggestAnotherLanguageFor(language);
+		return false;
 	}
 });

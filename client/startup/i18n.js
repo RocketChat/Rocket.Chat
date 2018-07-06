@@ -2,8 +2,11 @@
 
 import moment from 'moment';
 
+const currentLanguage = new ReactiveVar();
+
 Meteor.startup(() => {
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
+	currentLanguage.set(localStorage.getItem('userLanguage'));
 
 	const availableLanguages = TAPi18n.getLanguages();
 
@@ -41,7 +44,7 @@ Meteor.startup(() => {
 		});
 	});
 
-	const setLanguage = (language = 'en') => {
+	const applyLanguage = (language = 'en') => {
 		language = filterLanguage(language);
 
 		if (!availableLanguages[language]) {
@@ -57,17 +60,20 @@ Meteor.startup(() => {
 		loadMomentLocale(language).then(locale => moment.locale(locale), error => console.error(error));
 	};
 
+	const setLanguage = language => {
+		currentLanguage.set(filterLanguage(language));
+		localStorage.setItem('userLanguage', currentLanguage.get());
+	};
+
 	window.setLanguage = setLanguage;
+
 	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
 
-	let isLanguageSet = false;
 	Tracker.autorun(() => {
-		const userLanguage = getUserLanguage() || getServerLanguage() || 'en';
-
-		if (!isLanguageSet || localStorage.getItem('userLanguage') !== userLanguage) {
-			isLanguageSet = true;
-			localStorage.setItem('userLanguage', userLanguage);
-			setLanguage(userLanguage);
+		if (!currentLanguage.get()) {
+			setLanguage(getUserLanguage() || getServerLanguage() || 'en');
 		}
+
+		applyLanguage(currentLanguage.get());
 	});
 });
