@@ -1,5 +1,3 @@
-
-
 Meteor.startup(function() {
 	RocketChat.messageBox.actions.add('Add_files_from', 'Google_drive', {
 		id: 'google-drive',
@@ -12,19 +10,29 @@ Meteor.startup(function() {
 			return true;
 		},
 		action() {
-			const roomId = Session.get('openedRoom');
-
-			const gapi = window.gapi || {};
-			const google = window.google || {};
+			//const roomId = Session.get('openedRoom');
+			const google = window.google || []; // for now
+			const gapi = window.gapi || []; // for now
 
 			function pickerCallback(data) {
-				let fileId = null;
+				let file = null;
 				if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
-					const file = data[google.picker.Response.DOCUMENTS][0];
-					fileId = file[google.picker.Document.ID];
+					file = data[google.picker.Response.DOCUMENTS][0];
+					console.log(file);
 				}
-				if (fileId) {
-					Meteor.call('fetchFileFromDrive', {roomId, fileId});
+
+				if (file && file.id) {
+					Meteor.call('fetchFileFromDrive', file, function(error, data) {
+						if (error) {
+							console.log(error);
+							return;
+						} else {
+							const blob = new Blob([data], {type: 'application/octet-stream'});
+							// converting to file object
+							blob.lastModifiedDate = new Date();
+							blob.name = file.name;
+						}
+					});
 				}
 			}
 

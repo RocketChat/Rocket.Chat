@@ -1,7 +1,9 @@
 import {google} from 'googleapis';
+import Future from 'fibers/future';
 
 Meteor.methods({
-	async 'fetchFileFromDrive'({roomId, fileId, googleFileType = null}) {
+	async 'fetchFileFromDrive'(file) {
+		const future = new Future();
 		const driveScope = 'https://www.googleapis.com/auth/drive';
 
 		if (!Meteor.userId()) {
@@ -51,9 +53,9 @@ Meteor.methods({
 			auth: authObj
 		});
 
-		if (!googleFileType) {
+		if (!file.mimeType.match(/application\/vnd\.google-apps\./i)) {
 			await drive.files.get({
-				fileId,
+				fileId: file.id,
 				alt: 'media'
 			}, {
 				responseType: 'arraybuffer'
@@ -65,11 +67,11 @@ Meteor.methods({
 
 				const arrayBuffer = response.data;
 				const byteArray = new Uint8Array(arrayBuffer);
-				console.log(byteArray);
+				future['return'](byteArray);
 			});
 		} else {
 			await drive.files.export({
-				fileId,
+				fileId: file.id,
 				mimeType: 'text/csv'
 			}, {
 				responseType: 'arraybuffer'
@@ -81,8 +83,10 @@ Meteor.methods({
 
 				const arrayBuffer = response.data;
 				const byteArray = new Uint8Array(arrayBuffer);
-				console.log(byteArray);
+				future['return'](byteArray);
 			});
 		}
+
+		return future.wait();
 	}
 });
