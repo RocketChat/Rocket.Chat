@@ -3,18 +3,20 @@ Template.loginFooter.onCreated(function() {
 
 	const suggestLanguage = language => TAPi18n._loadLanguage(language).then(() => this.suggestedLanguage.set(language));
 
-	const userLanguage = localStorage.getItem('userLanguage');
-	const serverLanguage = RocketChat.settings.get('Language') || 'en';
+	this.autorun(() => {
+		const userLanguage = localStorage.getItem('userLanguage');
+		const serverLanguage = RocketChat.settings.get('Language') || 'en';
 
-	if (userLanguage !== serverLanguage) {
-		suggestLanguage(serverLanguage);
-		return;
-	}
+		if (userLanguage !== serverLanguage) {
+			suggestLanguage(serverLanguage);
+			return;
+		}
 
-	if (!/^en/.test(userLanguage)) {
-		suggestLanguage('en');
-		return;
-	}
+		if (!/^en/.test(userLanguage)) {
+			suggestLanguage('en');
+			return;
+		}
+	});
 });
 
 Template.loginFooter.helpers({
