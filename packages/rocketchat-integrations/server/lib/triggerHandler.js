@@ -89,11 +89,11 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			history.data = { ...data };
 
 			if (data.user) {
-				history.data.user = _.omit(data.user, ['meta', 'services']);
+				history.data.user = _.omit(data.user, ['services']);
 			}
 
 			if (data.room) {
-				history.data.room = _.omit(data.room, ['meta']);
+				history.data.room = data.room;
 			}
 		}
 
