@@ -70,8 +70,14 @@ Meteor.startup(() => {
 	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
 
 	Tracker.autorun(() => {
+		const defaultLanguage = getUserLanguage() || getServerLanguage() || 'en';
+
 		if (!currentLanguage.get()) {
-			setLanguage(getUserLanguage() || getServerLanguage() || 'en');
+			setLanguage(defaultLanguage);
+		}
+
+		if (getUserLanguage() && getUserLanguage() !== currentLanguage.get()) {
+			setLanguage(getUserLanguage());
 		}
 
 		applyLanguage(currentLanguage.get());
