@@ -81,6 +81,7 @@ Template.messagePopup.onCreated(function() {
 		if (previous != null) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			previous.className += ' selected sidebar-item__popup-active';
+			previous.scrollIntoView(false);
 			return template.value.set(previous.getAttribute('data-id'));
 		}
 	};
@@ -90,6 +91,7 @@ Template.messagePopup.onCreated(function() {
 		if (next && next.classList.contains('popup-item')) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			next.className += ' selected sidebar-item__popup-active';
+			next.scrollIntoView(false);
 			return template.value.set(next.getAttribute('data-id'));
 		}
 	};
