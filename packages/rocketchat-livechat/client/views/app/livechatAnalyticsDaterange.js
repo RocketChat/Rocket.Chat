@@ -12,21 +12,9 @@ Template.livechatAnalyticsDaterange.helpers({
 	}
 });
 
-Template.livechatAnalyticsDaterange.onRendered(function() {});
-
 Template.livechatAnalyticsDaterange.events({
 	'change input'({currentTarget}) {
-		// const name = currentTarget.getAttribute('name');
 		const value = currentTarget.getAttribute('type') === 'checkbox' ? currentTarget.checked : currentTarget.value;
-
-		// console.log(name);
-		// console.log(value);
-		//
-		// document.getElementsByClassName('lc-date-picker-btn')[0].value = value;
-		//
-		// const today = moment().format('MMM D YYYY');
-		//
-		// console.log(today);
 
 		popover.close();
 
@@ -46,13 +34,13 @@ Template.livechatAnalyticsDaterange.events({
 				popover.open(config);
 				break;
 			case 'this-week':
-				setDateRange(value, moment().startOf('week').format('MMM D YYYY'), moment().format('MMM D YYYY'));
+				setDateRange(value, moment().startOf('week').format('MMM D YYYY'), moment().endOf('week').format('MMM D YYYY'));
 				break;
 			case 'prev-week':
 				setDateRange(value, moment().subtract(1, 'weeks').startOf('week').format('MMM D YYYY'), moment().subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
 				break;
 			case 'this-month':
-				setDateRange(value, moment().startOf('month').format('MMM D YYYY'), moment().format('MMM D YYYY'));
+				setDateRange(value, moment().startOf('month').format('MMM D YYYY'), moment().endOf('month').format('MMM D YYYY'));
 				break;
 			case 'prev-month':
 				setDateRange(value, moment().subtract(1, 'months').startOf('month').format('MMM D YYYY'), moment().subtract(1, 'months').endOf('month').format('MMM D YYYY'));

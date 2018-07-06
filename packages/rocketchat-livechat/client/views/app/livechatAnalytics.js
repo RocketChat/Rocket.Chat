@@ -4,7 +4,7 @@ import moment from 'moment';
 import Chart from 'chart.js/src/chart.js';
 
 let templateInstance;		// current template instance/context
-let chartContext;
+let chartContext;			// stores context of current chart, used to clean when redrawing
 
 const chartConfiguration = {
 	layout: {
@@ -56,48 +56,48 @@ const chartConfiguration = {
 	responsiveAnimationDuration: 0 // animation duration after a resize
 };
 
+// analytics all options and their associated chart/overview options
 const analyticsAllOptions = [{
 	name: 'Conversations',
 	value: 'conversations',
 	chartOptions: [{
-		name: 'Total Conversations',
+		name: 'Total_conversations',
 		value: 'total-conversations'
 	}],
-	analyticsOptions: [[{
-		title: 'Total Conversations'
+	analyticsOverviewOptions: [[{
+		title: 'Total_conversations'
 	}, {
-		title: 'Open Conversations'
+		title: 'Open_conversations'
 	}], [{
-		title: 'Total Messages'
+		title: 'Total_messages'
 	}, {
-		title: 'Busiest Day'
+		title: 'Busiest_day'
 	}], [{
-		title: 'Conversations per day'
+		title: 'Conversations_per_day'
 	}, {
-		title: 'Busiest Time'
+		title: 'Busiest_time'
 	}]]
 }, {
 	name: 'Productivity',
 	value: 'productivity',
 	chartOptions: [{
-		name: 'First resposnse time',
+		name: 'First_response_time',
 		value: 'first-response-time'
 	}, {
-		name: 'Avg Resposnse time',
+		name: 'Avg_response_time',
 		value: 'avg-response-time'
 	}, {
-		name: 'Avg Reaction time',
+		name: 'Avg_reaction_time',
 		value: 'avg-reaction-time'
 	}],
-	analyticsOptions: [[{
-		title: 'Response Time'
+	analyticsOverviewOptions: [[{
+		title: 'Avg_response_time'
 	}], [{
-		title: 'First Response Time'
+		title: 'First_response_time'
 	}], [{
-		title: 'Reaction Time'
+		title: 'Avg_reaction_time'
 	}]]
 }];
-
 
 function drawLineChart(chartLabel, dataLabels, dataPoints) {
 	const chart = document.getElementById('lc-analytics-chart');
@@ -128,9 +128,7 @@ function drawLineChart(chartLabel, dataLabels, dataPoints) {
 }
 
 function updateAnalyticsChart() {
-	console.log('updating chart ******');
-
-	Meteor.call('livechat:getAnalyticsChartData', {daterange: templateInstance.daterange.get(), chartOptions: templateInstance.analyticsOptions.get().chartOptions}, function(error, result) {
+	Meteor.call('livechat:getAnalyticsChartData', {daterange: templateInstance.daterange.get(), chartOptions: templateInstance.chartOptions.get()}, function(error, result) {
 		if (error) {
 			return handleError(error);
 		}
@@ -140,9 +138,7 @@ function updateAnalyticsChart() {
 }
 
 function updateAnalyticsOverview() {
-	console.log('updating overview ******');
-
-	Meteor.call('livechat:getAnalyticsOverviewData', {daterange: templateInstance.daterange.get(), analyticsOptions: templateInstance.analyticsOptions.get().analyticsOptions}, (error, result) => {
+	Meteor.call('livechat:getAnalyticsOverviewData', {daterange: templateInstance.daterange.get(), analyticsOverviewOptions: templateInstance.analyticsOptions.get().analyticsOverviewOptions}, (error, result) => {
 		if (error) {
 			return handleError(error);
 		}
@@ -152,20 +148,18 @@ function updateAnalyticsOverview() {
 }
 
 function setDateRange(value, from, to) {
-	console.log('---------------- setdr called ................');
 	if (value && from && to) {
 		templateInstance.daterange.set({value, from, to});
 	} else {
 		templateInstance.daterange.set({
 			value: 'this-week',
 			from: moment().startOf('week').format('MMM D YYYY'),
-			to: moment().format('MMM D YYYY')
+			to: moment().endOf('week').format('MMM D YYYY')
 		});
 	}
 }
 
 function updateDateRange(order) {
-	console.log('updating datarange]]]]]]]]]]]');
 	const currentDaterange = templateInstance.daterange.get();
 
 	switch (currentDaterange.value) {
@@ -191,6 +185,8 @@ function updateDateRange(order) {
 					moment(new Date(currentDaterange.to)).subtract(1, 'months').endOf('month').format('MMM D YYYY'));
 			}
 			break;
+		case 'custom':
+			handleError({details: {errorTitle: 'Navigation_didnot_work'}, error: 'You_have_selected_custom_dates'});
 	}
 }
 
@@ -201,9 +197,6 @@ Template.livechatAnalytics.helpers({
 	analyticsAllOptions() {
 		return analyticsAllOptions;
 	},
-	// chartOptions() {
-	// 	return Template.instance().chartOptions.get();
-	// },
 	analyticsOptions() {
 		return templateInstance.analyticsOptions.get();
 	},
@@ -211,62 +204,38 @@ Template.livechatAnalytics.helpers({
 		return templateInstance.daterange.get();
 	},
 	selected(value) {
-		console.log('check if selected?');
-		console.log(value);
 		if (value === templateInstance.analyticsOptions.get().value || value === templateInstance.chartOptions.get().value) { return 'selected'; }
 		return false;
 	}
 });
 
 
-
 Template.livechatAnalytics.onCreated(function() {
 	templateInstance = Template.instance();
 
-	console.log('Main template rendered!!');
 	this.analyticsOverviewData = new ReactiveVar();
 	this.daterange = new ReactiveVar({});
-	this.analyticsOptions = new ReactiveVar(analyticsAllOptions[0]);
-	this.chartOptions = new ReactiveVar(analyticsAllOptions[0].chartOptions[0]);
+	this.analyticsOptions = new ReactiveVar(analyticsAllOptions[0]);		// default selected first
+	this.chartOptions = new ReactiveVar(analyticsAllOptions[0].chartOptions[0]);		// default selected first
 
 	this.autorun(() => {
 		setDateRange();
-
-		// this.chartOptions.set(analyticsAllOptions.filter(function(obj) {
-		// 	return obj.selected && obj.selected === true;
-		// })[0].chartOptions);
-
-
 	});
 });
 
 Template.livechatAnalytics.onRendered(() => {
-	const elem = document.getElementById('lc-analytics-options');
-	const analyticsOption = elem.options[elem.selectedIndex].value;
-	console.log(`Selected value: ${ analyticsOption }`);
-
-	console.log(moment().startOf('week').format('MMM D YYYY'));
-	console.log(moment().format('MMM D YYYY'));
-
 	Tracker.autorun(() => {
-		console.log('autorun tracker -----------');
-		// console.log(templateInstance.daterange.get());
-		// console.log('autorun tracker ==========');
-		// console.log(templateInstance.analyticsOptions.get());
+		if (templateInstance.analyticsOptions.get()) {
+			templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
+		}
 		if (templateInstance.daterange.get() && templateInstance.analyticsOptions.get()) {
-			// updateAnalyticsChart();
 			updateAnalyticsOverview();
 		}
 
 	});
 
 	Tracker.autorun(() => {
-		// console.log('autorun tracker -----------');
-		// console.log(templateInstance.daterange.get());
-		console.log('autorun tracker ==========');
-		// console.log(templateInstance.analyticsOptions.get());
-
-		if (templateInstance.chartOptions.get()) {
+		if (templateInstance.daterange.get() && templateInstance.chartOptions.get()) {
 			updateAnalyticsChart();
 		}
 	});
@@ -275,7 +244,6 @@ Template.livechatAnalytics.onRendered(() => {
 Template.livechatAnalytics.events({
 	'click .lc-date-picker-btn'(e) {
 		e.preventDefault();
-		//alert('pick date');
 		const options = [];
 		const config = {
 			template: 'livechatAnalyticsDaterange',
@@ -299,31 +267,13 @@ Template.livechatAnalytics.events({
 		updateDateRange(1);
 	},
 	'change #lc-analytics-options'({currentTarget}) {
-
 		templateInstance.analyticsOptions.set(analyticsAllOptions.filter(function(obj) {
 			return obj.value === currentTarget.value;
 		})[0]);
-
-		// updateAnalyticsChart();
-		// updateAnalyticsOverview();
 	},
 	'change #lc-analytics-chart-options'({currentTarget}) {
-		// console.log('changed chart input');
-		// console.log(currentTarget.value);
-
 		templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions.filter(function(obj) {
 			return obj.value === currentTarget.value;
 		})[0]);
-
-		// updateAnalyticsChart();
 	}
 });
-
-//
-// Template.livechatAnalytics.onRendered(function() {
-// 	console.log('Chart options:');
-// 	console.log(templateInstance.analyticsOptions.get().chartOptions);
-//
-// 	updateAnalyticsChart();
-// 	updateAnalyticsOverview();
-// });

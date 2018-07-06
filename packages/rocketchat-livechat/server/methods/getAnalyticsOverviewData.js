@@ -5,40 +5,43 @@ Meteor.methods({
 		}
 
 		// get overview here..
-		console.log(options);
+		console.log('daterange');
+		console.log(options.daterange);
+		console.log('overview options');
+		console.log(options.analyticsOverviewOptions);
 
 		const data1 = [[{
-			title: 'Total Conversations',
+			title: 'Total_conversations',
 			value: parseInt(Math.random()*3333, 10)
 		}, {
-			title: 'Open Conversations',
+			title: 'Open_conversations',
 			value: parseInt(Math.random()*33, 10)
 		}], [{
-			title: 'Total Messages',
+			title: 'Total_messages',
 			value: parseInt(Math.random()*57792, 10)
 		}, {
-			title: 'Busiest Day',
+			title: 'Busiest_day',
 			value: 'Tuesday'
 		}], [{
-			title: 'Conversations per day',
+			title: 'Conversations_per_day',
 			value: Math.round(Math.random()*330*100)/100
 		}, {
-			title: 'Busiest Time',
+			title: 'Busiest_time',
 			value: '11am-12am'
 		}]];
 
 		const data2 = [[{
-			title: 'Response Time',
+			title: 'Avg_response_time',
 			value: Math.round(Math.random()*30*100)/100
 		}], [{
-			title: '1st Response Time',
+			title: 'First_response_time',
 			value: Math.round(Math.random()*10*100)/100
 		}], [{
-			title: 'Reaction Time',
+			title: 'Avg_reaction_time',
 			value: Math.round(Math.random()*20*100)/100
 		}]];
 
-		if (options.analyticsOptions[0][0].title === 'Total Conversations') {
+		if (options.analyticsOverviewOptions[0][0].title === 'Total_conversations') {
 			return data1;
 		}
 

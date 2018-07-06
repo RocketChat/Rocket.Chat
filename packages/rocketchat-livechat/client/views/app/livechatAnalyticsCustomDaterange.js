@@ -24,7 +24,7 @@ Template.livechatAnalyticsCustomDaterange.events({
 		if (moment(from).isValid() && moment(to).isValid()) {
 			setDateRange('custom', moment(new Date(from)).format('MMM D YYYY'), moment(new Date(to)).format('MMM D YYYY'));
 		} else {
-			handleError({details: {errorTitle: 'Invalid dates'}, error: 'Didnot select dates'});
+			handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Error_in_custom_dates'});
 		}
 
 		popover.close();
