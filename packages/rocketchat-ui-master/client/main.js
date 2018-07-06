@@ -1,4 +1,4 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
@@ -190,7 +190,6 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
