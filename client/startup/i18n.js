@@ -28,8 +28,8 @@ Meteor.startup(() => {
 	const getUserLanguage = () => (Meteor.userId() && Meteor.user() && Meteor.user().language);
 
 	const loadMomentLocale = language => new Promise((resolve, reject) => {
-		if (language === 'en') {
-			resolve('en');
+		if (moment.locales().includes(language.toLowerCase())) {
+			resolve(language);
 			return;
 		}
 
