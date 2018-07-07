@@ -17,7 +17,7 @@ html.rtl .attachment {
 	}
 
 	& .attachment-download-icon,
-	& .icon-drive-upload {
+	& .icon-google-drive-upload {
 		margin-right: 5px;
 		margin-left: auto;
 	}
@@ -130,7 +130,7 @@ html.rtl .attachment {
 	}
 
 	& .attachment-download-icon,
-	& .icon-drive-upload {
+	& .icon-google-drive-upload {
 		margin-left: 5px;
 		padding: 2px 5px;
 
@@ -138,7 +138,7 @@ html.rtl .attachment {
 		border-radius: 5px;
 	}
 
-	& .icon-drive-upload {
+	& .icon-google-drive-upload {
 		cursor: pointer;
 	}
 

@@ -661,7 +661,23 @@ Template.room.events({
 		}
 	},
 
-	'click .icon-drive-upload'(e) {
+	'click .google-drive-upload'(e) {
+
+		function disable() {
+			$('.icon-google-drive-upload').removeClass('google-drive-upload');
+			$('.icon-google-drive-upload').css('cursor', 'auto');
+			$(e.target).removeClass('icon-google');
+			$(e.target).addClass('icon-spinner');
+		}
+
+		function enable() {
+			$('.icon-google-drive-upload').addClass('google-drive-upload');
+			$('.icon-google-drive-upload').css('cursor', 'pointer');
+			$(e.target).addClass('icon-google');
+			$(e.target).removeClass('icon-spinner');
+		}
+
+		disable();
 		const url = e.target.getAttribute('data-url');
 		const title = e.target.getAttribute('data-title');
 		const type = e.target.getAttribute('data-type');
@@ -681,30 +697,43 @@ Template.room.events({
 				const fileData = new Uint8Array(arrayBuffer);
 				Meteor.call('checkDriveAccess', (error) => {
 					if (error && error.error !== 'error-unauthenticated-user') {
+						enable();
 						return toastr.error(t(error.error));
 					} else if (error) {
 						Meteor.loginWithGoogle({
 							requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
 						}, function(error) {
 							if (error) {
+								enable();
 								return;
 							}
-							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
+							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
+								enable();
 								if (error) {
 									return toastr.error(t(error.error));
+								} else if (status === false) {
+									return toastr.error(t('Failed_Drive_Upload'));
+								} else {
+									return toastr.success(t('Success_Drive_Upload'));
 								}
-								toastr.success(t('Success_Drive_Upload'));
 							});
 						});
 					} else {
-						Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
+						Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
+							enable();
 							if (error) {
 								return toastr.error(t(error.error));
+							} else if (status === false) {
+								return toastr.error(t('Failed_Drive_Upload'));
+							} else {
+								return toastr.success(t('Success_Drive_Upload'));
 							}
-							toastr.success(t('Success_Drive_Upload'));
 						});
 					}
 				});
+			} else {
+				enable();
+				return toastr.error(t('Failed_Drive_Upload'));
 			}
 		};
 
