@@ -104,6 +104,8 @@
   "Accounts_OAuth_Github_secret": "Client Secret",
   "Accounts_OAuth_Gitlab": "OAuth Enabled",
   "Accounts_OAuth_Gitlab_callback_url": "GitLab Callback URL",
+  "Accounts_OAuth_Google_Drive_Access": "Google Drive",
+  "Accounts_OAuth_Google_Picker_key": "Google Picker Key",
   "Accounts_OAuth_Gitlab_id": "GitLab Id",
   "Accounts_OAuth_Gitlab_secret": "Client Secret",
   "Accounts_OAuth_Google": "Google Login",
