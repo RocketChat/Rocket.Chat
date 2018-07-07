@@ -97,11 +97,11 @@ Object.assign(FileUpload, {
 				metadata = {};
 			}
 
-			s.toFormat(sharp.format.jpeg)
+			s.toFormat(sharp.format.png)
 				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
 				.pipe(sharp()
 					.resize(height, height)
-					.background('#FFFFFF')
+					.background({ r: 0, g: 0, b: 0, alpha: 0 })
 					.embed()
 				)
 				// Use buffer to get the result in memory then replace the existing file
