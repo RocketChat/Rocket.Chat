@@ -668,6 +668,7 @@ Template.room.events({
 			$('.icon-google-drive-upload').css('cursor', 'auto');
 			$(e.target).removeClass('icon-google');
 			$(e.target).addClass('icon-spinner');
+			$(e.target).text(t('Uploading_file'));
 		}
 
 		function enable() {
@@ -675,6 +676,7 @@ Template.room.events({
 			$('.icon-google-drive-upload').css('cursor', 'pointer');
 			$(e.target).addClass('icon-google');
 			$(e.target).removeClass('icon-spinner');
+			$(e.target).text(t('Drive'));
 		}
 
 		disable();
