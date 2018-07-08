@@ -255,7 +255,7 @@
 	}
 
 	& table {
-		overflow: hidden;
+		overflow-y: hidden;
 
 		width: 100%;
 		margin-bottom: 30px;

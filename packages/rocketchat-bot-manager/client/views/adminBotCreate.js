@@ -13,7 +13,7 @@ Template.adminBotCreate.helpers({
 		return Template.instance().bot;
 	},
 
-	role() {
+	roles() {
 		const roles = Template.instance().roles.get();
 		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
 	},

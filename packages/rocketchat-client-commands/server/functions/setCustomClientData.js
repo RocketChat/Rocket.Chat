@@ -1,3 +1,7 @@
+/**
+ * Updates the user model with data about the custom client being used by the user
+ * Useful to know if a logged in user will respond to certain ClientCommands
+ */
 RocketChat.setCustomClientData = function(user, clientData) {
 	if (clientData.canPauseResumeMsgStream && clientData.pausedMsgStream === undefined) {
 		clientData.pausedMsgStream = false;

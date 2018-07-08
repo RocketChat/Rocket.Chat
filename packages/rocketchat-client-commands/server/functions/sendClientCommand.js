@@ -2,12 +2,20 @@ import _ from 'underscore';
 
 const commandStream = new Meteor.Streamer('client-commands');
 
+/**
+ * Sends a ClientCommand object to the user via the client-commands stream
+ * @param {Object} user Object of the target user
+ * @param {Object} command Command to be sent, must have a 'key' property of type String
+ * @param {Number} timeout Number of seconds until timeout, defaults to 5
+ */
 RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 	const promise = new Promise((resolve, reject) => {
 		check(user, Object);
 		check(command, Object);
 		check(command.key, String);
+		check(timeout, Number);
 
+		// Must have the _id and username properties
 		if (user._id === undefined || user.username === undefined) {
 			const error = new Meteor.Error('error-invalid-user', 'Invalid user', {
 				function: 'sendClientCommand'
@@ -34,9 +42,6 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 			reject(error);
 		}, msTimeout);
 
-		// emits the command to the user
-		commandStream.emit(user._id, clientCommand);
-
 		// adds listener for a response event coming from replyClientCommand
 		// if the response times out, the listener is removed by timeoutFunction
 		RocketChat.on(`client-command-response-${ clientCommand._id }`, (replyUser, response) => {
@@ -47,6 +52,9 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 			RocketChat.removeAllListeners(`client-command-response-${ clientCommand._id }`);
 			resolve(response);
 		});
+
+		// emits the command to the user
+		commandStream.emit(user._id, clientCommand);
 	});
 
 	return promise;

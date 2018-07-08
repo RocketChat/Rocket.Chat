@@ -414,6 +414,8 @@
   "Bot_Stats_Hubot_Brain_Users_description": "Number of users stored in the Hubot brain",
   "Bot_Stats_Latest_Read": "Latest Message Read",
   "Bot_Stats_Latest_Read_description": "Latest time when a message was red",
+  "Bot_Stats_Mention_Count": "Mention Count",
+  "Bot_Stats_Mention_Count_description": "Number of times the account has been mentioned in a message",
   "Bot_Stats_Read_Messages": "Read Messages",
   "Bot_Stats_Read_Messages_description": "Number of messages read by the bot",
   "Bot_Stats_refreshed": "Statistics refreshed",

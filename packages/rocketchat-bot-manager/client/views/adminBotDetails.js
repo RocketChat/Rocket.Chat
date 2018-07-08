@@ -8,6 +8,9 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.changed = new ReactiveVar(false);
 	this.ping = new ReactiveVar(undefined);
 
+	/**
+	 * Get new values of editable fields when saving the changes
+	 */
 	this.updateBot = () => {
 		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
 			return;
@@ -21,6 +24,30 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		this.bot.set(bot);
 	};
 
+	this.loadStatistics = () => {
+		const bot = this.bot.get();
+		Meteor.call('getBotServerStats', bot, (err, statistics) => {
+			if (err) {
+				return handleError(err);
+			}
+			const currentStats =_.assign(this.statistics.get(), statistics);
+			this.statistics.set(currentStats);
+		});
+		if (this.isOnline()) {
+			Meteor.call('getBotLiveStats', bot, (err, statistics) => {
+				if (err) {
+					return handleError(err);
+				}
+				const currentStats =_.assign(this.statistics.get(), statistics);
+				this.statistics.set(currentStats);
+			});
+		}
+	};
+
+	/**
+	 * Retrieves the bot account from the database and makes first call
+	 * to get its statistics
+	 */
 	this.autorun(() => {
 		const username = this.data && this.data.params && this.data.params().username;
 
@@ -29,18 +56,13 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (sub.ready()) {
 				let bot;
 
-				if (RocketChat.authz.hasAllPermission('view-full-bot-account')) {
+				if (RocketChat.authz.hasAllPermission('manage-bot-account')) {
 					bot = Meteor.users.findOne({ username });
 				}
 
 				if (bot) {
 					this.bot.set(bot);
-					Meteor.call('getBotStatistics', bot, (err, statistics) => {
-						if (err) {
-							return handleError(err);
-						}
-						this.statistics.set(statistics);
-					});
+					this.loadStatistics();
 				} else {
 					toastr.error(TAPi18n.__('Bot_not_found'));
 					FlowRouter.go('admin-bots');
@@ -49,15 +71,19 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		}
 	});
 
+	/**
+	 * Checks whether the bot is online
+	 */
 	this.isOnline = () => {
 		const bot = this.bot.get();
-		if (bot.statusConnection && bot.statusConnection !== 'offline') {
-			return true;
-		}
-		return false;
+		return bot.statusConnection && bot.statusConnection !== 'offline';
 	};
 
-	// check  bot aliveness each 1500ms
+	/**
+	 * Calls pingBot each second, always waiting for the previous call to finish
+	 * or timeout, it then sets the ping variable to the value of the response time.
+	 * Also updates the 'now' reactiveVar, to refresh the uptime views in the front-end.
+	 */
 	this.autorun(() => {
 		let finished = true;
 		this.interval = Meteor.setInterval(() => {
@@ -100,12 +126,13 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 });
 
 Template.adminBotDetails.onDestroyed(function _adminBotDetailsOnDestroyed() {
+	// Clearing the interval which calls pingBot and updates 'now'
 	Meteor.clearInterval(this.interval);
 });
 
 Template.adminBotDetails.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('view-full-bot-account');
+		return RocketChat.authz.hasAllPermission('manage-bot-account');
 	},
 
 	getName() {
@@ -124,7 +151,7 @@ Template.adminBotDetails.helpers({
 		if (isOnline && bot.customClientData && bot.customClientData.framework) {
 			return bot.customClientData.framework;
 		}
-		return 'Undefined';
+		return TAPi18n.__('Undefined');
 	},
 
 	getRoles() {
@@ -201,7 +228,7 @@ Template.adminBotDetails.helpers({
 		return cursor.length === 0 ? 'disabled' : '';
 	},
 
-	rolesCursor() {
+	availableRoles() {
 		const bot = Template.instance().bot.get();
 		if (!bot.roles) {
 			return [];
@@ -291,14 +318,8 @@ Template.adminBotDetails.events({
 
 	'click .refresh': (e, t) => {
 		$(e.currentTarget).closest('button').addClass('disabled');
-		Meteor.call('getBotStatistics', t.bot.get(), (err, statistics) => {
-			$(e.currentTarget).closest('button').removeClass('disabled');
-			if (err) {
-				return handleError(err);
-			}
-			toastr.success(TAPi18n.__('Bot_Stats_refreshed'));
-			t.statistics.set(statistics);
-		});
+		t.loadStatistics();
+		toastr.success(TAPi18n.__('Bot_Stats_refreshed'));
 	},
 
 	'click .expand': (e) => {

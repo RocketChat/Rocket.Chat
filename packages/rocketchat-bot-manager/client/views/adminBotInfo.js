@@ -110,13 +110,10 @@ Template.adminBotInfo.events({
 });
 
 Template.adminBotInfo.onCreated(function() {
-	this.now = new ReactiveVar(moment());
 	this.bot = new ReactiveVar;
 	this.loadingBotInfo = new ReactiveVar(true);
 	this.loadedBotUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
-
-	Meteor.setInterval(() => this.now.set(moment()), 30000);
 
 	this.autorun(() => {
 		const username = this.loadedBotUsername.get();

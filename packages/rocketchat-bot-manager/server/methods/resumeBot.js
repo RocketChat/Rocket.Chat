@@ -2,7 +2,7 @@ Meteor.methods({
 	async resumeBot(bot) {
 		check(bot, Object);
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-bot-client') !== true) {
+		if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'pauseBot'
 			});
