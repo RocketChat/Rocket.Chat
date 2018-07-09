@@ -5,9 +5,9 @@
             {{#if title}}
                 <div class="attachment-title">
                     {{#if title_link}}
-                        <a href="{{fixLivechatUpload title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
+                        <a href="{{title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
                         {{#if title_link_download}}
-                            <a class="icon-download attachment-download-icon" href="{{fixLivechatUpload title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
+                            <a class="icon-download attachment-download-icon" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
                         {{/if}}
                     {{else}}
                         {{title}}
@@ -18,8 +18,8 @@
             {{#if image_url}}
                 <div class="attachment-image">
                     <figure>
-                        <div class="inline-image" style="background-image: url('{{fixLivechatUpload image_url}}');">
-                            <img src="{{fixLivechatUpload image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
+                        <div class="inline-image" style="background-image: url('{{image_url}}');">
+                            <img src="{{image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
                         </div>
                         {{#if description}}
                             <figcaption class="attachment-description">{{description}}</figcaption>
@@ -31,7 +31,7 @@
             {{#if audio_url}}
                 <div class="attachment-audio">
                     <audio controls>
-                        <source src="{{fixLivechatUpload audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+                        <source src="{{audio_url}}" type="{{audio_type}}" data-description="{{description}}">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
@@ -40,7 +40,7 @@
             {{#if video_url}}
                 <div class="attachment-video">
                     <video controls class="inline-video">
-                        <source src="{{fixLivechatUpload video_url}}" type="{{video_type}}" data-description="{{description}}">
+                        <source src="{{video_url}}" type="{{video_type}}" data-description="{{description}}">
                         Your browser does not support the video element.
                     </video>
                 </div>
@@ -53,7 +53,7 @@
             {{/unless}}
 
             {{#each attachments}}
-                {{injectIndex . ../index @index}} {{> messageAttachment}}
+                {{> messageAttachment}}
             {{/each}}
         </div>
     </div>

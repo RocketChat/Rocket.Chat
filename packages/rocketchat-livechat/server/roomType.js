@@ -21,8 +21,8 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		return { title, text };
 	}
 
-	allowFileUpload(allowData) {
-		const { rc_token, rc_rid } = allowData;
+	canAccessUploadedFile(accessData) {
+		const { rc_token, rc_rid } = accessData;
 		return rc_token && rc_rid && RocketChat.models.Rooms.findOneOpenByVisitorToken(rc_token, rc_rid);
 	}
 }

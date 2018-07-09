@@ -10,13 +10,10 @@
 				{{/if}}
 			</span>
 			<div class="body" dir="auto">
-				{{#if hasAttachments}}
-					{{#each attachments}}
-						{{injectIndex . @index}} {{> messageAttachment}}
-					{{/each}}				
-				{{else}}
-					{{{body}}}
-				{{/if}}	
+				{{{body}}}
+				{{#each attachments}}
+					{{> messageAttachment}}
+				{{/each}}
 				<span class="info">
 					<span class="time">{{time}}</span>
 					{{#if edit}}
