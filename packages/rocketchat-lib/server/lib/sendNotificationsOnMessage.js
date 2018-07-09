@@ -130,7 +130,7 @@ const sendNotification = ({
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
-				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });
+				sendEmail({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser });
 
 				return true;
 			}
