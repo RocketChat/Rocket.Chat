@@ -16791,6 +16791,50 @@
           ]
         }
       ]
+    },
+    "0.66.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11359",
+          "title": "Send setting Allow_Marketing_Emails to statistics collector",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11364",
+          "title": "Regression: Fix migration 125 checking for settings field",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11365",
+          "title": "[FIX] Remove file snap store doesn't like",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.66.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11266",
+          "title": "[FIX] Livechat not sending desktop notifications",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.2",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
