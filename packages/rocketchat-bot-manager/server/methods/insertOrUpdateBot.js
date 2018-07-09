@@ -1,6 +1,5 @@
 Meteor.methods({
 	insertOrUpdateBot(botData) {
-
 		check(botData, Object);
 
 		if (!Meteor.userId()) {

@@ -24,8 +24,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		this.bot.set(bot);
 	};
 
-	this.loadStatistics = () => {
-		const bot = this.bot.get();
+	this.loadStatistics = (bot) => {
 		Meteor.call('getBotServerStats', bot, (err, statistics) => {
 			if (err) {
 				return handleError(err);
@@ -33,7 +32,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			const currentStats =_.assign(this.statistics.get(), statistics);
 			this.statistics.set(currentStats);
 		});
-		if (this.isOnline()) {
+		if (this.isOnline(bot)) {
 			Meteor.call('getBotLiveStats', bot, (err, statistics) => {
 				if (err) {
 					return handleError(err);
@@ -62,9 +61,8 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 
 				if (bot) {
 					this.bot.set(bot);
-					this.loadStatistics();
+					this.loadStatistics(bot);
 				} else {
-					toastr.error(TAPi18n.__('Bot_not_found'));
 					FlowRouter.go('admin-bots');
 				}
 			}
@@ -74,8 +72,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	/**
 	 * Checks whether the bot is online
 	 */
-	this.isOnline = () => {
-		const bot = this.bot.get();
+	this.isOnline = (bot) => {
 		return bot.statusConnection && bot.statusConnection !== 'offline';
 	};
 
@@ -86,13 +83,14 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	 */
 	this.autorun(() => {
 		let finished = true;
+		const bot = this.bot.get();
 		this.interval = Meteor.setInterval(() => {
 			this.now.set(new Date());
-			if (!finished || !this.isOnline()) {
+			if (!finished || !this.isOnline(bot)) {
 				return;
 			}
 			finished = false;
-			Meteor.call('pingBot', this.bot.get(), (err, ping) => {
+			Meteor.call('pingBot', bot, (err, ping) => {
 				if (err) {
 					this.ping.set(Infinity);
 				} else {
@@ -147,7 +145,7 @@ Template.adminBotDetails.helpers({
 
 	getFramework() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		if (isOnline && bot.customClientData && bot.customClientData.framework) {
 			return bot.customClientData.framework;
 		}
@@ -161,25 +159,26 @@ Template.adminBotDetails.helpers({
 
 	canPause() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		return isOnline && bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		if (isOnline && bot.customClientData) {
 			return bot.customClientData.pausedMsgStream;
 		}
 	},
 
 	isOnline() {
-		return Template.instance().isOnline();
+		const bot = Template.instance().bot.get();
+		return Template.instance().isOnline(bot);
 	},
 
 	ipAddress() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		if (isOnline && bot.customClientData) {
 			return bot.customClientData.ipAddress;
 		}
@@ -187,7 +186,7 @@ Template.adminBotDetails.helpers({
 
 	canPing() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		return isOnline && bot.customClientData && bot.customClientData.canListenToHeartbeat;
 	},
 
@@ -206,7 +205,7 @@ Template.adminBotDetails.helpers({
 	activeUptime() {
 		const bot = Template.instance().bot.get();
 		const now = Template.instance().now.get();
-		const isOnline = Template.instance().isOnline();
+		const isOnline = Template.instance().isOnline(bot);
 		let diff = now.getTime() - bot.lastLogin.getTime();
 
 		if (isOnline && bot.customClientData.pausedMsgStream) {
@@ -249,7 +248,7 @@ Template.adminBotDetails.helpers({
 		return RocketChat.authz.hasAllPermission('delete-bot-account');
 	},
 
-	canChange() {
+	canConvert() {
 		return RocketChat.authz.hasAllPermission('edit-bot-account');
 	},
 
@@ -318,7 +317,7 @@ Template.adminBotDetails.events({
 
 	'click .refresh': (e, t) => {
 		$(e.currentTarget).closest('button').addClass('disabled');
-		t.loadStatistics();
+		t.loadStatistics(t.bot.get());
 		toastr.success(TAPi18n.__('Bot_Stats_refreshed'));
 	},
 
@@ -389,7 +388,7 @@ Template.adminBotDetails.events({
 		});
 	},
 
-	'click .rc-header__section-button > .change': (e, instance) => {
+	'click .rc-header__section-button > .convert': (e, instance) => {
 		const bot = instance.bot.get();
 
 		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
