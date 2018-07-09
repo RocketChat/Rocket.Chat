@@ -84,7 +84,7 @@ function getMessageLink(room, sub) {
 	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }">${ message }</a>`;
 }
 
-export function sendEmail({ message, user, subscription, room, emailAddress, toAll }) {
+export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
 	let emailSubject;
 	const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
 
@@ -93,13 +93,13 @@ export function sendEmail({ message, user, subscription, room, emailAddress, toA
 			user: username,
 			room: RocketChat.roomTypes.getRoomName(room.t, room)
 		});
-	} else if (toAll) {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
+	} else if (hasMentionToUser) {
+		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
 			user: username,
 			room: RocketChat.roomTypes.getRoomName(room.t, room)
 		});
 	} else {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
+		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
 			user: username,
 			room: RocketChat.roomTypes.getRoomName(room.t, room)
 		});
