@@ -1,6 +1,8 @@
+import {StatsD} from 'node-dogstatsd';
+
 RocketChat.statsTracker = new (class StatsTracker {
 	constructor() {
-		this.StatsD = Npm.require('node-dogstatsd').StatsD;
+		this.StatsD = StatsD;
 		this.dogstatsd = new this.StatsD();
 	}
 

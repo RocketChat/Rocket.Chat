@@ -1,3 +1,5 @@
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 /* globals menu*/
 
 Template.sideNav.helpers({
@@ -29,6 +31,15 @@ Template.sideNav.helpers({
 
 	loggedInUser() {
 		return !!Meteor.userId();
+	},
+
+	sidebarViewMode() {
+		const viewMode = RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode');
+		return viewMode ? viewMode : 'condensed';
+	},
+
+	sidebarHideAvatar() {
+		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
 	}
 });
 
@@ -41,15 +52,8 @@ Template.sideNav.events({
 		return SideNav.toggleCurrent();
 	},
 
-	'mouseenter .header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave .header'() {
-		return SideNav.leaveArrow();
-	},
-
 	'scroll .rooms-list'() {
+		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
@@ -61,7 +65,7 @@ Template.sideNav.events({
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-
+	lazyloadtick();
 	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
 	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
 	if (room !== undefined && room._id !== '') {
@@ -72,20 +76,15 @@ Template.sideNav.onRendered(function() {
 });
 
 Template.sideNav.onCreated(function() {
-	this.mergedChannels = new ReactiveVar(false);
+	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.roomsListExhibitionMode': 1,
-				'settings.preferences.mergeChannels': 1
+				'settings.preferences.sidebarGroupByType': 1
 			}
 		});
-		let userPref = null;
-		if (user && user.settings && user.settings.preferences) {
-			userPref = user.settings.preferences.roomsListExhibitionMode === 'category' && user.settings.preferences.mergeChannels;
-		}
-
-		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
+		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));
 	});
 });

@@ -16,7 +16,7 @@ apps:
     rocketchat-server:
         command: startRocketChat
         daemon: simple
-        plugs: [network, network-bind]
+        plugs: [network, network-bind, desktop]
     rocketchat-mongo:
         command: startmongo
         daemon: simple
@@ -38,27 +38,26 @@ apps:
         command: env LC_ALL=c initcaddy
 parts:
     node:
-        plugin: nodejs
-        node-engine: 8.8.1
+        plugin: dump 
+        prepare: ./resources/preparenode  
         build-packages:
             # For fibers
             - python
             - build-essential
             - nodejs
     rocketchat-server:
+        build-packages:
+            - curl
         plugin: dump
-        prepare: cd programs/server; npm install; cd npm/node_modules/meteor/rocketchat_google-vision; npm install grpc
+        prepare: ./resources/prepareRocketChat
         after: [node]
-        source: https://download.rocket.chat/build/rocket.chat-#{RC_VERSION}.tgz
-        source-type: tar
+        source: .
         stage-packages:
-            - graphicsmagick
+            - execstack
         stage:
             - programs
             - main.js
             - .node_version.txt
-            - usr
-            - lib
     mongodb:
         build-packages:
             - wget

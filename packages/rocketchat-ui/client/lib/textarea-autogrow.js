@@ -52,7 +52,7 @@
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
 				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
-					val += '<br />';
+					val += '<br/>';
 				}
 
 				shadow.css('width', $self.width());
@@ -67,13 +67,17 @@
 					return true;
 				}
 
+				var overflow = 'hidden';
 				if(maxHeight <= newHeight){
 					newHeight = maxHeight;
+					overflow = ''
+				} else {
+					overflow = 'hidden'
 				}
 
 				$self.stop().animate( { height: newHeight }, { duration: 100, complete: ()=> {
 					$self.trigger('autogrow', []);
-				}});
+				}}).css('overflow', overflow);
 
 				$self.trigger('autogrow', []);
 
@@ -82,7 +86,7 @@
 				}
 			};
 
-			$self.on('focus, change, keyup, keydown, input', update);
+			$self.on('focus change input', update);
 			$(window).resize(update);
 
 			update();

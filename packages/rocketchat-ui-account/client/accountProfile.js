@@ -8,13 +8,22 @@ const validateUsername = (username) => {
 	return reg.test(username);
 };
 const validateName = (name) => name.length;
+const validatePassword = (password, confirmationPassword) => {
+	if (!confirmationPassword) {
+		return true;
+	}
+
+	return password === confirmationPassword;
+};
+
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
 };
 const filterEmail = (old) => {
 	return old.replace(' ', '');
 };
+
 const setAvatar = function(event, template) {
 	const {blob, contentType, service} = this.suggestion;
 
@@ -37,6 +46,8 @@ const loginWith = function(event, template) {
 		template.getSuggestions();
 	});
 };
+const isUserEmailVerified = user => user.emails && user.emails[0] && user.emails[0].verified;
+const getUserEmailAddress = user => user.emails && user.emails[0] && user.emails[0].address;
 
 Template.accountProfile.helpers({
 	emailInvalid() {
@@ -50,6 +61,13 @@ Template.accountProfile.helpers({
 	},
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
+	},
+	confirmationPasswordInvalid() {
+		const { password, confirmationPassword } = Template.instance();
+		return !validatePassword(password.get(), confirmationPassword.get());
+	},
+	selectUrl() {
+		return Template.instance().url.get().trim() ? '' : 'disabled';
 	},
 	services() {
 		const suggestions = Template.instance().suggestions.get();
@@ -83,6 +101,7 @@ Template.accountProfile.helpers({
 		const realname = instance.realname.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
+		const confirmationPassword = instance.confirmationPassword.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -97,7 +116,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && !password) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -117,11 +136,14 @@ Template.accountProfile.helpers({
 	},
 	email() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].address;
+		return getUserEmailAddress(user);
 	},
 	emailVerified() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].verified;
+		return isUserEmailVerified(user);
+	},
+	allowRealNameChange() {
+		return RocketChat.settings.get('Accounts_AllowRealNameChange');
 	},
 	allowUsernameChange() {
 		return RocketChat.settings.get('Accounts_AllowUsernameChange') && RocketChat.settings.get('LDAP_Enable') !== true;
@@ -131,6 +153,10 @@ Template.accountProfile.helpers({
 	},
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
+	},
+	canConfirmNewPassword() {
+		const password = Template.instance().password.get();
+		return RocketChat.settings.get('Accounts_AllowPasswordChange') && password && password !== '';
 	},
 	allowAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
@@ -145,11 +171,13 @@ Template.accountProfile.onCreated(function() {
 	const user = Meteor.user();
 	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
-	self.email = new ReactiveVar(user.emails[0].address);
+	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
+	self.confirmationPassword = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
+	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 
 	RocketChat.Notifications.onLogged('updateAvatar', () => self.avatar.set());
@@ -182,7 +210,12 @@ Template.accountProfile.onCreated(function() {
 	this.save = function(typedPassword, cb) {
 		const avatar = self.avatar.get();
 		if (avatar) {
-			Meteor.call('setAvatarFromService', avatar.blob, avatar.contentType, avatar.service, function(err) {
+			const params = [avatar.blob];
+
+			params.push(avatar.contentType);
+
+			params.push(avatar.service);
+			Meteor.call('setAvatarFromService', ...params, function(err) {
 				if (err && err.details && err.details.timeToReset) {
 					toastr.error(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000)
@@ -203,7 +236,14 @@ Template.accountProfile.onCreated(function() {
 			data.newPassword = self.password.get();
 		}
 		if (s.trim(self.realname.get()) !== user.name) {
-			data.realname = s.trim(self.realname.get());
+			if (!RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+				toastr.remove();
+				toastr.error(t('RealName_Change_Disabled'));
+				instance.clearForm();
+				return cb && cb();
+			} else {
+				data.realname = s.trim(self.realname.get());
+			}
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!RocketChat.settings.get('Accounts_AllowUsernameChange')) {
@@ -215,7 +255,7 @@ Template.accountProfile.onCreated(function() {
 				data.username = s.trim(self.username.get());
 			}
 		}
-		if (s.trim(self.email.get()) !== (user.emails && user.emails[0] && user.emails[0].address)) {
+		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
 			if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
 				toastr.remove();
 				toastr.error(t('Email_Change_Disabled'));
@@ -238,7 +278,7 @@ Template.accountProfile.onCreated(function() {
 			if (results) {
 				toastr.remove();
 				toastr.success(t('Profile_saved_successfully'));
-				swal.close();
+				modal.close();
 				instance.clearForm();
 				self.password.set();
 			}
@@ -259,8 +299,6 @@ Template.accountProfile.onRendered(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();
 	});
-	$('.main-content').removeClass('rc-old');
-	// TODO: remove this line (:
 });
 
 const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
@@ -284,6 +322,23 @@ Template.accountProfile.events({
 				RocketChat.callbacks.run('userAvatarSet', 'initials');
 			}
 		});
+	},
+	'click .js-select-avatar-url'(e, instance, ...args) {
+		const url = instance.url.get().trim();
+		if (!url) {
+			return;
+		}
+		setAvatar.apply({
+			suggestion: {
+				service: 'url',
+				blob: url,
+				contentType: ''
+			}
+		}, [e, instance, ...args]);
+	},
+	'input .js-avatar-url-input'(e, instance) {
+		const text = e.target.value;
+		instance.url.set(text);
 	},
 	'click .js-select-avatar'(...args) {
 		this.suggestion ? setAvatar.apply(this, args) : loginWith.apply(this, args);
@@ -313,6 +368,13 @@ Template.accountProfile.events({
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);
+
+		if (e.target.value.length === 0) {
+			instance.confirmationPassword.set('');
+		}
+	},
+	'input [name=confirmation-password]'(e, instance) {
+		instance.confirmationPassword.set(e.target.value);
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
@@ -322,12 +384,12 @@ Template.accountProfile.events({
 
 		const send = $(e.target.send);
 		send.addClass('loading');
-		const reqPass = ((email !== (user && user.emails && user.emails[0] && user.emails[0].address))
+		const reqPass = ((email !== getUserEmailAddress(user))
 			|| s.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
 			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
 		}
-		swal({
+		modal.open({
 			title: t('Please_enter_your_password'),
 			text: t('For_your_security_you_must_enter_your_current_password_to_continue'),
 			type: 'input',
@@ -342,7 +404,7 @@ Template.accountProfile.events({
 				toastr.warning(t('Please_wait_while_your_profile_is_being_saved'));
 				instance.save(SHA256(typedPassword), () => send.removeClass('loading'));
 			} else {
-				swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+				modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 				return false;
 			}
 		});
@@ -369,7 +431,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		const user = Meteor.user();
 		if (s.trim(user && user.services && user.services.password && user.services.password.bcrypt)) {
-			swal({
+			modal.open({
 				title: t('Are_you_sure_you_want_to_delete_your_account'),
 				text: t('If_you_are_sure_type_in_your_password'),
 				type: 'input',
@@ -385,18 +447,18 @@ Template.accountProfile.events({
 					Meteor.call('deleteUserOwnAccount', SHA256(typedPassword), function(error) {
 						if (error) {
 							toastr.remove();
-							swal.showInputError(t('Your_password_is_wrong'));
+							modal.showInputError(t('Your_password_is_wrong'));
 						} else {
-							swal.close();
+							modal.close();
 						}
 					});
 				} else {
-					swal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
+					modal.showInputError(t('You_need_to_type_in_your_password_in_order_to_do_this'));
 					return false;
 				}
 			});
 		} else {
-			swal({
+			modal.open({
 				title: t('Are_you_sure_you_want_to_delete_your_account'),
 				text: t('If_you_are_sure_type_in_your_username'),
 				type: 'input',
@@ -412,13 +474,13 @@ Template.accountProfile.events({
 					Meteor.call('deleteUserOwnAccount', deleteConfirmation, function(error) {
 						if (error) {
 							toastr.remove();
-							swal.showInputError(t('Your_password_is_wrong'));
+							modal.showInputError(t('Your_password_is_wrong'));
 						} else {
-							swal.close();
+							modal.close();
 						}
 					});
 				} else {
-					swal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
+					modal.showInputError(t('You_need_to_type_in_your_username_in_order_to_do_this'));
 					return false;
 				}
 			});
@@ -429,7 +491,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
 		e.currentTarget.disabled = true;
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
+		Meteor.call('sendConfirmationEmail', getUserEmailAddress(user), (error, results) => {
 			if (results) {
 				toastr.success(t('Verification_email_sent'));
 			} else if (error) {

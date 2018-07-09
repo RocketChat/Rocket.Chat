@@ -3,9 +3,9 @@ this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
 
-msgStream.allowRead(function(eventName) {
+msgStream.allowRead(function(eventName, args) {
 	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId);
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
 
 		if (!room) {
 			return false;

@@ -14,6 +14,8 @@ Meteor.publish('userData', function() {
 			utcOffset: 1,
 			language: 1,
 			settings: 1,
+			enableAutoAway: 1,
+			idleTimeLimit: 1,
 			roles: 1,
 			active: 1,
 			defaultRoom: 1,
@@ -25,7 +27,8 @@ Meteor.publish('userData', function() {
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,
 			'services.totp.enabled': 1,
-			statusLivechat: 1
+			statusLivechat: 1,
+			banners: 1
 		}
 	});
 });

@@ -17,10 +17,6 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	UserPresence.awayTime = 300000;
-	UserPresence.start();
-	Meteor.subscribe('activeUsers');
-
 	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
@@ -28,7 +24,7 @@ Meteor.startup(function() {
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
-	const defaultAppLanguage = function() {
+	const defaultAppLanguage = () => {
 		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
 		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
 		const re = /([a-z]{2}-)([a-z]{2})/;
@@ -40,9 +36,7 @@ Meteor.startup(function() {
 		return lng;
 	};
 
-	window.defaultUserLanguage = function() {
-		return RocketChat.settings.get('Language') || defaultAppLanguage();
-	};
+	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || defaultAppLanguage();
 
 	const availableLanguages = TAPi18n.getLanguages();
 	const loadedLanguages = [];
@@ -79,25 +73,54 @@ Meteor.startup(function() {
 		}
 	};
 
-	Meteor.subscribe('userData', function() {
-		const userLanguage = Meteor.user() && Meteor.user().language ? Meteor.user().language : window.defaultUserLanguage();
-
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
+	Tracker.autorun(function(computation) {
+		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+			return;
 		}
+		Meteor.subscribe('userData');
+		Meteor.subscribe('activeUsers');
+		computation.stop();
+	});
 
-		window.setLanguage(userLanguage);
-
-		let status = undefined;
-		Tracker.autorun(function() {
-			if (!Meteor.userId()) {
-				return;
-			}
-
-			if (Meteor.user() && Meteor.user().status !== status) {
-				status = Meteor.user().status;
-				fireGlobalEvent('status-changed', status);
+	let status = undefined;
+	Tracker.autorun(function() {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				status: 1,
+				'settings.preferences.idleTimeLimit': 1,
+				'settings.preferences.enableAutoAway': 1
 			}
 		});
+
+		if (!user) {
+			return;
+		}
+
+		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
+			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
+			UserPresence.awayTime = idleTimeLimit * 1000;
+		} else {
+			delete UserPresence.awayTime;
+			UserPresence.stopTimer();
+		}
+
+		UserPresence.start();
+
+		if (user.status !== status) {
+			status = user.status;
+			fireGlobalEvent('status-changed', status);
+		}
+	});
+
+	Tracker.autorun(() => {
+		const userLanguage = Meteor.user() && Meteor.user().language || RocketChat.settings.get('Language') || 'en';
+
+		if (loadedLanguages.length === 0 || localStorage.getItem('userLanguage') !== userLanguage) {
+			localStorage.setItem('userLanguage', userLanguage);
+			window.setLanguage(userLanguage);
+		}
 	});
 });

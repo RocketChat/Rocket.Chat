@@ -1,81 +1,103 @@
 <template name="createChannel">
 	<section class="create-channel">
-		<header class="create-channel__header">
-			<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
-			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
-		</header>
-		<form class="create-channel__content">
-			<div class="create-channel__switches">
-				<div class="rc-switch">
-					<label class="rc-switch__label" tabindex="-1">
-						<input type="checkbox" class="rc-switch__input" name="type" value="p" checked>
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-						<span class="rc-switch__text">
-							{{typeLabel}}
-						</span>
-					</label>
-					<span class="rc-switch__description">{{typeDescription}}</span>
-				</div>
-				<div class="rc-switch">
-					<label class="rc-switch__label">
-						<input type="checkbox" class="rc-switch__input" name="readOnly">
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-						<span class="rc-switch__text">
-							{{_ "Read_only_channel"}}
-						</span>
-					</label>
-					<span class="rc-switch__description">{{readOnlyDescription}}</span>
-				</div>
+		{{#each roomType in roomTypesBeforeStandard}}
+			<div class="room-type-creation">
+				{{> Template.dynamic template=roomType.creationTemplate }}
 			</div>
-			<div class="create-channel__inputs">
-				<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Channel_name"}}</div>
-						<div class="rc-input__wrapper">
-							<div class="rc-input__icon">
-								{{> icon block="rc-input__icon-svg" icon=iconType }}
-							</div>
-							<input name="name" type="text" class="rc-input__element" placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
-						</div>
-					</label>
-					{{!--<div class="rc-input__description">Names must be all lower case and shorter than 22 characters</div>--}}
-					{{#if inUse}}
-						<div class="rc-input__error">
-							<div class="rc-input__error-icon">
-								{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-							</div>
-							<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
-						</div>
-					{{/if}}
+		{{/each}}
+		<div class="create-channel__wrapper">
+			<header class="create-channel__header">
+				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
+				<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
+			</header>
+			<form class="create-channel__content">
+				<div class="create-channel__switches">
+					<div class="rc-switch">
+						<label class="rc-switch__label" tabindex="-1">
+							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked={{roomTypeIsP}} disabled="{{cantCreateBothTypes}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+							<span class="rc-switch__text">
+								{{typeLabel}}
+							</span>
+						</label>
+						<span class="rc-switch__description">{{typeDescription}}</span>
+					</div>
+					<div class="rc-switch">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
+							<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+							<span class="rc-switch__text">
+								{{_ "Read_only_channel"}}
+							</span>
+						</label>
+						<span class="rc-switch__description">{{readOnlyDescription}}</span>
+					</div>
+					<div class="rc-switch">
+						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input" name="broadcast">
+							<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+							<span class="rc-switch__text">
+								{{_"Broadcast_channel"}}
+							</span>
+						</label>
+						<span class="rc-switch__description">
+							{{_"Broadcast_channel_Description"}}
+						</span>
+					</div>
 				</div>
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ "Invite_Users"}}</div>
-						<div class="rc-input__wrapper">
-							<div class="rc-input__icon">
-								{{> icon block="rc-input__icon-svg" icon="at"}}
-							</div>
-							<div class="rc-tags">
-								{{#each user in selectedUsers}}
-									{{> tag user}}
-								{{/each}}
-								<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
-							</div>
-						</div>
-						{{#with config}}
-							{{#if autocomplete 'isShowing'}}
-								<div class="fadeInDown">
-									{{#if autocomplete 'isLoaded'}}
-										{{> popupList data=config items=items}}
-									{{/if}}
+				<div class="create-channel__inputs">
+					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Channel_name"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon=iconType }}
 								</div>
-							{{/if}}
-						{{/with}}
-					</label>
+								<input name="name" type="text" class="rc-input__element"
+									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
+							</div>
+						</label>
+						{{#if inUse}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
+							</div>
+						{{/if}}
+					</div>
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Invite_Users"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon="at"}}
+								</div>
+								<div class="rc-tags">
+									{{#each user in selectedUsers}}
+										{{> tag user}}
+									{{/each}}
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}"
+										   name="users" autocomplete="off"/>
+								</div>
+							</div>
+							{{#with config}}
+								{{#if autocomplete 'isShowing'}}
+									<div class="fadeInDown">
+										{{#if autocomplete 'isLoaded'}}
+											{{> popupList data=config items=items}}
+										{{/if}}
+									</div>
+								{{/if}}
+							{{/with}}
+						</label>
+					</div>
 				</div>
 				{{#if tokenAccessEnabled}}
 					<div class="create-channel__switches">
@@ -95,11 +117,16 @@
 						{{> tokenpass extensionsConfig}}
 					{{/if}}
 				{{/if}}
+				<div class="create-channel__inputs">
+					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
+				</div>
+			</form>
+		</div>
+		{{#each roomType in roomTypesAfterStandard}}
+			<div class="room-type-creation">
+				{{> Template.dynamic template=roomType.creationTemplate }}
 			</div>
-			<div class="create-channel__inputs">
-				<button class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}}>{{_ "Create"}}</button>
-			</div>
-		</form>
+		{{/each}}
 	</section>
 </template>
 
@@ -162,10 +189,14 @@
 
 <template name='tag'>
 	<span class="rc-tags__tag">
-		<span class="rc-tags__tag-image">
-			{{> avatar username=username}}
-		</span>
-		<span class="rc-tags__tag-text">{{username}}</span>
+		{{#if username}}
+			<span class="rc-tags__tag-image">
+				{{> avatar username=username}}
+			</span>
+			<span class="rc-tags__tag-text">{{username}}</span>
+		{{else}}
+			<span class="rc-tags__tag-text">{{text}}</span>
+		{{/if}}
 		{{> icon block="rc-tags__tag-icon" icon="cross"}}
 	</span>
 </template>

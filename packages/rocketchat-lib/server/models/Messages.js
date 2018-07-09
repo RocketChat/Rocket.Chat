@@ -20,6 +20,21 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
 	}
 
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true
+			},
+			rid: roomId,
+			ts: {
+				$gte: afterTimestamp,
+				$lte: beforeTimestamp
+			}
+		};
+
+		return this.find(query, options).count();
+	}
+
 	// FIND
 	findByMention(username, options) {
 		const query =	{'mentions.username': username};
@@ -279,9 +294,48 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	findOneBySlackTs(slackTs) {
-		const query =	{slackTs};
+		const query = {slackTs};
 
 		return this.findOne(query);
+	}
+
+	findByRoomIdAndType(roomId, type, options) {
+		const query = {
+			rid: roomId,
+			t: type
+		};
+
+		if (options == null) { options = {}; }
+
+		return this.find(query, options);
+	}
+
+	findByRoomId(roomId, options) {
+		const query = {
+			rid: roomId
+		};
+
+		return this.find(query, options);
+	}
+
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+			t: { $exists: false }
+		};
+
+		if (messageId) {
+			query._id = { $ne: messageId };
+		}
+
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+
+		return this.findOne(query, options);
 	}
 
 	cloneAndSaveAsHistoryById(_id) {
@@ -480,6 +534,22 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	unlinkUserId(userId, newUserId, newUsername, newNameAlias) {
+		const query = {
+			'u._id': userId
+		};
+
+		const update = {
+			$set: {
+				'alias': newNameAlias,
+				'u._id': newUserId,
+				'u.username' : newUsername,
+				'u.name' : undefined
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
@@ -499,10 +569,42 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			groupable: false
 		};
 
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
 		RocketChat.models.Rooms.incMsgCountById(room._id, 1);
+		return record;
+	}
+
+	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_navigation_history';
+		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 }});
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date,
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username
+			},
+			groupable: false
+		};
+
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
+		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
 		return record;
 	}
 
@@ -601,5 +703,46 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
+	}
+
+	setAsRead(rid, until) {
+		return this.update({
+			rid,
+			unread: true,
+			ts: { $lt: until }
+		}, {
+			$unset: {
+				unread: 1
+			}
+		}, {
+			multi: true
+		});
+	}
+
+	setAsReadById(_id) {
+		return this.update({
+			_id
+		}, {
+			$unset: {
+				unread: 1
+			}
+		});
+	}
+
+	findUnreadMessagesByRoomAndDate(rid, after) {
+		const query = {
+			unread: true,
+			rid
+		};
+
+		if (after) {
+			query.ts = { $gt: after };
+		}
+
+		return this.find(query, {
+			fields: {
+				_id: 1
+			}
+		});
 	}
 };

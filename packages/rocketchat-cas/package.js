@@ -19,11 +19,8 @@ Package.onUse(function(api) {
 	// Server files
 	api.add_files('server/cas_rocketchat.js', 'server');
 	api.add_files('server/cas_server.js', 'server');
+	api.add_files('server/models/CredentialTokens.js', 'server');
 
 	// Client files
 	api.add_files('client/cas_client.js', 'client');
-});
-
-Npm.depends({
-	cas: 'https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62'
 });

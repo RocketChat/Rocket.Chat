@@ -48,22 +48,31 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 	return this.find(query, { sort: { ts: - 1 }, offset, limit });
 };
 
-RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
-	code = parseInt(code);
-
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 	const options = {};
 
 	if (fields) {
 		options.fields = fields;
 	}
 
-	// if (this.useCache) {
-	// 	return this.cache.findByIndex('t,code', ['l', code], options).fetch();
-	// }
+	const query = {
+		t: 'l',
+		_id
+	};
+
+	return this.findOne(query, options);
+};
+
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
 
 	const query = {
 		t: 'l',
-		code
+		_id
 	};
 
 	return this.findOne(query, options);
@@ -73,7 +82,7 @@ RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
  * Get the next visitor name
  * @return {string} The next visitor name
  */
-RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
+RocketChat.models.Rooms.updateLivechatRoomCount = function() {
 	const settingsRaw = RocketChat.models.Settings.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
 
@@ -117,11 +126,11 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	return this.find(query);
 };
 
-RocketChat.models.Rooms.findOneOpenByVisitorId = function(visitorId, roomId) {
+RocketChat.models.Rooms.findOneOpenByVisitorToken = function(token, roomId) {
 	const query = {
 		_id: roomId,
 		open: true,
-		'v._id': visitorId
+		'v.token': token
 	};
 
 	return this.findOne(query);
@@ -150,21 +159,16 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 		_id: roomId
 	}, {
 		$set: {
-			closedBy: {
-				_id: closeInfo.user._id,
-				username: closeInfo.user.username
-			},
+			closer: closeInfo.closer,
+			closedBy: closeInfo.closedBy,
 			closedAt: closeInfo.closedAt,
-			chatDuration: closeInfo.chatDuration
+			chatDuration: closeInfo.chatDuration,
+			'v.status': 'offline'
 		},
 		$unset: {
 			open: 1
 		}
 	});
-};
-
-RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
-	return this.update({ _id: roomId }, { $set: { label } });
 };
 
 RocketChat.models.Rooms.findOpenByAgent = function(userId) {
@@ -199,6 +203,21 @@ RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
 	const update = {
 		$set: {
 			crmData
+		}
+	};
+
+	return this.update(query, update);
+};
+
+RocketChat.models.Rooms.updateVisitorStatus = function(token, status) {
+	const query = {
+		'v.token': token,
+		open: true
+	};
+
+	const update = {
+		$set: {
+			'v.status': status
 		}
 	};
 

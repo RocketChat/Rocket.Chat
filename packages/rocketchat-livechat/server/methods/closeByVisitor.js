@@ -1,21 +1,19 @@
-Meteor.methods({
-	'livechat:closeByVisitor'(roomId) {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
-		}
+import LivechatVisitors from '../models/LivechatVisitors';
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorId(Meteor.userId(), roomId);
+Meteor.methods({
+	'livechat:closeByVisitor'({ roomId, token }) {
+		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(token, roomId);
 
 		if (!room || !room.open) {
 			return false;
 		}
 
-		const user = Meteor.user();
+		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		const language = (user && user.language) || RocketChat.settings.get('language') || 'en';
+		const language = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
 
 		return RocketChat.Livechat.closeRoom({
-			user,
+			visitor,
 			room,
 			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
 		});
