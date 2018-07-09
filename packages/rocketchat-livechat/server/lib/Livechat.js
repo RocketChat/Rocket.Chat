@@ -316,7 +316,7 @@ RocketChat.Livechat = {
 
 	forwardOpenChats(userId) {
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
-			const guest = RocketChat.models.Users.findOneById(room.v._id);
+			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
 	},
