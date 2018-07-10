@@ -4,7 +4,7 @@ import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
-this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isFirefox = navigator.userAgent.match(/(Firefox|Chrome)\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
