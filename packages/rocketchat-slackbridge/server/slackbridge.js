@@ -18,7 +18,7 @@ class SlackBridge {
 		this.slack.setRocket(this.rocket);
 
 		//Settings that we cache versus looking up at runtime
-		this.apiToken = {};
+		this.apiToken = false;
 		this.aliasFormat = {};
 		this.excludeBotnames = {};
 		this.isReactionsEnabled = {};
