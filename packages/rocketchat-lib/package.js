@@ -157,7 +157,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
 	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
-	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/cleanRoomHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
