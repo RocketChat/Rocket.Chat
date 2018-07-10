@@ -176,6 +176,36 @@ RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(roomId, inc, analyt
 	}, update);
 };
 
+/**
+ * total no of conversations between date.
+ * @param {string, {ISODate, ISODate}} t - string, room type. date.gte - ISODate (ts >= date.gte), date.lt- ISODate (ts < date.lt)
+ * @return {int}
+ */
+
+RocketChat.models.Rooms.getTotalConversationsBetweenDate = function(t, date) {
+	const query = {
+		t,
+		ts: {
+			$gte: date.gte,	// ISO Date, ts >= date.gte
+			$lt: date.lt	// ISODate, ts < date.lt
+		}
+	};
+
+	return this.find(query).count();
+};
+
+RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate = function(t, date) {
+	const query = {
+		t,
+		ts: {
+			$gte: date.gte,	// ISO Date, ts >= date.gte
+			$lt: date.lt	// ISODate, ts < date.lt
+		}
+	};
+
+	return this.find(query, { fields: {metrics: 1, msgs: 1} });
+};
+
 RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 	return this.update({
 		_id: roomId

@@ -138,7 +138,7 @@ function updateAnalyticsChart() {
 }
 
 function updateAnalyticsOverview() {
-	Meteor.call('livechat:getAnalyticsOverviewData', {daterange: templateInstance.daterange.get(), analyticsOverviewOptions: templateInstance.analyticsOptions.get().analyticsOverviewOptions}, (error, result) => {
+	Meteor.call('livechat:getAnalyticsOverviewData', {daterange: templateInstance.daterange.get(), analyticsOptions: templateInstance.analyticsOptions.get()}, (error, result) => {
 		if (error) {
 			return handleError(error);
 		}
@@ -163,7 +163,8 @@ function updateDateRange(order) {
 	const currentDaterange = templateInstance.daterange.get();
 
 	switch (currentDaterange.value) {
-		case 'this-week' || 'prev-week':
+		case 'this-week':
+		case 'prev-week':
 			if (order === 1) {
 				setDateRange(currentDaterange.value,
 					moment(new Date(currentDaterange.from)).add(1, 'weeks').startOf('week').format('MMM D YYYY'),
@@ -174,7 +175,8 @@ function updateDateRange(order) {
 					moment(new Date(currentDaterange.to)).subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
 			}
 			break;
-		case 'this-month' || 'prev-month':
+		case 'this-month':
+		case 'prev-month':
 			if (order === 1) {
 				setDateRange(currentDaterange.value,
 					moment(new Date(currentDaterange.from)).add(1, 'months').startOf('month').format('MMM D YYYY'),
