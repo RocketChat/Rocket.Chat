@@ -73,13 +73,17 @@ Package.onUse(function(api) {
 	//client startup
 	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
 
+	// analytics views
+	api.addFiles('client/views/app/analytics/livechatAnalytics.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalytics.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsCustomDaterange.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsCustomDaterange.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsDaterange.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsDaterange.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatRealTimeMonitoring.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatRealTimeMonitoring.js', 'client');
+
 	// client views
-	api.addFiles('client/views/app/livechatAnalytics.html', 'client');
-	api.addFiles('client/views/app/livechatAnalytics.js', 'client');
-	api.addFiles('client/views/app/livechatAnalyticsCustomDaterange.html', 'client');
-	api.addFiles('client/views/app/livechatAnalyticsCustomDaterange.js', 'client');
-	api.addFiles('client/views/app/livechatAnalyticsDaterange.html', 'client');
-	api.addFiles('client/views/app/livechatAnalyticsDaterange.js', 'client');
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
 	api.addFiles('client/views/app/livechatAppearance.js', 'client');
 	api.addFiles('client/views/app/livechatCurrentChats.html', 'client');
@@ -99,8 +103,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/livechatNotSubscribed.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.html', 'client');
 	api.addFiles('client/views/app/livechatQueue.js', 'client');
-	api.addFiles('client/views/app/livechatRealTimeMonitoring.html', 'client');
-	api.addFiles('client/views/app/livechatRealTimeMonitoring.js', 'client');
 	api.addFiles('client/views/app/livechatTriggers.html', 'client');
 	api.addFiles('client/views/app/livechatTriggers.js', 'client');
 	api.addFiles('client/views/app/livechatTriggersForm.html', 'client');
