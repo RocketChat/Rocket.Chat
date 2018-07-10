@@ -9,7 +9,7 @@ Meteor.startup(function() {
 		// icon to be added
 		icon: 'google-drive',
 		condition() {
-			if (!RocketChat.settings.get('Accounts_OAuth_Google') || !RocketChat.settings.get('Accounts_OAuth_Google_Picker')) {
+			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
 			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
