@@ -45,5 +45,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/turnUserIntoBot.js', 'server');
 	api.addFiles('server/methods/turnBotIntoUser.js', 'server');
 
+	api.addFiles('server/api.js', 'server');
 	api.addFiles('server/startup.js', 'server');
 });
