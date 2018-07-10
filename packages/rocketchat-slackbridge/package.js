@@ -18,6 +18,4 @@ Package.onUse(function(api) {
 	api.addFiles('server/slackbridge_import.server.js', 'server');
 	api.addFiles('server/RocketAdapter.js', 'server');
 	api.addFiles('server/SlackAdapter.js', 'server');
-
-	api.addFiles('server/slackbridge_import.server.js', 'server');
 });
