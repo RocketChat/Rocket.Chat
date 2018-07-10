@@ -176,6 +176,30 @@ RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(roomId, inc, analyt
 	}, update);
 };
 
+RocketChat.models.Rooms.setLastMessageTimeById = function(room, message) {
+	const update = {
+		$set: {}
+	};
+
+	// livechat analytics : update last message timestamps
+	if (room.t === 'l') {
+		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
+		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
+
+		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
+			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor
+				update.$set['metrics.v.lq'] = message.ts;
+			}
+		} else if (visitorLastQuery > agentLastReply) {		// update agent timestamp, if first response, not continuing
+			update.$set['metrics.servedBy.lr'] = message.ts;
+		}
+	}
+
+	return this.update({
+		_id: room._id
+	}, update);
+};
+
 /**
  * total no of conversations between date.
  * @param {string, {ISODate, ISODate}} t - string, room type. date.gte - ISODate (ts >= date.gte), date.lt- ISODate (ts < date.lt)

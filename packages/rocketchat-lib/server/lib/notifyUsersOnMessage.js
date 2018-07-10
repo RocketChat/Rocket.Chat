@@ -100,9 +100,9 @@ function notifyUsersOnMessage(message, room) {
 		}
 	}
 
-	// Update all the room activity tracker fields, including livechat-analytics lm timestamps
+	// Update all the room activity tracker fields
 	// This method take so long to execute on gient rooms cuz it will trugger the cache rebuild for the releations of that room
-	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(room, message.token, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
+	RocketChat.models.Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, RocketChat.settings.get('Store_Last_Message') && message);
 
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages

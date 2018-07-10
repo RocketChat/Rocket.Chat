@@ -9,6 +9,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
+	RocketChat.models.Rooms.setLastMessageTimeById(room, message);
+
 	// if the message has a token, it was sent by the visitor, so ignore it
 	if (message.token) {
 		return message;
@@ -17,24 +19,24 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	Meteor.defer(() => {
 		const now = new Date();
 		const analyticsData = {};
-		const visitorLastMessage = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-		const agentLastMessage = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
+		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
+		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
 		const agentJoinTime = (room.servedBy && room.servedBy.ts) ? room.servedBy.ts : room.ts;
 
-		if (agentLastMessage === room.ts) {		// first response
+		if (agentLastReply === room.ts) {		// first response
 			analyticsData.firstResponseDate = now;
-			analyticsData.firstResponseTime = (now.getTime() - visitorLastMessage) / 1000;
-			analyticsData.responseTime = (now.getTime() - visitorLastMessage) / 1000;
+			analyticsData.firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
+			analyticsData.responseTime = (now.getTime() - visitorLastQuery) / 1000;
 			analyticsData.avgResponseTime = (((room.metrics && room.metrics.response && room.metrics.response.tt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((room.metrics && room.metrics.response && room.metrics.response.total) ? room.metrics.response.total : 0) + 1);
 
 			analyticsData.firstReactionDate = now;
 			analyticsData.firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
 			analyticsData.reactionTime = (now.getTime() - agentJoinTime) / 1000;
-		} else if (visitorLastMessage > agentLastMessage) {		// response, not first
-			analyticsData.responseTime = (now.getTime() - visitorLastMessage) / 1000;
+		} else if (visitorLastQuery > agentLastReply) {		// response, not first
+			analyticsData.responseTime = (now.getTime() - visitorLastQuery) / 1000;
 			analyticsData.avgResponseTime = (((room.metrics && room.metrics.response && room.metrics.response.tt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((room.metrics && room.metrics.response && room.metrics.response.total) ? room.metrics.response.total : 0) + 1);
 
-			analyticsData.reactionTime = (now.getTime() - visitorLastMessage) / 1000;
+			analyticsData.reactionTime = (now.getTime() - visitorLastQuery) / 1000;
 		} else {
 			return;		// ignore, its continuing response
 		}
@@ -43,4 +45,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	return message;
-}, RocketChat.callbacks.priority.MEDIUM, 'saveAnalyticsData');
+}, RocketChat.callbacks.priority.LOW, 'saveAnalyticsData');

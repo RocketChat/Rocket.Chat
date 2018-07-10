@@ -561,9 +561,9 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(room, token, inc, lastMessageTimestamp, lastMessage) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
-		const query = {_id: room._id};
+		const query = {_id};
 
 		const update = {
 			$set: {
@@ -573,20 +573,6 @@ class ModelRooms extends RocketChat.models._Base {
 				msgs: inc
 			}
 		};
-
-		// livechat analytics : update last message timestamps
-		if (room.t === 'l') {
-			const visitorLastMessage = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-			const agentLastMessage = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
-
-			if (token) {	// update visitor timestamp, only if its new inquiry and not continuing message
-				if (agentLastMessage >= visitorLastMessage) {		// if first query, not continuing query from visitor
-					update.$set['metrics.v.lq'] = lastMessageTimestamp;
-				}
-			} else if (visitorLastMessage > agentLastMessage) {		// update agent timestamp, if first response, not continuing
-				update.$set['metrics.servedBy.lr'] = lastMessageTimestamp;
-			}
-		}
 
 		if (lastMessage) {
 			update.$set.lastMessage = lastMessage;
