@@ -117,12 +117,11 @@
 			</div>
 		{{/with}}
 
-
 		{{#with settings.reactWhenReadOnly}}
 			{{#if canView}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 						{{_ "React_when_read_only"}}
 						<div class="rc-switch-double__description">
 							{{_ "React_when_read_only"}}
@@ -136,7 +135,7 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "Disallow_reacting"}}
 						<div class="rc-switch-double__description">
 							{{_ "Disallow_reacting_Description"}}
@@ -213,85 +212,91 @@
 		{{/with}}
 
 		{{#if hasRetentionPermission}}
-			<div class="error-color">
-				{{> icon icon="warning"}} {{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
+			<div class="rc-user-info__config">
+				<div class="rc-user-info__config-header">
+					{{> icon block="rc-user-info__config-icon" icon="trash"}}
+					<span class="rc-user-info__config-label">{{_ "Prune"}}</span>
+				</div>
+				{{#with settings.retentionEnabled}}
+				<div class="rc-user-info__config-content">
+					<div class="rc-user-info__config-name">{{_ label}}:</div>
+					<div class="rc-user-info__config-value">
+						{{subValue value}} {{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+					</div>
+				</div>
+				{{/with}}
 			</div>
-			{{#with settings.retentionEnabled}}
-				<div class="rc-user-info__row">
-					<div class="rc-switch rc-switch--blue">
-						<label class="rc-switch__label">
-							<span class="rc-switch__text">
-								{{_ label}}{{equal default value '*'}}
-							</span>
-							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionEnabled" checked="{{checked}}" disabled="{{./disabled}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
+			{{# if retentionEnabled settings.retentionEnabled.value.get }}
+				{{#with settings.retentionOverrideGlobal}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
 					</div>
-				</div>
-			{{/with}}
-			{{#with settings.retentionMaxAge}}
-				<div class="rc-user-info__row">
-					<div class="rc-input">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-							<div class="rc-input__wrapper">
-								<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+				{{/with}}
+				{{# if settings.retentionEnabled.value.get }}
+					<div class="mail-messages__instructions mail-messages__instructions--warning">
+						<div class="mail-messages__instructions-wrapper">
+							<div class="mail-messages__instructions-text">
+								{{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
 							</div>
-						</label>
+						</div>
 					</div>
-				</div>
-			{{/with}}
-			{{#with settings.retentionExcludePinned}}
-				<div class="rc-user-info__row">
-					<div class="rc-switch rc-switch--blue">
-						<label class="rc-switch__label">
-							<span class="rc-switch__text">
-								{{_ label}}{{equal default value '*'}}
-							</span>
-							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
+				{{/if}}
+				{{#if settings.retentionOverrideGlobal.value.get}}
+				{{#with settings.retentionMaxAge}}
+					<div class="rc-user-info__row">
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+								<div class="rc-input__wrapper">
+									<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+								</div>
+							</label>
+						</div>
 					</div>
-				</div>
-			{{/with}}
-			{{#with settings.retentionFilesOnly}}
-				<div class="rc-user-info__row">
-					<div class="rc-switch rc-switch--blue">
-						<label class="rc-switch__label">
-							<span class="rc-switch__text">
-								{{_ label}}{{equal default value '*'}}
-							</span>
-							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
+				{{/with}}
+				{{#with settings.retentionExcludePinned}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
 					</div>
-				</div>
-			{{/with}}
-			{{#with settings.retentionOverrideGlobal}}
-				<div class="rc-user-info__row">
-					<div class="rc-switch rc-switch--blue">
-						<label class="rc-switch__label">
-							<span class="rc-switch__text">
-								{{_ label}}{{equal default value '*'}}
-							</span>
-							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-						</label>
+				{{/with}}
+				{{#with settings.retentionFilesOnly}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
 					</div>
-				</div>
-			{{/with}}
-			{{#if hasGlobalPurge}}
-				<p>{{_ "Global_purge_override_warning"}}</p>
+				{{/with}}
 			{{/if}}
 		{{/if}}
+	{{/if}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">

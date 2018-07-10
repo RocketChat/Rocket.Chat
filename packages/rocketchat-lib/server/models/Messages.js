@@ -42,6 +42,27 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findFilesByUserId(userId, options = {}) {
+		const query = {
+			'u._id': userId,
+			'file._id': { $exists: true }
+		};
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
+
+	findFilesByRoomIdPinnedAndTimestamp(rid, excludePinned, ts, options = {}) {
+		const query = {
+			rid,
+			ts,
+			'file._id': { $exists: true }
+		};
+
+		if (!excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -691,6 +712,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	removeByRoomId(roomId) {
 		const query =	{rid: roomId};
+
+		return this.remove(query);
+	}
+
+	removeByIdPinnedAndTimestamp(rid, pinned, ts) {
+		const query = {
+			rid,
+			ts
+		};
+
+		if (!pinned) {
+			query.pinned = { $ne: true };
+		}
 
 		return this.remove(query);
 	}

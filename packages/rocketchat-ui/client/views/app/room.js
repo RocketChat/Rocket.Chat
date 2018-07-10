@@ -135,31 +135,27 @@ function roomHasGlobalPurge(room) {
 		return false;
 	}
 
-	if ((room && room.t === 'c') && RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
-		return true;
+	switch (room.t) {
+		case 'c':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+		case 'p':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+		case 'd':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
 	}
-	if ((room && room.t === 'p') && RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
-		return true;
-	}
-	if ((room && room.t === 'd') && RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
-		return true;
-	}
-
 	return false;
 }
 
 function roomHasPurge(room) {
-	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
 		return false;
 	}
 
-	const hasGlobalPurge = roomHasGlobalPurge(room);
-
-	if (!hasGlobalPurge || (room.retention && room.retention.overrideGlobal)) {
+	if (room.retention && room.retention.enabled !== undefined) {
 		return room.retention.enabled;
 	}
 
-	return hasGlobalPurge;
+	return roomHasGlobalPurge(room);
 }
 
 function roomFilesOnly(room) {

@@ -1,34 +1,21 @@
 RocketChat.deleteUser = function(userId) {
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = RocketChat.models.Users.findOneById(userId, {
+		fields: { username: 1, avatarOrigin: 1 }
+	});
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
 		const messageErasureType = RocketChat.settings.get('Message_ErasureType');
-
 		switch (messageErasureType) {
 			case 'Delete':
-				RocketChat.models.Messages.find({
-					'u._id': userId,
-					file: {
-						$exists: true
-					}
-				}, {
-					fields: {
-						file: 1
-					}
-				}).fetch().map(function(document) {
-					if (document.file && document.file._id) {
-						FileUpload.getStore('Uploads').deleteById(document.file._id);
-					}
+				const store = FileUpload.getStore('Uploads');
+				RocketChat.models.Messages.findFilesByUserId(userId).forEach(function({ file }) {
+					store.deleteById(file._id);
 				});
 				RocketChat.models.Messages.removeByUserId(userId);
-
-				RocketChat.Notifications.notifyLogged('deleteMessageBulk', {
-					'u._id': userId
-				});
 				break;
 			case 'Unlink':
-				const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
+				const rocketCat = RocketChat.models.Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
 				RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
@@ -57,6 +44,7 @@ RocketChat.deleteUser = function(userId) {
 		}
 
 		RocketChat.models.Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		RocketChat.Notifications.notifyLogged('Users:Deleted', { userId });
 	}
 
 	RocketChat.models.Users.removeById(userId); // Remove user from users database

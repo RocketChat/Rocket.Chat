@@ -759,11 +759,13 @@ class ModelRooms extends RocketChat.models._Base {
 	saveRetentionEnabledById(_id, value) {
 		const query = {_id};
 
-		const update = {
-			$set: {
-				'retention.enabled': value === true
-			}
-		};
+		const update = {};
+
+		if (value == null) {
+			update.$unset = { 'retention.enabled': true };
+		} else {
+			update.$set = { 'retention.enabled': !!value };
+		}
 
 		return this.update(query, update);
 	}
