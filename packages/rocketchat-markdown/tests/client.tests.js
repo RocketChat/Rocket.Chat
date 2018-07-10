@@ -200,8 +200,8 @@ const inlinecode = {
 	'End `code`': `End ${ inlinecodeWrapper('code') }`,
 	'Middle `code` middle': `Middle ${ inlinecodeWrapper('code') } middle`,
 	'`code`begin': `${ inlinecodeWrapper('code') }begin`,
-	'End`code`': 'End`code`',
-	'Middle`code`middle': 'Middle`code`middle'
+	'End`code`': `End${ inlinecodeWrapper('code') }`,
+	'Middle`code`middle': `Middle${ inlinecodeWrapper('code') }middle`
 };
 
 const code = {

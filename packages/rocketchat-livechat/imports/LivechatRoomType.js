@@ -1,5 +1,5 @@
 /* globals openRoom, LivechatInquiry */
-import {RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from 'meteor/rocketchat:lib';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:lib';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -20,7 +20,7 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	}
 }
 
-class LivechatRoomType extends RoomTypeConfig {
+export default class LivechatRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'l',
@@ -82,5 +82,3 @@ class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 }
-
-RocketChat.roomTypes.add(new LivechatRoomType());

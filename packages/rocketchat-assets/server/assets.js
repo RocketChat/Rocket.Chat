@@ -28,6 +28,16 @@ const assets = {
 			order: 2
 		}
 	},
+	background: {
+		label: 'login background (svg, png, jpg)',
+		defaultUrl: undefined,
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+			width: undefined,
+			height: undefined
+		}
+	},
 	favicon_ico: {
 		label: 'favicon (ico)',
 		defaultUrl: 'favicon.ico',

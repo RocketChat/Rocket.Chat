@@ -51,10 +51,17 @@ async function migrateHistory(total, current) {
 		return result;
 	}, { insert: [], remove: [] });
 
-	const batch = Promise.all([
-		messageCollection.insertMany(actions.insert),
-		pageVisitedCollection.removeMany({ _id: { $in: actions.remove } })
-	]);
+	const ops = [];
+
+	if (actions.insert.length > 0) {
+		ops.push(messageCollection.insertMany(actions.insert));
+	}
+
+	if (actions.remove.length > 0) {
+		ops.push(pageVisitedCollection.removeMany({ _id: { $in: actions.remove } }));
+	}
+
+	const batch = Promise.all(ops);
 	if (actions.remove.length === batchSize) {
 		await batch;
 		return migrateHistory(total, current + batchSize);
