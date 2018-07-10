@@ -6,98 +6,6 @@ import Chart from 'chart.js/src/chart.js';
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
 
-const chartConfiguration = {
-	layout: {
-		padding: {
-			top: 10
-		}
-	},
-	legend: {
-		display: false
-	},
-	title: {
-		display: false
-	},
-	tooltips: {
-		enabled: true,
-		mode: 'point',
-		displayColors: false			// hide color box
-	},
-	scales: {
-		xAxes: [{
-			scaleLabel:{
-				display: false
-			},
-			gridLines: {
-				display: true,
-				color: 'rgba(0, 0, 0, 0.03)'
-			}
-		}],
-		yAxes: [{
-			scaleLabel:{
-				display: false
-			},
-			gridLines: {
-				display: true,
-				color: 'rgba(0, 0, 0, 0.03)'
-			},
-			ticks: {
-				beginAtZero: true
-			}
-		}]
-	},
-	animation: {
-		duration: 0 // general animation time
-	},
-	hover: {
-		animationDuration: 0 // duration of animations when hovering an item
-	},
-	responsive: true,
-	responsiveAnimationDuration: 0 // animation duration after a resize
-};
-
-// analytics all options and their associated chart/overview options
-const analyticsAllOptions = [{
-	name: 'Conversations',
-	value: 'conversations',
-	chartOptions: [{
-		name: 'Total_conversations',
-		value: 'total-conversations'
-	}],
-	analyticsOverviewOptions: [[{
-		title: 'Total_conversations'
-	}, {
-		title: 'Open_conversations'
-	}], [{
-		title: 'Total_messages'
-	}, {
-		title: 'Busiest_day'
-	}], [{
-		title: 'Conversations_per_day'
-	}, {
-		title: 'Busiest_time'
-	}]]
-}, {
-	name: 'Productivity',
-	value: 'productivity',
-	chartOptions: [{
-		name: 'First_response_time',
-		value: 'first-response-time'
-	}, {
-		name: 'Avg_response_time',
-		value: 'avg-response-time'
-	}, {
-		name: 'Avg_reaction_time',
-		value: 'avg-reaction-time'
-	}],
-	analyticsOverviewOptions: [[{
-		title: 'Avg_response_time'
-	}], [{
-		title: 'First_response_time'
-	}], [{
-		title: 'Avg_reaction_time'
-	}]]
-}];
 
 function drawLineChart(chartLabel, dataLabels, dataPoints) {
 	const chart = document.getElementById('lc-analytics-chart');
@@ -123,7 +31,7 @@ function drawLineChart(chartLabel, dataLabels, dataPoints) {
 				fill: false
 			}]
 		},
-		options: chartConfiguration
+		options: RocketChat.Livechat.Analytics.getChartConfiguration()
 	});
 }
 
@@ -197,7 +105,7 @@ Template.livechatAnalytics.helpers({
 		return templateInstance.analyticsOverviewData.get();
 	},
 	analyticsAllOptions() {
-		return analyticsAllOptions;
+		return RocketChat.Livechat.Analytics.getAnalyticsAllOptions();
 	},
 	analyticsOptions() {
 		return templateInstance.analyticsOptions.get();
@@ -217,8 +125,8 @@ Template.livechatAnalytics.onCreated(function() {
 
 	this.analyticsOverviewData = new ReactiveVar();
 	this.daterange = new ReactiveVar({});
-	this.analyticsOptions = new ReactiveVar(analyticsAllOptions[0]);		// default selected first
-	this.chartOptions = new ReactiveVar(analyticsAllOptions[0].chartOptions[0]);		// default selected first
+	this.analyticsOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0]);		// default selected first
+	this.chartOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0].chartOptions[0]);		// default selected first
 
 	this.autorun(() => {
 		setDateRange();
@@ -269,7 +177,7 @@ Template.livechatAnalytics.events({
 		updateDateRange(1);
 	},
 	'change #lc-analytics-options'({currentTarget}) {
-		templateInstance.analyticsOptions.set(analyticsAllOptions.filter(function(obj) {
+		templateInstance.analyticsOptions.set(RocketChat.Livechat.Analytics.getAnalyticsAllOptions().filter(function(obj) {
 			return obj.value === currentTarget.value;
 		})[0]);
 	},
