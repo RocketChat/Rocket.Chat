@@ -225,7 +225,17 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(que
 
 	return this._db.find(query, {
 		fields: {
-			'u._id': 1,
+
+			// fields needed for notifications
+			rid: 1,
+			t: 1,
+			u: 1,
+			name: 1,
+			fname: 1,
+			code: 1,
+
+			// fields to define if should send a notification
+			ignored: 1,
 			audioNotifications: 1,
 			audioNotificationValue: 1,
 			desktopNotificationDuration: 1,

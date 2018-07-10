@@ -34,6 +34,9 @@ this.Livechat = new (class Livechat {
 
 		this.stream = new Meteor.Streamer('livechat-room');
 
+		this._guestName = new ReactiveVar();
+		this._guestEmail = new ReactiveVar();
+
 		Tracker.autorun(() => {
 			if (this._room.get() && visitor.getId()) {
 				RoomHistoryManager.getMoreIfIsEmpty(this._room.get());
@@ -121,6 +124,12 @@ this.Livechat = new (class Livechat {
 	get agent() {
 		return this._agent.get();
 	}
+	get guestName() {
+		return this._guestName.get();
+	}
+	get guestEmail() {
+		return this._guestEmail.get();
+	}
 
 	set online(value) {
 		this._online.set(value);
@@ -197,6 +206,12 @@ this.Livechat = new (class Livechat {
 	}
 	set agent(agentData) {
 		this._agent.set(agentData);
+	}
+	set guestName(name) {
+		return this._guestName.set(name);
+	}
+	set guestEmail(email) {
+		return this._guestEmail.set(email);
 	}
 
 	ready() {

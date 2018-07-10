@@ -29,7 +29,7 @@ const sendNotification = ({
 	}
 
 	// dont send notification to users who ignored the sender
-	if (Array.isArray(subscription.ignored) && subscription.ignored.find(sender._id)) {
+	if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
 		return;
 	}
 
@@ -130,7 +130,7 @@ const sendNotification = ({
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
-				sendEmail({ message, receiver, subscription, room, emailAddress: email.address });
+				sendEmail({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser });
 
 				return true;
 			}
@@ -157,7 +157,7 @@ function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	const sender = (room.t !== 'l') ? RocketChat.models.Users.findOneById(message.u._id) : room.v;
+	const sender = RocketChat.roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}
@@ -174,7 +174,7 @@ function sendAllNotifications(message, room) {
 
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = RocketChat.settings.get('Notifications_Max_Room_Members');
-	const disableAllMessageNotifications = room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
+	const disableAllMessageNotifications = room.usernames && room.usernames.length > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
 		rid: room._id,
@@ -199,11 +199,15 @@ function sendAllNotifications(message, room) {
 				[notificationField]: 'mentions',
 				'u._id': { $in: mentionIdsWithoutGroups }
 			});
+		} else if (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) {
+			query.$or.push({
+				[notificationField]: 'mentions'
+			});
 		}
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
 		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
-		if ((room.t === 'd' && serverPreference === 'mentions') || (serverPreference === 'all' && !disableAllMessageNotifications)) {
+		if ((room.t === 'd' && serverPreference !== 'nothing') || (!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))) {
 			query.$or.push({
 				[notificationField]: { $exists: false }
 			});

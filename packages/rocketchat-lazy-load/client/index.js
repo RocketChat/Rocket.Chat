@@ -24,22 +24,29 @@ export const fixCordova = function(url) {
 	}
 };
 
-const loadImage = el => {
+const getEl = (el, instance) => (instance && instance.firstNode) || el;
+
+const loadImage = (el, instance) => {
+	const element = getEl(el, instance);
 	const img = new Image();
-	const src = el.getAttribute('data-src');
-	el.className = el.className.replace('lazy-img', '');
+	const src = element.getAttribute('data-src');
 	img.onload = function() {
-		el.src = src;
-		el.removeAttribute('data-src');
+		if (instance) {
+			instance.loaded.set(true);
+		} else {
+			element.className = element.className.replace('lazy-img', '');
+			element.src = src;
+		}
+		element.removeAttribute('data-src');
 	};
 	img.src = fixCordova(src);
 };
 
-const isVisible = el => {
+const isVisible = (el, instance) => {
 	requestAnimationFrame(() => {
-		const rect = el.getBoundingClientRect();
+		const rect = getEl(el, instance).getBoundingClientRect();
 		if (rect.top >= -100 && rect.left >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight)) {
-			return loadImage(el);
+			return loadImage(el, instance);
 		}
 	});
 
@@ -48,11 +55,11 @@ const isVisible = el => {
 window.addEventListener('resize', window.lazyloadtick);
 
 export const lazyloadtick = _.debounce(() => {
-	[...document.querySelectorAll('.lazy-img[data-src]')]
-
-		.forEach(isVisible);
-}, 500);
+	[...document.querySelectorAll('.lazy-img[data-src]')].forEach(el =>
+		isVisible(el, Blaze.getView(el)._templateInstance)
+	);
+}, 300);
 
 window.lazyloadtick = lazyloadtick;
 
-export const addImage = el => isVisible(el);
+export const addImage = instance => isVisible(instance.firstNode, instance);

@@ -1,8 +1,8 @@
 <template name="videoCall">
 	{{#if videoAvaliable}}
 		{{#if videoActive}}
-			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay background-transparent-darker{{/if}}">
-				<div class="main-video background-transparent-darker">
+			<div class="webrtc-video {{#if overlay}}webrtc-video-overlay{{/if}}">
+				<div class="main-video">
 					<video src="{{mainVideoUrl}}" autoplay muted="true" class="webrtc-video-element {{#if $eq mainVideoUrl selfVideoUrl}}{{#unless screenShareEnabled}}video-flip{{/unless}}{{/if}}"></video>
 					<div class="background-transparent-darker">{{mainVideoUsername}}</div>
 				</div>

@@ -88,6 +88,10 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
+	findWithUsername(username, options) {
+		return this.find({ usernames: username }, options);
+	}
+
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
@@ -525,6 +529,18 @@ class ModelRooms extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				name,
+				fname
+			}
+		};
+
+		return this.update(query, update);
+	}
+
+	setFnameById(_id, fname) {
+		const query = {_id};
+
+		const update = {
+			$set: {
 				fname
 			}
 		};
