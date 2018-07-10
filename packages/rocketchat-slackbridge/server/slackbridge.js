@@ -68,18 +68,6 @@ class SlackBridge {
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
-		RocketChat.settings.get('SlackBridge_AliasFormat', (key, value) => {
-			this.aliasFormat = value;
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-		//Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
-		RocketChat.settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
-			this.excludeBotnames = value;
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
 		//Is this entire SlackBridge enabled
 		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {
 			if (value && this.apiToken) {
