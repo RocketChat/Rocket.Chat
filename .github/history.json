@@ -16835,6 +16835,30 @@
           ]
         }
       ]
+    },
+    "0.66.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11398",
+          "title": "[FIX] All messages notifications via email were sent as mention alert",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11406",
+          "title": "[FIX] Livechat taking inquiry leading to 404 page",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }

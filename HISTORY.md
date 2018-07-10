@@ -1,4 +1,21 @@
 
+# 0.66.3
+`2018-07-09  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- All messages notifications via email were sent as mention alert ([#11398](https://github.com/RocketChat/Rocket.Chat/pull/11398))
+- Livechat taking inquiry leading to 404 page ([#11406](https://github.com/RocketChat/Rocket.Chat/pull/11406))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 0.66.2
 `2018-07-06  ·  2 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
 
