@@ -61,6 +61,6 @@ Meteor.methods({
 		});
 
 		// return room corresponding to inquiry (for redirecting agent to the room route)
-		return room;
+		return inquiry;
 	}
 });

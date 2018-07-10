@@ -16727,6 +16727,138 @@
           ]
         }
       ]
+    },
+    "0.66.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11335",
+          "title": "[FIX] Some updates were returning errors when based on queries with position operators",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11315",
+          "title": "[FIX] SAML attributes with periods are not properly read.",
+          "userLogin": "Hudell",
+          "milestone": "0.66.1",
+          "contributors": [
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11333",
+          "title": "[FIX] Outgoing integrations were stopping the oplog tailing sometimes",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11254",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "userLogin": "tassoevan",
+          "milestone": "0.66.1",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11267",
+          "title": "[FIX] Livestream muted when audio only option was enabled",
+          "userLogin": "gdelavald",
+          "milestone": "0.66.1",
+          "contributors": [
+            "gdelavald",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11295",
+          "title": "[FIX] Notification preferences being lost when switching view mode",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.66.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11359",
+          "title": "Send setting Allow_Marketing_Emails to statistics collector",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11364",
+          "title": "Regression: Fix migration 125 checking for settings field",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11365",
+          "title": "[FIX] Remove file snap store doesn't like",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.66.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11266",
+          "title": "[FIX] Livechat not sending desktop notifications",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.2",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.66.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11398",
+          "title": "[FIX] All messages notifications via email were sent as mention alert",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11406",
+          "title": "[FIX] Livechat taking inquiry leading to 404 page",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }
