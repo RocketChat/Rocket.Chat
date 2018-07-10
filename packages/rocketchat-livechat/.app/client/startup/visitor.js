@@ -25,7 +25,7 @@ Meteor.startup(() => {
 			connected = connectionStatus.connected;
 			document.cookie = `rc_rid=${ visitor.getRoom() }; path=/`;
 			document.cookie = `rc_token=${ visitor.getToken() }; path=/`;
-			document.cookie = `rc_room_type=${ 'l' }; path=/`;
+			document.cookie = `rc_room_type=l; path=/`;
 			visitor.setConnected();
 		}
 	});

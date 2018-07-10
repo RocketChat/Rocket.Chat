@@ -10,14 +10,14 @@ FileUpload = {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
-		const user = (file.userId) ? Meteor.user() : null;
+		const user = file.userId ? Meteor.user() : null;
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
 		const directMessageAllow = RocketChat.settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = RocketChat.settings.get('FileUpload_Enabled');
 		if (RocketChat.authz.canAccessRoom(room, user, file) !== true) {
 			return false;
 		}
-		const language = (user) ? user.language : 'en';
+		const language = user ? user.language : 'en';
 		if (!fileUploadAllowed) {
 			const reason = TAPi18n.__('FileUpload_Disabled', language);
 			throw new Meteor.Error('error-file-upload-disabled', reason);
