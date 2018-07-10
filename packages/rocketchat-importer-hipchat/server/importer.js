@@ -27,7 +27,7 @@ export class HipChatImporter extends Base {
 		// const contentType = ref.contentType;
 		const zip = new this.AdmZip(new Buffer(image, 'base64'));
 		const zipEntries = zip.getEntries();
-		const tempRooms = [];
+		let tempRooms = [];
 		let tempUsers = [];
 		const tempMessages = {};
 
@@ -42,7 +42,7 @@ export class HipChatImporter extends Base {
 				let roomName = entry.entryName.split(this.roomPrefix)[1];
 				if (roomName === 'list.json') {
 					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-					const tempRooms = JSON.parse(entry.getData().toString()).rooms;
+					tempRooms = JSON.parse(entry.getData().toString()).rooms;
 					tempRooms.forEach(room => {
 						room.name = s.slugify(room.name);
 					});

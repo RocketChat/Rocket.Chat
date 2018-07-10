@@ -1,7 +1,9 @@
 .rc-table {
 	width: 100%;
 
-	color: var(--rc-color-primary);
+	color: var(--rc-color-primary-light);
+
+	font-weight: 500;
 
 	font-size: 0.875rem;
 
@@ -10,7 +12,7 @@
 	}
 
 	& tbody {
-		& tr {
+		& tr:not(.table-loading) {
 			cursor: pointer;
 
 			&:hover {
@@ -29,6 +31,7 @@
 	}
 
 	& th {
+		font-size: 0.75rem;
 		height: 0;
 
 		padding-top: 0;
@@ -48,12 +51,86 @@
 	& td {
 		padding: 0.25rem 0;
 
-		font-size: 0.75rem;
+		font-size: 0.9rem;
 		line-height: 1rem;
 
 		overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&-wrapper {
+		display: flex;
+
+		overflow: hidden;
+
+		align-items: stretch;
+	}
+
+	&-subtitle {
+		color: var(--rc-color-primary-light);
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&-title {
+		overflow: hidden;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+
+		color: var(--rc-color-primary);
+
+		& .rc-icon {
+			font-size: 1rem;
+			margin: 0 -4px;
+		}
+
+	}
+
+	&-avatar {
+		flex: 0 0 auto;
+
+		width: 26px;
+		height: 26px;
+		margin: 2px 4px;
+		border-radius: 2px;
+
+		flex: 0 0 auto;
+
+		background-repeat: no-repeat;
+		background-position: center center;
+
+		background-size: contain;
+	}
+
+	&-info {
+		display: flex;
+
+		overflow: hidden;
+
+		flex-direction: column;
+
+		width: 1%;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+		flex-grow: 1;
+
+		margin: 0 4px;
+
+		justify-content: space-around;
+	}
+
+	&-td {
+		&--small {
+			width: 80px;
+		}
+		&--medium {
+			width: 200px;
+		}
 	}
 }
 
@@ -80,6 +157,7 @@
 
 	min-height: 0;
 	flex-grow: 1;
+	margin-bottom: 1rem;
 }
 
 .table-scroll {
@@ -89,14 +167,15 @@
 
 	margin-top: 2rem;
 
-	border-top: 1px solid #d8d8d8;
+	border-top: 1px solid rgba(216, 216, 216, 0.4);
 	flex-grow: 1;
 }
 
 .table-fake-th {
 	position: absolute;
-	display: flex;
+	display: block;
 	top: 0;
+	display: flex;
 
 	padding: 0.5rem 0;
 
@@ -105,7 +184,7 @@
 	color: var(--rc-color-primary-light);
 
 	font-size: 0.75rem;
-	font-weight: 400;
+	font-weight: 500;
 	line-height: 1rem;
 
 	& .rc-icon {
@@ -123,4 +202,12 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	text-transform: capitalize;
+}
+
+.table-loading {
+	height: 10px;
+}
+
+.table-loading-td {
+	position: relative;
 }

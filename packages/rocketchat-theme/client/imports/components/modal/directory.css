@@ -4,6 +4,8 @@
 
 	padding: 0 1.5rem;
 
+	height: 100vh;
+
 	&-search {
 		width: 100%;
 
@@ -26,80 +28,24 @@
 			font-size: 1.375rem;
 		}
 	}
-}
 
-.rc-directory-channel {
-	&-wrapper {
-		display: flex;
-
-		overflow: hidden;
-
-		align-items: center;
-	}
-
-	&-avatar {
-		flex: 0 0 auto;
-
-		width: 32px;
-		height: 32px;
-		padding: 3px;
-
-		background-repeat: no-repeat;
-		background-position: center center;
-
-		background-size: contain;
-	}
-
-	&-info {
-		display: flex;
-
-		overflow: hidden;
-
-		flex-direction: column;
-
-		width: 1%;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-		flex-grow: 1;
-
-		margin: 0 3px;
-	}
-
-	&-name,
-	&-username {
-		overflow: hidden;
-
-		white-space: nowrap;
-
-		text-overflow: ellipsis;
-
-		& .rc-icon {
-			font-size: 1rem;
-		}
-	}
-
-	&-description {
-
-		overflow: hidden;
-
-		max-width: 200px;
-		margin-top: 0.625rem;
-
-		text-overflow: ellipsis;
-
+	&-topic {
 		color: var(--rc-color-primary-light);
 	}
 }
 
-.rc-directory-content {
+.rc-directory-icon {
+	color: var(--color-dark-light);
+}
+
+.rc-table-content {
 	display: flex;
 	overflow-x: auto;
 	flex-direction: column;
 	flex: 1 1 100%;
 
 	height: 100vh;
+	padding: 0 1rem;
 
 	& .js-sort {
 		cursor: pointer;
@@ -137,19 +83,11 @@
 	width: 80px;
 }
 
-@media (width <= 500px) {
-	.rc-directory-content {
+@media (width <= 700px) {
+	.rc-table-content {
 		& th:not(:first-child),
 		& td:not(:first-child) {
 			display: none;
-		}
-	}
-
-	.rc-directory {
-		&-selector,
-		&-search,
-		&-plus {
-			padding: 0 0.3rem;
 		}
 	}
 }
