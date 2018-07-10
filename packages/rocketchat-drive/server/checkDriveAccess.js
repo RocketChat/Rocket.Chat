@@ -39,6 +39,9 @@ Meteor.methods({
 		}
 
 		if (client.credentials.expiresAt < Date.now() + 60 * 1000) {
+			if (!client.credentials.refreshToken) {
+				throw new Meteor.Error('error-unauthenticated-user', 'Unauthenticated User', {method: 'checkDriveAccess'});
+			}
 			const authObj = new google.auth.OAuth2(client.clientId, client.clientSecret, client.calllbackUrl);
 
 			authObj.setCredentials({
