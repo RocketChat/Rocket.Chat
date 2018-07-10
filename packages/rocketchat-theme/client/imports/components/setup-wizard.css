@@ -1,4 +1,7 @@
 .setup-wizard {
+	--step-color: var(--rc-color-button-primary);
+	--highlight-color: var(--rc-color-button-primary);
+
 	display: flex;
 
 	width: 100%;
@@ -12,6 +15,7 @@
 		flex: 0 1 350px;
 
 		margin: 55px 65px 30px 80px;
+		overflow: hidden;
 
 		&__header{
 			display: flex;
@@ -125,28 +129,30 @@
 				}
 
 				&--active {
-					color: #1d74f5;
+					color: var(--rc-color-button-primary);
 
 					&::before {
-						color: #1d74f5;
-						border-color: #1d74f5;
+						color: var(--rc-color-button-primary);
+						background-color: transparent;
+						border-color: var(--rc-color-button-primary);
 					}
 				}
 
 				&--past {
-					color: #2f343d;
+					color: var(--rc-color-primary);
 
 					&::before {
-						color: #ffffff;
-						background-color: #1d74f5;
+						color: var(--rc-color-content);
+						background-color: var(--rc-color-button-primary);
+						border-color: var(--rc-color-button-primary);
 					}
 
 					&::after {
-						background-color: #1d74f5 !important;
+						background-color: var(--rc-color-button-primary) !important;
 					}
 
 					& .setup-wizard-info__steps-item-bonding {
-						background-color: #1d74f5;
+						background-color: var(--rc-color-button-primary);
 					}
 				}
 
@@ -177,8 +183,6 @@
 			height: calc(100% - 2rem);
 			margin: 1rem 1rem 1rem 0;
 
-			padding: 3rem;
-
 			border-radius: 2px;
 			background: #ffffff;
 			box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
@@ -190,6 +194,17 @@
 			flex-direction: column;
 
 			width: 350px;
+			min-height: min-content;
+			margin: 3rem;
+
+			visibility: hidden;
+			opacity: 0;
+			transition: opacity 1s linear;
+
+			&--loaded {
+				visibility: visible;
+				opacity: 1;
+			}
 		}
 
 		&__header {
@@ -259,13 +274,21 @@
 					cursor: pointer;
 
 					color: #2f343d;
-					border: 1px solid #e7ebf2;
+					border: 2px solid #e7ebf2;
 
 					border-radius: 2px;
 
 					font-size: 0.875rem;
 
 					line-height: 1.25rem;
+
+					&--selected {
+						border-color: var(--highlight-color);
+					}
+
+					&--disabled {
+						opacity: 0.25;
+					}
 
 					&:first-child {
 						margin-bottom: 1rem;
@@ -292,22 +315,21 @@
 
 							position: relative;
 
-							border-color: #1d74f5;
+							border-color: var(--highlight-color);
 
 							&::before {
-								position: absolute;
-
-								top: 3px;
-								left: 3px;
-
-								width: 12px;
-								height: 12px;
-
 								content: "";
 
-								border-radius: 50%;
+								position: absolute;
 
-								background-color: #1d74f5;
+								width: 100%;
+								height: 100%;
+
+								background-clip: padding-box;
+								border-radius: 50%;
+								border: 2px solid transparent;
+
+								background-color: var(--highlight-color);
 							}
 						}
 					}
@@ -319,13 +341,70 @@
 						height: 20px;
 						margin: 0 0.5rem;
 
-						border: 1px solid #cfd8e6;
+						border: 2px solid #cfd8e6;
 						border-radius: 50px;
 					}
 
 					&-text {
 						font-weight: 500;
 					}
+				}
+
+				&-checkbox {
+					position: relative;
+
+					display: flex;
+
+					margin: 0 -0.5rem 1rem;
+
+					cursor: inherit;
+
+					&-element {
+						position: absolute;
+						z-index: -1;
+						top: 0;
+						left: 0;
+
+						width: 0;
+						height: 0;
+
+						&:checked + .setup-wizard-forms__content-register-checkbox-fake {
+							position: relative;
+
+							border-color: var(--highlight-color);
+							background-color: var(--highlight-color);
+							color: var(--rc-color-content);
+
+							.setup-wizard-forms__content-register-checkbox-fake-icon {
+								display: block;
+							}
+						}
+					}
+
+					&-fake {
+						display: block;
+
+						width: 16px;
+						height: 16px;
+						margin: 2px 0.5rem;
+
+						border: 2px solid #cfd8e6;
+						border-radius: 2px;
+
+						&-icon {
+							width: 100%;
+							height: 100%;
+							display: none;
+						}
+					}
+
+					&-text {
+						color: #666666;
+					}
+				}
+
+				&-items + * {
+					margin-top: 1rem;
 				}
 
 				&-item {
@@ -340,13 +419,20 @@
 					}
 
 					& .setup-wizard-forms__content-register-radio-icon {
-						margin: 0 calc(4px + 0.5rem);
+						min-width: 20px;
+						width: 20px;
+						height: 20px;
+						margin: 0 0.5rem;
+						align-self: baseline;
 
-						font-size: 10px;
-					}
+						&--check {
+							color: var(--highlight-color);
+						}
 
-					& .setup-wizard-forms__content-register-radio-icon--check {
-						color: #1d74f5;
+						&--circle {
+							height: 6px;
+							margin: 7px 0.5rem;
+						}
 					}
 				}
 			}
@@ -354,8 +440,9 @@
 
 		&__footer {
 			display: flex;
+			flex-direction: row;
 
-			margin: 0 -0.5rem;
+			margin: 0 -0.5rem 2rem -0.5rem;
 
 			& .rc-button {
 				margin: 0 0.5rem;
@@ -390,7 +477,7 @@
 
 			letter-spacing: 0;
 
-			color: #1d74f5;
+			color: var(--highlight-color);
 
 			font-size: 1rem;
 
