@@ -564,11 +564,12 @@ RocketChat.settings.addGroup('OAuth', function() {
 			force: true,
 			enableQuery
 		});
-		this.add('Accounts_OAuth_Google_Drive_Access', false, {
+		this.add('Google_Drive_Access', false, {
 			type: 'boolean',
-			'public': true
+			'public': true,
+			enableQuery
 		});
-		return this.add('Accounts_OAuth_Google_Picker_key', '', {
+		return this.add('Google_Picker_key', '', {
 			type: 'string',
 			enableQuery,
 			'public': true

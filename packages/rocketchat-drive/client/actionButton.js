@@ -73,7 +73,7 @@ Meteor.startup(function() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
-			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		order: 7,
 		group: 'menu'

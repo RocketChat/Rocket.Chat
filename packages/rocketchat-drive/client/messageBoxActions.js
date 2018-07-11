@@ -12,7 +12,7 @@ Meteor.startup(function() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
-			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		action() {
 			const roomId = Session.get('openedRoom');
@@ -140,7 +140,7 @@ Meteor.startup(function() {
 				const picker = new google.picker.PickerBuilder().
 					addView(google.picker.ViewId.DOCS).
 					setOAuthToken(user.services.google.accessToken).
-					setDeveloperKey(RocketChat.settings.get('Accounts_OAuth_Google_Picker_key')).
+					setDeveloperKey(RocketChat.settings.get('Google_Picker_key')).
 					setCallback(pickerCallback).
 					build();
 				picker.setVisible(true);
@@ -177,7 +177,7 @@ Meteor.startup(function() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
-			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		action() {
 			const roomId = Session.get('openedRoom');
@@ -210,7 +210,7 @@ Meteor.startup(function() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
-			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		action() {
 			const roomId = Session.get('openedRoom');
@@ -243,7 +243,7 @@ Meteor.startup(function() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
 			}
-			return RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		action() {
 			const roomId = Session.get('openedRoom');

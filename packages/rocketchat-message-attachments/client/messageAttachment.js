@@ -64,7 +64,7 @@ Template.messageAttachment.helpers({
 	},
 
 	googleDriveAvailable() {
-		return RocketChat.settings.get('Accounts_OAuth_Google') && RocketChat.settings.get('Accounts_OAuth_Google_Drive_Access');
+		return RocketChat.settings.get('Accounts_OAuth_Google') && RocketChat.settings.get('Google_Drive_Access');
 	},
 
 	fileType() {
