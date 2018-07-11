@@ -131,4 +131,74 @@ describe('[Subscriptions]', function() {
 				.end(done);
 		});
 	});
+
+	describe('[/subscriptions.unread]', () => {
+		let testChannel;
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('sending message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: 'Sample message'
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').and.to.be.an('object');
+				})
+				.end(done);
+		});
+		it('should return success: true when make as unread successfully', (done) => {
+			request.post(api('subscriptions.unread'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail on invalid params', (done) => {
+			request.post(api('subscriptions.unread'))
+				.set(credentials)
+				.send({
+					roomId: 12345
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should fail on empty params', (done) => {
+			request.post(api('subscriptions.unread'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+	});
 });

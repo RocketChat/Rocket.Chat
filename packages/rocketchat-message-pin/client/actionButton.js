@@ -16,7 +16,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
@@ -41,7 +41,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
@@ -64,7 +64,7 @@ Meteor.startup(function() {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;
@@ -79,13 +79,13 @@ Meteor.startup(function() {
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['pinned'],
-		action(event) {
+		async action(event) {
 			const message = this._arguments[1];
-			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			$(event.currentTarget).attr('data-clipboard-text', await RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;

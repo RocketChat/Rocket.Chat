@@ -27,6 +27,10 @@ Meteor.methods({
 			}
 		}
 
+		if (!fs.existsSync(tempFolder)) {
+			fs.mkdirSync(tempFolder);
+		}
+
 		const subFolderName = fullExport ? 'full' : 'partial';
 		const baseFolder = path.join(tempFolder, userId);
 		if (!fs.existsSync(baseFolder)) {

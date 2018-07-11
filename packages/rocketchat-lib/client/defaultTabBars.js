@@ -33,7 +33,7 @@ RocketChat.TabBar.addButton({
 			return true;
 		}
 
-		return RocketChat.authz.hasRole(Meteor.userId(), ['admin', 'moderator', 'owner'], rid);
+		return RocketChat.authz.hasAllPermission('view-broadcast-member-list', rid);
 	}
 });
 
@@ -57,7 +57,7 @@ RocketChat.TabBar.addButton({
 });
 
 RocketChat.TabBar.addButton({
-	groups: ['channel', 'privategroup', 'directmessage'],
+	groups: ['channel', 'group', 'direct'],
 	id: 'keyboard-shortcut-list',
 	i18nTitle: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',

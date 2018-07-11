@@ -19,7 +19,7 @@ Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 		}
 	};
 
-	const cursorHandle = RocketChat.models.Rooms.findByNameStartingAndTypes(selector.name, ['c', 'p'], options).observeChanges({
+	const cursorHandle = RocketChat.models.Rooms.findChannelAndPrivateByNameStarting(selector.name, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},
