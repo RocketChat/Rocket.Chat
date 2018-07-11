@@ -1,5 +1,4 @@
 /*global OAuth2Server */
-import _ from 'underscore';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',
@@ -80,5 +79,5 @@ RocketChat.API.v1.addAuthMethod(function() {
 	if (user == null) {
 		return;
 	}
-	return { user: _.omit(user, '$loki') };
+	return { user };
 });
