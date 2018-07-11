@@ -2,10 +2,6 @@
 
 import moment from 'moment';
 
-function setDateRange(value, from, to) {
-	Template.currentData().daterange.set({value, from, to});
-}
-
 Template.livechatAnalyticsDaterange.helpers({
 	bold(prop) {
 		return (prop === Template.currentData().daterange.get().value) ? 'rc-popover__item--bold' : '';
@@ -34,16 +30,16 @@ Template.livechatAnalyticsDaterange.events({
 				popover.open(config);
 				break;
 			case 'this-week':
-				setDateRange(value, moment().startOf('week').format('MMM D YYYY'), moment().endOf('week').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('week').format('MMM D YYYY'), moment().endOf('week').format('MMM D YYYY'));
 				break;
 			case 'prev-week':
-				setDateRange(value, moment().subtract(1, 'weeks').startOf('week').format('MMM D YYYY'), moment().subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'weeks').startOf('week').format('MMM D YYYY'), moment().subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
 				break;
 			case 'this-month':
-				setDateRange(value, moment().startOf('month').format('MMM D YYYY'), moment().endOf('month').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('month').format('MMM D YYYY'), moment().endOf('month').format('MMM D YYYY'));
 				break;
 			case 'prev-month':
-				setDateRange(value, moment().subtract(1, 'months').startOf('month').format('MMM D YYYY'), moment().subtract(1, 'months').endOf('month').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'months').startOf('month').format('MMM D YYYY'), moment().subtract(1, 'months').endOf('month').format('MMM D YYYY'));
 				break;
 		}
 	}

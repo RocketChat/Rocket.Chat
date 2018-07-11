@@ -1,39 +1,8 @@
 /* globals popover */
 
-import moment from 'moment';
-import Chart from 'chart.js/src/chart.js';
-
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
 
-
-function drawLineChart(chartLabel, dataLabels, dataPoints) {
-	const chart = document.getElementById('lc-analytics-chart');
-
-	if (chartContext) {
-		chartContext.destroy();
-	}
-
-	chartContext = new Chart(chart, {
-		type: 'line',
-		data: {
-			labels: dataLabels,		// data labels, y-axis points
-			datasets: [{
-				label: TAPi18n.__(chartLabel),	// chart label
-				data: dataPoints,		// data points corresponding to data labels, x-axis points
-				backgroundColor: [
-					'rgba(255, 99, 132, 0.2)'
-				],
-				borderColor: [
-					'rgba(255,99,132,1)'
-				],
-				borderWidth: 2,
-				fill: false
-			}]
-		},
-		options: RocketChat.Livechat.Analytics.getChartConfiguration()
-	});
-}
 
 function updateAnalyticsChart() {
 	Meteor.call('livechat:getAnalyticsChartData', {daterange: templateInstance.daterange.get(), chartOptions: templateInstance.chartOptions.get()}, function(error, result) {
@@ -41,7 +10,7 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		drawLineChart(result.chartLabel, result.dataLabels, result.dataPoints);
+		RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
 	});
 }
 
@@ -53,51 +22,6 @@ function updateAnalyticsOverview() {
 
 		templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
 	});
-}
-
-function setDateRange(value, from, to) {
-	if (value && from && to) {
-		templateInstance.daterange.set({value, from, to});
-	} else {
-		templateInstance.daterange.set({
-			value: 'this-week',
-			from: moment().startOf('week').format('MMM D YYYY'),
-			to: moment().endOf('week').format('MMM D YYYY')
-		});
-	}
-}
-
-function updateDateRange(order) {
-	const currentDaterange = templateInstance.daterange.get();
-
-	switch (currentDaterange.value) {
-		case 'this-week':
-		case 'prev-week':
-			if (order === 1) {
-				setDateRange(currentDaterange.value,
-					moment(new Date(currentDaterange.from)).add(1, 'weeks').startOf('week').format('MMM D YYYY'),
-					moment(new Date(currentDaterange.to)).add(1, 'weeks').endOf('week').format('MMM D YYYY'));
-			} else {
-				setDateRange(currentDaterange.value,
-					moment(new Date(currentDaterange.from)).subtract(1, 'weeks').startOf('week').format('MMM D YYYY'),
-					moment(new Date(currentDaterange.to)).subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
-			}
-			break;
-		case 'this-month':
-		case 'prev-month':
-			if (order === 1) {
-				setDateRange(currentDaterange.value,
-					moment(new Date(currentDaterange.from)).add(1, 'months').startOf('month').format('MMM D YYYY'),
-					moment(new Date(currentDaterange.to)).add(1, 'months').endOf('month').format('MMM D YYYY'));
-			} else {
-				setDateRange(currentDaterange.value,
-					moment(new Date(currentDaterange.from)).subtract(1, 'months').startOf('month').format('MMM D YYYY'),
-					moment(new Date(currentDaterange.to)).subtract(1, 'months').endOf('month').format('MMM D YYYY'));
-			}
-			break;
-		case 'custom':
-			handleError({details: {errorTitle: 'Navigation_didnot_work'}, error: 'You_have_selected_custom_dates'});
-	}
 }
 
 Template.livechatAnalytics.helpers({
@@ -129,7 +53,7 @@ Template.livechatAnalytics.onCreated(function() {
 	this.chartOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0].chartOptions[0]);		// default selected first
 
 	this.autorun(() => {
-		setDateRange();
+		RocketChat.Livechat.Analytics.setDateRange(templateInstance.daterange);
 	});
 });
 
@@ -169,12 +93,12 @@ Template.livechatAnalytics.events({
 	'click .lc-daterange-prev'(e) {
 		e.preventDefault();
 
-		updateDateRange(-1);
+		RocketChat.Livechat.Analytics.updateDateRange(templateInstance.daterange, -1);
 	},
 	'click .lc-daterange-next'(e) {
 		e.preventDefault();
 
-		updateDateRange(1);
+		RocketChat.Livechat.Analytics.updateDateRange(templateInstance.daterange, 1);
 	},
 	'change #lc-analytics-options'({currentTarget}) {
 		templateInstance.analyticsOptions.set(RocketChat.Livechat.Analytics.getAnalyticsAllOptions().filter(function(obj) {
