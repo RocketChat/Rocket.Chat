@@ -248,6 +248,33 @@ Template.channelSettingsEditing.onCreated(function() {
 				});
 			}
 		},
+		sysMes: {
+			type: 'boolean',
+			label: 'System_messages',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(
+					room,
+					RoomSettingsEnum.SYSTEM_MESSAGES
+				);
+			},
+			getValue() {
+				return room.sysMes !== false;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
+					() => {
+						toastr.success(
+							TAPi18n.__('System_messages_setting_changed_successfully')
+						);
+					}
+				);
+			}
+		},
 		archived: {
 			type: 'boolean',
 			label: 'Room_archivation_state_true',
@@ -475,9 +502,6 @@ Template.channelSettingsInfo.helpers({
 	},
 	topic() {
 		return Template.instance().room.topic;
-	},
-	users() {
-		return Template.instance().room.usernames;
 	},
 
 	channelIcon() {
