@@ -15,6 +15,7 @@ packages/rocketchat-ui/client/lib/recorderjs/recorder.js
 packages/rocketchat-ui/client/lib/textarea-autogrow.js
 packages/rocketchat-videobridge/client/public/external_api.js
 packages/rocketchat-theme/client/vendor/
+packages/tap-i18n/lib/tap_i18next/tap_i18next-1.7.3.js
 private/moment-locales/
 public/livechat/
 public/mp3-realtime-worker.js

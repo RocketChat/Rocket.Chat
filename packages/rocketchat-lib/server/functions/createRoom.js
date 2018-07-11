@@ -31,7 +31,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		fname: name,
 		t: type,
 		msgs: 0,
-		usernames: members,
+		usersCount: 0,
 		u: {
 			_id: owner._id,
 			username: owner.username
@@ -41,6 +41,10 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		ro: readOnly === true,
 		sysMes: readOnly !== true
 	});
+
+	if (type === 'd') {
+		room.usernames = members;
+	}
 
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));
@@ -64,7 +68,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	room = RocketChat.models.Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 }});
 		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
@@ -95,6 +99,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
 		});
 	}
+	Meteor.defer(() => {
+		RocketChat.callbacks.run('afterCreateRoom', owner, room);
+	});
 
 	if (Apps && Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message

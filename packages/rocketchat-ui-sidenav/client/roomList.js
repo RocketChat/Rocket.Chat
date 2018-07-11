@@ -1,6 +1,4 @@
 /* globals RocketChat */
-import _ from 'underscore';
-
 import { UiTextContext } from 'meteor/rocketchat:lib';
 
 Template.roomList.helpers({
@@ -12,11 +10,10 @@ Template.roomList.helpers({
 				show favorites
 				show unread
 		*/
-
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
 		}
-		const user = Meteor.user();
+		const user = Meteor.userId();
 		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true
@@ -25,14 +22,15 @@ Template.roomList.helpers({
 		const sort = {};
 
 		if (sortBy === 'activity') {
-			sort.t = 1;
+			sort.lm = -1;
 		} else { // alphabetical
-			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'fname' : 'name'] = /descending/.test(sortBy) ? -1 : 1;
+			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
 			query.hideUnreadStatus = {$ne: true};
+
 			return ChatSubscription.find(query, {sort});
 		}
 
@@ -68,20 +66,6 @@ Template.roomList.helpers({
 				query.f = {$ne: favoritesEnabled};
 			}
 		}
-
-		if (sortBy === 'activity') {
-			const list = ChatSubscription.find(query).fetch();
-			RocketChat.models.Rooms.find();
-			const rooms = RocketChat.models.Rooms._collection._docs._map;
-
-			return _.sortBy(list.map(sub => {
-				const lm = rooms[sub.rid] && rooms[sub.rid]._updatedAt;
-				return {
-					...sub,
-					lm: lm && lm.toISOString && lm.toISOString()
-				};
-			}), 'lm').reverse();
-		}
 		return ChatSubscription.find(query, {sort});
 	},
 
@@ -107,11 +91,53 @@ Template.roomList.helpers({
 
 	noSubscriptionText() {
 		const instance = Template.instance();
-		const roomType = (instance.data.header || instance.data.identifier);
-		return RocketChat.roomTypes.roomTypes[roomType].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+		return RocketChat.roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 
 	showRoomCounter() {
-		return RocketChat.getUserPreference(Meteor.user(), 'roomCounterSidebar');
+		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	}
 });
+
+const getLowerCaseNames = (room, nameDefault = '', fnameDefault= '') => {
+	const name = room.name || nameDefault;
+	const fname = room.fname || fnameDefault || name;
+	return {
+		lowerCaseName: name.toLowerCase(),
+		lowerCaseFName: fname.toLowerCase()
+	};
+};
+
+const mergeSubRoom = subscription => {
+	const room = RocketChat.models.Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
+	subscription.lastMessage = room.lastMessage;
+	subscription.lm = room._updatedAt;
+	return Object.assign(subscription, getLowerCaseNames(subscription));
+};
+
+const mergeRoomSub = room => {
+	const sub = RocketChat.models.Subscriptions.findOne({ rid: room._id });
+	if (!sub) {
+		return room;
+	}
+
+	RocketChat.models.Subscriptions.update({
+		rid: room._id
+	}, {
+		$set: {
+			lastMessage: room.lastMessage,
+			lm: room._updatedAt,
+			...getLowerCaseNames(room, sub.name, sub.fname)
+		}
+	});
+
+	return room;
+};
+
+RocketChat.callbacks.add('cachedCollection-received-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-sync-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-loadFromServer-rooms', mergeRoomSub);
+
+RocketChat.callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
+RocketChat.callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);
+RocketChat.callbacks.add('cachedCollection-loadFromServer-subscriptions', mergeSubRoom);
