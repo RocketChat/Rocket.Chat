@@ -16,7 +16,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
@@ -41,7 +41,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
@@ -64,7 +64,7 @@ Meteor.startup(function() {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;
@@ -85,7 +85,7 @@ Meteor.startup(function() {
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;
