@@ -21,7 +21,7 @@ AccountBox.addRoute({
 
 AccountBox.addRoute({
 	name: 'livechat-analytics',
-	path: '/livechat-analytics',
+	path: '/analytics',
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Analytics',
 	pageTemplate: 'livechatAnalytics'
@@ -29,7 +29,7 @@ AccountBox.addRoute({
 
 AccountBox.addRoute({
 	name: 'livechat-real-time-monitoring',
-	path: '/livechat-real-time-monitoring',
+	path: '/real-time-monitoring',
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Real_Time_Monitoring',
 	pageTemplate: 'livechatRealTimeMonitoring'

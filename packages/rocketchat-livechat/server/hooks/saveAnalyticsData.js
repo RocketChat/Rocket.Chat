@@ -4,8 +4,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	// check if room is livechat & yet awaiting for response
-	if (!(typeof room.t !== 'undefined' && room.t === 'l')) {
+	// check if room is livechat
+	if (room.t !== 'l') {
 		return message;
 	}
 
