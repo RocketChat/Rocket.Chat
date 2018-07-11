@@ -314,7 +314,7 @@ RocketChat.Livechat = {
 
 	forwardOpenChats(userId) {
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
-			const guest = RocketChat.models.Users.findOneById(room.v._id);
+			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
 	},
@@ -365,8 +365,6 @@ RocketChat.Livechat = {
 		const servedBy = room.servedBy;
 
 		if (agent && agent.agentId !== servedBy._id) {
-			room.usernames = _.without(room.usernames, servedBy.username).concat(agent.username);
-
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 
 			const subscriptionData = {
@@ -389,6 +387,7 @@ RocketChat.Livechat = {
 			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
 			RocketChat.models.Subscriptions.insert(subscriptionData);
+			RocketChat.models.Rooms.incUsersCountById(room._id);
 
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
 			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });

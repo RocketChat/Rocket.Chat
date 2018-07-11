@@ -25,7 +25,6 @@ Template.roomList.helpers({
 			sort.lm = -1;
 		} else { // alphabetical
 			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
-			sort['name'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {
@@ -100,9 +99,9 @@ Template.roomList.helpers({
 	}
 });
 
-const getLowerCaseNames = (room, nameDefault = '') => {
+const getLowerCaseNames = (room, nameDefault = '', fnameDefault= '') => {
 	const name = room.name || nameDefault;
-	const fname = room.fname || name;
+	const fname = room.fname || fnameDefault || name;
 	return {
 		lowerCaseName: name.toLowerCase(),
 		lowerCaseFName: fname.toLowerCase()
@@ -128,7 +127,7 @@ const mergeRoomSub = room => {
 		$set: {
 			lastMessage: room.lastMessage,
 			lm: room._updatedAt,
-			...getLowerCaseNames(room, sub.name)
+			...getLowerCaseNames(room, sub.name, sub.fname)
 		}
 	});
 

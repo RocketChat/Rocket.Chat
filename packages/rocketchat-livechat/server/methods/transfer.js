@@ -18,9 +18,8 @@ Meteor.methods({
 
 		const guest = LivechatVisitors.findOneById(room.v._id);
 
-		const user = Meteor.user();
-
-		if (room.usernames.indexOf(user.username) === -1 && !RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription && !RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });
 		}
 
