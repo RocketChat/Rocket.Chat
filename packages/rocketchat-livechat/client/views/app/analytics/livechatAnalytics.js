@@ -10,7 +10,7 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
+		chartContext = RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
 	});
 }
 
@@ -59,13 +59,16 @@ Template.livechatAnalytics.onCreated(function() {
 
 Template.livechatAnalytics.onRendered(() => {
 	Tracker.autorun(() => {
-		if (templateInstance.analyticsOptions.get()) {
-			templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
-		}
 		if (templateInstance.daterange.get() && templateInstance.analyticsOptions.get()) {
 			updateAnalyticsOverview();
 		}
 
+	});
+
+	Tracker.autorun(() => {
+		if (templateInstance.analyticsOptions.get()) {
+			templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
+		}
 	});
 
 	Tracker.autorun(() => {

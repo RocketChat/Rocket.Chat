@@ -62,6 +62,9 @@ class Analytics {
 			chartOptions: [{
 				name: 'Total_conversations',
 				value: 'total-conversations'
+			}, {
+				name: 'Avg_chat_duration',
+				value: 'avg-chat-duration'
 			}]
 		}, {
 			name: 'Productivity',
@@ -118,7 +121,7 @@ class Analytics {
 			chartContext.destroy();
 		}
 
-		chartContext = new Chart(chart, {
+		return new Chart(chart, {
 			type: 'line',
 			data: {
 				labels: dataLabels,		// data labels, y-axis points
@@ -167,6 +170,18 @@ class Analytics {
 		const currentDaterange = daterange.get();
 
 		switch (currentDaterange.value) {
+			case 'today':
+			case 'yesterday':
+				if (order === 1) {
+					this.setDateRange(daterange, currentDaterange.value,
+						moment(new Date(currentDaterange.from)).add(1, 'days').format('MMM D YYYY'),
+						moment(new Date(currentDaterange.to)).add(1, 'days').format('MMM D YYYY'));
+				} else {
+					this.setDateRange(daterange, currentDaterange.value,
+						moment(new Date(currentDaterange.from)).subtract(1, 'days').format('MMM D YYYY'),
+						moment(new Date(currentDaterange.to)).subtract(1, 'days').format('MMM D YYYY'));
+				}
+				break;
 			case 'this-week':
 			case 'prev-week':
 				if (order === 1) {

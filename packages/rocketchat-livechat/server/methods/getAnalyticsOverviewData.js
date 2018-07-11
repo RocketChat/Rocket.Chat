@@ -8,8 +8,22 @@ Meteor.methods({
 			});
 		}
 
+		if (!(options.analyticsOptions && options.analyticsOptions.name)) {
+			return;
+		}
+
 		const from = moment(new Date(options.daterange.from));
 		const to = moment(new Date(options.daterange.to));
+
+		if (!(moment(from).isValid() && moment(to).isValid())) {
+			console.log('Invalid dates');
+			return;
+		}
+
+		if (!RocketChat.Livechat.Analytics.OverviewData[options.analyticsOptions.name]) {
+			console.log(`Method RocketChat.Livechat.Analytics.OverviewData.${ options.analyticsOptions.name } does NOT exist`);
+			return;
+		}
 
 		return RocketChat.Livechat.Analytics.OverviewData[options.analyticsOptions.name](from, to);
 	}

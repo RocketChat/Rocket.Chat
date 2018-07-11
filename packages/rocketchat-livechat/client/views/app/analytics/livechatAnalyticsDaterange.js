@@ -29,6 +29,12 @@ Template.livechatAnalyticsDaterange.events({
 				};
 				popover.open(config);
 				break;
+			case 'today':
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().format('MMM D YYYY'), moment().format('MMM D YYYY'));
+				break;
+			case 'yesterday':
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'days').format('MMM D YYYY'), moment().subtract(1, 'days').format('MMM D YYYY'));
+				break;
 			case 'this-week':
 				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('week').format('MMM D YYYY'), moment().endOf('week').format('MMM D YYYY'));
 				break;
