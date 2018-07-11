@@ -13,7 +13,8 @@ const resolver = {
 				throw new Error('No user');
 			}
 
-			const rooms = RocketChat.models.Rooms.findByContainingUsername(user.username, {
+			const roomIds = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch().map(s => s.rid);
+			const rooms = RocketChat.models.Rooms.findByIds(roomIds, {
 				sort: {
 					name: 1
 				},

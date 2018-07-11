@@ -91,9 +91,14 @@ Object.assign(FileUpload, {
 		s.rotate();
 		// Get metadata to resize the image the first time to keep "inside" the dimensions
 		// then resize again to create the canvas around
+
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			if (!metadata) {
+				metadata = {};
+			}
+
 			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
+				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
 				.pipe(sharp()
 					.resize(height, height)
 					.background('#FFFFFF')
@@ -203,17 +208,13 @@ Object.assign(FileUpload, {
 		let { rc_uid, rc_token } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_uid = cookie.get('rc_uid', headers.cookie);
 			rc_token = cookie.get('rc_token', headers.cookie);
 		}
-
-		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
-			return false;
-		}
-
-		return true;
+		const isAuthorizedByCookies = rc_uid && rc_token && RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && RocketChat.models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		return isAuthorizedByCookies || isAuthorizedByHeaders;
 	},
-
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
 			return file;

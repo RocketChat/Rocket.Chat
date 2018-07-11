@@ -37,7 +37,7 @@ const loadUserSubscriptions = function(exportOperation) {
 	const cursor = RocketChat.models.Subscriptions.findByUserId(exportUserId);
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
-		const roomData = subscription._room;
+		const roomData = RocketChat.models.Rooms.findOneById(roomId);
 		let roomName = roomData.name ? roomData.name : roomId;
 		let userId = null;
 
@@ -319,7 +319,14 @@ const sendEmail = function(userId) {
 };
 
 const makeZipFile = function(exportOperation) {
+	createDir(zipFolder);
+
 	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+	if (fs.existsSync(targetFile)) {
+		exportOperation.status = 'uploading';
+		return;
+	}
+
 	const output = fs.createWriteStream(targetFile);
 
 	exportOperation.generatedFile = targetFile;
@@ -424,6 +431,11 @@ const continueExportOperation = function(exportOperation) {
 			});
 
 			if (isDownloadFinished(exportOperation)) {
+				const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+				if (fs.existsSync(targetFile)) {
+					fs.unlinkSync(targetFile);
+				}
+
 				exportOperation.status = 'compressing';
 				return;
 			}
@@ -431,7 +443,6 @@ const continueExportOperation = function(exportOperation) {
 
 		if (exportOperation.status === 'compressing') {
 			makeZipFile(exportOperation);
-			exportOperation.status = 'uploading';
 			return;
 		}
 

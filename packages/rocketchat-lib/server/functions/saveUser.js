@@ -187,7 +187,7 @@ RocketChat.saveUser = function(userId, userData) {
 			RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 		}
 
-		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
+		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password') && RocketChat.passwordPolicy.validate(userData.password)) {
 			Accounts.setPassword(userData._id, userData.password.trim());
 		}
 
