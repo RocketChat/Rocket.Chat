@@ -16859,6 +16859,259 @@
           ]
         }
       ]
+    },
+    "0.67.0-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "10749",
+          "title": "[BREAK] Remove cache layer and internal calculated property `room.usernames`",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.0",
+          "contributors": [
+            "rodrigok",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11417",
+          "title": "Merge master into develop & Set version to 0.67.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11406",
+          "title": "[FIX] Livechat taking inquiry leading to 404 page",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "11398",
+          "title": "[FIX] All messages notifications via email were sent as mention alert",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11358",
+          "title": "[FIX] sort fname sidenav",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11399",
+          "title": "Merge master into develop & Set version to 0.67.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "geekgonecrazy",
+            "renatobecker",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10918",
+          "title": "[NEW] Additional Livechat iFrame API's",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11266",
+          "title": "[FIX] Livechat not sending desktop notifications",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.2",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11319",
+          "title": "[FIX] SVG icons code",
+          "userLogin": "tassoevan",
+          "milestone": "0.67.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11365",
+          "title": "[FIX] Remove file snap store doesn't like",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.66.2",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11364",
+          "title": "Regression: Fix migration 125 checking for settings field",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11359",
+          "title": "Send setting Allow_Marketing_Emails to statistics collector",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11313",
+          "title": "[FIX] Message popup responsiveness in slash commands",
+          "userLogin": "tassoevan",
+          "milestone": "0.67.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "9991",
+          "title": "[FIX] web app manifest errors as reported by Chrome DevTools",
+          "userLogin": "justinribeiro",
+          "milestone": "0.67.0",
+          "contributors": [
+            "justinribeiro",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11342",
+          "title": "[FIX] Message attachment's fields with different sizes",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.67.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11330",
+          "title": "[IMPROVE] Stop sort callbacks on run",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "9754",
+          "title": "[FIX] Parse inline code without space before initial backtick",
+          "userLogin": "c0dzilla",
+          "milestone": "0.67.0",
+          "contributors": [
+            "c0dzilla",
+            "gdelavald",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11348",
+          "title": "Merge master into develop & Set version to 0.67.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok",
+            "gdelavald",
+            "tassoevan",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11335",
+          "title": "[FIX] Some updates were returning errors when based on queries with position operators",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11315",
+          "title": "[FIX] SAML attributes with periods are not properly read.",
+          "userLogin": "Hudell",
+          "milestone": "0.66.1",
+          "contributors": [
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11333",
+          "title": "[FIX] Outgoing integrations were stopping the oplog tailing sometimes",
+          "userLogin": "rodrigok",
+          "milestone": "0.66.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11254",
+          "title": "[IMPROVE] Setup Wizard username validation, step progress and optin/optout",
+          "userLogin": "tassoevan",
+          "milestone": "0.66.1",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11267",
+          "title": "[FIX] Livestream muted when audio only option was enabled",
+          "userLogin": "gdelavald",
+          "milestone": "0.66.1",
+          "contributors": [
+            "gdelavald",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11295",
+          "title": "[FIX] Notification preferences being lost when switching view mode",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.66.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11290",
+          "title": "Merge master into develop & Set version to 0.67.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
