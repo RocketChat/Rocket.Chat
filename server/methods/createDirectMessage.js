@@ -50,7 +50,8 @@ Meteor.methods({
 			$setOnInsert: {
 				t: 'd',
 				msgs: 0,
-				ts: now
+				ts: now,
+				usersCount: 2
 			}
 		});
 
@@ -64,6 +65,7 @@ Meteor.methods({
 				open: true
 			},
 			$setOnInsert: {
+				fname: to.name,
 				name: to.username,
 				t: 'd',
 				alert: false,
@@ -95,6 +97,7 @@ Meteor.methods({
 			$and: [{'u._id': to._id}] // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
+				fname: me.username,
 				name: me.username,
 				t: 'd',
 				open: false,
