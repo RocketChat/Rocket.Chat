@@ -13,7 +13,7 @@ RocketChat.metrics = {};
 RocketChat.metrics.meteorMethods = new client.Summary({
 	name: 'rocketchat_meteor_methods',
 	help: 'summary of meteor methods count and time',
-	labelNames: ['method']
+	labelNames: ['method', 'has_connection', 'has_user']
 });
 
 RocketChat.metrics.rocketchatCallbacks = new client.Summary({
