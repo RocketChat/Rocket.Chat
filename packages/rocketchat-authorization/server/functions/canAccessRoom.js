@@ -12,7 +12,7 @@ RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 		if (subscription) {
-			return subscription._room;
+			return RocketChat.models.Rooms.findOneById(subscription.rid);
 		}
 	}
 ];
