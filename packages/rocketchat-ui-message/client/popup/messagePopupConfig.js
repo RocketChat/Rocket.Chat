@@ -1,97 +1,115 @@
-/* globals filteredUsersMemory */
 import _ from 'underscore';
 
-filteredUsersMemory = new Mongo.Collection(null);
+const usersFromRoomMessages = new Mongo.Collection(null);
+
+const reloadUsersFromRoomMessages = () => {
+	usersFromRoomMessages.remove({});
+	const uniqueMessageUsersControl = {};
+	RocketChat.models.Messages
+		.find(
+			{
+				rid: Session.get('openedRoom'),
+				'u.username': { $ne: Meteor.user().username }
+			},
+			{
+				fields: {
+					'u.username': 1,
+					'u.name': 1,
+					ts: 1
+				},
+				sort: { ts: -1 }
+			}
+		)
+		.fetch()
+		.filter(({ u: { username } }) => {
+			const notMapped = !uniqueMessageUsersControl[username];
+			uniqueMessageUsersControl[username] = true;
+			return notMapped;
+		})
+		.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
+			_id: username,
+			username,
+			name,
+			status: Session.get(`user_${ username }_status`) || 'offline',
+			ts
+		}));
+};
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.user() == null || Session.get('openedRoom') == null) {
 			return;
 		}
-		filteredUsersMemory.remove({});
-		const messageUsers = RocketChat.models.Messages.find({
-			rid: Session.get('openedRoom'),
-			'u.username': {
-				$ne: Meteor.user().username
-			}
-		}, {
-			fields: {
-				'u.username': 1,
-				'u.name': 1,
-				ts: 1
-			},
-			sort: {
-				ts: -1
-			}
-		}).fetch();
-		const uniqueMessageUsersControl = {};
-		return messageUsers.forEach(function(messageUser) {
-			if (uniqueMessageUsersControl[messageUser.u.username] == null) {
-				uniqueMessageUsersControl[messageUser.u.username] = true;
-				return filteredUsersMemory.upsert(messageUser.u.username, {
-					_id: messageUser.u.username,
-					username: messageUser.u.username,
-					name: messageUser.u.name,
-					status: Session.get(`user_${ messageUser.u.username }_status`) || 'offline',
-					ts: messageUser.ts
-				});
-			}
-		});
+
+		reloadUsersFromRoomMessages();
 	});
 });
 
-const getUsersFromServer = (filter, records, cb, rid) => {
-	const messageUsers = _.pluck(records, 'username');
-	return Meteor.call('spotlight', filter, messageUsers, {
-		users: true
-	}, rid, function(err, results) {
-		if (err != null) {
-			return console.error(err);
+const fetchUsersFromServer = (filterText, records, cb, rid) => {
+	const usernames = records.map(({ username }) => username);
+
+	return Meteor.call('spotlight', filterText, usernames, { users: true }, rid, (error, results) => {
+		if (error) {
+			console.error(error);
+			return;
 		}
-		if (results.users.length > 0) {
-			results.users.forEach(result => {
+
+		const { users } = results;
+
+		if (!users || users.length <= 0) {
+			return;
+		}
+
+		users.slice(0, 5)
+			.forEach(({ username }) => {
 				if (records.length < 5) {
 					records.push({
-						_id: result.username,
-						username: result.username,
+						_id: username,
+						username,
 						status: 'offline',
 						sort: 3
 					});
 				}
 			});
-			records = _.sortBy(records, 'sort');
-			return cb(records);
-		}
+
+		records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
+
+		return cb && cb(records);
 	});
 };
 
-const getRoomsFromServer = (filter, records, cb, rid) => {
+const fetchRoomsFromServer = (filterText, records, cb, rid) => {
 	if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
-		return cb([]);
+		return cb && cb([]);
 	}
-	return Meteor.call('spotlight', filter, null, {
-		rooms: true
-	}, rid, function(err, results) {
-		if (err != null) {
-			return console.error(err);
+
+	return Meteor.call('spotlight', filterText, null, { rooms: true }, rid, (error, results) => {
+		if (error) {
+			return console.error(error);
 		}
-		if (results.rooms.length > 0) {
-			results.rooms.forEach(room => {
-				if (records.length < 5) {
-					records.push(room);
-				}
-			});
-			return cb(records);
+
+		const { rooms } = results;
+
+		if (!rooms || rooms.length <= 0) {
+			return;
 		}
+
+		rooms.slice(0, 5).forEach(room => {
+			if (records.length < 5) {
+				records.push(room);
+			}
+		});
+
+		return cb && cb(records);
 	});
 };
 
-const getUsersFromServerDelayed = _.throttle(getUsersFromServer, 500);
+const fetchUsersFromServerDelayed = _.throttle(fetchUsersFromServer, 500);
 
-const getRoomsFromServerDelayed = _.throttle(getRoomsFromServer, 500);
+const fetchRoomsFromServerDelayed = _.throttle(fetchRoomsFromServer, 500);
 
 const addEmojiToRecents = (emoji) => {
-	const pickerEl = $('.emoji-picker')[0];
+	const pickerEl = document.querySelector('.emoji-picker');
 	if (pickerEl) {
 		const view = Blaze.getView(pickerEl);
 		if (view) {
@@ -131,71 +149,117 @@ Template.messagePopupConfig.helpers({
 		const self = this;
 		const config = {
 			title: t('People'),
-			collection: filteredUsersMemory,
+			collection: usersFromRoomMessages,
 			template: 'messagePopupUser',
 			getInput: self.getInput,
 			textFilterDelay: 200,
 			trigger: '@',
 			suffix: ' ',
-			getFilter(collection, filter, cb) {
-				let exp = new RegExp(`${ RegExp.escape(filter) }`, 'i');
-				// Get users from messages
-				const items = filteredUsersMemory.find({
-					ts: {
-						$exists: true
-					},
-					$or: [
+			getFilter(collection, filterText, cb) {
+				filterText = filterText && filterText.trim() || '';
+				let exp = new RegExp(`${ RegExp.escape(filterText) }`, 'i');
+
+				// Get at least 5 users from messages sent on room
+				const items = usersFromRoomMessages
+					.find(
 						{
-							username: exp
-						}, {
-							name: exp
+							ts: { $exists: true },
+							$or: [
+								{ username: exp },
+								{ name: exp }
+							]
+						},
+						{
+							limit: 5,
+							sort: { ts: -1 }
 						}
-					]
-				}, {
-					limit: 5,
-					sort: {
-						ts: -1
-					}
-				}).fetch();
-				// Get online users
-				if (items.length < 5 && filter && filter.trim() !== '') {
-					const messageUsers = _.pluck(items, 'username');
+					)
+					.fetch();
+
+				// If needed, add to list the online users
+				if (items.length < 5 && filterText !== '') {
+					const messageUsers = items.map(({ username }) => username);
 					const user = Meteor.user();
+
 					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
-						const usernames = RocketChat.models.Subscriptions.find({$or :[{'name': exp}, { fname: exp}]}).fetch().map(({name}) =>name);
-						items.push(...RocketChat.models.Users.find({username:{$in:usernames}}, {fields:{
-							username: 1,
-							name: 1,
-							status: 1
-						}}, {
-							limit: 5 - messageUsers.length
-						}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 })));
-					} else {
-						items.push(...Meteor.users.find({
-							$and: [
+						const usernames = RocketChat.models.Subscriptions
+							.find(
 								{
+									t: 'd',
 									$or: [
+										{ name: exp },
+										{ fname: exp }
+									]
+								}
+							)
+							.fetch()
+							.map(({ name }) => name);
+						console.log(usernames);
+						const newItems = RocketChat.models.Users
+							.find(
+								{
+									username: { $in: usernames }
+								},
+								{
+									fields: {
+										username: 1,
+										name: 1,
+										status: 1
+									}
+								},
+								{ limit: 5 - messageUsers.length }
+							)
+							.fetch()
+							.map(({ username, name, status }) => ({
+								_id: username,
+								username,
+								name,
+								status,
+								sort: 1
+							}));
+
+						items.push(...newItems);
+					} else {
+						const newItems = Meteor.users
+							.find(
+								{
+									$and: [
 										{
-											username: exp
-										}, {
-											name: exp
+											$or: [
+												{ username: exp },
+												{ name: exp }
+											]
+										},
+										{
+											username: {
+												$nin: [
+													user && user.username,
+													...messageUsers
+												]
+											}
 										}
 									]
-								}, {
-									username: {
-										$nin: [(user && user.username), ...messageUsers]
-									}
-								}
-							]
-						}, {
-							limit: 5 - messageUsers.length
-						}).fetch().map(({username, name, status}) => ({ _id: username, username, name, status, sort: 1 })));
+								},
+								{ limit: 5 - messageUsers.length }
+							)
+							.fetch()
+							.map(({ username, name, status }) => ({
+								_id: username,
+								username,
+								name,
+								status,
+								sort: 1
+							}));
+
+						items.push(...newItems);
 					}
 				}
+
 				// Get users from db
-				if (items.length < 5 && filter && filter.trim() !== '') {
-					getUsersFromServerDelayed(filter, items, cb, RocketChat.openedRoom);
+				if (items.length < 5 && filterText !== '') {
+					fetchUsersFromServerDelayed(filterText, items, cb, RocketChat.openedRoom);
 				}
+
 				const all = {
 					_id: 'all',
 					username: 'all',
@@ -204,7 +268,8 @@ Template.messagePopupConfig.helpers({
 					compatibility: 'channel group',
 					sort: 4
 				};
-				exp = new RegExp(`(^|\\s)${ RegExp.escape(filter) }`, 'i');
+
+				exp = new RegExp(`(^|\\s)${ RegExp.escape(filterText) }`, 'i');
 				if (exp.test(all.username) || exp.test(all.compatibility)) {
 					items.push(all);
 				}
@@ -251,7 +316,7 @@ Template.messagePopupConfig.helpers({
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
-					getRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
+					fetchRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
 				}
 				return records;
 			},
