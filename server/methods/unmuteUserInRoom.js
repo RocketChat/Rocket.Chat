@@ -28,7 +28,8 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(room.usernames) === false || room.usernames.includes(data.username) === false) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
+		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'unmuteUserInRoom'
 			});

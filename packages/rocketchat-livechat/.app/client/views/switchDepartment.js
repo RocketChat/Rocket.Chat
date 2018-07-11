@@ -1,4 +1,5 @@
-/* globals Department, Livechat, swal */
+/* globals Department, Livechat */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 Template.switchDepartment.helpers({
@@ -42,7 +43,6 @@ Template.switchDepartment.events({
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('No'),
-			closeOnConfirm: true,
 			html: false
 		}, () => {
 			const guestData = {

@@ -703,6 +703,10 @@ RocketChat.settings.addGroup('General', function() {
 			order: 0
 		}
 	});
+	this.add('Document_Domain', '', {
+		type: 'string',
+		'public': true
+	});
 	this.add('Language', '', {
 		type: 'language',
 		'public': true,
@@ -1713,6 +1717,10 @@ RocketChat.settings.addGroup('Logs', function() {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled'
+		});
+		this.add('Prometheus_Port', 9100, {
+			type: 'string',
+			i18nLabel: 'Port'
 		});
 	});
 });
@@ -2893,6 +2901,9 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				step: 3,
 				order: 2
 			}
+		});
+		this.add('Allow_Marketing_Emails', true, {
+			type: 'boolean'
 		});
 	});
 });

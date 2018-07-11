@@ -92,7 +92,7 @@
 													<div class="rc-select">
 														<select class="input-monitor rc-select__element" name="{{_id}}" {{isDisabled}} {{isReadonly}}>
 															{{#each languages}}
-															<option value="{{key}}" selected="{{appLanguage key}}" dir="auto">{{name}}</option>
+															<option value="{{key}}" selected="{{isAppLanguage key}}" dir="auto">{{name}}</option>
 															{{/each}}
 														</select>
 														{{> icon block="rc-select__arrow" icon="arrow-down" }}

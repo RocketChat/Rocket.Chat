@@ -13,7 +13,7 @@ RocketChat.metrics = {};
 RocketChat.metrics.meteorMethods = new client.Summary({
 	name: 'rocketchat_meteor_methods',
 	help: 'summary of meteor methods count and time',
-	labelNames: ['method']
+	labelNames: ['method', 'has_connection', 'has_user']
 });
 
 RocketChat.metrics.rocketchatCallbacks = new client.Summary({
@@ -144,10 +144,17 @@ app.use('/metrics', (req, res) => {
 const server = http.createServer(app);
 
 let timer;
-RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
-	if (value === true) {
+const updatePrometheusConfig = () => {
+	const port = RocketChat.settings.get('Prometheus_Port');
+	const enabled = RocketChat.settings.get('Prometheus_Enabled');
+
+	if (port == null || enabled == null) {
+		return;
+	}
+
+	if (enabled === true) {
 		server.listen({
-			port: 9100,
+			port,
 			host: process.env.BIND_IP || '0.0.0.0'
 		});
 		timer = Meteor.setInterval(setPrometheusData, 5000);
@@ -155,4 +162,7 @@ RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
 		server.close();
 		Meteor.clearInterval(timer);
 	}
-});
+};
+
+RocketChat.settings.get('Prometheus_Enabled', updatePrometheusConfig);
+RocketChat.settings.get('Prometheus_Port', updatePrometheusConfig);
