@@ -196,24 +196,42 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 			} else {
 				const busboy = new Busboy({ headers: this.request.headers });
+				let fields = {};
+				const getUserFromFormData = fields => {
+					let userFromFormData;
+					if (fields.userId) {
+						userFromFormData = RocketChat.models.Users.findOneById(fields.userId);
+					} else if (fields.username) {
+						userFromFormData = RocketChat.models.Users.findOneByUsername(fields.username);
+					}
+					return userFromFormData;
+				};
 
 				Meteor.wrapAsync((callback) => {
 					busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
 						if (fieldname !== 'image') {
 							return callback(new Meteor.Error('invalid-field'));
 						}
-
 						const imageData = [];
 						file.on('data', Meteor.bindEnvironment((data) => {
 							imageData.push(data);
 						}));
 
 						file.on('end', Meteor.bindEnvironment(() => {
+							const sentTheUserByFormData = fields.userId || fields.username;
+							if (sentTheUserByFormData) {
+								user = getUserFromFormData(fields);
+								if (!user) {
+									return callback(new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users'));
+								}
+							}
 							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
 							callback();
 						}));
-
 					}));
+					busboy.on('field', (fieldname, val) => {
+						fields = Object.assign(fields, { [fieldname]: val });
+					});
 					this.request.pipe(busboy);
 				})();
 			}

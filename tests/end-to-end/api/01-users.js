@@ -52,6 +52,7 @@ describe('[Users]', function() {
 					expect(res.body).to.not.have.nested.property('user.customFields');
 
 					targetUser._id = res.body.user._id;
+					targetUser.username = res.body.user.username;
 				})
 				.end(done);
 		});
@@ -209,10 +210,34 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.setAvatar]', () => {
-		it.skip('should set the avatar of the auth user', (done) => {
+		it('should set the avatar of the auth user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
-				.attach('avatarUrl', imgURL)
+				.attach('image', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should set the avatar of another user by username and local image', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(credentials)
+				.attach('image', imgURL)
+				.field({ 'username': targetUser.username})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should set the avatar of another user by userId and local image', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(credentials)
+				.attach('image', imgURL)
+				.field({ 'userId': targetUser._id})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
