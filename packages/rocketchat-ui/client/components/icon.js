@@ -1,4 +1,4 @@
-/* globals isFirefox isChrome */
+/* globals isFirefox, isChrome */
 
 const baseUrlFix = () => `${ window.location.origin }${ FlowRouter.current().path }`;
 
