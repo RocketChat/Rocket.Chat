@@ -3,8 +3,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import UAParser from 'ua-parser-js';
 import LivechatVisitors from '../models/LivechatVisitors';
+import {Analytics} from './Analytics';
 
 RocketChat.Livechat = {
+	Analytics,
 	historyMonitorType: 'url',
 
 	logger: new Logger('Livechat', {

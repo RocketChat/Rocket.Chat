@@ -19,7 +19,7 @@ function drawLineChart(chartLabel, dataLabels, dataPoints) {
 		data: {
 			labels: dataLabels,		// data labels, y-axis points
 			datasets: [{
-				label: chartLabel,	// chart label
+				label: TAPi18n.__(chartLabel),	// chart label
 				data: dataPoints,		// data points corresponding to data labels, x-axis points
 				backgroundColor: [
 					'rgba(255, 99, 132, 0.2)'

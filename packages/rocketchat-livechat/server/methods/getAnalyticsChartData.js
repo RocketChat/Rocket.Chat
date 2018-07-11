@@ -25,62 +25,7 @@ Meteor.methods({
 				lt: moment(m).add(1, 'days')
 			};
 
-			switch (options.chartOptions.name) {
-				case 'Total_conversations':
-					//
-					data.dataPoints.push(RocketChat.models.Rooms.getTotalConversationsBetweenDate('l', date));
-					break;
-				case 'First_response_time':
-					//
-					let frt = 0;
-					let countFrt = 0;
-					RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({metrics}) => {
-						if (metrics && metrics.response && metrics.response.ft) {
-							frt += metrics.response.ft;
-							countFrt++;
-						}
-					});
-
-					const avgFrt = (countFrt) ? frt/countFrt : 0;
-
-					data.dataPoints.push(Math.round(avgFrt*100)/100);
-					break;
-				case 'Avg_response_time':
-					//
-					let art = 0;
-					let countArt = 0;
-					RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({metrics}) => {
-						if (metrics && metrics.response && metrics.response.avg) {
-							art += metrics.response.avg;
-							countArt++;
-						}
-					});
-
-					const avgArt = (countArt) ? art/countArt : 0;
-
-					data.dataPoints.push(Math.round(avgArt*100)/100);
-					break;
-				case 'Avg_reaction_time':
-					//
-					let arnt = 0;
-					let countArnt = 0;
-					RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({metrics}) => {
-						if (metrics && metrics.reaction && metrics.reaction.ft) {
-							arnt += metrics.reaction.ft;
-							countArnt++;
-						}
-					});
-
-					const avgArnt = (countArnt) ? arnt/countArnt : 0;
-
-					data.dataPoints.push(Math.round(avgArnt*100)/100);
-					break;
-				default:
-					//
-					data.dataLabels.pop();
-					console.log('Option not recognised');
-					break;
-			}
+			data.dataPoints.push(RocketChat.Livechat.Analytics.ChartData[options.chartOptions.name](date));
 		}
 
 		return data;
