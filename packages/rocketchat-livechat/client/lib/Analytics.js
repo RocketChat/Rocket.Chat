@@ -59,24 +59,7 @@ class Analytics {
 			chartOptions: [{
 				name: 'Total_conversations',
 				value: 'total-conversations'
-			}],
-			analyticsOverviewOptions: [
-				[{
-					title: 'Total_conversations'
-				}, {
-					title: 'Open_conversations'
-				}],
-				[{
-					title: 'Total_messages'
-				}, {
-					title: 'Busiest_day'
-				}],
-				[{
-					title: 'Conversations_per_day'
-				}, {
-					title: 'Busiest_time'
-				}]
-			]
+			}]
 		}, {
 			name: 'Productivity',
 			value: 'productivity',
@@ -89,18 +72,7 @@ class Analytics {
 			}, {
 				name: 'Avg_reaction_time',
 				value: 'avg-reaction-time'
-			}],
-			analyticsOverviewOptions: [
-				[{
-					title: 'Avg_response_time'
-				}],
-				[{
-					title: 'First_response_time'
-				}],
-				[{
-					title: 'Avg_reaction_time'
-				}]
-			]
+			}]
 		}];
 	}
 
@@ -110,6 +82,17 @@ class Analytics {
 
 	getAnalyticsAllOptions() {
 		return this.analyticsAllOptions;
+	}
+
+	chunkArray(arr, chunkCount) {	// split array into n almost equal arrays
+		const chunks = [];
+		while (arr.length) {
+			const chunkSize = Math.ceil(arr.length / chunkCount--);
+			const chunk = arr.slice(0, chunkSize);
+			chunks.push(chunk);
+			arr = arr.slice(chunkSize);
+		}
+		return chunks;
 	}
 }
 

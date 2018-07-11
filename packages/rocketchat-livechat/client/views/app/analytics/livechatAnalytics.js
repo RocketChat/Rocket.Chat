@@ -51,7 +51,7 @@ function updateAnalyticsOverview() {
 			return handleError(error);
 		}
 
-		templateInstance.analyticsOverviewData.set(result);
+		templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
 	});
 }
 
