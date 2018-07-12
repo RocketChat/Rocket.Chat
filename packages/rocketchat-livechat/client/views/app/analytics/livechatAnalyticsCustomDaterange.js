@@ -2,6 +2,15 @@
 
 import moment from 'moment';
 
+Template.livechatAnalyticsCustomDaterange.helpers({
+	from() {
+		return moment(new Date(Template.currentData().daterange.get().from)).format('L');
+	},
+	to() {
+		return moment(new Date(Template.currentData().daterange.get().to)).format('L');
+	}
+});
+
 Template.livechatAnalyticsCustomDaterange.onRendered(function() {
 	this.$('.lc-custom-daterange').datepicker({
 		autoclose: true,
