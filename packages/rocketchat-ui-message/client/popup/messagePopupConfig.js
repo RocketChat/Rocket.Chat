@@ -62,12 +62,13 @@ const fetchUsersFromServer = (filterText, records, cb, rid) => {
 		}
 
 		users.slice(0, 5)
-			.forEach(({ username }) => {
+			.forEach(({ username, name, status }) => {
 				if (records.length < 5) {
 					records.push({
 						_id: username,
 						username,
-						status: 'offline',
+						name,
+						status,
 						sort: 3
 					});
 				}
@@ -158,7 +159,7 @@ Template.messagePopupConfig.helpers({
 			suffix: ' ',
 			getFilter(collection, filterText, cb) {
 				filterText = filterText && filterText.trim() || '';
-				let exp = new RegExp(`${ RegExp.escape(filterText) }`, 'i');
+				const filterRegex = new RegExp(`${ RegExp.escape(filterText) }`, 'i');
 
 				// Get at least 5 users from messages sent on room
 				const items = usersFromRoomMessages
@@ -166,8 +167,8 @@ Template.messagePopupConfig.helpers({
 						{
 							ts: { $exists: true },
 							$or: [
-								{ username: exp },
-								{ name: exp }
+								{ username: filterRegex },
+								{ name: filterRegex }
 							]
 						},
 						{
@@ -179,35 +180,46 @@ Template.messagePopupConfig.helpers({
 
 				// If needed, add to list the online users
 				if (items.length < 5 && filterText !== '') {
-					const messageUsers = items.map(({ username }) => username);
+					const usernamesAlreadyFetched = items.map(({ username }) => username);
 					const user = Meteor.user();
 
 					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
-						const usernames = RocketChat.models.Subscriptions
+						const usernamesFromDMs = RocketChat.models.Subscriptions
 							.find(
 								{
 									t: 'd',
-									$or: [
-										{ name: exp },
-										{ fname: exp }
+									$and: [
+										{
+											$or: [
+												{ name: filterRegex },
+												{ fname: filterRegex }
+											]
+										},
+										{
+											name: { $nin: usernamesAlreadyFetched }
+										}
 									]
+								},
+								{
+									fields: { name: 1 }
 								}
 							)
-							.fetch()
 							.map(({ name }) => name);
 						const newItems = RocketChat.models.Users
 							.find(
 								{
-									username: { $in: usernames }
+									username: {
+										$in: usernamesFromDMs
+									}
 								},
 								{
 									fields: {
 										username: 1,
 										name: 1,
 										status: 1
-									}
-								},
-								{ limit: 5 - messageUsers.length }
+									},
+									limit: 5 - usernamesAlreadyFetched.length
+								}
 							)
 							.fetch()
 							.map(({ username, name, status }) => ({
@@ -226,21 +238,28 @@ Template.messagePopupConfig.helpers({
 									$and: [
 										{
 											$or: [
-												{ username: exp },
-												{ name: exp }
+												{ username: filterRegex },
+												{ name: filterRegex }
 											]
 										},
 										{
 											username: {
 												$nin: [
 													user && user.username,
-													...messageUsers
+													...usernamesAlreadyFetched
 												]
 											}
 										}
 									]
 								},
-								{ limit: 5 - messageUsers.length }
+								{
+									fields: {
+										username: 1,
+										name: 1,
+										status: 1
+									},
+									limit: 5 - usernamesAlreadyFetched.length
+								}
 							)
 							.fetch()
 							.map(({ username, name, status }) => ({
@@ -265,25 +284,25 @@ Template.messagePopupConfig.helpers({
 					username: 'all',
 					system: true,
 					name: t('Notify_all_in_this_room'),
-					compatibility: 'channel group',
 					sort: 4
 				};
 
-				exp = new RegExp(`(^|\\s)${ RegExp.escape(filterText) }`, 'i');
-				if (exp.test(all.username) || exp.test(all.compatibility)) {
-					items.push(all);
-				}
 				const here = {
 					_id: 'here',
 					username: 'here',
 					system: true,
 					name: t('Notify_active_in_this_room'),
-					compatibility: 'channel group',
 					sort: 4
 				};
-				if (exp.test(here.username) || exp.test(here.compatibility)) {
+
+				if (filterRegex.test(all.username)) {
+					items.push(all);
+				}
+
+				if (filterRegex.test(here.username)) {
 					items.push(here);
 				}
+
 				return items;
 			},
 			getValue(_id) {
