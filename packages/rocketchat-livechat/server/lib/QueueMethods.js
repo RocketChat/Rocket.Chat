@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
 	 *
@@ -16,6 +14,7 @@ RocketChat.QueueMethods = {
 
 		RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 		RocketChat.models.Subscriptions.subscribeWithRoomAndUser(room, agent);
+
 		RocketChat.Livechat.stream.emit(room._id, {
 			type: 'agentData',
 			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
@@ -30,7 +29,7 @@ RocketChat.QueueMethods = {
 	 * An Inquiry is visible to all agents (TODO: in the correct department)
 	 *
 	 */
-	'Guest_Pool'(guest, message, room) {
+	'Guest_Pool'(guest, message) {
 		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
 
 		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
@@ -56,7 +55,6 @@ RocketChat.QueueMethods = {
 			message: message.msg,
 			name: guest.name || guest.username,
 			ts: new Date(),
-			code: room.code,
 			department: guest.department,
 			agents: agentIds,
 			status: 'open',
@@ -72,7 +70,7 @@ RocketChat.QueueMethods = {
 
 		return undefined;
 	},
-	'External'(guest, message, roomInfo, agent) {
-		return this['Least_Amount'](guest, message, roomInfo, agent); // eslint-disable-line
+	'External'(guest, message, room, agent) {
+		return this['Least_Amount'](guest, message, room, agent); // eslint-disable-line
 	}
 };

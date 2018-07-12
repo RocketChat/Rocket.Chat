@@ -67,7 +67,8 @@ Meteor.startup(function() {
 		{ _id: 'view-statistics',               roles : ['admin'] },
 		{ _id: 'view-user-administration',      roles : ['admin'] },
 		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] },
-		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] }
+		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'view-broadcast-member-list',    roles : ['admin', 'owner', 'moderator'] }
 	];
 
 	for (const permission of permissions) {

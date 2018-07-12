@@ -92,6 +92,12 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
+	cantCreateBothTypes() {
+		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+	},
+	roomTypeIsP() {
+		return Template.instance().type.get() === 'p';
+	},
 	createIsDisabled() {
 		const instance = Template.instance();
 		const invalid = instance.invalid.get();
@@ -258,7 +264,7 @@ Template.createChannel.onCreated(function() {
 	this.extensions_validations = {};
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar('p');
+	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);

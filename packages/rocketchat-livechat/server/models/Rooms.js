@@ -5,15 +5,14 @@ import _ from 'underscore';
  * @param {string} token - Visitor token
  */
 RocketChat.models.Rooms.create = function(rid, guest, roomInfo, agent) {
-	const roomCode = this.getNextLivechatRoomCode();
-
+	this.updateLivechatRoomCount();
 	rid = rid || Random.id();
 	const room = _.extend({
 		_id: rid,
 		msgs: 1,
+		usersCount: 0,
 		lm: new Date(),
-		code: roomCode,
-		label: guest.name || guest.username,
+		fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
 		// usernames: [agent.username, guest.username],
 		t: 'l',
 		ts: new Date(),
@@ -32,6 +31,7 @@ RocketChat.models.Rooms.create = function(rid, guest, roomInfo, agent) {
 			_id: agent._id || agent.agentId,
 			username: agent.username
 		};
+		room.usersCount = 1;
 	}
 	this.insert(room);
 	return room;
@@ -85,22 +85,31 @@ RocketChat.models.Rooms.findLivechat = function(filter = {}, offset = 0, limit =
 	return this.find(query, { sort: { ts: - 1 }, offset, limit });
 };
 
-RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
-	code = parseInt(code);
-
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 	const options = {};
 
 	if (fields) {
 		options.fields = fields;
 	}
 
-	// if (this.useCache) {
-	// 	return this.cache.findByIndex('t,code', ['l', code], options).fetch();
-	// }
+	const query = {
+		t: 'l',
+		_id
+	};
+
+	return this.findOne(query, options);
+};
+
+RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
 
 	const query = {
 		t: 'l',
-		code
+		_id
 	};
 
 	return this.findOne(query, options);
@@ -110,7 +119,7 @@ RocketChat.models.Rooms.findLivechatByCode = function(code, fields) {
  * Get the next visitor name
  * @return {string} The next visitor name
  */
-RocketChat.models.Rooms.getNextLivechatRoomCode = function() {
+RocketChat.models.Rooms.updateLivechatRoomCount = function() {
 	const settingsRaw = RocketChat.models.Settings.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
 
@@ -197,10 +206,6 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 			open: 1
 		}
 	});
-};
-
-RocketChat.models.Rooms.setLabelByRoomId = function(roomId, label) {
-	return this.update({ _id: roomId }, { $set: { label } });
 };
 
 RocketChat.models.Rooms.findOpenByAgent = function(userId) {
