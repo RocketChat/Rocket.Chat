@@ -73,16 +73,16 @@ if [ $(ls -l ${DATA_DIR} | wc -l) -le 1 ]; then
     abort "No restore data found within ${DATA_DIR}!"
 fi
 echo "[*] Restoring data..."
-echo "[*] Restoring data with \"${SNAP}/bin/mongorestore --db parties --noIndexRestore --drop ${DATA_DIR}\"" &>> "${RESTORE_DIR}/${LOG_NAME}"
-${SNAP}/bin/mongorestore --db parties --noIndexRestore --drop ${DATA_DIR} &>> "${RESTORE_DIR}/${LOG_NAME}" \
+echo "[*] Restoring data with \"mongorestore --db parties --noIndexRestore --drop ${DATA_DIR}\"" &>> "${RESTORE_DIR}/${LOG_NAME}"
+mongorestore --db parties --noIndexRestore --drop ${DATA_DIR} &>> "${RESTORE_DIR}/${LOG_NAME}" \
     || abort "Failed to execute mongorestore from ${DATA_DIR}!"
 if [ $(cat ${RESTORE_DIR}/${LOG_NAME} | grep $(date +%Y) | wc -l) -lt 24 ]; then
     warn "Little or no data could be restored from the backup!"
 fi
 
 echo "[*] Preparing database..."
-echo "[*] Preparing database with \"${SNAP}/bin/mongo parties --eval 'db.repairDatabase()' --verbose\"" &>> "${RESTORE_DIR}/${LOG_NAME}"
-${SNAP}/bin/mongo parties --eval "db.repairDatabase()" --verbose &>> "${RESTORE_DIR}/${LOG_NAME}" \
+echo "[*] Preparing database with \"mongo parties --eval 'db.repairDatabase()' --verbose\"" &>> "${RESTORE_DIR}/${LOG_NAME}"
+mongo parties --eval "db.repairDatabase()" --verbose &>> "${RESTORE_DIR}/${LOG_NAME}" \
     || abort "Failed to prepare database for usage!"
 
 echo "[+] Restore completed! Please with 'sudo systemctl restart snap.rocketchat-server.rocketchat-server' to verify."

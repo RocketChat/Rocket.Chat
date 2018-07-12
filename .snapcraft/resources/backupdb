@@ -8,8 +8,6 @@ fi
 if $(ps x | grep "node ${SNAP}/main.js" | grep -qv "grep"); then
     echo "[-] Please shutdown Rocket.Chat first to get a clean backup"
     echo "[-] Use 'sudo systemctl stop snap.rocketchat-server.rocketchat-server'"
-    echo "[-] Backup aborted!"
-    exit
 fi
 
 TIMESTAMP=$(date +"%Y%m%d.%H%M")
@@ -33,8 +31,8 @@ fi
 
 echo "[*] Creating backup file..."
 mkdir ${BACKUP_DIR}/dump
-echo "[*] Dumping database with \"${SNAP}/bin/mongodump -d parties -o ${BACKUP_DIR}/dump\"" > "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
-${SNAP}/bin/mongodump -d parties -o ${BACKUP_DIR}/dump &>> "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
+echo "[*] Dumping database with \"mongodump -d parties -o ${BACKUP_DIR}/dump\"" > "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
+mongodump -d parties -o ${BACKUP_DIR}/dump &>> "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
 echo "[*] Packing archive with \"tar czvf ${BACKUP_DIR}/rocketchat_backup_${TIMESTAMP}.tar.gz ${BACKUP_DIR}/dump\"" >> "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
 tar czvf ${BACKUP_DIR}/rocketchat_backup_${TIMESTAMP}.tar.gz -C ${BACKUP_DIR} dump &>> "${BACKUP_DIR}/backup_${TIMESTAMP}.log"
 rm -rf ${BACKUP_DIR}/dump
