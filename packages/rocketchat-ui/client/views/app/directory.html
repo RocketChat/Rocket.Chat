@@ -18,8 +18,8 @@
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
 								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name')}}</div>
 							</th>
-							<th class="rc-directory-td--users">
-								<div class="table-fake-th"><span>{{_ "Users"}}</span></div>
+							<th class="rc-directory-td--users js-sort {{#if searchSortBy 'usersCount'}}is-sorting{{/if}}" data-sort="usersCount">
+								<div class="table-fake-th"><span>{{_ "Users"}}</span> {{> icon icon=(sortIcon 'usersCount')}}</div>
 							</th>
 							{{#if showLastMessage}}
 							<th class="table-column-date">
