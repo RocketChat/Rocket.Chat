@@ -9,7 +9,8 @@ const reloadUsersFromRoomMessages = () => {
 		.find(
 			{
 				rid: Session.get('openedRoom'),
-				'u.username': { $ne: Meteor.user().username }
+				'u.username': { $ne: Meteor.user().username },
+				t: { $exists: false }
 			},
 			{
 				fields: {
@@ -194,7 +195,6 @@ Template.messagePopupConfig.helpers({
 							)
 							.fetch()
 							.map(({ name }) => name);
-						console.log(usernames);
 						const newItems = RocketChat.models.Users
 							.find(
 								{
