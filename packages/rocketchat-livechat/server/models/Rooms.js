@@ -208,8 +208,8 @@ RocketChat.models.Rooms.getTotalConversationsBetweenDate = function(t, date) {
 	const query = {
 		t,
 		ts: {
-			$gte: date.gte,	// ISO Date, ts >= date.gte
-			$lt: date.lt	// ISODate, ts < date.lt
+			$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+			$lt: new Date(date.lt)	// ISODate, ts < date.lt
 		}
 	};
 
@@ -220,8 +220,8 @@ RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate = function(t, date) {
 	const query = {
 		t,
 		ts: {
-			$gte: date.gte,	// ISO Date, ts >= date.gte
-			$lt: date.lt	// ISODate, ts < date.lt
+			$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+			$lt: new Date(date.lt)	// ISODate, ts < date.lt
 		}
 	};
 

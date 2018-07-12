@@ -9,6 +9,7 @@ Meteor.methods({
 		}
 
 		if (!(options.chartOptions && options.chartOptions.name)) {
+			console.log('Incorrect chart options');
 			return;
 		}
 

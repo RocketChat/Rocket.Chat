@@ -9,6 +9,7 @@ Meteor.methods({
 		}
 
 		if (!(options.analyticsOptions && options.analyticsOptions.name)) {
+			console.log('Incorrect analytics options');
 			return;
 		}
 
