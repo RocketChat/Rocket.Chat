@@ -141,6 +141,35 @@ class Analytics {
 			options: this.getChartConfiguration()
 		});
 	}
+	/**
+	 *	Check if given daterange matches any of pre-defined options
+	 * @param {String} value
+	 * @param {Date} from
+	 * @param {Date} to
+	 *
+	 * @returns {String} new value
+	 */
+	checkDaterangeValue(value, from, to) {
+		if (moment().startOf('day').isSame(from) && moment().startOf('day').isSame(to)) {
+			return 'today';
+		}
+		if (moment().startOf('day').subtract(1, 'days').isSame(from) && moment().startOf('day').subtract(1, 'days').isSame(from)) {
+			return 'yesterday';
+		}
+		if (moment().startOf('week').isSame(from) && moment().endOf('week').isSame(to)) {
+			return 'this-week';
+		}
+		if (moment().subtract(1, 'weeks').startOf('week').isSame(from) && moment().subtract(1, 'weeks').endOf('week').isSame(to)) {
+			return 'prev-week';
+		}
+		if (moment().startOf('month').isSame(from) && moment().endOf('month').isSame(to)) {
+			return 'this-month';
+		}
+		if (moment().subtract(1, 'months').startOf('month').isSame(from) && moment().subtract(1, 'months').endOf('month').isSame(to)) {
+			return 'prev-month';
+		}
+		return value;
+	}
 
 	/**
 	 * Update ReactiVar to daterange provided
@@ -150,8 +179,18 @@ class Analytics {
 	 * @param {Date} to
 	 */
 	setDateRange(daterange, value, from, to) {
+		if (moment(from).isAfter(moment())) {
+			return handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Start_date_incorrect'});
+		}
+
 		if (value && from && to) {
-			daterange.set({value, from, to});
+			value = this.checkDaterangeValue(value, from, to);
+
+			daterange.set({
+				value,
+				from: moment(from).format('MMM D YYYY'),
+				to: moment(to).format('MMM D YYYY')
+			});
 		} else {
 			daterange.set({
 				value: 'this-week',
@@ -172,38 +211,41 @@ class Analytics {
 		switch (currentDaterange.value) {
 			case 'today':
 			case 'yesterday':
+			case 'day':
 				if (order === 1) {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).add(1, 'days').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).add(1, 'days').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'day',
+						moment(new Date(currentDaterange.from)).add(1, 'days').startOf('day'),
+						moment(new Date(currentDaterange.to)).add(1, 'days').startOf('day'));
 				} else {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).subtract(1, 'days').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'days').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'day',
+						moment(new Date(currentDaterange.from)).subtract(1, 'days').startOf('day'),
+						moment(new Date(currentDaterange.to)).subtract(1, 'days').startOf('day'));
 				}
 				break;
 			case 'this-week':
 			case 'prev-week':
+			case 'week':
 				if (order === 1) {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).add(1, 'weeks').startOf('week').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).add(1, 'weeks').endOf('week').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'week',
+						moment(new Date(currentDaterange.from)).add(1, 'weeks').startOf('week'),
+						moment(new Date(currentDaterange.to)).add(1, 'weeks').endOf('week'));
 				} else {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).subtract(1, 'weeks').startOf('week').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'week',
+						moment(new Date(currentDaterange.from)).subtract(1, 'weeks').startOf('week'),
+						moment(new Date(currentDaterange.to)).subtract(1, 'weeks').endOf('week'));
 				}
 				break;
 			case 'this-month':
 			case 'prev-month':
+			case 'month':
 				if (order === 1) {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).add(1, 'months').startOf('month').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).add(1, 'months').endOf('month').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'month',
+						moment(new Date(currentDaterange.from)).add(1, 'months').startOf('month'),
+						moment(new Date(currentDaterange.to)).add(1, 'months').endOf('month'));
 				} else {
-					this.setDateRange(daterange, currentDaterange.value,
-						moment(new Date(currentDaterange.from)).subtract(1, 'months').startOf('month').format('MMM D YYYY'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'months').endOf('month').format('MMM D YYYY'));
+					this.setDateRange(daterange, 'month',
+						moment(new Date(currentDaterange.from)).subtract(1, 'months').startOf('month'),
+						moment(new Date(currentDaterange.to)).subtract(1, 'months').endOf('month'));
 				}
 				break;
 			case 'custom':

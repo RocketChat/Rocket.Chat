@@ -18,7 +18,7 @@ Template.livechatAnalyticsCustomDaterange.events({
 		const to = document.getElementsByClassName('lc-custom-daterange-to')[0].value;
 
 		if (moment(from).isValid() && moment(to).isValid()) {
-			RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, 'custom', moment(new Date(from)).format('MMM D YYYY'), moment(new Date(to)).format('MMM D YYYY'));
+			RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, 'custom', moment(new Date(from)), moment(new Date(to)));
 		} else {
 			handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Error_in_custom_dates'});
 		}

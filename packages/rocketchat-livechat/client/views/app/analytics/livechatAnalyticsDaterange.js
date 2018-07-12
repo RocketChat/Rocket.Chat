@@ -30,22 +30,22 @@ Template.livechatAnalyticsDaterange.events({
 				popover.open(config);
 				break;
 			case 'today':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().format('MMM D YYYY'), moment().format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('day'), moment().startOf('day'));
 				break;
 			case 'yesterday':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'days').format('MMM D YYYY'), moment().subtract(1, 'days').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day'));
 				break;
 			case 'this-week':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('week').format('MMM D YYYY'), moment().endOf('week').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('week'), moment().endOf('week'));
 				break;
 			case 'prev-week':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'weeks').startOf('week').format('MMM D YYYY'), moment().subtract(1, 'weeks').endOf('week').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'weeks').startOf('week'), moment().subtract(1, 'weeks').endOf('week'));
 				break;
 			case 'this-month':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('month').format('MMM D YYYY'), moment().endOf('month').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('month'), moment().endOf('month'));
 				break;
 			case 'prev-month':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'months').startOf('month').format('MMM D YYYY'), moment().subtract(1, 'months').endOf('month').format('MMM D YYYY'));
+				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month'));
 				break;
 		}
 	}

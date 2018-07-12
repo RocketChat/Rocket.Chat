@@ -40,6 +40,18 @@ Template.livechatAnalytics.helpers({
 	selected(value) {
 		if (value === templateInstance.analyticsOptions.get().value || value === templateInstance.chartOptions.get().value) { return 'selected'; }
 		return false;
+	},
+	showLeftNavButton() {
+		if (templateInstance.daterange.get().value === 'custom') {
+			return false;
+		}
+		return true;
+	},
+	showRightNavButton() {
+		if (templateInstance.daterange.get().value === 'custom' || templateInstance.daterange.get().value === 'today' || templateInstance.daterange.get().value === 'this-week' || templateInstance.daterange.get().value === 'this-month') {
+			return false;
+		}
+		return true;
 	}
 });
 
