@@ -36,7 +36,9 @@ Meteor.methods({
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all'
 		};
+
 		RocketChat.models.Subscriptions.insert(subscriptionData);
+		RocketChat.models.Rooms.incUsersCountById(inquiry.rid);
 
 		// update room
 		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);

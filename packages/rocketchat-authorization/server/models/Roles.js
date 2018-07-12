@@ -65,5 +65,4 @@ class ModelRoles extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Roles = new ModelRoles('roles', true);
-RocketChat.models.Roles.cache.load();
+RocketChat.models.Roles = new ModelRoles('roles');
