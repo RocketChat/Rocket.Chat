@@ -10,6 +10,7 @@ FileUpload = {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
+		// livechat users can upload files but they don't have an userId
 		const user = file.userId ? Meteor.user() : null;
 		const room = RocketChat.models.Rooms.findOneById(file.rid);
 		const directMessageAllow = RocketChat.settings.get('FileUpload_Enabled_Direct');
