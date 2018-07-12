@@ -667,7 +667,14 @@ export default class SlackAdapter {
 
 			//Hack to notify that a file was attempted to be uploaded
 			delete slackMessage.subtype;
-			slackMessage.text = `Uploaded a file: ${ slackMessage.file.permalink }`;
+
+			//If the text includes the file link, simply use the same text for the rocket message.
+			//If the link was not included, then use it instead of the message.
+
+			if (slackMessage.text.indexOf(slackMessage.file.permalink) < 0) {
+				slackMessage.text = slackMessage.file.permalink;
+			}
+
 			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
 			const msgDataDefaults = {
 				_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),

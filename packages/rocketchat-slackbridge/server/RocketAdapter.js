@@ -147,7 +147,7 @@ export default class RocketAdapter {
 		}
 	}
 
-	getFileDownloadUrl(rocketMessage) {
+	getMessageAttachment(rocketMessage) {
 		if (!rocketMessage.file) {
 			return;
 		}
@@ -157,9 +157,13 @@ export default class RocketAdapter {
 		}
 
 		const fileId = rocketMessage.file._id;
-		const attachment = rocketMessage.attachments.find((attachment) => {
+		return rocketMessage.attachments.find((attachment) => {
 			return attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0;
 		});
+	}
+
+	getFileDownloadUrl(rocketMessage) {
+		const attachment = this.getMessageAttachment(rocketMessage);
 
 		if (attachment) {
 			return attachment.title_link;
@@ -173,13 +177,17 @@ export default class RocketAdapter {
 
 		if (rocketMessage.file.name) {
 			let file_name = rocketMessage.file.name;
+			let text = rocketMessage.msg;
 
-			const title_link = this.getFileDownloadUrl(rocketMessage, rocketMessage.file);
-			if (title_link) {
-				file_name = Meteor.absoluteUrl(title_link);
+			const attachment = this.getMessageAttachment(rocketMessage);
+			if (attachment) {
+				file_name = Meteor.absoluteUrl(attachment.title_link);
+				if (!text) {
+					text = attachment.description;
+				}
 			}
 
-			const message = `Uploaded a file: ${ file_name }`;
+			const message = `${ text } ${ file_name }`;
 
 			rocketMessage.msg = message;
 			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
