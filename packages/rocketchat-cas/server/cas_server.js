@@ -233,7 +233,6 @@ Accounts.registerLoginHandler(function(options) {
 					}
 
 					if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
-						RocketChat.models.Rooms.addUsernameByName(room_name, result.username);
 						RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 							ts: new Date(),
 							open: true,
