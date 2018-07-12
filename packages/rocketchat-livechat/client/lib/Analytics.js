@@ -132,9 +132,9 @@ class Analytics {
 						'rgba(255, 99, 132, 0.2)'
 					],
 					borderColor: [
-						'rgba(255,99,132,1)'
+						'#1d74f5'
 					],
-					borderWidth: 2,
+					borderWidth: 3,
 					fill: false
 				}]
 			},

@@ -1,4 +1,24 @@
 <template name="livechatRealTimeMonitoring">
 	{{#requiresPermission 'view-livechat-manager'}}
+	<form class="form-inline">
+			<div class="section">
+				<div class="section-content border-component-color">
+					<span>Total Conversations</span>
+					<span>2303</span>
+				</div>
+			</div>
+			<div class="section">
+					<div class="section-content border-component-color">
+						<span>Total Messages</span>
+						<span>20390</span>
+					</div>
+				</div>
+			<div class="section">
+						<div class="section-content border-component-color">
+							<span>Open Conversations</span>
+							<span>23</span>
+						</div>
+					</div>
+	</form>
 	{{/requiresPermission}}
 </template>
