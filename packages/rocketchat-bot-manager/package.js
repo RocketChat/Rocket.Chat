@@ -32,12 +32,15 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/adminBotCreate.js', 'client');
 	api.addFiles('client/views/adminBotDetails.html', 'client');
 	api.addFiles('client/views/adminBotDetails.js', 'client');
+	api.addFiles('client/views/adminBotLogs.html', 'client');
+	api.addFiles('client/views/adminBotLogs.js', 'client');
 
 	api.addFiles('server/functions/saveBot.js', 'server');
 
 	api.addFiles('server/methods/deleteBot.js', 'server');
 	api.addFiles('server/methods/getBotLiveStats.js', 'server');
 	api.addFiles('server/methods/getBotServerStats.js', 'server');
+	api.addFiles('server/methods/getLogs.js', 'server');
 	api.addFiles('server/methods/insertOrUpdateBot.js', 'server');
 	api.addFiles('server/methods/pauseBot.js', 'server');
 	api.addFiles('server/methods/pingBot.js', 'server');

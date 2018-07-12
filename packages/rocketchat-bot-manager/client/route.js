@@ -18,3 +18,14 @@ FlowRouter.route('/admin/bots/:username', {
 		});
 	}
 });
+
+FlowRouter.route('/admin/bots/:username/logs', {
+	name: 'admin-bots-log',
+	action(params) {
+		return BlazeLayout.render('main', {
+			center: 'adminBotLogs',
+			pageTitle: t('Bot_Logs'),
+			params
+		});
+	}
+});

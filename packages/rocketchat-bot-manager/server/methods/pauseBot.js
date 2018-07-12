@@ -9,7 +9,16 @@ Meteor.methods({
 		}
 
 		// if the send fails, throw will be catched by the caller of pauseBot
-		await RocketChat.sendClientCommand(bot, { key: 'pauseMessageStream' });
+		const response = await RocketChat.sendClientCommand(bot, { key: 'pauseMessageStream' });
+		if (!response.success) {
+			throw new Meteor.Error('error-unsuccessful-client-command',
+				'Client replied to ClientCommand with an error', {
+					method: 'pauseBot',
+					error: response.error
+				}
+			);
+		}
+
 		const update = RocketChat.models.Users.update({ _id: bot._id }, {
 			$set: {
 				'customClientData.pausedMsgStream': true

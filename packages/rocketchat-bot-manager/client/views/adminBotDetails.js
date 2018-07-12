@@ -184,6 +184,12 @@ Template.adminBotDetails.helpers({
 		}
 	},
 
+	canGetLogs() {
+		const bot = Template.instance().bot.get();
+		const isOnline = Template.instance().isOnline(bot);
+		return isOnline && bot.customClientData && bot.customClientData.canGetLogs;
+	},
+
 	canPing() {
 		const bot = Template.instance().bot.get();
 		const isOnline = Template.instance().isOnline(bot);
@@ -330,6 +336,11 @@ Template.adminBotDetails.events({
 	'click .collapse': (e) => {
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+	},
+
+	'click .logs': (e, t) => {
+		const bot = t.bot.get();
+		return FlowRouter.go('admin-bots-log', { username: bot.username, bot });
 	},
 
 	'click .rc-header__section-button > .save': (e, t) => {

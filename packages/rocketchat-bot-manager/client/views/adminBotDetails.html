@@ -130,6 +130,12 @@
                     {{/if}}
                   </div>
                 </div>
+                <div class="input-line double-col">
+                  <label>{{_ "Logs"}}</label>
+                  <div>
+                    <button class="button primary logs" disabled="{{not canGetLogs}}"><span>{{_ "View_Logs"}}</span></button>
+                  </div>
+                </div>
               {{/if}}
               <div class="input-line double-col">
                 <label>{{_ "Roles"}}</label>
