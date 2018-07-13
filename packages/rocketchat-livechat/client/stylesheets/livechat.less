@@ -714,13 +714,14 @@
 .lc-analytics-overview {
   display: flex;
   flex-direction: row;
-  margin-top: 40px;
-  margin-bottom: 63px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+	justify-content: center;
 }
 
 .lc-analytics-ov-col {
   min-height: 20px;
-  flex: 1;
+  flex: 33.33333%; //1;
   max-width: 33.33333%;
 
   &.-full-width {
@@ -735,28 +736,31 @@
 .lc-analytics-ov-case {
   width: 100%;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   user-select: text;
 
   &:first-child {
     margin-top: 8px;
+		//border-bottom: 1px solid #E9E9E9;
   }
 
   &.-standalone {
     & > .title {
-      font-size: 22px;
-      font-weight: 500;
+			display: inline-block;
+      font-size: .875rem;
+      font-weight: 300;
       text-transform: none;
       margin-bottom: 6px;
     }
     & > .value {
       margin-top: 1px;
-      font-size: 60px;
+      font-size: 1.75rem;
     }
   }
 
   & > .title {
-    font-weight: 600;
+		display: inline-block;
+    font-weight: 300;
     font-size: 0.875rem;
     color: #9ea2a8;
     text-transform: uppercase;
@@ -770,14 +774,43 @@
 
   & > .value {
     margin-top: 8px;
-    font-weight: 500;
-    font-size: 36px;
+    font-weight: 400;
+    font-size: 1.75rem;
     color: #383838;
     line-height: 1;
     text-transform: capitalize;
   }
 }
 
-.lc-custom-daterange-submit {
-	color: var(--rc-color-button-primary)
+@media screen and (max-width: 925px) {
+	.lc-analytics-ov-case {
+		& > .title {
+			font-size: 0.5rem;
+		}
+		& > .value {
+			font-size: 1rem;
+		}
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.lc-analytics-ov-case {
+		& > .title {
+			font-size: 0.875rem;
+		}
+		& > .value {
+			font-size: 1.75rem;
+		}
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.lc-analytics-ov-case {
+		& > .title {
+			font-size: 0.5rem;
+		}
+		& > .value {
+			font-size: 1rem;
+		}
+	}
 }

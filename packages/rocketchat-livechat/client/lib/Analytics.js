@@ -52,6 +52,7 @@ class Analytics {
 				animationDuration: 0 // duration of animations when hovering an item
 			},
 			responsive: true,
+			maintainAspectRatio: false,
 			responsiveAnimationDuration: 0 // animation duration after a resize
 		};
 
@@ -65,6 +66,9 @@ class Analytics {
 			}, {
 				name: 'Avg_chat_duration',
 				value: 'avg-chat-duration'
+			}, {
+				name: 'Total_messages',
+				value: 'total-messages'
 			}]
 		}, {
 			name: 'Productivity',
@@ -120,6 +124,7 @@ class Analytics {
 		if (chartContext) {
 			chartContext.destroy();
 		}
+		chart.height = 200;
 
 		return new Chart(chart, {
 			type: 'line',

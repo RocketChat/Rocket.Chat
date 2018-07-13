@@ -27,6 +27,18 @@ export const Analytics = {
 			return Math.round(avgCD*100)/100;
 		},
 
+		Total_messages(date) {
+			let total = 0;
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({msgs}) => {
+				if (msgs) {
+					total += msgs;
+				}
+			});
+
+			return total;
+		},
+
 		/**
 		 *
 		 * @param {Object} date {gte: {Date}, lt: {Date}}

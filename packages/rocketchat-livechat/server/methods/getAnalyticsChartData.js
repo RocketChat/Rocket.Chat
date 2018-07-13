@@ -48,7 +48,7 @@ Meteor.methods({
 			}
 		} else {
 			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
-				data.dataLabels.push(m.format('M/D/YY'));
+				data.dataLabels.push(m.format('M/D'));
 
 				const date = {
 					gte: m,
