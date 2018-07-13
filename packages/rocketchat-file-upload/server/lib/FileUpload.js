@@ -205,15 +205,19 @@ Object.assign(FileUpload, {
 			return true;
 		}
 
-		let { rc_uid, rc_token } = query;
+		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
 			rc_token = cookie.get('rc_token', headers.cookie);
+			rc_rid = cookie.get('rc_rid', headers.cookie);
+			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
+
 		const isAuthorizedByCookies = rc_uid && rc_token && RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && RocketChat.models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		return isAuthorizedByCookies || isAuthorizedByHeaders;
+		const isAuthorizedByRoom = rc_room_type && RocketChat.roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
