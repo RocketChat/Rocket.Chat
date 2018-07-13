@@ -1,7 +1,7 @@
 /* globals RocketChat */
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
-		if (room.t === 'c') {
+		if (room && room.t === 'c') {
 			if (!user._id && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				return true;
 			}
@@ -10,6 +10,10 @@ RocketChat.authz.roomAccessValidators = [
 		}
 	},
 	function(room, user = {}) {
+		if (!room || !user) {
+			return;
+		}
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 		if (subscription) {
 			return RocketChat.models.Rooms.findOneById(subscription.rid);
