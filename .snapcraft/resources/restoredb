@@ -9,12 +9,12 @@ function abort {
         echo "[!] ${1}"
         echo "[*] Check ${RESTORE_DIR}/${LOG_NAME} for details."
         echo "[-] Restore aborted!"
-        exit
+        exit 1
 }
 
 if [[ ${EUID} != 0 ]]; then
     echo "[-] This task must be run with 'sudo'."
-    exit
+    exit 1
 fi
 
 echo "*** ATTENTION ***"
@@ -24,7 +24,7 @@ echo "* Do you want to continue?"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) break;;
-        No ) exit;;
+        No ) exit 1;;
     esac
 done
 
@@ -32,7 +32,7 @@ if $(ps x | grep "node ${SNAP}/main.js" | grep -qv "grep"); then
     echo "[-] Please shutdown Rocket.Chat first to restore a clean backup"
     echo "[-] Use 'sudo systemctl stop snap.rocketchat-server.rocketchat-server'"
     echo "[-] Backup aborted!"
-    exit
+    exit 1
 fi
 
 TIMESTAMP=$(date +"%Y%m%d.%H%M")
@@ -55,12 +55,12 @@ fi
 BACKUP_FILE=${1}
 if [[ ! -f ${BACKUP_FILE} ]]; then
     echo "[-] Usage: sudo snap run rocketchat-server.restoredb ${SNAP_COMMON}/rocketchat_backup_{TIMESTAMP}.tar.gz"
-    exit
+    exit 1
 fi
 
 if ! $(echo "${BACKUP_FILE}" | grep -q "${SNAP_COMMON}"); then
     echo "[-] Backup file must be within ${SNAP_COMMON}."
-    exit
+    exit 1
 fi
 
 echo "[*] Extracting backup file..."
@@ -86,3 +86,4 @@ mongo parties --eval "db.repairDatabase()" --verbose &>> "${RESTORE_DIR}/${LOG_N
     || abort "Failed to prepare database for usage!"
 
 echo "[+] Restore completed! Please with 'sudo systemctl restart snap.rocketchat-server.rocketchat-server' to verify."
+exit 0
