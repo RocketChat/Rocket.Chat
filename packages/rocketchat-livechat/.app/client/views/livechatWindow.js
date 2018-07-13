@@ -127,6 +127,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
+			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
