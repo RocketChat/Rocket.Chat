@@ -50,7 +50,7 @@ export const MsgTyping = (function() {
 			timeouts[room] = null;
 		}
 		const user = Meteor.user();
-		return RocketChat.Notifications.notifyRoom(room, 'typing', shownName(user), false);
+		return RocketChat.Notifications.notifyRoom(room, 'typing', user && shownName(user), false);
 	};
 	const start = function(room) {
 		if (!renew) { return; }
@@ -60,7 +60,7 @@ export const MsgTyping = (function() {
 		renew = false;
 		selfTyping.set(true);
 		const user = Meteor.user();
-		RocketChat.Notifications.notifyRoom(room, 'typing', shownName(user), true);
+		RocketChat.Notifications.notifyRoom(room, 'typing', user && shownName(user), true);
 		clearTimeout(timeouts[room]);
 		return timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
 	};
