@@ -63,6 +63,11 @@
 			padding-top: 5px
 		}
 
+		&__block {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
 		&__name {
 			font-size: 24px;
 		}

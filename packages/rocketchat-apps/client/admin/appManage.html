@@ -47,9 +47,13 @@
 					</div>
 					<div class="rc-apps-container">
 						<div class="rc-apps-details__content">
-							<div class="rc-apps-details__row">
+							<div class="rc-apps-details__row rc-apps-details__block">
 								<h2> Categories </h2>
-
+								<div class="rc-apps-details__row">
+									{{#each category in categories}}
+										<a href="#" class="rc-button rc-button--secondary">{{ category }}</a>
+									{{/each}}
+								</div>
 							</div>
 							<div class="rc-apps-details__row">
 								<h2> Contact </h2>
@@ -62,7 +66,9 @@
 								<b> {{ description }} </b>
 							</div>
 							<div class="rc-apps-details__row">
-								{{ description }}
+								<!-- {{ description }} -->
+								Proin ornare eros sit amet purus vestibulum, sit amet laoreet est pretium. Mauris a tristique nisl, et bibendum libero. Nunc et tristique tellus. Mauris pellentesque feugiat ligula sed varius. Donec quis nunc at eros ornare facilisis vel ut libero. Vivamus sollicitudin diam vestibulum tortor dignissim condimentum. Quisque consequat nec diam a gravida. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse ut volutpat velit, eu lobortis erat. Integer aliquet, tellus sit amet dictum faucibus, odio magna lacinia dui, et viverra libero nisl vitae ipsum. Pellentesque tempor, ante nec lobortis facilisis, tellus felis auctor sem, nec tempus lorem ex vitae diam. Curabitur iaculis commodo suscipit. Etiam rutrum dolor dolor, sit amet porttitor augue pretium sed. Proin pellentesque lectus ligula, ac placerat turpis facilisis ut. Proin pulvinar vestibulum metus, vel consequat enim suscipit ut.
+
 							</div>
 						</div>
 					</div>
@@ -399,15 +405,15 @@
 
 					{{/each}}
 					</div>
-					<div class="rc-apps-container">
+					<!-- <div class="rc-apps-container">
 						<div class="rc-button-group">
-							<button class="rc-button rc-button--secondary js-cancel">{{_ "Cancel" }}</button>
-							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
-							<button class="rc-button rc-button--cancel js-uninstall">{{_ "Uninstall" }}</button>
-							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
-							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
+							<button class="rc-button rc-button- -secondary js-cancel">{{_ "Cancel" }}</button>
+							<button class="rc-button rc-button- -primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
+							<button class="rc-button rc-button- -cancel js-uninstall">{{_ "Uninstall" }}</button>
+							<button class="rc-button rc-button- -secondary js-update">{{_ "Update" }}</button>
+							<button class="rc-button rc-button- -secondary js-view-logs">{{_ "View_Logs" }}</button>
 						</div>
-					</div>
+					</div> -->
 				{{else if hasError}}
 					<div class="apps-error error-color">
 						<i class="icon-attention"></i>

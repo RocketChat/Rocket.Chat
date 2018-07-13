@@ -38,4 +38,23 @@
 	.rc-table-content {
 		padding: 0;
 	}
+	.installer {
+	  animation-duration: 1500ms;
+	  animation-timing-function: steps(90);
+	  width: 20px;
+	  height: 20px;
+	  background-repeat: no-repeat;
+	}
+	.installer.play {
+	  animation-name: play90;
+	}
+}
+
+keyframes play90 {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: -1800px 0px;
+  }
 }

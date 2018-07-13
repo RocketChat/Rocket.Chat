@@ -146,6 +146,9 @@ Template.appManage.helpers({
 	app() {
 		return Template.instance().app.get();
 	},
+	categories() {
+		return ['Communication', 'Productivity']; // Template.instance().app.get('category').split(',');
+	},
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
