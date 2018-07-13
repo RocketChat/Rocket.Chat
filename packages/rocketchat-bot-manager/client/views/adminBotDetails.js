@@ -4,7 +4,7 @@ import _ from 'underscore';
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
 	this.now = new ReactiveVar(new Date());
-	this.statistics = new ReactiveVar({});
+	this.statistics = new ReactiveVar();
 	this.changed = new ReactiveVar(false);
 	this.ping = new ReactiveVar(undefined);
 
@@ -29,8 +29,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (err) {
 				return handleError(err);
 			}
-			const currentStats =_.assign(this.statistics.get(), statistics);
-			this.statistics.set(currentStats);
+			this.statistics.set(statistics);
 		});
 		if (this.isOnline(bot)) {
 			Meteor.call('getBotLiveStats', bot, (err, statistics) => {
@@ -61,7 +60,6 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 
 				if (bot) {
 					this.bot.set(bot);
-					this.loadStatistics(bot);
 				} else {
 					FlowRouter.go('admin-bots');
 				}
