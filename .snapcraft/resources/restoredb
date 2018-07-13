@@ -86,4 +86,3 @@ mongo parties --eval "db.repairDatabase()" --verbose &>> "${RESTORE_DIR}/${LOG_N
     || abort "Failed to prepare database for usage!"
 
 echo "[+] Restore completed! Please with 'sudo systemctl restart snap.rocketchat-server.rocketchat-server' to verify."
-exit 0
