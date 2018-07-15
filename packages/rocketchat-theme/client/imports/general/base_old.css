@@ -121,7 +121,6 @@
 
 .copyonly {
 	display: inline-block;
-	float: left;
 
 	width: 0;
 	height: 0;
@@ -131,6 +130,10 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
+	
+	code & {
+		float: left;
+	}
 }
 
 .rc-old .text-center {
