@@ -46,10 +46,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/visitorStatus.js', 'server');
 	api.addFiles('permissions.js', 'server');
 	api.addFiles('messageTypes.js');
-	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
 
+	api.addFiles('client/roomType.js', 'client');
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
@@ -131,6 +131,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.html', 'client');
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
 
+	// startup
+	api.addFiles('server/roomType.js', 'server');
+
 	// hooks
 	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/leadCapture.js', 'server');
@@ -170,10 +173,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveTrigger.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
+	api.addFiles('server/methods/sendFileLivechatMessage.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
 	api.addFiles('server/methods/setDepartmentForVisitor.js', 'server');
 	api.addFiles('server/methods/startVideoCall.js', 'server');
+	api.addFiles('server/methods/startFileUploadRoom.js', 'server');
 	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
