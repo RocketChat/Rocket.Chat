@@ -1,31 +1,8 @@
 /* globals chatMessages*/
+import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import moment from 'moment';
 import _ from 'underscore';
 import s from 'underscore.string';
-
-const fixCordova = (url) => {
-	if ((url != null ? url.indexOf('data:image') : undefined) === 0) {
-		return url;
-	}
-
-	if (Meteor.isCordova && ((url != null ? url[0] : undefined) === '/')) {
-		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
-		if (url.indexOf('?') === -1) {
-			url = `${ url }?${ query }`;
-		} else {
-			url = `${ url }&${ query }`;
-		}
-	}
-
-	if ((Meteor.settings && Meteor.settings.public && Meteor.settings.sandstorm) || url.match(/^(https?:)?\/\//i)) {
-		return url;
-	} else if (navigator.userAgent.indexOf('Electron') > -1) {
-		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
-	}
-};
 
 const roomFiles = new Mongo.Collection('room_files');
 
