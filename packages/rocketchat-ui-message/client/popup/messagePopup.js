@@ -107,6 +107,27 @@ Template.messagePopup.onCreated(function() {
 			}
 		}
 	};
+
+	template.bindEventsIfNecessary = () => {
+		const events = $._data($(this.input)[0], 'events');
+
+		if (!events['keyup']) {
+			$(this.input).on('keyup', this.onInputKeyup.bind(this));
+		}
+
+		if (!events['keydown']) {
+			$(this.input).on('keydown', this.onInputKeydown.bind(this));
+		}
+
+		if (!events['focus']) {
+			$(this.input).on('focus', this.onFocus.bind(this));
+		}
+
+		if (!events['blur']) {
+			$(this.input).on('blur', this.onBlur.bind(this));
+		}
+	};
+
 	template.onInputKeydown = (event) => {
 		if (template.open.curValue !== true || template.hasData.curValue !== true) {
 			return;
@@ -258,10 +279,8 @@ Template.messagePopup.onRendered(function() {
 			$('#popup').removeClass('popup-with-reply-preview');
 		}
 	});
-	$(this.input).on('keyup', this.onInputKeyup.bind(this));
-	$(this.input).on('keydown', this.onInputKeydown.bind(this));
-	$(this.input).on('focus', this.onFocus.bind(this));
-	return $(this.input).on('blur', this.onBlur.bind(this));
+
+	return this.bindEventsIfNecessary();
 });
 
 Template.messagePopup.onDestroyed(function() {
