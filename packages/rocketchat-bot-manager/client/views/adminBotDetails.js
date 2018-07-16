@@ -82,6 +82,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.autorun(() => {
 		let finished = true;
 		const bot = this.bot.get();
+		Meteor.clearInterval(this.interval);
 		this.interval = Meteor.setInterval(() => {
 			this.now.set(new Date());
 			if (!finished || !this.isOnline(bot)) {
