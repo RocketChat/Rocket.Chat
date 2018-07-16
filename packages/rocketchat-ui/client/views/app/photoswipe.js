@@ -5,77 +5,80 @@ import s from 'underscore.string';
 
 Meteor.startup(() => {
 
-	let isGalleryOpen = false;
-	const initGallery = (selector, items, options) => {
-		if (!isGalleryOpen) {
-			const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);
-			gallery.init();
-
-			gallery.listen('destroy', () => {
-				isGalleryOpen = false;
+	let currentGallery = null;
+	const initGallery = (items, options) => {
+		if (!currentGallery) {
+			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
+			currentGallery.listen('destroy', () => {
+				currentGallery = null;
 			});
-
-			isGalleryOpen = true;
+			currentGallery.init();
 		}
 	};
 
-	const getItems = (selector, imageSrc) => {
-		const results = {
-			index: 0,
-			items: []
-		};
-
-		for (let i = 0, len = selector.length; i < len; i++) {
-			results.items.push({
-				src: selector[i].src,
-				w: selector[i].naturalWidth,
-				h: selector[i].naturalHeight,
-				title: selector[i].dataset.title,
-				description: selector[i].dataset.description
-			});
-
-			if (imageSrc === selector[i].src) {
-				results.index = i;
-			}
-		}
-
-		return results;
-	};
-
-	const galleryOptions = {
-		index: 0,
+	const defaultGalleryOptions = {
 		bgOpacity: 0.8,
 		showHideOpacity: true,
 		counterEl: false,
 		shareEl: false
 	};
 
-	$(document).on('click', '.gallery-item', function() {
-		const images = getItems(document.querySelectorAll('.gallery-item'), $(this)[0].src);
+	$(document).on('click', '.gallery-item', event => {
+		event.preventDefault();
+		event.stopPropagation();
 
-		galleryOptions.index = images.index;
-		galleryOptions.addCaptionHTMLFn = function(item, captionEl) {
-			captionEl.children[0].innerHTML = `${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
-			return true;
+		if (currentGallery) {
+			return;
+		}
+
+		const items = Array.from(document.querySelectorAll('.gallery-item'))
+			.map(img => ({
+				msrc: null,
+				src: img.src,
+				w: img.naturalWidth,
+				h: img.naturalHeight,
+				title: img.dataset.title,
+				description: img.dataset.description
+			}));
+
+		const galleryOptions = {
+			...defaultGalleryOptions,
+			index: items.findIndex(item => item.src === event.target.src),
+			addCaptionHTMLFn(item, captionEl) {
+				captionEl.children[0].innerHTML =
+					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
+				return true;
+			}
 		};
 
-		initGallery(document.getElementById('pswp'), images.items, galleryOptions);
+		initGallery(items, galleryOptions);
 	});
 
-	$(document).on('click', '.room-files-image', e => {
-		e.preventDefault();
-		e.stopPropagation();
+	$(document).on('click', '.room-files-image', event => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (currentGallery) {
+			return;
+		}
+
+		const galleryOptions = {
+			...defaultGalleryOptions,
+			index: 0
+		};
 
 		const img = new Image();
-		img.src = e.currentTarget.href;
-		img.addEventListener('load', function() {
+		img.src = event.currentTarget.href;
+		img.addEventListener('load', () => {
 			const item = {
-				src: this.src,
-				w: this.naturalWidth,
-				h: this.naturalHeight
+				msrc: null,
+				src: img.src,
+				w: img.naturalWidth,
+				h: img.naturalHeight
 			};
 
-			initGallery(document.getElementById('pswp'), [ item ], galleryOptions);
+			initGallery([ item ], galleryOptions);
 		});
 	});
+
 });
