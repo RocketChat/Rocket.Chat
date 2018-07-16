@@ -33,8 +33,8 @@ Meteor.startup(() => {
 
 		const items = Array.from(document.querySelectorAll('.gallery-item'))
 			.map(img => ({
-				msrc: null,
-				src: img.src,
+				msrc: img.dataset.src && img.src,
+				src: img.dataset.src || img.src,
 				w: img.naturalWidth,
 				h: img.naturalHeight,
 				title: img.dataset.title,
@@ -43,7 +43,7 @@ Meteor.startup(() => {
 
 		const galleryOptions = {
 			...defaultGalleryOptions,
-			index: items.findIndex(item => item.src === event.target.src),
+			index: items.findIndex(item => item.src === (event.target.dataset.src || event.target.src)),
 			addCaptionHTMLFn(item, captionEl) {
 				captionEl.children[0].innerHTML =
 					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
