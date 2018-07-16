@@ -1,13 +1,24 @@
 import PhotoSwipe from 'photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
 import 'photoswipe/dist/photoswipe.css';
+import s from 'underscore.string';
 
-const escapeHTML = (html) => (html || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 Meteor.startup(() => {
+
+	let isGalleryOpen = false;
 	const initGallery = (selector, items, options) => {
-		const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);
-		gallery.init();
+		if (!isGalleryOpen) {
+			const gallery = new PhotoSwipe(selector, PhotoSwipeUI_Default, items, options);
+			gallery.init();
+
+			gallery.listen('destroy', () => {
+				isGalleryOpen = false;
+			});
+
+			isGalleryOpen = true;
+		}
 	};
+
 	const getItems = (selector, imageSrc) => {
 		const results = {
 			index: 0,
@@ -44,27 +55,27 @@ Meteor.startup(() => {
 
 		galleryOptions.index = images.index;
 		galleryOptions.addCaptionHTMLFn = function(item, captionEl) {
-			captionEl.children[0].innerHTML = `${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small> `;
+			captionEl.children[0].innerHTML = `${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
 			return true;
 		};
 
 		initGallery(document.getElementById('pswp'), images.items, galleryOptions);
 	});
 
-	$(document).on('click', '.room-files-image', (e) => {
+	$(document).on('click', '.room-files-image', e => {
 		e.preventDefault();
 		e.stopPropagation();
 
 		const img = new Image();
 		img.src = e.currentTarget.href;
 		img.addEventListener('load', function() {
-			const item = [{
+			const item = {
 				src: this.src,
 				w: this.naturalWidth,
 				h: this.naturalHeight
-			}];
+			};
 
-			initGallery(document.getElementById('pswp'), item, galleryOptions);
+			initGallery(document.getElementById('pswp'), [ item ], galleryOptions);
 		});
 	});
 });

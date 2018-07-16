@@ -165,8 +165,6 @@ Template.uploadedFilesList.onCreated(function() {
 			if (roomFiles.find({ rid }).fetch().length < this.limit.get()) {
 				return this.hasMore.set(false);
 			}
-		}
-		);
-	}
-	);
+		});
+	});
 });
