@@ -1128,6 +1128,7 @@
   "FileUpload": "File Upload",
   "FileUpload_Disabled": "File uploads are disabled.",
   "FileUpload_Enabled": "File Uploads Enabled",
+  "FileUpload_Error": "File Upload Error",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_File_Empty": "File empty",
   "FileUpload_FileSystemPath": "System Path",
