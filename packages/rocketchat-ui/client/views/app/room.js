@@ -159,47 +159,50 @@ function roomHasPurge(room) {
 }
 
 function roomFilesOnly(room) {
-	let filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
-
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.filesOnly || !roomHasGlobalPurge(room))) {
-		filesOnly = room.retention.filesOnly;
+	if (!room) {
+		return false;
 	}
 
-	return filesOnly;
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.filesOnly;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
 }
 
 function roomExcludePinned(room) {
-	let excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
-
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !room.retention.excludePinned || !roomHasGlobalPurge(room))) {
-		excludePinned = room.retention.excludePinned;
+	if (!room) {
+		return false;
 	}
 
-	return excludePinned;
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.excludePinned;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 }
 
 function roomMaxAge(room) {
-	let globalTimeout;
-
-	if ((room && room.t === 'c')) {
-		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	if (!room) {
+		return;
 	}
-	if ((room && room.t === 'p')) {
-		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
-	}
-	if ((room && room.t === 'd')) {
-		globalTimeout = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	if (!roomHasPurge(room)) {
+		return;
 	}
 
-	let maxAge = globalTimeout;
-
-	if (room.retention && room.retention.enabled && (room.retention.overrideGlobal || !roomHasGlobalPurge(room))) {
-		maxAge = room.retention.maxAge;
-	} else if (room.retention && room.retention.enabled) {
-		maxAge = Math.min(room.retention.maxAge, globalTimeout);
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.maxAge;
 	}
 
-	return maxAge;
+	if (room.t === 'c') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if (room.t === 'p') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if (room.t === 'd') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
 }
 
 RocketChat.callbacks.add('enter-room', wipeFailedUploads);

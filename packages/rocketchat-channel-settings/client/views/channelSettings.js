@@ -66,6 +66,18 @@ function retentionEnabled({t: type}) {
 	return false;
 }
 
+function roomMaxAgeDefault(type) {
+	switch (type) {
+		case 'c':
+			return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+		case 'p':
+			return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+		case 'd':
+			return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+		default:
+			return 30; // days
+	}
+}
 
 function roomMaxAge(room) {
 	if (!room) {
@@ -76,14 +88,7 @@ function roomMaxAge(room) {
 		return room.retention.maxAge;
 	}
 
-	switch (room.t) {
-		case 'c':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
-		case 'p':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
-		case 'd':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
-	}
+	return roomMaxAgeDefault(room.t);
 }
 
 Template.channelSettingsEditing.events({
@@ -102,19 +107,19 @@ Template.channelSettingsEditing.events({
 		const options = [{
 			id: 'prune_default',
 			name: 'prune_value',
-			label: 'default',
+			label: 'Default',
 			value: 'default'
 		},
 		{
 			id: 'prune_enabled',
 			name: 'prune_value',
-			label: 'enabled',
+			label: 'Enabled',
 			value: 'enabled'
 		},
 		{
 			id: 'prune_disabled',
 			name: 'prune_value',
-			label: 'disabled',
+			label: 'Disabled',
 			value: 'disabled'
 		}];
 
@@ -504,7 +509,8 @@ Template.channelSettingsEditing.onCreated(function() {
 			label: 'RetentionPolicyRoom_MaxAge',
 			processing: new ReactiveVar(false),
 			getValue() {
-				return Template.instance().room.retention && Template.instance().room.retention.maxAge;
+				const { room } = Template.instance();
+				return Math.min(roomMaxAge(room), roomMaxAgeDefault(room.t));
 			},
 			canView() {
 				return true;
@@ -658,7 +664,7 @@ Template.channelSettingsEditing.helpers({
 	hasRetentionPermission() {
 		const { room } = Template.instance();
 
-		return RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id) && RocketChat.settings.get('RetentionPolicy_Enabled');
+		return RocketChat.settings.get('RetentionPolicy_Enabled') && RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id);
 	},
 	subValue(value) {
 		if (value === undefined) {
@@ -671,6 +677,10 @@ Template.channelSettingsEditing.helpers({
 	retentionEnabled(value) {
 		const { room } = Template.instance();
 		return value || value === undefined && retentionEnabled(room);
+	},
+	retentionMaxAgeLabel(label) {
+		const { room } = Template.instance();
+		return TAPi18n.__(label, { max: roomMaxAgeDefault(room.t) });
 	}
 });
 
@@ -761,6 +771,16 @@ Template.channelSettingsInfo.helpers({
 	},
 	excludePinned() {
 		return roomExcludePinned(Template.instance().room);
+	},
+	hasPurge() {
+		const { room } = Template.instance();
+		if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+			return false;
+		}
+
+		if (retentionEnabled(room) || room.retention && room.retention.enabled !== undefined) {
+			return room.retention.enabled;
+		}
 	},
 	purgeTimeout() {
 		moment.relativeTimeThreshold('s', 60);

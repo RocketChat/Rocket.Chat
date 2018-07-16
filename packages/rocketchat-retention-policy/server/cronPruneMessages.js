@@ -4,12 +4,14 @@ const types = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
 
+let lastPrune = oldest;
+
 const maxTimes = {
 	c: 0,
 	p: 0,
 	d: 0
 };
-
+const toDays = 1000 * 60 * 60 * 24;
 function job() {
 	const now = new Date();
 	const filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
@@ -18,10 +20,11 @@ function job() {
 	// get all rooms with default values
 	types.forEach(type => {
 		const maxAge = maxTimes[type] || 0;
-		const latest = new Date(now.getTime() - maxAge * 1000);
+		const latest = new Date(now.getTime() - maxAge * toDays);
 
 		RocketChat.models.Rooms.find({
 			t: type,
+			_updatedAt: { $gte: lastPrune },
 			$or: [{'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 			'retention.overrideGlobal': { $ne: true }
 		}).forEach(({ _id: rid }) => {
@@ -32,31 +35,25 @@ function job() {
 	RocketChat.models.Rooms.find({
 		'retention.enabled': { $eq: true },
 		'retention.overrideGlobal': { $eq: true },
-		'retention.maxAge': { $gte: 0 }
+		'retention.maxAge': { $gte: 0 },
+		_updatedAt: { $gte: lastPrune }
 	}).forEach(room => {
 		const { maxAge = 0, filesOnly, excludePinned } = room.retention;
-		const latest = new Date(now.getTime() - maxAge * 1000);
+		const latest = new Date(now.getTime() - maxAge * toDays);
 		RocketChat.cleanRoomHistory({ rid: room.rid, latest, oldest, filesOnly, excludePinned });
 	});
+	lastPrune = new Date();
 }
 
 function getSchedule(precision) {
 	switch (precision) {
 		case '0':
-			return '* * * * * *';
-		case '1':
-			return '*/10 * * * * *';
-		case '2':
-			return '0 * * * * *';
-		case '3':
-			return '0 */5 * * * *';
-		case '4':
 			return '0 */30 * * * *';
-		case '5':
+		case '1':
 			return '0 0 * * * *';
-		case '6':
+		case '2':
 			return '0 0 */6 * * *';
-		case '7':
+		case '3':
 			return '0 0 0 * * *';
 	}
 }

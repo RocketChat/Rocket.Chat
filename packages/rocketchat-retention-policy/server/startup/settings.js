@@ -12,27 +12,15 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 		values: [
 			{
 				key: '0',
-				i18nLabel: 'every_second'
-			}, {
-				key: '1',
-				i18nLabel: 'every_10_seconds'
-			}, {
-				key: '2',
-				i18nLabel: 'every_minute'
-			}, {
-				key: '3',
-				i18nLabel: 'every_5_minutes'
-			}, {
-				key: '4',
 				i18nLabel: 'every_30_minutes'
 			}, {
-				key: '5',
+				key: '1',
 				i18nLabel: 'every_hour'
 			}, {
-				key: '6',
+				key: '2',
 				i18nLabel: 'every_six_hours'
 			}, {
-				key: '7',
+				key: '3',
 				i18nLabel: 'every_day'
 			}
 		],
@@ -57,7 +45,7 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 			i18nLabel: 'RetentionPolicy_AppliesToChannels',
 			enableQuery: globalQuery
 		});
-		this.add('RetentionPolicy_MaxAge_Channels', 2592000, {
+		this.add('RetentionPolicy_MaxAge_Channels', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_Channels',
@@ -74,7 +62,7 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 			i18nLabel: 'RetentionPolicy_AppliesToGroups',
 			enableQuery: globalQuery
 		});
-		this.add('RetentionPolicy_MaxAge_Groups', 2592000, {
+		this.add('RetentionPolicy_MaxAge_Groups', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_Groups',
@@ -91,7 +79,7 @@ RocketChat.settings.addGroup('RetentionPolicy', function() {
 			i18nLabel: 'RetentionPolicy_AppliesToDMs',
 			enableQuery: globalQuery
 		});
-		this.add('RetentionPolicy_MaxAge_DMs', 2592000, {
+		this.add('RetentionPolicy_MaxAge_DMs', 30, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'RetentionPolicy_MaxAge_DMs',
