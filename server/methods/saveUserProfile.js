@@ -34,9 +34,7 @@ Meteor.methods({
 		}
 
 		if (settings.realname) {
-			if (!RocketChat.setRealName(Meteor.userId(), settings.realname)) {
-				throw new Meteor.Error('error-could-not-change-name', 'Could not change name', { method: 'saveUserProfile' });
-			}
+			Meteor.call('setRealName', settings.realname);
 		}
 
 		if (settings.username) {
