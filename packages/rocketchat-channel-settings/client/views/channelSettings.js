@@ -740,9 +740,6 @@ Template.channelSettingsInfo.helpers({
 	topic() {
 		return Template.instance().room.topic;
 	},
-	users() {
-		return Template.instance().room.usernames;
-	},
 
 	channelIcon() {
 		const roomType = Template.instance().room.t;
