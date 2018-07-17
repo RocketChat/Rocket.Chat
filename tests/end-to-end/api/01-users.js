@@ -316,26 +316,6 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
-		it('should return an error when trying update profile and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowUserProfileChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								verified: true
-							}
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-		});
-
 		it('should return an error when trying update username and it is not allowed', (done) => {
 			updateSetting('Accounts_AllowUsernameChange', false)
 				.then(() => {
@@ -405,6 +385,26 @@ describe('[Users]', function() {
 							userId: targetUser._id,
 							data: {
 								password: 'itsnotworking'
+							}
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an error when trying update profile and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowUserProfileChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								verified: true
 							}
 						})
 						.expect('Content-Type', 'application/json')

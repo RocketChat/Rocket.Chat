@@ -194,7 +194,7 @@ RocketChat.saveUser = function(userId, userData) {
 			});
 		}
 
-		if (userData.name && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
+		if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user'
