@@ -6,11 +6,12 @@ const roomFiles = new Mongo.Collection('room_files');
 
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
+	this.filter = new ReactiveVar(null);
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 
 	this.autorun(() => {
-		this.subscribe('roomFiles', rid, this.limit.get(), () => {
+		this.subscribe('roomFiles', rid, this.filter.get(), this.limit.get(), () => {
 			if (roomFiles.find({ rid }).fetch().length < this.limit.get()) {
 				this.hasMore.set(false);
 			}
@@ -99,6 +100,11 @@ Template.uploadedFilesList.helpers({
 });
 
 Template.uploadedFilesList.events({
+	'input .uploaded-files-list__filter'(e, t) {
+		t.filter.set(e.target.value.trim());
+		t.hasMore.set(true);
+	},
+
 	'scroll .uploaded-files-list': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);

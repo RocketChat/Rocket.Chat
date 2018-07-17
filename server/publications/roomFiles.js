@@ -1,11 +1,11 @@
-Meteor.publish('roomFiles', function(rid, limit = 50) {
+Meteor.publish('roomFiles', function(rid, filter = null, limit = 50) {
 	if (!this.userId) {
 		return this.ready();
 	}
 
 	const pub = this;
 
-	const cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, limit).observeChanges({
+	const cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, filter, limit).observeChanges({
 		added(_id, record) {
 			const { username, name } = record.userId ? RocketChat.models.Users.findOneById(record.userId) : {};
 			return pub.added('room_files', _id, { ...record, user: { username, name } });
