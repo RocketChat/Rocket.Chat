@@ -1,5 +1,7 @@
-/* globals:CROWD:true */
+/* globals:CROWD:true, SynchedCron */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
+import _ from "underscore";
+
 const logger = new Logger('CROWD', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {
@@ -71,18 +73,16 @@ const CROWD = class CROWD {
 
 		const userResponse = this.crowdClient.user.findSync(username);
 
-		const user = {
+		return {
 			displayname: userResponse['display-name'],
 			username: userResponse.name,
 			email: userResponse.email,
 			password,
 			active: userResponse.active
 		};
-
-		return user;
 	}
 
-	syncDataToUser(crowdUser, id) {
+	static syncDataToUser(crowdUser, id) {
 		const user = {
 			username: crowdUser.username,
 			emails: [{
@@ -124,13 +124,13 @@ const CROWD = class CROWD {
 						active: userResponse.active
 					};
 
-					self.syncDataToUser(crowdUser, user._id);
+					CROWD.syncDataToUser(crowdUser, user._id);
 				}
 			});
 		}
 	}
 
-	addNewUser(crowdUser) {
+	static addNewUser(crowdUser) {
 		const userQuery = {
 			crowd: true,
 			username: crowdUser.username
@@ -148,7 +148,7 @@ const CROWD = class CROWD {
 				}
 			});
 
-			this.syncDataToUser(crowdUser, user._id);
+			CROWD.syncDataToUser(crowdUser, user._id);
 
 			return {
 				userId: user._id,
@@ -201,26 +201,7 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 	}
 
-	return crowd.addNewUser(user);
-});
-
-let interval;
-let timeout;
-
-RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
-	Meteor.clearInterval(interval);
-	Meteor.clearTimeout(timeout);
-
-	if (value === true) {
-		const crowd = new CROWD();
-		logger.info('Enabling CROWD user sync');
-		Meteor.setInterval(crowd.sync, 1000 * 60 * 60);
-		Meteor.setTimeout(function() {
-			crowd.sync();
-		}, 1000 * 30);
-	} else {
-		logger.info('Disabling CROWD user sync');
-	}
+	return CROWD.addNewUser(user);
 });
 
 Meteor.methods({
@@ -252,4 +233,36 @@ Meteor.methods({
 			params: []
 		};
 	}
+});
+
+const jobName = 'Atlassian Crowd Sync';
+
+const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
+	if (RocketChat.settings.get('CROWD_Sync_User_Data') !== true) {
+		logger.info('Disabling Crowd Background Sync');
+		if (SyncedCron.nextScheduledAtDate(jobName)) {
+			SyncedCron.remove(jobName);
+		}
+		return;
+	}
+
+	if (RocketChat.settings.get('CROWD_Sync_Interval')) {
+		logger.info('Enabling Crowd Background Sync');
+		SyncedCron.add({
+			name: jobName,
+			schedule: (parser) => parser.text(RocketChat.settings.get('CROWD_Sync_Interval')),
+			job() {
+				const crowd = new CROWD();
+				crowd.sync();
+			}
+		});
+		SyncedCron.start();
+	}
+}), 500);
+
+Meteor.startup(() => {
+	Meteor.defer(() => {
+		RocketChat.settings.get('CROWD_Sync_User_Data', addCronJob);
+		RocketChat.settings.get('CROWD_Sync_Interval', addCronJob);
+	});
 });
