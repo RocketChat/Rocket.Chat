@@ -3,12 +3,10 @@ import s from 'underscore.string';
 
 let usernameBlackList = [];
 
-const trimUsername = username => username.trim();
-
-const toRegExp = username => new RegExp(`^${s.escapeRegExp(username)}$`, 'i');
+const toRegExp = username => new RegExp(`^${ s.escapeRegExp(username).trim() }$`, 'i');
 
 RocketChat.settings.get('Accounts_BlockedUsernameList', (key, value) => {
-	usernameBlackList = value.split(',').map(value).map(toRegExp);
+	usernameBlackList = value.split(',').map(toRegExp);
 });
 
 const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.length
@@ -22,7 +20,7 @@ RocketChat.checkUsernameAvailability = function(username) {
 
 	return !Meteor.users.findOne({
 		username: {
-			$regex: new RegExp(`^${ s.trim(s.escapeRegExp(username)) }$`, 'i')
+			$regex: toRegExp(username)
 		}
 	}, { fields: { _id: 1 } });
 };
