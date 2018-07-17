@@ -14,9 +14,10 @@ const resolver = {
 			return root.name;
 		},
 		members: (root) => {
-			return root.usernames.map(
-				username => RocketChat.models.Users.findOneByUsername(username)
-			);
+			const ids = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(root._id, { fields: { 'u._id': 1 } })
+				.fetch()
+				.map(sub => sub.u._id);
+			return RocketChat.models.Users.findByIds(ids).fetch();
 		},
 		owners: (root) => {
 			// there might be no owner
@@ -26,7 +27,9 @@ const resolver = {
 
 			return [RocketChat.models.Users.findOneByUsername(root.u.username)];
 		},
-		numberOfMembers: (root) => (root.usernames || []).length,
+		numberOfMembers: (root) => {
+			return RocketChat.models.Subscriptions.findByRoomId(root._id).count();
+		},
 		numberOfMessages: property('msgs'),
 		readOnly: (root) => root.ro === true,
 		direct: (root) => root.t === 'd',
