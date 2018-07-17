@@ -720,6 +720,18 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
+		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
+			request.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
+				.set(credentials)
+				.send({'value': true})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('should delete user own account', (done) => {
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
