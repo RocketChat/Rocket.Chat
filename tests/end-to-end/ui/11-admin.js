@@ -736,11 +736,11 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the idle timeout limit field', () => {
-					admin.accountsIdleTimeoutLimit.click();
-					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
+					admin.accountsidleTimeLimit.click();
+					admin.accountsidleTimeLimit.isVisible().should.be.true;
 				});
 				it('the idle timeout limit field value should be 300', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300');
+					admin.accountsidleTimeLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
@@ -873,14 +873,6 @@ describe('[Administration]', () => {
 				it('the hide avatars field value should be false', () => {
 					admin.accountsHideAvatarsTrue.isSelected().should.be.false;
 					admin.accountsHideAvatarsFalse.isSelected().should.be.true;
-				});
-
-				it('it should show the sidebar channel list mode field', () => {
-					admin.accountsRoomsListExhibitionMode.click();
-					admin.accountsRoomsListExhibitionMode.isVisible().should.be.true;
-				});
-				it('the sidebar channel list mode field value should be category', () => {
-					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
 				});
 
 				it('it should show the enter key behavior field', () => {

@@ -327,7 +327,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				collapseMediaByDefault: Match.Maybe(Boolean),
 				autoImageLoad: Match.Maybe(Boolean),
 				emailNotificationMode: Match.Maybe(String),
-				roomsListExhibitionMode: Match.Maybe(String),
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
@@ -348,31 +347,34 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
-				mergeChannels: Match.Optional(Boolean),
+				sidebarGroupByType: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean)
 			})
 		});
 
-		let preferences;
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
+		const userData = {
+			_id: userId,
+			settings: {
+				preferences: this.bodyParams.data
+			}
+		};
+
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
-		} else {
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
+			userData.language = language;
 		}
 
-		// Keep compatibility with old values
-		if (preferences.emailNotificationMode === 'all') {
-			preferences.emailNotificationMode = 'mentions';
-		} else if (preferences.emailNotificationMode === 'disabled') {
-			preferences.emailNotificationMode = 'nothing';
-		}
+		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
 
-		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
-
-		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: preferences }) });
+		return RocketChat.API.v1.success({
+			user: RocketChat.models.Users.findOneById(userId, {
+				fields: {
+					'settings.preferences': 1
+				}
+			})
+		});
 	}
 });
 

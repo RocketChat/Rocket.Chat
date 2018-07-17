@@ -68,6 +68,10 @@
 	& .unread-rooms {
 		display: none;
 	}
+
+	.embedded-view > & {
+		display: none;
+	}
 }
 
 @media (width < 780px) {

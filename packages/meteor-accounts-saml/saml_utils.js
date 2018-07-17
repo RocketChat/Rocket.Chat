@@ -395,10 +395,11 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 				if (attributes) {
 					attributes.forEach(function(attribute) {
 						const value = self.getElement(attribute, 'AttributeValue');
+						const key = attribute.$.Name.value;
 						if (typeof value[0] === 'string') {
-							profile[attribute.$.Name.value] = value[0];
+							profile[key] = value[0];
 						} else {
-							profile[attribute.$.Name.value] = value[0]._;
+							profile[key] = value[0]._;
 						}
 					});
 				}
@@ -418,6 +419,16 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 			}
 			if (Meteor.settings.debug) {
 				console.log(`NameID: ${ JSON.stringify(profile) }`);
+			}
+
+			const profileKeys = Object.keys(profile);
+			for (let i = 0; i < profileKeys.length; i++) {
+				const key = profileKeys[i];
+
+				if (key.match(/\./)) {
+					profile[key.replace(/\./g, '-')] = profile[key];
+					delete profile[key];
+				}
 			}
 
 			callback(null, profile, false);

@@ -1,14 +1,12 @@
-import _ from 'underscore';
-
 class ModelSubscriptions extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
 
 		this.tryEnsureIndex({ 'rid': 1, 'u._id': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ 'rid': 1, 'u.username': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'alert': 1, 'u._id': 1 });
 		this.tryEnsureIndex({ 'rid': 1, 'roles': 1 });
 		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1 });
-		this.tryEnsureIndex({ 'u._id': 1, 'name': 1, 't': 1, 'code': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'open': 1 });
 		this.tryEnsureIndex({ 'alert': 1 });
 
@@ -23,20 +21,11 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'autoTranslate': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'autoTranslateLanguage': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
-
-		this.cache.ensureIndex('rid', 'array');
-		this.cache.ensureIndex('u._id', 'array');
-		this.cache.ensureIndex('name', 'array');
-		this.cache.ensureIndex(['rid', 'u._id'], 'unique');
-		this.cache.ensureIndex(['name', 'u._id'], 'unique');
 	}
 
 
 	// FIND ONE
 	findOneByRoomIdAndUserId(roomId, userId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('rid,u._id', [roomId, userId], options).fetch();
-		}
 		const query = {
 			rid: roomId,
 			'u._id': userId
@@ -45,10 +34,16 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByRoomIdAndUsername(roomId, username, options) {
+		const query = {
+			rid: roomId,
+			'u.username': username
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByRoomNameAndUserId(roomName, userId) {
-		if (this.useCache) {
-			return this.cache.findByIndex('name,u._id', [roomName, userId]).fetch();
-		}
 		const query = {
 			name: roomName,
 			'u._id': userId
@@ -59,12 +54,28 @@ class ModelSubscriptions extends RocketChat.models._Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('u._id', userId, options);
-		}
-
 		const query =
 			{ 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndType(userId, type, options) {
+		const query = {
+			'u._id': userId,
+			t: type
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndTypes(userId, types, options) {
+		const query = {
+			'u._id': userId,
+			t: {
+				$in: types
+			}
+		};
 
 		return this.find(query, options);
 	}
@@ -109,21 +120,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-	findByTypeNameAndUserId(type, name, userId, options) {
-		const query = {
-			t: type,
-			name,
-			'u._id': userId
-		};
-
-		return this.find(query, options);
-	}
-
 	findByRoomId(roomId, options) {
-		if (this.useCache) {
-			return this.cache.findByIndex('rid', roomId, options);
-		}
-
 		const query =
 			{ rid: roomId };
 
@@ -182,6 +179,18 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		};
 
 		return this.find(query);
+	}
+
+	findByRoomIdWhenUserIdExists(rid, options) {
+		const query = { rid, 'u._id': { $exists: 1 } };
+
+		return this.find(query, options);
+	}
+
+	findByRoomIdWhenUsernameExists(rid, options) {
+		const query = { rid, 'u.username': { $exists: 1 } };
+
+		return this.find(query, options);
 	}
 
 	findUnreadByUserId(userId) {
@@ -356,13 +365,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateNameByRoomId(roomId, name) {
+	updateDisplayNameByRoomId(roomId, fname) {
 		const query =
 			{ rid: roomId };
 
 		const update = {
 			$set: {
-				name
+				fname
 			}
 		};
 
@@ -748,6 +757,21 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updateDirectFNameByName(name, fname) {
+		const query = {
+			t: 'd',
+			name
+		};
+
+		const update = {
+			$set: {
+				fname
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
@@ -766,54 +790,48 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				_id: user._id,
 				username: user.username,
 				name: user.name
-			}
+			},
+			...RocketChat.getDefaultSubscriptionPref(user),
+			...extraData
 		};
 
-		const {
-			desktopNotifications,
-			mobileNotifications,
-			emailNotificationMode,
-			highlights
-		} = (user.settings && user.settings.preferences) || {};
+		const result = this.insert(subscription);
 
-		if (desktopNotifications && desktopNotifications !== 'default') {
-			subscription.desktopNotifications = desktopNotifications;
-			subscription.desktopPrefOrigin = 'user';
-		}
+		RocketChat.models.Rooms.incUsersCountById(room._id);
 
-		if (mobileNotifications && mobileNotifications !== 'default') {
-			subscription.mobilePushNotifications = mobileNotifications;
-			subscription.mobilePrefOrigin = 'user';
-		}
-
-		if (emailNotificationMode && emailNotificationMode !== 'default') {
-			subscription.emailNotifications = emailNotificationMode;
-			subscription.emailPrefOrigin = 'user';
-		}
-
-		if (Array.isArray(highlights) && highlights.length) {
-			subscription.userHighlights = highlights;
-		}
-
-		_.extend(subscription, extraData);
-
-		return this.insert(subscription);
+		return result;
 	}
 
 
 	// REMOVE
 	removeByUserId(userId) {
-		const query =
-			{ 'u._id': userId };
+		const query = {
+			'u._id': userId
+		};
 
-		return this.remove(query);
+		const roomIds = this.findByUserId(userId).map(s => s.rid);
+
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountByIds(roomIds, -1);
+		}
+
+		return result;
 	}
 
 	removeByRoomId(roomId) {
-		const query =
-			{ rid: roomId };
+		const query = {
+			rid: roomId
+		};
 
-		return this.remove(query);
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+		}
+
+		return result;
 	}
 
 	removeByRoomIdAndUserId(roomId, userId) {
@@ -822,7 +840,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			'u._id': userId
 		};
 
-		return this.remove(query);
+		const result = this.remove(query);
+
+		if (Match.test(result, Number) && result > 0) {
+			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+		}
+
+		return result;
 	}
 }
 

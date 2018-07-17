@@ -396,6 +396,22 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
+		it('should throw an error when the name is only whitespaces', (done) => {
+			request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						name: '  '
+					}
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+
 		it('should set new email as \'unverified\'', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)

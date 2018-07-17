@@ -9,9 +9,12 @@
 		<div class="about clearfix">
 			{{#with user}}
 				<div class="info">
-					<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
-					<p class="secondary-font-color">{{name}}</p>
-
+					{{#if name}}
+						<h3 title="{{name}}"><i class="status-{{status}}"></i> {{name}}</h3>
+						<p class="secondary-font-color">{{username}}</p>
+					{{else}}
+						<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
+					{{/if}}
 					<ul>
 						{{#if utc}}<li><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</li>{{/if}}
 						{{#each visitorEmails}} <li><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok success-color"></i>{{/if}}</li> {{/each}}

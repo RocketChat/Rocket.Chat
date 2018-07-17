@@ -10,6 +10,9 @@
 					<span class="rc-switch__button">
 						<span class="rc-switch__button-inside"></span>
 					</span>
+					<span class="rc-switch__text">
+						{{_ "Activate"}}
+					</span>
 				</label>
 			</div>
 
@@ -54,28 +57,27 @@
 					{{#each settings}}
 						<div class="rc-apps-settings__item">
 							{{#if $eq type 'string'}}
-
 								<div class="rc-input">
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ i18nLabel}}</div>
 										<div class="rc-input__wrapper">
 											{{#if multiline}}
-											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+												<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
 											{{else}}
-											<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+												<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
 											{{/if}}
 										</div>
 									</label>
-									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+									{{#if i18nDescription}}
+										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
 									{{/if}}
-									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+									{{#if i18nAlert}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
 									{{/if}}
 								</div>
 							{{else if $eq type 'boolean'}}
@@ -90,6 +92,14 @@
 									</span>
 								</label>
 								<span class="rc-switch__description">{{{parseDescription i18nDescription}}}</span>
+								{{# if i18nAlert}}
+									<div class="rc-input__error">
+										<div class="rc-input__error-icon">
+											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										</div>
+										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+									</div>
+								{{/if}}
 							</div>
 							{{else if $eq type 'int'}}
 								<div class="rc-input">
@@ -104,15 +114,15 @@
 										</div>
 									</label>
 									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
 									{{/if}}
 									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
 									{{/if}}
 								</div>
 							{{else if $eq type 'password'}}
@@ -128,15 +138,15 @@
 										</div>
 									</label>
 									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
 									{{/if}}
 									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
 									{{/if}}
 								</div>
 							{{else if $eq type 'relativeUrl'}}
@@ -150,15 +160,15 @@
 										</div>
 									</label>
 									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
 									{{/if}}
 									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
 									{{/if}}
 								</div>
 							{{else if $eq type 'font'}}
@@ -174,15 +184,15 @@
 										</div>
 									</label>
 									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
 									{{/if}}
 									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+										<div class="rc-input__error">
+											<div class="rc-input__error-icon">
+												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+											</div>
+											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
 									{{/if}}
 								</div>
 							{{else if $eq type 'code'}}
@@ -220,8 +230,6 @@
 								</div>
 
 							{{else if $eq type 'select'}}
-
-
 								<div class="rc-input">
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ i18nLabel}}</div>
@@ -248,7 +256,6 @@
 								</div>
 
 							{{else if $eq type 'color'}}
-
 								<div class="rc-input">
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ i18nLabel}}</div>
@@ -381,9 +388,9 @@
 					</div>
 					<div class="rc-apps-container">
 						<div class="rc-button-group">
-							<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
-							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{ _ "Save" }}</button>
-							<button class="rc-button rc-button--cancel js-uninstall">{{ _ "Uninstall" }}</button>
+							<button class="rc-button rc-button--secondary js-cancel">{{_ "Cancel" }}</button>
+							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
+							<button class="rc-button rc-button--cancel js-uninstall">{{_ "Uninstall" }}</button>
 							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
 							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
 						</div>

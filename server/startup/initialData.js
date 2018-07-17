@@ -1,14 +1,14 @@
 import _ from 'underscore';
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
+	Meteor.defer(() => {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				'default': true
 			});
 		}
 
-		if (!RocketChat.models.Users.db.findOneById('rocket.cat')) {
+		if (!RocketChat.models.Users.findOneById('rocket.cat')) {
 			RocketChat.models.Users.create({
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
@@ -143,10 +143,14 @@ Meteor.startup(function() {
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
-				if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
-					RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-				}
-				console.log(`No admins are found. Set ${ oldestUser.username } as admin for being the oldest user`);
+				console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
+			}
+		}
+
+		if (!_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
 
@@ -177,7 +181,7 @@ Meteor.startup(function() {
 			console.log((`Username: ${ adminUser.username }`).green);
 			console.log((`Password: ${ adminUser._id }`).green);
 
-			if (RocketChat.models.Users.db.findOneByEmailAddress(adminUser.emails[0].address)) {
+			if (RocketChat.models.Users.findOneByEmailAddress(adminUser.emails[0].address)) {
 				throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');
 			}
 

@@ -181,6 +181,15 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_request_on_agent_message'
 	});
 
+	RocketChat.settings.add('Send_visitor_navigation_history_livechat_webhook_request', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_visitor_navigation_history_on_request',
+		i18nDescription: 'Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled',
+		enableQuery: { _id: 'Livechat_Visitor_navigation_as_a_message', value: true }
+	});
+
 	RocketChat.settings.add('Livechat_webhook_on_capture', false, {
 		type: 'boolean',
 		group: 'Livechat',
@@ -236,11 +245,25 @@ Meteor.startup(function() {
 		]
 	});
 
+	RocketChat.settings.add('Livechat_Visitor_navigation_as_a_message', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Send_Visitor_navigation_history_as_a_message'
+	});
+
 	RocketChat.settings.add('Livechat_enable_office_hours', false, {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
 		i18nLabel: 'Office_hours_enabled'
+	});
+
+	RocketChat.settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Continuous_sound_notifications_for_new_livechat_room'
 	});
 
 	RocketChat.settings.add('Livechat_videocall_enabled', false, {
@@ -250,6 +273,14 @@ Meteor.startup(function() {
 		i18nLabel: 'Videocall_enabled',
 		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
 		enableQuery: { _id: 'Jitsi_Enabled', value: true }
+	});
+
+	RocketChat.settings.add('Livechat_fileupload_enabled', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'FileUpload_Enabled',
+		enableQuery: { _id: 'FileUpload_Enabled', value: true }
 	});
 
 	RocketChat.settings.add('Livechat_enable_transcript', false, {

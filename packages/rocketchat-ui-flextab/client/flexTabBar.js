@@ -55,7 +55,9 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
+		return RocketChat.TabBar.getButtons().filter(button =>
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
+		);
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
@@ -161,7 +163,7 @@ Template.RoomsActionTab.events({
 		$(e.currentTarget).blur();
 		e.preventDefault();
 		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, instance.anonymous, instance.data.rid));
-		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
+		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(RocketChat.TabBar.size)).map(item => {
 			item.name = TAPi18n.__(item.i18nTitle);
 			item.action = action;
 			return item;
@@ -173,7 +175,7 @@ Template.RoomsActionTab.events({
 			popoverClass: 'message-box',
 			data: {
 				rid: this._id,
-				buttons: instance.small.get() ? buttons : buttons.slice(4),
+				buttons: instance.small.get() ? buttons : buttons.slice(RocketChat.TabBar.size),
 				tabBar: instance.tabBar
 			},
 			currentTarget: e.currentTarget,
@@ -199,6 +201,10 @@ Template.RoomsActionTab.onCreated(function() {
 
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
+	postButtons() {
+		const toolbar = Session.get('toolbarButtons') || {};
+		return Object.keys(toolbar.buttons || []).map(key =>({ id: key, ...toolbar.buttons[key] }));
+	},
 	active() {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
@@ -210,7 +216,7 @@ Template.RoomsActionTab.helpers({
 			return [];
 		}
 		const buttons = RocketChat.TabBar.getButtons().filter(button => filterButtons(button, this.anonymous, this.data.rid));
-		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
+		return buttons.length <= RocketChat.TabBar.size ? buttons : buttons.slice(0, RocketChat.TabBar.size);
 	},
 
 	moreButtons() {
@@ -220,6 +226,6 @@ Template.RoomsActionTab.helpers({
 		const buttons = RocketChat.TabBar.getButtons().filter(button =>
 			filterButtons(button, this.anonymous, this.data.rid)
 		);
-		return buttons.length > 5;
+		return buttons.length > RocketChat.TabBar.size;
 	}
 });
