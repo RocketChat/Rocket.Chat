@@ -134,7 +134,7 @@ export default {
 		this.roomSubscribed = roomId;
 
 		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
-		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
+		msgStream.on(roomId, { visitorToken: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
 			} else if (!msgTypesNotDisplayed.includes(msg.t)) {
