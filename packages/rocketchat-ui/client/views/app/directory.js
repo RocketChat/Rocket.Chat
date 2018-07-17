@@ -2,6 +2,10 @@ import moment from 'moment';
 import _ from 'underscore';
 
 function timeAgo(time) {
+	if (!time) {
+		return;
+	}
+
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
@@ -14,7 +18,7 @@ function directorySearch(config, cb) {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
-					users: (result.usernames ? result.usernames.length : result.usersCount) || 0,
+					users: result.usersCount || 0,
 					createdAt: timeAgo(result.ts),
 					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
@@ -198,8 +202,8 @@ Template.directory.onRendered(function() {
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
 	this.searchType = new ReactiveVar('channels');
-	this.searchSortBy = new ReactiveVar('name');
-	this.sortDirection = new ReactiveVar('asc');
+	this.searchSortBy = new ReactiveVar('usersCount');
+	this.sortDirection = new ReactiveVar('desc');
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);

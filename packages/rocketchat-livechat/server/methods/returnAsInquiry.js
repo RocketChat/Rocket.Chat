@@ -7,11 +7,6 @@ Meteor.methods({
 		// //delete agent and room subscription
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
-		// remove user from room
-		const username = Meteor.user().username;
-
-		RocketChat.models.Rooms.removeUsernameById(rid, username);
-
 		// find inquiry corresponding to room
 		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
 

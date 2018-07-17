@@ -1,5 +1,5 @@
 Template.messagePopupChannel.helpers({
-	icon() {
+	channelIcon() {
 		return RocketChat.roomTypes.getIcon(this.t);
 	}
 });
