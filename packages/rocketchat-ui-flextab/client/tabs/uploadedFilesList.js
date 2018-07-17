@@ -105,7 +105,7 @@ Template.uploadedFilesList.events({
 		t.hasMore.set(true);
 	},
 
-	'scroll .uploaded-files-list': _.throttle(function(e, t) {
+	'scroll .flex-tab__result': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);
 		}
