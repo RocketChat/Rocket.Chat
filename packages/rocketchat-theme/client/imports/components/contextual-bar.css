@@ -117,20 +117,10 @@
 	}
 }
 
-.uploaded-files {
-	&__content {
-		display: flex;
-		flex-direction: column;
-	}
-
-	&__search-form {
-		margin-bottom: 8px;
-	}
-}
-
 .attachments {
 	&__item {
 		transition: background-color 300ms linear;
+		margin-bottom: 10px;
 
 		&:hover {
 			cursor: pointer;
