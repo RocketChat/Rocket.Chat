@@ -1,6 +1,14 @@
 import Busboy from 'busboy';
 import filesize from 'filesize';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+let maxFileSize;
+RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
+	try {
+		maxFileSize = parseInt(value);
+	} catch (e) {
+		maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+	}
+});
 
 RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 	post() {
@@ -59,13 +67,6 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 			return RocketChat.API.v1.failure({
 				reason: 'error-type-not-allowed'
 			});
-		}
-		let maxFileSize;
-		const value = RocketChat.settings.get('FileUpload_MaxFileSize')
-		try {
-			maxFileSize = parseInt(value);
-		} catch (e) {
-			maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 		}
 
 		// -1 maxFileSize means there is no limit
