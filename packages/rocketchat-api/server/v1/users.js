@@ -59,6 +59,24 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
+	post() {
+		const { password } = this.bodyParams;
+		if (!password) {
+			return RocketChat.API.v1.failure('Body parameter "password" is required.');
+		}
+		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('deleteUserOwnAccount', password);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 	get() {
 		const user = this.getUserFromParams();
