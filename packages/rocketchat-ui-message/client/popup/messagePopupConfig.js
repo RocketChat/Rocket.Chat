@@ -3,42 +3,42 @@ import _ from 'underscore';
 const usersFromRoomMessages = new Mongo.Collection(null);
 
 const reloadUsersFromRoomMessages = () => {
+	const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+
 	usersFromRoomMessages.remove({});
 	const uniqueMessageUsersControl = {};
-	RocketChat.models.Messages
-		.find(
-			{
-				rid: Session.get('openedRoom'),
-				'u.username': { $ne: Meteor.user().username },
-				t: { $exists: false }
-			},
-			{
-				fields: {
-					'u.username': 1,
-					'u.name': 1,
-					ts: 1
-				},
-				sort: { ts: -1 }
-			}
-		)
-		.fetch()
-		.filter(({ u: { username } }) => {
-			const notMapped = !uniqueMessageUsersControl[username];
-			uniqueMessageUsersControl[username] = true;
-			return notMapped;
-		})
-		.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
-			_id: username,
-			username,
-			name,
-			status: Session.get(`user_${ username }_status`) || 'offline',
-			ts
-		}));
+
+	RocketChat.models.Messages.find({
+		rid: Tracker.nonreactive(() => Session.get('openedRoom')),
+		'u.username': { $ne: user.username },
+		t: { $exists: false }
+	},
+	{
+		reactive: false,
+		fields: {
+			'u.username': 1,
+			'u.name': 1,
+			ts: 1
+		},
+		sort: { ts: -1 }
+	}).fetch()
+	.filter(({ u: { username } }) => {
+		const notMapped = !uniqueMessageUsersControl[username];
+		uniqueMessageUsersControl[username] = true;
+		return notMapped;
+	})
+	.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
+		_id: username,
+		username,
+		name,
+		status: Tracker.nonReactive(() => Session.get(`user_${ username }_status`) || 'offline'),
+		ts
+	}));
 };
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (Meteor.user() == null || Session.get('openedRoom') == null) {
+		if (Meteor.userId() == null || Session.get('openedRoom') == null) {
 			return;
 		}
 
@@ -62,17 +62,17 @@ const fetchUsersFromServer = (filterText, records, cb, rid) => {
 		}
 
 		users.slice(0, 5)
-			.forEach(({ username, name, status }) => {
-				if (records.length < 5) {
-					records.push({
-						_id: username,
-						username,
-						name,
-						status,
-						sort: 3
-					});
-				}
-			});
+		.forEach(({ username, name, status }) => {
+			if (records.length < 5) {
+				records.push({
+					_id: username,
+					username,
+					name,
+					status,
+					sort: 3
+				});
+			}
+		});
 
 		records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
 
@@ -106,9 +106,9 @@ const fetchRoomsFromServer = (filterText, records, cb, rid) => {
 	});
 };
 
-const fetchUsersFromServerDelayed = _.throttle(fetchUsersFromServer, 500);
+const fetchUsersFromServerDelayed = _.throttle(fetchUsersFromServer, 1000);
 
-const fetchRoomsFromServerDelayed = _.throttle(fetchRoomsFromServer, 500);
+const fetchRoomsFromServerDelayed = _.throttle(fetchRoomsFromServer, 1000);
 
 const addEmojiToRecents = (emoji) => {
 	const pickerEl = document.querySelector('.emoji-picker');
@@ -154,127 +154,122 @@ Template.messagePopupConfig.helpers({
 			collection: usersFromRoomMessages,
 			template: 'messagePopupUser',
 			getInput: self.getInput,
-			textFilterDelay: 200,
+			textFilterDelay: 500,
 			trigger: '@',
 			suffix: ' ',
-			getFilter(collection, filterText, cb) {
-				filterText = filterText && filterText.trim() || '';
+			getFilter(collection, filter = '', cb) {
+				const filterText = filter.trim();
 				const filterRegex = new RegExp(`${ RegExp.escape(filterText) }`, 'i');
 
 				// Get at least 5 users from messages sent on room
-				const items = usersFromRoomMessages
-					.find(
-						{
-							ts: { $exists: true },
-							$or: [
-								{ username: filterRegex },
-								{ name: filterRegex }
-							]
-						},
-						{
-							limit: 5,
-							sort: { ts: -1 }
-						}
-					)
-					.fetch();
+				const items = usersFromRoomMessages.find(
+					{
+						ts: { $exists: true },
+						$or: [
+							{ username: filterRegex },
+							{ name: filterRegex }
+						]
+					},
+					{
+						limit: 5,
+						sort: { ts: -1 }
+					}
+				)
+				.fetch();
 
 				// If needed, add to list the online users
 				if (items.length < 5 && filterText !== '') {
 					const usernamesAlreadyFetched = items.map(({ username }) => username);
-					const user = Meteor.user();
-
 					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
 						const usernamesFromDMs = RocketChat.models.Subscriptions
-							.find(
-								{
-									t: 'd',
-									$and: [
-										{
-											$or: [
-												{ name: filterRegex },
-												{ fname: filterRegex }
-											]
-										},
-										{
-											name: { $nin: usernamesAlreadyFetched }
-										}
-									]
-								},
-								{
-									fields: { name: 1 }
-								}
-							)
-							.map(({ name }) => name);
-						const newItems = RocketChat.models.Users
-							.find(
-								{
-									username: {
-										$in: usernamesFromDMs
-									}
-								},
-								{
-									fields: {
-										username: 1,
-										name: 1,
-										status: 1
+						.find(
+							{
+								t: 'd',
+								$and: [
+									{
+										$or: [
+											{ name: filterRegex },
+											{ fname: filterRegex }
+										]
 									},
-									limit: 5 - usernamesAlreadyFetched.length
+									{
+										name: { $nin: usernamesAlreadyFetched }
+									}
+								]
+							},
+							{
+								fields: { name: 1 }
+							}
+						)
+						.map(({ name }) => name);
+						const newItems = RocketChat.models.Users
+						.find(
+							{
+								username: {
+									$in: usernamesFromDMs
 								}
-							)
-							.fetch()
-							.map(({ username, name, status }) => ({
-								_id: username,
-								username,
-								name,
-								status,
-								sort: 1
-							}));
+							},
+							{
+								fields: {
+									username: 1,
+									name: 1,
+									status: 1
+								},
+								limit: 5 - usernamesAlreadyFetched.length
+							}
+						)
+						.fetch()
+						.map(({ username, name, status }) => ({
+							_id: username,
+							username,
+							name,
+							status,
+							sort: 1
+						}));
 
 						items.push(...newItems);
 					} else {
-						const newItems = Meteor.users
-							.find(
+						const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+						const newItems = Meteor.users.find({
+							$and: [
 								{
-									$and: [
-										{
-											$or: [
-												{ username: filterRegex },
-												{ name: filterRegex }
-											]
-										},
-										{
-											username: {
-												$nin: [
-													user && user.username,
-													...usernamesAlreadyFetched
-												]
-											}
-										}
+									$or: [
+										{ username: filterRegex },
+										{ name: filterRegex }
 									]
 								},
 								{
-									fields: {
-										username: 1,
-										name: 1,
-										status: 1
-									},
-									limit: 5 - usernamesAlreadyFetched.length
+									username: {
+										$nin: [
+											user && user.username,
+											...usernamesAlreadyFetched
+										]
+									}
 								}
-							)
-							.fetch()
-							.map(({ username, name, status }) => ({
-								_id: username,
-								username,
-								name,
-								status,
-								sort: 1
-							}));
+							]
+						},
+						{
+							fields: {
+								username: 1,
+								name: 1,
+								status: 1
+							},
+							limit: 5 - usernamesAlreadyFetched.length
+						})
+						.fetch()
+						.map(({ username, name, status }) => ({
+							_id: username,
+							username,
+							name,
+							status,
+							sort: 1
+						}));
 
 						items.push(...newItems);
 					}
 				}
 
-				// Get users from db
+				// Get users from Server
 				if (items.length < 5 && filterText !== '') {
 					fetchUsersFromServerDelayed(filterText, items, cb, RocketChat.openedRoom);
 				}
@@ -318,6 +313,7 @@ Template.messagePopupConfig.helpers({
 			collection: RocketChat.models.Subscriptions,
 			trigger: '#',
 			suffix: ' ',
+			textFilterDelay: 500,
 			template: 'messagePopupChannel',
 			getInput: self.getInput,
 			getFilter(collection, filter, cb) {
@@ -328,6 +324,7 @@ Template.messagePopupConfig.helpers({
 						$in: ['c', 'p']
 					}
 				}, {
+					reactive: 1,
 					limit: 5,
 					sort: {
 						ls: -1
@@ -418,9 +415,9 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-						.filter(obj => regExp.test(obj._id))
-						.sort(emojiSort(recents))
-						.slice(0, 10);
+					.filter(obj => regExp.test(obj._id))
+					.sort(emojiSort(recents))
+					.slice(0, 10);
 				},
 				getValue(_id) {
 					addEmojiToRecents(_id);
@@ -456,9 +453,9 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-						.filter(obj => regExp.test(obj._id))
-						.sort(emojiSort(recents))
-						.slice(0, 10);
+					.filter(obj => regExp.test(obj._id))
+					.sort(emojiSort(recents))
+					.slice(0, 10);
 				},
 				getValue(_id) {
 					addEmojiToRecents(_id);
