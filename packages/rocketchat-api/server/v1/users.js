@@ -94,15 +94,15 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const user = this.getUserFromParams();
+		const { username } = this.getUserFromParams();
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { filter: user.username, limit: 1 });
+			result = Meteor.call('getFullUserData', { username, limit: 1 });
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
 		}
 
 		return RocketChat.API.v1.success({
