@@ -20,7 +20,7 @@
 					<a href="{{fixCordova url}}" title="{{name}}" data-description="{{description}}" rel="noopener noreferrer" target="_blank"
 						class="attachments__item-link {{fileTypeClass}}">
 						{{#with thumb}}
-							<span class="attachments__thumb" style="background-image:url('{{.}}');"></span>
+							<span class="attachments__thumb" style="background-image: url('{{escapeCssUrl .}}');"></span>
 						{{else}}
 							{{#with fileTypeIcon}}
 							<span class="attachments__file attachments__file--{{type}}">
