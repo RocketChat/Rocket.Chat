@@ -23,6 +23,9 @@ Meteor.startup(() => {
 		var connectionStatus = Meteor.status();
 		if (visitor.getRoom() && visitor.getToken() && connectionStatus.connected && !connected) {
 			connected = connectionStatus.connected;
+			document.cookie = `rc_rid=${ visitor.getRoom() }; path=/`;
+			document.cookie = `rc_token=${ visitor.getToken() }; path=/`;
+			document.cookie = `rc_room_type=l; path=/`;
 			visitor.setConnected();
 		}
 	});
