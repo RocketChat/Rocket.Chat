@@ -378,32 +378,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 	}
 });
 
-/**
- DEPRECATED
- // TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
- This API returns the logged user roles.
-
- Method: GET
- Route: api/v1/user.roles
- */
-RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
-	get() {
-		let currentUserRoles = {};
-
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUserRoles'));
-
-		if (Array.isArray(result) && result.length > 0) {
-			currentUserRoles = result[0];
-		}
-
-		return RocketChat.API.v1.success(this.deprecationWarning({
-			endpoint: 'user.roles',
-			versionWillBeRemove: 'v0.66',
-			response: currentUserRoles
-		}));
-	}
-});
-
 RocketChat.API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 	post() {
 		const { email } = this.bodyParams;
