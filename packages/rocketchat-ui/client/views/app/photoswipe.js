@@ -23,7 +23,7 @@ Meteor.startup(() => {
 		shareEl: false
 	};
 
-	$(document).on('click', '.gallery-item', event => {
+	const createEventListenerFor = className => event => {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -36,21 +36,25 @@ Meteor.startup(() => {
 			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
 				captionEl.children[0].innerHTML =
-					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
+					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
 				return true;
 			}
 		};
 
-		const items = Array.from(document.querySelectorAll('.gallery-item'))
-			.map((imgElement, i) => {
-				if (imgElement === event.target) {
+		const items = Array.from(document.querySelectorAll(className))
+			.map((element, i) => {
+				if (element === event.currentTarget) {
 					galleryOptions.index = i;
 				}
 
-				if (imgElement.dataset.src) {
+				if (element.dataset.src || element.href) {
 					const img = new Image();
 
 					img.addEventListener('load', () => {
+						if (!currentGallery) {
+							return;
+						}
+
 						delete currentGallery.items[i].html;
 						currentGallery.items[i].src = img.src;
 						currentGallery.items[i].w = img.naturalWidth;
@@ -59,52 +63,27 @@ Meteor.startup(() => {
 						currentGallery.updateSize(true);
 					});
 
-					img.src = imgElement.dataset.src;
+					img.src = element.dataset.src || element.href;
 
 					return {
 						html: '',
-						title: imgElement.dataset.title,
-						description: imgElement.dataset.description
+						title: element.dataset.title || element.title,
+						description: element.dataset.description
 					};
 				}
 
 				return {
-					src: imgElement.src,
-					w: imgElement.naturalWidth,
-					h: imgElement.naturalHeight,
-					title: imgElement.dataset.title,
-					description: imgElement.dataset.description
+					src: element.src,
+					w: element.naturalWidth,
+					h: element.naturalHeight,
+					title: element.dataset.title || element.title,
+					description: element.dataset.description
 				};
 			});
 
 		initGallery(items, galleryOptions);
-	});
+	};
 
-	$(document).on('click', '.room-files-image', event => {
-		event.preventDefault();
-		event.stopPropagation();
-
-		if (currentGallery) {
-			return;
-		}
-
-		const galleryOptions = {
-			...defaultGalleryOptions,
-			index: 0
-		};
-
-		const img = new Image();
-		img.src = event.currentTarget.href;
-		img.addEventListener('load', () => {
-			const item = {
-				msrc: null,
-				src: img.src,
-				w: img.naturalWidth,
-				h: img.naturalHeight
-			};
-
-			initGallery([ item ], galleryOptions);
-		});
-	});
-
+	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
+	$(document).on('click', '.room-files-image', createEventListenerFor('.room-files-image'));
 });
