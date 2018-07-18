@@ -773,6 +773,23 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.remove(query);
 	}
 
+	removeFilesByRoomId(roomId) {
+		this.find({
+			roomId,
+			file: {
+				$exists: true
+			}
+		}, {
+			fields: {
+				file: 1
+			}
+		}).fetch().map(function(document) {
+			if (document.file && document.file._id) {
+				FileUpload.getStore('Uploads').deleteById(document.file._id);
+			}
+		});
+	}
+
 	getMessageByFileId(fileID) {
 		return this.findOne({ 'file._id': fileID });
 	}

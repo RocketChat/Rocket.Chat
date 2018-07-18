@@ -25,10 +25,12 @@ RocketChat.deleteUser = function(userId) {
 			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 			if (room) {
 				if (room.t !== 'c' && RocketChat.models.Subscriptions.findByRoomId(room._id).count() === 1) {
+					RocketChat.models.Messages.removeFilesByRoomId(subscription.rid);
 					RocketChat.models.Rooms.removeById(subscription.rid); // Remove non-channel rooms with only 1 user (the one being deleted)
 				}
 				if (room.t === 'd') {
 					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
+					RocketChat.models.Messages.removeFilesByRoomId(subscription.rid);
 					RocketChat.models.Messages.removeByRoomId(subscription.rid);
 				}
 			}
