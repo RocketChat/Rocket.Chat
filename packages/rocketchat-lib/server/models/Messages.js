@@ -775,7 +775,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	removeFilesByRoomId(roomId) {
 		this.find({
-			roomId,
+			rid: roomId,
 			file: {
 				$exists: true
 			}
