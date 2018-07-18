@@ -668,7 +668,7 @@ Template.channelSettingsEditing.helpers({
 	hasRetentionPermission() {
 		const { room } = Template.instance();
 
-		return RocketChat.settings.get('RetentionPolicy_Enabled') && RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id) && RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+		return RocketChat.settings.get('RetentionPolicy_Enabled') && RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id);
 	},
 	subValue(value) {
 		if (value === undefined) {

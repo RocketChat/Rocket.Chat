@@ -101,13 +101,6 @@ Meteor.methods({
 				delete settings.retentionMaxAge;
 				delete settings.retentionExcludePinned;
 				delete settings.retentionFilesOnly;
-
-				if (!RocketChat.authz.hasPermission(userId, 'edit-privileged-setting', rid) && value !== room.retention.overrideGlobal) {
-					throw new Meteor.Error('error-override-global-retention-not-allowed', 'Overriding global retention policy is not allowed', {
-						method: 'saveRoomSettings',
-						action: 'Editing_room'
-					});
-				}
 			}
 		});
 
