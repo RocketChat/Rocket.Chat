@@ -1119,6 +1119,7 @@
   "FileUpload_Disabled": "Os carregamentos de arquivos estão desativados.",
   "FileUpload_Enabled": "Habilitar upload de arquivos",
   "FileUpload_Enabled_Direct": "Uploads de arquivos ativados em mensagens diretas",
+  "FileUpload_Error": "Erro de Upload de arquivo",
   "FileUpload_File_Empty": "Arquivo vazio",
   "FileUpload_FileSystemPath": "Caminho do Sistema",
   "FileUpload_GoogleStorage_AccessId": "ID de acesso de armazenamento do Google",
