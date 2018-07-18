@@ -7,7 +7,7 @@ Meteor.startup(function() {
 		this.add('CROWD_APP_USERNAME', '', { type: 'string', enableQuery, i18nLabel: 'Username' });
 		this.add('CROWD_APP_PASSWORD', '', { type: 'password', enableQuery, i18nLabel: 'Password' });
 		this.add('CROWD_Sync_User_Data', false, { type: 'boolean', enableQuery, i18nLabel: 'Sync_Users' });
-		this.add('CROWD_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: enableQuery, i18nLabel: 'LDAP_Background_Sync_Interval', i18nDescription: 'LDAP_Background_Sync_Interval_Description' });
+		this.add('CROWD_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery, i18nLabel: 'LDAP_Background_Sync_Interval', i18nDescription: 'LDAP_Background_Sync_Interval_Description' });
 		this.add('CROWD_Test_Connection', 'crowd_test_connection', { type: 'action', actionText: 'Test_Connection', i18nLabel: 'Test_Connection' });
 	});
 });

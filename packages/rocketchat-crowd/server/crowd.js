@@ -1,6 +1,6 @@
-/* globals:CROWD:true, SynchedCron */
+/* globals CROWD, SyncedCron */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
-import _ from "underscore";
+import _ from 'underscore';
 
 const logger = new Logger('CROWD', {});
 
@@ -90,7 +90,8 @@ const CROWD = class CROWD {
 				verified: true
 			}],
 			password: crowdUser.password,
-			active: crowdUser.active
+			active: crowdUser.active,
+			crowd: true
 		};
 
 		if (crowdUser.displayname) {
@@ -102,33 +103,57 @@ const CROWD = class CROWD {
 		});
 	}
 
+	fetchCrowdUser(user) {
+		try {
+			const userResponse = this.crowdClient.user.findSync(user.username);
+
+			if (userResponse) {
+				return {
+					displayname: userResponse['display-name'],
+					username: userResponse.name,
+					email: userResponse.email,
+					password: userResponse.password,
+					active: userResponse.active
+				};
+			}
+		} catch (e) {
+			if (e.hasOwnProperty('type') && e.type === 'USER_NOT_FOUND') {
+				logger.info('Disable not found user', user.username);
+
+				return {
+					username: user.username,
+					email: user.emails.length ? user.emails[0].address : '',
+					password: user.password,
+					active: false,
+				};
+			} else {
+				logger.error('error fetchCrowdUser', user.username, e);
+			}
+		}
+	}
+
 	sync() {
 		if (RocketChat.settings.get('CROWD_Enable') !== true) {
 			return;
 		}
 
-		const self = this;
 		logger.info('Sync started');
 
+		const self = this;
 		const users = RocketChat.models.Users.findCrowdUsers();
+
 		if (users) {
 			users.forEach(function(user) {
 				logger.info('Syncing user', user.username);
-				const userResponse = self.crowdClient.user.findSync(user.username);
-				if (userResponse) {
-					const crowdUser = {
-						displayname: userResponse['display-name'],
-						username: userResponse.name,
-						email: userResponse.email,
-						password: userResponse.password,
-						active: userResponse.active
-					};
+				const crowdUser = self.fetchCrowdUser(user);
 
+				if (typeof crowdUser !== 'undefined') {
 					CROWD.syncDataToUser(crowdUser, user._id);
 				}
 			});
 		}
 	}
+
 
 	static addNewUser(crowdUser) {
 		const userQuery = {
