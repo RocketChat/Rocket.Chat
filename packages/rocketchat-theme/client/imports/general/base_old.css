@@ -5729,7 +5729,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 10;
+	z-index: 9;
 	right: 0;
 	left: 0;
 
