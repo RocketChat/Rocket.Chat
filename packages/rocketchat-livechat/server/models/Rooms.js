@@ -225,7 +225,7 @@ RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate = function(t, date) {
 		}
 	};
 
-	return this.find(query, { fields: {metrics: 1, msgs: 1} });
+	return this.find(query, { fields: {servedBy: 1, metrics: 1, msgs: 1} });
 };
 
 RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {

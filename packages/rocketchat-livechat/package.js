@@ -165,6 +165,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/facebook.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getAgentData.js', 'server');
+	api.addFiles('server/methods/getAgentOverviewData.js', 'server');
 	api.addFiles('server/methods/getAnalyticsChartData.js', 'server');
 	api.addFiles('server/methods/getAnalyticsOverviewData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');

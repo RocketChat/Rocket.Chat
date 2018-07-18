@@ -255,5 +255,134 @@ export const Analytics = {
 
 			return data;
 		}
+	},
+
+	AgentOverviewData: {
+		/**
+		 * do operation equivalent to map[key] += value
+		 *
+		 */
+		updateMap(map, key, value) {
+			map.set(key, map.has(key) ? (map.get(key) + value) : value);
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Conversations(from, to) {
+			let total = 0;
+			const agentConversations = new Map(); // stores total conversations for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: '%_of_conversations'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				servedBy
+			}) => {
+				if (servedBy) {
+					this.updateMap(agentConversations, servedBy.username, 1);
+					total++;
+				}
+			});
+
+			agentConversations.forEach((value, key) => {	// calculate percentage
+				const percentage = value/total*100;
+
+				data.data.push({
+					name: key,
+					value: Math.round(percentage * 100) / 100
+				});
+			});
+
+			data.data.sort(function(a, b) {		//reverse sort array
+				if (a.value > b.value) {
+					return -1;
+				}
+				if (a.value < b.value) {
+					return 1;
+				}
+				return 0;
+			});
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Productivity(from, to) {
+			const agentAvgRespTime = new Map(); // stores avg response time for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'First_response_time'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				metrics,
+				servedBy
+			}) => {
+				if (servedBy && metrics && metrics.response && metrics.response.ft) {
+					if (agentAvgRespTime.has(servedBy.username)) {
+						agentAvgRespTime.set(servedBy.username, {
+							frt: agentAvgRespTime.get(servedBy.username).frt + metrics.response.ft,
+							total: agentAvgRespTime.get(servedBy.username).total + 1
+						});
+					} else {
+						agentAvgRespTime.set(servedBy.username, {
+							frt: metrics.response.ft,
+							total: 1
+						});
+					}
+				}
+			});
+
+			agentAvgRespTime.forEach((obj, key) => {	// calculate avg
+				const avg = obj.frt/obj.total;
+
+				data.data.push({
+					name: key,
+					value: Math.round(avg * 100) / 100
+				});
+			});
+
+			data.data.sort(function(a, b) {		// sort array
+				if (a.value > b.value) {
+					return 1;
+				}
+				if (a.value < b.value) {
+					return -1;
+				}
+				return 0;
+			});
+
+			return data;
+		}
 	}
 };

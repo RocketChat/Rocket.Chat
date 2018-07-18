@@ -5,7 +5,12 @@ let chartContext;			// stores context of current chart, used to clean when redra
 
 
 function updateAnalyticsChart() {
-	Meteor.call('livechat:getAnalyticsChartData', {daterange: templateInstance.daterange.get(), chartOptions: templateInstance.chartOptions.get()}, function(error, result) {
+	const options = {
+		daterange: templateInstance.daterange.get(),
+		chartOptions: templateInstance.chartOptions.get()
+	};
+
+	Meteor.call('livechat:getAnalyticsChartData', options, function(error, result) {
 		if (error) {
 			return handleError(error);
 		}
@@ -15,12 +20,25 @@ function updateAnalyticsChart() {
 }
 
 function updateAnalyticsOverview() {
-	Meteor.call('livechat:getAnalyticsOverviewData', {daterange: templateInstance.daterange.get(), analyticsOptions: templateInstance.analyticsOptions.get()}, (error, result) => {
+	const options = {
+		daterange: templateInstance.daterange.get(),
+		analyticsOptions: templateInstance.analyticsOptions.get()
+	};
+
+	Meteor.call('livechat:getAnalyticsOverviewData', options, (error, result) => {
 		if (error) {
 			return handleError(error);
 		}
 
 		templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
+	});
+
+	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
+		if (error) {
+			return handleError(error);
+		}
+
+		templateInstance.agentOverviewData.set(result);
 	});
 }
 
@@ -28,8 +46,8 @@ Template.livechatAnalytics.helpers({
 	analyticsOverviewData() {
 		return templateInstance.analyticsOverviewData.get();
 	},
-	chartOverviewData() {
-		return templateInstance.chartOverviewData.get();
+	agentOverviewData() {
+		return templateInstance.agentOverviewData.get();
 	},
 	analyticsAllOptions() {
 		return RocketChat.Livechat.Analytics.getAnalyticsAllOptions();
@@ -63,50 +81,7 @@ Template.livechatAnalytics.onCreated(function() {
 	templateInstance = Template.instance();
 
 	this.analyticsOverviewData = new ReactiveVar();
-	this.chartOverviewData = new ReactiveVar({
-		head: [{
-			name: 'Agent'
-		}, {
-			name: '% of conversations'
-		}],
-		data: [{
-			name: 'agent-1',
-			value: '30'
-		}, {
-			name: 'agent-2',
-			value: '23'
-		}, {
-			name: 'agent-3',
-			value: '20'
-		}, {
-			name: 'agent-4',
-			value: '15'
-		}, {
-			name: 'agent-5',
-			value: '3.0'
-		}, {
-			name: 'agent-6',
-			value: '2.3'
-		}, {
-			name: 'agent-7',
-			value: '2.0'
-		}, {
-			name: 'agent-8',
-			value: '1.5'
-		}, {
-			name: 'agent-5',
-			value: '3.0'
-		}, {
-			name: 'agent-6',
-			value: '2.3'
-		}, {
-			name: 'agent-7',
-			value: '2.0'
-		}, {
-			name: 'agent-8',
-			value: '1.5'
-		}]
-	});
+	this.agentOverviewData = new ReactiveVar();
 	this.daterange = new ReactiveVar({});
 	this.analyticsOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0]);		// default selected first
 	this.chartOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0].chartOptions[0]);		// default selected first
@@ -130,12 +105,6 @@ Template.livechatAnalytics.onRendered(() => {
 			templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
 		}
 	});
-
-	// Tracker.autorun(() => {
-	// 	if (templateInstance.daterange.get() && templateInstance.chartOptions.get()) {
-	// 		updateAnalyticsChart();
-	// 	}
-	// });
 });
 
 Template.livechatAnalytics.events({
