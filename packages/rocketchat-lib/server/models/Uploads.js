@@ -14,7 +14,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'uploadedAt': 1 });
 	}
 
-	findNotHiddenFilesOfRoom(roomId, filter, limit) {
+	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -24,8 +24,8 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 			}
 		};
 
-		if (filter) {
-			fileQuery.name = { $regex: new RegExp(RegExp.escape(filter), 'i') };
+		if (searchText) {
+			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
 		}
 
 		const fileOptions = {
