@@ -10,18 +10,10 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	/*
 	api.use('templating', 'client');
-	api.mainModule('client/WebRTCClass.js', 'client');
-	api.addFiles('client/adapter.js', 'client');
-	// api.addFiles(');
-	api.addFiles('client/screenShare.js', 'client');
-
-	api.addFiles('server/settings.js', 'server');
-
-	api.export('WebRTC', 'client');
 	*/
-
 	api.addFiles([
-		'server/models/Sessions.js'
+		'server/models/Sessions.js',
+		'server/lib/rocketchat.js'
 	], 'server');
 
 });
