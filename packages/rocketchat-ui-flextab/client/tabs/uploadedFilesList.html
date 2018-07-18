@@ -17,8 +17,9 @@
 		<ul class="attachments">
 			{{#each files}}
 				<li class="attachments__item">
-					<a href="{{fixCordova url}}" title="{{name}}" data-description="{{description}}" rel="noopener noreferrer" target="_blank"
-						class="attachments__item-link {{fileTypeClass}}">
+					<a href="{{fixCordova url}}" title="{{name}}" data-description="{{description}}"
+						class="attachments__item-link {{fileTypeClass}}"
+						download rel="noopener noreferrer" target="_blank">
 						{{#with thumb}}
 							<span class="attachments__thumb" style="background-image: url('{{escapeCssUrl .}}');"></span>
 						{{else}}
