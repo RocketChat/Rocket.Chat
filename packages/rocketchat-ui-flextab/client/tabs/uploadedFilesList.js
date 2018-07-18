@@ -11,7 +11,7 @@ Template.uploadedFilesList.onCreated(function() {
 	this.limit = new ReactiveVar(50);
 
 	this.autorun(() => {
-		this.subscribe('roomFiles', rid, this.searchText.get(), this.limit.get(), () => {
+		this.subscribe('roomFilesWithSearchText', rid, this.searchText.get(), this.limit.get(), () => {
 			if (roomFiles.find({ rid }).fetch().length < this.limit.get()) {
 				this.hasMore.set(false);
 			}
