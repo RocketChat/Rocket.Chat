@@ -621,7 +621,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 		value = Number(value);
 		if (!value) {
-			value = 2592000;
+			value = 30;
 		}
 
 		const update = {
@@ -660,11 +660,20 @@ class ModelRooms extends RocketChat.models._Base {
 	saveRetentionOverrideGlobalById(_id, value) {
 		const query = {_id};
 
-		const update = {
+		let update = {
 			$set: {
 				'retention.overrideGlobal': value === true
 			}
 		};
+
+		if (value === true && this.findOne({_id}, {'retention.maxAge': 1}).retention.maxAge === undefined) {
+			update = {
+				$set: {
+					'retention.overrideGlobal': value === true,
+					'retention.maxAge': 30
+				}
+			};
+		}
 
 		return this.update(query, update);
 	}

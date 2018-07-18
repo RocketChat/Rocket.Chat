@@ -2144,7 +2144,7 @@
   "RetentionPolicyRoom_Enabled": "Automatically prune old messages",
   "RetentionPolicyRoom_ExcludePinned": "Exclude pinned messages",
   "RetentionPolicyRoom_FilesOnly": "Prune files only, keep messages",
-  "RetentionPolicyRoom_MaxAge": "Maximum message age in seconds (default: __max__)",
+  "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: __max__)",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
   "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href='https://rocket.chat/docs/administrator-guides/retention-policies/'>here</a>.",
   "Retry_Count": "Retry Count",

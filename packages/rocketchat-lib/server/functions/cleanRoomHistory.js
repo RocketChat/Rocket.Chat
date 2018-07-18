@@ -22,7 +22,14 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 	if (filesOnly) {
 		return fileCount;
 	}
-	const count = RocketChat.models.Messages.removeByIdPinnedAndTimestamp(rid, excludePinned, ts);
+
+	let count = 0;
+	if (limit) {
+		count = RocketChat.models.Messages.removeByIdPinnedTimestampAndLimit(rid, excludePinned, ts, limit);
+	} else {
+		count = RocketChat.models.Messages.removeByIdPinnedAndTimestamp(rid, excludePinned, ts);
+	}
+
 	if (count) {
 		RocketChat.Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,

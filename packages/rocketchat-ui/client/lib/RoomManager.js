@@ -4,7 +4,7 @@ import { upsertMessage } from './RoomHistoryManager';
 const onDeleteMessageStream = msg => ChatMessage.remove({ _id: msg._id });
 const onDeleteMessageBulkStream = ({rid, ts, excludePinned}) => {
 	const query = { rid, ts };
-	if (!excludePinned) {
+	if (excludePinned) {
 		query.pinned = { $ne: true };
 	}
 	ChatMessage.remove(query);

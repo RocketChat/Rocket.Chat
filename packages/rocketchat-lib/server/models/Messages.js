@@ -57,7 +57,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			'file._id': { $exists: true }
 		};
 
-		if (!excludePinned) {
+		if (excludePinned) {
 			query.pinned = { $ne: true };
 		}
 
@@ -722,11 +722,37 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			ts
 		};
 
-		if (!pinned) {
+		if (pinned) {
 			query.pinned = { $ne: true };
 		}
 
 		return this.remove(query);
+	}
+
+	removeByIdPinnedTimestampAndLimit(rid, pinned, ts, limit) {
+		const query = {
+			rid,
+			ts
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		const messagesToDelete = RocketChat.models.Messages.find(query, {
+			fields: {
+				_id: 1
+			},
+			limit
+		}).map((document) => {
+			return document._id;
+		});
+
+		return this.remove({
+			_id: {
+				$in: messagesToDelete
+			}
+		});
 	}
 
 	removeByUserId(userId) {

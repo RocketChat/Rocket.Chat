@@ -1,6 +1,6 @@
 /* globals SyncedCron */
 
-const types = [];
+let types = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
 
@@ -12,7 +12,10 @@ const maxTimes = {
 	d: 0
 };
 const toDays = 1000 * 60 * 60 * 24;
+const gracePeriod = 5000;
 function job() {
+	console.log(types);
+
 	const now = new Date();
 	const filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
 	const excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
@@ -40,9 +43,9 @@ function job() {
 	}).forEach(room => {
 		const { maxAge = 0, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
-		RocketChat.cleanRoomHistory({ rid: room.rid, latest, oldest, filesOnly, excludePinned });
+		RocketChat.cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned });
 	});
-	lastPrune = new Date();
+	lastPrune = new Date(now.getTime() - gracePeriod);
 }
 
 function getSchedule(precision) {
@@ -71,49 +74,52 @@ function deployCron(precision) {
 	});
 }
 
-const removeItem = (arr, item) => {
-	const index = arr.indexOf(item);
-	return index > -1 && arr.splice(index, 1);
-};
+function reloadPolicy() {
+	types = [];
+
+	if (RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		if (RocketChat.settings.get('RetentionPolicy_AppliesToChannels')) {
+			types.push('c');
+		}
+
+		if (RocketChat.settings.get('RetentionPolicy_AppliesToGroups')) {
+			types.push('p');
+		}
+
+		if (RocketChat.settings.get('RetentionPolicy_AppliesToDMs')) {
+			types.push('d');
+		}
+
+		maxTimes.c = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+		maxTimes.p = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+		maxTimes.d = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+
+		return deployCron(RocketChat.settings.get('RetentionPolicy_Precision'));
+	}
+	return SyncedCron.remove(pruneCronName);
+}
 
 Meteor.startup(function() {
-	Tracker.autorun(function() {
-		if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
-			return SyncedCron.remove(pruneCronName);
-		}
-		deployCron(RocketChat.settings.get('RetentionPolicy_Precision'));
-	});
+	Meteor.defer(function() {
+		RocketChat.models.Settings.find({
+			_id: {
+				$in: [
+					'RetentionPolicy_Enabled',
+					'RetentionPolicy_Precision',
+					'RetentionPolicy_AppliesToChannels',
+					'RetentionPolicy_AppliesToGroups',
+					'RetentionPolicy_AppliesToDMs',
+					'RetentionPolicy_MaxAge_Channels',
+					'RetentionPolicy_MaxAge_Groups',
+					'RetentionPolicy_MaxAge_DMs'
+				]
+			}
+		}).observe({
+			changed() {
+				reloadPolicy();
+			}
+		});
 
-
-	Tracker.autorun(function() {
-		const c = RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
-		if (c) {
-			return types.push('c');
-		}
-		return removeItem(types, 'c');
-	});
-	Tracker.autorun(function() {
-		const p = RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
-		if (p) {
-			return types.push('p');
-		}
-		return removeItem(types, 'p');
-	});
-	Tracker.autorun(function() {
-		const d = RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
-		if (d) {
-			return types.push('d');
-		}
-		return removeItem(types, 'd');
-	});
-
-	Tracker.autorun(function() {
-		maxTimes.c = RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
-	});
-	Tracker.autorun(function() {
-		maxTimes.p = RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
-	});
-	Tracker.autorun(function() {
-		maxTimes.d = RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+		reloadPolicy();
 	});
 });

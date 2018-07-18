@@ -218,40 +218,24 @@
 					<span class="rc-user-info__config-label">{{_ "Prune"}}</span>
 				</div>
 				{{#with settings.retentionEnabled}}
-				<div class="rc-user-info__config-content">
-					<div class="rc-user-info__config-name">{{_ label}}:</div>
-					<div class="rc-user-info__config-value">
-						{{subValue value}} {{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+					<div class="rc-user-info__config-content">
+						<div class="rc-user-info__config-name">{{_ label}}:</div>
+						<div class="rc-user-info__config-value">
+							{{subValue value}} {{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+						</div>
 					</div>
-				</div>
 				{{/with}}
 			</div>
-			{{# if retentionEnabled settings.retentionEnabled.value.get }}
-				{{#with settings.retentionOverrideGlobal}}
-					<div class="rc-user-info__row">
-						<div class="rc-switch rc-switch--blue">
-							<label class="rc-switch__label">
-								<span class="rc-switch__text">
-									{{_ label}}{{equal default value '*'}}
-								</span>
-								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
-								<span class="rc-switch__button">
-									<span class="rc-switch__button-inside"></span>
-								</span>
-							</label>
-						</div>
-					</div>
-				{{/with}}
-				{{# if settings.retentionEnabled.value.get }}
-					<div class="mail-messages__instructions mail-messages__instructions--warning">
-						<div class="mail-messages__instructions-wrapper">
-							<div class="mail-messages__instructions-text">
+			{{# if settings.retentionEnabled.value.get }}
+				<div class="mail-messages__instructions mail-messages__instructions--warning">
+					<div class="mail-messages__instructions-wrapper">
+						<div class="mail-messages__instructions-text">
+							<span>
 								{{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
-							</div>
+							</span>
 						</div>
 					</div>
-				{{/if}}
-				{{#if settings.retentionOverrideGlobal.value.get}}
+				</div>
 				{{#with settings.retentionMaxAge}}
 					<div class="rc-user-info__row">
 						<div class="rc-input">
@@ -296,7 +280,6 @@
 				{{/with}}
 			{{/if}}
 		{{/if}}
-	{{/if}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">

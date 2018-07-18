@@ -481,7 +481,7 @@ Template.room.helpers({
 		moment.relativeTimeThreshold('d', 31);
 		moment.relativeTimeThreshold('M', 12);
 
-		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000).humanize();
+		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000 * 60 * 60 * 24).humanize();
 	}
 });
 
