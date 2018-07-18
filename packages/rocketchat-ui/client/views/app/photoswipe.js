@@ -31,25 +31,51 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const items = Array.from(document.querySelectorAll('.gallery-item'))
-			.map(img => ({
-				msrc: img.dataset.src && img.src,
-				src: img.dataset.src || img.src,
-				w: img.naturalWidth,
-				h: img.naturalHeight,
-				title: img.dataset.title,
-				description: img.dataset.description
-			}));
-
 		const galleryOptions = {
 			...defaultGalleryOptions,
-			index: items.findIndex(item => item.src === (event.target.dataset.src || event.target.src)),
+			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
 				captionEl.children[0].innerHTML =
 					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small> `;
 				return true;
 			}
 		};
+
+		const items = Array.from(document.querySelectorAll('.gallery-item'))
+			.map((imgElement, i) => {
+				if (imgElement === event.target) {
+					galleryOptions.index = i;
+				}
+
+				if (imgElement.dataset.src) {
+					const img = new Image();
+
+					img.addEventListener('load', () => {
+						delete currentGallery.items[i].html;
+						currentGallery.items[i].src = img.src;
+						currentGallery.items[i].w = img.naturalWidth;
+						currentGallery.items[i].h = img.naturalHeight;
+						currentGallery.invalidateCurrItems();
+						currentGallery.updateSize(true);
+					});
+
+					img.src = imgElement.dataset.src;
+
+					return {
+						html: '',
+						title: imgElement.dataset.title,
+						description: imgElement.dataset.description
+					};
+				}
+
+				return {
+					src: imgElement.src,
+					w: imgElement.naturalWidth,
+					h: imgElement.naturalHeight,
+					title: imgElement.dataset.title,
+					description: imgElement.dataset.description
+				};
+			});
 
 		initGallery(items, galleryOptions);
 	});
