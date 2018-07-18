@@ -1,4 +1,4 @@
-/* globals CROWD, SyncedCron */
+/* globals SyncedCron */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 import _ from 'underscore';
 
@@ -124,7 +124,7 @@ const CROWD = class CROWD {
 					username: user.username,
 					email: user.emails.length ? user.emails[0].address : '',
 					password: user.password,
-					active: false,
+					active: false
 				};
 			} else {
 				logger.error('error fetchCrowdUser', user.username, e);
