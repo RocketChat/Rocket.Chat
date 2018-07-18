@@ -8,7 +8,8 @@ class Analytics {
 		this.chartConfiguration = {
 			layout: {
 				padding: {
-					top: 10
+					top: 10,
+					bottom: 0
 				}
 			},
 			legend: {
@@ -124,7 +125,6 @@ class Analytics {
 		if (chartContext) {
 			chartContext.destroy();
 		}
-		chart.height = 200;
 
 		return new Chart(chart, {
 			type: 'line',

@@ -28,6 +28,9 @@ Template.livechatAnalytics.helpers({
 	analyticsOverviewData() {
 		return templateInstance.analyticsOverviewData.get();
 	},
+	chartOverviewData() {
+		return templateInstance.chartOverviewData.get();
+	},
 	analyticsAllOptions() {
 		return RocketChat.Livechat.Analytics.getAnalyticsAllOptions();
 	},
@@ -60,6 +63,50 @@ Template.livechatAnalytics.onCreated(function() {
 	templateInstance = Template.instance();
 
 	this.analyticsOverviewData = new ReactiveVar();
+	this.chartOverviewData = new ReactiveVar({
+		head: [{
+			name: 'Agent'
+		}, {
+			name: '% of conversations'
+		}],
+		data: [{
+			name: 'agent-1',
+			value: '30'
+		}, {
+			name: 'agent-2',
+			value: '23'
+		}, {
+			name: 'agent-3',
+			value: '20'
+		}, {
+			name: 'agent-4',
+			value: '15'
+		}, {
+			name: 'agent-5',
+			value: '3.0'
+		}, {
+			name: 'agent-6',
+			value: '2.3'
+		}, {
+			name: 'agent-7',
+			value: '2.0'
+		}, {
+			name: 'agent-8',
+			value: '1.5'
+		}, {
+			name: 'agent-5',
+			value: '3.0'
+		}, {
+			name: 'agent-6',
+			value: '2.3'
+		}, {
+			name: 'agent-7',
+			value: '2.0'
+		}, {
+			name: 'agent-8',
+			value: '1.5'
+		}]
+	});
 	this.daterange = new ReactiveVar({});
 	this.analyticsOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0]);		// default selected first
 	this.chartOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0].chartOptions[0]);		// default selected first
@@ -71,8 +118,9 @@ Template.livechatAnalytics.onCreated(function() {
 
 Template.livechatAnalytics.onRendered(() => {
 	Tracker.autorun(() => {
-		if (templateInstance.daterange.get() && templateInstance.analyticsOptions.get()) {
+		if (templateInstance.daterange.get() && templateInstance.analyticsOptions.get() && templateInstance.chartOptions.get()) {
 			updateAnalyticsOverview();
+			updateAnalyticsChart();
 		}
 
 	});
@@ -83,11 +131,11 @@ Template.livechatAnalytics.onRendered(() => {
 		}
 	});
 
-	Tracker.autorun(() => {
-		if (templateInstance.daterange.get() && templateInstance.chartOptions.get()) {
-			updateAnalyticsChart();
-		}
-	});
+	// Tracker.autorun(() => {
+	// 	if (templateInstance.daterange.get() && templateInstance.chartOptions.get()) {
+	// 		updateAnalyticsChart();
+	// 	}
+	// });
 });
 
 Template.livechatAnalytics.events({
