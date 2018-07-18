@@ -1,7 +1,7 @@
 /* globals FileUpload */
 
 Meteor.methods({
-	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, filesOnly = false }) {
+	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, filesOnly = false, fromUsers = [] }) {
 		check(roomId, String);
 		check(latest, Date);
 		check(oldest, Date);
@@ -9,6 +9,7 @@ Meteor.methods({
 		check(limit, Match.Maybe(Number));
 		check(excludePinned, Match.Maybe(Boolean));
 		check(filesOnly, Match.Maybe(Boolean));
+		check(fromUsers, Match.Maybe([String]));
 
 		const userId = Meteor.userId();
 
@@ -20,6 +21,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
-		return RocketChat.cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly });
+		return RocketChat.cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
 	}
 });

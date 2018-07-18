@@ -50,7 +50,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedAndTimestamp(rid, excludePinned, ts, options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -59,6 +59,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
 		}
 
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
@@ -716,7 +720,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedAndTimestamp(rid, pinned, ts) {
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ts, users = []) {
 		const query = {
 			rid,
 			ts
@@ -726,10 +730,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			query.pinned = { $ne: true };
 		}
 
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndLimit(rid, pinned, ts, limit) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ts, limit, users = []) {
 		const query = {
 			rid,
 			ts
@@ -737,6 +745,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 		if (pinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
 		}
 
 		const messagesToDelete = RocketChat.models.Messages.find(query, {

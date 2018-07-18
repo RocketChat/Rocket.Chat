@@ -2,10 +2,13 @@ import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
 
 const onDeleteMessageStream = msg => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({rid, ts, excludePinned}) => {
+const onDeleteMessageBulkStream = ({rid, ts, excludePinned, users}) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
+	}
+	if (users && users.length) {
+		query['u.username'] = { $in: users };
 	}
 	ChatMessage.remove(query);
 };

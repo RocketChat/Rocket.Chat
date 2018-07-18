@@ -35,6 +35,29 @@
 				</div>
 			</label>
 		</div>
+		<div class="rc-input rc-input--usernames">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Only_from_users"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="at"}}
+					</div>
+					<div class="rc-tags">
+						{{#each user in selectedUsers}}
+							{{> tag user}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+					</div>
+				</div>
+				{{#with config}}
+					{{#if autocomplete 'isShowing'}}
+						{{#if autocomplete 'isLoaded'}}
+							{{> popupList data=config items=items}}
+						{{/if}}
+					{{/if}}
+				{{/with}}
+			</label>
+		</div>
 		<label class="rc-checkbox">
 			<input type="checkbox" name="inclusive" class="rc-checkbox__input">
 			{{> icon icon="check" block="rc-checkbox__icon"}}
