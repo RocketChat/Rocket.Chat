@@ -32,6 +32,10 @@ VOLUME /opt/app-root/src/uploads
 
 WORKDIR /opt/app-root/src/bundle
 
+# Hack needed to force use of bundled library instead of system level outdated library
+# https://github.com/lovell/sharp/issues/892
+ENV LD_PRELOAD=/opt/app-root/src/bundle/programs/server/npm/node_modules/sharp/vendor/lib/libz.so
+
 ENV DEPLOY_METHOD=docker-redhat \
     NODE_ENV=production \
     MONGO_URL=mongodb://mongo:27017/rocketchat \
