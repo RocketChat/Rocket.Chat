@@ -300,11 +300,11 @@ export const Analytics = {
 			});
 
 			agentConversations.forEach((value, key) => {	// calculate percentage
-				const percentage = value/total*100;
+				const percentage = (value/total*100).toFixed(2);
 
 				data.data.push({
 					name: key,
-					value: Math.round(percentage * 100) / 100
+					value: percentage
 				});
 			});
 
@@ -316,6 +316,10 @@ export const Analytics = {
 					return 1;
 				}
 				return 0;
+			});
+
+			data.data.forEach((value) => {
+				value.value = `${ value.value }%`;
 			});
 
 			return data;
