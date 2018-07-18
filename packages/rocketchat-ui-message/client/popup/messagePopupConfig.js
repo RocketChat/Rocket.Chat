@@ -22,18 +22,18 @@ const reloadUsersFromRoomMessages = () => {
 		},
 		sort: { ts: -1 }
 	}).fetch()
-	.filter(({ u: { username } }) => {
-		const notMapped = !uniqueMessageUsersControl[username];
-		uniqueMessageUsersControl[username] = true;
-		return notMapped;
-	})
-	.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
-		_id: username,
-		username,
-		name,
-		status: Tracker.nonReactive(() => Session.get(`user_${ username }_status`) || 'offline'),
-		ts
-	}));
+		.filter(({ u: { username } }) => {
+			const notMapped = !uniqueMessageUsersControl[username];
+			uniqueMessageUsersControl[username] = true;
+			return notMapped;
+		})
+		.forEach(({ u: { username, name }, ts }) => usersFromRoomMessages.upsert(username, {
+			_id: username,
+			username,
+			name,
+			status: Tracker.nonReactive(() => Session.get(`user_${ username }_status`) || 'offline'),
+			ts
+		}));
 };
 
 Meteor.startup(function() {
@@ -62,17 +62,17 @@ const fetchUsersFromServer = (filterText, records, cb, rid) => {
 		}
 
 		users.slice(0, 5)
-		.forEach(({ username, name, status }) => {
-			if (records.length < 5) {
-				records.push({
-					_id: username,
-					username,
-					name,
-					status,
-					sort: 3
-				});
-			}
-		});
+			.forEach(({ username, name, status }) => {
+				if (records.length < 5) {
+					records.push({
+						_id: username,
+						username,
+						name,
+						status,
+						sort: 3
+					});
+				}
+			});
 
 		records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
 
@@ -175,57 +175,57 @@ Template.messagePopupConfig.helpers({
 						sort: { ts: -1 }
 					}
 				)
-				.fetch();
+					.fetch();
 
 				// If needed, add to list the online users
 				if (items.length < 5 && filterText !== '') {
 					const usernamesAlreadyFetched = items.map(({ username }) => username);
 					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
 						const usernamesFromDMs = RocketChat.models.Subscriptions
-						.find(
-							{
-								t: 'd',
-								$and: [
-									{
-										$or: [
-											{ name: filterRegex },
-											{ fname: filterRegex }
-										]
-									},
-									{
-										name: { $nin: usernamesAlreadyFetched }
-									}
-								]
-							},
-							{
-								fields: { name: 1 }
-							}
-						)
-						.map(({ name }) => name);
-						const newItems = RocketChat.models.Users
-						.find(
-							{
-								username: {
-									$in: usernamesFromDMs
-								}
-							},
-							{
-								fields: {
-									username: 1,
-									name: 1,
-									status: 1
+							.find(
+								{
+									t: 'd',
+									$and: [
+										{
+											$or: [
+												{ name: filterRegex },
+												{ fname: filterRegex }
+											]
+										},
+										{
+											name: { $nin: usernamesAlreadyFetched }
+										}
+									]
 								},
-								limit: 5 - usernamesAlreadyFetched.length
-							}
-						)
-						.fetch()
-						.map(({ username, name, status }) => ({
-							_id: username,
-							username,
-							name,
-							status,
-							sort: 1
-						}));
+								{
+									fields: { name: 1 }
+								}
+							)
+							.map(({ name }) => name);
+						const newItems = RocketChat.models.Users
+							.find(
+								{
+									username: {
+										$in: usernamesFromDMs
+									}
+								},
+								{
+									fields: {
+										username: 1,
+										name: 1,
+										status: 1
+									},
+									limit: 5 - usernamesAlreadyFetched.length
+								}
+							)
+							.fetch()
+							.map(({ username, name, status }) => ({
+								_id: username,
+								username,
+								name,
+								status,
+								sort: 1
+							}));
 
 						items.push(...newItems);
 					} else {
@@ -256,14 +256,14 @@ Template.messagePopupConfig.helpers({
 							},
 							limit: 5 - usernamesAlreadyFetched.length
 						})
-						.fetch()
-						.map(({ username, name, status }) => ({
-							_id: username,
-							username,
-							name,
-							status,
-							sort: 1
-						}));
+							.fetch()
+							.map(({ username, name, status }) => ({
+								_id: username,
+								username,
+								name,
+								status,
+								sort: 1
+							}));
 
 						items.push(...newItems);
 					}
@@ -415,9 +415,9 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.sort(emojiSort(recents))
-					.slice(0, 10);
+						.filter(obj => regExp.test(obj._id))
+						.sort(emojiSort(recents))
+						.slice(0, 10);
 				},
 				getValue(_id) {
 					addEmojiToRecents(_id);
@@ -453,9 +453,9 @@ Template.messagePopupConfig.helpers({
 							data: value
 						};
 					})
-					.filter(obj => regExp.test(obj._id))
-					.sort(emojiSort(recents))
-					.slice(0, 10);
+						.filter(obj => regExp.test(obj._id))
+						.sort(emojiSort(recents))
+						.slice(0, 10);
 				},
 				getValue(_id) {
 					addEmojiToRecents(_id);
