@@ -23,10 +23,6 @@ Meteor.startup(() => {
 
 	const getBrowserLanguage = () => filterLanguage(window.navigator.userLanguage || window.navigator.language);
 
-	const getServerLanguage = () => RocketChat.settings.get('Language');
-
-	const getUserLanguage = () => (Meteor.userId() && Meteor.user() && Meteor.user().language);
-
 	const loadMomentLocale = language => new Promise((resolve, reject) => {
 		if (moment.locales().includes(language.toLowerCase())) {
 			resolve(language);
@@ -70,14 +66,17 @@ Meteor.startup(() => {
 	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
 
 	Tracker.autorun(() => {
-		const defaultLanguage = getUserLanguage() || getServerLanguage() || 'en';
+		const user = Meteor.userId() && RocketChat.models.Users.findOne(Meteor.userId());
+		const serverLanguage = RocketChat.settings.get('Language');
+		const userLanguage = user && user.language;
+		const defaultLanguage = userLanguage || serverLanguage || 'en';
 
 		if (!currentLanguage.get()) {
 			setLanguage(defaultLanguage);
 		}
 
-		if (getUserLanguage() && getUserLanguage() !== currentLanguage.get()) {
-			setLanguage(getUserLanguage());
+		if (userLanguage && userLanguage !== currentLanguage.get()) {
+			setLanguage(userLanguage);
 		}
 
 		applyLanguage(currentLanguage.get());
