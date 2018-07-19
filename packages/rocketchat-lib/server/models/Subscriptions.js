@@ -317,16 +317,11 @@ class ModelSubscriptions extends RocketChat.models._Base {
 	}
 
 	setCustomFieldsDirectMessagesByUserId(userId, fields) {
-		const values = {};
-		Object.keys(fields).forEach(key => {
-			values[`customFields.${ key }`] = fields[key];
-		});
-
 		const query = {
 			'u._id': userId,
 			't': 'd'
 		};
-		const update = { $set: values };
+		const update = { $set: { customFields: fields } };
 		const options = { 'multi': true };
 
 		return this.update(query, update, options);
