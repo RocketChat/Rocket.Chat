@@ -94,15 +94,15 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const user = this.getUserFromParams();
+		const { username } = this.getUserFromParams();
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { filter: user.username, limit: 1 });
+			result = Meteor.call('getFullUserData', { username, limit: 1 });
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
 		}
 
 		return RocketChat.API.v1.success({
@@ -352,26 +352,29 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			})
 		});
 
-		let preferences;
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
+		const userData = {
+			_id: userId,
+			settings: {
+				preferences: this.bodyParams.data
+			}
+		};
+
 		if (this.bodyParams.data.language) {
 			const language = this.bodyParams.data.language;
 			delete this.bodyParams.data.language;
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data }, language });
-		} else {
-			preferences = _.extend({ _id: userId, settings: { preferences: this.bodyParams.data } });
+			userData.language = language;
 		}
 
-		// Keep compatibility with old values
-		if (preferences.emailNotificationMode === 'all') {
-			preferences.emailNotificationMode = 'mentions';
-		} else if (preferences.emailNotificationMode === 'disabled') {
-			preferences.emailNotificationMode = 'nothing';
-		}
+		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
 
-		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, preferences));
-
-		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: preferences }) });
+		return RocketChat.API.v1.success({
+			user: RocketChat.models.Users.findOneById(userId, {
+				fields: {
+					'settings.preferences': 1
+				}
+			})
+		});
 	}
 });
 

@@ -727,6 +727,27 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.setDefault', async(done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
+		request.post(api('channels.setDefault'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				default: true
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('channel._id');
+				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+				expect(res.body).to.have.nested.property('channel.t', 'c');
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+			})
+			.end(done);
+	});
+
 	it('/channels.leave', async(done) => {
 		const roomInfo = await getRoomInfo(channel._id);
 
