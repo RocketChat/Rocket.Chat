@@ -18,6 +18,16 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	}
 }
 
+const call = (method, ...args) => new Promise((resolve, reject) => {
+	Meteor.call(method, ...args, function(err, data) {
+		if (err) {
+			return reject(err);
+		}
+		resolve(data);
+	});
+});
+const getSingleMessage = async(msgId) => await call('getSingleMessage', msgId);
+
 export class DirectMessageRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
@@ -33,6 +43,23 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			t: 'd',
 			name: identifier
 		};
+
+		//If the link is to a direct message to the user itself, check if there's a msgId included
+		//If there's a msgId, pick the user from the message instead.
+		const userData = Meteor.user();
+		if (query.name === userData.username && FlowRouter.getQueryParam('msg')) {
+			const msgId = FlowRouter.getQueryParam('msg');
+			const msg = RocketChat.models.Messages.findOne(msgId) || getSingleMessage(msgId);
+			if (msg && msg.rid && msg.rid.indexOf(userData._id) >= 0) {
+				const otherUserId = msg.rid.replace(userData._id, '');
+				if (otherUserId !== userData._id) {
+					const otherUserData = RocketChat.models.Users.findOneById(otherUserId);
+					if (otherUserData) {
+						query.name = otherUserData.username;
+					}
+				}
+			}
+		}
 
 		const subscription = RocketChat.models.Subscriptions.findOne(query);
 		if (subscription && subscription.rid) {
