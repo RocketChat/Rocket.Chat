@@ -781,7 +781,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			fields: {
 				'file._id': 1
 			}
-		}).fetch().foreach(document => FileUpload.getStore('Uploads').deleteById(document.file._id));
+		}).fetch().forEach(document => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {
