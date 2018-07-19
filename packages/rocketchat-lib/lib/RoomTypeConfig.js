@@ -242,4 +242,14 @@ export class RoomTypeConfig {
 
 		return { title, text };
 	}
+
+	/**
+	 * Check if there is an user with the same id and loginToken
+	 * @param {object} allowData
+	 * @return {object} User's object from db
+	 */
+	canAccessUploadedFile(/* accessData */) {
+		return false;
+	}
+
 }
