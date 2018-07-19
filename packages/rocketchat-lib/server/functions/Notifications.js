@@ -27,11 +27,6 @@ RocketChat.Notifications = new class {
 		this.streamLogged.allowRead('logged');
 		this.streamRoom.allowRead(function(eventName, extraData) {
 			const [roomId] = eventName.split('/');
-			const user = Meteor.users.findOne(this.userId, {
-				fields: {
-					username: 1
-				}
-			});
 			const room = RocketChat.models.Rooms.findOneById(roomId);
 			if (!room) {
 				console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
@@ -43,7 +38,8 @@ RocketChat.Notifications = new class {
 			if (this.userId == null) {
 				return false;
 			}
-			return room.usernames.indexOf(user.username) > -1;
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
+			return subscription != null;
 		});
 		this.streamRoomUsers.allowRead('none');
 		this.streamUser.allowRead(function(eventName) {
@@ -124,7 +120,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 		return true;
 	}
 	if (e === 'typing') {
-
+		const key = RocketChat.settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget
 		if (extraData && extraData.token) {
 			const room = RocketChat.models.Rooms.findOneById(roomId);
@@ -135,7 +131,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 
 		const user = Meteor.users.findOne(this.userId, {
 			fields: {
-				username: 1
+				[key]: 1
 			}
 		});
 
@@ -143,7 +139,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 			return false;
 		}
 
-		return user.username === username;
+		return user[key] === username;
 	}
 	return false;
 });

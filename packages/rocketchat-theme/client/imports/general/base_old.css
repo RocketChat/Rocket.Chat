@@ -2614,6 +2614,33 @@
 
 .rc-old .message-popup-position {
 	position: relative;
+
+	.message-popup {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		max-height: 20rem;
+
+		.message-popup-items {
+			overflow-y: auto;
+
+			.popup-slash-command {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				&-format {
+					flex-grow: 1;
+				}
+
+				&-description {
+					flex-grow: 2;
+					font-style: italic;
+					text-align: right;
+				}
+			}
+		}
+	}
 }
 
 .rc-old .message-popup-items.preview-items {
@@ -2773,10 +2800,6 @@
 	border-radius: 10px;
 }
 
-.rc-old .popup-slash-command-description {
-	float: right;
-}
-
 .messages-box {
 	position: relative;
 
@@ -2893,8 +2916,9 @@
 	}
 }
 
-.rc-old .message {
+.message {
 	position: relative;
+	z-index: 1;
 
 	min-height: 40px;
 	padding: 8px 50px 4px 70px;
@@ -3755,50 +3779,6 @@ body:not(.is-cordova) {
 
 		margin: 1em auto 0;
 	}
-
-	&.uploaded-files-list {
-	  	& ul {
-		  & li {
-			margin-bottom: 10px;
-		  }
-		}
-
-		& .file-name {
-			display: block;
-
-			padding: 10px 5px;
-
-			color: #008ce3;
-			border-width: 0 0 1px;
-			border-bottom: 1px solid #eaeaea;
-
-			&:hover {
-				text-decoration: underline;
-
-				color: #006db0;
-			}
-
-			& p {
-				overflow: hidden;
-
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
-		}
-
-		& i {
-			float: left;
-			margin-right: 10px;
-
-			&.file-delete {
-				float: right;
-			}
-
-			&.file-download {
-				float: right;
-			}
-		}
-	}
 }
 
 .rc-old .user-view {
@@ -4625,6 +4605,11 @@ body:not(.is-cordova) {
 	text-align: center;
 	align-items: center;
 	flex-flow: row nowrap;
+
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
 
 	& .wrapper {
 		position: relative;
@@ -5496,10 +5481,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 
@@ -5677,7 +5658,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.room-leader a.chat-now {
+.room-leader .chat-now {
 	position: absolute;
 	top: 15px;
 	right: 25px;
@@ -5704,7 +5685,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 1;
+	z-index: 9;
 	right: 0;
 	left: 0;
 
