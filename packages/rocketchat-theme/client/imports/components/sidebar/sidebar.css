@@ -48,12 +48,10 @@
 		-webkit-user-drag: none;
 	}
 
-	&__footer {
+	&__footer:not(:empty) {
 		width: auto;
 		height: var(--sidebar-footer-height);
 		padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
-
-		text-align: center;
 
 		& img {
 			max-width: 100%;
