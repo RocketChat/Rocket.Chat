@@ -125,6 +125,32 @@ const emojiSort = (recents) => {
 		return 0;
 	};
 };
+const exactFinalTone = new RegExp('^tone[1-5]:*$');
+const colorBlind = new RegExp('tone[1-5]:*$');
+const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
+const getEmojis = function(collection, filter) {
+	const key = `:${ filter }`;
+
+	if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+		return [];
+	}
+
+	if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
+		return [];
+	}
+
+	const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+	const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
+	return Object.keys(collection).map(_id => {
+		const data = collection[key];
+		return { _id, data };
+	})
+		.filter(({ _id }) => {
+			return regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id));
+		})
+		.sort(emojiSort(recents))
+		.slice(0, 10);
+};
 
 Template.messagePopupConfig.helpers({
 	popupUserConfig() {
@@ -314,30 +340,7 @@ Template.messagePopupConfig.helpers({
 				prefix: '',
 				suffix: ' ',
 				getInput: self.getInput,
-				getFilter(collection, filter) {
-					const key = `:${ filter }`;
-
-					if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
-						return [];
-					}
-
-					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
-						return [];
-					}
-
-					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
-					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
-					return Object.keys(collection).map(key => {
-						const value = collection[key];
-						return {
-							_id: key,
-							data: value
-						};
-					})
-						.filter(obj => regExp.test(obj._id))
-						.sort(emojiSort(recents))
-						.slice(0, 10);
-				},
+				getFilter: getEmojis,
 				getValue(_id) {
 					addEmojiToRecents(_id);
 					return _id;
@@ -352,30 +355,11 @@ Template.messagePopupConfig.helpers({
 				title: t('Emoji'),
 				collection: RocketChat.emoji.list,
 				template: 'messagePopupEmoji',
-				trigger: '\\+',
+				trigger: '\\+:',
 				prefix: '+',
 				suffix: ' ',
 				getInput: self.getInput,
-				getFilter(collection, filter) {
-					const key = `${ filter }`;
-
-					if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
-						return [];
-					}
-
-					const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
-					const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
-					return Object.keys(collection).map(key => {
-						const value = collection[key];
-						return {
-							_id: key,
-							data: value
-						};
-					})
-						.filter(obj => regExp.test(obj._id))
-						.sort(emojiSort(recents))
-						.slice(0, 10);
-				},
+				getFilter: getEmojis,
 				getValue(_id) {
 					addEmojiToRecents(_id);
 					return _id;
