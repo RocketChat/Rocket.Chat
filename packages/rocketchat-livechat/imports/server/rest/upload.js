@@ -70,7 +70,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		});
 
 		// -1 maxFileSize means there is no limit
-		if (maxFileSize >= -1 && file.fileBuffer.length > maxFileSize) {
+		if (maxFileSize > -1 && file.fileBuffer.length > maxFileSize) {
 			return RocketChat.API.v1.failure({
 				reason: 'error-size-not-allowed',
 				sizeAllowed: filesize(maxFileSize)
