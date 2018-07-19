@@ -1134,6 +1134,7 @@
   "FileUpload_GoogleStorage_Secret": "Google Storage Secret",
   "FileUpload_GoogleStorage_Secret_Description": "Please follow <a href=\"https://github.com/CulturalMe/meteor-slingshot#google-cloud\">these instructions</a> and paste the result here.",
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",
+  "FileUpload_MaxFileSizeDescription": "Set it to -1 to remove the file size limitation.",
   "FileUpload_MediaType_NotAccepted": "Media Types Not Accepted",
   "FileUpload_MediaTypeWhiteList": "Accepted Media Types",
   "FileUpload_MediaTypeWhiteListDescription": "Comma-separated list of media types. Leave it blank for accepting all media types.",
