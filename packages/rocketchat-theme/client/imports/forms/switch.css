@@ -1,4 +1,6 @@
 .rc-switch {
+	padding: 0 0.25rem;
+
 	&__label {
 		display: flex;
 
@@ -9,8 +11,35 @@
 		align-items: center;
 	}
 
+	&--blue {
+		& .rc-switch__button {
+			border-color: #D7D7D7;
+			background-color: var(--color-gray-light);
+		}
+
+		& .rc-switch__input {
+			&:checked {
+				& + .rc-switch__button {
+				 border-color: var(--button-primary-background);
+				 background-color: var(--button-primary-background);
+			 }
+			}
+		}
+	}
+
 	&__input {
 		display: none;
+
+		&:checked {
+			& + .rc-switch__button {
+				border-color: #26d198;
+				background-color: var(--rc-color-success);
+
+				& .rc-switch__button-inside {
+					transform: translate3d(13px, 1px, 0);
+				}
+			}
+		}
 
 		&:disabled {
 			& + .rc-switch__button {
@@ -24,23 +53,13 @@
 				cursor: default;
 			}
 		}
-
-		&:checked {
-			& + .rc-switch__button {
-				border-color: #26d198;
-				background-color: var(--rc-color-success);
-
-				& .rc-switch__button-inside {
-					transform: translate3d(1px, 1px, 0);
-				}
-			}
-		}
 	}
 
 	&__button {
 		display: block;
 		flex: 0 32px;
 
+		width: 32px;
 		height: 20px;
 		margin-right: 0.25rem;
 		margin-left: 0.25rem;
@@ -61,7 +80,7 @@
 		height: 16px;
 
 		transition: all 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
-		transform: translate3d(13px, 1px, 0);
+		transform: translate3d(1px, 1px, 0);
 
 		border-width: 1px;
 		border-color: #f2f3f5;
@@ -96,10 +115,10 @@
 	}
 
 	&__button-inside {
-		transform: translate3d(-13px, 1px, 0);
+		transform: translate3d(-1px, 1px, 0);
 	}
 
 	&__input:checked + .rc-switch__button .rc-switch__button-inside {
-		transform: translate3d(-1px, 1px, 0);
+		transform: translate3d(-13px, 1px, 0);
 	}
 }

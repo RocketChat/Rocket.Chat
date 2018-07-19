@@ -32,7 +32,6 @@ Meteor.methods({
 					return;
 				}
 				RocketChat.callbacks.run('beforeJoinRoom', user, room);
-				RocketChat.models.Rooms.addUsernameById(rid, user.username);
 				RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 					ts: now,
 					open: true,

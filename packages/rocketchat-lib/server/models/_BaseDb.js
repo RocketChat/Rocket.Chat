@@ -36,9 +36,11 @@ class ModelsBaseDb extends EventEmitter {
 
 		this.wrapModel();
 
+		let alreadyListeningToOplog = false;
 		// When someone start listening for changes we start oplog if available
-		this.once('newListener', (event/*, listener*/) => {
-			if (event === 'change') {
+		this.on('newListener', (event/*, listener*/) => {
+			if (event === 'change' && alreadyListeningToOplog === false) {
+				alreadyListeningToOplog = true;
 				if (isOplogEnabled) {
 					const query = {
 						collection: this.collectionName
@@ -98,83 +100,36 @@ class ModelsBaseDb extends EventEmitter {
 		};
 	}
 
+	_doNotMixInclusionAndExclusionFields(options) {
+		if (options && options.fields) {
+			const keys = Object.keys(options.fields);
+			const removeKeys = keys.filter(key => options.fields[key] === 0);
+			if (keys.length > removeKeys.length) {
+				removeKeys.forEach(key => delete options.fields[key]);
+			}
+		}
+	}
+
 	find() {
+		this._doNotMixInclusionAndExclusionFields(arguments[1]);
 		return this.model.find(...arguments);
 	}
 
 	findOne() {
+		this._doNotMixInclusionAndExclusionFields(arguments[1]);
 		return this.model.findOne(...arguments);
 	}
 
 	findOneById(_id, options) {
-		return this.model.findOne({ _id }, options);
+		return this.findOne({ _id }, options);
 	}
 
 	findOneByIds(ids, options) {
-		return this.model.findOne({ _id: { $in: ids }}, options);
-	}
-
-	defineSyncStrategy(query, modifier, options) {
-		if (this.baseModel.useCache === false) {
-			return 'db';
-		}
-
-		if (options.upsert === true) {
-			return 'db';
-		}
-
-		// const dbModifiers = [
-		// 	'$currentDate',
-		// 	'$bit',
-		// 	'$pull',
-		// 	'$pushAll',
-		// 	'$push',
-		// 	'$setOnInsert'
-		// ];
-
-		const cacheAllowedModifiers = [
-			'$set',
-			'$unset',
-			'$min',
-			'$max',
-			'$inc',
-			'$mul',
-			'$rename',
-			'$pullAll',
-			'$pop',
-			'$addToSet'
-		];
-
-		const notAllowedModifiers = Object.keys(modifier).filter(i => i.startsWith('$') && cacheAllowedModifiers.includes(i) === false);
-
-		if (notAllowedModifiers.length > 0) {
-			return 'db';
-		}
-
-		const placeholderFields = Object.keys(query).filter(item => item.indexOf('$') > -1);
-		if (placeholderFields.length > 0) {
-			return 'db';
-		}
-
-		return 'cache';
+		return this.findOne({ _id: { $in: ids }}, options);
 	}
 
 	updateHasPositionalOperator(update) {
-		for (const key in update) {
-			if (key.includes('.$')) {
-				return true;
-			}
-
-			const value = update[key];
-
-			if (Match.test(value, Object)) {
-				if (this.updateHasPositionalOperator(value) === true) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return Object.keys(update).some(key => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
 	}
 
 	processOplogRecord(action) {
@@ -185,6 +140,7 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'i') {
 			this.emit('change', {
 				action: 'insert',
+				clientAction: 'inserted',
 				id: action.op.o._id,
 				data: action.op.o,
 				oplog: true
@@ -195,7 +151,8 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'u') {
 			if (!action.op.o.$set && !action.op.o.$unset) {
 				this.emit('change', {
-					action: 'update:record',
+					action: 'update',
+					clientAction: 'updated',
 					id: action.id,
 					data: action.op.o,
 					oplog: true
@@ -221,9 +178,10 @@ class ModelsBaseDb extends EventEmitter {
 			}
 
 			this.emit('change', {
-				action: 'update:diff',
+				action: 'update',
+				clientAction: 'updated',
 				id: action.id,
-				data: diff,
+				diff,
 				oplog: true
 			});
 			return;
@@ -232,6 +190,7 @@ class ModelsBaseDb extends EventEmitter {
 		if (action.op.op === 'd') {
 			this.emit('change', {
 				action: 'remove',
+				clientAction: 'removed',
 				id: action.id,
 				oplog: true
 			});
@@ -243,16 +202,18 @@ class ModelsBaseDb extends EventEmitter {
 		this.setUpdatedAt(record);
 
 		const result = this.originals.insert(...arguments);
+
+		record._id = result;
+
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
 			this.emit('change', {
 				action: 'insert',
+				clientAction: 'inserted',
 				id: result,
 				data: _.extend({}, record),
 				oplog: false
 			});
 		}
-
-		record._id = result;
 
 		return result;
 	}
@@ -260,10 +221,9 @@ class ModelsBaseDb extends EventEmitter {
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
-		const strategy = this.defineSyncStrategy(query, update, options);
 		let ids = [];
-		if (!isOplogEnabled && this.listenerCount('change') > 0 && strategy === 'db') {
-			const findOptions = {fields: {_id: 1}};
+		if (!isOplogEnabled && this.listenerCount('change') > 0) {
+			const findOptions = { fields: { _id: 1 } };
 			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
 			if (!Array.isArray(records)) {
 				records = [records];
@@ -279,53 +239,31 @@ class ModelsBaseDb extends EventEmitter {
 			}
 		}
 
+		// TODO: CACHE: Can we use findAndModify here when oplog is disabled?
 		const result = this.originals.update(query, update, options);
 
 		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			if (strategy === 'db') {
-				if (options.upsert === true) {
-					if (result.insertedId) {
-						this.emit('change', {
-							action: 'insert',
-							id: result.insertedId,
-							data: this.findOne({_id: result.insertedId}),
-							oplog: false
-						});
-						return;
-					}
-
-					query = {
-						_id: {
-							$in: ids
-						}
-					};
-				}
-
-				let records = options.multi ? this.find(query).fetch() : this.findOne(query) || [];
-				if (!Array.isArray(records)) {
-					records = [records];
-				}
-				for (const record of records) {
-					this.emit('change', {
-						action: 'update:record',
-						id: record._id,
-						data: record,
-						oplog: false
-					});
-				}
-			} else {
+			if (options.upsert === true && result.insertedId) {
 				this.emit('change', {
-					action: 'update:query',
-					id: undefined,
-					data: {
-						query,
-						update,
-						options
-					},
+					action: 'insert',
+					clientAction: 'inserted',
+					id: result.insertedId,
+					oplog: false
+				});
+
+				return result;
+			}
+
+			for (const id of ids) {
+				this.emit('change', {
+					action: 'update',
+					clientAction: 'updated',
+					id,
 					oplog: false
 				});
 			}
 		}
+
 		return result;
 	}
 
@@ -356,6 +294,7 @@ class ModelsBaseDb extends EventEmitter {
 			for (const record of records) {
 				this.emit('change', {
 					action: 'remove',
+					clientAction: 'removed',
 					id: record._id,
 					data: _.extend({}, record),
 					oplog: false
@@ -417,6 +356,15 @@ class ModelsBaseDb extends EventEmitter {
 		query.__collection__ = this.name;
 
 		return trash.find(query, options);
+	}
+
+	trashFindOneById(_id, options) {
+		const query = {
+			_id,
+			__collection__: this.name
+		};
+
+		return trash.findOne(query, options);
 	}
 
 	trashFindDeletedAfter(deletedAt, query = {}, options) {

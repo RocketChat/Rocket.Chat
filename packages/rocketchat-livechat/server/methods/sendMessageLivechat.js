@@ -1,11 +1,16 @@
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
-	sendMessageLivechat({ token, _id, rid, msg }, agent) {
+	sendMessageLivechat({ token, _id, rid, msg, attachments }, agent) {
 		check(token, String);
 		check(_id, String);
 		check(rid, String);
 		check(msg, String);
+
+		check(agent, Match.Maybe({
+			agentId: String,
+			username: String
+		}));
 
 		const guest = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
@@ -26,7 +31,8 @@ Meteor.methods({
 				_id,
 				rid,
 				msg,
-				token
+				token,
+				attachments
 			},
 			agent
 		});

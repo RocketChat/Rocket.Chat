@@ -1,5 +1,7 @@
 .sidebar {
+
 	position: relative;
+
 	z-index: 2;
 
 	display: flex;
@@ -66,9 +68,17 @@
 	& .unread-rooms {
 		display: none;
 	}
+
+	.embedded-view > & {
+		display: none;
+	}
 }
 
 @media (width < 780px) {
+	.sidebar {
+		position: absolute;
+	}
+
 	.sidebar:not(.sidebar-light) {
 		user-select: none;
 		transform: translate3d(calc(var(--sidebar-width) * -1), 0, 0);

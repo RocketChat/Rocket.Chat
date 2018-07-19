@@ -116,7 +116,7 @@ this.ChatMessages = class ChatMessages {
 			const currentAgent = !visitor.roomSubscribed && Livechat.agent;
 			if (currentAgent) {
 				agent = {
-					_id: currentAgent._id,
+					agentId: currentAgent._id,
 					username: currentAgent.username
 				};
 			}
@@ -148,12 +148,22 @@ this.ChatMessages = class ChatMessages {
 				guest.department = Livechat.department;
 			}
 
+			if (Livechat.guestName) {
+				guest.name = Livechat.guestName;
+			}
+
+			if (Livechat.guestEmail) {
+				guest.email = Livechat.guestEmail;
+			}
+			
 			Meteor.call('livechat:registerGuest', guest, (error, result) => {
 				if (error) {
 					return showError(error.reason);
 				}
 
-				visitor.setId(result._id);
+				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
+				
 				sendMessage();
 			});
 		} else {

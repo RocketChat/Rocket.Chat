@@ -9,11 +9,12 @@ const Kick = function(command, params, {rid}) {
 	if (username === '') {
 		return;
 	}
-	const user = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const user = Meteor.users.findOne(userId);
 	const kickedUser = RocketChat.models.Users.findOneByUsername(username);
-	const room = RocketChat.models.Rooms.findOneById(rid);
+
 	if (kickedUser == null) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
@@ -23,8 +24,10 @@ const Kick = function(command, params, {rid}) {
 			}, user.language)
 		});
 	}
-	if ((room.usernames || []).includes(username) === false) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+	if (!subscription) {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
@@ -37,4 +40,8 @@ const Kick = function(command, params, {rid}) {
 	Meteor.call('removeUserFromRoom', {rid, username});
 };
 
-RocketChat.slashCommands.add('kick', Kick);
+RocketChat.slashCommands.add('kick', Kick, {
+	description: 'Remove_someone_from_room',
+	params: '@username',
+	permission: 'remove-user'
+});

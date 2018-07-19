@@ -3,26 +3,57 @@
 import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
+import http from 'http';
+import https from 'https';
 
 const get = function(file, req, res) {
 	const fileUrl = this.store.getRedirectURL(file);
 
 	if (fileUrl) {
-		res.setHeader('Location', fileUrl);
-		res.writeHead(302);
+		const storeType = file.store.split(':').pop();
+		if (RocketChat.settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
+			const request = /^https:/.test(fileUrl) ? https : http;
+			request.get(fileUrl, fileRes => fileRes.pipe(res));
+		} else {
+			res.removeHeader('Content-Length');
+			res.setHeader('Location', fileUrl);
+			res.writeHead(302);
+			res.end();
+		}
+	} else {
+		res.end();
 	}
-	res.end();
+};
+
+const copy = function(file, out) {
+	const fileUrl = this.store.getRedirectURL(file);
+
+	if (fileUrl) {
+		const request = /^https:/.test(fileUrl) ? https : http;
+		request.get(fileUrl, fileRes => fileRes.pipe(out));
+	} else {
+		out.end();
+	}
 };
 
 const AmazonS3Uploads = new FileUploadClass({
 	name: 'AmazonS3:Uploads',
-	get
+	get,
+	copy
 	// store setted bellow
 });
 
 const AmazonS3Avatars = new FileUploadClass({
 	name: 'AmazonS3:Avatars',
-	get
+	get,
+	copy
+	// store setted bellow
+});
+
+const AmazonS3UserDataFiles = new FileUploadClass({
+	name: 'AmazonS3:UserDataFiles',
+	get,
+	copy
 	// store setted bellow
 });
 
@@ -38,14 +69,12 @@ const configure = _.debounce(function() {
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
 	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
 
-	if (!Bucket || !AWSAccessKeyId || !AWSSecretAccessKey) {
+	if (!Bucket) {
 		return;
 	}
 
 	const config = {
 		connection: {
-			accessKeyId: AWSAccessKeyId,
-			secretAccessKey: AWSSecretAccessKey,
 			signatureVersion: SignatureVersion,
 			s3ForcePathStyle: ForcePathStyle,
 			params: {
@@ -57,12 +86,21 @@ const configure = _.debounce(function() {
 		URLExpiryTimeSpan
 	};
 
+	if (AWSAccessKeyId) {
+		config.connection.accessKeyId = AWSAccessKeyId;
+	}
+
+	if (AWSSecretAccessKey) {
+		config.connection.secretAccessKey = AWSSecretAccessKey;
+	}
+
 	if (BucketURL) {
 		config.connection.endpoint = BucketURL;
 	}
 
 	AmazonS3Uploads.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Uploads.name, config);
 	AmazonS3Avatars.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3Avatars.name, config);
+	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
 }, 500);
 
 RocketChat.settings.get(/^FileUpload_S3_/, configure);

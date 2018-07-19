@@ -65,13 +65,13 @@ class Administration extends Page {
 	//settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(3) .button.expand'); }
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(4) .button.expand'); }
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(5) .button.expand'); }
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(6) .button.expand'); }
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(7) .button.expand'); }
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(8) .button.expand'); }
+	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(3) .button.expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(4) .button.expand'); }
+	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(5) .button.expand'); }
+	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(6) .button.expand'); }
+	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(7) .button.expand'); }
+	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(8) .button.expand'); }
+	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(9) .button.expand'); }
 
 	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
 	get generalSiteUrlReset() { return browser.element('.reset-setting[data-setting="Site_Url"]'); }
@@ -123,15 +123,15 @@ class Administration extends Page {
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
 	//accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(3) .button.expand'); }
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(3) .button.collapse'); }
+	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.expand'); }
+	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.collapse'); }
 
 	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 
-	get accountsIdleTimeoutLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
-	get accountsIdleTimeoutLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeoutLimit"]'); }
+	get accountsidleTimeLimit() { return browser.element('[name="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
+	get accountsidleTimeLimitReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_idleTimeLimit"]'); }
 
 	get accountsNotificationDuration() { return browser.element('[name="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
 	get accountsNotificationDurationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_desktopNotificationDuration"]'); }
@@ -185,9 +185,6 @@ class Administration extends Page {
 	get accountsHideAvatarsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideAvatars"]'); }
 	get accountsHideAvatarsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
-	get accountsRoomsListExhibitionMode() { return browser.element('[name="Accounts_Default_User_Preferences_roomsListExhibitionMode"]'); }
-	get accountsRoomsListExhibitionModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_roomsListExhibitionMode"]'); }
-
 	get accountsMergeChannelsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_mergeChannels"]'); }
@@ -195,8 +192,8 @@ class Administration extends Page {
 	get accountsSendOnEnter() { return browser.element('[name="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 	get accountsSendOnEnterReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_sendOnEnter"]'); }
 
-	get accountsViewMode() { return browser.element('[name="Accounts_Default_User_Preferences_viewMode"]'); }
-	get accountsViewModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_viewMode"]'); }
+	get accountsMessageViewMode() { return browser.element('[name="Accounts_Default_User_Preferences_messageViewMode"]'); }
+	get accountsMessageViewModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_messageViewMode"]'); }
 
 	get accountsEmailNotificationMode() { return browser.element('[name="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
 	get accountsEmailNotificationModeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_emailNotificationMode"]'); }
@@ -210,6 +207,10 @@ class Administration extends Page {
 
 	get accountsNewMessageNotification() { return browser.element('[name="Accounts_Default_User_Preferences_newMessageNotification"]'); }
 	get accountsNewMessageNotificationReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_newMessageNotification"]'); }
+
+	get accountsMuteFocusedConversationsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
+	get accountsMuteFocusedConversationsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
+	get accountsMuteFocusedConversationsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_muteFocusedConversations"]'); }
 
 	get accountsNotificationsSoundVolume() { return browser.element('[name="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }
 	get accountsNotificationsSoundVolumeReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_notificationsSoundVolume"]'); }

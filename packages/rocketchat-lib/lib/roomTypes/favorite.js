@@ -10,4 +10,7 @@ export class FavoriteRoomType extends RoomTypeConfig {
 			label: 'Favorites'
 		});
 	}
+	condition() {
+		return RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
+	}
 }

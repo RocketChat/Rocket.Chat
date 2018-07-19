@@ -16,7 +16,3 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/assets.js', 'server');
 });
-
-Npm.depends({
-	'image-size': '0.4.0'
-});
