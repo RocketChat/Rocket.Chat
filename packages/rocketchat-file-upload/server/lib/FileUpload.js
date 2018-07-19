@@ -138,6 +138,9 @@ Object.assign(FileUpload, {
 	},
 
 	uploadsOnValidate(file) {
+		if (RocketChat.settings.get('FileUpload_ScaleImages') !== true) {
+			return;
+		}
 		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 			return;
 		}
