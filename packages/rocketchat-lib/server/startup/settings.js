@@ -83,7 +83,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
-	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+	this.add('Accounts_SearchFields', 'username, name', {
 		type: 'string',
 		public: true
 	});
