@@ -68,8 +68,8 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to login with username and password', (done) => {
 		const query = `
-			mutation login{
-				loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
+			mutation login {
+			loginWithPassword(user: "${ user.username }", password: "${ user.password }") {
 					user {
 						username,
 						email
@@ -102,7 +102,7 @@ describe('GraphQL Tests', function() {
 	it('Is able to login with email and password', (done) => {
 		const query = `
 			mutation login {
-				loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
+				loginWithPassword(user: "", userFields: {email: "${ user.email }"}, password: "${ user.password }") {
 					user {
 						username,
 						email,
@@ -135,7 +135,7 @@ describe('GraphQL Tests', function() {
 	it('Fails when trying to login with wrong password', (done) => {
 		const query = `
 			mutation login {
-				loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
+				loginWithPassword(user: "${ user.username }", password: "not!${ user.password }") {
 					user {
 						username
 					},
