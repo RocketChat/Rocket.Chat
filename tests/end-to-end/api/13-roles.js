@@ -10,7 +10,7 @@ describe('[Roles]', function() {
 
 	describe('GET [/roles]', () => {
 		it('should return all roles', (done) => {
-			request.get(api('roles'))
+			request.get(api('roles.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
