@@ -14,8 +14,6 @@ const maxTimes = {
 const toDays = 1000 * 60 * 60 * 24;
 const gracePeriod = 5000;
 function job() {
-	console.log(types);
-
 	const now = new Date();
 	const filesOnly = RocketChat.settings.get('RetentionPolicy_FilesOnly');
 	const excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
