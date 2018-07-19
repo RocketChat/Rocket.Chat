@@ -26,6 +26,21 @@ Meteor.methods({
 		}
 
 		if (RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
+			RocketChat.models.Messages.find({
+				rid,
+				file: {
+					$exists: true
+				}
+			}, {
+				fields: {
+					file: 1
+				}
+			}).fetch().map(function(document) {
+				if (document.file && document.file._id) {
+					FileUpload.getStore('Uploads').deleteById(document.file._id);
+				}
+			});
+
 			RocketChat.models.Messages.removeByRoomId(rid);
 			RocketChat.models.Subscriptions.removeByRoomId(rid);
 			const result = RocketChat.models.Rooms.removeById(rid);
