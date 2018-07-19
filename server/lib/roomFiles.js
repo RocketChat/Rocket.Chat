@@ -1,4 +1,4 @@
-export const roomFiles = (pub, { rid, searchText = null, limit = 50 }) => {
+export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 	if (!pub.userId) {
 		return pub.ready();
 	}
