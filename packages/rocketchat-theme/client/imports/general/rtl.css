@@ -670,22 +670,6 @@
 		& > .title .see-all {
 			float: left;
 		}
-
-		&.uploaded-files-list {
-			& i {
-				float: right;
-				margin-right: auto;
-				margin-left: 10px;
-
-				&.file-delete {
-				  float: left;
-				}
-
-				&.file-download {
-				  float: left;
-				}
-			}
-		}
 	}
 
 	& .page-list .list {
