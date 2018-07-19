@@ -66,10 +66,10 @@ Meteor.startup(() => {
 	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
 
 	Tracker.autorun(() => {
-		const user = Meteor.userId() && RocketChat.models.Users.findOne(Meteor.userId());
-		const serverLanguage = RocketChat.settings.get('Language');
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { username: 1 }});
 		const userLanguage = user && user.language;
-		const defaultLanguage = userLanguage || serverLanguage || 'en';
+
+		const defaultLanguage = userLanguage || RocketChat.settings.get('Language') || 'en';
 
 		if (!currentLanguage.get()) {
 			setLanguage(defaultLanguage);
