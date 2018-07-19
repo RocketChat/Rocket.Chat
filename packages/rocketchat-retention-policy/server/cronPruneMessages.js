@@ -41,7 +41,7 @@ function job() {
 		'retention.maxAge': { $gte: 0 },
 		_updatedAt: { $gte: lastPrune }
 	}).forEach(room => {
-		const { maxAge = 0, filesOnly, excludePinned } = room.retention;
+		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
 		RocketChat.cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned });
 	});

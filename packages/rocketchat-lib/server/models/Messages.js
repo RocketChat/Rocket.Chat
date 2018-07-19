@@ -756,9 +756,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 				_id: 1
 			},
 			limit
-		}).map((document) => {
-			return document._id;
-		});
+		}).map(({ _id }) => _id);
 
 		return this.remove({
 			_id: {
@@ -776,18 +774,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	removeFilesByRoomId(roomId) {
 		this.find({
 			rid: roomId,
-			file: {
+			'file._id': {
 				$exists: true
 			}
 		}, {
 			fields: {
-				file: 1
+				'file._id': 1
 			}
-		}).fetch().map(function(document) {
-			if (document.file && document.file._id) {
-				FileUpload.getStore('Uploads').deleteById(document.file._id);
-			}
-		});
+		}).fetch().foreach(document => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

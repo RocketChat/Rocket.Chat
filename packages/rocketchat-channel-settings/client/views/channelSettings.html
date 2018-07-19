@@ -226,7 +226,24 @@
 					</div>
 				{{/with}}
 			</div>
-			{{# if settings.retentionEnabled.value.get }}
+			 {{# if retentionEnabled settings.retentionEnabled.value.get }}
+				{{#with settings.retentionOverrideGlobal}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+				{{/with}}
+			{{/if}}
+			{{# if settings.retentionOverrideGlobal.value.get }}
 				<div class="mail-messages__instructions mail-messages__instructions--warning" style="margin-bottom: 0;">
 					<div class="mail-messages__instructions-wrapper">
 						<div class="mail-messages__instructions-text">

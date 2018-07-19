@@ -522,14 +522,31 @@ Template.channelSettingsEditing.onCreated(function() {
 				return RocketChat.authz.hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
-				return call('saveRoomSettings', room._id, 'retentionEnabled', value).then(
+				return call('saveRoomSettings', room._id, 'retentionEnabled', value).then(() => toastr.success(t('Retention_setting_changed_successfully')));
+			}
+		},
+		retentionOverrideGlobal: {
+			type: 'boolean',
+			label: 'RetentionPolicyRoom_OverrideGlobal',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			getValue() {
+				return Template.instance().room.retention && Template.instance().room.retention.overrideGlobal;
+			},
+			canView() {
+				return true;
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+			},
+			disabled() {
+				return !RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value).then(
 					() => {
-						call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value !== undefined).then(
-							() => {
-								toastr.success(
-									t('Retention_setting_changed_successfully')
-								);
-							}
+						toastr.success(
+							t('Retention_setting_changed_successfully')
 						);
 					}
 				);
