@@ -41,11 +41,8 @@ Template.accountPreferences.helpers({
 			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
 			.sort((a, b) => a.key - b.key);
 
-		const appLanguageKey = RocketChat.settings.get('Language') || 'en';
-		const appLanguage = result.filter(({ key }) => key === appLanguageKey.toLowerCase())[0];
-
 		result.unshift({
-			'name': appLanguage ? `Default (${ appLanguage.name })` : 'Default',
+			'name': 'Default',
 			'en': 'Default',
 			'key': ''
 		});
