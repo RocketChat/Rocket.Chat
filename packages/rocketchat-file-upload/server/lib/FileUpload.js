@@ -161,29 +161,35 @@ Object.assign(FileUpload, {
 				}
 			};
 
-			if (metadata.orientation == null) {
-				return fut.return();
-			}
-
-			s.rotate()
-				.toFile(`${ tmpFile }.tmp`)
-				.then(Meteor.bindEnvironment(() => {
-					fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
-						fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
-							const size = fs.lstatSync(tmpFile).size;
-							this.getCollection().direct.update({_id: file._id}, {
-								$set: {
-									size,
-									identify
-								}
-							});
+			const reorientation = cb => {
+				if (metadata.orientation) {
+					s.rotate()
+						.toFile(`${ tmpFile }.tmp`)
+						.then(Meteor.bindEnvironment(() => {
+							fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+								fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+									cb();
+								}));
+							}));
+						})).catch((err) => {
+							console.error(err);
 							fut.return();
-						}));
-					}));
-				})).catch((err) => {
-					console.error(err);
-					fut.return();
+						});
+
+					return;
+				}
+
+				cb();
+			};
+
+			reorientation(() => {
+				const size = fs.lstatSync(tmpFile).size;
+				this.getCollection().direct.update({_id: file._id}, {
+					$set: { size, identify }
 				});
+
+				fut.return();
+			});
 		}));
 
 		return fut.wait();
