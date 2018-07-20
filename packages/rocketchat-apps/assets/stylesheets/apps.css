@@ -39,22 +39,30 @@
 		padding: 0;
 	}
 	.installer {
-	  animation-duration: 1500ms;
-	  animation-timing-function: steps(90);
-	  width: 20px;
-	  height: 20px;
-	  background-repeat: no-repeat;
-	}
-	.installer.play {
-	  animation-name: play90;
+		width: 20px;
+		height: 20px;
+		overflow: hidden;
+		position: relative;
+
+		.--marketplace-installer {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 900px;
+			height: 20px;
+		}
+		.--marketplace-installer.play {
+			animation: play90 steps(18);
+
+		}
 	}
 }
 
 keyframes play90 {
   0% {
-    background-position: 0px 0px;
+    right: -882px;
   }
   100% {
-    background-position: -1800px 0px;
+    right: 0px;
   }
 }

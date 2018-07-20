@@ -63,7 +63,9 @@
 									{{/if}}
 								</td>
 								<td>
-									{{> icon icon="marketplace-installer" classes="installer"}}
+									<button class="js-install installer" data-button="install" data-app="{{id}}">
+										{{> icon icon="marketplace-installer"}}
+									</button>
 								</td>
 							</tr>
 						{{/each}}
