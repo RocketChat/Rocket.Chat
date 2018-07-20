@@ -12,22 +12,25 @@ class ModelSessions extends RocketChat.models._Base {
 	createOrUpdate(data) {
 		const { year, month, day, sessionId } = data;
 
+		if (!sessionId) {
+			return;
+		}
+
+		const now = new Date;
+
 		return this.upsert({ year, month, day, sessionId }, {
 			$set: data,
 			$setOnInsert: {
-				createdAt: new Date
+				createdAt: now
 			}
 		});
 	}
 
-	updateActivityBySessionIds(array) {
-		const lastActivityAt = new Date();
+	updateBySessionIds(array, data) {
 		const query = { sessionId: { $in: array } };
 
 		const update = {
-			$set: {
-				lastActivityAt
-			}
+			$set: data
 		};
 
 		return this.update(query, update, { multi: true });
