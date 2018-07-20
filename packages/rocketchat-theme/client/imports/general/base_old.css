@@ -2669,6 +2669,12 @@
     padding-bottom: 0.5rem;
     align-items: center;
     justify-content: space-between;
+
+	.message {
+		padding: 0;
+		flex: 1;
+		background-color: transparent;
+	}
 }
 
 .rc-old .rc-message-box .reply-preview-with-popup {
