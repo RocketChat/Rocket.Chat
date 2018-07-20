@@ -2364,6 +2364,7 @@
   "Take_it": "Take it!",
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
+  "Target user not allowed to receive messages": "Target user not allowed to receive messages",
   "Team": "Team",
   "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",

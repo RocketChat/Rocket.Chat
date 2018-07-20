@@ -36,6 +36,12 @@ Meteor.methods({
 			});
 		}
 
+		if (!RocketChat.authz.hasPermission(to._id, 'view-d-room')) {
+			throw new Meteor.Error('error-not-allowed', 'Target user not allowed to receive messages', {
+				method: 'createDirectMessage'
+			});
+		}
+
 		const rid = [me._id, to._id].sort().join('');
 
 		const now = new Date();
