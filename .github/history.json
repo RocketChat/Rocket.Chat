@@ -17112,6 +17112,20 @@
           ]
         }
       ]
+    },
+    "0.67.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11497",
+          "title": "Fix dependency issue in redhat image",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        }
+      ]
     }
   }
 }

@@ -19,9 +19,9 @@ const pkgdef :Spk.PackageDefinition = (
 
 		appTitle = (defaultText = "Rocket.Chat"),
 
-		appVersion = 82,  # Increment this for every release.
+		appVersion = 83,  # Increment this for every release.
 
-		appMarketingVersion = (defaultText = "0.67.0-rc.0"),
+		appMarketingVersion = (defaultText = "0.67.0"),
 		# Human-readable representation of appVersion. Should match the way you
 		# identify versions of your app in documentation and marketing.
 

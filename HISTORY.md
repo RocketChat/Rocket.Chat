@@ -1,8 +1,10 @@
 
-# 0.67.0 (Under Release Candidate Process)
+# 0.67.0
+`2018-07-20  ·  1 ️️️⚠️  ·  1 🎉  ·  1 🚀  ·  6 🐛  ·  5 🔍  ·  11 👩‍💻👨‍💻`
 
-## 0.67.0-rc.0
-`2018-07-10  ·  1 ️️️⚠️  ·  1 🎉  ·  1 🚀  ·  6 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -28,6 +30,7 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Fix dependency issue in redhat image ([#11497](https://github.com/RocketChat/Rocket.Chat/pull/11497))
 - Merge master into develop & Set version to 0.67.0-develop ([#11417](https://github.com/RocketChat/Rocket.Chat/pull/11417))
 - Merge master into develop & Set version to 0.67.0-develop ([#11399](https://github.com/RocketChat/Rocket.Chat/pull/11399))
 - Merge master into develop & Set version to 0.67.0-develop ([#11348](https://github.com/RocketChat/Rocket.Chat/pull/11348))
