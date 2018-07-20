@@ -248,20 +248,20 @@
 				<label class="rc-user-info__label">
 					{{_ "Description"}}
 					<div class="rc-user-info__description">
-						{{unscape description}}
+						{{description}}
 					</div>
 				</label>
 			{{/unless}}
 			<label class="rc-user-info__label">
 				{{_ "Announcement"}}
 				<div class="rc-user-info__description">
-					{{unscape announcement}}
+					{{{RocketChatMarkdown announcement}}}
 				</div>
 			</label>
 			<label class="rc-user-info__label">
 				{{_ "Topic"}}
 				<div class="rc-user-info__description">
-					{{unscape topic}}
+					{{{RocketChatMarkdown topic}}}
 				</div>
 			</label>
 			{{#if broadcast}}

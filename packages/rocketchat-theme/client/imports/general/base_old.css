@@ -3779,50 +3779,6 @@ body:not(.is-cordova) {
 
 		margin: 1em auto 0;
 	}
-
-	&.uploaded-files-list {
-	  	& ul {
-		  & li {
-			margin-bottom: 10px;
-		  }
-		}
-
-		& .file-name {
-			display: block;
-
-			padding: 10px 5px;
-
-			color: #008ce3;
-			border-width: 0 0 1px;
-			border-bottom: 1px solid #eaeaea;
-
-			&:hover {
-				text-decoration: underline;
-
-				color: #006db0;
-			}
-
-			& p {
-				overflow: hidden;
-
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
-		}
-
-		& i {
-			float: left;
-			margin-right: 10px;
-
-			&.file-delete {
-				float: right;
-			}
-
-			&.file-download {
-				float: right;
-			}
-		}
-	}
 }
 
 .rc-old .user-view {
@@ -4678,7 +4634,6 @@ body:not(.is-cordova) {
 
 			max-width: 100%;
 			max-height: 150px;
-			padding: 10px;
 		}
 	}
 
@@ -4696,6 +4651,9 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
+		width: 520px;
+		padding: 0 20px;
+		margin: auto;
 
 		display: block;
 	}
@@ -5729,7 +5687,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 10;
+	z-index: 9;
 	right: 0;
 	left: 0;
 
