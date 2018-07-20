@@ -110,6 +110,7 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:retention-policy
 rocketchat:apps
 rocketchat:sandstorm
 rocketchat:setup-wizard
@@ -142,6 +143,7 @@ rocketchat:tutum
 rocketchat:ui
 rocketchat:ui-account
 rocketchat:ui-admin
+rocketchat:ui-clean-history
 rocketchat:ui-flextab
 rocketchat:ui-login
 rocketchat:ui-master

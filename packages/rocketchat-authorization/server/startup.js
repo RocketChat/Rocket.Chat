@@ -20,7 +20,7 @@ Meteor.startup(function() {
 		{ _id: 'create-d',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
-		{ _id: 'clean-channel-history',         roles : ['admin'] }, // special permission to bulk delete a channel's mesages
+		{ _id: 'clean-channel-history',         roles : ['admin'] },
 		{ _id: 'delete-c',                      roles : ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles : ['admin'] },
 		{ _id: 'delete-message',                roles : ['admin', 'owner', 'moderator'] },
@@ -32,6 +32,7 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-password',      roles : ['admin'] },
 		{ _id: 'edit-privileged-setting',       roles : ['admin'] },
 		{ _id: 'edit-room',                     roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-room-retention-policy',    roles : ['admin'] },
 		{ _id: 'force-delete-message',          roles : ['admin', 'owner'] },
 		{ _id: 'join-without-join-code',        roles : ['admin', 'bot'] },
 		{ _id: 'leave-c',                       roles : ['admin', 'user', 'bot', 'anonymous'] },
