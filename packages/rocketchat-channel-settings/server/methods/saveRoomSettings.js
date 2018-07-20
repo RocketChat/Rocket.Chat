@@ -68,6 +68,14 @@ Meteor.methods({
 					action: 'Change_Room_Type'
 				});
 			}
+			const groupLimitEnable = RocketChat.settings.get('Group_Limit_Enable');
+			const groupLimit = RocketChat.settings.get('Group_Limit_Number');
+			if (setting === 'roomType' && value !== room.t && value === 'p' && groupLimitEnable && room.usernames.length > groupLimit) {
+				throw new Meteor.Error('error-group-limit-exceeded', 'Room limit exceeded', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Type'
+				});
+			}
 		});
 
 		Object.keys(settings).forEach(setting => {

@@ -12,7 +12,8 @@
 				<input type="text" id="channel-name" class="required" dir="auto" placeholder="{{_ 'Enter_name_here'}}">
 			</div>
 			<div class="input-line toggle">
-				<label for="channel-type">{{_ "Private"}}</label>
+                <label for="channel-type">{{_ "Private"}}</label>
+				<span class="warning {{groupLimitHidden}}">{{_ "Group_Limit_Warning" number=groupLimitNumber}}</span>
 				<div class="input checkbox toggle">
 					<input type="checkbox" id="channel-type" {{privateSwitchDisabled}} {{privateSwitchChecked}}>
 					<label class="color-tertiary-font-color" for="channel-type"></label>
@@ -59,6 +60,12 @@
 					<strong>{{_ "Oops!"}}</strong>
 					{{{_ "Duplicate_archived_channel_name" roomName}}}
 				</div>
+			{{/if}}
+			{{#if error.grouplimitexceed}}
+                <div class="input-error error-color">
+                    <strong>{{_ "Oops!"}}</strong>
+					{{{_ "Group_limit_exceeded"}}}
+                </div>
 			{{/if}}
 			<div class="input-submit">
 				<button class="button primary save-channel">{{_ "Create" }}</button>

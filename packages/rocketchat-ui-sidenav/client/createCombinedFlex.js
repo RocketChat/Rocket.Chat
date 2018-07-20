@@ -46,6 +46,12 @@ Template.createCombinedFlex.helpers({
 	},
 	privateSwitchChecked() {
 		return RocketChat.authz.hasAllPermission('create-c') ? '' : 'checked';
+	},
+	groupLimitHidden() {
+		return RocketChat.settings.get('Group_Limit_Enable') ? '' : 'hidden';
+	},
+	groupLimitNumber() {
+		return RocketChat.settings.get('Group_Limit_Number');
 	}
 });
 
@@ -102,6 +108,16 @@ Template.createCombinedFlex.events({
 		const createRoute = privateGroup ? 'createPrivateGroup' : 'createChannel';
 		const successRoute = privateGroup ? 'group' : 'channel';
 		instance.roomName.set(name);
+
+		// check group limit
+		if (privateGroup && RocketChat.settings.get('Group_Limit_Enable')) {
+			const limit = RocketChat.settings.get('Group_Limit_Number');
+			if (instance.selectedUsers.get().length + 1 > limit) { // count the creator in
+				instance.error.set({grouplimitexceed: true});
+				return;
+			}
+		}
+
 		if (!err) {
 			return Meteor.call(createRoute, name, instance.selectedUsers.get(), readOnly, function(err, result) {
 				if (err) {

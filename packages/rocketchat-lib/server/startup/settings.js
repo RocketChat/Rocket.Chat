@@ -798,6 +798,21 @@ RocketChat.settings.addGroup('General', function() {
 			'public': true
 		});
 	});
+	this.section('Group_Limit', function() {
+		this.add('Group_Limit_Enable', false, {
+			type: 'boolean',
+			public: true
+		});
+		this.add('Group_Limit_Number', 9, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Group_Limit_Description',
+			enableQuery: {
+				_id: 'Group_Limit_Enable',
+				value: true
+			}
+		});
+	});
 	this.section('Reporting', function() {
 		return this.add('Statistics_reporting', true, {
 			type: 'boolean'

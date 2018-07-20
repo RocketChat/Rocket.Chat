@@ -20,6 +20,15 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		members.push(owner.username);
 	}
 
+	// check group limit
+	const groupLimitEnable = RocketChat.settings.get('Group_Limit_Enable');
+	if (type === 'p' && groupLimitEnable) {
+		const limit = RocketChat.settings.get('Group_Limit_Number');
+		if (members.length > limit) {
+			throw new Meteor.Error('error-group-limit-exceeded', `Group members count (${ members.length + 1 }) exceeds limit`, { function: 'RocketChat.createRoom', room_name: name });
+		}
+	}
+
 	if (extraData.broadcast) {
 		readOnly = true;
 		delete extraData.reactWhenReadOnly;

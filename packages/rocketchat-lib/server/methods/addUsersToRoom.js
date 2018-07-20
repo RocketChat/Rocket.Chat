@@ -26,6 +26,14 @@ Meteor.methods({
 			});
 		}
 
+		const groupLimitEnable = RocketChat.settings.get('Group_Limit_Enable');
+		const groupLimit = RocketChat.settings.get('Group_Limit_Number');
+		if (room.t === 'p' && groupLimitEnable && room.usernames.length + data.users.length > groupLimit) {
+			throw new Meteor.Error('error-group-limit-exceeded', TAPi18n.__('error-group-limit-exceeded'), {
+				method: 'addUsersToRoom'
+			});
+		}
+
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
 		if (userInRoom && RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {

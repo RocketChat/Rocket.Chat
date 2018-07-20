@@ -8,6 +8,13 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		return;
 	}
 
+	// check group limit
+	const groupLimitEnable = RocketChat.settings.get('Group_Limit_Enable');
+	const groupLimit = RocketChat.settings.get('Group_Limit_Number');
+	if (room.t === 'p' && groupLimitEnable && room.usernames.length >= groupLimit) {
+		return;
+	}
+
 	if (room.t === 'c' || room.t === 'p') {
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
