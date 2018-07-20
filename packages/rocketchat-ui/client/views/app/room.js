@@ -130,6 +130,81 @@ const wipeFailedUploads = () => {
 	}
 };
 
+function roomHasGlobalPurge(room) {
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	switch (room.t) {
+		case 'c':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+		case 'p':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+		case 'd':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+	}
+	return false;
+}
+
+function roomHasPurge(room) {
+	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	if (room.retention && room.retention.enabled !== undefined) {
+		return room.retention.enabled;
+	}
+
+	return roomHasGlobalPurge(room);
+}
+
+function roomFilesOnly(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.filesOnly;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+}
+
+function roomExcludePinned(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.excludePinned;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+}
+
+function roomMaxAge(room) {
+	if (!room) {
+		return;
+	}
+	if (!roomHasPurge(room)) {
+		return;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.maxAge;
+	}
+
+	if (room.t === 'c') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if (room.t === 'p') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if (room.t === 'd') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
+}
+
 RocketChat.callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
@@ -388,6 +463,25 @@ Template.room.helpers({
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
+	},
+	hasPurge() {
+		return roomHasPurge(Session.get(`roomData${ this._id }`));
+	},
+	filesOnly() {
+		return roomFilesOnly(Session.get(`roomData${ this._id }`));
+	},
+	excludePinned() {
+		return roomExcludePinned(Session.get(`roomData${ this._id }`));
+	},
+	purgeTimeout() {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
+
+		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000 * 60 * 60 * 24).humanize();
 	}
 });
 
