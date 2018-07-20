@@ -51,7 +51,7 @@ export default class {
 	replaceChannels(str, message) {
 		//since apostrophe escaped contains # we need to unescape it
 		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
-			if (!message.temp && !message.channels.find(c => c.name === name)) {
+			if (!message.temp && !(message.channels && message.channels.find(c => c.name === name))) {
 				return match;
 			}
 
