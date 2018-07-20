@@ -4,5 +4,8 @@ Template.home.helpers({
 	},
 	body() {
 		return RocketChat.settings.get('Layout_Home_Body');
+	},
+	threadingOnHome() {
+		return true; // TODO provide setting
 	}
 });

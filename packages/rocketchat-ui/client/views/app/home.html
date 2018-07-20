@@ -1,6 +1,9 @@
 <template name="home">
 	<section class="page-container page-home page-static content-background-color">
 		{{> header sectionName=title}}
+		{{#if threadingOnHome}}
+			{{> CreateThread }}
+		{{/if}}
 		<div class="content">
 			{{{body}}}
 		</div>
