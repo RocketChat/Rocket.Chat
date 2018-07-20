@@ -27,11 +27,6 @@ RocketChat.Notifications = new class {
 		this.streamLogged.allowRead('logged');
 		this.streamRoom.allowRead(function(eventName, extraData) {
 			const [roomId] = eventName.split('/');
-			const user = Meteor.users.findOne(this.userId, {
-				fields: {
-					username: 1
-				}
-			});
 			const room = RocketChat.models.Rooms.findOneById(roomId);
 			if (!room) {
 				console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
@@ -43,7 +38,8 @@ RocketChat.Notifications = new class {
 			if (this.userId == null) {
 				return false;
 			}
-			return room.usernames.indexOf(user.username) > -1;
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
+			return subscription != null;
 		});
 		this.streamRoomUsers.allowRead('none');
 		this.streamUser.allowRead(function(eventName) {

@@ -87,6 +87,7 @@ html.rtl .attachment {
 	}
 
 	& .attachment-fields {
+		display: flex;
 		margin-top: 4px;
 
 		& .attachment-field {
@@ -101,10 +102,6 @@ html.rtl .attachment {
 				line-height: 1rem;
 			}
 		}
-	}
-
-	& .attachment-field ~ .attachment-field {
-		margin-top: 8px;
 	}
 
 	& .attachment-thumb {
