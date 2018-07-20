@@ -8,7 +8,29 @@ Template.adminBots.helpers({
 		return instance.ready && instance.ready.get();
 	},
 	bots() {
-		return Template.instance().bots();
+		return Template.instance().bots().sort((a, b) => {
+			if (a.status === b.status) {
+				return a.username > b.username;
+			}
+			switch (a.status) {
+				case 'online':
+					return -1;
+				case 'away':
+					if (b.status === 'online') {
+						return 1;
+					} else {
+						return -1;
+					}
+				case 'busy':
+					if (b.status === 'offline') {
+						return -1;
+					} else {
+						return 1;
+					}
+				case 'offline':
+					return 1;
+			}
+		});
 	},
 	isLoading() {
 		const instance = Template.instance();
@@ -83,7 +105,7 @@ Template.adminBots.onCreated(function() {
 		}
 
 		const limit = instance.limit && instance.limit.get();
-		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
+		return Meteor.users.find(query, {limit}).fetch();
 	};
 });
 

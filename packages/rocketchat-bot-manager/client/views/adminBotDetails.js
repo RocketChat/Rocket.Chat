@@ -181,6 +181,7 @@ Template.adminBotDetails.helpers({
 		if (isOnline && bot.customClientData) {
 			return bot.customClientData.ipAddress;
 		}
+		return TAPi18n.__('Unknown');
 	},
 
 	canGetLogs() {
