@@ -21,7 +21,7 @@ const resolver = {
 			return await RocketChat.models.Rooms.findBySubscriptionUserId(_id).fetch();
 		}),
 		directMessages: ({ username }) => {
-			return RocketChat.models.Rooms.findByTypeContainingUsername('d', username).fetch();
+			return RocketChat.models.Rooms.findDirectRoomContainingUsername(username).fetch();
 		}
 	}
 };
