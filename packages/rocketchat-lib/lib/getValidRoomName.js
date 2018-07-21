@@ -1,7 +1,7 @@
 import s from 'underscore.string';
 
 RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
-	let slugifiedName = displayName;
+	let slugifiedName = s.slugify(displayName);
 
 	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 		const room = RocketChat.models.Rooms.findOneByDisplayName(displayName);
@@ -12,7 +12,6 @@ RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 				throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ displayName }' exists`, { function: 'RocketChat.getValidRoomName', channel_name: displayName });
 			}
 		}
-		slugifiedName = s.slugify(displayName);
 	}
 
 	let nameValidation;
