@@ -123,7 +123,8 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 	get() {
-		const { roomId, searchText, limit } = this.queryParams;
+		const { roomId, searchText } = this.queryParams;
+		const { count } = this.getPaginationItems();
 
 		if (!roomId) {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -133,12 +134,8 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 			throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 		}
 
-		if (limit && (typeof limit !== 'number' || isNaN(limit) || limit <= 0)) {
-			throw new Meteor.Error('error-limit-param-invalid', 'The "limit" query parameter must be a valid number and be greater than 0.');
-		}
-
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, limit).message.docs);
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
 
 		return RocketChat.API.v1.success({
 			messages: result
