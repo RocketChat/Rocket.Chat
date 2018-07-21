@@ -18,5 +18,6 @@ Meteor.startup(() => {
 		RocketChat.models.Permissions.createOrUpdate('close-livechat-room', ['livechat-agent', 'livechat-manager', 'admin']);
 		RocketChat.models.Permissions.createOrUpdate('close-others-livechat-room', ['livechat-manager', 'admin']);
 		RocketChat.models.Permissions.createOrUpdate('save-others-livechat-room-info', ['livechat-manager']);
+		RocketChat.models.Permissions.createOrUpdate('remove-closed-livechat-rooms', ['livechat-manager', 'admin']);
 	}
 });
