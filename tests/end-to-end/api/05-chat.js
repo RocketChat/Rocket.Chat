@@ -362,6 +362,22 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'This message was edited via API',
+					count: 1
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
 	});
 	describe('[/chat.react]', () => {
 		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
