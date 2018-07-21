@@ -27,7 +27,13 @@ Template.register.helpers({
 	},
 	showEmailFieldRegisterForm() {
 		return Livechat.emailFieldRegistrationForm;
-	}	
+	},
+	getName() {
+		return Livechat.guestName;
+	},
+	getEmail() {
+		return Livechat.guestEmail;
+	}
 });
 
 Template.register.events({
@@ -41,10 +47,10 @@ Template.register.events({
 			}
 		};
 		const form = e.currentTarget;
-		
+
 		const fields = [];
-		let name;
-		let email;
+		let name = Livechat.guestName;
+		let email = Livechat.guestEmail;
 
 		if (Livechat.nameFieldRegistrationForm) {
 			fields.push('name');
@@ -106,7 +112,7 @@ Template.register.onCreated(function() {
 
 		return valid;
 	};
-	
+
 	this.showError = (msg) => {
 		$('.error').addClass('show');
 		this.error.set(msg);
