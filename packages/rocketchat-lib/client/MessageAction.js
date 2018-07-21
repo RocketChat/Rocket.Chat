@@ -117,8 +117,10 @@ RocketChat.MessageAction = new class {
 		if (!roomData) {
 			throw new Error('room-not-found');
 		}
-		const routePath = RocketChat.roomTypes.getRouteLink(roomData.t, roomData);
-		return `${ Meteor.absoluteUrl().replace(/\/$/, '') + routePath }?msg=${ msgId }`;
+
+		const subData = RocketChat.models.Subscriptions.findOne({rid: roomData._id, 'u._id': Meteor.userId()});
+		const routePath = RocketChat.roomTypes.getRouteLink(roomData.t, subData || roomData);
+		return `${ Meteor.absoluteUrl(routePath.replace(/^\//, '')) }?msg=${ msgId }`;
 	}
 };
 
