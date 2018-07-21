@@ -1,3 +1,4 @@
+// DEPRECATE
 Meteor.methods({
 	getRoomIdByNameOrId(rid) {
 		check(rid, String);
@@ -14,11 +15,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId'
 			});
-		}
-
-		const user = Meteor.user();
-		if (user && user.username && room.usernames.indexOf(user.username) !== -1) {
-			return room._id;
 		}
 
 		if (room.t !== 'c' || RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') !== true) {
