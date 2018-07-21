@@ -17,6 +17,8 @@ RocketChat._setRealName = function(userId, name) {
 	RocketChat.models.Users.setName(user._id, name);
 	user.name = name;
 
+	RocketChat.models.Subscriptions.updateDirectFNameByName(user.username, name);
+
 	if (RocketChat.settings.get('UI_Use_Real_Name') === true) {
 		RocketChat.Notifications.notifyLogged('Users:NameChanged', {
 			_id: user._id,
