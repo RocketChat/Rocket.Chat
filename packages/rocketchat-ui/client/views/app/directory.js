@@ -113,7 +113,7 @@ Template.directory.helpers({
 				type = 'd';
 				routeConfig = { name: item.username };
 			}
-		    RocketChat.roomTypes.openRouteLink(type, routeConfig);
+			RocketChat.roomTypes.openRouteLink(type, routeConfig);
 		};
 	},
 	isLoading() {
