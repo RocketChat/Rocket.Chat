@@ -3,8 +3,9 @@ import toastr from 'toastr';
 import { Session } from 'meteor/session'
 
 Template.webdavFilePicker.rendered = function () {
+	const accountId = this.data.accountId;
 	Session.set('webdavCurrentFolder', "/");
-	Meteor.call('getWebdavFileList', "/", function (error, result) {
+	Meteor.call('getWebdavFileList',  accountId, "/", function (error, result) {
 		Session.set('webdavNodes', result);
 	});
 };
@@ -14,29 +15,29 @@ Template.webdavFilePicker.helpers({
 		let icon = 'file-generic';
 		let type = '';
 
-		if (this.type == 'directory') {
-			icon = 'icon-folder';
-			type = 'icon-folder';
+		let extension = this.basename.split('.').pop();
+		if(extension === this.basename) {
+			extension = '';
 		}
-		if (this.mime.match(/application\/pdf/)) {
+
+		if (this.type === 'directory') {
+			icon = 'discover';
+			type = 'directory';
+		} else if (this.mime.match(/application\/pdf/)) {
 			icon = 'file-pdf';
 			type = 'pdf';
-		}
-		if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
+		} else if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
 			icon = 'file-document';
 			type = 'document';
-		}
-		if (['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet',
+		} else if (['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet',
 			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].includes(this.mime)) {
 			icon = 'file-sheets';
 			type = 'sheets';
-		}
-		if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
+		} else if (['application/vnd.ms-powerpoint', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
 			icon = 'file-sheets';
 			type = 'ppt';
 		}
-
-		return {icon, type};
+		return {icon, type, extension};
 	},
 	equals(a, b) {
 		return a === b;
@@ -50,6 +51,7 @@ Template.webdavFilePicker.helpers({
 });
 Template.webdavFilePicker.events({
 	'click #webdav-go-back'() {
+		const accountId = Template.instance().data.accountId;
 		let currentFolder = Session.get('webdavCurrentFolder');
 
 		//determine parent directory to go back
@@ -58,23 +60,25 @@ Template.webdavFilePicker.events({
 			if(currentFolder[currentFolder.length-1] === '/') {
 				currentFolder = currentFolder.slice(0, -1);
 			}
-			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf("/"));
+			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf("/")+1);
 		}
 		Session.set('webdavCurrentFolder', parentFolder);
-		Meteor.call('getWebdavFileList', parentFolder, function (error, response) {
+		Meteor.call('getWebdavFileList', accountId, parentFolder, function (error, response) {
 			Session.set('webdavNodes', response);
 		});
 	},
 	'click .webdav_directory'() {
+		const accountId = Template.instance().data.accountId;
 		Session.set('webdavCurrentFolder', this.filename);
-		Meteor.call('getWebdavFileList', this.filename, function (error, response) {
+		Meteor.call('getWebdavFileList', accountId, this.filename, function (error, response) {
 			Session.set('webdavNodes', response);
 		});
 	},
 	'click .webdav_file'() {
 		const roomId = Session.get('openedRoom');
+		const accountId = Template.instance().data.accountId;
 		let file = this;
-		Meteor.call('getFileFromWebdav', file, function (error, response) {
+		Meteor.call('getFileFromWebdav', accountId, file, function (error, response) {
 			if (error) {
 				return toastr.error(t(error.error));
 			}
@@ -178,9 +182,6 @@ Template.webdavFilePicker.events({
 					}
 				});
 			});
-
-			Session.set('webdavCurrentFolder', '');
-			Session.set('webdavNodes', '');
 		});
 	},
 });
