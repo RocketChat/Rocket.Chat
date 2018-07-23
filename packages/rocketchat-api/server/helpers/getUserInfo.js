@@ -10,7 +10,8 @@ const getInfoFromUserObject = (user) => {
 		active,
 		language,
 		roles,
-		settings
+		settings,
+		customFields
 	} = user;
 	return {
 		_id,
@@ -23,7 +24,8 @@ const getInfoFromUserObject = (user) => {
 		active,
 		language,
 		roles,
-		settings
+		settings,
+		customFields
 	};
 };
 

@@ -80,41 +80,6 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 	}
 });
 
-/**
- DEPRECATED
- // TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
- **/
-RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
-	post() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-		if (!this.bodyParams.latest) {
-			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
-		}
-
-		if (!this.bodyParams.oldest) {
-			return RocketChat.API.v1.failure('Body parameter "oldest" is required.');
-		}
-
-		const latest = new Date(this.bodyParams.latest);
-		const oldest = new Date(this.bodyParams.oldest);
-
-		let inclusive = false;
-		if (typeof this.bodyParams.inclusive !== 'undefined') {
-			inclusive = this.bodyParams.inclusive;
-		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanChannelHistory', { roomId: findResult._id, latest, oldest, inclusive });
-		});
-
-		return RocketChat.API.v1.success(this.deprecationWarning({
-			endpoint: 'channels.cleanHistory',
-			versionWillBeRemove: 'v0.67'
-		}));
-	}
-});
-
 RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
@@ -164,10 +129,8 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof subscription !== 'undefined' && subscription.open) {
-			if (subscription.ls) {
-				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
-				unreadsFrom = subscription.ls;
-			}
+			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+			unreadsFrom = subscription.ls || subscription.ts;
 			userMentions = subscription.userMentions;
 			joined = true;
 		}
