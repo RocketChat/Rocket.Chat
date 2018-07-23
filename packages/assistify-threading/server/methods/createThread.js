@@ -10,6 +10,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 export class ThreadBuilder {
 	constructor(parentRoomId, openingQuestion) {
 		this._openingQuestion = openingQuestion;
+		if (!this._openingQuestion.u) {
+			this._openingQuestion.u = Meteor.user();
+		}
 		this._parentRoomId = parentRoomId;
 	}
 
@@ -87,9 +90,7 @@ export class ThreadBuilder {
 			// 		}]
 			// 	});
 			// Re-post message in the new room
-			const msgAuthor = this._openingQuestion.u
-				? RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username)
-				: Meteor.user().username;
+			const msgAuthor = RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username);
 
 			const msgRePosted = this._postMessage(
 				roomCreated,
@@ -99,6 +100,10 @@ export class ThreadBuilder {
 			);
 
 			if (msgRePosted) {
+				if (!this._openingQuestion._id) {
+					// TODO: If the thread was created without selecting a message in the parent, we need to create a message first
+					return;
+				}
 				/* Add a reference to the original message which can be rendered for navigation */
 				RocketChat.models.Messages.setMessageAttachments(this._openingQuestion._id, [{
 					author_name: this._openingQuestion.u.username || this._openingQuestion.u.name,
