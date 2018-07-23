@@ -3,14 +3,15 @@ class ModelSessions extends RocketChat.models._Base {
 		super(...arguments);
 
 		this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1, 'sessionId': 1 }, { unique: 1 });
-		this.tryEnsureIndex({ 'sessionId': 1 });
+		this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1 });
 		this.tryEnsureIndex({ 'sessionId': 1, 'userId': 1 });
+		this.tryEnsureIndex({ 'sessionId': 1 });
 	}
 
-	createOrUpdate(data) {
+	createOrUpdate(data = {}) {
 		const { year, month, day, sessionId } = data;
 
-		if (!sessionId) {
+		if (!(year && month && day && sessionId)) {
 			return;
 		}
 
@@ -24,7 +25,7 @@ class ModelSessions extends RocketChat.models._Base {
 		});
 	}
 
-	updateBySessionIds(array, data) {
+	updateBySessionIds(array, data = {}) {
 		const query = { sessionId: { $in: array } };
 
 		const update = {
