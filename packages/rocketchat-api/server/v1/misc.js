@@ -150,13 +150,14 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		}
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
+		const page = offset <= 0 ? 0 : Math.ceil(offset / count);
 
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
 			text,
 			type,
 			sortBy,
 			sortDirection,
-			page: offset,
+			page,
 			limit: count
 		}));
 
