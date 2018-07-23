@@ -31,7 +31,7 @@ const reloadUsersFromRoomMessages = () => {
 			_id: username,
 			username,
 			name,
-			status: Tracker.nonReactive(() => Session.get(`user_${ username }_status`) || 'offline'),
+			status: Tracker.nonreactive(() => Session.get(`user_${ username }_status`) || 'offline'),
 			ts
 		}));
 };
