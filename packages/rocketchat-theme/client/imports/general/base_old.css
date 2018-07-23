@@ -4644,6 +4644,10 @@ body:not(.is-cordova) {
 
 	& .logo {
 		display: block;
+		width: 100%;
+		max-width: 520px;
+		margin: 0 auto;
+		padding: 0 20px;
 
 		& > img {
 			position: relative;
@@ -4672,9 +4676,6 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
-		width: 520px;
-		padding: 0 20px;
-		margin: auto;
 
 		display: block;
 	}
