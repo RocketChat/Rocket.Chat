@@ -1,54 +1,59 @@
 <template name="CreateThread">
-	{{#unless channelSelectionEnabled}}
-	<header class="create-channel__header">
-		<h1 class="create-channel__title">{{_ "Thread"}}</h1>
-		<p class="create-channel__description">{{_ "Threading_description"}}</p>
-	</header>
-	<form class="create-channel__content">
-		<div class="create-channel__inputs">
-			<div class="rc-input">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ "Your_question"}}</div>
-					<div class="rc-input__wrapper">
-						<div class="rc-input__icon">
-							{{> icon block="rc-input__icon-svg" icon="send"}}
+	<div class="create-thread">
+		{{#unless channelSelectionEnabled}}
+		<header class="create-channel__header">
+			<h1 class="create-channel__title">{{_ "Thread"}}</h1>
+			<p class="create-channel__description">{{_ "Threading_description"}}</p>
+		</header>
+		<form class="create-channel__content">
+			<div class="create-channel__inputs">
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__wrapper">
+							<textarea name="first_question" id="first_question" class="rc-input__element" placeholder="{{_ 'New_thread_first_message'}}"
+							 maxlength="{{maxMessageLength}}"></textarea>
 						</div>
-						<textarea name="first_question" id="first_question" class="rc-input__textarea" placeholder="{{_ 'New_request_first_question'}}"
-						 maxlength="{{maxMessageLength}}"></textarea>
-					</div>
-				</label>
-			</div>
-			{{#if manuallySelectParent}}
-			<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}}">
-				<label class="rc-input__label">
-					<div class="rc-input__title">{{_ "Channel"}}</div>
-					<div class="rc-input__wrapper">
-						<div class="rc-input__icon">
-							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--lock" aria-hidden="true">
-								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-lock"></use>
-							</svg>
+					</label>
+				</div>
+				{{#unless manuallySelectParent}}
+				<div class="target-channel create-channel__description">
+					<span>{{ targetChannelText }}</span>
+					<span class="action-link js-select-parent">{{_ "Thread_select_different_parent"}}</span>
+				</div>
+				{{else}}
+				<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}}">
+					<label class="rc-input__label">
+						<div class="rc-input__title">{{_ "Thread_target_channel"}}</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--lock" aria-hidden="true">
+									<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-lock"></use>
+								</svg>
+							</div>
+							<input name="parentChannel" type="text" class="rc-input__element" id="parentChannel-search" placeholder={{_
+							 "New_request_for_parentChannel"}} autocomplete=off value={{parentChannel}}>
+							<div class="rc-input__icon rc-input__icon--right">
+								<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--book-alt" aria-hidden="true">
+									<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-book-alt"></use>
+								</svg>
+							</div>
 						</div>
-						<input name="expertise" type="text" class="rc-input__element" id="expertise-search" placeholder={{_
-						 "New_request_for_expertise"}} autocomplete=off value={{expertise}}>
-						<div class="rc-input__icon rc-input__icon--right">
-							<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--book-alt" aria-hidden="true">
-								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-book-alt"></use>
-							</svg>
+						{{#unless autocomplete 'isShowing'}} {{#if parentChannel}} {{#if parentChannelError}} {{> CreateThreadInputError text=parentChannelError}}
+						{{/if}} {{/if}} {{/unless}} {{#with config}} {{#if autocomplete 'isShowing'}}
+						<div class="fadeInDown">
+							{{#if autocomplete 'isLoaded'}} {{> popupList data=config items=items}} {{/if}}
 						</div>
+						{{/if}} {{/with}}
+					</label>
+				</div>
+				{{/unless}}
+				<div class="submit">
+					<div class="rc-input">
+						<button class="rc-button rc-button--primary js-save-thread {{createIsDisabled}}" {{createIsDisabled}}>{{_ " Create "}}</button>
 					</div>
-					{{#unless autocomplete 'isShowing'}} {{#if expertise}} {{#if parentChannelError}} {{> CreateThreadInputError text=parentChannelError}}
-					{{/if}} {{/if}} {{/unless}} {{#with config}} {{#if autocomplete 'isShowing'}}
-					<div class="fadeInDown">
-						{{#if autocomplete 'isLoaded'}} {{> popupList data=config items=items}} {{/if}}
-					</div>
-					{{/if}} {{/with}}
-				</label>
+				</div>
 			</div>
-			{{/if}}
-			<div class="rc-input">
-				<input class="rc-button rc-button--primary js-save-thread" type="submit" data-button="create" value="{{_ " Create "}}" {{createIsDisabled}}>
-			</div>
-		</div>
-	</form>
-	{{else}} {{> AssistifyWordCloud properties=getWordcloudProperties}} {{/unless}}
+		</form>
+		{{else}} {{> AssistifyWordCloud properties=getWordcloudProperties}} {{/unless}}
+	</div>
 </template>

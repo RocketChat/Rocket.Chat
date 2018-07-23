@@ -51,24 +51,24 @@ export class ThreadBuilder {
 	_linkMessages(roomCreated, parentRoom) {
 		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		if (rocketCatUser && Meteor.userId()) {
-			/**
-			 * Parent Room
-			 */
-			RocketChat.models.Messages.updateMsgWithThreadMessage(
-				Meteor.user().username === this._openingQuestion.u.username ? 'thread-started-message-self' : 'thread-started-message',
-				this._openingQuestion._id,
-				'',
-				Meteor.user(),
-				{
-					mentions: [
-						{
-							_id: Meteor.user()._id, // Thread Initiator
-							name: Meteor.user().username
-						}]
-				}
-			);
+			// /**  //TODO: Add link in parent Room
+			//  * Parent Room
+			//  */
+			// RocketChat.models.Messages.updateMsgWithThreadMessage(
+			// 	Meteor.user().username === this._openingQuestion.u.username ? 'thread-started-message-self' : 'thread-started-message',
+			// 	this._openingQuestion._id,
+			// 	'',
+			// 	Meteor.user(),
+			// 	{
+			// 		mentions: [
+			// 			{
+			// 				_id: Meteor.user()._id, // Thread Initiator
+			// 				name: Meteor.user().username
+			// 			}]
+			// 	}
+			// );
 
-			// The follwing lines would have the attachment remain at the original message.
+			// The following lines would have the attachment remain at the original message.
 			// if (this._openingQuestion.attachments) {
 			// 	RocketChat.models.Messages.addMessageAttachments(this._openingQuestion._id, this._openingQuestion.attachments);
 			// }
@@ -76,18 +76,21 @@ export class ThreadBuilder {
 			/*
 			 * Child Room
 			 */
-			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('thread-welcome-message', roomCreated._id, this._getMessageUrl(this._openingQuestion._id), rocketCatUser,
-				{
-					mentions: [{
-						_id: Meteor.user()._id, // Thread Initiator
-						name: Meteor.user().username // Use @Name field for navigation
-					}],
-					channels: [{
-						_id: parentRoom._id // Parent Room ID
-					}]
-				});
+			// RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('thread-welcome-message', roomCreated._id, this._getMessageUrl(this._openingQuestion._id), rocketCatUser,
+			// 	{
+			// 		mentions: [{
+			// 			_id: Meteor.user()._id, // Thread Initiator
+			// 			name: Meteor.user().username // Use @Name field for navigation
+			// 		}],
+			// 		channels: [{
+			// 			_id: parentRoom._id // Parent Room ID
+			// 		}]
+			// 	});
 			// Re-post message in the new room
-			const msgAuthor = RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username); // Search with the technical username
+			const msgAuthor = this._openingQuestion.u
+				? RocketChat.models.Users.findOneByUsername(this._openingQuestion.u.username)
+				: Meteor.user().username;
+
 			const msgRePosted = this._postMessage(
 				roomCreated,
 				msgAuthor,
@@ -111,11 +114,22 @@ export class ThreadBuilder {
 		}
 	}
 
+	_getMembers() {
+		const members = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._parentRoomId, {
+			fields: {
+				'u.username': 1
+			}
+		}).fetch().map(s => s.u.username);
+
+		// TODO: filter on owner, moderators and those online (see @here-implementation)
+		return members;
+	}
+
 	create() {
 		const parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
 		// Generate RoomName for the new room to be created.
 		this.name = `${ parentRoom.name }-${ ThreadBuilder.getNextId() }`;
-		const roomCreateResult = RocketChat.createRoom(parentRoom.t, this.name, Meteor.user() && Meteor.user().username, parentRoom.usernames, false, { parentRoomId: this._parentRoomId });
+		const roomCreateResult = RocketChat.createRoom(parentRoom.t, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, { parentRoomId: this._parentRoomId });
 
 		if (parentRoom.name) {
 			RocketChat.saveRoomTopic(roomCreateResult.rid, parentRoom.name, Meteor.user());
@@ -124,15 +138,16 @@ export class ThreadBuilder {
 		// Create messages in the newly created thread and it's parent which link the two rooms
 		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
 		if (room && parentRoom) {
-			this._linkMessages(room, parentRoom);
+			this._linkMessages(room, parentRoom); // TODO: post links
 		}
 
 		return roomCreateResult;
 	}
 }
 
+// Expose the functionality to the client as method
 Meteor.methods({
-	ThreadCreation(parentRoomId, openingQuestion) {
+	createThread(parentRoomId, openingQuestion) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ThreadCreation' });
 		}

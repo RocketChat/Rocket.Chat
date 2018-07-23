@@ -1,0 +1,28 @@
+.create-thread {
+	margin-top: 25%;
+
+	max-width: 80%;
+
+	padding: 0.25rem 2rem;
+}
+
+.create-thread header.create-channel__header {
+    text-align: center;
+}
+
+.create-thread textarea {
+		width: 100%;
+
+		height: 45px;
+		min-height: 80px;
+
+	    padding: 0.75rem 1rem;
+
+		font: inherit;
+
+		line-height: 20px;
+
+		resize: vertical;
+
+		max-height: 250px;
+}

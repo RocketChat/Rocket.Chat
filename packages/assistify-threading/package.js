@@ -23,8 +23,7 @@ Package.onUse(function(api) {
 
 	//Methods
 	api.addFiles('server/methods/createThread.js', 'server');
-	// api.addFiles('server/methods/requestsList.js', 'server');
-	// api.addFiles('server/methods/isValidExpertise.js', 'server');
+	api.addFiles('server/methods/getParentChannelId.js', 'server');
 	// api.addFiles('server/methods/expertiseList.js', 'server');
 
 	// we have all migrations in one single file
@@ -46,4 +45,6 @@ Package.onUse(function(api) {
 	// api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.js', 'client');
 	// api.addFiles('client/views/messageActions/ThreadMessageAction.js', 'client'); // TODO: Re-add
 
+	//styling
+	api.addFiles('client/public/stylesheets/threading.css', 'client');
 });
