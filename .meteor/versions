@@ -246,6 +246,7 @@ rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
+rocketchat:ipfs@0.0.1
 routepolicy@1.0.13
 server-render@0.3.1
 service-configuration@1.0.11

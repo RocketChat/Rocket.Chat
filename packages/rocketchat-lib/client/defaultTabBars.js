@@ -21,8 +21,8 @@ RocketChat.TabBar.addButton({
 	id: 'searchOn-IPFS',
 	i18nTitle: 'Get file from IPFS',
 	icon: 'magnifier',
-	template: 'getFileFromIPFS',
-	order: 3
+	template: 'fetchFilesfromIPFS',
+	order: 5
 });
 
 

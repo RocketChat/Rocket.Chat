@@ -154,6 +154,7 @@ rocketchat:videobridge
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:nrr
+rocketchat:ipfs
 
 konecty:change-case
 konecty:delayed-task

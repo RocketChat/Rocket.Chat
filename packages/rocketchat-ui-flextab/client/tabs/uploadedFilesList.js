@@ -36,8 +36,7 @@ Template.uploadedFilesList.helpers({
 
 		if (this.type.match(/application\/pdf/)) {
 			icon = 'file-pdf';
-			type = 'pdf'; 
-
+			type = 'pdf';
 		}
 		if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.type)) {
 			icon = 'file-document';

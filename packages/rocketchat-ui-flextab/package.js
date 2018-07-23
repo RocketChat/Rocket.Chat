@@ -32,22 +32,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/userEdit.js', 'client');
 	api.addFiles('client/tabs/userInfo.js', 'client');
 	api.addFiles('client/tabs/keyboardShortcuts.html', 'client');
-	api.addFiles('client/tabs/getFileFromIPFS.html', 'client');
-	api.addFiles('client/tabs/getFileFromIPFS.js', 'client');
 });
-
-
-// IPFS
-
-
-// ipfs mkdir /test2
-// ipfs files write --create  /test2/img cropped-brave_icon_512x.jpeg
-// ipfs file stat /test2
-// ipfs ls <HASH of Dir>
-// ipfs files rm /test2
-
-
-// API  (ipfs files api) https://ipfs.io/docs/api/
-
-// curl "http://localhost:5001/api/v0/cat?arg=QmShLqDHLZ4NECqaiez6dW1Yhc4WDDNpi7QTH8XRFvuayf"
 

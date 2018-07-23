@@ -51,6 +51,7 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
+		console.log(user);
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
@@ -64,7 +65,7 @@ Meteor.methods({
 			groupable: false,
 			attachments: [attachment]
 		}, msgData);
-
+		console.log(msg);
 		msg = Meteor.call('sendMessage', msg);
 
 		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));

@@ -5,38 +5,27 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import buffer from 'buffer';
-import IPFS from 'ipfs-mini';
-import cp from 'crypto-js';
 import { Meteor } from 'meteor/meteor';
 
 
-function storetoIPFS(file, key)
-{
+function storetoIPFS(file) {
 	const IPFSreader = new FileReader();
-	IPFSreader.onload = function ()
-	{
-		
+	IPFSreader.onload = function() {
 		const fileName = file.name;
 		const buf = new buffer.Buffer(IPFSreader.result);
-		
-		Meteor.call('addtoIPFS',buf,fileName ,(error, result) => {
-		});
-		
-	}
+		Meteor.call('addtoIPFS', buf, fileName);
+	};
 	IPFSreader.readAsArrayBuffer(file);
 }
 
-function readAsDataURL(file, callback) 
-{
+function readAsDataURL(file, callback) {
 	const reader = new FileReader();
 	reader.onload = ev => callback(ev.target.result, file);
 	return reader.readAsDataURL(file);
 }
 
-function getUploadPreview(file, callback) 
-{
+function getUploadPreview(file, callback) {
 	// If greater then 10MB don't try and show a preview
-	
 	if (file.file.size > (10 * 1000000)) {
 		return callback(file, null);
 	} else if (file.file.type == null) {
@@ -188,10 +177,8 @@ fileUpload = function(filesToUpload) {
 					size: file.file.size,
 					type: file.file.type,
 					rid: roomId,
-					description: document.getElementById('file-description').value,
-					IPFSSeed: document.getElementById('IPFSSeed').value,
+					description: document.getElementById('file-description').value
 				};
-				console.log(record.IPFSSeed);
 				consume();
 				if (!isConfirm) {
 					return;
@@ -238,7 +225,7 @@ fileUpload = function(filesToUpload) {
 						Session.set('uploading', uploading);
 						return;
 					}
-					storetoIPFS(upload.file,record.IPFSSeed);
+					storetoIPFS(upload.file);
 					if (file) {
 						Meteor.call('sendFileMessage', roomId, storage, file, () => {
 							Meteor.setTimeout(() => {

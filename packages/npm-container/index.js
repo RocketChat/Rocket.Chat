@@ -1,9 +1,9 @@
 Meteor.npmRequire = function (moduleName) {
-  let module = Npm.require(moduleName)
+  const module = Npm.require(moduleName);
   return module
 }
 
-Meteor.require = function (moduleName) {
-  console.warn('Meteor.require is deprecated. Please use Meteor.npmRequire instead!')
-  return Meteor.npmRequire(moduleName)
+Meteor.require = function(moduleName) {
+  console.warn('Meteor.require is deprecated. Please use Meteor.npmRequire instead!');
+  return Meteor.npmRequire(moduleName);
 }
