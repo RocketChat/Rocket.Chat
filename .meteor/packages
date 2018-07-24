@@ -194,3 +194,6 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 underscore
+
+assistify:ai
+assistify:defaults
