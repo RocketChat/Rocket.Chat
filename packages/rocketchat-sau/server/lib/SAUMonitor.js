@@ -6,15 +6,11 @@ const removeEmptyProps = obj => {
 	return obj;
 };
 
-const getTodayObj = () => {
-	const today = new Date();
-	return { day: today.getUTCDate(), month: today.getUTCMonth() + 1, year: today.getUTCFullYear() };
+const getDateObj = () => {
+	const date = new Date();
+	return { day: date.getUTCDate(), month: date.getUTCMonth() + 1, year: date.getUTCFullYear() };
 };
 
-const getFormattedDate = () => {
-	const { day, month, year } = getTodayObj();
-	return `${ year }/${ month }/${ day }`;
-};
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
  */
@@ -26,7 +22,7 @@ export class SAUMonitor {
 		this._debug = false;
 		this._timeMonitor = 15000;
 		this._timer = null;
-		this._currentDay = getFormattedDate();
+		this._monitorDay = getDateObj();
 	}
 
 	start() {
@@ -35,16 +31,16 @@ export class SAUMonitor {
 		}
 
 		if (typeof this._timeMonitor !== 'number' || this._timeMonitor <= 0) {
-			this._log(`${ this._serviceName } ' - SAUMonitor - Error starting monitor'`); //TODO: display timeMonitor error
+			this._log(`${ this._serviceName } - Error starting monitor`); //TODO: display timeMonitor error
 			return;
 		}
 
-		this._log(`${ this._serviceName } ' - Starting...'`); //TODO: Improve starting message..
+		this._log(`${ this._serviceName } - Starting...`);
 		//start session control
 		const self = this;
 		this._startMonitoring(() => {
 			self._started = true;
-			self._log(`${ this._serviceName } ' - Started.'`); //TODO: Improve started message..
+			self._log(`${ this._serviceName } - Started.`);
 		});
 	}
 
@@ -60,7 +56,7 @@ export class SAUMonitor {
 		}
 
 		this.storage.clear();
-		this.log(`${ this._serviceName } ' - Stopped.'`); //TODO: Improve stopped message..
+		this.log(`${ this._serviceName } - Stopped.`);
 	}
 
 	isRunning() {
@@ -112,11 +108,14 @@ export class SAUMonitor {
 
 		Meteor.onConnection(connection => {
 			connection.onClose(() => {
-				this.storage.remove(connection.id, connection.storeId);
-				RocketChat.models.Sessions.updateBySessionIds([connection.id], { closeAt: new Date() });
+				this._log(`${ this._serviceName } - Closing connection = ${ connection.id }`);
+				RocketChat.models.Sessions.updateBySessionId(connection.id, { closeAt: new Date() });
+				if (!this.storage.remove(connection.id, connection.storeId)) {
+					this._log(`${ this._serviceName } - Storage: Connection not found = ${ connection.id }`);
+				}
 			});
 
-			this._handleSession(connection, getTodayObj());
+			this._handleSession(connection, getDateObj());
 		});
 	}
 
@@ -127,7 +126,7 @@ export class SAUMonitor {
 
 		Accounts.onLogin(info => {
 			const userId = info.user._id;
-			const params = { userId, loginAt: new Date(), ...getTodayObj() };
+			const params = { userId, loginAt: new Date(), ...getDateObj() };
 			this._handleSession(info.connection, params);
 		});
 
@@ -156,25 +155,46 @@ export class SAUMonitor {
 			return;
 		}
 
-		const currentDay = getFormattedDate();
-		if (this._currentDay !== currentDay) {
-			this._currentDay = currentDay;
-			//TODO: When the current day is changed, it's necessary to update the last activities of the sessions on previous day(23:59:59)
-			//TODO: and then, it's necessary to recreate the current sessions basead on Meteor.server.sessions, because the struture of the document needs to be recreated
+		const currentDay = getDateObj();
+		const { year, month, day } = this._monitorDay;
+
+		if (JSON.stringify(this._monitorDay) !== JSON.stringify(currentDay)) {
+			//When the current day is changed, it's necessary to update the last activities of the sessions on previous day(23:59:59)
+			//it's necessary to recreate the current sessions because the struture of the document needs to be recreated
+			const beforeDate = this._monitorDay;
+			const beforeDateTime = new Date(beforeDate.year, beforeDate.month-1, beforeDate.day, 23, 59, 59, 999);
+			const nextDateTime = new Date(currentDay.year, currentDay.month-1, currentDay.day, 0, 0, 0, 0);
+
+			this._applyAllStorageSessions(sessions => {
+				this._log(`${ this._serviceName } - Migrating sessions..`);
+				this._cloneSessionsToDate(beforeDate, currentDay, sessions, { createdAt: nextDateTime, lastActivityAt: new Date() });
+
+				Meteor.defer(() => {
+					this._log(`${ this._serviceName } - updating...`);
+					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndIds({ year, month, day }, sessions, { lastActivityAt: beforeDateTime, closedAt: beforeDateTime });
+					this._log(`${ this._serviceName } - updated sessions: ${ update }`);
+					this._log(`${ this._serviceName } - Sessions migrated.`);
+				});
+			});
+
+			this._monitorDay = currentDay;
 		} else {
 			//Otherwise, just update the lastActivityAt field
-			Meteor.defer(() => {
-				this.storage.applyAll(sessions => {
-					this._log(`${ this._serviceName } ' - Updating sessions...`); //TODO: Improve updating message..
-					console.log(sessions);
-					const update = RocketChat.models.Sessions.updateBySessionIds(sessions, { lastActivityAt: new Date() });
-					this._log(`${ this._serviceName } ' - Sessions updated: ${ update }`); //TODO: Improve updating message..
+			this._applyAllStorageSessions(sessions => {
+				Meteor.defer(() => {
+					this._log(`${ this._serviceName } - Updating sessions..`);
+					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndIds({ year, month, day }, sessions, { lastActivityAt: new Date() });
+					this._log(`${ this._serviceName } - Sessions updated(${ update }).`);
 				});
 			});
 		}
 	}
 
 	_getConnectionInfo(connection, params = {}) {
+		if (!connection) {
+			return;
+		}
+
 		const ip = connection.httpHeaders ? connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] : connection.clientAddress;
 		const host = connection.httpHeaders && connection.httpHeaders.host;
 		const info = {
@@ -218,16 +238,67 @@ export class SAUMonitor {
 	}
 
 	_initActiveServerSessions() {
-		this._log('initiating active server sessions..');
+		this._applyAllServerSessions(connectionHandle => {
+			this._handleSession(connectionHandle);
+		});
+	}
+
+	_applyAllStorageSessions(callback) {
+		if (!callback || typeof callback !== 'function') {
+			return;
+		}
+
+		this.storage.applyAll(sessions => {
+			callback(sessions);
+		});
+	}
+
+	_applyAllServerSessions(callback) {
+		if (!callback || typeof callback !== 'function') {
+			return;
+		}
+
 		const sessions = Object.values(Meteor.server.sessions);
 		sessions.forEach(session => {
-			this._handleSession(session.connectionHandle);
+			callback(session.connectionHandle);
 		});
 	}
 
 	_updateConnectionInfo(sessionId, handleId) {
+		if (!handleId) {
+			return;
+		}
 		if (Meteor.server.sessions[sessionId]) {
 			Meteor.server.sessions[sessionId].connectionHandle['storeId'] = handleId;
 		}
 	}
+
+	async _cloneSessionsToDate(from = {}, to = {}, sessionIds, data = {}) {
+		const { year, month, day } = from;
+		const query = {
+			year,
+			month,
+			day,
+			sessionId: { $in: sessionIds }
+		};
+
+		const sessionsList = await RocketChat.models.Sessions.find(query).map(doc => {
+			const newDoc = Object.assign(doc, data, to);
+			delete newDoc._id;
+			return newDoc;
+		});
+
+		if (sessionsList.length === 0) {
+			return;
+		}
+
+		const collectionObj = RocketChat.models.Sessions.model.rawCollection();
+		try {
+			collectionObj.insertMany(sessionsList);
+		} catch (e) {
+			this.log(`${ this._serviceName } - Error recreating sessions.`);
+		}
+
+	}
+
 }

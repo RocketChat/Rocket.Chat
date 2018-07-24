@@ -2,45 +2,52 @@ export class BucketStorage {
 //will store the arrays in buckets
 	constructor() {
 		this._limit = 100;
-		this._queue = {};
+		this._container = {};
 		this._count = 0;
 	}
 
 	add(value) {
-		const bucketId = this._getNextBucket();
+		const bucketId = !this._findBucketIdByValue(value) && this._getNextBucket();
 		if (!bucketId) {
 			return;
 		}
 
-		this._queue[bucketId].storage.push(value);
-		this._queue[bucketId].count++;
+		this._container[bucketId].storage.push(value);
+		this._container[bucketId].count++;
 		return bucketId;
 	}
 
 	remove(value, bucketId = null) {
+		if (!this._isValidQueue()) {
+			return false;
+		}
+
 		if (!bucketId) {
 			bucketId = this._findBucketIdByValue(value);
 		}
 
-		if (!this._queue || typeof this._queue !== 'object') {
-			return;
+		if (!bucketId || !this._container[bucketId]) {
+			return false;
 		}
 
-		if (!bucketId || !this._queue[bucketId]) {
-			return;
+		const arrayIndex = this._container[bucketId].storage.indexOf(value);
+		if (arrayIndex === -1) {
+			return false;
 		}
 
-		this._queue[bucketId].storage.splice(value, 1);
-		this._queue[bucketId].count--;
+		this._container[bucketId].storage.splice(arrayIndex, 1);
+		this._container[bucketId].count--;
 
-		if (this._queue[bucketId].count === 0) {
-			delete this._queue[bucketId];
+		if (this._container[bucketId].count === 0) {
+			delete this._container[bucketId];
 			this._count--;
 		}
+
+		return true;
 	}
 
 	clear() {
-		this._queue = {};
+		this._container = {};
 	}
 
 	count() {
@@ -52,7 +59,7 @@ export class BucketStorage {
 			return;
 		}
 
-		const buckets = this._queue;
+		const buckets = this._container;
 		Object.keys(buckets).forEach(b => {
 			if (buckets[b].count && buckets[b].count > 0) {
 				callback(buckets[b].storage);
@@ -60,9 +67,13 @@ export class BucketStorage {
 		});
 	}
 
+	_isValidQueue() {
+		return this._container && typeof this._container === 'object';
+	}
+
 	_getNextBucket() {
 		const limit = this._limit;
-		const buckets = this._queue;
+		const buckets = this._container;
 		let bucketId = Object.keys(buckets).find(key => buckets[key].count && buckets[key].count < limit);
 
 		if (!bucketId) {
@@ -76,11 +87,11 @@ export class BucketStorage {
 		const date = new Date();
 		const timestamp = date.getTime();
 
-		if (!this._queue || typeof this._queue !== 'object') {
+		if (!this._isValidQueue()) {
 			return;
 		}
 
-		this._queue[timestamp] = { storage: [], count: 0 };
+		this._container[timestamp] = { storage: [], count: 0 };
 		this._count++;
 
 		return timestamp;
@@ -88,14 +99,14 @@ export class BucketStorage {
 
 	_findBucketIdByValue(value) {
 		if (!value) {
-			return;
+			return false;
 		}
 
-		if (!this._queue || typeof this._queue !== 'object') {
-			return;
+		if (!this._isValidQueue()) {
+			return false;
 		}
 
-		const buckets = this._queue;
+		const buckets = this._container;
 		return Object.keys(buckets).find(key => buckets[key].storage && buckets[key].storage.indexOf(value) > -1);
 	}
 }

@@ -1,4 +1,4 @@
-import { SAUMonitor } from './SAUMonitor';
+import { SAUMonitor } from './lib/SAUMonitor';
 
 RocketChat.SAUMonitor = new SAUMonitor();
 

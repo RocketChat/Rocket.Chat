@@ -13,7 +13,9 @@ Package.onUse(function(api) {
 	*/
 	api.addFiles([
 		'server/models/Sessions.js',
-		'server/lib/rocketchat.js'
+		'server/startup.js',
+		'server/lib/BucketStore.js',
+		'server/lib/SAUMonitor.js'
 	], 'server');
 
 });

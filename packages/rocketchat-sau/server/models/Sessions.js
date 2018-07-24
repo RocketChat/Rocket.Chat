@@ -25,8 +25,26 @@ class ModelSessions extends RocketChat.models._Base {
 		});
 	}
 
-	updateBySessionIds(array, data = {}) {
-		const query = { sessionId: { $in: array } };
+	updateBySessionId(sessionId, data = {}) {
+		const query = {
+			sessionId
+		};
+
+		const update = {
+			$set: data
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	updateActiveSessionsByDateAndIds({ year, month, day } = {}, sessions, data = {}) {
+		const query = {
+			year,
+			month,
+			day,
+			sessionId: { $in: sessions },
+			closedAt: { $exists: 0 }
+		};
 
 		const update = {
 			$set: data
