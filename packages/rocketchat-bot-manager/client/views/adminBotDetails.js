@@ -4,7 +4,7 @@ import _ from 'underscore';
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
 	this.now = new ReactiveVar(new Date());
-	this.statistics = new ReactiveVar();
+	this.statistics = new ReactiveVar({});
 	this.changed = new ReactiveVar(false);
 	this.ping = new ReactiveVar(undefined);
 
@@ -29,7 +29,8 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (err) {
 				return handleError(err);
 			}
-			this.statistics.set(statistics);
+			const currentStats =_.assign(this.statistics.get(), statistics);
+			this.statistics.set(currentStats);
 		});
 		if (this.isOnline(bot)) {
 			Meteor.call('getBotLiveStats', bot, (err, statistics) => {
@@ -142,10 +143,16 @@ Template.adminBotDetails.helpers({
 		return bot.username;
 	},
 
+	getStack() {
+		const bot = Template.instance().bot.get();
+		if (bot.customClientData && bot.customClientData.stack) {
+			return bot.customClientData.stack;
+		}
+	},
+
 	getFramework() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		if (isOnline && bot.customClientData && bot.customClientData.framework) {
+		if (bot.customClientData && bot.customClientData.framework) {
 			return bot.customClientData.framework;
 		}
 		return TAPi18n.__('Undefined');
@@ -158,14 +165,12 @@ Template.adminBotDetails.helpers({
 
 	canPause() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		return isOnline && bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
+		return bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
 	},
 
 	isPaused() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		if (isOnline && bot.customClientData) {
+		if (bot.customClientData) {
 			return bot.customClientData.pausedMsgStream;
 		}
 	},
@@ -177,8 +182,7 @@ Template.adminBotDetails.helpers({
 
 	ipAddress() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		if (isOnline && bot.customClientData) {
+		if (bot.customClientData) {
 			return bot.customClientData.ipAddress;
 		}
 		return TAPi18n.__('Unknown');
@@ -186,14 +190,12 @@ Template.adminBotDetails.helpers({
 
 	canGetLogs() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		return isOnline && bot.customClientData && bot.customClientData.canGetLogs;
+		return bot.customClientData && bot.customClientData.canGetLogs;
 	},
 
 	canPing() {
 		const bot = Template.instance().bot.get();
-		const isOnline = Template.instance().isOnline(bot);
-		return isOnline && bot.customClientData && bot.customClientData.canListenToHeartbeat;
+		return bot.customClientData && bot.customClientData.canListenToHeartbeat;
 	},
 
 	ping() {
@@ -211,14 +213,13 @@ Template.adminBotDetails.helpers({
 	activeUptime() {
 		const bot = Template.instance().bot.get();
 		const now = Template.instance().now.get();
-		const isOnline = Template.instance().isOnline(bot);
 		let diff = now.getTime() - bot.lastLogin.getTime();
 
-		if (isOnline && bot.customClientData.pausedMsgStream) {
+		if (bot.customClientData.pausedMsgStream) {
 			return TAPi18n.__('Paused');
 		}
 
-		if (isOnline && bot.customClientData.msgStreamLastActive) {
+		if (bot.customClientData.msgStreamLastActive) {
 			// Use min in case the bot relogs in but does not reset stream last active
 			diff = Math.min(diff, now.getTime() - bot.customClientData.msgStreamLastActive.getTime());
 		}

@@ -99,6 +99,17 @@
                   <div class="settings-description">{{_ "Bot_framework_description"}}</div>
                 </div>
               </div>
+              {{#if getStack}}
+              <div class="input-line double-col">
+                <label>{{_ "Stack"}}</label>
+                <div>
+                  {{#each getStack}}
+                  <input type="text" class="rc-input__element" disabled="true" name="client" value="{{name}} {{version}}" />
+                  {{/each}}
+                  <div class="settings-description">{{_ "Bot_stack_description"}}</div>
+                </div>
+              </div>
+              {{/if}}
               {{#if isOnline}}
                 <div class="input-line double-col">
                   <label>{{_ "Connection_Status"}}</label>

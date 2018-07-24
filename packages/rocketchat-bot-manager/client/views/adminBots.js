@@ -42,7 +42,7 @@ Template.adminBots.helpers({
 		if (this.customClientData && this.customClientData.framework) {
 			return this.customClientData.framework;
 		}
-		return 'Undefined';
+		return TAPi18n.__('Undefined');
 	},
 	hasMore() {
 		const instance = Template.instance();
