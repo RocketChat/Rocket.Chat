@@ -23,24 +23,32 @@ export class SAUMonitor {
 		this._timeMonitor = 15000;
 		this._timer = null;
 		this._monitorDay = getDateObj();
+		this._instanceId = null;
 	}
 
-	start() {
+	start(instanceId) {
 		if (this.isRunning()) {
 			return;
 		}
 
-		if (typeof this._timeMonitor !== 'number' || this._timeMonitor <= 0) {
-			this._log(`${ this._serviceName } - Error starting monitor`); //TODO: display timeMonitor error
+		this._instanceId = instanceId;
+
+		if (!this._instanceId) {
+			this._log(`${ this._serviceName } - Error starting monitor: InstanceID is not defined.`);
 			return;
 		}
+		/*
+		if (typeof this._timeMonitor !== 'number' || this._timeMonitor <= 0) {
+			this._log(`${ this._serviceName } - Error starting monitor: TimeMonitor is not defined.`);
+			return;
+		}*/
 
 		this._log(`${ this._serviceName } - Starting...`);
 		//start session control
 		const self = this;
 		this._startMonitoring(() => {
 			self._started = true;
-			self._log(`${ this._serviceName } - Started.`);
+			self._log(`${ this._serviceName } - Started(${ this._instanceId })`);
 		});
 	}
 
@@ -96,6 +104,10 @@ export class SAUMonitor {
 			return;
 		}
 
+		if (this._timeMonitor < 0) {
+			return;
+		}
+
 		this._timer = Meteor.setInterval(() => {
 			this._updateActiveSessions();
 		}, this._timeMonitor);
@@ -109,7 +121,7 @@ export class SAUMonitor {
 		Meteor.onConnection(connection => {
 			connection.onClose(() => {
 				this._log(`${ this._serviceName } - Closing connection = ${ connection.id }`);
-				RocketChat.models.Sessions.updateBySessionId(connection.id, { closeAt: new Date() });
+				RocketChat.models.Sessions.updateByInstanceIdAndSessionId(this._instanceId, connection.id, { closedAt: new Date() });
 				if (!this.storage.remove(connection.id, connection.storeId)) {
 					this._log(`${ this._serviceName } - Storage: Connection not found = ${ connection.id }`);
 				}
@@ -133,7 +145,7 @@ export class SAUMonitor {
 		Accounts.onLogout(info => {
 			const sessionId = info.connection.id;
 			const userId = info.user._id;
-			RocketChat.models.Sessions.updateBySessionIdAndUserId(sessionId, userId, { logoutAt: new Date() });
+			RocketChat.models.Sessions.updateByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId, { logoutAt: new Date() });
 		});
 	}
 
@@ -142,7 +154,9 @@ export class SAUMonitor {
 		const result = RocketChat.models.Sessions.createOrUpdate(data);
 		if (result && result.insertedId) {
 			const handleId = this.storage.add(data.sessionId);
-			this._updateConnectionInfo(data.sessionId, handleId);
+			if (handleId) {
+				this._updateConnectionInfo(data.sessionId, handleId);
+			}
 		}
 	}
 
@@ -171,7 +185,7 @@ export class SAUMonitor {
 
 				Meteor.defer(() => {
 					this._log(`${ this._serviceName } - updating...`);
-					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndIds({ year, month, day }, sessions, { lastActivityAt: beforeDateTime, closedAt: beforeDateTime });
+					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: beforeDateTime, closedAt: beforeDateTime });
 					this._log(`${ this._serviceName } - updated sessions: ${ update }`);
 					this._log(`${ this._serviceName } - Sessions migrated.`);
 				});
@@ -183,7 +197,7 @@ export class SAUMonitor {
 			this._applyAllStorageSessions(sessions => {
 				Meteor.defer(() => {
 					this._log(`${ this._serviceName } - Updating sessions..`);
-					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndIds({ year, month, day }, sessions, { lastActivityAt: new Date() });
+					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: new Date() });
 					this._log(`${ this._serviceName } - Sessions updated(${ update }).`);
 				});
 			});
@@ -199,6 +213,7 @@ export class SAUMonitor {
 		const host = connection.httpHeaders && connection.httpHeaders.host;
 		const info = {
 			sessionId: connection.id,
+			instanceId: this._instanceId,
 			ip,
 			host,
 			...this._getUserAgentInfo(connection),

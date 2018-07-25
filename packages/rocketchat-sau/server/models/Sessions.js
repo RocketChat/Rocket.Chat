@@ -2,22 +2,22 @@ class ModelSessions extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
 
-		this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1, 'sessionId': 1 }, { unique: 1 });
-		this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1 });
-		this.tryEnsureIndex({ 'sessionId': 1, 'userId': 1 });
-		this.tryEnsureIndex({ 'sessionId': 1 });
+		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1, 'year': 1, 'month': 1, 'day': 1 }, { unique: 1 });
+		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1, 'userId': 1 });
+		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1 });
+		//this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1 });
 	}
 
 	createOrUpdate(data = {}) {
-		const { year, month, day, sessionId } = data;
+		const { year, month, day, sessionId, instanceId } = data;
 
-		if (!(year && month && day && sessionId)) {
+		if (!(year && month && day && sessionId && instanceId)) {
 			return;
 		}
 
 		const now = new Date;
 
-		return this.upsert({ year, month, day, sessionId }, {
+		return this.upsert({ instanceId, sessionId, year, month, day }, {
 			$set: data,
 			$setOnInsert: {
 				createdAt: now
@@ -25,8 +25,9 @@ class ModelSessions extends RocketChat.models._Base {
 		});
 	}
 
-	updateBySessionId(sessionId, data = {}) {
+	updateByInstanceIdAndSessionId(instanceId, sessionId, data = {}) {
 		const query = {
+			instanceId,
 			sessionId
 		};
 
@@ -37,8 +38,9 @@ class ModelSessions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateActiveSessionsByDateAndIds({ year, month, day } = {}, sessions, data = {}) {
+	updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day } = {}, instanceId, sessions, data = {}) {
 		const query = {
+			instanceId,
 			year,
 			month,
 			day,
@@ -53,8 +55,8 @@ class ModelSessions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateBySessionIdAndUserId(sessionId, userId, data = {}) {
-		const query = { sessionId, userId };
+	updateByInstanceIdAndSessionIdAndUserId(instanceId, sessionId, userId, data = {}) {
+		const query = { instanceId, sessionId, userId };
 		const update = {
 			$set: data
 		};

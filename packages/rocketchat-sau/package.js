@@ -6,14 +6,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('rocketchat:lib');
-	api.use('ecmascript');
+	api.use([
+		'mongo',
+		'ecmascript',
+		'rocketchat:lib'
+	]);
 	/*
 	api.use('templating', 'client');
 	*/
 	api.addFiles([
 		'server/models/Sessions.js',
-		'server/startup.js',
+		'server/startup/monitor.js',
 		'server/lib/BucketStore.js',
 		'server/lib/SAUMonitor.js'
 	], 'server');
