@@ -7,13 +7,9 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'mongo',
 		'ecmascript',
 		'rocketchat:lib'
 	]);
-	/*
-	api.use('templating', 'client');
-	*/
 	api.addFiles([
 		'server/models/Sessions.js',
 		'server/startup/monitor.js',

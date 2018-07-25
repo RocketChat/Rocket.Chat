@@ -11,6 +11,8 @@ const getDateObj = () => {
 	return { day: date.getUTCDate(), month: date.getUTCMonth() + 1, year: date.getUTCFullYear() };
 };
 
+const logger = new Logger('SAUMonitor');
+
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
  */
@@ -34,21 +36,15 @@ export class SAUMonitor {
 		this._instanceId = instanceId;
 
 		if (!this._instanceId) {
+			logger.debug('[start] - InstanceId is not defined.');
 			this._log(`${ this._serviceName } - Error starting monitor: InstanceID is not defined.`);
 			return;
 		}
-		/*
-		if (typeof this._timeMonitor !== 'number' || this._timeMonitor <= 0) {
-			this._log(`${ this._serviceName } - Error starting monitor: TimeMonitor is not defined.`);
-			return;
-		}*/
 
-		this._log(`${ this._serviceName } - Starting...`);
-		//start session control
-		const self = this;
 		this._startMonitoring(() => {
-			self._started = true;
-			self._log(`${ this._serviceName } - Started(${ this._instanceId })`);
+			this._started = true;
+			this._log(`${ this._serviceName } - Started: ${ this._instanceId }`);
+			logger.debug(`[start] - InstanceId: ${ this._instanceId }`);
 		});
 	}
 
@@ -65,6 +61,7 @@ export class SAUMonitor {
 
 		this.storage.clear();
 		this.log(`${ this._serviceName } - Stopped.`);
+		logger.debug(`[stop] - InstanceId: ${ this._instanceId }`);
 	}
 
 	isRunning() {
@@ -124,6 +121,7 @@ export class SAUMonitor {
 				RocketChat.models.Sessions.updateByInstanceIdAndSessionId(this._instanceId, connection.id, { closedAt: new Date() });
 				if (!this.storage.remove(connection.id, connection.storeId)) {
 					this._log(`${ this._serviceName } - Storage: Connection not found = ${ connection.id }`);
+					logger.debug(`[connection.onClose] - Connection not found: ${ connection.id }`);
 				}
 			});
 
@@ -181,7 +179,7 @@ export class SAUMonitor {
 
 			this._applyAllStorageSessions(sessions => {
 				this._log(`${ this._serviceName } - Migrating sessions..`);
-				this._cloneSessionsToDate(beforeDate, currentDay, sessions, { createdAt: nextDateTime, lastActivityAt: new Date() });
+				this._cloneSessionsToDate(beforeDate, currentDay, this._instanceId, sessions, { createdAt: nextDateTime, lastActivityAt: new Date() });
 
 				Meteor.defer(() => {
 					this._log(`${ this._serviceName } - updating...`);
@@ -288,9 +286,10 @@ export class SAUMonitor {
 		}
 	}
 
-	async _cloneSessionsToDate(from = {}, to = {}, sessionIds, data = {}) {
+	async _cloneSessionsToDate(from = {}, to = {}, instanceId, sessionIds, data = {}) {
 		const { year, month, day } = from;
 		const query = {
+			instanceId,
 			year,
 			month,
 			day,
@@ -310,8 +309,10 @@ export class SAUMonitor {
 		const collectionObj = RocketChat.models.Sessions.model.rawCollection();
 		try {
 			collectionObj.insertMany(sessionsList);
-		} catch (e) {
-			this.log(`${ this._serviceName } - Error recreating sessions.`);
+		} catch (err) {
+			this._log(`${ this._serviceName } - Error recreating sessions.`);
+			logger.debug(`[cloneSessionsToDate] - ${ err }`);
+			throw new Meteor.Error(err);
 		}
 
 	}

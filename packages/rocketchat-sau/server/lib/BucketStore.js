@@ -21,9 +21,9 @@ export class BucketStorage {
 		if (!this._isValidQueue()) {
 			return false;
 		}
-
 		if (!bucketId) {
 			bucketId = this._findBucketIdByValue(value);
+
 		}
 
 		if (!bucketId || !this._container[bucketId]) {
