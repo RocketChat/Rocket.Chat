@@ -1,5 +1,5 @@
+class WebkitSpeechRecognition {
 
-this.SpeechRecognition = new class {
 	capitalize(s) {
 		return s.replace(s.substr(0, 1), function(m) { return m.toUpperCase(); });
 	}
@@ -28,6 +28,8 @@ this.SpeechRecognition = new class {
 			};
 
 			this.recognition.start();
+		} else {
+			cb(false);
 		}
 	}
 
@@ -37,7 +39,33 @@ this.SpeechRecognition = new class {
 				cb(this.final_transcript);
 			}
 		};
+
 		this.recognition.stop();
 	}
-};
+}
 
+
+
+
+this.SpeechRecognition = new class {
+	constructor() {
+		this.providers = {
+			'webkitSpeechProvider': new WebkitSpeechRecognition()
+		};
+	}
+
+	start(cb) {
+		Meteor.call('rocketchatAudio.getRecognitionProvider', (error, provider) => {
+			if (error || !provider) {
+				return cb(false);
+			}
+
+			this.activeProvider = this.providers[provider.key];
+			this.activeProvider.start(cb);
+		});
+	}
+
+	stop(cb) {
+		this.activeProvider.stop(cb);
+	}
+};

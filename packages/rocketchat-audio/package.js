@@ -7,8 +7,8 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'templating',
 		'ecmascript',
+		'templating',
 		'rocketchat:lib',
 		'rocketchat:logger'
 	]);
@@ -16,4 +16,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/recorder.js', 'client');
 	api.addFiles('client/audioRecorder.js', 'client');
 	api.addFiles('client/recognizer.js', 'client');
+
+	api.addFiles('server/index.js', 'server');
 });
