@@ -8,9 +8,10 @@ Meteor.methods({
 			});
 		}
 
-		const statistics = {};
-		statistics.totalMessages = RocketChat.models.Messages.find({'u.username': bot.username}).count();
-		statistics.mentionCount = RocketChat.models.Messages.findByMention(bot.username).count();
-		return statistics;
+		const server = {};
+		server.totalMessages = RocketChat.models.Messages.find({'u.username': bot.username}).count();
+		server.mentionCount = RocketChat.models.Messages.findByMention(bot.username).count();
+		server.roomCount = RocketChat.models.Rooms.findWithUsername(bot.username).count();
+		return { server };
 	}
 });

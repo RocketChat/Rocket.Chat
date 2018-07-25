@@ -177,7 +177,7 @@
             <div class="section-title">
               <div class="section-title-text">{{_ "Bot_Statistics"}}</div>
               <div class="section-title-right">
-                {{#unless statistics}}
+                {{#unless statistics.server}}
                 <button class="button primary refresh"><span>{{_ "Load"}}</span></button>
                 {{else}}
                 <button class="button primary refresh"><span>{{_ "Refresh"}}</span></button>
@@ -186,7 +186,7 @@
               </div>
             </div>
             <div class="section-content">
-              {{#if statistics}}
+              {{#if statistics.server}}
                 <h3>{{_ "Usage"}}</h3>
                 <table class="statistics-table secondary-background-color">
                   <tr class="admin-table-row">
@@ -194,14 +194,21 @@
                       <span class="rc-tooltip" aria-label="{{_ "Bot_Stats_Total_Messages_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
                       {{_ "Stats_Total_Messages"}}
                     </th>
-                    <td class="border-component-color">{{statistics.totalMessages}}</td>
+                    <td class="border-component-color">{{statistics.server.totalMessages}}</td>
                   </tr>
                   <tr class="admin-table-row">
                     <th class="content-background-color border-component-color">
                       <span class="rc-tooltip" aria-label="{{_ "Bot_Stats_Mention_Count_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
                       {{_ "Bot_Stats_Mention_Count"}}
                     </th>
-                    <td class="border-component-color">{{statistics.mentionCount}}</td>
+                    <td class="border-component-color">{{statistics.server.mentionCount}}</td>
+                  </tr>
+                  <tr class="admin-table-row">
+                    <th class="content-background-color border-component-color">
+                      <span class="rc-tooltip" aria-label="{{_ "Bot_Stats_Room_Count_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
+                      {{_ "Bot_Stats_Room_Count"}}
+                    </th>
+                    <td class="border-component-color">{{statistics.server.roomCount}}</td>
                   </tr>
                 </table>
               {{/if}}

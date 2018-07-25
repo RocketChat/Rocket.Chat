@@ -423,6 +423,8 @@
   "Bot_Stats_Read_Messages_description": "Number of messages read by the bot",
   "Bot_Stats_Reconnect_Count": "Reconnect Count",
   "Bot_Stats_Reconnect_Count_description": "Number of times the bot had to reconnect",
+  "Bot_Stats_Room_Count": "Room Count",
+  "Bot_Stats_Room_Count_description": "Number of rooms the bot has joined",
   "Bot_Stats_refreshed": "Statistics refreshed",
   "Bot_Stats_Session_description": "Statistics about the current session of the bot",
   "Bot_Stats_Total_Messages_description": "Number of all messages sent by this account",
