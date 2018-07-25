@@ -290,24 +290,6 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	//DEPRECATED
-	// TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
-	it('/channels.cleanHistory', (done) => {
-		request.post(api('channels.cleanHistory'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				latest: '2016-12-09T13:42:25.304Z',
-				oldest: '2016-08-30T13:42:25.304Z'
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
 	it('/channels.archive', (done) => {
 		request.post(api('channels.archive'))
 			.set(credentials)
@@ -714,6 +696,27 @@ describe('[Channels]', function() {
 			.send({
 				roomId: channel._id,
 				readOnly: true
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('channel._id');
+				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+				expect(res.body).to.have.nested.property('channel.t', 'c');
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+			})
+			.end(done);
+	});
+
+	it('/channels.setDefault', async(done) => {
+		const roomInfo = await getRoomInfo(channel._id);
+
+		request.post(api('channels.setDefault'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				default: true
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

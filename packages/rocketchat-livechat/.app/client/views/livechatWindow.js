@@ -4,7 +4,7 @@ import visitor from '../../imports/client/visitor';
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;
 };
- 
+
 Template.livechatWindow.helpers({
 	title() {
 		return Livechat.title;
@@ -90,11 +90,20 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
-	// get all needed live chat info for the user
-	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
-		if (err) {
-			console.error(err);
-		} else {
+	const loadDepartments = departments => {
+		Department.remove({});
+		departments.forEach((department) => {
+			Department.insert(department);
+		});
+	};
+
+	this.autorun(() => {
+		// get all needed live chat info for the user
+		Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+			if (err) {
+				return console.error(err);
+			}
+
 			if (!result.enabled) {
 				Triggers.setDisabled();
 				return parentCall('removeWidget');
@@ -118,6 +127,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
+			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
@@ -129,6 +139,14 @@ Template.livechatWindow.onCreated(function() {
 
 			if (result.visitor) {
 				visitor.setData(result.visitor);
+
+				if (visitor.name) {
+					Livechat.guestName = visitor.name;
+				}
+
+				if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
+					Livechat.guestEmail = visitor.visitorEmails[0].address;
+				}
 			}
 
 			if (result.agentData) {
@@ -146,13 +164,12 @@ Template.livechatWindow.onCreated(function() {
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
 
-			result.departments.forEach((department) => {
-				Department.insert(department);
-			});
+			loadDepartments(result.departments);
+
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 
 			Livechat.ready();
-		}
+		});
 	});
 
 	$(window).on('focus', () => {

@@ -172,7 +172,7 @@ rocketchat:importer-slack@0.0.1
 rocketchat:importer-slack-users@1.0.0
 rocketchat:integrations@0.0.1
 rocketchat:internal-hubot@0.0.1
-rocketchat:irc@0.0.2
+rocketchat:irc@0.0.1
 rocketchat:issuelinks@0.0.1
 rocketchat:katex@0.0.1
 rocketchat:lazy-load@0.0.1
@@ -202,6 +202,7 @@ rocketchat:otr@0.0.1
 rocketchat:postcss@1.0.0
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
+rocketchat:retention-policy@0.0.1
 rocketchat:sandstorm@0.0.1
 rocketchat:search@0.0.1
 rocketchat:setup-wizard@0.0.1
@@ -235,6 +236,7 @@ rocketchat:tutum@0.0.1
 rocketchat:ui@0.1.0
 rocketchat:ui-account@0.1.0
 rocketchat:ui-admin@0.1.0
+rocketchat:ui-clean-history@0.0.1
 rocketchat:ui-flextab@0.1.0
 rocketchat:ui-login@0.1.0
 rocketchat:ui-master@0.1.0
@@ -261,7 +263,7 @@ spacebars-compiler@1.1.3
 srp@1.0.10
 standard-minifier-js@2.3.4
 steffo:meteor-accounts-saml@0.0.1
-swydo:graphql@0.0.3
+swydo:graphql@0.4.0
 tap:i18n@1.8.2
 templating@1.3.2
 templating-compiler@1.3.3

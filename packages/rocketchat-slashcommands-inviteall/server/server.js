@@ -16,13 +16,13 @@ function inviteAll(type) {
 		if (!channel) {
 			return;
 		}
-
-		const currentUser = Meteor.users.findOne(Meteor.userId());
+		const userId = Meteor.userId();
+		const currentUser = Meteor.users.findOne(userId);
 		const baseChannel = type === 'to' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
 		const targetChannel = type === 'from' ? RocketChat.models.Rooms.findOneById(item.rid) : RocketChat.models.Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
-			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			return RocketChat.Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -32,18 +32,19 @@ function inviteAll(type) {
 				}, currentUser.language)
 			});
 		}
-		const users = baseChannel.usernames || [];
+		const cursor = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, { fields: { 'u.username': 1 } });
 
 		try {
-			if (users.length > RocketChat.settings.get('API_User_Limit')) {
+			if (cursor.count() > RocketChat.settings.get('API_User_Limit')) {
 				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 					method: 'addAllToRoom'
 				});
 			}
+			const users = cursor.fetch().map(s => s.u.username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
 				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				RocketChat.Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date(),
@@ -58,7 +59,7 @@ function inviteAll(type) {
 					users
 				});
 			}
-			return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			return RocketChat.Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),
@@ -66,7 +67,7 @@ function inviteAll(type) {
 			});
 		} catch (e) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			RocketChat.Notifications.notifyUser(userId, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date(),

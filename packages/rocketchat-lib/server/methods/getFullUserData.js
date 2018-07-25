@@ -1,11 +1,6 @@
 Meteor.methods({
-	getFullUserData({ filter = '', limit }) {
-		const result = RocketChat.getFullUserData({ userId: Meteor.userId(), filter, limit });
-
-		if (!result) {
-			return result;
-		}
-
-		return result.fetch();
+	getFullUserData({ filter = '', username = '', limit = 1 }) {
+		const result = RocketChat.getFullUserData({ userId: Meteor.userId(), filter: filter || username, limit });
+		return result && result.fetch();
 	}
 });

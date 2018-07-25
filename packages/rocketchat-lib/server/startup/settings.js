@@ -83,17 +83,9 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
-	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+	this.add('Accounts_SearchFields', 'username, name', {
 		type: 'string',
 		public: true
-	});
-
-	this.section('Two Factor Authentication', function() {
-		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta'
-		});
 	});
 
 	this.section('Registration', function() {
@@ -702,6 +694,10 @@ RocketChat.settings.addGroup('General', function() {
 			step: 3,
 			order: 0
 		}
+	});
+	this.add('Document_Domain', '', {
+		type: 'string',
+		'public': true
 	});
 	this.add('Language', '', {
 		type: 'language',
@@ -1727,6 +1723,10 @@ RocketChat.settings.addGroup('Logs', function() {
 		this.add('Prometheus_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled'
+		});
+		this.add('Prometheus_Port', 9100, {
+			type: 'string',
+			i18nLabel: 'Port'
 		});
 	});
 });
@@ -2907,6 +2907,9 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				step: 3,
 				order: 2
 			}
+		});
+		this.add('Allow_Marketing_Emails', true, {
+			type: 'boolean'
 		});
 	});
 });

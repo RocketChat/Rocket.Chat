@@ -18,9 +18,6 @@ Template.sidebarItem.helpers({
 	lastMessageTs() {
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
-	colorStyle() {
-		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
-	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
@@ -87,6 +84,17 @@ Template.sidebarItem.onCreated(function() {
 Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
+	},
+	'mouseenter .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
+		const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+
+		if (isTextEllipsed) {
+			element.setAttribute('title', element.getAttribute('aria-label'));
+		} else {
+			element.removeAttribute('title');
+		}
 	},
 	'click .sidebar-item__menu'(e) {
 		e.preventDefault();
@@ -178,9 +186,19 @@ Template.sidebarItem.events({
 	}
 });
 
-Template.sidebarItemStatus.helpers({
-	statusClass() {
-		const instance = Template.instance();
-		return instance.data.t === 'd' ? Session.get(`user_${ instance.data.username }_status`) || 'offline' : instance.data.t === 'l' ? RocketChat.roomTypes.getUserStatus('l', instance.data.rid) || 'offline' : false;
+Template.sidebarItemIcon.helpers({
+	isRoom() {
+		return this.rid || this._id;
+	},
+	status() {
+		if (this.t === 'd') {
+			return Session.get(`user_${ this.username }_status`) || 'offline';
+		}
+
+		if (this.t === 'l') {
+			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
+
+		return false;
 	}
 });

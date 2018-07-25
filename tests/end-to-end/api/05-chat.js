@@ -362,9 +362,39 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'This message was edited via API',
+					count: 1
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
 	});
-
-	describe('/chat.react', () => {
+	describe('[/chat.react]', () => {
+		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: false
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		it('should react a message successfully', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
@@ -394,7 +424,51 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
+		it('should return statusCode: 200 and success when try react a message that\'s already reacted', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: true
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: false
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: true
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
@@ -409,7 +483,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
