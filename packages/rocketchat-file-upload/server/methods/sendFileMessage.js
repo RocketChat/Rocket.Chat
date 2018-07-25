@@ -68,6 +68,7 @@ Meteor.methods({
 		console.log(msg);
 		msg = Meteor.call('sendMessage', msg);
 
+		
 		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
 
 		return msg;

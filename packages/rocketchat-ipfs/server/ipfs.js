@@ -23,11 +23,12 @@ Meteor.methods({
 		console.log(rst);
 		return rst.content;
 	},
-	test() {
+	getFilesFromIPFS() {
 		console.log('test');
 	},
 	getFile(hash) {
 		const rst = HTTP.call('GET', `http://localhost:5001/api/v0/cat?arg=${ hash }`);
+		// console.log("User "+Meteor.user());
 		return rst.content;
 	},
 	async addtoIPFS(file, filename) {

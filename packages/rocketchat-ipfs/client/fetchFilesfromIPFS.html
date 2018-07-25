@@ -34,12 +34,12 @@
 		</div>
 		{{#each file in files}}
 		<div class="rc-user-info__row rc-user-info__row--separator">
-			<!-- <a href="https://ipfs.io/ipfs/{{file.Hash}}" target="_blank" class="attachments__item {{customClassForFileType}}"> -->
+			<a href="http://localhost:3000/ipfs/{{file.Hash}}" target="_blank" class="attachments__item {{customClassForFileType}}">
 				<div class="attachments__content js-ipfs">
-						<div class="attachments__name">{{file.Name}}</div>
-				<!-- </div> -->
-			<!-- </a> -->
-			<!-- <div> -->
+						<div class="attachments__name">{{file.name}}</div>
+				</div>
+			</a>
+			<div>
 					<div class="attachments__details attachments__bold js-ipfsHash " id= "fileHash" name="h">{{file.Hash}}</div>
 			</div>
 			<div class="rc-user-info__flex rc-user-info__row">

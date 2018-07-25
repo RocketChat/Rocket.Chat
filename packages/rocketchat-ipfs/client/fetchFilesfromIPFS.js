@@ -39,6 +39,23 @@ const filterNames = (old) => {
 
 Template.fetchFilesfromIPFS.helpers({
 	files() {
+		// ----------------------------------------------
+		const data = [];
+		let nit;
+		Meteor.call('ipfsdirStat', (error, result) => {
+			const details = JSON.parse(result);
+			Meteor.call('getlistfromIPFS', details.Hash, (err, rst) => {
+				const test = JSON.parse(rst);
+				console.log(test);
+				for (let i=1;i<test.Objects['0'].Links.length;i++) {
+					data.push({name:test.Objects['0'].Links[i].Name, Hash:test.Objects['0'].Links[i].Hash});
+				}
+				console.log(JSON.stringify(data));
+				nit = JSON.stringify(data);
+				// return nit;
+			});
+		});
+		// ----------------------------------------------
 		// const data = [];
 		// let nit;
 		// const data = await Meteor.call('ipfslist');
@@ -68,7 +85,7 @@ Template.fetchFilesfromIPFS.helpers({
 		//     nit = JSON.stringify(data)
 		// }
 
-		return [{'Name':'IPFS-what-is-it-1024x512-09-29-2016.jpg', 'Hash':'QmP9W4HKyaAvGdzyRJnUYfUaotG1G1QhYprF7grQdmoeiA', 'Size':68018, 'Type':2}, {'Name':'cropped-brave_icon_512x.jpeg', 'Hash':'Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee', 'Size':43854, 'Type':2}, {'Name':'file.txt', 'Hash':'QmaWTT21LMBn3HuZzFfj4GGDqhUwvTjgisQijTTU19pDyB', 'Size':69, 'Type':2}, {'Name':'hello.txt', 'Hash':'QmaWTT21LMBn3HuZzFfj4GGDqhUwvTjgisQijTTU19pDyB', 'Size':69, 'Type':2}, {'Name':'sam.jpeg', 'Hash':'QmRS8Nks1xNnNw6ZHtx1szNTPCQoG468CpkhkYeSXBgbwL', 'Size':5741, 'Type':2}, {'Name':'uploadIPFS.gif', 'Hash':'QmayNN7mQmsEFWygtvrxCW2ewvmZS8Mp3GgWA2WadUYWPm', 'Size':456494, 'Type':2}];
+		return [{"name":"banner.jpg","Hash":"QmYqPsG1YQK17KYm66cdAoABdKZAajydykYcdBvJ6XyUsa"},{"name":"cropped-brave_icon_512x.jpeg","Hash":"Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee"},{"name":"file.jpeg","Hash":"Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee"},{"name":"file.txt","Hash":"QmaWTT21LMBn3HuZzFfj4GGDqhUwvTjgisQijTTU19pDyB"},{"name":"hello (copy).txt","Hash":"QmPyGn4wHvx3t4xu1LFbPUgCjFTa9b72LwfwD4o39sxXg1"},{"name":"hello.txt","Hash":"Qmeu5pGCUXbNhAsDpH7CH4i5w9wH5aQvWYi8rj2aDGCB7j"},{"name":"pic01.jpg","Hash":"QmQBRvcKskPAi4C9Gpg2A4HXhiPaJnKsTRMUQz4rvsbN6P"},{"name":"sam.jpeg","Hash":"QmRS8Nks1xNnNw6ZHtx1szNTPCQoG468CpkhkYeSXBgbwL"},{"name":"slide03.jpg","Hash":"QmSmoE6ycVYrr1PUwnpQ4ELV8h6phjTFriivQKbCAiLNJB"},{"name":"uploadIPFS.gif","Hash":"QmayNN7mQmsEFWygtvrxCW2ewvmZS8Mp3GgWA2WadUYWPm"}];
 		// const data = [];
 		// // const d;
 		// Meteor.call('ipfsdirStat', (error, result) => {
@@ -245,7 +262,7 @@ Template.fetchFilesfromIPFS.events({
 		// const RID = users+owner.;
 		// console.log(RID);
 		// const message = `https://ipfs.io/ipfs/${ document.getElementById('ipfsHash').value }`;
-		const message = document.getElementById('ipfsHash').value ;
+		const message = `http://localhost:3000/ipfs/${ document.getElementById('ipfsHash').value }` ;
 		// console.log(RID);
 		Meteor.call('sendMessage', {
 			rid: Session.get('openedRoom'),
