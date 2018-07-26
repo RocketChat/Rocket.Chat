@@ -25,8 +25,23 @@ const UAParserMobile = {
 	device: 'mobile',
 	uaSeparator: ';',
 	props: {
-		os: ['name', 'version'],
-		app: ['version', 'bundle']
+		os: {
+			list: ['name', 'version']
+		},
+		app: {
+			list: ['version', 'bundle'],
+			get: (prop, value) => {
+				if (prop === 'bundle') {
+					return value.replace(/([()])/g, '');
+				}
+
+				if (prop === 'version') {
+					return value.replace(/^v/g, '');
+				}
+
+				return value;
+			}
+		}
 	},
 
 	isMobileApp(uaString) {
@@ -67,15 +82,15 @@ const UAParserMobile = {
 			}
 
 			const props = this.props[key];
-			if (!Array.isArray(props) || props.length === 0) {
+			if (!props.list || !Array.isArray(props.list) || props.list.length === 0) {
 				return;
 			}
 
 			const subProps = {};
 			splitProps.forEach((value, idx) => {
-				if (props.length > idx) {
-					const propName = props[idx];
-					subProps[propName] = value;
+				if (props.list.length > idx) {
+					const propName = props.list[idx];
+					subProps[propName] = props.get ? props.get(propName, value) : value;
 				}
 			});
 
