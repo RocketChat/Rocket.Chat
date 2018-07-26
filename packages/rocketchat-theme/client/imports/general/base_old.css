@@ -55,8 +55,9 @@
 	position: relative;
 
 	clear: both;
+	display: block;
+	min-height: 20px;
 
-	margin: 0.5em 0;
 	padding-left: 10px;
 
 	&::after {
@@ -74,17 +75,23 @@
 		margin-bottom: 0;
 	}
 
-	&::before {
+	&:first-child::before {
+		border-radius: 2px 2px 0 0;
+	}
+
+	&:last-child::before {
+		border-radius: 0 0 2px 2px;
+	}
+
+	&:before {
 		position: absolute;
-		top: -1px;
-		bottom: -1px;
+		top: 0;
+		bottom: 0;
 		left: 0;
 
-		width: 4px;
+		width: 2px;
 
 		content: ' ';
-
-		border-radius: 2px;
 	}
 }
 
@@ -2662,6 +2669,12 @@
     padding-bottom: 0.5rem;
     align-items: center;
     justify-content: space-between;
+
+	.message {
+		padding: 0;
+		flex: 1;
+		background-color: transparent;
+	}
 }
 
 .rc-old .rc-message-box .reply-preview-with-popup {
