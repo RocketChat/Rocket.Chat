@@ -3,6 +3,7 @@ export class BucketStorage {
 	constructor() {
 		this._limit = 100;
 		this._container = {};
+		this._buckets = 0;
 		this._count = 0;
 	}
 
@@ -14,6 +15,7 @@ export class BucketStorage {
 
 		this._container[bucketId].storage.push(value);
 		this._container[bucketId].count++;
+		this._count++;
 		return bucketId;
 	}
 
@@ -37,10 +39,11 @@ export class BucketStorage {
 
 		this._container[bucketId].storage.splice(arrayIndex, 1);
 		this._container[bucketId].count--;
+		this._count--;
 
 		if (this._container[bucketId].count === 0) {
 			delete this._container[bucketId];
-			this._count--;
+			this._buckets--;
 		}
 
 		return true;
@@ -48,6 +51,10 @@ export class BucketStorage {
 
 	clear() {
 		this._container = {};
+	}
+
+	buckets() {
+		return this._buckets;
 	}
 
 	count() {
@@ -92,7 +99,7 @@ export class BucketStorage {
 		}
 
 		this._container[timestamp] = { storage: [], count: 0 };
-		this._count++;
+		this._buckets++;
 
 		return timestamp;
 	}

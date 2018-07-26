@@ -12,9 +12,7 @@ Package.onUse(function(api) {
 	]);
 	api.addFiles([
 		'server/models/Sessions.js',
-		'server/startup/monitor.js',
-		'server/lib/BucketStore.js',
-		'server/lib/SAUMonitor.js'
+		'server/startup/monitor.js'
 	], 'server');
 
 });

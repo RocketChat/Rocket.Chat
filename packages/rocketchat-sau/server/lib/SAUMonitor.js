@@ -164,7 +164,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		if (this.storage.count() === 0) {
+		if (this.storage.buckets() === 0) {
 			return;
 		}
 
@@ -178,8 +178,9 @@ export class SAUMonitor {
 			const beforeDateTime = new Date(beforeDate.year, beforeDate.month-1, beforeDate.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month-1, currentDay.day, 0, 0, 0, 0);
 
+			this._log(`${ this._serviceName } - Migrating sessions: ${ this.storage.count() }`);
+
 			this._applyAllStorageSessions(sessions => {
-				this._log(`${ this._serviceName } - Migrating sessions..`);
 				this._cloneSessionsToDate(beforeDate, currentDay, this._instanceId, sessions, { createdAt: nextDateTime, lastActivityAt: new Date() });
 
 				Meteor.defer(() => {

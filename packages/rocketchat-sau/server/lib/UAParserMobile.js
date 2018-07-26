@@ -71,7 +71,7 @@ const UAParserMobile = {
 
 		splitUA.shift(); //remove first element
 		if (splitUA.length === 0) {
-			return;
+			return obj;
 		}
 
 		splitUA.forEach((element, index) => {
