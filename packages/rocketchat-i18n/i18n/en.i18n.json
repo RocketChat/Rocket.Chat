@@ -392,6 +392,8 @@
   "Body": "Body",
   "bold": "bold",
   "Bot_Active_Uptime_description": "Time during the account has been active (not paused)",
+  "Bot_client_stack": "Client Stack",
+  "Bot_client_stack_description": "Stack of clients the bot is using",
   "Bot_created_successfully": "Bot created successfully",
   "Bot_Connected_Uptime_description": "Time during the account has been connected",
   "Bot_deployment_help": "If you need help with the deployment, check the docs",
