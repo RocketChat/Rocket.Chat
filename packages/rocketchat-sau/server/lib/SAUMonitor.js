@@ -1,5 +1,6 @@
 import UAParser from 'ua-parser-js';
 import { BucketStorage } from './BucketStore';
+import { UAParserMobile } from './UAParserMobile';
 
 const removeEmptyProps = obj => {
 	Object.keys(obj).forEach(p => (!obj[p] || obj[p] === undefined) && delete obj[p]);
@@ -225,26 +226,34 @@ export class SAUMonitor {
 		if (!(connection && connection.httpHeaders && connection.httpHeaders['user-agent'])) {
 			return;
 		}
-		//TODO: Create a method to identify user-agent for Rocket.Chat app's and get the correctly data they provide
-		const ua = new UAParser();
-		ua.setUA(connection.httpHeaders['user-agent']);
-		//ua.setUA('RC Mobile, Android 6.0, v2.5.0 (2750)');
-		//ua.setUA('RC Mobile Dalvik/2.1.0 (Linux; U; Android 6.0.1; vivo 1610 Build/MMB29M)');
-		//<AppName>/<version> Dalvik/<version> (Linux; U; Android <android version>; <device ID> Build/<buildtag>)
-		//ua.setUA('RC Mobile iPhone5 iOS 10.1 CFNetwork/808.3 Darwin/16.3.0');
-		const result = ua.getResult();
+
+		const uaString = connection.httpHeaders['user-agent'];
+		let result;
+
+		if (UAParserMobile.isMobileApp(uaString)) {
+			result = UAParserMobile.uaObject(uaString);
+		} else {
+			const ua = new UAParser(uaString);
+			//ua.setUA();
+			result = ua.getResult();
+		}
+
 		const info = {};
 
-		if (result.browser.name) {
+		if (result.browser && result.browser.name) {
 			info.browser = removeEmptyProps(result.browser);
 		}
 
-		if (result.os.name) {
+		if (result.os && result.os.name) {
 			info.os = removeEmptyProps(result.os);
 		}
 
-		if (result.device.type || result.device.model) {
+		if (result.device && (result.device.type || result.device.model)) {
 			info.device = removeEmptyProps(result.device);
+		}
+
+		if (result.app && result.app.name) {
+			info.app = removeEmptyProps(result.app);
 		}
 
 		return info;
