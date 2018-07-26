@@ -82,7 +82,7 @@
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
-							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
+							{{> lazyloadImage src=(fixCordova image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
 							{{#if labels}}
 								<div class="image-labels">
 									{{#each labels}}
