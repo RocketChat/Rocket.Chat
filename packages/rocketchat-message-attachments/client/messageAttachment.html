@@ -1,7 +1,11 @@
 <template name="messageAttachment">
 	<div class="attachment">
 		<!-- <div>fallback: {{fallback}}</div> -->
-		{{pretext}}
+		{{#if markdownInPretext}}
+			{{{parsedPretext}}}
+		{{else}}
+			{{pretext}}
+		{{/if}}
 		<div class="attachment-block">
 			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{#if author_name}}
