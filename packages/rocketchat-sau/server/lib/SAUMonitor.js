@@ -1,5 +1,5 @@
 import UAParser from 'ua-parser-js';
-import { BucketStorage } from './BucketStore';
+import { BucketStorage } from './BucketStorage';
 import { UAParserMobile } from './UAParserMobile';
 
 const removeEmptyProps = obj => {
@@ -75,8 +75,8 @@ export class SAUMonitor {
 		}
 	}
 
-	setDebugMode(mode) {
-		if (typeof this._started !== 'boolean') {
+	setDebug(mode) {
+		if (!mode || typeof mode !== 'boolean') {
 			return;
 		}
 
@@ -117,16 +117,16 @@ export class SAUMonitor {
 		}
 
 		Meteor.onConnection(connection => {
+			this._handleSession(connection, getDateObj());
+
 			connection.onClose(() => {
+				const closeTime = new Date();
 				this._log(`${ this._serviceName } - Closing connection = ${ connection.id }`);
-				RocketChat.models.Sessions.updateByInstanceIdAndSessionId(this._instanceId, connection.id, { closedAt: new Date() });
+				RocketChat.models.Sessions.updateByInstanceIdAndSessionId(this._instanceId, connection.id, { closedAt: closeTime, lastActivityAt: closeTime });
 				if (!this.storage.remove(connection.id, connection.storeId)) {
-					this._log(`${ this._serviceName } - Storage: Connection not found = ${ connection.id }`);
 					logger.debug(`[connection.onClose] - Connection not found: ${ connection.id }`);
 				}
 			});
-
-			this._handleSession(connection, getDateObj());
 		});
 	}
 
@@ -173,7 +173,7 @@ export class SAUMonitor {
 
 		if (JSON.stringify(this._monitorDay) !== JSON.stringify(currentDay)) {
 			//When the current day is changed, it's necessary to update the last activities of the sessions on previous day(23:59:59)
-			//it's necessary to recreate the current sessions because the struture of the document needs to be recreated
+			//And then, it's necessary to recreate the current sessions because the struture of the documents need to be recreated
 			const beforeDate = this._monitorDay;
 			const beforeDateTime = new Date(beforeDate.year, beforeDate.month-1, beforeDate.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month-1, currentDay.day, 0, 0, 0, 0);
@@ -185,9 +185,8 @@ export class SAUMonitor {
 
 				Meteor.defer(() => {
 					this._log(`${ this._serviceName } - updating...`);
-					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: beforeDateTime, closedAt: beforeDateTime });
+					const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: beforeDateTime/*, closedAt: beforeDateTime*/ });
 					this._log(`${ this._serviceName } - updated sessions: ${ update }`);
-					this._log(`${ this._serviceName } - Sessions migrated.`);
 				});
 			});
 
@@ -235,7 +234,6 @@ export class SAUMonitor {
 			result = UAParserMobile.uaObject(uaString);
 		} else {
 			const ua = new UAParser(uaString);
-			//ua.setUA();
 			result = ua.getResult();
 		}
 
@@ -262,7 +260,7 @@ export class SAUMonitor {
 
 	_initActiveServerSessions() {
 		this._applyAllServerSessions(connectionHandle => {
-			this._handleSession(connectionHandle);
+			this._handleSession(connectionHandle, getDateObj());
 		});
 	}
 
@@ -288,7 +286,7 @@ export class SAUMonitor {
 	}
 
 	_updateConnectionInfo(sessionId, handleId) {
-		if (!handleId) {
+		if (!sessionId || !handleId) {
 			return;
 		}
 		if (Meteor.server.sessions[sessionId]) {

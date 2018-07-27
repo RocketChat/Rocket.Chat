@@ -1,5 +1,4 @@
 export class BucketStorage {
-//will store the arrays in buckets
 	constructor() {
 		this._limit = 100;
 		this._container = {};
