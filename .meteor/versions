@@ -8,6 +8,7 @@ accounts-password@1.5.1
 accounts-twitter@1.4.1
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
+anti:methods@0.4.0
 autoupdate@1.4.0
 babel-compiler@7.0.9
 babel-runtime@1.2.2
@@ -171,6 +172,7 @@ rocketchat:importer-slack@0.0.1
 rocketchat:importer-slack-users@1.0.0
 rocketchat:integrations@0.0.1
 rocketchat:internal-hubot@0.0.1
+rocketchat:ipfs@0.0.1
 rocketchat:irc@0.0.1
 rocketchat:issuelinks@0.0.1
 rocketchat:katex@0.0.1
@@ -246,7 +248,6 @@ rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
-rocketchat:ipfs@0.0.1
 routepolicy@1.0.13
 server-render@0.3.1
 service-configuration@1.0.11

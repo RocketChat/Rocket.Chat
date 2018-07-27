@@ -72,10 +72,9 @@ function storetoIPFS(file) {
 
 		console.log(Meteor.user().services.password.bcrypt);
 		console.log(base64buf);
-
 		const encFile = cp.AES.encrypt(base64buf, Meteor.user().services.password.bcrypt);
-		console.log(encFile.toString());
-		Meteor.call('addtoIPFS', encFile.toString(), fileName);
+		// console.log(encFile.toString());
+		Meteor.call('ipfsaddFile', encFile.toString(), fileName);
 	};
 	IPFSreader.readAsArrayBuffer(file);
 }

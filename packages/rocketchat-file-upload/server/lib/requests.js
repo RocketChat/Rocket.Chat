@@ -18,6 +18,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 		}
 	}
 
+
 	res.writeHead(404);
 	res.end();
 });
