@@ -2,19 +2,18 @@ import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
 
-const reloadUsersFromRoomMessages = () => {
-	const user = Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
+const reloadUsersFromRoomMessages = (userId, rid) => {
+	const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
 
 	usersFromRoomMessages.remove({});
 	const uniqueMessageUsersControl = {};
 
 	RocketChat.models.Messages.find({
-		rid: Tracker.nonreactive(() => Session.get('openedRoom')),
+		rid,
 		'u.username': { $ne: user.username },
 		t: { $exists: false }
 	},
 	{
-		reactive: false,
 		fields: {
 			'u.username': 1,
 			'u.name': 1,
@@ -38,11 +37,14 @@ const reloadUsersFromRoomMessages = () => {
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (Meteor.userId() == null || Session.get('openedRoom') == null) {
+		const userId = Meteor.userId();
+		const rid = Session.get('openedRoom');
+
+		if (!userId || !rid) {
 			return;
 		}
 
-		reloadUsersFromRoomMessages();
+		reloadUsersFromRoomMessages(userId, rid);
 	});
 });
 
