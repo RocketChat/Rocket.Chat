@@ -66,6 +66,14 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 describe('[Message Popup]', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
+			browser.executeAsync(done => {
+				const user = Meteor.user();
+				if (!user) {
+					return done();
+				}
+				Meteor.logout(done);
+			});
+
 			browser.call(async() => {
 				for (const user of users) {
 					await createTestUser(user);
@@ -80,16 +88,8 @@ describe('[Message Popup]', () => {
 		});
 
 		after(() => {
-			browser.execute(() => {
-				const user = Meteor.user();
-				if (!user) {
-					return;
-				}
-				Meteor.logout(() => {
-					RocketChat.callbacks.run('afterLogoutCleanUp', user);
-					Meteor.call('logoutCleanUp', user);
-					FlowRouter.go('home');
-				});
+			browser.executeAsync(done => {
+				Meteor.logout(done);
 			});
 		});
 
