@@ -1,6 +1,22 @@
 
 # 0.68.0 (Under Release Candidate Process)
 
+## 0.68.0-rc.2
+`2018-07-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- LingoHub based on develop ([#11587](https://github.com/RocketChat/Rocket.Chat/pull/11587))
+- Regression: Make message popup user mentions reactive again ([#11567](https://github.com/RocketChat/Rocket.Chat/pull/11567))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 0.68.0-rc.1
 `2018-07-27  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
