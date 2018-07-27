@@ -20,10 +20,6 @@ Template.userInfo.helpers({
 		return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
 	},
 	customField() {
-		if (!RocketChat.authz.hasAllPermission('view-full-other-user-info')) {
-			return;
-		}
-
 		const sCustomFieldsToShow = RocketChat.settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
 

@@ -83,17 +83,9 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		'public': true
 	});
-	this.add('Accounts_SearchFields', 'username, name, emails.address', {
+	this.add('Accounts_SearchFields', 'username, name', {
 		type: 'string',
 		public: true
-	});
-
-	this.section('Two Factor Authentication', function() {
-		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta'
-		});
 	});
 
 	this.section('Registration', function() {
@@ -2901,6 +2893,9 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				step: 3,
 				order: 2
 			}
+		});
+		this.add('Allow_Marketing_Emails', true, {
+			type: 'boolean'
 		});
 	});
 });

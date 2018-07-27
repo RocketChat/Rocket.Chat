@@ -110,7 +110,7 @@ class CachedCollection {
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		useCache = true,
-		version = 7,
+		version = 8,
 		maxCacheTime = 60*60*24*30,
 		onSyncData = (/* action, record */) => {}
 	}) {
@@ -213,7 +213,6 @@ class CachedCollection {
 		Meteor.call(this.methodName, (error, data) => {
 			this.log(`${ data.length } records loaded from server`);
 			data.forEach((record) => {
-				delete record.$loki;
 				RocketChat.callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 
@@ -276,7 +275,6 @@ class CachedCollection {
 			});
 
 			for (const record of changes) {
-				delete record.$loki;
 				RocketChat.callbacks.run(`cachedCollection-sync-${ this.name }`, record, record._deletedAt? 'removed' : 'changed');
 				if (record._deletedAt) {
 					this.collection.remove({ _id: record._id });
@@ -342,7 +340,6 @@ class CachedCollection {
 				this.collection.remove(record._id);
 				RoomManager.close(record.t+record.name);
 			} else {
-				delete record.$loki;
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}
 

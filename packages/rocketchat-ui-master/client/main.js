@@ -1,10 +1,11 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
 
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -190,7 +191,6 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
