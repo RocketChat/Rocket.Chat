@@ -3,8 +3,8 @@
     "description": "The Ultimate Open Source WebChat Platform",
     "launch_path": "/",
     "icons": {
-        "192": "/images/logo/android-chrome-192x192.png",
-        "512": "/images/logo/512x512.png"
+        "192": "/assets/favicon_192.png",
+        "512": "/assets/favicon_512.png"
     },
     "developer": {
         "name": "Rocket.Chat",
