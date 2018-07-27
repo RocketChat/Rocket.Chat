@@ -17573,6 +17573,30 @@
           ]
         }
       ]
+    },
+    "0.68.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11561",
+          "title": "Regression: Update cachedCollection version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11550",
+          "title": "Regression: nonReactive to nonreactive",
+          "userLogin": "ggazzo",
+          "milestone": "0.68.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
