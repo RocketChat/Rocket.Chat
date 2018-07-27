@@ -17597,6 +17597,31 @@
           ]
         }
       ]
+    },
+    "0.68.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11587",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11567",
+          "title": "Regression: Make message popup user mentions reactive again",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
