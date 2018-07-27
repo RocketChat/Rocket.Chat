@@ -1,6 +1,21 @@
 
 # 0.68.0 (Under Release Candidate Process)
 
+## 0.68.0-rc.1
+`2018-07-27  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Update cachedCollection version ([#11561](https://github.com/RocketChat/Rocket.Chat/pull/11561))
+- Regression: nonReactive to nonreactive ([#11550](https://github.com/RocketChat/Rocket.Chat/pull/11550))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 0.68.0-rc.0
 `2018-07-21  ·  2 ️️️⚠️  ·  13 🎉  ·  3 🚀  ·  23 🐛  ·  5 🔍  ·  21 👩‍💻👨‍💻`
 
