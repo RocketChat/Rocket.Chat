@@ -63,7 +63,7 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 	}
 };
 
-describe('[Message Popup] @watch', () => {
+describe('[Message Popup]', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
 			browser.call(async() => {
