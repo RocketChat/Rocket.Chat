@@ -37,11 +37,14 @@ const reloadUsersFromRoomMessages = (userId, rid) => {
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (!Meteor.userId() || !Session.get('openedRoom')) {
+		const userId = Meteor.userId();
+		const rid = Session.get('openedRoom');
+
+		if (!userId || !rid) {
 			return;
 		}
 
-		reloadUsersFromRoomMessages(Meteor.userId(), Session.get('openedRoom'));
+		reloadUsersFromRoomMessages(userId, rid);
 	});
 });
 
