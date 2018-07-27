@@ -1,6 +1,13 @@
 /* eslint-env mocha */
 
 import { adminEmail, adminPassword } from '../../data/user.js';
+
+import {
+	api,
+	request,
+	getCredentials,
+	credentials
+} from '../../data/api-data.js';
 import loginPage from '../../pageobjects/login.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import mainContent from '../../pageobjects/main-content.page';
@@ -15,46 +22,55 @@ const users = new Array(10).fill(null)
 		isMentionable: i % 2 === 0
 	}));
 
-const registerNewUser = user => browser.executeAsync(({ name, email, username, password, isMentionable }, done) => {
-	setTimeout(() => Meteor.call('registerUser', { name, email, pass: password }, error => {
-		if (error) {
-			throw error;
-		}
+const createTestUser = async({ email, name, username, password, isMentionable }) => {
+	await new Promise(done => getCredentials(done));
 
-		setTimeout(() => Meteor.loginWithPassword(email, password, error => {
-			if (error) {
-				throw error;
-			}
+	await new Promise(done => request.post(api('users.create'))
+		.set(credentials)
+		.send({
+			email,
+			name,
+			username,
+			password,
+			active: true,
+			roles: [ 'user' ],
+			joinDefaultChannels: true,
+			verified: true
+		})
+		.end(done)
+	);
 
-			setTimeout(() => Meteor.call('setUsername', username, error => {
-				if (error) {
-					throw error;
-				}
+	if (isMentionable) {
+		const userCredentials = {};
 
-				if (isMentionable) {
-					Meteor.call('sendMessage', { rid: 'GENERAL', msg: 'Test' }, error => {
-						if (error) {
-							throw error;
-						}
+		await new Promise(done => request.post(api('login'))
+			.send({ user: username, password })
+			.expect((res) => {
+				userCredentials['X-Auth-Token'] = res.body.data.authToken;
+				userCredentials['X-User-Id'] = res.body.data.userId;
+			})
+			.end(done)
+		);
 
-						Meteor.logout(done);
-					});
+		await new Promise(done => request.post(api('chat.postMessage'))
+			.set(userCredentials)
+			.send({
+				channel: 'general',
+				text: 'Test'
+			})
+			.end(done)
+		);
+	}
+};
 
-					return;
-				}
-
-				Meteor.logout(done);
-			}), 500);
-		}), 500);
-	}), 500)	;
-}, user);
-
-describe('[Message Popup]', () => {
+describe('[Message Popup] @watch', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
-			loginPage.open();
-
-			users.forEach(registerNewUser);
+			browser.call(async() => {
+				for (const user of users) {
+					await createTestUser(user);
+				}
+			});
 
 			loginPage.open();
 			loginPage.login({ email: adminEmail, password: adminPassword });
