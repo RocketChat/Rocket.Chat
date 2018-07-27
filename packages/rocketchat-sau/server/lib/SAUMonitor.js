@@ -23,7 +23,7 @@ export class SAUMonitor {
 		this._started = false;
 		this.storage = new BucketStorage();
 		this._debug = false;
-		this._timeMonitor = 15000;
+		this._timeMonitor = 60000;
 		this._timer = null;
 		this._monitorDay = getDateObj();
 		this._instanceId = null;
@@ -164,7 +164,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		if (this.storage.buckets() === 0) {
+		if (this.storage.count() === 0) {
 			return;
 		}
 
