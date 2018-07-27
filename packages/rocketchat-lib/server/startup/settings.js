@@ -1280,9 +1280,28 @@ RocketChat.settings.addGroup('Message', function() {
 			'public': true,
 			i18nDescription: 'Message_AudioRecorderEnabledDescription'
 		});
+
+		this.add('Message_Audio_format', 'mp3', {
+			type: 'select',
+			'public': true,
+			values: [
+				{
+					key: 'mp3',
+					i18nLabel: 'mp3'
+				},
+				{
+					key: 'ogg',
+					i18nLabel: 'ogg'
+				}]
+		});
+
 		this.add('Message_Audio_bitRate', 32, {
 			type: 'int',
-			'public': true
+			'public': true,
+			enableQuery: {
+				_id: 'Message_Audio_format',
+				value: 'mp3'
+			}
 		});
 	});
 	this.add('Message_AllowEditing', true, {

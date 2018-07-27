@@ -493,7 +493,7 @@ Template.messageBox.events({
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 
 		chatMessages[RocketChat.openedRoom].recording = true;
-
+		const format = RocketChat.settings.get('Message_Audio_format');
 		mic_action_class[RocketChat.settings.get('Message_MicAction')].start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
@@ -509,7 +509,7 @@ Template.messageBox.events({
 
 			mic.classList.remove('active');
 			recording_icons.forEach((e)=>{ e.classList.add('active'); });
-		});
+		}, {format});
 	},
 	'click .js-audio-message-cross'(event) {
 		event.preventDefault();
@@ -556,9 +556,9 @@ Template.messageBox.events({
 
 			const roomId = Session.get('openedRoom');
 			const record = {
-				name: `${ TAPi18n.__('Audio record') }.mp3`,
+				name: `${ TAPi18n.__('Audio record') }.${ RocketChat.settings.get('Message_Audio_format') }`,
 				size: blob.size,
-				type: 'audio/mp3',
+				type: blob.type,
 				rid: roomId,
 				description: ''
 			};
