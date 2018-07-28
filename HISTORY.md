@@ -1,53 +1,10 @@
 
-# 0.68.0 (Under Release Candidate Process)
+# 0.68.0
+`2018-07-27  ·  2 ️️️⚠️  ·  13 🎉  ·  3 🚀  ·  23 🐛  ·  10 🔍  ·  21 👩‍💻👨‍💻`
 
-## 0.68.0-rc.3
-`2018-07-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Fix purge message's translations ([#11590](https://github.com/RocketChat/Rocket.Chat/pull/11590))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.68.0-rc.2
-`2018-07-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- LingoHub based on develop ([#11587](https://github.com/RocketChat/Rocket.Chat/pull/11587))
-- Regression: Make message popup user mentions reactive again ([#11567](https://github.com/RocketChat/Rocket.Chat/pull/11567))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@rodrigok](https://github.com/rodrigok)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 0.68.0-rc.1
-`2018-07-27  ·  2 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: Update cachedCollection version ([#11561](https://github.com/RocketChat/Rocket.Chat/pull/11561))
-- Regression: nonReactive to nonreactive ([#11550](https://github.com/RocketChat/Rocket.Chat/pull/11550))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 0.68.0-rc.0
-`2018-07-21  ·  2 ️️️⚠️  ·  13 🎉  ·  3 🚀  ·  23 🐛  ·  5 🔍  ·  21 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -110,6 +67,11 @@
 - Regression: Add missing LiveChat permission to allow removing closed rooms ([#11423](https://github.com/RocketChat/Rocket.Chat/pull/11423))
 - Update release issue template to use Houston CLI ([#11499](https://github.com/RocketChat/Rocket.Chat/pull/11499))
 - Regression: Remove safe area margins from logos ([#11508](https://github.com/RocketChat/Rocket.Chat/pull/11508))
+- Regression: Update cachedCollection version ([#11561](https://github.com/RocketChat/Rocket.Chat/pull/11561))
+- Regression: nonReactive to nonreactive ([#11550](https://github.com/RocketChat/Rocket.Chat/pull/11550))
+- LingoHub based on develop ([#11587](https://github.com/RocketChat/Rocket.Chat/pull/11587))
+- Regression: Make message popup user mentions reactive again ([#11567](https://github.com/RocketChat/Rocket.Chat/pull/11567))
+- Regression: Fix purge message's translations ([#11590](https://github.com/RocketChat/Rocket.Chat/pull/11590))
 
 </details>
 
