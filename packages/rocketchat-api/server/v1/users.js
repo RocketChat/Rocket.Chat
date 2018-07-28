@@ -59,6 +59,24 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
+	post() {
+		const { password } = this.bodyParams;
+		if (!password) {
+			return RocketChat.API.v1.failure('Body parameter "password" is required.');
+		}
+		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('deleteUserOwnAccount', password);
+		});
+
+		return RocketChat.API.v1.success();
+	}
+});
+
 RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 	get() {
 		const user = this.getUserFromParams();
@@ -94,15 +112,15 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
-		const user = this.getUserFromParams();
+		const { username } = this.getUserFromParams();
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getFullUserData', { filter: user.username, limit: 1 });
+			result = Meteor.call('getFullUserData', { username, limit: 1 });
 		});
 
 		if (!result || result.length !== 1) {
-			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ user._id }".`);
+			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
 		}
 
 		return RocketChat.API.v1.success({
@@ -375,32 +393,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				}
 			})
 		});
-	}
-});
-
-/**
- DEPRECATED
- // TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
- This API returns the logged user roles.
-
- Method: GET
- Route: api/v1/user.roles
- */
-RocketChat.API.v1.addRoute('user.roles', { authRequired: true }, {
-	get() {
-		let currentUserRoles = {};
-
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUserRoles'));
-
-		if (Array.isArray(result) && result.length > 0) {
-			currentUserRoles = result[0];
-		}
-
-		return RocketChat.API.v1.success(this.deprecationWarning({
-			endpoint: 'user.roles',
-			versionWillBeRemove: 'v0.66',
-			response: currentUserRoles
-		}));
 	}
 });
 

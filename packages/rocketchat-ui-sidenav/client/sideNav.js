@@ -12,7 +12,7 @@ Template.sideNav.helpers({
 	},
 
 	footer() {
-		return RocketChat.settings.get('Layout_Sidenav_Footer');
+		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
 	roomType() {
