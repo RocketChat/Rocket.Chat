@@ -1,6 +1,20 @@
 
 # 0.68.0 (Under Release Candidate Process)
 
+## 0.68.0-rc.3
+`2018-07-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Fix purge message's translations ([#11590](https://github.com/RocketChat/Rocket.Chat/pull/11590))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.68.0-rc.2
 `2018-07-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
