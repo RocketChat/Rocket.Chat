@@ -28,7 +28,7 @@ export class GoogleDriveStore extends UploadFS.Store {
 			}
 		};
 
-/*
+		/*
 		this.create = function(file, callback) {
 			check(file, Object);
 
@@ -66,7 +66,7 @@ export class GoogleDriveStore extends UploadFS.Store {
 
 			file.store = this.options.name; // assign store to file
 		};
-*/
+		*/
 	}
 }
 
