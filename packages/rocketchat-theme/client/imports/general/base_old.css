@@ -55,8 +55,9 @@
 	position: relative;
 
 	clear: both;
+	display: block;
+	min-height: 20px;
 
-	margin: 0.5em 0;
 	padding-left: 10px;
 
 	&::after {
@@ -74,17 +75,23 @@
 		margin-bottom: 0;
 	}
 
-	&::before {
+	&:first-child::before {
+		border-radius: 2px 2px 0 0;
+	}
+
+	&:last-child::before {
+		border-radius: 0 0 2px 2px;
+	}
+
+	&:before {
 		position: absolute;
-		top: -1px;
-		bottom: -1px;
+		top: 0;
+		bottom: 0;
 		left: 0;
 
-		width: 4px;
+		width: 2px;
 
 		content: ' ';
-
-		border-radius: 2px;
 	}
 }
 
@@ -2662,6 +2669,12 @@
     padding-bottom: 0.5rem;
     align-items: center;
     justify-content: space-between;
+
+	.message {
+		padding: 0;
+		flex: 1;
+		background-color: transparent;
+	}
 }
 
 .rc-old .rc-message-box .reply-preview-with-popup {
@@ -2822,6 +2835,14 @@
 		margin-top: 12px;
 
 		text-align: center;
+
+		& .start__purge-warning {
+			padding: 0.5rem;
+			margin-bottom: 0.5rem;
+			margin-top: -33px;
+			border-width: 1px 0 0 0;
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
+		}
 	}
 
 	& .new-message {
@@ -3779,50 +3800,6 @@ body:not(.is-cordova) {
 
 		margin: 1em auto 0;
 	}
-
-	&.uploaded-files-list {
-	  	& ul {
-		  & li {
-			margin-bottom: 10px;
-		  }
-		}
-
-		& .file-name {
-			display: block;
-
-			padding: 10px 5px;
-
-			color: #008ce3;
-			border-width: 0 0 1px;
-			border-bottom: 1px solid #eaeaea;
-
-			&:hover {
-				text-decoration: underline;
-
-				color: #006db0;
-			}
-
-			& p {
-				overflow: hidden;
-
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
-		}
-
-		& i {
-			float: left;
-			margin-right: 10px;
-
-			&.file-delete {
-				float: right;
-			}
-
-			&.file-download {
-				float: right;
-			}
-		}
-	}
 }
 
 .rc-old .user-view {
@@ -4678,7 +4655,6 @@ body:not(.is-cordova) {
 
 			max-width: 100%;
 			max-height: 150px;
-			padding: 10px;
 		}
 	}
 
@@ -4696,6 +4672,9 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
+		width: 520px;
+		padding: 0 20px;
+		margin: auto;
 
 		display: block;
 	}
@@ -5729,7 +5708,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 10;
+	z-index: 9;
 	right: 0;
 	left: 0;
 
