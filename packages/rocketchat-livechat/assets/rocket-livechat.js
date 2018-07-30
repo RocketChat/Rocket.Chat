@@ -716,9 +716,6 @@
 
 	// exports
 	w.RocketChat.livechat = {
-		// objects
-		api	: api,
-
 		// methods
 		pageVisited: pageVisited,
 		setCustomField: setCustomField,

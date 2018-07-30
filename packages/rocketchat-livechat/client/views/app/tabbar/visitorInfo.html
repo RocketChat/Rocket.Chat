@@ -40,25 +40,25 @@
 				</div>
 			{{/with}}
 
-            {{#with inquiry}}
-                <div class="info">
-                    <ul>
-                        {{#if status}}
-                            <li><strong>{{_ "Inquiry Status"}}</strong>: {{status}}</li>
-                        {{/if}}
-                    </ul>
-                </div>
-            {{/with}}
+			{{#with inquiry}}
+				<div class="info">
+					<ul>
+						{{#if status}}
+						<li><strong>{{_ "Inquiry Status"}}</strong>: {{status}}</li>
+						{{/if}}
+					</ul>
+				</div>
+			{{/with}}
 
-            {{#with department}}
-                <div class="info">
-                    <ul>
-                        {{#if name}}
-                            <li><strong>{{_ "Department"}}</strong>: {{name}}</li>
-                        {{/if}}
-                    </ul>
-                </div>
-            {{/with}}
+			{{#with department}}
+				<div class="info">
+					<ul>
+						{{#if name}}
+						<li><strong>{{_ "Department"}}</strong>: {{name}}</li>
+						{{/if}}
+					</ul>
+				</div>
+			{{/with}}
 		</div>
 
 		{{#if canSeeButtons}}

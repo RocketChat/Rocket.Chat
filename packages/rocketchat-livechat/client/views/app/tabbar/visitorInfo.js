@@ -25,7 +25,6 @@ Template.visitorInfo.helpers({
 	},
 
 	room() {
-		console.log('room.id', this.rid);
 		return ChatRoom.findOne({ _id: this.rid });
 	},
 
