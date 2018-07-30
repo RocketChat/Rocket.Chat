@@ -17123,6 +17123,524 @@
           ]
         }
       ]
+    },
+    "0.68.0-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11328",
+          "title": "[NEW] Setting to disable 2FA globally",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11524",
+          "title": "[FIX] New favicons size too small",
+          "userLogin": "brunosquadros",
+          "contributors": [
+            "brunosquadros",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11534",
+          "title": "[FIX] Render reply preview with message as a common message",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11537",
+          "title": "Revert: Mixed case channel slugs #9449",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11536",
+          "title": "Merge master into develop & Set version to 0.68.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "engelgabriel",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11531",
+          "title": "[FIX] Unreads counter for new rooms on /channels.counters REST endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11488",
+          "title": "[NEW] Add /users.deleteOwnAccount REST endpoint to an user delete his own account",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11357",
+          "title": "[FIX] Marked parser breaking announcements and mentions at the start of messages",
+          "userLogin": "vynmera",
+          "contributors": [
+            "vynmera"
+          ]
+        },
+        {
+          "pr": "11500",
+          "title": "[NEW] Add /roles.list REST endpoint to retrieve all server roles",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "10731",
+          "title": "[FIX] Send Livechat back to Guest Pool",
+          "userLogin": "renatobecker",
+          "milestone": "0.68.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11496",
+          "title": "[FIX] Add customFields property to /me REST endpoint response",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11507",
+          "title": "[FIX] Invalid permalink URLs for Direct Messages",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11471",
+          "title": "[FIX] Unlimited upload file size not working",
+          "userLogin": "Hudell",
+          "milestone": "0.68.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11493",
+          "title": "[BREAK] Remove deprecated /user.roles endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11423",
+          "title": "Regression: Add missing LiveChat permission to allow removing closed rooms",
+          "userLogin": "renatobecker",
+          "milestone": "0.68.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "9449",
+          "title": "[FIX] Mixed case channel slugs",
+          "userLogin": "soundstorm",
+          "milestone": "0.68.0",
+          "contributors": [
+            "soundstorm",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11135",
+          "title": "[FIX] SAML issues",
+          "userLogin": "Hudell",
+          "milestone": "0.68.0",
+          "contributors": [
+            "arminfelder",
+            "web-flow",
+            "engelgabriel",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11363",
+          "title": "[FIX] Loading and setting fixes for i18n and RTL",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11527",
+          "title": "[FIX] Check for channels property on message object before parsing mentions",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11526",
+          "title": "[FIX] empty blockquote",
+          "userLogin": "ggazzo",
+          "milestone": "0.68.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11514",
+          "title": "[FIX] Snap font issue for sharp",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.68.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11236",
+          "title": "[NEW] Message retention policy and pruning",
+          "userLogin": "vynmera",
+          "contributors": [
+            "vynmera",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11327",
+          "title": "[IMPROVE] Set default max upload size to 100mb",
+          "userLogin": "cardoso",
+          "milestone": "0.68.0",
+          "contributors": [
+            "cardoso",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11499",
+          "title": "Update release issue template to use Houston CLI",
+          "userLogin": "rodrigok",
+          "milestone": "0.68.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11508",
+          "title": "Regression: Remove safe area margins from logos",
+          "userLogin": "brunosquadros",
+          "contributors": [
+            "brunosquadros",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11164",
+          "title": "[IMPROVE] Typing indicators now use Real Names",
+          "userLogin": "vynmera",
+          "milestone": "0.68.0",
+          "contributors": [
+            "vynmera",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11487",
+          "title": "[FIX] RocketChat.settings.get causing memory leak (sometimes)",
+          "userLogin": "ggazzo",
+          "milestone": "0.68.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11430",
+          "title": "[BREAK] Update GraphQL dependencies",
+          "userLogin": "engelgabriel",
+          "milestone": "0.68.0",
+          "contributors": [
+            "engelgabriel",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11303",
+          "title": "[NEW] Send user status to client",
+          "userLogin": "HappyTobi",
+          "contributors": [
+            "HappyTobi",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11486",
+          "title": "[NEW] Room files search form",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11441",
+          "title": "[FIX] Refinements in message popup mentions",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10017",
+          "title": "[NEW] search only default tone emoji Popup search",
+          "userLogin": "Joe-mcgee",
+          "milestone": "0.68.0",
+          "contributors": [
+            "Joe-mcgee",
+            "web-flow",
+            "engelgabriel",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11332",
+          "title": "[NEW] Privacy for custom user fields",
+          "userLogin": "vynmera",
+          "contributors": [
+            "vynmera",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11450",
+          "title": "[FIX] Decrease room leader bar z-index",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11491",
+          "title": "[NEW] Replaced old logo with the new ones",
+          "userLogin": "brunosquadros",
+          "contributors": [
+            "brunosquadros",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "9972",
+          "title": "[NEW] Sorting channels by number of users in directory",
+          "userLogin": "arungalva",
+          "milestone": "0.68.0",
+          "contributors": [
+            "arungalva",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11408",
+          "title": "[IMPROVE] Allow markdown in room topic, announcement, and description including single quotes",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11298",
+          "title": "[FIX] Remove title attribute from sidebar items",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11459",
+          "title": "[FIX] Only escape HTML from details in toast error messages",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11462",
+          "title": "[FIX] broadcast channel reply",
+          "userLogin": "ggazzo",
+          "milestone": "0.68.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11416",
+          "title": "[FIX] Fixed svg for older chrome browsers bug #11414",
+          "userLogin": "tpDBL",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tpDBL",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10119",
+          "title": "[FIX] Wrap custom fields in user profile to new line",
+          "userLogin": "PhpXp",
+          "milestone": "0.68.0",
+          "contributors": [
+            "PhpXp",
+            "karlprieb",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11349",
+          "title": "[FIX] Record popup",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11489",
+          "title": "[NEW] Make WebRTC not enabled by default",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "11443",
+          "title": "[NEW] Accept resumeToken as query param to log in",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "10514",
+          "title": "[NEW] Livechat File Upload",
+          "userLogin": "renatobecker",
+          "milestone": "0.66.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11561",
+          "title": "Regression: Update cachedCollection version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11550",
+          "title": "Regression: nonReactive to nonreactive",
+          "userLogin": "ggazzo",
+          "milestone": "0.68.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "0.68.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11587",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11567",
+          "title": "Regression: Make message popup user mentions reactive again",
+          "userLogin": "tassoevan",
+          "milestone": "0.68.0",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.0-rc.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11590",
+          "title": "Regression: Fix purge message's translations",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.68.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": []
     }
   }
 }
