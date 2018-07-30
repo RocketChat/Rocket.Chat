@@ -4,20 +4,20 @@ ENV RC_VERSION 0.59.0-develop
 
 MAINTAINER buildmaster@rocket.chat
 
+COPY bundle /tmp/bundle
+
 RUN set -x \
- && curl -SLf "https://download.rocket.chat/build/${RC_VERSION}.tgz" -o rocket.chat.tgz \
- && curl -SLf "https://download.rocket.chat/build/${RC_VERSION}.tgz.asc" -o rocket.chat.tgz.asc \
  && mkdir /app \
- && gpg --verify rocket.chat.tgz.asc \
  && mkdir -p /app \
- && tar -zxf rocket.chat.tgz -C /app \
- && rm rocket.chat.tgz rocket.chat.tgz.asc \
+ && cp -r /tmp/bundle /app/bundle \
+ && echo "/app/bundle dir was created" \
  && cd /app/bundle/programs/server \
  && npm install \
  && npm cache clear \
- && chown -R rocketchat:rocketchat /app
+ && chown -R rocketchat:rocketchat /app \
+ && echo "Rocket.chat docker build process finished successfully"
 
-USER rocketchat
+USER root
 
 VOLUME /app/uploads
 
