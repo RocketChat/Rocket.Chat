@@ -1,4 +1,107 @@
 
+# 0.68.0
+`2018-07-27  ·  2 ️️️⚠️  ·  13 🎉  ·  3 🚀  ·  23 🐛  ·  10 🔍  ·  21 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### ⚠️ BREAKING CHANGES
+
+- Remove deprecated /user.roles endpoint ([#11493](https://github.com/RocketChat/Rocket.Chat/pull/11493))
+- Update GraphQL dependencies ([#11430](https://github.com/RocketChat/Rocket.Chat/pull/11430))
+
+### 🎉 New features
+
+- Setting to disable 2FA globally ([#11328](https://github.com/RocketChat/Rocket.Chat/pull/11328))
+- Add /users.deleteOwnAccount REST endpoint to an user delete his own account ([#11488](https://github.com/RocketChat/Rocket.Chat/pull/11488))
+- Add /roles.list REST endpoint to retrieve all server roles ([#11500](https://github.com/RocketChat/Rocket.Chat/pull/11500))
+- Message retention policy and pruning ([#11236](https://github.com/RocketChat/Rocket.Chat/pull/11236) by [@vynmera](https://github.com/vynmera))
+- Send user status to client ([#11303](https://github.com/RocketChat/Rocket.Chat/pull/11303) by [@HappyTobi](https://github.com/HappyTobi))
+- Room files search form ([#11486](https://github.com/RocketChat/Rocket.Chat/pull/11486))
+- search only default tone emoji Popup search ([#10017](https://github.com/RocketChat/Rocket.Chat/pull/10017) by [@Joe-mcgee](https://github.com/Joe-mcgee))
+- Privacy for custom user fields ([#11332](https://github.com/RocketChat/Rocket.Chat/pull/11332) by [@vynmera](https://github.com/vynmera))
+- Replaced old logo with the new ones ([#11491](https://github.com/RocketChat/Rocket.Chat/pull/11491))
+- Sorting channels by number of users in directory ([#9972](https://github.com/RocketChat/Rocket.Chat/pull/9972) by [@arungalva](https://github.com/arungalva))
+- Make WebRTC not enabled by default ([#11489](https://github.com/RocketChat/Rocket.Chat/pull/11489))
+- Accept resumeToken as query param to log in ([#11443](https://github.com/RocketChat/Rocket.Chat/pull/11443))
+- Livechat File Upload ([#10514](https://github.com/RocketChat/Rocket.Chat/pull/10514))
+
+### 🚀 Improvements
+
+- Set default max upload size to 100mb ([#11327](https://github.com/RocketChat/Rocket.Chat/pull/11327))
+- Typing indicators now use Real Names ([#11164](https://github.com/RocketChat/Rocket.Chat/pull/11164) by [@vynmera](https://github.com/vynmera))
+- Allow markdown in room topic, announcement, and description including single quotes ([#11408](https://github.com/RocketChat/Rocket.Chat/pull/11408))
+
+### 🐛 Bug fixes
+
+- New favicons size too small ([#11524](https://github.com/RocketChat/Rocket.Chat/pull/11524))
+- Render reply preview with message as a common message ([#11534](https://github.com/RocketChat/Rocket.Chat/pull/11534))
+- Unreads counter for new rooms on /channels.counters REST endpoint ([#11531](https://github.com/RocketChat/Rocket.Chat/pull/11531))
+- Marked parser breaking announcements and mentions at the start of messages ([#11357](https://github.com/RocketChat/Rocket.Chat/pull/11357) by [@vynmera](https://github.com/vynmera))
+- Send Livechat back to Guest Pool ([#10731](https://github.com/RocketChat/Rocket.Chat/pull/10731))
+- Add customFields property to /me REST endpoint response ([#11496](https://github.com/RocketChat/Rocket.Chat/pull/11496))
+- Invalid permalink URLs for Direct Messages ([#11507](https://github.com/RocketChat/Rocket.Chat/pull/11507))
+- Unlimited upload file size not working ([#11471](https://github.com/RocketChat/Rocket.Chat/pull/11471))
+- Mixed case channel slugs ([#9449](https://github.com/RocketChat/Rocket.Chat/pull/9449) by [@soundstorm](https://github.com/soundstorm))
+- SAML issues ([#11135](https://github.com/RocketChat/Rocket.Chat/pull/11135) by [@arminfelder](https://github.com/arminfelder))
+- Loading and setting fixes for i18n and RTL ([#11363](https://github.com/RocketChat/Rocket.Chat/pull/11363))
+- Check for channels property on message object before parsing mentions ([#11527](https://github.com/RocketChat/Rocket.Chat/pull/11527))
+- empty blockquote ([#11526](https://github.com/RocketChat/Rocket.Chat/pull/11526))
+- Snap font issue for sharp ([#11514](https://github.com/RocketChat/Rocket.Chat/pull/11514))
+- RocketChat.settings.get causing memory leak (sometimes) ([#11487](https://github.com/RocketChat/Rocket.Chat/pull/11487))
+- Refinements in message popup mentions ([#11441](https://github.com/RocketChat/Rocket.Chat/pull/11441))
+- Decrease room leader bar z-index ([#11450](https://github.com/RocketChat/Rocket.Chat/pull/11450))
+- Remove title attribute from sidebar items ([#11298](https://github.com/RocketChat/Rocket.Chat/pull/11298))
+- Only escape HTML from details in toast error messages ([#11459](https://github.com/RocketChat/Rocket.Chat/pull/11459))
+- broadcast channel reply ([#11462](https://github.com/RocketChat/Rocket.Chat/pull/11462))
+- Fixed svg for older chrome browsers bug #11414 ([#11416](https://github.com/RocketChat/Rocket.Chat/pull/11416) by [@tpDBL](https://github.com/tpDBL))
+- Wrap custom fields in user profile to new line ([#10119](https://github.com/RocketChat/Rocket.Chat/pull/10119) by [@PhpXp](https://github.com/PhpXp))
+- Record popup ([#11349](https://github.com/RocketChat/Rocket.Chat/pull/11349))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Revert: Mixed case channel slugs #9449 ([#11537](https://github.com/RocketChat/Rocket.Chat/pull/11537))
+- Merge master into develop & Set version to 0.68.0-develop ([#11536](https://github.com/RocketChat/Rocket.Chat/pull/11536))
+- Regression: Add missing LiveChat permission to allow removing closed rooms ([#11423](https://github.com/RocketChat/Rocket.Chat/pull/11423))
+- Update release issue template to use Houston CLI ([#11499](https://github.com/RocketChat/Rocket.Chat/pull/11499))
+- Regression: Remove safe area margins from logos ([#11508](https://github.com/RocketChat/Rocket.Chat/pull/11508))
+- Regression: Update cachedCollection version ([#11561](https://github.com/RocketChat/Rocket.Chat/pull/11561))
+- Regression: nonReactive to nonreactive ([#11550](https://github.com/RocketChat/Rocket.Chat/pull/11550))
+- LingoHub based on develop ([#11587](https://github.com/RocketChat/Rocket.Chat/pull/11587))
+- Regression: Make message popup user mentions reactive again ([#11567](https://github.com/RocketChat/Rocket.Chat/pull/11567))
+- Regression: Fix purge message's translations ([#11590](https://github.com/RocketChat/Rocket.Chat/pull/11590))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@HappyTobi](https://github.com/HappyTobi)
+- [@Joe-mcgee](https://github.com/Joe-mcgee)
+- [@PhpXp](https://github.com/PhpXp)
+- [@arminfelder](https://github.com/arminfelder)
+- [@arungalva](https://github.com/arungalva)
+- [@soundstorm](https://github.com/soundstorm)
+- [@tpDBL](https://github.com/tpDBL)
+- [@vynmera](https://github.com/vynmera)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@brunosquadros](https://github.com/brunosquadros)
+- [@cardoso](https://github.com/cardoso)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@karlprieb](https://github.com/karlprieb)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.67.0
 `2018-07-20  ·  1 ️️️⚠️  ·  1 🎉  ·  1 🚀  ·  6 🐛  ·  5 🔍  ·  11 👩‍💻👨‍💻`
 
