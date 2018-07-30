@@ -198,7 +198,7 @@ export const Analytics = {
 				'value': busiestDay
 			}, {
 				'title': 'Conversations_per_day',
-				'value': Math.round(totalConversations*100/days)/100
+				'value': (totalConversations/days).toFixed(2)
 			}, {
 				'title': 'Busiest_time',
 				'value': (busiestHour > 0) ? `${ moment(busiestHour, ['H']).format('hA') }-${ moment((parseInt(busiestHour)+1)%24, ['H']).format('hA') }` : '-'
@@ -244,13 +244,13 @@ export const Analytics = {
 
 			const data = [{
 				'title': 'Avg_response_time',
-				'value': Math.round(avgResponseTime * 100) / 100
+				'value': avgResponseTime.toFixed(2)
 			}, {
 				'title': 'First_response_time',
-				'value': Math.round(firstResponseTime * 100) / 100
+				'value': firstResponseTime.toFixed(2)
 			}, {
 				'title': 'Avg_reaction_time',
-				'value': Math.round(avgReactionTime * 100) / 100
+				'value': avgReactionTime.toFixed(2)
 			}];
 
 			return data;
@@ -372,7 +372,7 @@ export const Analytics = {
 
 				data.data.push({
 					name: key,
-					value: Math.round(avg * 100) / 100
+					value: avg.toFixed(2)
 				});
 			});
 

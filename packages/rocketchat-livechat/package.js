@@ -69,6 +69,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatVisitor.js', 'client');
 
 	api.addFiles('client/lib/Analytics.js', 'client');
+	api.addFiles('client/lib/Monitoring.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
@@ -234,6 +235,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatIntegration.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
+	api.addFiles('server/publications/livechatMonitoring.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
 	api.addFiles('server/publications/livechatTriggers.js', 'server');

@@ -1,24 +1,48 @@
 <template name="livechatRealTimeMonitoring">
 	{{#requiresPermission 'view-livechat-manager'}}
-	<form class="form-inline">
-			<div class="section">
-				<div class="section-content border-component-color">
-					<span>Total Conversations</span>
-					<span>2303</span>
+	<div class="lc-monitoring-flex">
+		<div class="section lc-monitoring-doughnut-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-chart"></canvas>
 				</div>
 			</div>
-			<div class="section">
-					<div class="section-content border-component-color">
-						<span>Total Messages</span>
-						<span>20390</span>
-					</div>
+		</div>
+		<div class="section lc-monitoring-line-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-per-agent-chart"></canvas>
 				</div>
-			<div class="section">
-						<div class="section-content border-component-color">
-							<span>Open Conversations</span>
-							<span>23</span>
-						</div>
-					</div>
-	</form>
+			</div>
+		</div>
+		<div class="section lc-monitoring-doughnut-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-agents-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<!-- <div class="section lc-monitoring-line-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-per-dept-chart"></canvas>
+				</div>
+			</div>
+		</div> -->
+		<div class="section lc-monitoring-line-chart-full">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chat-duration-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="section lc-monitoring-line-chart-full">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-reaction-response-times-chart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
 	{{/requiresPermission}}
 </template>
