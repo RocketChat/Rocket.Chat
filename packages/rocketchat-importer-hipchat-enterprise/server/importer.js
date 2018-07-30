@@ -33,10 +33,13 @@ export class HipChatEnterpriseImporter extends Base {
 				if (header.name.indexOf('.json') !== -1) {
 					const info = this.path.parse(header.name);
 
+          var json_data = '';
 					stream.on('data', Meteor.bindEnvironment((chunk) => {
+            json_data += chunk;
+          }));;
+					stream.on('end', Meteor.bindEnvironment(() => {
 						this.logger.debug(`Processing the file: ${ header.name }`);
-						const file = JSON.parse(chunk);
-
+						const file = JSON.parse(json_data);
 						if (info.base === 'users.json') {
 							super.updateProgress(ProgressStep.PREPARING_USERS);
 							for (const u of file) {
@@ -114,9 +117,8 @@ export class HipChatEnterpriseImporter extends Base {
 							//What are these files!?
 							this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ header.name }" :o`, info);
 						}
+            next();
 					}));
-
-					stream.on('end', () => next());
 					stream.on('error', () => next());
 				} else {
 					next();
