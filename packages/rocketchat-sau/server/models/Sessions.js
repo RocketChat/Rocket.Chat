@@ -25,17 +25,22 @@ class ModelSessions extends RocketChat.models._Base {
 		});
 	}
 
-	updateByInstanceIdAndSessionId(instanceId, sessionId, data = {}) {
+	closeByInstanceIdAndSessionId(instanceId, sessionId) {
 		const query = {
 			instanceId,
-			sessionId
+			sessionId,
+			closedAt: { $exists: 0 }
 		};
 
+		const closeTime = new Date();
 		const update = {
-			$set: data
+			$set: {
+				closedAt: closeTime,
+				lastActivityAt: closeTime
+			}
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.update(query, update);
 	}
 
 	updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day } = {}, instanceId, sessions, data = {}) {
@@ -55,13 +60,59 @@ class ModelSessions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateByInstanceIdAndSessionIdAndUserId(instanceId, sessionId, userId, data = {}) {
-		const query = { instanceId, sessionId, userId };
+	logoutByInstanceIdAndSessionIdAndUserId(instanceId, sessionId, userId) {
+		const query = {
+			instanceId,
+			sessionId,
+			userId,
+			logoutAt: { $exists: 0 }
+		};
+
+		const logoutAt = new Date();
 		const update = {
-			$set: data
+			$set: {
+				logoutAt
+			}
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	async cloneSessionsToDate(from = {}, to = {}, instanceId, sessionIds, data = {}) {
+		const { year, month, day } = from;
+		const query = {
+			instanceId,
+			year,
+			month,
+			day,
+			sessionId: { $in: sessionIds },
+			closedAt: { $exists: 0 }
+		};
+
+		const collectionObj = this.model.rawCollection();
+
+		const sessions = await collectionObj.find(query).toArray();
+		if (sessions.length === 0) {
+			return;
+		}
+
+		const ops = [];
+		sessions.forEach(doc => {
+			const newDoc = Object.assign(doc, data, to);
+			const { year, month, day, sessionId, instanceId } = newDoc;
+			delete newDoc._id;
+
+			ops.push({
+				updateOne: {
+					filter: { year, month, day, sessionId, instanceId },
+					update: {
+						$set: newDoc
+					},
+					upsert: true
+				}
+			});
+		});
+		return collectionObj.bulkWrite(ops, { ordered: false });
 	}
 }
 
