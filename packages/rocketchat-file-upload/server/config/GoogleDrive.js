@@ -1,15 +1,15 @@
+/* eslint-disable */
 /* globals FileUpload */
-import {google} from 'googleapis';
 import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/GoogleDrive/server.js';
 
 const get = function(file, req, res) {
-	this.store.getReadStream(file._id, file).pipe(res);
+
 };
 
 const copy = function(file, req, res) {
-	this.store.getReadStream(file._id, file).pipe(res);
+
 }
 
 const GoogleDriveUploads = new FileUploadClass({
