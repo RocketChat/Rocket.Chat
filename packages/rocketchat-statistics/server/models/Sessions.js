@@ -5,7 +5,7 @@ class ModelSessions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1, 'year': 1, 'month': 1, 'day': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1, 'userId': 1 });
 		this.tryEnsureIndex({ 'instanceId': 1, 'sessionId': 1 });
-		//this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1 });
+		this.tryEnsureIndex({ 'year': 1, 'month': 1, 'day': 1 });
 	}
 
 	createOrUpdate(data = {}) {
@@ -78,41 +78,29 @@ class ModelSessions extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	async cloneSessionsToDate(from = {}, to = {}, instanceId, sessionIds, data = {}) {
-		const { year, month, day } = from;
-		const query = {
-			instanceId,
-			year,
-			month,
-			day,
-			sessionId: { $in: sessionIds },
-			closedAt: { $exists: 0 }
-		};
+	createBatch(sessions) {
 
-		const collectionObj = this.model.rawCollection();
-
-		const sessions = await collectionObj.find(query).toArray();
-		if (sessions.length === 0) {
+		if (!sessions || sessions.length === 0) {
 			return;
 		}
 
 		const ops = [];
 		sessions.forEach(doc => {
-			const newDoc = Object.assign(doc, data, to);
-			const { year, month, day, sessionId, instanceId } = newDoc;
-			delete newDoc._id;
+			const { year, month, day, sessionId, instanceId } = doc;
+			delete doc._id;
 
 			ops.push({
 				updateOne: {
 					filter: { year, month, day, sessionId, instanceId },
 					update: {
-						$set: newDoc
+						$set: doc
 					},
 					upsert: true
 				}
 			});
 		});
-		return collectionObj.bulkWrite(ops, { ordered: false });
+
+		return this.model.rawCollection().bulkWrite(ops, { ordered: false });
 	}
 }
 

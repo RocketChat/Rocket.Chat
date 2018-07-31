@@ -6,9 +6,12 @@ const removeEmptyProps = obj => {
 	return obj;
 };
 
-const getDateObj = () => {
-	const date = new Date();
-	return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() };
+const getDateObj = (dateTime) => {
+	if (!dateTime) {
+		dateTime = new Date();
+	}
+
+	return { day: dateTime.getDate(), month: dateTime.getMonth() + 1, year: dateTime.getFullYear() };
 };
 
 const logger = new Logger('SAUMonitor');
@@ -129,8 +132,10 @@ export class SAUMonitor {
 
 		Accounts.onLogin(info => {
 			const userId = info.user._id;
-			const params = { userId, loginAt: new Date(), ...getDateObj() };
+			const loginAt = new Date();
+			const params = { userId, loginAt, ...getDateObj() };
 			this._handleSession(info.connection, params);
+			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
 
 		Accounts.onLogout(info => {
@@ -150,60 +155,30 @@ export class SAUMonitor {
 			return;
 		}
 
-		const currentDay = getDateObj();
 		const { year, month, day } = this._today;
+		const currentDateTime = new Date();
+		const currentDay = getDateObj(currentDateTime);
 
 		if (JSON.stringify(this._today) !== JSON.stringify(currentDay)) {
-			const beforeDate = this._today;
-			const beforeDateTime = new Date(beforeDate.year, beforeDate.month-1, beforeDate.day, 23, 59, 59, 999);
+			const beforeDateTime = new Date(this._today.year, this._today.month-1, this._today.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month-1, currentDay.day, 0, 0, 0, 0);
 
-			this._log(`${ this._serviceName } - Migrating sessions..`);
-			console.log('e ai');
-			this._applyAllServerSessionsIds(sessions => {
+			const createSessions = ((objects, ids) => {
+				RocketChat.models.Sessions.createBatch(objects);
 
-				new Promise((resolve, reject) => {
-					try {
-						console.log('promisse 1');
-						const upsert = RocketChat.models.Sessions.cloneSessionsToDate(beforeDate, currentDay, this._instanceId, sessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime });
-						console.log('promisse 2');
-						resolve(upsert);
-					} catch (e) {
-						reject(e);
-					}
-				}).then(result => {
-					console.log('agora caindo aqui...', result);
-					Meteor.defer(() => {
-						console.log('3');
-						this._log(`${ this._serviceName } - Updating sessions..`);
-						const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: beforeDateTime });
-						this._log(`${ this._serviceName } - updated sessions: ${ update }`);
-					});
-
-				}).catch(() => {
-
+				Meteor.defer(() => {
+					RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
-				/*
-				try {
-
-				} catch (err) {
-					this._log(`${ this._serviceName } - Error recreating sessions.`);
-					logger.debug(`[_updateActiveSessions] - ${ err }`);
-				}
-
-				console.log('2');
-				*/
 			});
-			console.log('e aqui');
+			this._applyAllServerSessionBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay});
 			this._today = currentDay;
-		} else {
-			//Otherwise, just update the lastActivityAt field
-			this._applyAllServerSessionsIds(sessions => {
-				this._log(`${ this._serviceName } - Updating sessions..`);
-				const update = RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: new Date() });
-				this._log(`${ this._serviceName } - Sessions updated(${ update }).`);
-			});
+			return;
 		}
+
+		//Otherwise, just update the lastActivityAt field
+		this._applyAllServerSessionsIds(sessions => {
+			RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
+		});
 	}
 
 	_getConnectionInfo(connection, params = {}) {
@@ -221,6 +196,10 @@ export class SAUMonitor {
 			...this._getUserAgentInfo(connection),
 			...params
 		};
+
+		if (connection.loginAt) {
+			info.loginAt = connection.loginAt;
+		}
 
 		return info;
 	}
@@ -290,4 +269,38 @@ export class SAUMonitor {
 		}
 	}
 
+	_updateConnectionInfo(sessionId, data = {}) {
+		if (!sessionId) {
+			return;
+		}
+		if (Meteor.server.sessions[sessionId]) {
+			Object.keys(data).forEach(p => {
+				Object.defineProperty(Meteor.server.sessions[sessionId].connectionHandle, p, {
+					value: data[p]
+				});
+			});
+		}
+	}
+	_applyAllServerSessionBatch(callback, params) {
+		const self = this;
+		const batch = (arr, limit) => {
+			if (!arr.length) {
+				return Promise.resolve();
+			}
+			const ids = [];
+			return Promise.all(arr.splice(0, limit).map((item) => {
+				ids.push(item.id);
+				return self._getConnectionInfo(item.connectionHandle, params);
+			})).then((data) => {
+				callback(data, ids);
+				return batch(arr, limit);
+			}).catch((e) => {
+				logger.debug(`Error: ${ e.message }`);
+				this._log(`${ this._serviceName } - Error: ${ e.message }`);
+			});
+		}
+
+		const sessions = Object.values(Meteor.server.sessions);
+		batch(sessions, 500);
+	}
 }
