@@ -7,6 +7,7 @@ import {
 } from 'meteor/rocketchat:importer';
 import {Readable} from 'stream';
 import path from 'path';
+import s from 'underscore.string';
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info) {
@@ -30,97 +31,116 @@ export class HipChatEnterpriseImporter extends Base {
 		const tempDirectMessages = new Map();
 		const promise = new Promise((resolve, reject) => {
 			this.extract.on('entry', Meteor.bindEnvironment((header, stream, next) => {
-				if (header.name.indexOf('.json') !== -1) {
-					const info = this.path.parse(header.name);
-
-					stream.on('data', Meteor.bindEnvironment((chunk) => {
-						this.logger.debug(`Processing the file: ${ header.name }`);
-						const file = JSON.parse(chunk);
-
-						if (info.base === 'users.json') {
-							super.updateProgress(ProgressStep.PREPARING_USERS);
-							for (const u of file) {
-								tempUsers.push({
-									id: u.User.id,
-									email: u.User.email,
-									name: u.User.name,
-									username: u.User.mention_name,
-									avatar: u.User.avatar.replace(/\n/g, ''),
-									timezone: u.User.timezone,
-									isDeleted: u.User.is_deleted
-								});
-							}
-						} else if (info.base === 'rooms.json') {
-							super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-							for (const r of file) {
-								tempRooms.push({
-									id: r.Room.id,
-									creator: r.Room.owner,
-									created: new Date(r.Room.created),
-									name: r.Room.name.replace(/ /g, '_').toLowerCase(),
-									isPrivate: r.Room.privacy === 'private',
-									isArchived: r.Room.is_archived,
-									topic: r.Room.topic
-								});
-							}
-						} else if (info.base === 'history.json') {
-							const dirSplit = info.dir.split('/'); //['.', 'users', '1']
-							const roomIdentifier = `${ dirSplit[1] }/${ dirSplit[2] }`;
-
-							if (dirSplit[1] === 'users') {
-								const msgs = [];
-								for (const m of file) {
-									if (m.PrivateUserMessage) {
-										msgs.push({
-											type: 'user',
-											id: `hipchatenterprise-${ m.PrivateUserMessage.id }`,
-											senderId: m.PrivateUserMessage.sender.id,
-											receiverId: m.PrivateUserMessage.receiver.id,
-											text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
-											ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0])
-										});
-									}
-								}
-								tempDirectMessages.set(roomIdentifier, msgs);
-							} else if (dirSplit[1] === 'rooms') {
-								const roomMsgs = [];
-
-								for (const m of file) {
-									if (m.UserMessage) {
-										roomMsgs.push({
-											type: 'user',
-											id: `hipchatenterprise-${ dirSplit[2] }-${ m.UserMessage.id }`,
-											userId: m.UserMessage.sender.id,
-											text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
-											ts: new Date(m.UserMessage.timestamp.split(' ')[0])
-										});
-									} else if (m.TopicRoomMessage) {
-										roomMsgs.push({
-											type: 'topic',
-											id: `hipchatenterprise-${ dirSplit[2] }-${ m.TopicRoomMessage.id }`,
-											userId: m.TopicRoomMessage.sender.id,
-											ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
-											text: m.TopicRoomMessage.message
-										});
-									} else {
-										this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
-									}
-								}
-								tempMessages.set(roomIdentifier, roomMsgs);
-							} else {
-								this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ dirSplit[1] }" files.`);
-							}
-						} else {
-							//What are these files!?
-							this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ header.name }" :o`, info);
-						}
-					}));
-
-					stream.on('end', () => next());
-					stream.on('error', () => next());
-				} else {
-					next();
+				if (!header.name.endsWith('.json')) {
+					stream.resume();
+					return next();
 				}
+
+				const info = this.path.parse(header.name);
+				const data = [];
+
+				stream.on('data', Meteor.bindEnvironment((chunk) => {
+					data.push(chunk);
+				}));
+
+				stream.on('end', Meteor.bindEnvironment(() => {
+					this.logger.debug(`Processing the file: ${ header.name }`);
+					const dataString = Buffer.concat(data).toString();
+					const file = JSON.parse(dataString);
+
+					if (info.base === 'users.json') {
+						super.updateProgress(ProgressStep.PREPARING_USERS);
+						for (const u of file) {
+							if (!u.User.email) {
+								continue;
+							}
+							tempUsers.push({
+								id: u.User.id,
+								email: u.User.email,
+								name: u.User.name,
+								username: u.User.mention_name,
+								avatar: u.User.avatar && u.User.avatar.replace(/\n/g, ''),
+								timezone: u.User.timezone,
+								isDeleted: u.User.is_deleted
+							});
+						}
+					} else if (info.base === 'rooms.json') {
+						super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+						for (const r of file) {
+							tempRooms.push({
+								id: r.Room.id,
+								creator: r.Room.owner,
+								created: new Date(r.Room.created),
+								name: s.slugify(r.Room.name),
+								isPrivate: r.Room.privacy === 'private',
+								isArchived: r.Room.is_archived,
+								topic: r.Room.topic
+							});
+						}
+					} else if (info.base === 'history.json') {
+						const [type, id] = info.dir.split('/'); //['users', '1']
+						const roomIdentifier = `${ type }/${ id }`;
+						if (type === 'users') {
+							const msgs = [];
+							for (const m of file) {
+								if (m.PrivateUserMessage) {
+									msgs.push({
+										type: 'user',
+										id: `hipchatenterprise-${ m.PrivateUserMessage.id }`,
+										senderId: m.PrivateUserMessage.sender.id,
+										receiverId: m.PrivateUserMessage.receiver.id,
+										text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
+										ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0])
+									});
+								}
+							}
+							tempDirectMessages.set(roomIdentifier, msgs);
+						} else if (type === 'rooms') {
+							const roomMsgs = [];
+
+							for (const m of file) {
+								if (m.UserMessage) {
+									roomMsgs.push({
+										type: 'user',
+										id: `hipchatenterprise-${ id }-${ m.UserMessage.id }`,
+										userId: m.UserMessage.sender.id,
+										text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
+										ts: new Date(m.UserMessage.timestamp.split(' ')[0])
+									});
+								} else if (m.NotificationMessage) {
+									roomMsgs.push({
+										type: 'user',
+										id: `hipchatenterprise-${ id }-${ m.NotificationMessage.id }`,
+										userId: 'rocket.cat',
+										alias: m.NotificationMessage.sender,
+										text: m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`,
+										ts: new Date(m.NotificationMessage.timestamp.split(' ')[0])
+									});
+								} else if (m.TopicRoomMessage) {
+									roomMsgs.push({
+										type: 'topic',
+										id: `hipchatenterprise-${ id }-${ m.TopicRoomMessage.id }`,
+										userId: m.TopicRoomMessage.sender.id,
+										ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
+										text: m.TopicRoomMessage.message
+									});
+								} else {
+									this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
+								}
+							}
+							tempMessages.set(roomIdentifier, roomMsgs);
+						} else {
+							this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files.`);
+						}
+					} else {
+						//What are these files!?
+						this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ header.name }" :o`, info);
+					}
+					next();
+				}));
+				stream.on('error', () => next());
+
+				stream.resume();
 			}));
 
 			this.extract.on('error', (err) => {
@@ -206,10 +226,10 @@ export class HipChatEnterpriseImporter extends Base {
 
 			//Wish I could make this cleaner :(
 			const split = dataURI.split(',');
-			const s = new this.Readable;
-			s.push(new Buffer(split[split.length - 1], 'base64'));
-			s.push(null);
-			s.pipe(this.zlib.createGunzip()).pipe(this.extract);
+			const read = new this.Readable;
+			read.push(new Buffer(split[split.length - 1], 'base64'));
+			read.push(null);
+			read.pipe(this.zlib.createGunzip()).pipe(this.extract);
 		});
 
 		return promise;
@@ -264,7 +284,7 @@ export class HipChatEnterpriseImporter extends Base {
 							u.rocketId = existantUser._id;
 							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
 						} else {
-							const userId = Accounts.createUser({ email: u.email, password: Date.now() + u.name + u.email.toUpperCase() });
+							const userId = Accounts.createUser({ email: u.email, password: Random.id() });
 							Meteor.runAsUser(userId, () => {
 								Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
 								//TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
@@ -354,6 +374,7 @@ export class HipChatEnterpriseImporter extends Base {
 												ts: msg.ts,
 												msg: msg.text,
 												rid: room._id,
+												alias: msg.alias,
 												u: {
 													_id: creator._id,
 													username: creator.username
