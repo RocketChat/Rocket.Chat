@@ -17641,6 +17641,30 @@
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
       "pull_requests": []
+    },
+    "0.68.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11613",
+          "title": "[FIX] `Jump to message` search result action",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11597",
+          "title": "[FIX] HipChat importer wasn’t compatible with latest exports",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,4 +1,22 @@
 
+# 0.68.1
+`2018-07-30  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- `Jump to message` search result action ([#11613](https://github.com/RocketChat/Rocket.Chat/pull/11613))
+- HipChat importer wasn’t compatible with latest exports ([#11597](https://github.com/RocketChat/Rocket.Chat/pull/11597))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.68.0
 `2018-07-27  ·  2 ️️️⚠️  ·  13 🎉  ·  3 🚀  ·  23 🐛  ·  10 🔍  ·  21 👩‍💻👨‍💻`
 
