@@ -47,22 +47,21 @@
 		.--marketplace-installer {
 			position: absolute;
 			top: 0;
-			left: 0;
-			width: 900px;
+			width: 818px;
 			height: 20px;
 		}
 		.--marketplace-installer.play {
-			animation: play90 steps(18);
+			animation: play90 steps(20) 4s forwards;
 
 		}
 	}
 }
 
-keyframes play90 {
+@keyframes play90 {
   0% {
-    right: -882px;
+    right: -798px;
   }
   100% {
-    right: 0px;
+    right: 2px;
   }
 }
