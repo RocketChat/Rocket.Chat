@@ -15,11 +15,13 @@ Meteor.methods({
 		const ipfsPath = `/RocketChat/${ Meteor.userId() }`;
 		ipfs.files.stat(ipfsPath, (err) => {
 			if (err) {
+				console.log('newDir');
 				ipfs.files.mkdir(ipfsPath);
 			}
-			console.log(ipfsPath);
+			console.log(`${ ipfsPath }/${ path }`);
+			console.log(content);
 			return new Promise((resolve, reject) => {
-				ipfs.files.write(`${ ipfsPath }/path`, content, { create : true }, (err) => {
+				ipfs.files.write(`${ ipfsPath }/${ path }`, content, { create : true }, (err) => {
 					if (err) {
 						reject(err);
 					}
@@ -51,6 +53,7 @@ Meteor.methods({
 	getFile(hash) {
 		const rst = HTTP.call('GET', `http://localhost:5001/api/v0/cat?arg=${ hash }`);
 		console.log(`User ${ Meteor.user() }`);
+		console.log(rst.content);
 		return rst.content;
 	}
 });

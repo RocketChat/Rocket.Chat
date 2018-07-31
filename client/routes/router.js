@@ -1,5 +1,11 @@
 /* globals KonchatNotification */
 import s from 'underscore.string';
+import cp from 'crypto-js';
+import download from 'downloadjs';
+import enc from 'crypto-js/enc-utf8';
+
+
+import { ConfigBase } from 'aws-sdk/lib/config';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -47,6 +53,52 @@ FlowRouter.route('/login', {
 
 	action() {
 		FlowRouter.go('home');
+	}
+});
+
+FlowRouter.route('/ipfs/:hash', {
+	name: 'test',
+	action(params) {
+		console.log(Meteor.userId());
+		const password = prompt('Enter Password');
+		console.log(params.hash);
+		console.log('Looking at a list?');
+		return new Promise((resolve, reject) => {
+			Meteor.call('getFile', params.hash, (err, res) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(res);
+					console.log(res);
+					console.log('hello');
+					const getRst = cp.AES.decrypt(res, password);
+					// console.log(Meteor.user().services.password.bcrypt);
+					console.log(`value  ${ getRst.toString(cp.enc.Utf8) }`);
+					console.log(getRst.toString(cp.enc.Utf8));
+					const end = (getRst.toString(cp.enc.Utf8)).indexOf(';');
+					const fileType = (getRst.toString(cp.enc.Utf8)).substring(5, end);
+					console.log(fileType);
+					if (fileType === 'image/jpeg') {
+						console.log('Loading');
+						const image = new Image();
+						image.src = getRst.toString(cp.enc.Utf8);
+						const w = window.open('');
+						w.document.write(image.outerHTML);
+					} else if ((fileType === 'application/pdf') || (fileType === 'text/plain')) {
+						// let ext = 'txt';
+						// if (fileType === 'application/pdf') {
+						// 	ext = 'pdf';
+						// }
+						download(getRst.toString(cp.enc.Utf8), 'file', fileType)
+							.then(function(file) {
+								console.log(file);
+							});
+					} else {
+						console.log('fail');
+					}
+				}
+			});
+		});
 	}
 });
 

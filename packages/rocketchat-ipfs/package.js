@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 	]);
 	api.addFiles('server/ipfs.js', 'server');
 	api.addFiles('client/fetchFilesfromIPFS.html', 'client');
-	api.addFiles('server/lib/request.js', 'server');
+	// api.addFiles('server/lib/request.js', 'server');
 	api.addFiles('server/lib/IPFSConnecter.js', 'server');
 	api.addFiles('client/fetchFilesfromIPFS.js', 'client');
 
