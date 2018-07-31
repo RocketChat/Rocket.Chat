@@ -298,7 +298,7 @@ export class SAUMonitor {
 				logger.debug(`Error: ${ e.message }`);
 				this._log(`${ this._serviceName } - Error: ${ e.message }`);
 			});
-		}
+		};
 
 		const sessions = Object.values(Meteor.server.sessions);
 		batch(sessions, 500);
