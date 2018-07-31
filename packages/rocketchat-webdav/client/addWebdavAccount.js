@@ -51,6 +51,8 @@ Template.addWebdavAccount.onCreated(function() {
 			validationObj['pass'] = t('Field_required');
 		}
 
+		$('#add-webdav input.error, #add-webdav  select.error').removeClass('error');
+		$('#add-webdav .input-error').text('');
 		if (!_.isEmpty(validationObj)) {
 			Object.keys(validationObj).forEach((key) => {
 				const value = validationObj[key];

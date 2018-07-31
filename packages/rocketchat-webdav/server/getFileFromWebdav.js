@@ -1,4 +1,3 @@
-/* globals FileUpload */
 import Webdav from 'webdav';
 import Future from 'fibers/future';
 

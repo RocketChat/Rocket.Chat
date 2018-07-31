@@ -1,4 +1,5 @@
 import Webdav from 'webdav';
+import Future from 'fibers/future';
 
 Meteor.methods({
 	getWebdavFileList(accountId, path) {
@@ -20,6 +21,12 @@ Meteor.methods({
 			account.username,
 			account.password
 		);
-		return client.getDirectoryContents(path);
+		const future = new Future();
+		client.getDirectoryContents(path).then((data) => {
+				future['return']({success: true, data: data});
+		},(err) => {
+			future['return']({success: false, message: "could-not-access-webdav"});
+		});
+		return future.wait();
 	}
 });

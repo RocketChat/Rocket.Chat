@@ -24,7 +24,7 @@ Tracker.autorun(() => {
 		const label = account.username + '@'+account.server_url.replace(/^https?\:\/\//i, "");
 		RocketChat.messageBox.actions.add('WebDAV', label, {
 			id: 'webdav-upload-' + account._id.toLowerCase(),
-			icon: 'webdav', //add icon for webdav
+			icon: 'cloud-plus',
 			condition: () => RocketChat.settings.get('Webdav_Integration_Allowed'),
 			action() {
 				modal.open({

@@ -5,9 +5,20 @@ import { Session } from 'meteor/session'
 Template.webdavFilePicker.rendered = function () {
 	const accountId = this.data.accountId;
 	Session.set('webdavCurrentFolder', "/");
-	Meteor.call('getWebdavFileList',  accountId, "/", function (error, result) {
-		Session.set('webdavNodes', result);
+	Meteor.call('getWebdavFileList',  accountId, "/", function (error, response) {
+		if(error) {
+			modal.close();
+			return toastr.error(t(error.error));
+		}
+		if (!response.success) {
+			modal.close();
+			return toastr.error(t(response.message));
+		}
+		Session.set('webdavNodes', response.data);
 	});
+};
+Template.webdavFilePicker.destroyed = function () {
+	Session.set('webdavNodes', []);
 };
 Template.webdavFilePicker.helpers({
 	iconType() {
@@ -21,11 +32,11 @@ Template.webdavFilePicker.helpers({
 		}
 
 		if (this.type === 'directory') {
-			icon = 'discover';
+			icon = 'folder';
 			type = 'directory';
 		} else if (this.mime.match(/application\/pdf/)) {
 			icon = 'file-pdf';
-			type = 'pdf';
+			type = 'ppt';
 		} else if (['application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.presentation'].includes(this.mime)) {
 			icon = 'file-document';
 			type = 'document';
@@ -63,15 +74,31 @@ Template.webdavFilePicker.events({
 			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf("/")+1);
 		}
 		Session.set('webdavCurrentFolder', parentFolder);
+		Session.set('webdavNodes', []);
 		Meteor.call('getWebdavFileList', accountId, parentFolder, function (error, response) {
-			Session.set('webdavNodes', response);
+			if(error) {
+				modal.close();
+				return toastr.error(t(error.error));
+			}
+			if (!response.success) {
+				return toastr.error(t(response.message));
+			}
+			Session.set('webdavNodes', response.data);
 		});
 	},
 	'click .webdav_directory'() {
 		const accountId = Template.instance().data.accountId;
 		Session.set('webdavCurrentFolder', this.filename);
+		Session.set('webdavNodes', []);
 		Meteor.call('getWebdavFileList', accountId, this.filename, function (error, response) {
-			Session.set('webdavNodes', response);
+			if(error) {
+				modal.close();
+				return toastr.error(t(error.error));
+			}
+			if (!response.success) {
+				return toastr.error(t(response.message));
+			}
+			Session.set('webdavNodes', response.data);
 		});
 	},
 	'click .webdav_file'() {
