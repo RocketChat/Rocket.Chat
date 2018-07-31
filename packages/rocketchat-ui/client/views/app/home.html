@@ -3,9 +3,11 @@
 		{{> header sectionName=title}}
 		{{#if threadingOnHome}}
 			{{> CreateThread }}
+		{{ else }}
+			<div class="content">
+				{{{body}}}
+			</div>
 		{{/if}}
-		<div class="content">
-			{{{body}}}
-		</div>
+
 	</section>
 </template>

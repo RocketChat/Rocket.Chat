@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 	// api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 
 	api.addFiles('config.js', 'server');
-	// api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
+	api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
 
 	// Libraries
 	// api.addFiles('server/inject.js', 'server');
@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 	//Methods
 	api.addFiles('server/methods/createThread.js', 'server');
 	api.addFiles('server/methods/getParentChannelId.js', 'server');
+	api.addFiles('server/methods/getParentChannelList.js', 'server');
 	// api.addFiles('server/methods/expertiseList.js', 'server');
 
 	// we have all migrations in one single file
@@ -38,11 +39,11 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/CreateThread.html', 'client');
 	api.addFiles('client/views/creationDialog/CreateThread.js', 'client');
 	api.addFiles('client/views/creationDialog/CreateThreadInputError.html', 'client');
-	// api.addFiles('client/views/creationDialog/AssistifyWordCloud.html', 'client'); // TODO: add wordcloud - but when doing this, ensure the sizes are based on the member-count (non-linear!)
-	// api.addFiles('client/views/creationDialog/AssistifyWordCloud.js', 'client');
 	api.addFiles('client/views/creationDialog/CreateThreadAutocomplete.html', 'client');
-	// api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.html', 'client');
-	// api.addFiles('client/views/creationDialog/AssistifyTopicSearchEmpty.js', 'client');
+	api.addFiles('client/views/creationDialog/ChannelNotFound.html', 'client');
+	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
+	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client'); // TODO: add wordcloud - but when doing this, ensure the sizes are based on the member-count (non-linear!)
+	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	// api.addFiles('client/views/messageActions/ThreadMessageAction.js', 'client'); // TODO: Re-add
 
 	//styling

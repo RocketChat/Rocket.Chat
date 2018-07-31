@@ -9,9 +9,10 @@ Meteor.methods({
 		};
 
 		const cursorHandle = RocketChat.models.Rooms.findByNameAndTypesNotInIds(channelName, ['c', 'p'], '', options);
-		const rooms = cursorHandle.fetch();
-		if (rooms.length) {
-			return rooms[0];
+		const room = cursorHandle.fetch();
+		if (!room.length) {
+			throw new Meteor.Error('invalid-channel', 'Invalid channel', { method: 'assistify:getParentChannelId' });
 		}
+		return room[0]._id;
 	}
 });

@@ -1,6 +1,5 @@
 /* globals TAPi18n, AutoComplete */
 /* globals _ */
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -15,7 +14,7 @@ const acEvents = {
 	},
 	'click #more-topics'(e, t) {
 		e.preventDefault();
-		t.channelSelectionEnabled.set(true);
+		t.showChannelSelection.set(true);
 	},
 	'keydown [name="parentChannel"]'(e, t) {
 		t.ac.onKeyDown(e);
@@ -61,7 +60,7 @@ Template.CreateThread.helpers({
 		return {
 			filter: filter.get(),
 			template_item: 'CreateThreadAutocomplete',
-			noMatchTemplate: 'AssistifyTopicSearchEmpty',
+			noMatchTemplate: 'ChannelNotFound',
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
@@ -70,7 +69,7 @@ Template.CreateThread.helpers({
 			}
 		};
 	},
-	manuallySelectParent() {
+	selectParent() {
 		return Template.instance().selectParent.get();
 	},
 	targetChannelText() {
@@ -79,7 +78,7 @@ Template.CreateThread.helpers({
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-		if (instance.openingQuestion.get() && instance.parentChannelId.get() && !instance.error.get()) {
+		if (instance.openingQuestion.get() && instance.parentChannel.get() && !instance.error.get()) {
 			return '';
 		} else {
 			return 'disabled';
@@ -97,9 +96,9 @@ Template.CreateThread.helpers({
 		const instance = Template.instance();
 		return instance.error.get();
 	},
-	channelSelectionEnabled() {
+	showChannelSelection() {
 		const instance = Template.instance();
-		return instance.channelSelectionEnabled.get();
+		return instance.showChannelSelection.get();
 	},
 	getWordcloudProperties() {
 		const instance = Template.instance();
@@ -156,7 +155,6 @@ Template.CreateThread.helpers({
 			//setCanvas: getCanvas
 		};
 	}
-
 });
 
 Template.CreateThread.events({
@@ -168,7 +166,8 @@ Template.CreateThread.events({
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const length = input.value.length;
-		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length); t.parentChannel.set(input.value);
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		t.parentChannel.set(input.value);
 		t.parentChannelId.set('');
 		t.parentChannelError.set('');
 	},
@@ -187,7 +186,9 @@ Template.CreateThread.events({
 		const openingQuestion = instance.openingQuestion.get();
 		if (parentChannelId) {
 			instance.error.set(null);
-			Meteor.call('createThread', parentChannelId, {msg: openingQuestion}, (err, result) => {
+			Meteor.call('createThread', parentChannelId, {
+				msg: openingQuestion
+			}, (err, result) => {
 				if (err) {
 					console.log(err);
 					switch (err.error) {
@@ -256,15 +257,15 @@ Template.CreateThread.onRendered(function() {
 
 Template.CreateThread.onCreated(function() {
 	const instance = this;
-	instance.parentChannel = new ReactiveVar('general'); // TODO: determine parent Channel from setting and allow to oeverwerite
-	instance.selectParent = new ReactiveVar(false);
+	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Parent_Channel')); // TODO: determine parent Channel from setting and allow to overwrite
 	instance.parentChannelId = new ReactiveVar('');
 	instance.parentChannelError = new ReactiveVar(null);
+	instance.selectParent = new ReactiveVar(RocketChat.settings.get('Select_Parent'));
+	instance.parentChannelsList = new ReactiveVar('');
 	instance.error = new ReactiveVar(null);
 	instance.openingQuestion = new ReactiveVar('');
-	instance.channelSelectionEnabled = new ReactiveVar('');
 	instance.showDropDown = new ReactiveVar('');
-	instance.parentChannelsList = new ReactiveVar('');
+	instance.showChannelSelection = new ReactiveVar(false);
 	instance.debounceDropDown = _.debounce(() => {
 		instance.showDropDown.set('');
 	}, 200);
@@ -274,15 +275,12 @@ Template.CreateThread.onCreated(function() {
 			return false; //parentChannel is mandatory
 		}
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
-			if (error) {
+			if (!result) {
 				instance.parentChannelId.set(false);
+				instance.parentChannelError.set('Parent_channel_doesnt_exist');
 			} else {
-				instance.parentChannelId.set(result);
-				if (!result) {
-					instance.error.set('parentChannel_does_not_exist');
-				} else {
-					instance.error.set('');
-				}
+				instance.parentChannelError.set('');
+				instance.parentChannelId.set(result); //assign parent channel Id
 			}
 		});
 	}, 500);
@@ -297,20 +295,19 @@ Template.CreateThread.onCreated(function() {
 		},
 		limit: 10,
 		inputDelay: 300,
-		rules: [
-			{
-				collection: 'parentChannelSearch', // TODO:  check for proper collection
-				subscription: 'autocompleteparentChannel', // TODO: Provide another subscription exposing `c` and `p`
-				field: 'name',
-				matchAll: true,
-				doNotChangeWidth: false,
-				selector(match) {
-					return { term: match };
-				},
-				sort: 'name'
-			}
-		]
-
+		rules: [{
+			collection: 'CachedChannelList', // TODO:  check for proper collection
+			subscription: 'channelAndPrivateAutocomplete', // TODO: Provide another subscription exposing `c` and `p`
+			field: 'name',
+			matchAll: true,
+			doNotChangeWidth: false,
+			selector(match) {
+				return {
+					name: match
+				};
+			},
+			sort: 'name'
+		}]
 	});
 	this.ac.tmplInst = this;
 
@@ -328,9 +325,11 @@ Template.CreateThread.onCreated(function() {
 	// 	}
 	// }
 
-	// Meteor.call('parentChannelList', { sort: 'name' }, function(err, result) { // TODO: Provide analogous methods
-	// 	if (result) {
-	// 		instance.parentChannelsList.set(result.channels);
-	// 	}
-	// });
+	Meteor.call('getParentChannelList', {
+		sort: 'name'
+	}, function(err, result) { // TODO: Provide analogous methods
+		if (result) {
+			instance.parentChannelsList.set(result.channels);
+		}
+	});
 });
