@@ -1,6 +1,25 @@
 
+# 0.68.2
+`2018-07-31  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Incorrect migration version in v130.js ([#11544](https://github.com/RocketChat/Rocket.Chat/pull/11544) by [@c0dzilla](https://github.com/c0dzilla))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@c0dzilla](https://github.com/c0dzilla)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.68.1
-`2018-07-30  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+`2018-07-31  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -11,8 +30,16 @@
 - `Jump to message` search result action ([#11613](https://github.com/RocketChat/Rocket.Chat/pull/11613))
 - HipChat importer wasn’t compatible with latest exports ([#11597](https://github.com/RocketChat/Rocket.Chat/pull/11597))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.68.1 ([#11616](https://github.com/RocketChat/Rocket.Chat/pull/11616))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
+- [@engelgabriel](https://github.com/engelgabriel)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
