@@ -203,7 +203,7 @@ export default class LDAP {
 			typeof user['services']['ldap'] !== 'undefined' &&
 			typeof user['services']['ldap']['id'] !== 'undefined' &&
 			typeof user['services']['ldap']['idAttribute'] !== 'undefined') {
-			var idFilter = new this.ldapjs.filters.EqualityFilter({
+			let idFilter = new this.ldapjs.filters.EqualityFilter({
 				attribute: user['services']['ldap']['idAttribute'],
 				value: new Buffer(user['services']['ldap']['id'],'hex')
 			});
