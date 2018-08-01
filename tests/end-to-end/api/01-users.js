@@ -798,6 +798,17 @@ describe('[Users]', function() {
 
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${ Date.now() }token`;
+		it('Enable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
+			request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
+				.set(credentials)
+				.send({'value': true})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		describe('[/users.generatePersonalAccessToken]', () => {
 			it('should return a personal access token to user', (done) => {
 				request.post(api('users.generatePersonalAccessToken'))
@@ -856,6 +867,19 @@ describe('[Users]', function() {
 					.end(done);
 			});
 		});
+		describe('[/users.getPersonalAccessTokens]', () => {
+			it('should return my personal access tokens', (done) => {
+				request.get(api('users.getPersonalAccessTokens'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('tokens').and.to.be.an('array');
+					})
+					.end(done);
+			});
+		});
 		describe('[/users.removePersonalAccessToken]', () => {
 			it('should return success when user remove a personal access token', (done) => {
 				request.post(api('users.removePersonalAccessToken'))
@@ -871,7 +895,7 @@ describe('[Users]', function() {
 					.end(done);
 			});
 			it('should throw an error when user tries remove a token that does not exist', (done) => {
-				request.post(api('users.regeneratePersonalAccessToken'))
+				request.post(api('users.removePersonalAccessToken'))
 					.set(credentials)
 					.send({
 						tokenName: 'tokenthatdoesnotexist'
