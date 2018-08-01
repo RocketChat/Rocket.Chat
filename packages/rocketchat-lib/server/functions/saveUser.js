@@ -135,9 +135,9 @@ RocketChat.saveUser = function(userId, userData) {
 
 			subject = RocketChat.placeholders.replace(subject);
 			html = RocketChat.placeholders.replace(html, {
-				name: userData.name,
-				email: userData.email,
-				password: userData.password
+				name: s.escapeHTML(userData.name),
+				email: s.escapeHTML(userData.email),
+				password: s.escapeHTML(userData.password)
 			});
 
 			const email = {

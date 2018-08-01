@@ -1,4 +1,6 @@
 /*globals Mailer */
+import s from 'underscore.string';
+
 Mailer.sendMail = function(from, subject, body, dryrun, query) {
 
 	const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
@@ -60,8 +62,8 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 					_id: user._id,
 					createdAt: user.createdAt.getTime()
 				})),
-				name: user.name,
-				email
+				name: s.escapeHTML(user.name),
+				email: s.escapeHTML(email)
 			});
 			email = `${ user.name } <${ email }>`;
 			if (rfcMailPatternWithName.test(email)) {

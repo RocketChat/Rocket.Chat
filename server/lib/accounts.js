@@ -27,9 +27,9 @@ Accounts.emailTemplates.userToActivate = {
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
 		const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
-			name: options.name,
-			email: options.email,
-			reason: options.reason
+			name: s.escapeHTML(options.name),
+			email: s.escapeHTML(options.email),
+			reason: s.escapeHTML(options.reason)
 		});
 
 		return header + html + footer;
@@ -52,7 +52,7 @@ Accounts.emailTemplates.userActivated = {
 		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
 
 		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
-			name
+			name: s.escapeHTML(name)
 		});
 
 		return header + html + footer;
@@ -99,8 +99,8 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/*, url*/) {
 	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 	html = RocketChat.placeholders.replace(html, {
-		name: user.name,
-		email: user.emails && user.emails[0] && user.emails[0].address
+		name: s.escapeHTML(user.name),
+		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address)
 	});
 
 	return header + html + footer;
