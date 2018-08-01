@@ -32,6 +32,8 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 	}
 
 	if (count) {
+		RocketChat.models.Rooms.resetLastMessageById(rid);
+
 		RocketChat.Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
