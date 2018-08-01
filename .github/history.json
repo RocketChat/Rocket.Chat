@@ -17647,6 +17647,17 @@
       "npm_version": "5.6.0",
       "pull_requests": [
         {
+          "pr": "11616",
+          "title": "Release 0.68.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "engelgabriel",
+            "sampaiodiego",
+            "tassoevan",
+            "rodrigok"
+          ]
+        },
+        {
           "pr": "11613",
           "title": "[FIX] `Jump to message` search result action",
           "userLogin": "tassoevan",
@@ -17660,6 +17671,22 @@
           "userLogin": "rodrigok",
           "contributors": [
             "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11544",
+          "title": "[FIX] Incorrect migration version in v130.js",
+          "userLogin": "c0dzilla",
+          "contributors": [
+            "c0dzilla",
             "sampaiodiego",
             "web-flow"
           ]
