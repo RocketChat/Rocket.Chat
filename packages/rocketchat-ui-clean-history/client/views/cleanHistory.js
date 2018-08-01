@@ -166,6 +166,7 @@ Template.cleanHistory.onCreated(function() {
 
 Template.cleanHistory.onRendered(function() {
 	const users = this.selectedUsers;
+	const selUsers = this.cleanHistorySelectedUsers;
 
 	this.ac.element = this.firstNode.parentElement.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
@@ -173,7 +174,7 @@ Template.cleanHistory.onRendered(function() {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
-		Session.set('cleanHistorySelectedUsers', usersArr);
+		selUsers.set(usersArr);
 	});
 
 	Tracker.autorun(() => {
@@ -314,7 +315,7 @@ Template.cleanHistory.events({
 	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
-		Session.set('cleanHistorySelectedUsers', t.selectedUsers.get());
+		t.cleanHistorySelectedUsers.set(t.selectedUsers.get());
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -334,7 +335,7 @@ Template.cleanHistory.events({
 			const users = t.selectedUsers;
 			const usersArr = users.get();
 			usersArr.pop();
-			Session.set('cleanHistorySelectedUsers', usersArr);
+			t.cleanHistorySelectedUsers.set(usersArr);
 			return users.set(usersArr);
 		}
 
