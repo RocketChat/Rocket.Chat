@@ -5,7 +5,7 @@ import _ from 'underscore';
 if (!Accounts.saml) {
 	Accounts.saml = {
 		settings: {
-			debug: true,
+			debug: false,
 			generateUsername: false,
 			providers: []
 		}
@@ -237,8 +237,10 @@ const middleware = function(req, res, next) {
 			throw new Error('Missing SAML action');
 		}
 
-		console.log(Accounts.saml.settings.providers);
-		console.log(samlObject.serviceName);
+		if (Accounts.saml.settings.debug) {
+			console.log(Accounts.saml.settings.providers);
+			console.log(samlObject.serviceName);
+		}
 		const service = _.find(Accounts.saml.settings.providers, function(samlSetting) {
 			return samlSetting.provider === samlObject.serviceName;
 		});

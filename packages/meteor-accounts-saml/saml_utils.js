@@ -286,8 +286,8 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 		if (err) {
 			debugLog(`Error while inflating. ${ err }`);
 		} else {
-			console.log(`constructing new DOM parser: ${ Object.prototype.toString.call(decoded) }`);
-			console.log(`>>>> ${ decoded }`);
+			debugLog(`constructing new DOM parser: ${ Object.prototype.toString.call(decoded) }`);
+			debugLog(`>>>> ${ decoded }`);
 			const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
 			if (doc) {
 				const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
@@ -300,9 +300,9 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 						debugLog(`In Response to: ${ inResponseTo }`);
 					} catch (e) {
 						if (Meteor.settings.debug) {
-							console.log(`Caught error: ${ e }`);
+							debugLog(`Caught error: ${ e }`);
 							const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-							console.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+							debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
 						}
 					}
 
