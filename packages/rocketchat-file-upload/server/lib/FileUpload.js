@@ -58,6 +58,25 @@ Object.assign(FileUpload, {
 		};
 	},
 
+	defaultUserDataFiles() {
+		return {
+			collection: RocketChat.models.UserDataFiles.model,
+			getPath(file) {
+				return `${ RocketChat.settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+			},
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			}
+		};
+	},
+
 	avatarsOnValidate(file) {
 		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
 			return;
@@ -72,9 +91,14 @@ Object.assign(FileUpload, {
 		s.rotate();
 		// Get metadata to resize the image the first time to keep "inside" the dimensions
 		// then resize again to create the canvas around
+
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			if (!metadata) {
+				metadata = {};
+			}
+
 			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height, metadata.width), Math.min(height, metadata.height))
+				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
 				.pipe(sharp()
 					.resize(height, height)
 					.background('#FFFFFF')
@@ -181,20 +205,20 @@ Object.assign(FileUpload, {
 			return true;
 		}
 
-		let { rc_uid, rc_token } = query;
+		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie) ;
+			rc_uid = cookie.get('rc_uid', headers.cookie);
 			rc_token = cookie.get('rc_token', headers.cookie);
+			rc_rid = cookie.get('rc_rid', headers.cookie);
+			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
-			return false;
-		}
-
-		return true;
+		const isAuthorizedByCookies = rc_uid && rc_token && RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && RocketChat.models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByRoom = rc_room_type && RocketChat.roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
 	},
-
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
 			return file;
@@ -229,16 +253,30 @@ Object.assign(FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	copy(file, targetFile) {
+		const store = this.getStoreByName(file.store);
+		const out = fs.createWriteStream(targetFile);
+
+		file = FileUpload.addExtensionTo(file);
+
+		if (store.copy) {
+			store.copy(file, out);
+			return true;
+		}
+
+		return false;
 	}
 });
 
-
 export class FileUploadClass {
-	constructor({ name, model, store, get, insert, getStore }) {
+	constructor({ name, model, store, get, insert, getStore, copy }) {
 		this.name = name;
 		this.model = model || this.getModelFromName();
 		this._store = store || UploadFS.getStore(name);
 		this.get = get;
+		this.copy = copy;
 
 		if (insert) {
 			this.insert = insert;

@@ -35,7 +35,7 @@ html.rtl .attachment {
 			bottom: 0;
 			left: 0;
 
-			width: 4px;
+			width: 2px;
 
 			border-radius: 8px;
 		}
@@ -57,7 +57,8 @@ html.rtl .attachment {
 			margin-bottom: -2px;
 		}
 
-		& .time {
+		& .time,
+		& .time-link {
 			font-size: 0.8em;
 			font-weight: normal;
 		}
@@ -86,6 +87,7 @@ html.rtl .attachment {
 	}
 
 	& .attachment-fields {
+		display: flex;
 		margin-top: 4px;
 
 		& .attachment-field {
@@ -100,10 +102,6 @@ html.rtl .attachment {
 				line-height: 1rem;
 			}
 		}
-	}
-
-	& .attachment-field ~ .attachment-field {
-		margin-top: 8px;
 	}
 
 	& .attachment-thumb {

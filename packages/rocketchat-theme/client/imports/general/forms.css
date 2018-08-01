@@ -135,16 +135,21 @@
 	&--inline {
 		display: flex;
 		flex-direction: row;
-    align-items: flex-end;
-		margin-left: -0.5rem;
+
 		margin-right: -0.5rem;
+
+		margin-left: -0.5rem;
+
 		white-space: nowrap;
+		align-items: flex-end;
 	}
 
 	& > .rc-form-item-inline {
 		flex: 1 1 auto;
-		margin-left: 0.5rem;
+
 		margin-right: 0.5rem;
+
+		margin-left: 0.5rem;
 
 		&--full {
 			flex: 0 0 100%;
@@ -189,9 +194,20 @@
 	font-weight: 500;
 }
 
+.rc-button-group {
+	display: flex;
+
+	margin: 0 calc(-var(--default-small-padding) / 2);
+
+	& .rc-button {
+		margin: 0 calc(var(--default-small-padding) / 2);
+	}
+}
+
 .rc-grid {
 	display: flex;
 	align-items: flex-start;
+	flex-flow: row wrap;
 }
 
 .rc-w50 {

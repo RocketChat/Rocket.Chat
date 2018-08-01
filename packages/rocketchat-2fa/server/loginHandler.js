@@ -7,6 +7,10 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 RocketChat.callbacks.add('onValidateLogin', (login) => {
+	if (!RocketChat.settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+		return;
+	}
+
 	if (login.type === 'password' && login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
 		const { totp } = login.methodArguments[0];
 

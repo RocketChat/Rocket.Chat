@@ -3,6 +3,14 @@
 function start_rocketchat {
 	echo "Checking if oplog has been enabled, and enabling if not"
 	LC_ALL=C mongo $SNAP/bin/initreplset.js
+	
+	## For making fonts work for sharp
+	export XDG_DATA_HOME=$SNAP/usr/share
+
+	# Font Config
+	export FONTCONFIG_PATH=$SNAP/etc/fonts/config.d
+	export FONTCONFIG_FILE=$SNAP/etc/fonts/fonts.conf
+
 
 	export DEPLOY_METHOD=snap
 	export NODE_ENV=production

@@ -6,7 +6,6 @@ class LivechatInquiry extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'name': 1 }); // name of the inquiry (client name for now)
 		this.tryEnsureIndex({ 'message': 1 }); // message sent by the client
 		this.tryEnsureIndex({ 'ts': 1 }); // timestamp
-		this.tryEnsureIndex({ 'code': 1 }); // (for routing)
 		this.tryEnsureIndex({ 'agents': 1}); // Id's of the agents who can see the inquiry (handle departments)
 		this.tryEnsureIndex({ 'status': 1}); // 'open', 'taken'
 	}
@@ -47,10 +46,24 @@ class LivechatInquiry extends RocketChat.models._Base {
 	 * mark inquiry as open
 	 */
 	openInquiry(inquiryId) {
-		this.update({
+		return this.update({
 			'_id': inquiryId
 		}, {
 			$set: { status: 'open' }
+		});
+	}
+
+	/*
+	 * mark inquiry as open and set agents
+	 */
+	openInquiryWithAgents(inquiryId, agentIds) {
+		return this.update({
+			'_id': inquiryId
+		}, {
+			$set: {
+				status: 'open',
+				agents: agentIds
+			}
 		});
 	}
 

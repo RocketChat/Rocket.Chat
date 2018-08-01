@@ -55,8 +55,9 @@
 	position: relative;
 
 	clear: both;
+	display: block;
+	min-height: 20px;
 
-	margin: 0.5em 0;
 	padding-left: 10px;
 
 	&::after {
@@ -74,17 +75,23 @@
 		margin-bottom: 0;
 	}
 
-	&::before {
+	&:first-child::before {
+		border-radius: 2px 2px 0 0;
+	}
+
+	&:last-child::before {
+		border-radius: 0 0 2px 2px;
+	}
+
+	&:before {
 		position: absolute;
-		top: -1px;
-		bottom: -1px;
+		top: 0;
+		bottom: 0;
 		left: 0;
 
-		width: 4px;
+		width: 2px;
 
 		content: ' ';
-
-		border-radius: 2px;
 	}
 }
 
@@ -1691,7 +1698,8 @@
 }
 
 .rc-old .announcement {
-	display: block;
+	display: flex;
+	flex-flow: row nowrap;
 	overflow: hidden;
 
 	height: 40px;
@@ -1699,8 +1707,6 @@
 
 	cursor: pointer;
 	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 
 	color: var(--rc-color-content);
 
@@ -1715,6 +1721,14 @@
 		text-decoration: underline;
 
 		color: currentColor;
+	}
+
+	p {
+		width: 0; /* Grow via flex. */
+		flex: auto;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
@@ -2241,6 +2255,7 @@
 	position: relative;
 	z-index: 1;
 	flex-grow: 1;
+	overflow: auto;
 }
 
 .rc-old .room-container {
@@ -2606,6 +2621,43 @@
 
 .rc-old .message-popup-position {
 	position: relative;
+
+	.message-popup {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		max-height: 20rem;
+
+		.message-popup-items {
+			overflow-y: auto;
+
+			.popup-slash-command {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				&-format {
+					flex-grow: 1;
+				}
+
+				&-description {
+					flex-grow: 2;
+					font-style: italic;
+					text-align: right;
+				}
+			}
+		}
+	}
+}
+
+.rc-old .message-popup-items.preview-items {
+	display: flex;
+	overflow-y: auto;
+}
+
+.rc-old .preview-items .popup-item {
+	padding: 5px;
+	line-height: unset;
 }
 
 .rc-old .rc-message-box .reply-preview {
@@ -2617,6 +2669,12 @@
     padding-bottom: 0.5rem;
     align-items: center;
     justify-content: space-between;
+
+	.message {
+		padding: 0;
+		flex: 1;
+		background-color: transparent;
+	}
 }
 
 .rc-old .rc-message-box .reply-preview-with-popup {
@@ -2755,10 +2813,6 @@
 	border-radius: 10px;
 }
 
-.rc-old .popup-slash-command-description {
-	float: right;
-}
-
 .messages-box {
 	position: relative;
 
@@ -2781,6 +2835,14 @@
 		margin-top: 12px;
 
 		text-align: center;
+
+		& .start__purge-warning {
+			padding: 0.5rem;
+			margin-bottom: 0.5rem;
+			margin-top: -33px;
+			border-width: 1px 0 0 0;
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
+		}
 	}
 
 	& .new-message {
@@ -2875,8 +2937,9 @@
 	}
 }
 
-.rc-old .message {
+.message {
 	position: relative;
+	z-index: 1;
 
 	min-height: 40px;
 	padding: 8px 50px 4px 70px;
@@ -3144,7 +3207,6 @@
 
 		& .inline-image {
 			display: inline-block;
-			overflow: hidden;
 
 			border-radius: 3px;
 			background-repeat: no-repeat;
@@ -3157,10 +3219,9 @@
 			& img {
 				max-width: 100%;
 				max-height: 200px;
+				object-fit: contain;
 
 				cursor: pointer;
-
-				opacity: 0;
 			}
 		}
 
@@ -3255,6 +3316,12 @@
 
 		font-weight: 400;
 	}
+
+	&.livechat_navigation_history {
+		& .thumb, & .user, & .info {
+			display: none;
+		}
+	}
 }
 
 .rc-old .image-labels {
@@ -3279,7 +3346,7 @@
 }
 
 .rc-old .attachment-description {
-	margin-top: 10px;
+	margin: 6px;
 
 	line-height: 1;
 }
@@ -3413,7 +3480,6 @@ body:not(.is-cordova) {
 		overflow-x: visible;
 
 		width: var(--flex-tab-width);
-		height: calc(100vh - var(--header-height));
 
 		& .control {
 			& .header {
@@ -3734,50 +3800,6 @@ body:not(.is-cordova) {
 
 		margin: 1em auto 0;
 	}
-
-	&.uploaded-files-list {
-	  	& ul {
-		  & li {
-			margin-bottom: 10px;
-		  }
-		}
-
-		& .file-name {
-			display: block;
-
-			padding: 10px 5px;
-
-			color: #008ce3;
-			border-width: 0 0 1px;
-			border-bottom: 1px solid #eaeaea;
-
-			&:hover {
-				text-decoration: underline;
-
-				color: #006db0;
-			}
-
-			& p {
-				overflow: hidden;
-
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
-		}
-
-		& i {
-			float: left;
-			margin-right: 10px;
-
-			&.file-delete {
-				float: right;
-			}
-
-			&.file-download {
-				float: right;
-			}
-		}
-	}
 }
 
 .rc-old .user-view {
@@ -4062,7 +4084,7 @@ body:not(.is-cordova) {
 .rc-old .user-image {
 	position: relative;
 
-	display: inline-table;
+	display: inline-block;
 
 	width: var(--user-image-square);
 	height: var(--user-image-square);
@@ -4605,6 +4627,11 @@ body:not(.is-cordova) {
 	align-items: center;
 	flex-flow: row nowrap;
 
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
+
 	& .wrapper {
 		position: relative;
 		z-index: 10;
@@ -4628,7 +4655,6 @@ body:not(.is-cordova) {
 
 			max-width: 100%;
 			max-height: 150px;
-			padding: 10px;
 		}
 	}
 
@@ -4646,6 +4672,9 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
+		width: 520px;
+		padding: 0 20px;
+		margin: auto;
 
 		display: block;
 	}
@@ -4769,13 +4798,8 @@ body:not(.is-cordova) {
 
 .rc-old .mention-link {
 	border-radius: 4px;
-
-	&.mention-link-me,
-	&.mention-link-all {
-		padding: 0 4px 2px;
-
-		font-weight: bold;
-	}
+	padding: 0 4px 2px;
+	font-weight: bold;
 }
 
 .rc-old .highlight-text {
@@ -4987,7 +5011,7 @@ body:not(.is-cordova) {
 	padding-left: 10px;
 }
 
-.rc-old .webrtc-video {
+.webrtc-video {
 	&.webrtc-video-overlay,
 	& .main-video,
 	& .state-overlay::before,
@@ -5004,12 +5028,28 @@ body:not(.is-cordova) {
 		left: 0;
 
 		display: flex;
+		overflow-y: auto;
 		flex-direction: column;
-		justify-content: center;
 
-		& .main-video .webrtc-video-element {
-			width: auto;
-			max-width: 100%;
+		padding: var(--default-small-padding);
+
+		background-color: #ffffff;
+
+		& .main-video {
+			display: flex;
+			flex-direction: column;
+
+			min-height: 140px;
+			margin-bottom: 4px;
+			align-items: center;
+			flex-grow: 1;
+
+			.webrtc-video-element {
+				width: auto;
+				max-width: 100%;
+				height: 100%;
+				min-height: 140px;
+			}
 		}
 	}
 
@@ -5026,6 +5066,7 @@ body:not(.is-cordova) {
 
 			margin-top: -28px;
 			margin-bottom: 2px;
+			padding: 0 8px;
 
 			text-align: center;
 
@@ -5051,6 +5092,7 @@ body:not(.is-cordova) {
 
 			width: 93px;
 			margin-right: 3px;
+			margin-bottom: 3px;
 
 			text-align: center;
 
@@ -5113,7 +5155,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.rc-old .webrtc-video-element {
+.webrtc-video-element {
 	background-color: #000000;
 }
 
@@ -5384,6 +5426,11 @@ body:not(.is-cordova) {
 	cursor: pointer;
 }
 
+.toggle-hidden {
+	cursor: pointer;
+	font-style: italic;
+}
+
 /* kinda hacky, needed in oembedFrageWidget.html */
 
 .rc-old br.only-after-a {
@@ -5457,10 +5504,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 
@@ -5638,7 +5681,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.room-leader a.chat-now {
+.room-leader .chat-now {
 	position: absolute;
 	top: 15px;
 	right: 25px;
@@ -5665,7 +5708,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 1;
+	z-index: 9;
 	right: 0;
 	left: 0;
 
