@@ -1,11 +1,6 @@
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
 
-const removeEmptyProps = obj => {
-	Object.keys(obj).forEach(p => (!obj[p] || obj[p] === undefined) && delete obj[p]);
-	return obj;
-};
-
 const getDateObj = (dateTime) => {
 	if (!dateTime) {
 		dateTime = new Date();
@@ -24,7 +19,7 @@ export class SAUMonitor {
 		this._serviceName = 'SAUMonitor';
 		this._started = false;
 		this._debug = false;
-		this._monitorTime = 10000;
+		this._monitorTime = 600000;
 		this._timer = null;
 		this._today = getDateObj();
 		this._instanceId = null;
@@ -220,6 +215,11 @@ export class SAUMonitor {
 		}
 
 		const info = {};
+
+		const removeEmptyProps = obj => {
+			Object.keys(obj).forEach(p => (!obj[p] || obj[p] === undefined) && delete obj[p]);
+			return obj;
+		};
 
 		if (result.browser && result.browser.name) {
 			info.browser = removeEmptyProps(result.browser);
