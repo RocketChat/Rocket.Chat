@@ -192,7 +192,7 @@ export default class LDAP {
 		const usernameFilter = this.options.User_Search_Field.split(',').map(item => `(${ item }=${ username })`);
 
 		const query = {
-			username: username,
+			username,
 			ldap: true,
 			type: 'user'
 		};
