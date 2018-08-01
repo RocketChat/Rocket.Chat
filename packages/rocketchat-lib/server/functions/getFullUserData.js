@@ -28,37 +28,32 @@ const fullFields = {
 let publicCustomFields = {};
 let customFields = {};
 
-const fillCustomFields = ({ isMyOwnInfo }) => {
-	RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
-		publicCustomFields = {};
-		customFields = {};
+RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
+	publicCustomFields = {};
+	customFields = {};
 
-		if (!value.trim()) {
-			return;
-		}
+	if (!value.trim()) {
+		return;
+	}
 
-		try {
-			const customFieldsOnServer = JSON.parse(value.trim());
-			Object.keys(customFieldsOnServer).forEach(key => {
-				const element = customFieldsOnServer[key];
-				if (element.public || isMyOwnInfo) {
-					publicCustomFields[`customFields.${ key }`] = 1;
-				}
-				customFields[`customFields.${ key }`] = 1;
-			});
-		} catch (e) {
-			logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
-		}
-
-	});
-};
-
+	try {
+		const customFieldsOnServer = JSON.parse(value.trim());
+		Object.keys(customFieldsOnServer).forEach(key => {
+			const element = customFieldsOnServer[key];
+			if (element.public) {
+				publicCustomFields[`customFields.${ key }`] = 1;
+			}
+			customFields[`customFields.${ key }`] = 1;
+		});
+	} catch (e) {
+		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
+	}
+});
 
 RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
 	const userToRetrieveFullUserData = RocketChat.models.Users.findOneByUsername(username);
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
-	fillCustomFields({ isMyOwnInfo });
 	const viewFullOtherUserInfo = RocketChat.authz.hasPermission(userId, 'view-full-other-user-info');
 	const limit = !viewFullOtherUserInfo ? 1 : l;
 
@@ -66,7 +61,7 @@ RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 		return undefined;
 	}
 
-	const _customFields = viewFullOtherUserInfo ? customFields : publicCustomFields;
+	const _customFields = isMyOwnInfo || viewFullOtherUserInfo ? customFields : publicCustomFields;
 
 	const fields = viewFullOtherUserInfo ? { ...defaultFields, ...fullFields, ..._customFields } : { ...defaultFields, ..._customFields };
 
