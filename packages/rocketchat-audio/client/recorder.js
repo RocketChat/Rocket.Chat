@@ -1,5 +1,4 @@
 (function(window) {
-
 	const WORKER_PATH = 'audio-worker.js';
 	const Recorder = function(source, config={}) {
 		const bufferLen = config.bufferLen || 4096;
@@ -8,7 +7,6 @@
 		const worker = new Worker(WORKER_PATH);
 		let currCallback;
 		this.dataBuffer = [];
-
 		const appendToBuffer = (mp3Buf)=> {
 			this.dataBuffer.push(new Int8Array(mp3Buf));
 		};
@@ -17,7 +15,6 @@
 		this.node = (this.context.createScriptProcessor ||
 			this.context.createJavaScriptNode).call(this.context,
 			bufferLen, 1, 1);
-
 		worker.postMessage({
 			command: 'init',
 			config: {
@@ -66,6 +63,5 @@
 		source.connect(this.node);
 		this.node.connect(this.context.destination); //this should not be necessary
 	};
-
 	window.Recorder = Recorder;
 }(window));

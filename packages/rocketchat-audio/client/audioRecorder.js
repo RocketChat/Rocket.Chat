@@ -17,11 +17,9 @@ this.AudioRecorder = new class {
 				this.startUserMedia(stream);
 				return (cb != null ? cb(this) : undefined);
 			};
-
 			if ((navigator.getUserMedia == null)) {
 				return cb(false);
 			}
-
 			return navigator.getUserMedia({audio: true}, ok, e => console.log(`No live audio input: ${ e }`));
 		} else if (this.options.format === 'ogg') {
 			this.recorder = new RCMediaRecorder();
@@ -41,7 +39,6 @@ this.AudioRecorder = new class {
 
 	stop(cb) {
 		if (this.options.format === 'mp3') {
-
 			this.recorder.stop(cb);
 			this.stream.getAudioTracks()[0].stop();
 			window.audioContext.close();
@@ -52,5 +49,4 @@ this.AudioRecorder = new class {
 			this.recorder.end(cb);
 		}
 	}
-
 };

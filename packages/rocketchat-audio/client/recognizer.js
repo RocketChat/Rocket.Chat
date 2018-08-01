@@ -10,10 +10,10 @@ class WebkitSpeechRecognition {
 			const SpeechRecognitionProvider = window.webkitSpeechRecognition;
 			this.recognition = new SpeechRecognitionProvider();
 			this.recognition.continuous = true;
-
 			this.recognition.onstart = () => {
 				cb();
 			};
+
 			this.recognition.onerror = (event) => {
 				console.log(event.error);
 			};
@@ -43,9 +43,6 @@ class WebkitSpeechRecognition {
 		this.recognition.stop();
 	}
 }
-
-
-
 
 this.SpeechRecognition = new class {
 	constructor() {

@@ -1,23 +1,19 @@
-
 (function(window) {
 	const RCMediaRecorder = function(config) {
 		let stream;
 		let recorder;
 		let chunks;
-
 		const mediaOptions = {};
 		config = config || {};
 		mediaOptions.tag = config.tag || 'audio';
 		mediaOptions.type = config.type || 'audio/ogg';
 		mediaOptions.ext = config.ext || '.ogg',
 		mediaOptions.gUM = config.gUM || { audio: true };
-
 		let global_cb;
 
 		this.start = function() {
 			chunks = [];
 			global_cb = undefined;
-
 			navigator.mediaDevices.getUserMedia(mediaOptions.gUM).then(_stream => {
 				stream = _stream;
 				recorder = new MediaRecorder(stream);
