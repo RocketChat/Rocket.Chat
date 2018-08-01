@@ -196,7 +196,7 @@ export default class LDAP {
 			'username': username,
 			ldap: true,
 			type: 'user'
-		}
+		};
 		user = RocketChat.models.Users.findOne(query);
 		if (typeof user !== 'undefined' &&
 			typeof user['services'] !== 'undefined' &&
