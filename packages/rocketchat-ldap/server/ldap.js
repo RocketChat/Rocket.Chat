@@ -191,6 +191,28 @@ export default class LDAP {
 
 		const usernameFilter = this.options.User_Search_Field.split(',').map(item => `(${ item }=${ username })`);
 
+		let user;
+		const query = {
+			'username': username,
+			ldap: true,
+			type: 'user'
+		}
+		user = RocketChat.models.Users.findOne(query);
+		if (typeof user != 'undefined' &&
+			typeof user['services'] != 'undefined' &&
+			typeof user['services']['ldap'] != 'undefined' &&
+			typeof user['services']['ldap']['id'] != 'undefined' &&
+			typeof user['services']['ldap']['idAttribute'] != 'undefined') {
+			var idFilter = new this.ldapjs.filters.EqualityFilter({
+				attribute: user['services']['ldap']['idAttribute'],
+				value: new Buffer(user['services']['ldap']['id'],'hex')
+			});
+			if (filter.length === 1) {
+				idFilter = new this.ldapjs.AndFilter({ filters: [ idFilter, this.ldapjs.parseFilter(filter[0]) ] } );
+			}
+			return idFilter;
+		}
+
 		if (usernameFilter.length === 0) {
 			logger.error('LDAP_LDAP_User_Search_Field not defined');
 		} else if (usernameFilter.length === 1) {
