@@ -191,13 +191,12 @@ export default class LDAP {
 
 		const usernameFilter = this.options.User_Search_Field.split(',').map(item => `(${ item }=${ username })`);
 
-		let user;
 		const query = {
-			'username': username,
+			username: username,
 			ldap: true,
 			type: 'user'
 		};
-		user = RocketChat.models.Users.findOne(query);
+		const user = RocketChat.models.Users.findOne(query);
 		if (typeof user !== 'undefined' &&
 			typeof user['services'] !== 'undefined' &&
 			typeof user['services']['ldap'] !== 'undefined' &&
@@ -205,10 +204,10 @@ export default class LDAP {
 			typeof user['services']['ldap']['idAttribute'] !== 'undefined') {
 			let idFilter = new this.ldapjs.filters.EqualityFilter({
 				attribute: user['services']['ldap']['idAttribute'],
-				value: new Buffer(user['services']['ldap']['id'],'hex')
+				value: new Buffer(user['services']['ldap']['id'], 'hex')
 			});
 			if (filter.length === 1) {
-				idFilter = new this.ldapjs.AndFilter({ filters: [ idFilter, this.ldapjs.parseFilter(filter[0]) ] } );
+				idFilter = new this.ldapjs.AndFilter({ filters: [ idFilter, this.ldapjs.parseFilter(filter[0]) ] });
 			}
 			return idFilter;
 		}
