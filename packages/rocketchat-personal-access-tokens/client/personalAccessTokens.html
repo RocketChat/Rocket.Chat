@@ -1,0 +1,54 @@
+<template name="personalAccessTokens">
+	<section class="preferences-page">
+		<div class="preferences-page__content">
+			<div class="container">
+				{{# if isAllowed}}
+					<fieldset>
+						<div class="section">
+							<h1>{{_ "API_Personal_Access_Tokens_To_REST_API"}}</h1>
+							<br>
+							<form id="form-tokens" class="inline">
+								<label>{{_ "API_Add_Personal_Access_Token"}}</label>
+								<input id="input-token-name"
+										type="text"
+										name="tokenName"
+										placeholder={{_ "Enter_a_name"}}
+										value="{{tokenName}}">
+								<button name="add" class="button primary save-token">{{_ "Add"}}</button>
+							</form>
+							<br>
+							<div class="list">
+								<table>
+									<thead>
+									<tr>
+										<th width="40%">{{_ "API_Personal_Access_Token_Name"}}</th>
+										<th width="40%">{{_ "Created_at"}}</th>
+										<th width="20%">{{_ "Last_token_part"}}</th>
+										<th></th>
+									</tr>
+									</thead>
+									<tbody>
+									{{#unless hasTokens}}
+										<tr>
+											<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
+										</tr>
+									{{/unless}}
+									{{#each tokens}}
+										<tr data-id="{{name}}">
+											<td>{{name}}</td>
+											<td>{{dateFormated createdAt}}</td>
+											<td>...{{lastTokenPart}}</td>
+											<td><a class="regenerate-personal-access-token"><i class="icon-ccw"></i></a></td>
+											<td><a class="remove-personal-access-token"><i class="icon-block"></i></a></td>
+										</tr>
+									{{/each}}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+				{{/if}}
+			</div>
+		</div>
+	</section>
+</template>

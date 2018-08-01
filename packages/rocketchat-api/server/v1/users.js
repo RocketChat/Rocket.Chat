@@ -418,3 +418,62 @@ RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }
 		return RocketChat.API.v1.success({ result });
 	}
 });
+
+RocketChat.API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+
+		return RocketChat.API.v1.success({ token });
+	}
+});
+
+RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:regenerateToken', { tokenName }));
+
+		return RocketChat.API.v1.success({ token });
+	}
+});
+
+RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
+	get() {
+		const loginTokens = RocketChat.models.Users.getLoginTokensByUserId(this.userId).fetch()[0];
+		const getPersonalAccessTokens = () => {
+			return loginTokens.services.resume.loginTokens
+				.filter(loginToken => loginToken.type && loginToken.type === 'personalAccessToken')
+				.map(loginToken => {
+					return {
+						name: loginToken.name,
+						createdAt: loginToken.createdAt,
+						lastTokenPart: loginToken.lastTokenPart
+					};
+				});
+		};
+
+		return RocketChat.API.v1.success({
+			tokens: getPersonalAccessTokens()
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:removeToken', {
+			tokenName
+		}));
+
+		return RocketChat.API.v1.success();
+	}
+});

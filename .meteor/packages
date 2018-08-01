@@ -107,6 +107,7 @@ rocketchat:monitoring
 rocketchat:oauth2-server-config
 rocketchat:oembed
 rocketchat:otr
+rocketchat:personal-access-tokens
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions

@@ -794,6 +794,95 @@ describe('[Users]', function() {
 						.end(done);
 				});
 		});
+	});
 
+	describe('Personal Access Tokens', () => {
+		const tokenName = `${ Date.now() }token`;
+		describe('[/users.generatePersonalAccessToken]', () => {
+			it('should return a personal access token to user', (done) => {
+				request.post(api('users.generatePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('token');
+					})
+					.end(done);
+			});
+			it('should throw an error when user tries generate a token with the same name', (done) => {
+				request.post(api('users.generatePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+		describe('[/users.regeneratePersonalAccessToken]', () => {
+			it('should return a personal access token to user when user regenerates the token', (done) => {
+				request.post(api('users.regeneratePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('token');
+					})
+					.end(done);
+			});
+			it('should throw an error when user tries regenerate a token that does not exist', (done) => {
+				request.post(api('users.regeneratePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName: 'tokenthatdoesnotexist'
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+		describe('[/users.removePersonalAccessToken]', () => {
+			it('should return success when user remove a personal access token', (done) => {
+				request.post(api('users.removePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should throw an error when user tries remove a token that does not exist', (done) => {
+				request.post(api('users.regeneratePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName: 'tokenthatdoesnotexist'
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
 	});
 });

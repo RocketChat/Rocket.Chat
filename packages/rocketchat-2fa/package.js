@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:personal-access-tokens',
 		'sha',
 		'random'
 	]);
