@@ -5,20 +5,8 @@ import { Cookies } from 'meteor/ostrio:cookies';
 
 const cookie = new Cookies();
 
-Meteor.startup(function() {
-	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
-		const params = {
-			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
-		};
-		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
-
-		if (_.isEmpty(params.username)) {
-			res.writeHead(403);
-			res.write('Forbidden');
-			res.end();
-			return;
-		}
-
+function userCanAccessAvatar(req) {
+	if (RocketChat.settings.get('Accounts_AvatarBlockUnauthenticatedAccess') === true) {
 		const headers = req.headers || {};
 		const query = req.query || {};
 
@@ -30,7 +18,23 @@ Meteor.startup(function() {
 		}
 
 		if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+Meteor.startup(function() {
+	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+		const params = {
+			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
+		};
+		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
+
+		if (_.isEmpty(params.username) || !userCanAccessAvatar(req)) {
 			res.writeHead(403);
+			res.write('Forbidden');
 			res.end();
 			return;
 		}

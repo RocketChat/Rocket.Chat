@@ -451,6 +451,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 			i18nDescription: 'Accounts_AvatarCacheTime_description'
 		});
 
+		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+			type: 'boolean'
+		});
+
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean'
 		});
