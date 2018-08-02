@@ -767,6 +767,15 @@ class ModelRooms extends RocketChat.models._Base {
 
 		return this.remove(query);
 	}
+
+	removeUsernameById(roomId, username) {
+		const query = {
+			rid: roomId,
+			usernames: username
+		};
+
+		return this.remove(query);
+	}
 }
 
 RocketChat.models.Rooms = new ModelRooms('room', true);
