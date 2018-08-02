@@ -2,8 +2,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-RocketChat.saveUser = function(userId, userData) {
-	const user = RocketChat.models.Users.findOneById(userId);
+function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
@@ -85,7 +84,14 @@ RocketChat.saveUser = function(userId, userData) {
 				field: userData.email
 			});
 		}
+	}
+}
 
+RocketChat.saveUser = function(userId, userData) {
+	validateUserData(userId, userData);
+	const user = RocketChat.models.Users.findOneById(userId);
+
+	if (!userData._id) {
 		RocketChat.validateEmailDomain(userData.email);
 
 		// insert user
