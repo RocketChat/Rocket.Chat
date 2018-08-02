@@ -1,4 +1,4 @@
-/* globals LivechatVisitor */
+/* globals LivechatVisitor, LivechatInquiry */
 
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -28,6 +28,14 @@ Template.visitorInfo.helpers({
 
 	room() {
 		return ChatRoom.findOne({ _id: this.rid });
+	},
+
+	department() {
+		return Template.instance().department.get();
+	},
+
+	inquiry() {
+		return LivechatInquiry.findOne({ rid: this.rid });
 	},
 
 	joinTags() {
@@ -119,9 +127,24 @@ Template.visitorInfo.helpers({
 	},
 
 	roomOpen() {
+		if (!this.rid) { return false; }
 		const room = ChatRoom.findOne({ _id: this.rid });
 
 		return room.open;
+	},
+
+	roomArchived() {
+		if (!this.rid) { return false; }
+		const room = ChatRoom.findOne({ _id: this.rid });
+
+		return room.archived;
+	},
+
+	inquiryOpen() {
+		if (!this.rid) { return false; }
+		const inquiry = LivechatInquiry.findOne({ rid: this.rid });
+		if (!inquiry) { return false; }
+		return (inquiry.status === 'open');
 	},
 
 	guestPool() {
@@ -211,6 +234,25 @@ Template.visitorInfo.events({
 		});
 	},
 
+	'click .close-inquiry'(event) {
+		event.preventDefault();
+
+		Meteor.call('livechat:closeInquiry', this.rid);
+	},
+
+	'click .archive-room'(event) {
+		event.preventDefault();
+
+		Meteor.call('archiveRoom', this.rid, function(error/*, result*/) {
+			if (error) {
+				console.log(error);
+			} else {
+				Session.set('openedRoom');
+				FlowRouter.go('/home');
+			}
+		});
+	},
+
 	'click .forward-livechat'(event, instance) {
 		event.preventDefault();
 
@@ -223,6 +265,7 @@ Template.visitorInfo.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
+	this.department = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -247,5 +290,18 @@ Template.visitorInfo.onCreated(function() {
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ '_id': this.visitorId.get() }));
+
+		//load guest department
+		if (this.user.get() && this.user.get().department) {
+			const sub = this.subscribe('livechat:departments', this.user.get().department);
+			if (sub.ready()) {
+				const department = LivechatDepartment.findOne({_id: this.user.get().department});
+				if (department) {
+					this.department.set(department);
+				}
+			}
+		}
 	});
+
+	this.subscribe('livechat:inquiry');
 });

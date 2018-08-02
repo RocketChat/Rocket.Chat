@@ -45,6 +45,7 @@ Template.livechat.helpers({
 		departmentAgents.forEach((agent) => {
 			departmentIds.push(agent.departmentId);
 		});
+		//also include inquiries without a department
 		if (departmentIds.length) {
 			departmentIds.push(null);
 			departmentIds.push('');
