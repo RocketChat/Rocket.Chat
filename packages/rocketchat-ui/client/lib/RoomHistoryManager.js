@@ -161,6 +161,9 @@ export const RoomHistoryManager = new class {
 		if (ChatMessage.findOne(message._id)) {
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`#${ message._id }`, wrapper);
+			if (msgElement.length === 0) {
+				return;
+			}
 			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
 			wrapper.animate({
 				scrollTop: pos
@@ -190,7 +193,10 @@ export const RoomHistoryManager = new class {
 			}
 
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
+				if (!result || !result.messages) {
+					return;
+				}
+				for (const msg of Array.from(result.messages)) {
 					if (msg.t !== 'command') {
 						upsertMessage({msg, subscription});
 					}
