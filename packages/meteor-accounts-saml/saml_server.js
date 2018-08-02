@@ -103,8 +103,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
-		const email = RegExp.escape(loginResult.profile.email);
-		const emailRegex = new RegExp(`^${ email }$`, 'i');
+		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
+		const emailRegex = new RegExp(emailList.map(email => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 		let user = Meteor.users.findOne({
 			'emails.address': emailRegex
 		});
@@ -114,10 +114,12 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				name: loginResult.profile.cn || loginResult.profile.username,
 				active: true,
 				globalRoles: ['user'],
-				emails: [{
-					address: loginResult.profile.email,
-					verified: true
-				}]
+				emails: emailList.map(email => {
+					return {
+						address: email,
+						verified: true
+					};
+				})
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
