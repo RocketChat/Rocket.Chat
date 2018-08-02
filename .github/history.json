@@ -17692,6 +17692,64 @@
           ]
         }
       ]
+    },
+    "0.68.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11639",
+          "title": "[FIX] Missing chat history for users without permission `preview-c-room`",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11625",
+          "title": "[FIX] User info APIs not returning customFields correctly",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.3",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11631",
+          "title": "[FIX] Prune translations in German",
+          "userLogin": "rndmh3ro",
+          "milestone": "0.68.3",
+          "contributors": [
+            "rndmh3ro",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11635",
+          "title": "[FIX] Prune translation on room info panel",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11642",
+          "title": "[FIX] SAML login not working when user has multiple emails",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
