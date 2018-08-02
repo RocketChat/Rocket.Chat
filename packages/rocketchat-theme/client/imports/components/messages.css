@@ -1,3 +1,7 @@
+.messages-container-wrapper {
+	position: relative;
+}
+
 .message-actions {
 	position: absolute;
 	top: 2px;
@@ -37,6 +41,23 @@
 }
 
 .message {
+
+	& .toggle-hidden {
+		display: none;
+	}
+
+	&--ignored {
+		& .body {
+			display: none;
+		}
+		& .toggle-hidden {
+			display: block;
+		}
+		& + .message--ignored.sequential {
+			display: none;
+		}
+	}
+
 	&.active {
 		& .message-actions__label {
 			color: var(--rc-color-button-primary);

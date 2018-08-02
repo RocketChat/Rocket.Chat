@@ -42,7 +42,8 @@ Template.admin.onCreated(function() {
 	if (RocketChat.settings.cachedCollectionPrivate == null) {
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
 			name: 'private-settings',
-			eventType: 'onLogged'
+			eventType: 'onLogged',
+			useCache: false
 		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
@@ -84,22 +85,21 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
-			const language = languages[key];
-			return _.extend(language, { key });
-		});
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
 
-		result = _.sortBy(result, 'key');
 		result.unshift({
 			'name': 'Default',
 			'en': 'Default',
 			'key': ''
 		});
+
 		return result;
 	},
-	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	isAppLanguage(key) {
+		const languageKey = RocketChat.settings.get('Language');
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');
@@ -188,6 +188,13 @@ Template.admin.helpers({
 		if (this.readonly === true) {
 			return {
 				readonly: 'readonly'
+			};
+		}
+	},
+	canAutocomplete() {
+		if (this.autocomplete === false) {
+			return {
+				autocomplete: 'off'
 			};
 		}
 	},
@@ -360,7 +367,7 @@ Template.admin.events({
 		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
 		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value }});
 	},
-	'click .submit .discard'() {
+	'click .rc-header__section-button .discard'() {
 		const group = FlowRouter.getParam('group');
 		const query = {
 			group,
@@ -403,26 +410,37 @@ Template.admin.events({
 			});
 		});
 	},
-	'click .submit .save'() {
+	'click .rc-header__section-button .save'() {
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
-		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
-		if (!_.isEmpty(settings)) {
-			RocketChat.settings.batchSet(settings, function(err) {
-				if (err) {
-					return handleError(err);
-				}
-				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
-				toastr.success(TAPi18n.__('Settings_updated'));
-			});
+		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch() || [];
+		if (settings.length === 0) {
+			return;
 		}
+
+		RocketChat.settings.batchSet(settings, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+
+			TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
+
+			if (settings.some(({ _id }) => _id === 'Language')) {
+				const lng = Meteor.user().language
+					|| settings.filter(({ _id }) => _id === 'Language').shift().value
+					|| 'en';
+				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
+			}
+			toastr.success(TAPi18n.__('Settings_updated'));
+		});
+
 	},
-	'click .submit .refresh-clients'() {
+	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
 			toastr.success(TAPi18n.__('Clients_will_refresh_in_a_few_seconds'));
 		});
 	},
-	'click .submit .add-custom-oauth'() {
+	'click .rc-header__section-button .add-custom-oauth'() {
 		const config = {
 			title: TAPi18n.__('Add_custom_oauth'),
 			text: TAPi18n.__('Give_a_unique_name_for_the_custom_oauth'),
@@ -446,7 +464,7 @@ Template.admin.events({
 			});
 		});
 	},
-	'click .submit .refresh-oauth'() {
+	'click .rc-header__section-button .refresh-oauth'() {
 		toastr.info(TAPi18n.__('Refreshing'));
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
@@ -456,7 +474,7 @@ Template.admin.events({
 			}
 		});
 	},
-	'click .submit .remove-custom-oauth'() {
+	'click .rc-header__section-button .remove-custom-oauth'() {
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),

@@ -200,17 +200,17 @@ const inlinecode = {
 	'End `code`': `End ${ inlinecodeWrapper('code') }`,
 	'Middle `code` middle': `Middle ${ inlinecodeWrapper('code') } middle`,
 	'`code`begin': `${ inlinecodeWrapper('code') }begin`,
-	'End`code`': 'End`code`',
-	'Middle`code`middle': 'Middle`code`middle'
+	'End`code`': `End${ inlinecodeWrapper('code') }`,
+	'Middle`code`middle': `Middle${ inlinecodeWrapper('code') }middle`
 };
 
 const code = {
 	'```code```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
 	'```code': codeWrapper('<span class="hljs-selector-tag">code</span>\n', 'stylus'),
-	'```code\n': codeWrapper('<span class="hljs-selector-tag">code</span>\n\n', 'stylus'),
-	'```\ncode\n```': codeWrapper('\n<span class="hljs-selector-tag">code</span>\n', 'stylus'),
+	'```code\n': codeWrapper('<span class="hljs-selector-tag">code</span>\n', 'stylus'),
+	'```\ncode\n```': codeWrapper('<span class="hljs-selector-tag">code</span>\n', 'stylus'),
 	'```code\n```': codeWrapper('<span class="hljs-selector-tag">code</span>\n', 'stylus'),
-	'```\ncode```': codeWrapper('\n<span class="hljs-keyword">code</span>', 'clean'),
+	'```\ncode```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
 	'```javascript\nvar a = \'log\';\nconsole.log(a);```': codeWrapper('<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);', 'javascript'),
 	'```*code*```': codeWrapper('*<span class="hljs-meta">code</span>*', 'armasm'),
 	'```**code**```': codeWrapper('**<span class="hljs-meta">code</span>**', 'armasm'),

@@ -41,7 +41,8 @@ export default class LDAP {
 			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
 			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
 			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
-			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
+			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name'),
+			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login')
 		};
 	}
 
@@ -371,6 +372,17 @@ export default class LDAP {
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
+		const processPage = ({entries, title, end, next}) => {
+			logger.search.info(title);
+			// Force LDAP idle to wait the record processing
+			this.client._updateIdle(true);
+			page(null, entries, {end, next: () => {
+				// Reset idle timer
+				this.client._updateIdle();
+				next && next();
+			}});
+		};
+
 		this.client.search(BaseDN, options, (error, res) => {
 			if (error) {
 				logger.search.error(error);
@@ -392,33 +404,42 @@ export default class LDAP {
 				entries.push(this.extractLdapEntryData(entry));
 
 				if (entries.length >= internalPageSize) {
-					logger.search.info('Internal Page');
-					this.client._updateIdle(true);
-					page(null, entries, {end: false, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-					}});
+					processPage({
+						entries,
+						title: 'Internal Page',
+						end: false
+					});
 					entries = [];
 				}
 			});
 
 			res.on('page', (result, next) => {
 				if (!next) {
-					logger.search.debug('Final Page');
 					this.client._updateIdle(true);
-					page(null, entries, {end: true, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-					}});
+					processPage({
+						entries,
+						title: 'Final Page',
+						end: true
+					});
 				} else if (entries.length) {
 					logger.search.info('Page');
-					// Force LDAP idle to wait the record processing
-					this.client._updateIdle(true);
-					page(null, entries, {end: !next, next: () => {
-						// Reset idle timer
-						this.client._updateIdle();
-						next();
-					}});
+					processPage({
+						entries,
+						title: 'Page',
+						end: false,
+						next
+					});
+					entries = [];
+				}
+			});
+
+			res.on('end', () => {
+				if (entries.length) {
+					processPage({
+						entries,
+						title: 'Final Page',
+						end: true
+					});
 					entries = [];
 				}
 			});
@@ -459,6 +480,16 @@ export default class LDAP {
 
 		try {
 			this.bindSync(dn, password);
+			if (this.options.find_user_after_login) {
+				const searchOptions = {
+					scope: this.options.User_Search_Scope || 'sub'
+				};
+				const result = this.searchAllSync(dn, searchOptions);
+				if (result.length === 0) {
+					logger.auth.info('Bind successful but user was not found via search', dn, searchOptions);
+					return false;
+				}
+			}
 			logger.auth.info('Authenticated', dn);
 			return true;
 		} catch (error) {

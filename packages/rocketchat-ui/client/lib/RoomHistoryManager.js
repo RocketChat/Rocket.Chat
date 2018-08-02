@@ -1,6 +1,20 @@
 /* globals readMessage UserRoles RoomRoles*/
 import _ from 'underscore';
 
+export const upsertMessage = ({msg, subscription}) => {
+	const userId = msg.u && msg.u._id;
+
+	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
+		msg.ignored = true;
+	}
+	const roles = [
+		(userId && UserRoles.findOne(userId, { fields: { roles: 1 }})) || {},
+		(userId && RoomRoles.findOne({rid: msg.rid, 'u._id': userId})) || {}
+	].map(e => e.roles);
+	msg.roles = _.union.apply(_.union, roles);
+	return ChatMessage.upsert({_id: msg._id}, msg);
+};
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
@@ -67,16 +81,7 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			messages.forEach(item => {
-				if (item.t !== 'command') {
-					const roles = [
-						(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-						(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-					].map(e => e.roles);
-					item.roles = _.union.apply(_.union, roles);
-					ChatMessage.upsert({_id: item._id}, item);
-				}
-			});
+			messages.forEach(msg => msg.t !== 'command' && upsertMessage({msg, subscription}));
 
 			if (wrapper) {
 				const heightDiff = wrapper.scrollHeight - previousHeight;
@@ -126,14 +131,9 @@ export const RoomHistoryManager = new class {
 
 		if (ts) {
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
-				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (item.t !== 'command') {
-						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
-						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
 					}
 				}
 
@@ -161,6 +161,9 @@ export const RoomHistoryManager = new class {
 		if (ChatMessage.findOne(message._id)) {
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`#${ message._id }`, wrapper);
+			if (msgElement.length === 0) {
+				return;
+			}
 			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
 			wrapper.animate({
 				scrollTop: pos
@@ -190,14 +193,12 @@ export const RoomHistoryManager = new class {
 			}
 
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (item.t !== 'command') {
-						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
-						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+				if (!result || result.messages) {
+					return;
+				}
+				for (const msg of Array.from(result.messages)) {
+					if (msg.t !== 'command') {
+						upsertMessage({msg, subscription});
 					}
 				}
 

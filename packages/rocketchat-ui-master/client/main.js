@@ -1,8 +1,11 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+
+this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -114,6 +117,10 @@ Template.body.onRendered(function() {
 
 RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
+	removeSidenav() {
+		const { modal } = this;
+		return (modal || typeof modal === 'function' ? modal() : modal) || RocketChat.Layout.isEmbedded();
+	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
 	},
@@ -168,6 +175,12 @@ Template.main.helpers({
 		if (RocketChat.Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
+	},
+	showSetupWizard() {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
 	}
 });
 
@@ -178,7 +191,6 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
@@ -188,8 +200,13 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		const user = Meteor.user();
-		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
+			FlowRouter.go('setup-wizard');
+		}
+		if (RocketChat.getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});

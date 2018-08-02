@@ -20,11 +20,11 @@ Meteor.startup(function() {
 		{ _id: 'create-d',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
-		{ _id: 'clean-channel-history',         roles : ['admin'] }, // special permission to bulk delete a channel's mesages
-		{ _id: 'delete-c',                      roles : ['admin'] },
+		{ _id: 'clean-channel-history',         roles : ['admin'] },
+		{ _id: 'delete-c',                      roles : ['admin', 'owner'] },
 		{ _id: 'delete-d',                      roles : ['admin'] },
 		{ _id: 'delete-message',                roles : ['admin', 'owner', 'moderator'] },
-		{ _id: 'delete-p',                      roles : ['admin'] },
+		{ _id: 'delete-p',                      roles : ['admin', 'owner'] },
 		{ _id: 'delete-user',                   roles : ['admin'] },
 		{ _id: 'edit-message',                  roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-other-user-active-status', roles : ['admin'] },
@@ -32,14 +32,18 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-password',      roles : ['admin'] },
 		{ _id: 'edit-privileged-setting',       roles : ['admin'] },
 		{ _id: 'edit-room',                     roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-room-retention-policy',    roles : ['admin'] },
 		{ _id: 'force-delete-message',          roles : ['admin', 'owner'] },
 		{ _id: 'join-without-join-code',        roles : ['admin', 'bot'] },
+		{ _id: 'leave-c',                       roles : ['admin', 'user', 'bot', 'anonymous'] },
+		{ _id: 'leave-p',                       roles : ['admin', 'user', 'bot', 'anonymous'] },
 		{ _id: 'manage-assets',                 roles : ['admin'] },
 		{ _id: 'manage-emoji',                  roles : ['admin'] },
 		{ _id: 'manage-integrations',           roles : ['admin'] },
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] },
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] },
 		{ _id: 'mention-all',                   roles : ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                   roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'run-import',                    roles : ['admin'] },
@@ -64,7 +68,8 @@ Meteor.startup(function() {
 		{ _id: 'view-statistics',               roles : ['admin'] },
 		{ _id: 'view-user-administration',      roles : ['admin'] },
 		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] },
-		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] }
+		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'view-broadcast-member-list',    roles : ['admin', 'owner', 'moderator'] }
 	];
 
 	for (const permission of permissions) {

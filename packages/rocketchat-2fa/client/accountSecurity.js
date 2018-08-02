@@ -20,6 +20,9 @@ Template.accountSecurity.helpers({
 	isRegistering() {
 		return Template.instance().state.get() === 'registering';
 	},
+	isAllowed() {
+		return RocketChat.settings.get('Accounts_TwoFactorAuthentication_Enabled');
+	},
 	codesRemaining() {
 		if (Template.instance().codesRemaining.get()) {
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
@@ -29,6 +32,8 @@ Template.accountSecurity.helpers({
 
 Template.accountSecurity.events({
 	'click .enable-2fa'(event, instance) {
+		event.preventDefault();
+
 		Meteor.call('2fa:enable', (error, result) => {
 			instance.imageSecret.set(result.secret);
 			instance.imageData.set(qrcode(result.url, { size: 200 }));
@@ -41,7 +46,9 @@ Template.accountSecurity.events({
 		});
 	},
 
-	'click .disable-2fa'() {
+	'click .disable-2fa'(event) {
+		event.preventDefault();
+
 		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
@@ -70,7 +77,7 @@ Template.accountSecurity.events({
 		});
 	},
 
-	'submit .verify-code'(event, instance) {
+	'click .verify-code'(event, instance) {
 		event.preventDefault();
 
 		Meteor.call('2fa:validateTempToken', instance.find('#testCode').value, (error, result) => {
@@ -87,6 +94,8 @@ Template.accountSecurity.events({
 	},
 
 	'click .regenerate-codes'(event, instance) {
+		event.preventDefault();
+
 		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),

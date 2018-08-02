@@ -37,7 +37,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 				throw new Meteor.Error('invalid-channel');
 		}
 
-		if (mustBeJoined && !room.usernames.includes(user.username)) {
+		if (mustBeJoined && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
 			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
 			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
 		}
@@ -50,7 +50,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
 			msg: s.trim(messageObj.text || messageObj.msg || ''),
-			attachments: messageObj.attachments,
+			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false

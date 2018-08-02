@@ -28,10 +28,15 @@ RocketChat.slashCommands.add('join', function Join(command, params, item) {
 			}, user.language)
 		});
 	}
-	if (room.usernames.includes(user.username)) {
+
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
+	if (subscription) {
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
 			method: 'slashCommands'
 		});
 	}
 	Meteor.call('joinRoom', room._id);
+}, {
+	description: 'Join_the_given_channel',
+	params: '#channel'
 });

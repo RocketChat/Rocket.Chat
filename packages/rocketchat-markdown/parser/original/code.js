@@ -8,12 +8,12 @@ import hljs from 'highlight.js';
 
 const inlinecode = (message) => {
 	// Support `text`
-	return message.html = message.html.replace(/(^|&gt;|[ >_*~])\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2, p3) => {
-		const token = `=!=${ Random.id() }=!=`;
+	return message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
+		const token = ` =!=${ Random.id() }=!=`;
 
 		message.tokens.push({
 			token,
-			text: `${ p1 }<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p2 }</code></span><span class=\"copyonly\">\`</span>${ p3 }`,
+			text: `<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p1 }</code></span><span class=\"copyonly\">\`</span>${ p2 }`,
 			noHtml: match
 		});
 
@@ -39,7 +39,7 @@ const codeblocks = (message) => {
 		for (let index = 0; index < msgParts.length; index++) {
 			// Verify if this part is code
 			const part = msgParts[index];
-			const codeMatch = part.match(/^```(.*[\r\n\ ]?)([\s\S]*?)```+?$/);
+			const codeMatch = part.match(/^```[\r\n]*(.*[\r\n\ ]?)[\r\n]*([\s\S]*?)```+?$/);
 
 			if (codeMatch != null) {
 				// Process highlight if this part is code
@@ -59,7 +59,7 @@ const codeblocks = (message) => {
 					highlight: true,
 					token,
 					text: `<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`,
-					noHtml: `\`\`\`\n${ s.stripTags(result.value) }\n\`\`\``
+					noHtml: codeMatch[0]
 				});
 
 				msgParts[index] = token;

@@ -168,7 +168,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
 	logger.debug('user', {'email': user.email, '_id': user._id});
-	logger.debug('ldapUser', ldapUser);
+	logger.debug('ldapUser', ldapUser.object);
 
 	const userData = getDataToSyncUserData(ldapUser, user);
 	if (user && user._id && userData) {

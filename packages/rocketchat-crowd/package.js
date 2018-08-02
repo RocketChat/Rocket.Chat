@@ -22,7 +22,3 @@ Package.onUse(function(api) {
 
 	api.export('CROWD', 'server');
 });
-
-Npm.depends({
-	'atlassian-crowd': '0.5.0'
-});

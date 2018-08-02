@@ -108,7 +108,7 @@ const KonchatNotification = {
 		Tracker.nonreactive(function() {
 			let newRoomSound = Session.get('newRoomSound');
 			if (newRoomSound != null) {
-				newRoomSound = _.union(newRoomSound, rid);
+				newRoomSound = _.union(newRoomSound, [rid]);
 			} else {
 				newRoomSound = [rid];
 			}
@@ -120,7 +120,9 @@ const KonchatNotification = {
 	// $('.link-room-' + rid).addClass('new-room-highlight')
 
 	removeRoomNotification(rid) {
-		Tracker.nonreactive(() => Session.set('newRoomSound', []));
+		let newRoomSound = Session.get('newRoomSound');
+		newRoomSound = _.without(newRoomSound, rid);
+		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
 		return $(`.link-room-${ rid }`).removeClass('new-room-highlight');
 	}

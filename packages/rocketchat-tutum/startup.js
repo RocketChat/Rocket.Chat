@@ -6,7 +6,7 @@ DOCKERCLOUD_CLIENT_HOST=mywebsite.dotcloud.com
 */
 
 if (process.env.DOCKERCLOUD_REDIS_HOST != null) {
-	const redis = Npm.require('redis');
+	const redis = require('redis');
 
 	const client = redis.createClient(process.env.DOCKERCLOUD_REDIS_HOST);
 

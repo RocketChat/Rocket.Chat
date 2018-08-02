@@ -12,8 +12,8 @@ if (!Accounts.saml) {
 	};
 }
 
-const fiber = Npm.require('fibers');
-const connect = Npm.require('connect');
+import fiber from 'fibers';
+import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -170,17 +170,20 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	}
 });
 
-Accounts.saml._loginResultForCredentialToken = {};
-
 Accounts.saml.hasCredential = function(credentialToken) {
-	return _.has(Accounts.saml._loginResultForCredentialToken, credentialToken);
+	return RocketChat.models.CredentialTokens.findOneById(credentialToken) != null;
 };
 
 Accounts.saml.retrieveCredential = function(credentialToken) {
 	// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
-	const result = Accounts.saml._loginResultForCredentialToken[credentialToken];
-	delete Accounts.saml._loginResultForCredentialToken[credentialToken];
-	return result;
+	const data = RocketChat.models.CredentialTokens.findOneById(credentialToken);
+	if (data) {
+		return data.userInfo;
+	}
+};
+
+Accounts.saml.storeCredential = function(credentialToken, loginResult) {
+	RocketChat.models.CredentialTokens.create(credentialToken, loginResult);
 };
 
 const closePopup = function(res, err) {
@@ -333,22 +336,22 @@ const middleware = function(req, res, next) {
 						throw new Error(`Unable to validate response url: ${ err }`);
 					}
 
-					const credentialToken = profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					const credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+					const loginResult = {
+						profile
+					};
 					if (!credentialToken) {
 						// No credentialToken in IdP-initiated SSO
 						const saml_idp_credentialToken = Random.id();
-						Accounts.saml._loginResultForCredentialToken[saml_idp_credentialToken] = {
-							profile
-						};
+						Accounts.saml.storeCredential(saml_idp_credentialToken, loginResult);
+
 						const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ saml_idp_credentialToken }`;
 						res.writeHead(302, {
 							'Location': url
 						});
 						res.end();
 					} else {
-						Accounts.saml._loginResultForCredentialToken[credentialToken] = {
-							profile
-						};
+						Accounts.saml.storeCredential(credentialToken, loginResult);
 						closePopup(res);
 					}
 				});

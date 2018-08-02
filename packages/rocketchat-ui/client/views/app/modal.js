@@ -3,7 +3,7 @@
 this.modal = {
 	renderedModal: null,
 	open(config = {}, fn) {
-		config.confirmButtonText = config.confirmButtonText || t('Send');
+		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
@@ -19,9 +19,19 @@ this.modal = {
 		}
 
 		this.close();
-		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
 		this.fn = fn;
 		this.config = config;
+
+		if (config.dontAskAgain) {
+			const dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+
+			if (dontAskAgainList && dontAskAgainList.some(dontAsk => dontAsk.action === config.dontAskAgain.action)) {
+				this.confirm(true);
+				return;
+			}
+		}
+
+		this.renderedModal = Blaze.renderWithData(Template.rc_modal, config, document.body);
 		this.timer = null;
 		if (config.timer) {
 			this.timer = setTimeout(() => this.close(), config.timer);
@@ -106,8 +116,30 @@ Template.rc_modal.events({
 	},
 	'click .js-confirm'(e, instance) {
 		e.stopPropagation();
+		const dontAskAgain = instance.data.dontAskAgain;
+		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
+			const dontAskAgainObject = {
+				action: dontAskAgain.action,
+				label: dontAskAgain.label
+			};
+
+			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			if (dontAskAgainList) {
+				dontAskAgainList.push(dontAskAgainObject);
+			} else {
+				dontAskAgainList = [dontAskAgainObject];
+			}
+
+			Meteor.call('saveUserPreferences', {dontAskAgainList}, function(error) {
+				if (error) {
+					return handleError(error);
+				}
+			});
+		}
+
 		if (instance.data.input) {
-			return modal.confirm($('.js-modal-input').val());
+			modal.confirm(document.getElementsByClassName('js-modal-input')[0].value);
+			return;
 		}
 
 		modal.confirm(true);
