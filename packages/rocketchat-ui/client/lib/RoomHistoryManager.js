@@ -193,7 +193,7 @@ export const RoomHistoryManager = new class {
 			}
 
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				if (!result || result.messages) {
+				if (!result || !result.messages) {
 					return;
 				}
 				for (const msg of Array.from(result.messages)) {
