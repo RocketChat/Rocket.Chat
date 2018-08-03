@@ -19,6 +19,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/stylesheets/video.less', 'client');
 	api.addFiles('client/views/videoFlexTab.html', 'client');
+
+	api.addFiles('client/views/mconfLiveView.html', 'client');
 	api.addFiles('client/views/videoFlexTabMconf.html', 'client');
 	api.addFiles('client/views/videoFlexTab.js', 'client');
 	api.addFiles('client/views/videoFlexTabMconf.js', 'client');

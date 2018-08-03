@@ -38,8 +38,10 @@ Meteor.methods({
 			meta_html5chat: false,
 			meta_html5navbar: false
 		});
+
 		const createResult = HTTP.get(createUrl);
 		const doc = parseString(createResult.content);
+
 		if (doc.response.returncode[0]) {
 			const user = RocketChat.models.Users.findOneById(this.userId);
 			return {
