@@ -1,4 +1,3 @@
-
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
 

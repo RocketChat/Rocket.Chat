@@ -1,4 +1,21 @@
 Meteor.startup(function() {
+
+	Tracker.autorun(function() {
+		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
+			return RocketChat.TabBar.removeButton('mconf_video');
+		}
+		RocketChat.TabBar.addButton({
+			groups: ['direct', 'group'],
+			id: 'mconf_video',
+			i18nTitle: 'Video Chat(mconf)',
+			icon: 'video',
+			iconColor: 'red',
+			template: 'videoFlexTabMconf',
+			width: 600,
+			order: 12
+		});
+	});
+
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			RocketChat.TabBar.addButton({
