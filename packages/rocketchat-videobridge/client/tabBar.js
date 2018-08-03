@@ -4,6 +4,7 @@ Meteor.startup(function() {
 		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
 			return RocketChat.TabBar.removeButton('mconf_video');
 		}
+		const live = RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } });
 		RocketChat.TabBar.addButton({
 			groups: ['direct', 'group'],
 			id: 'mconf_video',
@@ -12,7 +13,10 @@ Meteor.startup(function() {
 			iconColor: 'red',
 			template: 'videoFlexTabMconf',
 			width: 600,
-			order: 12
+			order: live ? -1 : 15,
+			class: () => {
+				return live && 'live';
+			}
 		});
 	});
 

@@ -36,7 +36,8 @@ Meteor.methods({
 			moderatorPW: 'mp',
 			welcome: '<br>Welcome to <b>%%CONFNAME%%</b>!',
 			meta_html5chat: false,
-			meta_html5navbar: false
+			meta_html5navbar: false,
+			meta_endcallbackurl: ''
 		});
 
 		const createResult = HTTP.get(createUrl);
