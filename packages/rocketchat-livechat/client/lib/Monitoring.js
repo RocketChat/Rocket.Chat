@@ -72,6 +72,10 @@ RocketChat.Livechat.Monitoring = {
 	 * @param {Array(Array(Double))} dataPoints
 	 */
 	drawLineChart(chart, chartContext, chartLabels, dataLabels, dataSets) {
+		if (!chart) {
+			console.log('No chart element');
+			return;
+		}
 		if (chartContext) {
 			chartContext.destroy();
 		}
@@ -117,6 +121,9 @@ RocketChat.Livechat.Monitoring = {
 	 * @param {Array(Double)} dataPoints
 	 */
 	drawDoughnutChart(chart, title, chartContext, dataLabels, dataPoints) {
+		if (!chart) {
+			return;
+		}
 		if (chartContext) {
 			chartContext.destroy();
 		}

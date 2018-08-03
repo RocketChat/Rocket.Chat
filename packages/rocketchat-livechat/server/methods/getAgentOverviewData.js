@@ -8,7 +8,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!(options.analyticsOptions && options.analyticsOptions.name)) {
+		if (!(options.chartOptions && options.chartOptions.name)) {
 			console.log('Incorrect analytics options');
 			return;
 		}
@@ -21,11 +21,11 @@ Meteor.methods({
 			return;
 		}
 
-		if (!RocketChat.Livechat.Analytics.AgentOverviewData[options.analyticsOptions.name]) {
-			console.log(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ options.analyticsOptions.name } does NOT exist`);
+		if (!RocketChat.Livechat.Analytics.AgentOverviewData[options.chartOptions.name]) {
+			console.log(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ options.chartOptions.name } does NOT exist`);
 			return;
 		}
 
-		return RocketChat.Livechat.Analytics.AgentOverviewData[options.analyticsOptions.name](from, to);
+		return RocketChat.Livechat.Analytics.AgentOverviewData[options.chartOptions.name](from, to);
 	}
 });

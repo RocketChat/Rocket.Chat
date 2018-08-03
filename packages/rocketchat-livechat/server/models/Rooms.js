@@ -225,7 +225,7 @@ RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate = function(t, date) {
 		}
 	};
 
-	return this.find(query, { fields: {ts: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1} });
+	return this.find(query, { fields: {ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1} });
 };
 
 RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
@@ -271,6 +271,19 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 	if (newAgent.ts) {
 		update.$set.servedBy.ts = newAgent.ts;
 	}
+
+	this.update(query, update);
+};
+
+RocketChat.models.Rooms.changeDepartmentIdByRoomId = function(roomId, departmentId) {
+	const query = {
+		_id: roomId
+	};
+	const update = {
+		$set: {
+			departmentId
+		}
+	};
 
 	this.update(query, update);
 };

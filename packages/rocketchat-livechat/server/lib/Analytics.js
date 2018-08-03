@@ -123,6 +123,24 @@ export const Analytics = {
 			return maxKey;
 		},
 
+		secondsToHHMMSS(sec) {
+			let hours = Math.floor(sec / 3600);
+			let minutes = Math.floor((sec - (hours * 3600)) / 60);
+			let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
+
+			if (hours < 10) { hours = `0${ hours }`; }
+			if (minutes < 10) { minutes = `0${ minutes }`; }
+			if (seconds < 10) { seconds = `0${ seconds }`; }
+
+			if (hours > 0) {
+				return `${ hours }:${ minutes }:${ seconds }`;
+			}
+			if (minutes > 0) {
+				return `${ minutes }:${ seconds }`;
+			}
+			return sec;
+		},
+
 		/**
 		 *
 		 * @param {Date} from
@@ -244,13 +262,13 @@ export const Analytics = {
 
 			const data = [{
 				'title': 'Avg_response_time',
-				'value': avgResponseTime.toFixed(2)
+				'value': this.secondsToHHMMSS(avgResponseTime.toFixed(2))
 			}, {
 				'title': 'First_response_time',
-				'value': firstResponseTime.toFixed(2)
+				'value': this.secondsToHHMMSS(firstResponseTime.toFixed(2))
 			}, {
 				'title': 'Avg_reaction_time',
-				'value': avgReactionTime.toFixed(2)
+				'value': this.secondsToHHMMSS(avgReactionTime.toFixed(2))
 			}];
 
 			return data;
@@ -267,13 +285,30 @@ export const Analytics = {
 		},
 
 		/**
+		 * Sort array of objects by value property of object
+		 * @param  {Array(Object)} data
+		 * @param  {Boolean} [inv=false] reverse sort
+		 */
+		sortByValue(data, inv = false) {
+			data.sort(function(a, b) {		// sort array
+				if (parseFloat(a.value) > parseFloat(b.value)) {
+					return (inv) ? -1 : 1;		// if inv, reverse sort
+				}
+				if (parseFloat(a.value) < parseFloat(b.value)) {
+					return (inv) ? 1 : -1;
+				}
+				return 0;
+			});
+		},
+
+		/**
 		 *
 		 * @param {Date} from
 		 * @param {Date} to
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Conversations(from, to) {
+		Total_conversations(from, to) {
 			let total = 0;
 			const agentConversations = new Map(); // stores total conversations for each agent
 			const date = {
@@ -308,15 +343,7 @@ export const Analytics = {
 				});
 			});
 
-			data.data.sort(function(a, b) {		//reverse sort array
-				if (a.value > b.value) {
-					return -1;
-				}
-				if (a.value < b.value) {
-					return 1;
-				}
-				return 0;
-			});
+			this.sortByValue(data.data, true);	//reverse sort array
 
 			data.data.forEach((value) => {
 				value.value = `${ value.value }%`;
@@ -332,7 +359,106 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Productivity(from, to) {
+		Avg_chat_duration(from, to) {
+			const agentChatDurations = new Map(); // stores total conversations for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'Avg_chat_duration'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				metrics,
+				servedBy
+			}) => {
+				if (servedBy && metrics && metrics.chatDuration) {
+					if (agentChatDurations.has(servedBy.username)) {
+						agentChatDurations.set(servedBy.username, {
+							chatDuration: agentChatDurations.get(servedBy.username).chatDuration + metrics.chatDuration,
+							total: agentChatDurations.get(servedBy.username).total + 1
+						});
+					} else {
+						agentChatDurations.set(servedBy.username, {
+							chatDuration: metrics.chatDuration,
+							total: 1
+						});
+					}
+				}
+			});
+
+			agentChatDurations.forEach((obj, key) => {	// calculate percentage
+				const avg = (obj.chatDuration/obj.total).toFixed(2);
+
+				data.data.push({
+					name: key,
+					value: avg
+				});
+			});
+
+			this.sortByValue(data.data, true);		//reverse sort array
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Total_messages(from, to) {
+			const agentMessages = new Map(); // stores total conversations for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'Total_messages'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				servedBy
+			}) => {
+				if (servedBy) {
+					this.updateMap(agentMessages, servedBy.username, 1);
+				}
+			});
+
+			agentMessages.forEach((value, key) => {	// calculate percentage
+				data.data.push({
+					name: key,
+					value
+				});
+			});
+
+			this.sortByValue(data.data, true);		//reverse sort array
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		First_response_time(from, to) {
 			const agentAvgRespTime = new Map(); // stores avg response time for each agent
 			const date = {
 				gte: from,
@@ -376,15 +502,119 @@ export const Analytics = {
 				});
 			});
 
-			data.data.sort(function(a, b) {		// sort array
-				if (a.value > b.value) {
-					return 1;
+			this.sortByValue(data.data, false);		// sort array
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Avg_response_time(from, to) {
+			const agentAvgRespTime = new Map(); // stores avg response time for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'Avg_response_time'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				metrics,
+				servedBy
+			}) => {
+				if (servedBy && metrics && metrics.response && metrics.response.avg) {
+					if (agentAvgRespTime.has(servedBy.username)) {
+						agentAvgRespTime.set(servedBy.username, {
+							avg: agentAvgRespTime.get(servedBy.username).avg + metrics.response.avg,
+							total: agentAvgRespTime.get(servedBy.username).total + 1
+						});
+					} else {
+						agentAvgRespTime.set(servedBy.username, {
+							avg: metrics.response.avg,
+							total: 1
+						});
+					}
 				}
-				if (a.value < b.value) {
-					return -1;
-				}
-				return 0;
 			});
+
+			agentAvgRespTime.forEach((obj, key) => {	// calculate avg
+				const avg = obj.avg/obj.total;
+
+				data.data.push({
+					name: key,
+					value: avg.toFixed(2)
+				});
+			});
+
+			this.sortByValue(data.data, false);		// sort array
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Avg_reaction_time(from, to) {
+			const agentAvgReactionTime = new Map(); // stores avg reaction time for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'First_reaction_time'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				metrics,
+				servedBy
+			}) => {
+				if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
+					if (agentAvgReactionTime.has(servedBy.username)) {
+						agentAvgReactionTime.set(servedBy.username, {
+							frt: agentAvgReactionTime.get(servedBy.username).frt + metrics.reaction.ft,
+							total: agentAvgReactionTime.get(servedBy.username).total + 1
+						});
+					} else {
+						agentAvgReactionTime.set(servedBy.username, {
+							frt: metrics.reaction.ft,
+							total: 1
+						});
+					}
+				}
+			});
+
+			agentAvgReactionTime.forEach((obj, key) => {	// calculate avg
+				const avg = obj.frt/obj.total;
+
+				data.data.push({
+					name: key,
+					value: avg.toFixed(2)
+				});
+			});
+
+			this.sortByValue(data.data, false);		// sort array
 
 			return data;
 		}

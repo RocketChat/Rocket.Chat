@@ -17,6 +17,14 @@ function updateAnalyticsChart() {
 
 		chartContext = RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
 	});
+
+	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
+		if (error) {
+			return handleError(error);
+		}
+
+		templateInstance.agentOverviewData.set(result);
+	});
 }
 
 function updateAnalyticsOverview() {
@@ -31,14 +39,6 @@ function updateAnalyticsOverview() {
 		}
 
 		templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
-	});
-
-	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
-		if (error) {
-			return handleError(error);
-		}
-
-		templateInstance.agentOverviewData.set(result);
 	});
 }
 
@@ -100,11 +100,6 @@ Template.livechatAnalytics.onRendered(() => {
 
 	});
 
-	Tracker.autorun(() => {
-		if (templateInstance.analyticsOptions.get()) {
-			templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
-		}
-	});
 });
 
 Template.livechatAnalytics.events({
@@ -132,14 +127,19 @@ Template.livechatAnalytics.events({
 
 		RocketChat.Livechat.Analytics.updateDateRange(templateInstance.daterange, 1);
 	},
-	'change #lc-analytics-options'({currentTarget}) {
+	'change #lc-analytics-options'(e) {
+		e.preventDefault();
+
 		templateInstance.analyticsOptions.set(RocketChat.Livechat.Analytics.getAnalyticsAllOptions().filter(function(obj) {
-			return obj.value === currentTarget.value;
+			return obj.value === e.currentTarget.value;
 		})[0]);
+		templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);
 	},
-	'change #lc-analytics-chart-options'({currentTarget}) {
+	'change #lc-analytics-chart-options'(e) {
+		e.preventDefault();
+
 		templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions.filter(function(obj) {
-			return obj.value === currentTarget.value;
+			return obj.value === e.currentTarget.value;
 		})[0]);
 	}
 });

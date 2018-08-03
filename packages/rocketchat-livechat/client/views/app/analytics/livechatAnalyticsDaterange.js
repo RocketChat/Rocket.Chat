@@ -9,8 +9,10 @@ Template.livechatAnalyticsDaterange.helpers({
 });
 
 Template.livechatAnalyticsDaterange.events({
-	'change input'({currentTarget}) {
-		const value = currentTarget.getAttribute('type') === 'checkbox' ? currentTarget.checked : currentTarget.value;
+	'change input'(e) {
+		e.preventDefault();
+
+		const value = e.currentTarget.getAttribute('type') === 'checkbox' ? e.currentTarget.checked : e.currentTarget.value;
 
 		popover.close();
 
