@@ -8,6 +8,10 @@ Template.videoFlexTabMconf.helpers({
 		} else {
 			return RocketChat.settings.get('Jitsi_Open_New_Window');
 		}
+	},
+
+	live() {
+		return RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } }) != null;
 	}
 });
 
@@ -33,6 +37,15 @@ Template.videoFlexTabMconf.events({
 					onCloseCallback: () => console.log('bye popout')
 				});
 			}
+		});
+		// Get the link and open the iframe
+	},
+
+	'click .js-end-meeting'(e) {
+		$(e.currentTarget).prop('disabled', true);
+		Meteor.call('mconfEnd', { rid: this.rid }, (err, result) => {
+			// $(e.currentTarget).prop('disabled', false);
+			console.log(err, result);
 		});
 		// Get the link and open the iframe
 	}

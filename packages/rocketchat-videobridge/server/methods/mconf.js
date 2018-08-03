@@ -8,6 +8,14 @@ const parser = new xml2js.Parser({
 
 const parseString = Meteor.wrapAsync(parser.parseString);
 
+const getMConfAPI = () => {
+	const url = RocketChat.settings.get('bigbluebutton_server');
+	const secret = RocketChat.settings.get('bigbluebutton_sharedSecret');
+	const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
+
+	return { api, url };
+};
+
 Meteor.methods({
 	mconfJoin({ rid }) {
 
@@ -23,10 +31,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'videobridge:join' });
 		}
 
-		const url = RocketChat.settings.get('bigbluebutton_server');
-		const secret = RocketChat.settings.get('bigbluebutton_sharedSecret');
-		const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
-
+		const { api, url } = getMConfAPI();
 		const meetingID = RocketChat.settings.get('uniqueID') + rid;
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const createUrl = api.urlFor('create', {
@@ -77,6 +82,35 @@ Meteor.methods({
 				})
 			};
 		}
+	},
+
+	mconfEnd({ rid }) {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+		}
+
+		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+		}
+
+		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'videobridge:join' });
+		}
+
+		const { api } = getMConfAPI();
+		const meetingID = RocketChat.settings.get('uniqueID') + rid;
+		const endApi = api.urlFor('end', {
+			meetingID,
+			password: 'mp' //mp if moderator ap if attendee
+		});
+
+		const endApiResult = HTTP.get(endApi);
+
+		if (endApiResult.statusCode !== 200) {
+			// TODO improve error logging
+			console.log({ endApiResult });
+		}
+
 	}
 });
 
@@ -85,13 +119,35 @@ RocketChat.API.v1.addRoute('videoconference.mconf.update/:id', { authRequired: f
 		// TODO check checksum
 		const event = JSON.parse(this.bodyParams.event)[0];
 		const eventType = event.data.id;
-		const externalMeetingId = event.data.attributes.meeting['external-meeting-id'];
-		const rid = externalMeetingId.replace(RocketChat.settings.get('uniqueID'), '');
+		const meetingID = event.data.attributes.meeting['external-meeting-id'];
+		const rid = meetingID.replace(RocketChat.settings.get('uniqueID'), '');
 
 		console.log(eventType, rid);
 
 		if (eventType === 'meeting-ended') {
 			RocketChat.saveStreamingOptions(rid, {});
 		}
+
+		// if (eventType === 'user-left') {
+		// 	const { api } = getMConfAPI();
+
+		// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
+		// 		meetingID
+		// 	});
+
+		// 	const getMeetingInfoResult = HTTP.get(getMeetingInfoApi);
+
+		// 	if (getMeetingInfoResult.statusCode !== 200) {
+		// 		// TODO improve error logging
+		// 		console.log({ getMeetingInfoResult });
+		// 	}
+
+		// 	const doc = parseString(getMeetingInfoResult.content);
+
+		// 	if (doc.response.returncode[0]) {
+		// 		const participantCount = parseInt(doc.response.participantCount[0]);
+		// 		console.log(participantCount);
+		// 	}
+		// }
 	}
 });

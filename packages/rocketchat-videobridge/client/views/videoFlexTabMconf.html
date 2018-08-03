@@ -1,3 +1,10 @@
 <template name="videoFlexTabMconf">
-	<button type="button" class="rc-button rc-button--primary js-join-meeting">{{_ "Join/Create Meeting"}}</button>
+	<div class="rc-user-info__flex rc-user-info__row">
+		{{#unless live}}
+			<button type="button" class="rc-button rc-button--primary js-join-meeting">{{_ "Start Meeting"}}</button>
+		{{else}}
+			<button type="button" class="rc-button rc-button--primary js-join-meeting">{{_ "Join Meeting"}}</button>
+			<button type="button" class="rc-button rc-button--cancel js-end-meeting">{{_ "End Meeting"}}</button>
+		{{/unless}}
+	</div>
 </template>
