@@ -23,7 +23,7 @@ BigBlueButtonApi = (function () {
 	}
 
 	BigBlueButtonApi.prototype.availableApiCalls = function () {
-		return ['/', 'create', 'join', 'isMeetingRunning', 'getMeetingInfo', 'end', 'getMeetings', 'getDefaultConfigXML', 'setConfigXML', 'enter', 'configXML', 'signOut', 'getRecordings', 'publishRecordings', 'deleteRecordings', 'updateRecordings'];
+		return ['/', 'create', 'join', 'isMeetingRunning', 'getMeetingInfo', 'end', 'getMeetings', 'getDefaultConfigXML', 'setConfigXML', 'enter', 'configXML', 'signOut', 'getRecordings', 'publishRecordings', 'deleteRecordings', 'updateRecordings', 'hooks/create'];
 	};
 
 	BigBlueButtonApi.prototype.urlParamsFor = function (param) {
@@ -46,6 +46,8 @@ BigBlueButtonApi = (function () {
 				return [["recordID", true]];
 			case "updateRecordings":
 				return [["recordID", true], [/meta_\w+/, false]];
+			case "hooks/create":
+				return [["callbackURL", false], ["meetingID", false]];
 		}
 	};
 
