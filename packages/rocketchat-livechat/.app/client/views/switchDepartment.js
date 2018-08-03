@@ -44,7 +44,11 @@ Template.switchDepartment.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('No'),
 			html: false
-		}, () => {
+		}).then((result) => {
+			if (!result.value) {
+				return;
+			}
+
 			const guestData = {
 				roomId: visitor.getRoom(),
 				visitorToken: visitor.getToken(),
