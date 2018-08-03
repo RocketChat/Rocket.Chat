@@ -6,6 +6,9 @@ Template.sidebarItem.helpers({
 		args.pop();
 		return args.some(arg => arg);
 	},
+	streaming() {
+		return Object.keys(this.streamingOptions).length;
+	},
 	isRoom() {
 		return this.rid || this._id;
 	},

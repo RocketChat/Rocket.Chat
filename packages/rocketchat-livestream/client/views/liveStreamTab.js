@@ -138,7 +138,8 @@ Template.liveStreamTab.events({
 		const streamingOptions = {
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
-			message: i.find('[name=streaming-message]').value
+			message: i.find('[name=streaming-message]').value,
+			type: 'livestream'
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
@@ -198,7 +199,8 @@ Template.liveStreamTab.events({
 		const streamingOptions = {
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
-			message: i.find('[name=streaming-message]').value
+			message: i.find('[name=streaming-message]').value,
+			type: 'livestream'
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
