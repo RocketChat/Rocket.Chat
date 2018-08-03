@@ -37,14 +37,35 @@ Meteor.methods({
 			welcome: '<br>Welcome to <b>%%CONFNAME%%</b>!',
 			meta_html5chat: false,
 			meta_html5navbar: false,
-			meta_endcallbackurl: ''
+			meta_html5autoswaplayout: true,
+			meta_html5autosharewebcam: false,
+			meta_html5hidepresentation: true
 		});
+
+		console.log(Meteor.absoluteUrl(`api/v1/videoconference.mconf.update/${ meetingID }`));
 
 		const createResult = HTTP.get(createUrl);
 		const doc = parseString(createResult.content);
 
 		if (doc.response.returncode[0]) {
 			const user = RocketChat.models.Users.findOneById(this.userId);
+
+			const hookApi = api.urlFor('hooks/create', {
+				meetingID,
+				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.mconf.update/${ meetingID }`)
+			});
+
+			const hookResult = HTTP.get(hookApi);
+
+			if (hookResult.statusCode !== 200) {
+				// TODO improve error logging
+				console.log({ hookResult });
+			}
+
+			RocketChat.saveStreamingOptions(rid, {
+				type: 'call'
+			});
+
 			return {
 				url: api.urlFor('join', {
 					password: 'mp', //mp if moderator ap if attendee
@@ -55,6 +76,22 @@ Meteor.methods({
 					clientURL: `${ url }/html5client/join`
 				})
 			};
+		}
+	}
+});
+
+RocketChat.API.v1.addRoute('videoconference.mconf.update/:id', { authRequired: false }, {
+	post() {
+		// TODO check checksum
+		const event = JSON.parse(this.bodyParams.event)[0];
+		const eventType = event.data.id;
+		const externalMeetingId = event.data.attributes.meeting['external-meeting-id'];
+		const rid = externalMeetingId.replace(RocketChat.settings.get('uniqueID'), '');
+
+		console.log(eventType, rid);
+
+		if (eventType === 'meeting-ended') {
+			RocketChat.saveStreamingOptions(rid, {});
 		}
 	}
 });
