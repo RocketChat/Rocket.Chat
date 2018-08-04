@@ -16,8 +16,7 @@ html.rtl .attachment {
 		padding-right: 5px;
 	}
 
-	& .attachment-download-icon,
-	& .icon-google-drive-upload {
+	& .attachment-download-icon {
 		margin-right: 5px;
 		margin-left: auto;
 	}
@@ -129,8 +128,7 @@ html.rtl .attachment {
 		max-width: 700px;
 	}
 
-	& .attachment-download-icon,
-	& .icon-google-drive-upload {
+	& .attachment-download-icon {
 		margin-left: 5px;
 		padding: 2px 5px;
 
@@ -138,8 +136,25 @@ html.rtl .attachment {
 		border-radius: 5px;
 	}
 
-	& .icon-google-drive-upload {
+	& .google-drive-upload-container {
+		border-width: 1px;
+		border-radius: 5px;
 		cursor: pointer;
+		display: block;
+		height: 2rem;
+		width: 13.5rem;
+		margin-top: 5px;
 	}
 
+	& .logo-google-drive {
+		display: inline-block;
+		background-image: url('/images/logo/google-drive.svg');
+		background-size: 100% auto;
+		height: 1.5rem;
+		width: 1.5rem;
+	}
+
+	& .google-drive-upload-text {
+		vertical-align: super;
+	}
 }

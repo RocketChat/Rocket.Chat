@@ -663,26 +663,29 @@ Template.room.events({
 
 	'click .google-drive-upload'(e) {
 
+		const target = $(e.target).closest('.google-drive-upload-container')[0];
+
 		function disable() {
-			$('.icon-google-drive-upload').removeClass('google-drive-upload');
-			$('.icon-google-drive-upload').css('cursor', 'auto');
-			$(e.target).removeClass('icon-google');
-			$(e.target).addClass('icon-spinner');
-			$(e.target).text(t('Uploading_file'));
+			$('.google-drive-upload-container').removeClass('google-drive-upload');
+			$('.google-drive-upload-container').css('cursor', 'auto');
+			$(target).find('.logo-google-drive').addClass('icon-spinner');
+			$(target).find('.logo-google-drive').removeClass('logo-google-drive');
+			$(target).find('.google-drive-upload-text').text(t('Uploading_file'));
 		}
 
 		function enable() {
-			$('.icon-google-drive-upload').addClass('google-drive-upload');
-			$('.icon-google-drive-upload').css('cursor', 'pointer');
-			$(e.target).addClass('icon-google');
-			$(e.target).removeClass('icon-spinner');
-			$(e.target).text(t('Drive'));
+			$('.google-drive-upload-container').addClass('google-drive-upload');
+			$('.google-drive-upload-container').css('cursor', 'pointer');
+			$(target).find('.icon-spinner').addClass('logo-google-drive');
+			$(target).find('.icon-spinner').removeClass('icon-spinner');
+			$(target).find('.google-drive-upload-text').text(t('Upload_To_Drive'));
 		}
 
+		const url = target.getAttribute('data-url');
+		const title = target.getAttribute('data-title');
+		const type = target.getAttribute('data-type');
+
 		disable();
-		const url = e.target.getAttribute('data-url');
-		const title = e.target.getAttribute('data-title');
-		const type = e.target.getAttribute('data-type');
 
 		const metaData = {
 			'name': `${ title }`,
