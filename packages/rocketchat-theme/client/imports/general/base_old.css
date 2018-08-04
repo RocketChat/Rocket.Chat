@@ -3112,8 +3112,8 @@
 		& .is-bot,
 		& .role-tag {
 			padding: 1px 4px;
-
-			border-radius: 2px;
+			border-radius: 4px;
+			border-width: 1px;
 		}
 	}
 
@@ -3144,7 +3144,8 @@
 			text-align: right;
 
 			& .time,
-			& .role-tag {
+			& .role-tag,
+			& .is-bot {
 				display: none;
 			}
 
@@ -3864,12 +3865,6 @@ body:not(.is-cordova) {
 			font-size: 12px;
 			font-weight: 300;
 			line-height: 18px;
-		}
-
-		& .role-tag {
-			padding: 1px 4px;
-
-			border-radius: 2px;
 		}
 	}
 
