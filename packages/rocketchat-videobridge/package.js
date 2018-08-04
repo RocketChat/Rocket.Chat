@@ -20,10 +20,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/stylesheets/video.less', 'client');
 	api.addFiles('client/views/videoFlexTab.html', 'client');
 
-	api.addFiles('client/views/mconfLiveView.html', 'client');
-	api.addFiles('client/views/videoFlexTabMconf.html', 'client');
+	api.addFiles('client/views/bbbLiveView.html', 'client');
+	api.addFiles('client/views/videoFlexTabBbb.html', 'client');
 	api.addFiles('client/views/videoFlexTab.js', 'client');
-	api.addFiles('client/views/videoFlexTabMconf.js', 'client');
+	api.addFiles('client/views/videoFlexTabBbb.js', 'client');
 	api.addFiles('client/tabBar.js', 'client');
 	api.addFiles('client/actionLink.js', 'client');
 
@@ -33,6 +33,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/settings.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/methods/jitsiSetTimeout.js', 'server');
-	api.addFiles('server/methods/mconf.js', 'server');
+	api.addFiles('server/methods/bbb.js', 'server');
 	api.addFiles('server/actionLink.js', 'server');
 });

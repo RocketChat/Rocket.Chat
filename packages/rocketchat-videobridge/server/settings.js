@@ -1,7 +1,7 @@
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('Video Conference', function() {
 
-		this.section('mconf', function() {
+		this.section('BigBlueButton', function() {
 
 			this.add('bigbluebutton_Enabled', false, {
 				type: 'boolean',
@@ -16,8 +16,7 @@ Meteor.startup(function() {
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
 					value: true
-				},
-				public: true
+				}
 			});
 
 			this.add('bigbluebutton_sharedSecret', '', {
@@ -26,16 +25,11 @@ Meteor.startup(function() {
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
 					value: true
-				},
-				public: true
+				}
 			});
 
-
-
-
-
-			this.add('bigbluebutton_enable_d', '', {
-				type: 'string',
+			this.add('bigbluebutton_enable_d', true, {
+				type: 'boolean',
 				i18nLabel: 'Enable to direct messages',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
@@ -44,8 +38,8 @@ Meteor.startup(function() {
 				public: true
 			});
 
-			this.add('bigbluebutton_enable_p', '', {
-				type: 'string',
+			this.add('bigbluebutton_enable_p', true, {
+				type: 'boolean',
 				i18nLabel: 'Enable to private',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
@@ -54,8 +48,8 @@ Meteor.startup(function() {
 				public: true
 			});
 
-			this.add('bigbluebutton_enable_c', '', {
-				type: 'string',
+			this.add('bigbluebutton_enable_c', false, {
+				type: 'boolean',
 				i18nLabel: 'Shared_Secret',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',

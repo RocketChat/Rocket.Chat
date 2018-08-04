@@ -8,7 +8,7 @@ const parser = new xml2js.Parser({
 
 const parseString = Meteor.wrapAsync(parser.parseString);
 
-const getMConfAPI = () => {
+const getBBBAPI = () => {
 	const url = RocketChat.settings.get('bigbluebutton_server');
 	const secret = RocketChat.settings.get('bigbluebutton_sharedSecret');
 	const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
@@ -17,21 +17,21 @@ const getMConfAPI = () => {
 };
 
 Meteor.methods({
-	mconfJoin({ rid }) {
+	bbbJoin({ rid }) {
 
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}
 
 		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}
 
 		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbJoin' });
 		}
 
-		const { api, url } = getMConfAPI();
+		const { api, url } = getBBBAPI();
 		const meetingID = RocketChat.settings.get('uniqueID') + rid;
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const createUrl = api.urlFor('create', {
@@ -47,8 +47,6 @@ Meteor.methods({
 			meta_html5hidepresentation: true
 		});
 
-		console.log(Meteor.absoluteUrl(`api/v1/videoconference.mconf.update/${ meetingID }`));
-
 		const createResult = HTTP.get(createUrl);
 		const doc = parseString(createResult.content);
 
@@ -57,7 +55,7 @@ Meteor.methods({
 
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
-				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.mconf.update/${ meetingID }`)
+				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`)
 			});
 
 			const hookResult = HTTP.get(hookApi);
@@ -65,6 +63,7 @@ Meteor.methods({
 			if (hookResult.statusCode !== 200) {
 				// TODO improve error logging
 				console.log({ hookResult });
+				return;
 			}
 
 			RocketChat.saveStreamingOptions(rid, {
@@ -84,20 +83,20 @@ Meteor.methods({
 		}
 	},
 
-	mconfEnd({ rid }) {
+	bbbEnd({ rid }) {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
 		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
 		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'videobridge:join' });
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbEnd' });
 		}
 
-		const { api } = getMConfAPI();
+		const { api } = getBBBAPI();
 		const meetingID = RocketChat.settings.get('uniqueID') + rid;
 		const endApi = api.urlFor('end', {
 			meetingID,
@@ -109,12 +108,18 @@ Meteor.methods({
 		if (endApiResult.statusCode !== 200) {
 			// TODO improve error logging
 			console.log({ endApiResult });
+			return;
 		}
 
+		const doc = parseString(endApiResult.content);
+
+		if (doc.response.returncode[0] === 'FAILED') {
+			RocketChat.saveStreamingOptions(rid, {});
+		}
 	}
 });
 
-RocketChat.API.v1.addRoute('videoconference.mconf.update/:id', { authRequired: false }, {
+RocketChat.API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
 	post() {
 		// TODO check checksum
 		const event = JSON.parse(this.bodyParams.event)[0];
@@ -129,7 +134,7 @@ RocketChat.API.v1.addRoute('videoconference.mconf.update/:id', { authRequired: f
 		}
 
 		// if (eventType === 'user-left') {
-		// 	const { api } = getMConfAPI();
+		// 	const { api } = getBBBAPI();
 
 		// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
 		// 		meetingID

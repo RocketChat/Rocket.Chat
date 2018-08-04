@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 /* globals popout */
 
-Template.videoFlexTabMconf.helpers({
+Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {
 		if (Meteor.isCordova) {
 			return true;
@@ -11,23 +11,34 @@ Template.videoFlexTabMconf.helpers({
 	},
 
 	live() {
-		return RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } }) != null;
+		const isLive = RocketChat.models.Rooms.findOne({ _id: this.rid, 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } }) != null;
+
+		if (isLive === false && popout.context) {
+			popout.close();
+		}
+
+		return isLive;
+	},
+
+	callManagement() {
+		const type = RocketChat.models.Rooms.findOne({ _id: this.rid }).t;
+		return type === 'd' || RocketChat.authz.hasAllPermission('call-management') || RocketChat.authz.hasAllPermission('call-management', this.rid);
 	}
 });
 
-Template.videoFlexTabMconf.onCreated(function() {
+Template.videoFlexTabBbb.onCreated(function() {
 	this.tabBar = Template.currentData().tabBar;
 });
 
-Template.videoFlexTabMconf.events({
+Template.videoFlexTabBbb.events({
 	'click .js-join-meeting'(e) {
 		$(e.currentTarget).prop('disabled', true);
-		Meteor.call('mconfJoin', { rid: this.rid }, (err, result) => {
+		Meteor.call('bbbJoin', { rid: this.rid }, (err, result) => {
 			$(e.currentTarget).prop('disabled', false);
 			console.log(err, result);
 			if (result) {
 				popout.open({
-					content: 'mconfLiveView',
+					content: 'bbbLiveView',
 					data: {
 						source: result.url,
 						streamingOptions: result,
@@ -43,7 +54,7 @@ Template.videoFlexTabMconf.events({
 
 	'click .js-end-meeting'(e) {
 		$(e.currentTarget).prop('disabled', true);
-		Meteor.call('mconfEnd', { rid: this.rid }, (err, result) => {
+		Meteor.call('bbbEnd', { rid: this.rid }, (err, result) => {
 			// $(e.currentTarget).prop('disabled', false);
 			console.log(err, result);
 		});

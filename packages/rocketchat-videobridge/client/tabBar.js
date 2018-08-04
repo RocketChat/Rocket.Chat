@@ -2,16 +2,29 @@ Meteor.startup(function() {
 
 	Tracker.autorun(function() {
 		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
-			return RocketChat.TabBar.removeButton('mconf_video');
+			return RocketChat.TabBar.removeButton('bbb_video');
 		}
 		const live = RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } });
+
+		const groups = [];
+
+		if (RocketChat.settings.get('bigbluebutton_enable_d')) {
+			groups.push('direct');
+		}
+		if (RocketChat.settings.get('bigbluebutton_enable_p')) {
+			groups.push('group');
+		}
+		if (RocketChat.settings.get('bigbluebutton_enable_c')) {
+			groups.push('channel');
+		}
+
 		RocketChat.TabBar.addButton({
-			groups: ['direct', 'group'],
-			id: 'mconf_video',
-			i18nTitle: 'Video Chat(mconf)',
+			groups,
+			id: 'bbb_video',
+			i18nTitle: 'BBB Video Chat',
 			icon: 'video',
 			iconColor: 'red',
-			template: 'videoFlexTabMconf',
+			template: 'videoFlexTabBbb',
 			width: 600,
 			order: live ? -1 : 15,
 			class: () => {
