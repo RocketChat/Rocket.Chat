@@ -16,7 +16,7 @@ Template.addWebdavAccount.events({
 		const formData = instance.validate();
 		instance.loading.set(true);
 		if(formData) {
-			Meteor.call('addNewWebdavAccount', formData, function (error, response) {
+			Meteor.call('addWebdavAccount', formData, function (error, response) {
 				if (error) {
 					return toastr.error(t(error.error));
 				}

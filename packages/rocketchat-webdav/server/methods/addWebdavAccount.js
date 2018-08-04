@@ -2,15 +2,15 @@ import Webdav from 'webdav';
 import Future from 'fibers/future';
 
 Meteor.methods({
-	async addNewWebdavAccount(formData) {
+	async addWebdavAccount(formData) {
 		const future = new Future();
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', {method: 'addNewWebdavAccount'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', {method: 'addWebdavAccount'});
 		}
 		const userId = Meteor.userId();
 		if (!RocketChat.settings.get('Webdav_Integration_Allowed')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {method: 'addNewWebdavAccount'});
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {method: 'addWebdavAccount'});
 		}
 
 		check(formData, Match.ObjectIncluding({
@@ -40,7 +40,7 @@ Meteor.methods({
 					}
 					return;
 				}
-				future['return']({success: true, message: "account-saved"});
+				future['return']({success: true, message: "webdav-account-saved"});
 			});
 		},(err) => {
 			future['return']({success: false, message: "could-not-access-webdav"});

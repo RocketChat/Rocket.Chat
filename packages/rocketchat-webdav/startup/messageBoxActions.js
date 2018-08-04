@@ -21,7 +21,7 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 Tracker.autorun(() => {
 	WebdavAccounts.find().fetch().forEach((account) => {
 		//label = username@server_url, remove http/s from server_url
-		const label = account.username + '@'+account.server_url.replace(/^https?\:\/\//i, "");
+		const label = account.username + '@' + account.server_url.replace(/^https?\:\/\//i, "");
 		RocketChat.messageBox.actions.add('WebDAV', label, {
 			id: 'webdav-upload-' + account._id.toLowerCase(),
 			icon: 'cloud-plus',

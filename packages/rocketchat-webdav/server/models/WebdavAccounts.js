@@ -13,6 +13,10 @@ class WebdavAccounts extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	removeById(_id) {
+		return this.remove({ _id });
+	}
+
 }
 
 RocketChat.models.WebdavAccounts = new WebdavAccounts();

@@ -23,12 +23,12 @@ Package.onUse(function(api) {
 	api.addFiles('client/webdavFilePicker.html', 'client');
 	api.addFiles('client/webdavFilePicker.js', 'client');
 	api.addFiles('client/stylesheets/addWebdavAccount.less', 'client');
-	api.addFiles('client/stylesheets/webdavFilePicker.css', 'client');
 	api.addFiles('client/collections/WebdavAccounts.js', 'client');
 
-	api.addFiles('server/addNewWebdavAccount.js', 'server');
-	api.addFiles('server/getWebdavFileList.js', 'server');
-	api.addFiles('server/getFileFromWebdav.js', 'server');
+	api.addFiles('server/methods/addWebdavAccount.js', 'server');
+	api.addFiles('server/methods/removeWebdavAccount.js', 'server');
+	api.addFiles('server/methods/getWebdavFileList.js', 'server');
+	api.addFiles('server/methods/getFileFromWebdav.js', 'server');
 	api.addFiles('server/models/WebdavAccounts.js', 'server');
 	api.addFiles('server/publications/webdavAccounts.js', 'server');
 
