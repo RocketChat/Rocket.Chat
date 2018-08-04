@@ -200,6 +200,7 @@
 		height: calc(100% - 60px);
 		padding: 25px 40px;
 		-webkit-overflow-scrolling: touch;
+		line-height: 1.3em;
 
 		& fieldset {
 			margin-bottom: 1em;
