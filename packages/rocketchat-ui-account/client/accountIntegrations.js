@@ -1,3 +1,5 @@
+/* global WebdavAccounts */
+
 import toastr from 'toastr';
 Meteor.subscribe('webdavAccounts');
 
@@ -6,7 +8,7 @@ Template.accountIntegrations.helpers({
 		return WebdavAccounts.find().fetch();
 	},
 	getOptionValue(account) {
-		return account.username + '@' + account.server_url.replace(/^https?\:\/\//i, "");
+		return `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
 	}
 });
 
@@ -18,12 +20,12 @@ Template.accountIntegrations.events({
 		const selectedOption = selectEl.value;
 		const optionIndex = Array.from(options).findIndex(option => option.value === selectedOption);
 
-		Meteor.call('removeWebdavAccount', selectedOption, function (error, response) {
+		Meteor.call('removeWebdavAccount', selectedOption, function(error) {
 			if (error) {
 				return toastr.error(t(error.error));
 			}
 
-			toastr.success(t("webdav-account-removed"));
+			toastr.success(t('webdav-account-removed'));
 			modal.close();
 		});
 

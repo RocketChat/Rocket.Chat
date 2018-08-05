@@ -1,12 +1,13 @@
+/* global fileUploadHandler, Handlebars */
 import _ from 'underscore';
 import toastr from 'toastr';
-import { Session } from 'meteor/session'
+import { Session } from 'meteor/session';
 
-Template.webdavFilePicker.rendered = function () {
+Template.webdavFilePicker.rendered = function() {
 	const accountId = this.data.accountId;
-	Session.set('webdavCurrentFolder', "/");
-	Meteor.call('getWebdavFileList',  accountId, "/", function (error, response) {
-		if(error) {
+	Session.set('webdavCurrentFolder', '/');
+	Meteor.call('getWebdavFileList', accountId, '/', function(error, response) {
+		if (error) {
 			modal.close();
 			return toastr.error(t(error.error));
 		}
@@ -17,7 +18,7 @@ Template.webdavFilePicker.rendered = function () {
 		Session.set('webdavNodes', response.data);
 	});
 };
-Template.webdavFilePicker.destroyed = function () {
+Template.webdavFilePicker.destroyed = function() {
 	Session.set('webdavNodes', []);
 };
 Template.webdavFilePicker.helpers({
@@ -27,7 +28,7 @@ Template.webdavFilePicker.helpers({
 		let type = '';
 
 		let extension = this.basename.split('.').pop();
-		if(extension === this.basename) {
+		if (extension === this.basename) {
 			extension = '';
 		}
 
@@ -58,7 +59,7 @@ Template.webdavFilePicker.helpers({
 	},
 	webdavCurrentFolder() {
 		return Session.get('webdavCurrentFolder');
-	},
+	}
 });
 Template.webdavFilePicker.events({
 	'click #webdav-go-back'() {
@@ -67,16 +68,16 @@ Template.webdavFilePicker.events({
 
 		//determine parent directory to go back
 		let parentFolder = '/';
-		if(currentFolder && currentFolder !== '/' ) {
-			if(currentFolder[currentFolder.length-1] === '/') {
+		if (currentFolder && currentFolder !== '/') {
+			if (currentFolder[currentFolder.length-1] === '/') {
 				currentFolder = currentFolder.slice(0, -1);
 			}
-			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf("/")+1);
+			parentFolder = currentFolder.substr(0, currentFolder.lastIndexOf('/')+1);
 		}
 		Session.set('webdavCurrentFolder', parentFolder);
 		Session.set('webdavNodes', []);
-		Meteor.call('getWebdavFileList', accountId, parentFolder, function (error, response) {
-			if(error) {
+		Meteor.call('getWebdavFileList', accountId, parentFolder, function(error, response) {
+			if (error) {
 				modal.close();
 				return toastr.error(t(error.error));
 			}
@@ -90,8 +91,8 @@ Template.webdavFilePicker.events({
 		const accountId = Template.instance().data.accountId;
 		Session.set('webdavCurrentFolder', this.filename);
 		Session.set('webdavNodes', []);
-		Meteor.call('getWebdavFileList', accountId, this.filename, function (error, response) {
-			if(error) {
+		Meteor.call('getWebdavFileList', accountId, this.filename, function(error, response) {
+			if (error) {
 				modal.close();
 				return toastr.error(t(error.error));
 			}
@@ -104,8 +105,8 @@ Template.webdavFilePicker.events({
 	'click .webdav_file'() {
 		const roomId = Session.get('openedRoom');
 		const accountId = Template.instance().data.accountId;
-		let file = this;
-		Meteor.call('getFileFromWebdav', accountId, file, function (error, response) {
+		const file = this;
+		Meteor.call('getFileFromWebdav', accountId, file, function(error, response) {
 			if (error) {
 				return toastr.error(t(error.error));
 			}
@@ -210,5 +211,5 @@ Template.webdavFilePicker.events({
 				});
 			});
 		});
-	},
+	}
 });

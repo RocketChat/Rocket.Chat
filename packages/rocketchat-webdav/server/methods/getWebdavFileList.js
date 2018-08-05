@@ -6,13 +6,13 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', {method: 'addNewWebdavAccount'});
 		}
-		const userId = Meteor.userId();
+
 		if (!RocketChat.settings.get('Webdav_Integration_Allowed')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {method: 'addNewWebdavAccount'});
 		}
 
 		const account = RocketChat.models.WebdavAccounts.findOne({ _id: accountId });
-		if(!account) {
+		if (!account) {
 			throw new Meteor.Error('error-invalid-webdav-account', 'Invalid WebDAV Account', {method: 'addNewWebdavAccount'});
 		}
 
@@ -23,9 +23,9 @@ Meteor.methods({
 		);
 		const future = new Future();
 		client.getDirectoryContents(path).then((data) => {
-				future['return']({success: true, data: data});
-		},(err) => {
-			future['return']({success: false, message: "could-not-access-webdav"});
+			future['return']({success: true, data});
+		}, (err) => {
+			future['return']({success: false, message: 'could-not-access-webdav', error:err});
 		});
 		return future.wait();
 	}

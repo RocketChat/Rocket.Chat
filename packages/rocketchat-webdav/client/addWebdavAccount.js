@@ -1,5 +1,5 @@
-import _ from "underscore";
-import toastr from "toastr";
+import _ from 'underscore';
+import toastr from 'toastr';
 
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {
@@ -7,7 +7,7 @@ Template.addWebdavAccount.helpers({
 			return `${ t('Please_wait') }...`;
 		}
 		return t('Add_new_webdav_account');
-	},
+	}
 });
 
 Template.addWebdavAccount.events({
@@ -15,8 +15,8 @@ Template.addWebdavAccount.events({
 		event.preventDefault();
 		const formData = instance.validate();
 		instance.loading.set(true);
-		if(formData) {
-			Meteor.call('addWebdavAccount', formData, function (error, response) {
+		if (formData) {
+			Meteor.call('addWebdavAccount', formData, function(error, response) {
 				if (error) {
 					return toastr.error(t(error.error));
 				}
@@ -41,13 +41,13 @@ Template.addWebdavAccount.onCreated(function() {
 		formData.forEach((field) => {
 			formObj[field.name] = field.value;
 		});
-		if(!formObj['serverURL']) {
+		if (!formObj['serverURL']) {
 			validationObj['serverURL'] = t('Field_required');
 		}
-		if(!formObj['username']) {
+		if (!formObj['username']) {
 			validationObj['username'] = t('Field_required');
 		}
-		if(!formObj['pass']) {
+		if (!formObj['pass']) {
 			validationObj['pass'] = t('Field_required');
 		}
 
@@ -63,6 +63,6 @@ Template.addWebdavAccount.onCreated(function() {
 			return false;
 		}
 		return formObj;
-	}
+	};
 
 });

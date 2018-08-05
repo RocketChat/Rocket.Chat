@@ -16,7 +16,7 @@ Meteor.methods({
 		check(formData, Match.ObjectIncluding({
 			serverURL: String,
 			username: String,
-			pass: String,
+			pass: String
 		}));
 
 		const client = new Webdav(
@@ -32,18 +32,18 @@ Meteor.methods({
 				password: formData.pass
 			};
 			RocketChat.models.WebdavAccounts.insert(accountData, (err) => {
-				if(err) {
+				if (err) {
 					if (err.code === 11000) {
-						future['return']({success: false, message: "webdav-duplicated-account"});
+						future['return']({success: false, message: 'webdav-duplicated-account'});
 					} else {
-						future['return']({success: false, message: "unknown-write-error"});
+						future['return']({success: false, message: 'unknown-write-error'});
 					}
 					return;
 				}
-				future['return']({success: true, message: "webdav-account-saved"});
+				future['return']({success: true, message: 'webdav-account-saved'});
 			});
-		},(err) => {
-			future['return']({success: false, message: "could-not-access-webdav"});
+		}, (err) => {
+			future['return']({success: false, message: 'could-not-access-webdav', error: err});
 		});
 		return future.wait();
 	}
