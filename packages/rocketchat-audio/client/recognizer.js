@@ -1,3 +1,6 @@
+/**
+ * Speech provider which uses Web Speech API
+ */
 class WebkitSpeechRecognition {
 
 	capitalize(s) {

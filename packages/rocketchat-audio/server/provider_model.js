@@ -29,7 +29,9 @@ class Setting {
 	load() {
 		this._value = RocketChat.settings.get(this.id);
 
-		if (this._value === undefined) { this._value = this.defaultValue; }
+		if (this._value === undefined) {
+			this._value = this.defaultValue;
+		}
 	}
 
 }
@@ -61,7 +63,9 @@ class Settings {
          * @param key
          */
 	get(key) {
-		if (!this.settings[key]) { throw new Error('Setting is not set'); }
+		if (!this.settings[key]) {
+			throw new Error('Setting is not set');
+		}
 		return this.settings[key].value;
 	}
 
@@ -83,7 +87,9 @@ export default class RecognitionProvider {
          */
 	constructor(key) {
 
-		if (!key.match(/^[A-z0-9]+$/)) { throw new Error(`cannot instantiate provider: ${ key } does not match key-pattern`); }
+		if (!key.match(/^[A-z0-9]+$/)) {
+			throw new Error(`cannot instantiate provider: ${ key } does not match key-pattern`);
+		}
 
 		console.log(`create search provider ${ key }`);
 

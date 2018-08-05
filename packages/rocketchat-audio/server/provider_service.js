@@ -11,7 +11,9 @@ class RecognitionProviderService {
 	use(id) {
 
 		return new Promise((resolve, reject) => {
-			if (!this.providers[id]) { throw new Error(`provider ${ id } cannot be found`); }
+			if (!this.providers[id]) {
+				throw new Error(`provider ${ id } cannot be found`);
+			}
 
 			let reason = 'switch';
 
@@ -23,9 +25,7 @@ class RecognitionProviderService {
 			const stopProvider = () => {
 				return new Promise((resolve, reject) => {
 					if (this.activeProvider) {
-
 						console.log(`Stopping provider '${ this.activeProvider.key }'`);
-
 						this.activeProvider.stop(resolve, reject);
 					} else {
 						resolve();
@@ -35,16 +35,13 @@ class RecognitionProviderService {
 
 			stopProvider().then(() => {
 				this.activeProvider = undefined;
-
 				console.log(`Start provider '${ id }'`);
 
 				try {
-
 					this.providers[id].run(reason).then(() => {
 						this.activeProvider = this.providers[id];
 						resolve();
 					}, reject);
-
 				} catch (e) {
 					reject(e);
 				}
@@ -127,7 +124,9 @@ Meteor.startup(() => {
 
 Meteor.methods({
 	'rocketchatAudio.getRecognitionProvider'() {
-		if (!recognitionProviderService.activeProvider) { return undefined; }
+		if (!recognitionProviderService.activeProvider) {
+			return undefined;
+		}
 
 		return {
 			key: recognitionProviderService.activeProvider.key,

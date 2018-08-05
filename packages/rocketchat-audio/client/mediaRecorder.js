@@ -1,4 +1,8 @@
 (function(window) {
+	/**
+ 	* RCMediaRecorder : Recorder for recording in ogg-opus format
+	* uses MediaRecorder API
+ 	*/
 	const RCMediaRecorder = function(config) {
 		let stream;
 		let recorder;

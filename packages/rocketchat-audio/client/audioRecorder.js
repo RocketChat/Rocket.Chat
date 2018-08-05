@@ -1,4 +1,13 @@
 /* globals Recorder RCMediaRecorder */
+
+/**
+ * AudioRecorder classes provides interface to start recording audio,
+ * Recording format is specified in config param, accordingly correspoding
+ * provider is called.
+ * Currently supported:
+ *   1. 'mp3' : Recorder
+ *   2. 'ogg' : RCMediaRecorder
+ */
 this.AudioRecorder = new class {
 	start(cb, config) {
 		config = config || {};

@@ -1,5 +1,9 @@
 (function(window) {
 	const WORKER_PATH = 'audio-worker.js';
+
+	/**
+ 	* Recorder class implements recording and encoding in mp3 format
+ 	*/
 	const Recorder = function(source, config={}) {
 		const bufferLen = config.bufferLen || 4096;
 		const bitRate = config.bitRate || RocketChat.settings.get('Message_Audio_bitRate');
