@@ -6,7 +6,6 @@ import toastr from 'toastr';
 Meteor.startup(function() {
 	RocketChat.messageBox.actions.add('Add_files_from', 'Google_drive', {
 		id: 'google-drive',
-		// icon to be added
 		icon: 'google-drive',
 		condition() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
@@ -170,9 +169,8 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.messageBox.actions.add('Create_new', 'Google_doc', {
-		id: 'google-doc',
-		// icon to be added
-		icon: 'google-doc',
+		id: 'icon-google-docs',
+		icon: 'google-drive',
 		condition() {
 			if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
 				return false;
@@ -203,7 +201,7 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.messageBox.actions.add('Create_new', 'Google_slide', {
-		id: 'google-slide',
+		id: 'icon-google-slides',
 		// icon to be added
 		icon: 'google-slide',
 		condition() {
@@ -236,7 +234,7 @@ Meteor.startup(function() {
 	});
 
 	RocketChat.messageBox.actions.add('Create_new', 'Google_sheet', {
-		id: 'google-sheet',
+		id: 'icon-google-sheets',
 		// icon to be added
 		icon: 'google-sheet',
 		condition() {

@@ -472,4 +472,38 @@
 			<path d="M10 9v5" stroke-linecap="square" />
 		</g>
 	</symbol>
+	<symbol id="icon-google-drive" viewBox="0 0 48 48">
+		<g>
+			<path style=" fill:#FFC107;" d="M 17 6 L 31 6 L 45 30 L 31 30 Z "></path>
+			<path style=" fill:#1976D2;" d="M 9.875 42 L 16.9375 30 L 45 30 L 38 42 Z "></path>
+			<path style=" fill:#4CAF50;" d="M 3 30.125 L 9.875 42 L 24 18 L 17 6 Z "></path>
+		</g>
+	</symbol>
+	<symbol id="icon-google-docs" viewBox="0 0 48 48">
+		<g>
+			<path style=" fill:#2196F3;" d="M 37 45 L 11 45 C 9.34375 45 8 43.65625 8 42 L 8 6 C 8 4.34375 9.34375 3 11 3 L 30 3 L 40 13 L 40 42 C 40 43.65625 38.65625 45 37 45 Z "></path>
+			<path style=" fill:#BBDEFB;" d="M 40 13 L 30 13 L 30 3 Z "></path>
+			<path style=" fill:#1565C0;" d="M 30 13 L 40 23 L 40 13 Z "></path>
+			<path style=" fill:#E3F2FD;" d="M 15 23 L 33 23 L 33 25 L 15 25 Z "></path>
+			<path style=" fill:#E3F2FD;" d="M 15 27 L 33 27 L 33 29 L 15 29 Z "></path>
+			<path style=" fill:#E3F2FD;" d="M 15 31 L 33 31 L 33 33 L 15 33 Z "></path>
+			<path style=" fill:#E3F2FD;" d="M 15 35 L 25 35 L 25 37 L 15 37 Z "></path>
+		</g>
+	</symbol>
+	<symbol id="icon-google-sheets" viewBox="0 0 48 48">
+		<g>
+			<path style=" fill:#43A047;" d="M 37 45 L 11 45 C 9.34375 45 8 43.65625 8 42 L 8 6 C 8 4.34375 9.34375 3 11 3 L 30 3 L 40 13 L 40 42 C 40 43.65625 38.65625 45 37 45 Z "></path>
+			<path style=" fill:#C8E6C9;" d="M 40 13 L 30 13 L 30 3 Z "></path>
+			<path style=" fill:#2E7D32;" d="M 30 13 L 40 23 L 40 13 Z "></path>
+			<path style=" fill:#E8F5E9;" d="M 31 23 L 15 23 L 15 37 L 33 37 L 33 23 Z M 17 25 L 21 25 L 21 27 L 17 27 Z M 17 29 L 21 29 L 21 31 L 17 31 Z M 17 33 L 21 33 L 21 35 L 17 35 Z M 31 35 L 23 35 L 23 33 L 31 33 Z M 31 31 L 23 31 L 23 29 L 31 29 Z M 31 27 L 23 27 L 23 25 L 31 25 Z "></path>
+		</g>
+	</symbol>
+	<symbol id="icon=google-slides" viewBox="0 0 48 48">
+		<g>
+			<path style=" fill:#FFC107;" d="M 37 45 L 11 45 C 9.34375 45 8 43.65625 8 42 L 8 6 C 8 4.34375 9.34375 3 11 3 L 30 3 L 40 13 L 40 42 C 40 43.65625 38.65625 45 37 45 Z "></path>
+			<path style=" fill:#FFECB3;" d="M 40 13 L 30 13 L 30 3 Z "></path>
+			<path style=" fill:#FFA000;" d="M 30 13 L 40 23 L 40 13 Z "></path>
+			<path style=" fill:#FFFFFF;" d="M 30 22 L 18 22 C 16.898438 22 16 22.898438 16 24 L 16 36 C 16 37.101563 16.898438 38 18 38 L 30 38 C 31.101563 38 32 37.101563 32 36 L 32 24 C 32 22.898438 31.101563 22 30 22 Z M 30 26 L 30 34 L 18 34 L 18 26 Z "></path>
+		</g>
+	</symbol>
 </svg>
