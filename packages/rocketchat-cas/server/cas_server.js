@@ -249,8 +249,8 @@ Accounts.registerLoginHandler(function(options) {
 						ts: new Date(),
 						open: true,
 						alert: true,
-						unread: 1,
-						userMentions: 1,
+						unread: 0,
+						userMentions: 0,
 						groupMentions: 0
 					});
 				}

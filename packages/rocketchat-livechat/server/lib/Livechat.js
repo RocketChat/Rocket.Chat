@@ -316,8 +316,8 @@ RocketChat.Livechat = {
 				name: guest.name || guest.username,
 				alert: true,
 				open: true,
-				unread: 1,
-				userMentions: 1,
+				unread: 0,
+				userMentions: 0,
 				groupMentions: 0,
 				code: room.code,
 				u: {

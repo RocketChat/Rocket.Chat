@@ -18,8 +18,8 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		ts: now,
 		open: true,
 		alert: true,
-		unread: 1,
-		userMentions: 1,
+		unread: 0,
+		userMentions: 0,
 		groupMentions: 0
 	});
 
