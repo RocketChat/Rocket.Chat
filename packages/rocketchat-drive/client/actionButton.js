@@ -3,7 +3,7 @@ import toastr from 'toastr';
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'drive-upload',
-		icon: 'icon-google-drive',
+		icon: 'google-drive',
 		label: 'Upload To Drive',
 		async action() {
 			const message = this._arguments[1];

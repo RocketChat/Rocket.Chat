@@ -498,7 +498,7 @@
 			<path style=" fill:#E8F5E9;" d="M 31 23 L 15 23 L 15 37 L 33 37 L 33 23 Z M 17 25 L 21 25 L 21 27 L 17 27 Z M 17 29 L 21 29 L 21 31 L 17 31 Z M 17 33 L 21 33 L 21 35 L 17 35 Z M 31 35 L 23 35 L 23 33 L 31 33 Z M 31 31 L 23 31 L 23 29 L 31 29 Z M 31 27 L 23 27 L 23 25 L 31 25 Z "></path>
 		</g>
 	</symbol>
-	<symbol id="icon=google-slides" viewBox="0 0 48 48">
+	<symbol id="icon-google-slides" viewBox="0 0 48 48">
 		<g>
 			<path style=" fill:#FFC107;" d="M 37 45 L 11 45 C 9.34375 45 8 43.65625 8 42 L 8 6 C 8 4.34375 9.34375 3 11 3 L 30 3 L 40 13 L 40 42 C 40 43.65625 38.65625 45 37 45 Z "></path>
 			<path style=" fill:#FFECB3;" d="M 40 13 L 30 13 L 30 3 Z "></path>
