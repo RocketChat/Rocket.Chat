@@ -61,6 +61,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatDepartment.js', 'client');
 	api.addFiles('client/collections/LivechatDepartmentAgents.js', 'client');
 	api.addFiles('client/collections/LivechatIntegration.js', 'client');
+	api.addFiles('client/collections/LivechatMonitoring.js', 'client');
 	api.addFiles('client/collections/LivechatPageVisited.js', 'client');
 	api.addFiles('client/collections/LivechatQueueUser.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');

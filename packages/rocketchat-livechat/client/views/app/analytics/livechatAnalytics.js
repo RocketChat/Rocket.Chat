@@ -15,7 +15,11 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		chartContext = RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
+		if (result && result.chartLabel && result.dataLabels && result.dataPoints) {
+			chartContext = RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
+		} else {
+			console.log('livechat:getAnalyticsChartData => Missing Data');
+		}
 	});
 
 	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
@@ -23,7 +27,11 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		templateInstance.agentOverviewData.set(result);
+		if (result) {
+			templateInstance.agentOverviewData.set(result);
+		} else {
+			console.log('livechat:getAgentOverviewData => Missing Data');
+		}
 	});
 }
 
@@ -38,7 +46,11 @@ function updateAnalyticsOverview() {
 			return handleError(error);
 		}
 
-		templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
+		if (result) {
+			templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
+		} else {
+			console.log('livechat:getAnalyticsOverviewData => Missing Data');
+		}
 	});
 }
 

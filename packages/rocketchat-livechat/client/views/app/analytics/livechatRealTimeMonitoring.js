@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-const chartContexts = {};			// stores context of current chart, used to clean when redrawing
-const LivechatMonitoring = new Mongo.Collection('livechatMonitoring');
+let chartContexts = {};			// stores context of current chart, used to clean when redrawing
+// const LivechatMonitoring = new Mongo.Collection('livechatMonitoring');
 let templateInstance;
 
 const initChart = {
@@ -10,7 +10,7 @@ const initChart = {
 			document.getElementById('lc-chats-chart'),
 			'Chats',
 			chartContexts['lc-chats-chart'],
-			['Open', 'Queue', 'Closed'], []);
+			['Open', 'Queue', 'Closed'], [0, 0, 0]);
 	},
 
 	'lc-agents-chart'() {
@@ -18,7 +18,7 @@ const initChart = {
 			document.getElementById('lc-agents-chart'),
 			'Agents',
 			chartContexts['lc-agents-chart'],
-			['Online', 'Away', 'Busy', 'Offline'], []);
+			['Available', 'Away', 'Busy', 'Offline'], [0, 0, 0, 0]);
 	},
 
 	'lc-chats-per-agent-chart'() {
@@ -105,8 +105,6 @@ const metricsUpdated = (ts) => {
 };
 
 const updateDepartmentsChart = (departmentId) => {
-	console.log('dpt chart');
-
 	if (departmentId) {
 		// update for dept
 		const label = LivechatDepartment.findOne({_id: departmentId}).name;
@@ -144,16 +142,16 @@ const updateAgentsChart = (agent) => {
 	}
 };
 
-const updateAgentStatusChart = () => {
+function updateAgentStatusChart() {
 	const statusData = RocketChat.Livechat.Monitoring.getAgentStatusData(AgentUsers.find());
 
 	updateChart('lc-agents-chart', 'Offline', [statusData.offline]);
-	updateChart('lc-agents-chart', 'Online', [statusData.online]);
+	updateChart('lc-agents-chart', 'Available', [statusData.available]);
 	updateChart('lc-agents-chart', 'Away', [statusData.away]);
 	updateChart('lc-agents-chart', 'Busy', [statusData.busy]);
-};
+}
 
-const updateChatsChart = () => {
+function updateChatsChart() {
 	const chats = {
 		open: LivechatMonitoring.find({'metrics.chatDuration': {$exists: false}, 'servedBy': {$exists: true}}).count(),
 		closed: LivechatMonitoring.find({'metrics.chatDuration': {$exists: true}, 'servedBy': {$exists: true}}).count(),
@@ -163,6 +161,18 @@ const updateChatsChart = () => {
 	updateChart('lc-chats-chart', 'Open', [chats.open]);
 	updateChart('lc-chats-chart', 'Closed', [chats.closed]);
 	updateChart('lc-chats-chart', 'Queue', [chats.queue]);
+}
+
+const updateConversationsOverview = () => {
+	const data = RocketChat.Livechat.Monitoring.getConversationsOverviewData(LivechatMonitoring.find());
+
+	templateInstance.conversationsOverview.set(data);
+};
+
+const updateTimingsOverview = () => {
+	const data = RocketChat.Livechat.Monitoring.getTimingsOverviewData(LivechatMonitoring.find());
+
+	templateInstance.timingOverview.set(data);
 };
 
 function displayDepartmentChart(val) {
@@ -174,11 +184,19 @@ function displayDepartmentChart(val) {
 Template.livechatRealTimeMonitoring.helpers({
 	showDepartmentChart() {
 		return templateInstance.showDepartmentChart.get();
+	},
+	conversationsOverview() {
+		return templateInstance.conversationsOverview.get();
+	},
+	timingOverview() {
+		return templateInstance.timingOverview.get();
 	}
 });
 
 Template.livechatRealTimeMonitoring.onCreated(function() {
 	templateInstance = Template.instance();
+	this.conversationsOverview = new ReactiveVar([]);
+	this.timingOverview = new ReactiveVar([]);
 	// this.showDepartmentChart = new ReactiveVar(false);
 
 	AgentUsers.find().observeChanges({
@@ -189,7 +207,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			updateAgentStatusChart();
 		},
 		removed(/* id */) {
-			updateAgentStatusChart();
+			// updateAgentStatusChart();
 		}
 	});
 
@@ -202,11 +220,11 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			displayDepartmentChart(true);
 			updateDepartmentsChart(id);
 		},
-		removed(id) {
-			if (LivechatDepartment.find().count() === 0) {
-				displayDepartmentChart(false);
-			}
-			updateDepartmentsChart(id);
+		removed(/* id */) {
+			// if (LivechatDepartment.find().count() === 0) {
+			// 	displayDepartmentChart(false);
+			// }
+			// updateDepartmentsChart(id);
 		}
 	});
 
@@ -218,6 +236,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 				// metrics changed
 				metricsUpdated(ts);
 				updateChatsChart();
+				updateTimingsOverview();
 			}
 
 			if (fields.servedBy) {
@@ -232,6 +251,10 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 
 			if (fields.departmentId) {
 				updateDepartmentsChart(fields.departmentId);
+			}
+
+			if (fields.msgs) {
+				updateConversationsOverview();
 			}
 		},
 		added(id, fields) {
@@ -241,6 +264,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 				// metrics changed
 				metricsUpdated(ts);
 				updateChatsChart();
+				updateTimingsOverview();
 			}
 
 			if (fields.servedBy) {
@@ -255,19 +279,25 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			if (fields.departmentId) {
 				updateDepartmentsChart(fields.departmentId);
 			}
-		},
-		removed(id) {
-			const ts = LivechatMonitoring.findOne({_id: id}).ts;
 
-			metricsUpdated(ts);
-			updateAgentsChart();
-			updateChatsChart();
-			updateDepartmentsChart();
+			if (fields.msgs) {
+				updateConversationsOverview();
+			}
+		},
+		removed(/* id */) {
+			// const ts = LivechatMonitoring.findOne({_id: id}).ts;
+			//
+			// metricsUpdated(ts);
+			// updateAgentsChart();
+			// updateChatsChart();
+			// updateDepartmentsChart();
 		}
 	});
 });
 
 Template.livechatRealTimeMonitoring.onRendered(function() {
+	chartContexts = {};			// Clear chart contexts from previous loads, fixing bug when menu is reopened after changing to another.
+
 	initChart['lc-chats-chart']();
 	initChart['lc-agents-chart']();
 	initChart['lc-chats-per-agent-chart']();

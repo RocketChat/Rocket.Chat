@@ -51,9 +51,9 @@ RocketChat.Livechat.Monitoring = {
 					}
 				}]
 			},
-			animation: {
-				duration: 0 // general animation time
-			},
+			// animation: {
+			// 	duration: 0 // general animation time
+			// },
 			hover: {
 				animationDuration: 0 // duration of animations when hovering an item
 			},
@@ -167,9 +167,9 @@ RocketChat.Livechat.Monitoring = {
 					mode: 'point',
 					displayColors: false // hide color box
 				},
-				animation: {
-					duration: 0 // general animation time
-				},
+				// animation: {
+				// 	duration: 0 // general animation time
+				// },
 				hover: {
 					animationDuration: 0 // duration of animations when hovering an item
 				},
@@ -301,19 +301,63 @@ RocketChat.Livechat.Monitoring = {
 	getAgentStatusData(dbCursor) {
 		const data = {
 			offline: 0,
-			online: 0,
+			available: 0,
 			away: 0,
 			busy: 0
 		};
 
 		dbCursor.forEach((doc) => {
-			if (doc.status === 'offline' || doc.status === 'online' || doc.status === 'away' || doc.status === 'busy') {
+			if (doc.status === 'offline' || doc.status === 'away' || doc.status === 'busy') {
 				data[doc.status]++;
+			} else if (doc.status === 'online' && doc.statusLivechat === 'available') {
+				data[doc.statusLivechat]++;
 			} else {
 				data['offline']++;
 			}
 		});
 
 		return data;
+	},
+
+	getConversationsOverviewData(dbCursor) {
+		let total = 0;
+		let totalMessages = 0;
+
+		dbCursor.forEach(function(doc) {
+			total++;
+			if (doc.msgs) {
+				totalMessages += doc.msgs;
+			}
+		});
+
+		return [{
+			title: 'Total_conversations',
+			value: (total) ? total : 0
+		}, {
+			title: 'Total_messages',
+			value: (totalMessages) ? totalMessages : 0
+		}];
+	},
+
+	getTimingsOverviewData(dbCursor) {
+		let total = 0;
+		let totalResponseTime = 0;
+		let totalReactionTime = 0;
+
+		dbCursor.forEach(function(doc) {
+			total++;
+			if (doc.metrics && doc.metrics.response) {
+				totalResponseTime += doc.metrics.response.avg;
+				totalReactionTime += doc.metrics.reaction.ft;
+			}
+		});
+
+		return [{
+			title: 'Avg_response_time',
+			value: (total) ? (totalReactionTime/total).toFixed(2) : '-'
+		}, {
+			title: 'Avg_reaction_time',
+			value: (total) ? (totalResponseTime/total).toFixed(2) : '-'
+		}];
 	}
 };
