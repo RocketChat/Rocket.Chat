@@ -1,4 +1,4 @@
-import { SettingType } from '@rocket.chat/apps-ts-definition/settings';
+import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 export class AppSettingsConverter {
 	constructor(orch) {
