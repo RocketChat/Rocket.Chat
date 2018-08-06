@@ -223,6 +223,11 @@ RocketChat.Livechat.Monitoring = {
 		return true;
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Object}
+	 */
 	calculateResponseTimings(dbCursor) {
 		let art = 0;
 		let longest = 0;
@@ -246,6 +251,11 @@ RocketChat.Livechat.Monitoring = {
 		};
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Object}
+	 */
 	calculateReactionTimings(dbCursor) {
 		let arnt = 0;
 		let longest = 0;
@@ -267,6 +277,11 @@ RocketChat.Livechat.Monitoring = {
 		};
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Object}
+	 */
 	calculateDurationData(dbCursor) {
 		let total = 0;
 		let longest = 0;
@@ -288,6 +303,11 @@ RocketChat.Livechat.Monitoring = {
 		};
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Object}
+	 */
 	getChartData(dbCursor) {
 		const data = {};
 
@@ -298,6 +318,11 @@ RocketChat.Livechat.Monitoring = {
 		return data;
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Object}
+	 */
 	getAgentStatusData(dbCursor) {
 		const data = {
 			offline: 0,
@@ -319,6 +344,11 @@ RocketChat.Livechat.Monitoring = {
 		return data;
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Array(Object)}
+	 */
 	getConversationsOverviewData(dbCursor) {
 		let total = 0;
 		let totalMessages = 0;
@@ -339,6 +369,11 @@ RocketChat.Livechat.Monitoring = {
 		}];
 	},
 
+	/**
+	 *
+	 * @param  {Object} dbCursor cursor to minimongo result
+	 * @return {Array(Object)}
+	 */
 	getTimingsOverviewData(dbCursor) {
 		let total = 0;
 		let totalResponseTime = 0;

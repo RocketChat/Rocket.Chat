@@ -78,6 +78,15 @@ const initChart = {
 	}
 };
 
+function initAllCharts() {
+	chartContexts['lc-chats-chart'] = initChart['lc-chats-chart']();
+	chartContexts['lc-agents-chart'] = initChart['lc-agents-chart']();
+	chartContexts['lc-chats-per-agent-chart'] = initChart['lc-chats-per-agent-chart']();
+	chartContexts['lc-chats-per-dept-chart'] = initChart['lc-chats-per-dept-chart']();
+	chartContexts['lc-reaction-response-times-chart'] = initChart['lc-reaction-response-times-chart']();
+	chartContexts['lc-chat-duration-chart'] = initChart['lc-chat-duration-chart']();
+}
+
 function updateChart(chartId, label, data) {
 	// update chart
 	if (!chartContexts[chartId]) {
@@ -298,12 +307,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 Template.livechatRealTimeMonitoring.onRendered(function() {
 	chartContexts = {};			// Clear chart contexts from previous loads, fixing bug when menu is reopened after changing to another.
 
-	initChart['lc-chats-chart']();
-	initChart['lc-agents-chart']();
-	initChart['lc-chats-per-agent-chart']();
-	initChart['lc-chats-per-dept-chart']();
-	initChart['lc-reaction-response-times-chart']();
-	initChart['lc-chat-duration-chart']();
+	initAllCharts();
 
 	displayDepartmentChart(false);
 
