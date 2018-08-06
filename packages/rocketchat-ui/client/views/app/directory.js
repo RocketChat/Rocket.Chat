@@ -9,8 +9,8 @@ function timeAgo(time) {
 	const now = new Date();
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
-	return (now.getDate() === time.getDate() && now.getMonth() === time.getMonth() && now.getYear() === time.getYear() && moment(time).format('LT')) 
-		|| (yesterday.getDate() === time.getDate() && yesterday.getMonth() === time.getMonth() && yesterday.getYear() === time.getYear() && t('yesterday')) 
+	return (now.getDate() === time.getDate() && now.getMonth() === time.getMonth() && now.getYear() === time.getYear() && moment(time).format('LT'))
+		|| (yesterday.getDate() === time.getDate() && yesterday.getMonth() === time.getMonth() && yesterday.getYear() === time.getYear() && t('yesterday'))
 		|| moment(time).format('MMM D, YYYY');
 }
 
