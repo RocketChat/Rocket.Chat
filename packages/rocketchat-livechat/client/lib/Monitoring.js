@@ -370,6 +370,31 @@ RocketChat.Livechat.Monitoring = {
 	},
 
 	/**
+	 * return readable time format from seconds
+	 * @param  {Double} sec seconds
+	 * @return {String}     Readable string format
+	 */
+	secondsToHHMMSS(sec) {
+		sec = parseFloat(sec);
+
+		let hours = Math.floor(sec / 3600);
+		let minutes = Math.floor((sec - (hours * 3600)) / 60);
+		let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
+
+		if (hours < 10) { hours = `0${ hours }`; }
+		if (minutes < 10) { minutes = `0${ minutes }`; }
+		if (seconds < 10) { seconds = `0${ seconds }`; }
+
+		if (hours > 0) {
+			return `${ hours }:${ minutes }:${ seconds }`;
+		}
+		if (minutes > 0) {
+			return `${ minutes }:${ seconds }`;
+		}
+		return sec;
+	},
+
+	/**
 	 *
 	 * @param  {Object} dbCursor cursor to minimongo result
 	 * @return {Array(Object)}
@@ -389,10 +414,10 @@ RocketChat.Livechat.Monitoring = {
 
 		return [{
 			title: 'Avg_response_time',
-			value: (total) ? (totalReactionTime/total).toFixed(2) : '-'
+			value: (total) ? this.secondsToHHMMSS((totalReactionTime/total).toFixed(2)) : '-'
 		}, {
 			title: 'Avg_reaction_time',
-			value: (total) ? (totalResponseTime/total).toFixed(2) : '-'
+			value: (total) ? this.secondsToHHMMSS((totalResponseTime/total).toFixed(2)) : '-'
 		}];
 	}
 };

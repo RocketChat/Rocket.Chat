@@ -4,6 +4,8 @@ let chartContexts = {};			// stores context of current chart, used to clean when
 // const LivechatMonitoring = new Mongo.Collection('livechatMonitoring');
 let templateInstance;
 
+const LivechatVisitors = new Mongo.Collection('livechatVisitors');
+
 const initChart = {
 	'lc-chats-chart'() {
 		return RocketChat.Livechat.Monitoring.drawDoughnutChart(
@@ -190,6 +192,14 @@ function displayDepartmentChart(val) {
 	elem.style.display = (val) ? 'block' : 'none';
 }
 
+function updateVisitorsCount(count) {
+	console.log(count);
+	templateInstance.totalVisitors.set({
+		title: templateInstance.totalVisitors.get().title,
+		value: templateInstance.totalVisitors.get().value + count
+	});
+}
+
 Template.livechatRealTimeMonitoring.helpers({
 	showDepartmentChart() {
 		return templateInstance.showDepartmentChart.get();
@@ -199,13 +209,20 @@ Template.livechatRealTimeMonitoring.helpers({
 	},
 	timingOverview() {
 		return templateInstance.timingOverview.get();
+	},
+	totalVisitors() {
+		return templateInstance.totalVisitors.get();
 	}
 });
 
 Template.livechatRealTimeMonitoring.onCreated(function() {
 	templateInstance = Template.instance();
-	this.conversationsOverview = new ReactiveVar([]);
-	this.timingOverview = new ReactiveVar([]);
+	this.conversationsOverview = new ReactiveVar();
+	this.timingOverview = new ReactiveVar();
+	this.totalVisitors = new ReactiveVar({
+		title: 'Total_visitors',
+		value: 0
+	});
 	// this.showDepartmentChart = new ReactiveVar(false);
 
 	AgentUsers.find().observeChanges({
@@ -217,6 +234,16 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		},
 		removed(/* id */) {
 			// updateAgentStatusChart();
+		}
+	});
+
+	LivechatVisitors.find().observeChanges({
+		changed() {},
+		added(/* id, fields */) {
+			updateVisitorsCount(1);
+		},
+		removed(/* id */) {
+			updateVisitorsCount(-1);
 		}
 	});
 
@@ -314,4 +341,5 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 	this.subscribe('livechat:departments');
 	this.subscribe('livechat:agents');
 	this.subscribe('livechat:monitoring');
+	this.subscribe('livechat:visitors');
 });

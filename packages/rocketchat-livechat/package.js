@@ -240,6 +240,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
 	api.addFiles('server/publications/livechatTriggers.js', 'server');
+	api.addFiles('server/publications/livechatVisitors.js', 'server');
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');

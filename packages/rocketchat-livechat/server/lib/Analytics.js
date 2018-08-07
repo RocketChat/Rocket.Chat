@@ -123,6 +123,11 @@ export const Analytics = {
 			return maxKey;
 		},
 
+		/**
+		 * return readable time format from seconds
+		 * @param  {Double} sec seconds
+		 * @return {String}     Readable string format
+		 */
 		secondsToHHMMSS(sec) {
 			let hours = Math.floor(sec / 3600);
 			let minutes = Math.floor((sec - (hours * 3600)) / 60);
@@ -302,6 +307,31 @@ export const Analytics = {
 		},
 
 		/**
+		 * return readable time format from seconds
+		 * @param  {Double} sec seconds
+		 * @return {String}     Readable string format
+		 */
+		secondsToHHMMSS(sec) {
+			sec = parseFloat(sec);
+
+			let hours = Math.floor(sec / 3600);
+			let minutes = Math.floor((sec - (hours * 3600)) / 60);
+			let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
+
+			if (hours < 10) { hours = `0${ hours }`; }
+			if (minutes < 10) { minutes = `0${ minutes }`; }
+			if (seconds < 10) { seconds = `0${ seconds }`; }
+
+			if (hours > 0) {
+				return `${ hours }:${ minutes }:${ seconds }`;
+			}
+			if (minutes > 0) {
+				return `${ minutes }:${ seconds }`;
+			}
+			return sec;
+		},
+
+		/**
 		 *
 		 * @param {Date} from
 		 * @param {Date} to
@@ -405,6 +435,10 @@ export const Analytics = {
 
 			this.sortByValue(data.data, true);		//reverse sort array
 
+			data.data.forEach((obj) => {
+				obj.value = this.secondsToHHMMSS(obj.value);
+			});
+
 			return data;
 		},
 
@@ -504,6 +538,10 @@ export const Analytics = {
 
 			this.sortByValue(data.data, false);		// sort array
 
+			data.data.forEach((obj) => {
+				obj.value = this.secondsToHHMMSS(obj.value);
+			});
+
 			return data;
 		},
 
@@ -560,6 +598,10 @@ export const Analytics = {
 
 			this.sortByValue(data.data, false);		// sort array
 
+			data.data.forEach((obj) => {
+				obj.value = this.secondsToHHMMSS(obj.value);
+			});
+
 			return data;
 		},
 
@@ -615,6 +657,10 @@ export const Analytics = {
 			});
 
 			this.sortByValue(data.data, false);		// sort array
+
+			data.data.forEach((obj) => {
+				obj.value = this.secondsToHHMMSS(obj.value);
+			});
 
 			return data;
 		}
