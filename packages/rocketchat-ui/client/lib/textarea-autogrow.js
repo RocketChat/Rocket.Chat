@@ -1,3 +1,4 @@
+import _ from 'underscore'
 (function($) {
 	/**
 	 * Auto-growing textareas; technique ripped from Facebook
@@ -6,21 +7,19 @@
 	 * http://github.com/jaz303/jquery-grab-bag/tree/master/javascripts/jquery.autogrow-textarea.js
 	 */
 	$.fn.autogrow = function(options) {
+		var shadow = $("div.autogrow-shadow");
+		if (!shadow.length) {
+			shadow = $('<div></div>').addClass("autogrow-shadow").appendTo(document.body);
+		}
 		return this.filter('textarea').each(function() {
 			var self = this;
 			var $self = $(self);
-			var minHeight = $self.height();
+			const minHeight = $self.height();
 			var settings = $.extend({
-				preGrowCallback: null,
 				postGrowCallback: null
 			}, options);
 
 			const maxHeight = window.getComputedStyle(self)['max-height'].replace('px', '');
-
-			var shadow = $("div.autogrow-shadow");
-			if (!shadow.length) {
-				shadow = $('<div></div>').addClass("autogrow-shadow").appendTo(document.body);
-			}
 
 			shadow.css({
 				position: 'absolute',
@@ -35,11 +34,16 @@
 				wordWrap: 'break-word'
 			});
 
-			var update = function(event) {
-				var times = function(string, number) {
-					for (var i = 0, r = ''; i < number; i++) r += string;
-					return r;
-				};
+			const trigger = _.debounce(() => {
+				$self.trigger('autogrow', []);
+			})
+
+			const times = function(string, number) {
+				for (let i = 0, r = ''; i < number; i++) r += string;
+				return r;
+			};
+
+			const update = _.debounce(function(event) {
 
 				var val = self.value.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
@@ -58,33 +62,27 @@
 				shadow.css('width', $self.width());
 				shadow.html(val);
 
-				var newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
-				if (settings.preGrowCallback !== null) {
-					newHeight = settings.preGrowCallback($self, shadow, newHeight, minHeight);
-				}
+				let newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
 
-				if(newHeight === $self[0].offsetHeight){
-					return true;
-				}
+				let overflow = 'hidden';
 
-				var overflow = 'hidden';
 				if(maxHeight <= newHeight){
 					newHeight = maxHeight;
 					overflow = ''
-				} else {
-					overflow = 'hidden'
 				}
 
-				$self.stop().animate( { height: newHeight }, { duration: 100, complete: ()=> {
-					$self.trigger('autogrow', []);
-				}}).css('overflow', overflow);
+				if(newHeight == $self[0].offsetHeight){
+					return true;
+				}
 
-				$self.trigger('autogrow', []);
+				$self.stop().animate( { height: newHeight }, { duration: 100, complete: trigger }).css('overflow', overflow);
 
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
-			};
+
+				trigger()
+			}, 500);
 
 			$self.on('focus change input', update);
 			$(window).resize(update);

@@ -1,9 +1,24 @@
 /* globals MsgTyping */
+import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 
+let sendOnEnter = '';
+
+Meteor.startup(() => {
+	Tracker.autorun(function () {
+		const user = Meteor.userId();
+		sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
+	})
+})
+
 this.ChatMessages = class ChatMessages {
+	saveTextMessageBox = _.debounce((rid, value) => {
+		const key = `messagebox_${rid}`;
+		return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key)
+	}, 1000);
+
 	init(node) {
 		this.editing = {};
 		this.records = {};
@@ -373,11 +388,10 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	startTyping(rid, input) {
-		if (s.trim(input.value) !== '') {
-			return MsgTyping.start(rid);
-		} else {
-			return MsgTyping.stop(rid);
+		if (s.trim(input.value) === '') {
+			return this.stopTyping(rid);
 		}
+		return MsgTyping.start(rid);
 	}
 
 	stopTyping(rid) {
@@ -446,14 +460,12 @@ this.ChatMessages = class ChatMessages {
 			this.startTyping(rid, input);
 		}
 
-		localStorage.setItem(`messagebox_${ rid }`, input.value);
+		this.saveTextMessageBox(rid, input.value);
 
 		return this.hasValue.set(input.value !== '');
 	}
 
 	keydown(rid, event) {
-		const user = Meteor.user();
-		const sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
 		const input = event.currentTarget;
 		// const $input = $(input);
 		const k = event.which;
