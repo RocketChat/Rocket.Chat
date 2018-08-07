@@ -2,10 +2,10 @@
 import s from 'underscore.string';
 import cp from 'crypto-js';
 import download from 'downloadjs';
-import enc from 'crypto-js/enc-utf8';
+// import enc from 'crypto-js/enc-utf8';
 
 
-import { ConfigBase } from 'aws-sdk/lib/config';
+// import { ConfigBase } from 'aws-sdk/lib/config';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -56,12 +56,13 @@ FlowRouter.route('/login', {
 	}
 });
 
-FlowRouter.route('/ipfs/:hash', {
+FlowRouter.route('/ipfs/:hash/:password', {
 	name: 'test',
 	action(params) {
 		console.log(Meteor.userId());
-		const password = prompt('Enter Password');
+		// const password = prompt('Enter Password');
 		console.log(params.hash);
+		console.log(params.password);
 		console.log('Looking at a list?');
 		return new Promise((resolve, reject) => {
 			Meteor.call('getFile', params.hash, (err, res) => {
@@ -71,7 +72,7 @@ FlowRouter.route('/ipfs/:hash', {
 					resolve(res);
 					console.log(res);
 					console.log('hello');
-					const getRst = cp.AES.decrypt(res, password);
+					const getRst = cp.AES.decrypt(res, params.password);
 					// console.log(Meteor.user().services.password.bcrypt);
 					console.log(`value  ${ getRst.toString(cp.enc.Utf8) }`);
 					console.log(getRst.toString(cp.enc.Utf8));

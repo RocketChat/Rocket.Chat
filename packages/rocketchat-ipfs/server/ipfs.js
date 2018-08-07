@@ -21,11 +21,11 @@ Meteor.methods({
 			}
 		});
 	},
-	ipfsdirStat() {
-		const rst = HTTP.call('GET', 'http://localhost:5001/api/v0/files/stat?arg=/rc3');
-		console.log(rst);
-		return rst.content;
-	},
+	// ipfsdirStat() {
+	// 	const rst = HTTP.call('GET', 'http://localhost:5001/api/v0/files/stat?arg=/rc3');
+	// 	console.log(rst);
+	// 	return rst.content;
+	// },
 	getFilesFromIPFS() {
 		console.log('test');
 	},

@@ -158,6 +158,27 @@
 									{{/unless}}
 								{{/with}}
 							</div>
+							<div class="rc-input{{#if confirmationPasswordInvalid}} rc-input--error{{/if}} rc-w50 padded">
+								{{#with canChange=allowPasswordChange}}
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ "IPFS password"}}</div>
+										<div class="rc-input__wrapper">
+											<input name="IPFSpassword" type="password" class="rc-input__element" placeholder="{{_ "IPFS Password"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
+										</div>
+									</label>
+									<!-- {{#if canConfirmNewPassword}} -->
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ "Confirm_IPFS_password"}}</div>
+										<div class="rc-input__wrapper">
+											<input name="IPFSconfirmation-password" type="password" class="rc-input__element" placeholder="{{_ "Confirm_IPFS_Password_Placeholder"}}" autocomplete="confirm-new-password">
+										</div>
+									</label>
+									<!-- {{/if}} -->
+									{{# unless canChange}}
+										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
+									{{/unless}}
+								{{/with}}
+							</div>
 						</div>
 					</div>
 				</fieldset>

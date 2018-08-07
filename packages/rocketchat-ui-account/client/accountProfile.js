@@ -15,6 +15,13 @@ const validatePassword = (password, confirmationPassword) => {
 
 	return password === confirmationPassword;
 };
+const validateIPFSPassword = (IPFSpassword, IPFSconfirmationPassword) => {
+	if (!IPFSconfirmationPassword) {
+		return true;
+	}
+
+	return IPFSpassword === IPFSconfirmationPassword;
+};
 
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
@@ -66,6 +73,10 @@ Template.accountProfile.helpers({
 		const { password, confirmationPassword } = Template.instance();
 		return !validatePassword(password.get(), confirmationPassword.get());
 	},
+	IPFSconfirmationPasswordInvalid() {
+		const { IPFSpassword, IPFSconfirmationPassword } = Template.instance();
+		return !validateIPFSPassword(IPFSpassword.get(), IPFSconfirmationPassword.get());
+	},
 	selectUrl() {
 		return Template.instance().url.get().trim() ? '' : 'disabled';
 	},
@@ -102,6 +113,8 @@ Template.accountProfile.helpers({
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
+		const IPFSpassword = instance.IPFSpassword.get();
+		const IPFSconfirmationPassword = instance.IPFSconfirmationPassword.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -116,7 +129,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword) && (!IPFSpassword || IPFSpassword !== IPFSconfirmationPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -154,9 +167,16 @@ Template.accountProfile.helpers({
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
 	},
+	allowIPFSPasswordChange() {
+		return RocketChat.settings.get('Accounts_AllowIPFSPasswordChange');
+	},
 	canConfirmNewPassword() {
 		const password = Template.instance().password.get();
 		return RocketChat.settings.get('Accounts_AllowPasswordChange') && password && password !== '';
+	},
+	canConfirmIPFSPassword() {
+		const IPFSpassword = Template.instance().IPFSpassword.get();
+		return RocketChat.settings.get('Accounts_AllowPasswordChange') && IPFSpassword && IPFSpassword !== '';
 	},
 	allowAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
@@ -174,7 +194,9 @@ Template.accountProfile.onCreated(function() {
 	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
+	self.IPFSpassword = new ReactiveVar;
 	self.confirmationPassword = new ReactiveVar;
+	self.IPFSconfirmationPassword = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
@@ -196,11 +218,25 @@ Template.accountProfile.onCreated(function() {
 	this.clearForm = function() {
 		this.find('[name=password]').value = '';
 	};
+	this.clearForm = function() {
+		this.find('[name=IPFSpassword]').value = '';
+	};
 	this.changePassword = function(newPassword, callback) {
 		const instance = this;
 		if (!newPassword) {
 			return callback();
 		} else if (!RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+			toastr.remove();
+			toastr.error(t('Password_Change_Disabled'));
+			instance.clearForm();
+			return;
+		}
+	};
+	this.changePassword = function(newIPFSPassword, callback) {
+		const instance = this;
+		if (!newIPFSPassword) {
+			return callback();
+		} else if (!RocketChat.settings.get('Accounts_AllowIPFSPasswordChange')) {
 			toastr.remove();
 			toastr.error(t('Password_Change_Disabled'));
 			instance.clearForm();
@@ -373,14 +409,26 @@ Template.accountProfile.events({
 			instance.confirmationPassword.set('');
 		}
 	},
+	'input [name=IPFSpassword]'(e, instance) {
+		instance.IPFSpassword.set(e.target.value);
+		console.log(e.target.value);
+
+		if (e.target.value.length === 0) {
+			instance.IPFSconfirmationPassword.set('');
+		}
+	},
 	'input [name=confirmation-password]'(e, instance) {
 		instance.confirmationPassword.set(e.target.value);
+	},
+	'input [name=IPFSconfirmation-password]'(e, instance) {
+		instance.IPFSconfirmationPassword.set(e.target.value);
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
 		const user = Meteor.user();
 		const email = instance.email.get();
 		const password = instance.password.get();
+		const IPFSpassword = instance.IPFSpassword.get();
 
 		const send = $(e.target.send);
 		send.addClass('loading');

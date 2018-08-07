@@ -39,7 +39,6 @@ const filterNames = (old) => {
 
 Template.fetchFilesfromIPFS.helpers({
 	files() {
-
 		// const result = await Meteor.call('ipfslist');
 		// console.log(result);
 		// return result;
@@ -54,15 +53,22 @@ Template.fetchFilesfromIPFS.helpers({
 		// console.log(Meteor.call('ipfslist'));
 		// --------------=======
 		// new Promise((resolve, reject) => {
-		// 	Meteor.call('ipfslist').then(function(rst) {
-		// 		console.log(rst);
-
+		// Working
+		Meteor.call('ipfsdirStat', (err, rst) => {
+			console.log(rst);
+			const list = Meteor.call('ipfslist');
+			console.log(list);
+			// return list;
+		});
+		// console.log(RocketChat.settings.get('FileUpload_IPFS_Upload_Folder_Path'));
+		// Working
 		// 		resolve(rst);
 		// 	}, function(err) {
 		// 		console.log(err);
 
 		// 		reject(err);
 		// 	});
+		// });
 
 		// ------------------------------==
 		// resolve(Meteor.call('ipfslist'));
@@ -101,7 +107,8 @@ Template.fetchFilesfromIPFS.helpers({
 		//     console.log(JSON.stringify(data));
 		//     nit = JSON.stringify(data)
 		// }
-		return [{'name':'banner.jpg', 'Hash':'QmYqPsG1YQK17KYm66cdAoABdKZAajydykYcdBvJ6XyUsa'}, {'name':'cropped-brave_icon_512x.jpeg', 'Hash':'Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee'}, {'name':'file.jpeg', 'Hash':'Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee'}, {'name':'file.txt', 'Hash':'QmaWTT21LMBn3HuZzFfj4GGDqhUwvTjgisQijTTU19pDyB'}, {'name':'hello (copy).txt', 'Hash':'QmPyGn4wHvx3t4xu1LFbPUgCjFTa9b72LwfwD4o39sxXg1'}, {'name':'hello.txt', 'Hash':'Qmeu5pGCUXbNhAsDpH7CH4i5w9wH5aQvWYi8rj2aDGCB7j'}, {'name':'pic01.jpg', 'Hash':'QmQBRvcKskPAi4C9Gpg2A4HXhiPaJnKsTRMUQz4rvsbN6P'}, {'name':'sam.jpeg', 'Hash':'QmRS8Nks1xNnNw6ZHtx1szNTPCQoG468CpkhkYeSXBgbwL'}, {'name':'slide03.jpg', 'Hash':'QmSmoE6ycVYrr1PUwnpQ4ELV8h6phjTFriivQKbCAiLNJB'}, {'name':'uploadIPFS.gif', 'Hash':'QmayNN7mQmsEFWygtvrxCW2ewvmZS8Mp3GgWA2WadUYWPm'}];
+		return [{ name: 'Civil_Engineering.pdf', Hash: 'QmXjg2zWAmBzvKGeybcEg26GYbEzTptoBBWHzyb6vLHGPM' },
+			{ name: 'IPFS-what-is-it-1024x512-09-29-2016.jpg', Hash: 'QmP9W4HKyaAvGdzyRJnUYfUaotG1G1QhYprF7grQdmoeiA' }, {'name':'26538e3fb2c7c12d6ae41df466e9e369.jpg', 'Hash':'QmYkVsa95ktsofgRuSGZCD2Q3iweGkmfnfy8dshUQSnYWg'}];
 
 		// return [ { name: 'Civil_Engineering.pdf', Hash: 'QmXjg2zWAmBzvKGeybcEg26GYbEzTptoBBWHzyb6vLHGPM' }, { name: 'IPFS-what-is-it-1024x512-09-29-2016.jpg', Hash: 'QmP9W4HKyaAvGdzyRJnUYfUaotG1G1QhYprF7grQdmoeiA' }, { name: 'ROUTE_MAP_Trivandrum_.pdf', Hash: 'QmPTT3w1bZMkEfTyu4utnXAzcZsCvQaQt7qxQsiwNRJzVd' }, { name: 'banner.jpg', Hash: 'QmYqPsG1YQK17KYm66cdAoABdKZAajydykYcdBvJ6XyUsa' }, { name: 'cropped-brave_icon_512x.jpeg',Hash: 'Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee' }, { name: 'file.jpeg', Hash: 'Qme7JbBuxnC1up1qW13u2zQmG1qimaNrYgg3ao8MJEtHee' }, { name: 'file.txt', Hash: 'QmXBs8aKaGgHykf4iPtuuzB8yBdUsVBK1paJWgS9L9ohXZ' }, { name: 'hello (copy).txt', Hash: 'QmPyGn4wHvx3t4xu1LFbPUgCjFTa9b72LwfwD4o39sxXg1' }, { name: 'hello.txt',Hash: 'Qmeu5pGCUXbNhAsDpH7CH4i5w9wH5aQvWYi8rj2aDGCB7j' }, { name: 'pic01.jpg', Hash: 'QmQBRvcKskPAi4C9Gpg2A4HXhiPaJnKsTRMUQz4rvsbN6P' }, { name: 'sam.jpeg', Hash: 'QmRS8Nks1xNnNw6ZHtx1szNTPCQoG468CpkhkYeSXBgbwL' }, { name: 'slide03.jpg', Hash: 'QmSmoE6ycVYrr1PUwnpQ4ELV8h6phjTFriivQKbCAiLNJB' }, { name: 'uploadIPFS.gif', Hash: 'QmayNN7mQmsEFWygtvrxCW2ewvmZS8Mp3GgWA2WadUYWPm' } ];
 		// const data = [];
@@ -279,7 +286,7 @@ Template.fetchFilesfromIPFS.events({
 		// const RID = users+owner.;
 		// console.log(RID);
 		// const message = `https://ipfs.io/ipfs/${ document.getElementById('ipfsHash').value }`;
-		const message = `http://localhost:3000/ipfs/${ document.getElementById('ipfsHash').value }` ;
+		const message = `http://localhost:3000/ipfs/${ document.getElementById('ipfsHash').value }/${ Meteor.userId() }` ;
 		// console.log(RID);
 		Meteor.call('sendMessage', {
 			rid: Session.get('openedRoom'),
