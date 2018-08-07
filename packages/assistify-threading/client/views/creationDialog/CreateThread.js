@@ -1,7 +1,7 @@
 /* globals TAPi18n, AutoComplete */
 /* globals _ */
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { ReactiveVar } from 'meteor/reactive-var';
+import {FlowRouter} from 'meteor/kadira:flow-router';
+import {ReactiveVar} from 'meteor/reactive-var';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -122,7 +122,7 @@ Template.CreateThread.helpers({
 				if (parentChannel) {
 					instance.debounceWordCloudSelect(parentChannel);
 				}
-				instance.channelSelectionEnabled.set(''); //Search completed.
+				instance.showChannelSelection.set(false); //Search completed.
 			};
 		}
 
@@ -223,7 +223,7 @@ Template.CreateThread.onRendered(function() {
 
 	instance.ac.element = parentChannelElement;
 	instance.ac.$element = $(instance.ac.element);
-	instance.ac.$element.on('autocompleteselect', function(e, { item }) {
+	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
 		instance.parentChannel.set(item.name);
 		$('input[name="parentChannel"]').val(item.name);
 		instance.debounceValidateParentChannel(item.name);
@@ -234,30 +234,29 @@ Template.CreateThread.onRendered(function() {
 		questionElement.value = instance.openingQuestion.get();
 	}
 
-	// this.autorun(() => {
-	// 	instance.debounceWordCloudSelect = _.debounce((parentChannel) => { // TODO: integrate Wordcloud
-	// 		/*
-	// 		 * Update the parentChannel html reference to autocomplete
-	// 		 */
-	// 		instance.ac.element = this.find('#parentChannel-search');
-	// 		instance.ac.$element = $(instance.ac.element);
-	// 		$('input[name="parentChannel"]').val(parentChannel.name); // copy the selected value to screen field
-	// 		instance.ac.$element.on('autocompleteselect', function(e, { item }) {
-	// 			instance.parentChannel.set(item.name);
-	// 			$('input[name="parentChannel"]').val(item.name);
-	// 			instance.debounceValidateParentChannel(item.name);
-
-	// 			return instance.find('.js-save-thread').focus();
-	// 		});
-	// 		instance.parentChannel.set(parentChannel.name);
-	// 		instance.debounceValidateParentChannel(parentChannel.name); // invoke validation*/
-	// 	}, 200);
-	// });
+	this.autorun(() => {
+		instance.debounceWordCloudSelect = _.debounce((parentChannel) => { // integrate Wordcloud
+			/*
+			 * Update the parentChannel html reference to autocomplete
+			 */
+			instance.ac.element = this.find('#parentChannel-search');
+			instance.ac.$element = $(instance.ac.element);
+			$('input[name="parentChannel-search"]').val(parentChannel.name); // copy the selected value to screen field
+			instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+				instance.parentChannel.set(item.name);
+				$('input[name="parentChannel-search"]').val(item.name);
+				instance.debounceValidateParentChannel(item.name);
+				return instance.find('.js-save-thread').focus();
+			});
+			instance.parentChannel.set(parentChannel.name);
+			instance.debounceValidateParentChannel(parentChannel.name); // invoke validation*/
+		}, 200);
+	});
 });
 
 Template.CreateThread.onCreated(function() {
 	const instance = this;
-	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Parent_Channel')); // TODO: determine parent Channel from setting and allow to overwrite
+	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Parent_Channel')); //determine parent Channel from setting and allow to overwrite
 	instance.parentChannelId = new ReactiveVar('');
 	instance.parentChannelError = new ReactiveVar(null);
 	instance.selectParent = new ReactiveVar(RocketChat.settings.get('Select_Parent'));
@@ -296,8 +295,8 @@ Template.CreateThread.onCreated(function() {
 		limit: 10,
 		inputDelay: 300,
 		rules: [{
-			collection: 'CachedChannelList', // TODO:  check for proper collection
-			subscription: 'channelAndPrivateAutocomplete', // TODO: Provide another subscription exposing `c` and `p`
+			collection: 'CachedChannelList', // check for proper collection
+			subscription: 'channelAndPrivateAutocomplete', // Provide another subscription exposing `c` and `p`
 			field: 'name',
 			matchAll: true,
 			doNotChangeWidth: false,
