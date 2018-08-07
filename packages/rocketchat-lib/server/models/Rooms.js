@@ -440,22 +440,20 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	resetLastMessageById(_id) {
-		const query = {_id};
-		const newLast = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id);
+		const query = { _id };
+		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id);
 
-		if (!newLast) {
-			return this.update(query, {
-				$unset: {
-					lastMessage: 1
-				}
-			});
-		}
-
-		return this.update(query, {
+		const update = lastMessage ? {
 			$set: {
-				lastMessage: newLast
+				lastMessage
 			}
-		});
+		} : {
+			$unset: {
+				lastMessage: 1
+			}
+		};
+
+		return this.update(query, update);
 	}
 
 	replaceUsername(previousUsername, username) {
