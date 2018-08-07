@@ -7,17 +7,20 @@ import toastr from 'toastr';
 let sendOnEnter = '';
 
 Meteor.startup(() => {
-	Tracker.autorun(function () {
+	Tracker.autorun(function() {
 		const user = Meteor.userId();
 		sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
-	})
-})
+	});
+});
 
 this.ChatMessages = class ChatMessages {
-	saveTextMessageBox = _.debounce((rid, value) => {
-		const key = `messagebox_${rid}`;
-		return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key)
-	}, 1000);
+	constructor() {
+
+		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
+			const key = `messagebox_${ rid }`;
+			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+		}, 1000);
+	}
 
 	init(node) {
 		this.editing = {};
