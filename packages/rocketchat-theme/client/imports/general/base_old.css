@@ -4672,7 +4672,7 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
-		width: 520px;
+		max-width: 520px;
 		padding: 0 20px;
 		margin: auto;
 
