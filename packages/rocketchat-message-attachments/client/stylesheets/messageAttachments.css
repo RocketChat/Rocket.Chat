@@ -144,6 +144,8 @@ html.rtl .attachment {
 		height: 2rem;
 		width: 13.5rem;
 		margin-top: 5px;
+		padding-left: 12px;
+		padding-top: 2px;
 	}
 
 	& .logo-google-drive {
@@ -155,6 +157,10 @@ html.rtl .attachment {
 	}
 
 	& .google-drive-upload-text {
+		vertical-align: super;
+	}
+
+	& .icon-spinner {
 		vertical-align: super;
 	}
 }

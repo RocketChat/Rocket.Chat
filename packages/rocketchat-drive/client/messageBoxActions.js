@@ -168,7 +168,7 @@ Meteor.startup(function() {
 		}
 	});
 
-	RocketChat.messageBox.actions.add('Create_new', 'Google_doc', {
+	RocketChat.messageBox.actions.add('Create_and_share', 'Google_doc', {
 		id: 'google-docs',
 		icon: 'google-docs',
 		condition() {
@@ -200,7 +200,7 @@ Meteor.startup(function() {
 		}
 	});
 
-	RocketChat.messageBox.actions.add('Create_new', 'Google_slide', {
+	RocketChat.messageBox.actions.add('Create_and_share', 'Google_slide', {
 		id: 'google-slides',
 		icon: 'google-slides',
 		condition() {
@@ -232,7 +232,7 @@ Meteor.startup(function() {
 		}
 	});
 
-	RocketChat.messageBox.actions.add('Create_new', 'Google_sheet', {
+	RocketChat.messageBox.actions.add('Create_and_share', 'Google_sheet', {
 		id: 'google-sheets',
 		icon: 'google-sheets',
 		condition() {

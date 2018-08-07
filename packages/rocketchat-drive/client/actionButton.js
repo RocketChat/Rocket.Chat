@@ -4,7 +4,7 @@ Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'drive-upload',
 		icon: 'google-drive',
-		label: 'Upload To Drive',
+		label: t('Upload_To_Drive'),
 		async action() {
 			const message = this._arguments[1];
 			const attachment = message.attachments[0];
@@ -74,7 +74,7 @@ Meteor.startup(function() {
 			}
 			return RocketChat.settings.get('Google_Drive_Access');
 		},
-		order: 7,
+		order: 100,
 		group: 'menu'
 	});
 });
