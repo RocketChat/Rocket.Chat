@@ -24,14 +24,10 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 		return fileCount;
 	}
 
-	let count = 0;
-	if (limit) {
-		count = RocketChat.models.Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ts, limit, fromUsers);
-	} else {
-		count = RocketChat.models.Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers);
-	}
+	const count = limit ? RocketChat.models.Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ts, limit, fromUsers) : RocketChat.models.Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers);
 
 	if (count) {
+		RocketChat.models.Rooms.resetLastMessageById(rid);
 		RocketChat.Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
