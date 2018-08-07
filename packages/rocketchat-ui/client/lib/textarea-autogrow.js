@@ -7,13 +7,13 @@ import _ from 'underscore'
 	 * http://github.com/jaz303/jquery-grab-bag/tree/master/javascripts/jquery.autogrow-textarea.js
 	 */
 	$.fn.autogrow = function(options) {
-		var shadow = $("div.autogrow-shadow");
+		let shadow = $("body > #autogrow-shadow");
 		if (!shadow.length) {
-			shadow = $('<div></div>').addClass("autogrow-shadow").appendTo(document.body);
+			shadow = $('<div id="autogrow-shadow"></div>').addClass("autogrow-shadow").appendTo(document.body);
 		}
 		return this.filter('textarea').each(function() {
-			var self = this;
-			var $self = $(self);
+			const self = this;
+			const $self = $(self);
 			const minHeight = $self.height();
 			var settings = $.extend({
 				postGrowCallback: null
@@ -43,16 +43,18 @@ import _ from 'underscore'
 				return r;
 			};
 
-			const update = _.debounce(function(event) {
+			const runTimes = function (space) {
+				return times('&nbsp;', space.length - 1) + ' ';
+			}
 
-				var val = self.value.replace(/</g, '&lt;')
+			const update = function (event) {
+
+				let val = self.value.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
 					.replace(/&/g, '&amp;')
 					.replace(/\n$/, '<br/>&nbsp;')
 					.replace(/\n/g, '<br/>')
-					.replace(/ {2,}/g, function(space) {
-						return times('&nbsp;', space.length - 1) + ' ';
-					});
+					.replace(/ {2,}/g, runTimes);
 
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
 				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
@@ -66,29 +68,30 @@ import _ from 'underscore'
 
 				let overflow = 'hidden';
 
-				if(maxHeight <= newHeight){
+				if (maxHeight <= newHeight) {
 					newHeight = maxHeight;
 					overflow = ''
 				}
 
-				if(newHeight == $self[0].offsetHeight){
+				if (newHeight == $self[0].offsetHeight) {
 					return true;
 				}
 
-				$self.stop().animate( { height: newHeight }, { duration: 100, complete: trigger }).css('overflow', overflow);
+				$self.stop().animate({ height: newHeight }, { duration: 100, complete: trigger }).css('overflow', overflow);
 
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
 
 				trigger()
-			}, 500);
+			}
+			const updateThrottle = _.throttle(update, 1000);
 
-			$self.on('focus change input', update);
-			$(window).resize(update);
+			$self.on('focus change input', updateThrottle);
+			$(window).resize(updateThrottle);
 
 			update();
-			self.updateAutogrow = update;
+			self.updateAutogrow = updateThrottle;
 		});
 	};
 })(jQuery);
