@@ -1,5 +1,6 @@
 /* globals Inject */
 import _ from 'underscore';
+import s from 'underscore.string';
 
 const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
@@ -94,10 +95,11 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 });
 
 RocketChat.settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
+	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
-		`<title>${ value }</title>` +
-		`<meta name="application-name" content="${ value }">` +
-		`<meta name="apple-mobile-web-app-title" content="${ value }">`);
+		`<title>${ escapedValue }</title>` +
+		`<meta name="application-name" content="${ escapedValue }">` +
+		`<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 });
 
 RocketChat.settings.get('Meta_language', (key, value = '') => {
