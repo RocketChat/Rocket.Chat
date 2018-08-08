@@ -326,7 +326,7 @@ Template.CreateThread.onCreated(function() {
 
 	Meteor.call('getParentChannelList', {
 		sort: 'name'
-	}, function(err, result) { // TODO: Provide analogous methods
+	}, function(err, result) {
 		if (result) {
 			instance.parentChannelsList.set(result.channels);
 		}
