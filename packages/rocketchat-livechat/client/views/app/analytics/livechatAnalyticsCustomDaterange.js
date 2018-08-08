@@ -4,10 +4,10 @@ import moment from 'moment';
 
 Template.livechatAnalyticsCustomDaterange.helpers({
 	from() {
-		return moment(new Date(Template.currentData().daterange.get().from)).format('L');
+		return moment(Template.currentData().daterange.get().from, 'MMM D YYYY').format('L');
 	},
 	to() {
-		return moment(new Date(Template.currentData().daterange.get().to)).format('L');
+		return moment(Template.currentData().daterange.get().to, 'MMM D YYYY').format('L');
 	}
 });
 

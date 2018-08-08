@@ -184,6 +184,8 @@ class Analytics {
 	 * @param {Date} to
 	 */
 	setDateRange(daterange, value, from, to) {
+		moment.locale('en');		// using fixed locale
+
 		if (moment(from).isAfter(moment())) {
 			return handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Start_date_incorrect'});
 		}
@@ -219,12 +221,12 @@ class Analytics {
 			case 'day':
 				if (order === 1) {
 					this.setDateRange(daterange, 'day',
-						moment(new Date(currentDaterange.from)).add(1, 'days').startOf('day'),
-						moment(new Date(currentDaterange.to)).add(1, 'days').startOf('day'));
+						moment(currentDaterange.from, 'MMM D YYYY').add(1, 'days').startOf('day'),
+						moment(currentDaterange.to, 'MMM D YYYY').add(1, 'days').startOf('day'));
 				} else {
 					this.setDateRange(daterange, 'day',
-						moment(new Date(currentDaterange.from)).subtract(1, 'days').startOf('day'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'days').startOf('day'));
+						moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'days').startOf('day'),
+						moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'days').startOf('day'));
 				}
 				break;
 			case 'this-week':
@@ -232,12 +234,12 @@ class Analytics {
 			case 'week':
 				if (order === 1) {
 					this.setDateRange(daterange, 'week',
-						moment(new Date(currentDaterange.from)).add(1, 'weeks').startOf('week'),
-						moment(new Date(currentDaterange.to)).add(1, 'weeks').endOf('week'));
+						moment(currentDaterange.from, 'MMM D YYYY').add(1, 'weeks').startOf('week'),
+						moment(currentDaterange.to, 'MMM D YYYY').add(1, 'weeks').endOf('week'));
 				} else {
 					this.setDateRange(daterange, 'week',
-						moment(new Date(currentDaterange.from)).subtract(1, 'weeks').startOf('week'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'weeks').endOf('week'));
+						moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'weeks').startOf('week'),
+						moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'weeks').endOf('week'));
 				}
 				break;
 			case 'this-month':
@@ -245,12 +247,12 @@ class Analytics {
 			case 'month':
 				if (order === 1) {
 					this.setDateRange(daterange, 'month',
-						moment(new Date(currentDaterange.from)).add(1, 'months').startOf('month'),
-						moment(new Date(currentDaterange.to)).add(1, 'months').endOf('month'));
+						moment(currentDaterange.from, 'MMM D YYYY').add(1, 'months').startOf('month'),
+						moment(currentDaterange.to, 'MMM D YYYY').add(1, 'months').endOf('month'));
 				} else {
 					this.setDateRange(daterange, 'month',
-						moment(new Date(currentDaterange.from)).subtract(1, 'months').startOf('month'),
-						moment(new Date(currentDaterange.to)).subtract(1, 'months').endOf('month'));
+						moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'months').startOf('month'),
+						moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'months').endOf('month'));
 				}
 				break;
 			case 'custom':

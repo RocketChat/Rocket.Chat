@@ -19,8 +19,8 @@ Meteor.methods({
 			return;
 		}
 
-		const from = moment(new Date(options.daterange.from));
-		const to = moment(new Date(options.daterange.to));
+		const from = moment(options.daterange.from, 'MMM D YYYY');
+		const to = moment(options.daterange.to, 'MMM D YYYY');
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.log('Invalid dates');
