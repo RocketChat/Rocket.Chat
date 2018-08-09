@@ -5,9 +5,6 @@ Meteor.loginWithSamlAndTOTP = function(options, code, callback) {
 		options = null;
 	}
 
-	console.log('options');
-	console.log(options);
-
 	if (!options) {
 		options = {};
 		options.credentialToken = `id-${ Random.id() }`;
@@ -31,8 +28,6 @@ Meteor.loginWithSamlAndTOTP = function(options, code, callback) {
 const loginWithSaml = Meteor.loginWithSaml;
 
 Meteor.loginWithSaml = function(options, callback) {
-	console.log('first call');
-	console.log(options);
 	/* globals overrideLoginMethod*/
 	overrideLoginMethod(loginWithSaml, [options], callback, Meteor.loginWithSamlAndTOTP);
 };
