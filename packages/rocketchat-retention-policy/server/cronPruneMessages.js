@@ -25,7 +25,7 @@ function job() {
 
 		RocketChat.models.Rooms.find({
 			t: type,
-			_updatedAt: { $gte: lastPrune },
+			ts: { $gte: lastPrune },
 			$or: [{'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 			'retention.overrideGlobal': { $ne: true }
 		}).forEach(({ _id: rid }) => {
@@ -37,7 +37,7 @@ function job() {
 		'retention.enabled': { $eq: true },
 		'retention.overrideGlobal': { $eq: true },
 		'retention.maxAge': { $gte: 0 },
-		_updatedAt: { $gte: lastPrune }
+		ts: { $gte: lastPrune }
 	}).forEach(room => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
