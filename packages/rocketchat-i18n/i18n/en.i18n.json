@@ -2524,6 +2524,8 @@
   "Tokens_Required_Input_Error": "Invalid typed tokens.",
   "Tokens_Required_Input_Placeholder": "Tokens asset names",
   "Topic": "Topic",
+  "totp-disabled": "You do not have 2FA login enabled for your user",
+  "totp-required": "TOTP Required",
   "Tourism": "Tourism",
   "Transcript_Enabled": "Ask Visitor if They Would Like a Transcript After Chat Closed",
   "Transcript_message": "Message to Show When Asking About Transcript",

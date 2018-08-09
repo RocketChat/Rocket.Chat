@@ -225,12 +225,21 @@ class API extends Restivus {
 					algorithm: 'sha-256'
 				};
 			}
+			const objectToLDAPLogin = {
+				ldap: true,
+				username: auth.user && auth.user.username ? auth.user.username : auth.user && auth.user.email ? auth.user.email : '',
+				ldapPass: auth.password,
+				ldapOptions: {}
+			};
+			if (RocketChat.settings.get('LDAP_Enable') && !code) {
+				return objectToLDAPLogin;
+			}
 
 			if (code) {
 				return {
 					totp: {
 						code,
-						login: auth
+						login: RocketChat.settings.get('LDAP_Enable') ? objectToLDAPLogin : auth
 					}
 				};
 			}
