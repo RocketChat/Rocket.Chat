@@ -131,6 +131,8 @@ export default {
 			return;
 		}
 
+		msgStream.unsubscribe(this.roomSubscribed);
+
 		this.roomSubscribed = roomId;
 
 		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
