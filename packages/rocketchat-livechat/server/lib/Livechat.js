@@ -444,7 +444,7 @@ RocketChat.Livechat = {
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
 		// remove user from room
-		RocketChat.models.Rooms.removeUsernameById(rid, user.username);
+		RocketChat.models.Rooms.removeAgentByRoomId(rid);
 
 		// find inquiry corresponding to room
 		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
