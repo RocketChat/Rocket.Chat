@@ -1804,6 +1804,7 @@
   "Confirm_New_Password_Placeholder": "Bitte gib ein neues Passwort ein ...",
   "New_role": "Neue Rolle",
   "New_Room_Notification": "Neuer-Raum-Benachrichtigung",
+  "New_thread_first_message": "Üblicherweise beginn ein Thread mit einer Frage, bspw. \"Wie lade ich ein Bild hoch?\"",
   "New_Trigger": "Neuer Trigger",
   "New_version_available_(s)": "Neue Version verfügbar (%s)",
   "New_videocall_request": "Neuer Video-Anruf",
@@ -2419,6 +2420,11 @@
   "This_is_a_push_test_messsage": "Dies ist eine Test-Push-Nachricht",
   "This_room_has_been_archived_by__username_": "Dieser Raum wurde von __username__ archiviert",
   "This_room_has_been_unarchived_by__username_": "Dieser Raum wurde von __username__ aus dem Archiv geholt",
+  "Thread": "Einen neuen Thread anlegen",
+  "Threading_description": "Hilf dabei, die Übersicht zu behalten! Indem Du einen Thread anlegst, wird ein Unterkanal mit passenden Mitgliedern erstellt.",
+  "Thread_select_different_parent": "- wähle einen anderen übergeordneten Kanal aus",
+  "Thread_target_channel": "Übergeordneter Kanal oder Gruppe",
+  "Thread_target_channel_description": "Wähle einen Kanal oder eine Gruppe aus, die zu Deinem Anliegen passt",
   "Thursday": "Donnerstag",
   "Time_in_seconds": "Zeit in Sekunden",
   "Title": "Titel",
@@ -2736,6 +2742,7 @@
   "your_message_optional": "Ihre optionale Nachricht",
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Eine Push-Nachricht wurde an %s Geräte gesendet.",
+  "Your_question": "Deine Frage",
   "Your_server_link": "Ihre Serververbindung",
   "Your_workspace_is_ready": "Ihr Arbeitsbereich ist einsatzbereit 🎉"
 }
