@@ -13,14 +13,14 @@ Package.onUse(function(api) {
 	api.use(['ecmascript']);
 	api.use('rocketchat:authorization'); //In order to create custom permissions
 	api.use('templating', 'client');
-	// api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
+	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 
 	api.addFiles('config.js', 'server');
 	api.addFiles('auth.js', 'server');
 	api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
 
 	// Libraries
-	// api.addFiles('server/inject.js', 'server');
+	api.addFiles('server/inject.js', 'server');
 
 	//Methods
 	api.addFiles('server/methods/createThread.js', 'server');
