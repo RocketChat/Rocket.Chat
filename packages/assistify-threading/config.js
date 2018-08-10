@@ -1,28 +1,28 @@
 Meteor.startup(() => {
+	RocketChat.settings.addGroup('Threading');
+
 	RocketChat.settings.add('Thread_Count', 1, {
-		group: 'General',
+		group: 'Threading',
 		i18nLabel: 'Thread_count',
 		type: 'int',
-		public: true,
-		section: 'General'
+		public: true
 	});
 	RocketChat.settings.add('Select_Parent', false, {
-		group: 'General',
+		group: 'Threading',
 		i18nLabel: 'Select_Parent',
 		type: 'boolean',
-		public: true,
-		section: 'General'
+		public: true
 	});
-	RocketChat.settings.add('Parent_Channel', 'general', {
-		group: 'General',
+
+	RocketChat.settings.add('Parent_Channel', '', {
+		group: 'Threading',
 		i18nLabel: 'Parent_Channel',
 		type: 'select',
-		values: [{
-			key: 'general',
-			i18nLabel: 'General'
+		values: [{ // TODO: generate select based on rooms available
+			key: 'Threading',
+			i18nLabel: 'Threading'
 		}],
 		public: true,
-		section: 'General',
 		enableQuery: { _id: 'Select_Parent', value : false }
 	});
 });
