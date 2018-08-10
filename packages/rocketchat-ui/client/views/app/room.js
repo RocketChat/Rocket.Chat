@@ -626,13 +626,13 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const roomName = $(e.currentTarget).data('channel');
+		const roomNameOrId = $(e.currentTarget).data('channel');
 
-		if (roomName) {
-			const room = ChatRoom.findOne({name: roomName});
+		if (roomNameOrId) {
+			const room = ChatRoom.findOne({name: roomNameOrId}) || ChatRoom.findOne({_id: roomNameOrId});
 			if (room) {
 				if (RocketChat.Layout.isEmbedded()) {
-					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: roomName }), roomName });
+					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: room.name }), roomNameOrId });
 				}
 
 				FlowRouter.goToRoomById(room._id);
