@@ -1,6 +1,28 @@
 
+# 0.68.4
+`2018-08-10  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Default server language not being applied ([#11719](https://github.com/RocketChat/Rocket.Chat/pull/11719))
+- Broken logo on setup wizard ([#11708](https://github.com/RocketChat/Rocket.Chat/pull/11708))
+- Regression in prune by user, and update lastMessage ([#11646](https://github.com/RocketChat/Rocket.Chat/pull/11646) by [@vynmera](https://github.com/vynmera))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@vynmera](https://github.com/vynmera)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.68.3
-`2018-08-01  ·  5 🐛  ·  4 👩‍💻👨‍💻`
+`2018-08-01  ·  5 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -14,6 +36,13 @@
 - Prune translation on room info panel ([#11635](https://github.com/RocketChat/Rocket.Chat/pull/11635))
 - SAML login not working when user has multiple emails ([#11642](https://github.com/RocketChat/Rocket.Chat/pull/11642))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.68.3 ([#11650](https://github.com/RocketChat/Rocket.Chat/pull/11650) by [@rndmh3ro](https://github.com/rndmh3ro))
+
+</details>
+
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@rndmh3ro](https://github.com/rndmh3ro)
@@ -25,7 +54,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.68.2
-`2018-07-31  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+`2018-07-31  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -34,6 +63,13 @@
 ### 🐛 Bug fixes
 
 - Incorrect migration version in v130.js ([#11544](https://github.com/RocketChat/Rocket.Chat/pull/11544) by [@c0dzilla](https://github.com/c0dzilla))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.68.2 ([#11630](https://github.com/RocketChat/Rocket.Chat/pull/11630) by [@c0dzilla](https://github.com/c0dzilla))
+
+</details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
