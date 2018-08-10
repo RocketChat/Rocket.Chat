@@ -720,19 +720,23 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
-			if (RocketChat.Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+		const roomNameOrId = $(e.currentTarget).data('channel');
+
+		if (roomNameOrId) {
+			const room = ChatRoom.findOne({name: roomNameOrId}) || ChatRoom.findOne({_id: roomNameOrId});
+			if (room) {
+				if (RocketChat.Layout.isEmbedded()) {
+					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: room.name }), roomNameOrId });
+				}
+
+				FlowRouter.goToRoomById(room._id);
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
 			return;
+		} else {
+			const username = $(e.currentTarget).data('username');
+
+			openProfileTabOrOpenDM(e, instance, username);
 		}
-
-		const username = $(e.currentTarget).data('username');
-
-		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
