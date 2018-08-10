@@ -2,17 +2,20 @@ import { AppEvents } from '../communication';
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
-const sortByColumn = (array, column, inverted) => array.sort((a, b) => {
-	if (a[column] < b[column] && !inverted) {
-		return -1;
-	}
-	return 1;
-});
+const sortByColumn = (array, column, inverted) => {
+	return array.sort((a, b) => {
+		if (a.latest[column] < b.latest[column] && !inverted) {
+			return -1;
+		}
+		return 1;
+	});
+};
 
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
+	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
 	this.sortDirection = new ReactiveVar('asc');
@@ -21,14 +24,21 @@ Template.apps.onCreated(function() {
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(false);
 
+	fetch('https://marketplace.rocket.chat/v1/apps')
+		.then((response) => response.json())
+		.then((data) => {
+			instance.apps.set(data);
+			instance.ready.set(true);
+		});
 
-	RocketChat.API.get('apps').then((result) => {
-		instance.apps.set(result.apps);
-		instance.ready.set(true);
-	});
+	fetch('https://marketplace.rocket.chat/v1/categories')
+		.then((response) => response.json())
+		.then((data) => {
+			instance.categories.set(data);
+		});
 
 	instance.onAppAdded = function _appOnAppAdded(appId) {
-		RocketChat.API.get(`apps/${ appId }`).then((result) => {
+		fetch(`https://marketplace.rocket.chat/v1/apps/${ appId }`).then((result) => {
 			const apps = instance.apps.get();
 			apps.push(result.app);
 			instance.apps.set(apps);
@@ -75,16 +85,21 @@ Template.apps.helpers({
 		const searchText = instance.searchText.get().toLowerCase();
 		const sortColumn = instance.searchSortBy.get();
 		const inverted = instance.sortDirection.get() === 'desc';
+<<<<<<< HEAD
 		return sortByColumn(instance.apps.get().filter(({ name }) => name.toLowerCase().includes(searchText)), sortColumn, inverted);
+=======
+
+		return sortByColumn(instance.apps.get().filter((app) => app.latest.name.toLowerCase().includes(searchText)), sortColumn, inverted);
+	},
+	categories() {
+		return Template.instance().categories.get();
+>>>>>>> Changes to actions
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
 	},
 	isActive(status) {
 		return enabled({ status });
-	},
-	searchResults() {
-		return Template.instance().results.get();
 	},
 	sortIcon(key) {
 		const {
@@ -136,8 +151,7 @@ Template.apps.helpers({
 });
 
 Template.apps.events({
-	'click .manage'(e) {
-		e.preventDefault();
+	'click .manage'() {
 		const rl = this;
 
 		if (rl && rl.id) {
@@ -146,6 +160,11 @@ Template.apps.events({
 	},
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
+	},
+	'click .installer'(e) {
+		console.log('installer', this);
+		// e.currentTarget.find('rc-icon').addClass('play');
+		//play animation
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
