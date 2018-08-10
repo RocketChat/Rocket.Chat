@@ -15,15 +15,20 @@ const objectMaybeIncluding = (types) => {
 	});
 };
 
-const validateAttachmentsFields = attachmentFields => {
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = attachmentField => {
+	check(attachmentField, objectMaybeIncluding({
 		short: Boolean
 	}));
 
-	check(attachmentFields, objectMaybeIncluding({
+	check(attachmentField, objectMaybeIncluding({
 		title: String,
 		value: Match.OneOf(String, Match.Integer, Boolean)
 	}));
+	
+	if (typeof(attachmentField.value) !== undefined) {
+		attachmentField.value = String(attachmentField.value);
+	}
+	
 };
 
 const validateAttachment = attachment => {
