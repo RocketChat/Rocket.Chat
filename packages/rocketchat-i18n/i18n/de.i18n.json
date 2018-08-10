@@ -2421,6 +2421,7 @@
   "This_room_has_been_archived_by__username_": "Dieser Raum wurde von __username__ archiviert",
   "This_room_has_been_unarchived_by__username_": "Dieser Raum wurde von __username__ aus dem Archiv geholt",
   "Thread": "Einen neuen Thread anlegen",
+  "thread-created" : "__username__ hat einen neuen Thread angelegt: __message__.",
   "Threading_description": "Hilf dabei, die Übersicht zu behalten! Indem Du einen Thread anlegst, wird ein Unterkanal mit passenden Mitgliedern erstellt.",
   "Thread_select_different_parent": "- wähle einen anderen übergeordneten Kanal aus",
   "Thread_target_channel": "Übergeordneter Kanal oder Gruppe",
