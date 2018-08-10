@@ -56,17 +56,25 @@ Meteor.startup(() => {
 		loadMomentLocale(language).then(locale => moment.locale(locale), error => console.error(error));
 	};
 
-	window.setLanguage = (language) => {
+	const setLanguage = (language) => {
 		const lang = filterLanguage(language);
 		currentLanguage.set(lang);
 		localStorage.setItem('userLanguage', lang);
 	};
+	window.setLanguage = setLanguage;
 
-	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
+	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { language: 1 }});
 
-		applyLanguage((user && user.language) || currentLanguage.get() || RocketChat.settings.get('Language') || 'en');
+		setLanguage((user && user.language) || defaultUserLanguage());
+	});
+
+	Tracker.autorun(() => {
+		if (currentLanguage.get()) {
+			applyLanguage(currentLanguage.get());
+		}
 	});
 });
