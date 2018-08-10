@@ -86,7 +86,7 @@ export class ThreadBuilder {
 		});
 		// filter on owner, moderators and those online (see @here-implementation)
 		for (const user of users) {
-			if (!RocketChat.authz.hasRole(user.id, checkRoles)) {
+			if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
 				RocketChat.models.Users.findOne({
 					_id: user.id,
 					status: {
