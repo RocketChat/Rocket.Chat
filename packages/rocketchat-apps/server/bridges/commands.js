@@ -140,10 +140,32 @@ export class AppCommandsBridge {
 		}
 	}
 
+	_splitParameters(parameters) {
+		if (parameters.length === 0 || parameters === ' ') {
+			return [];
+		}
+
+		const match = parameters.match(/((["'])(?:(?=(\\?))\3.)*?\2)/g);
+		if (!match) {
+			return [];
+		}
+
+		let line = parameters;
+
+		match.forEach((item) => {
+			const newItem = item.replace(/(^['"]|['"]$)/g, '').replace(/ +/g, '\u2008');
+			line = line.replace(item, newItem);
+		});
+
+		return line.split(' ').map(item => {
+			return item.replace(/\u2008/g, ' ');
+		});
+	}
+
 	_appCommandExecutor(command, parameters, message) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
 		Promise.await(this.orch.getManager().getCommandManager().executeCommand(command, context));
@@ -152,7 +174,7 @@ export class AppCommandsBridge {
 	_appCommandPreviewer(command, parameters, message) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
 		return Promise.await(this.orch.getManager().getCommandManager().getPreviews(command, context));
@@ -161,7 +183,7 @@ export class AppCommandsBridge {
 	_appCommandPreviewExecutor(command, parameters, message, preview) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params));
 		Promise.await(this.orch.getManager().getCommandManager().executePreview(command, preview, context));
