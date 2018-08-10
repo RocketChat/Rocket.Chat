@@ -626,19 +626,23 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
-			if (RocketChat.Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+		const roomName = $(e.currentTarget).data('channel');
+
+		if (roomName) {
+			const room = ChatRoom.findOne({name: roomName});
+			if (room) {
+				if (RocketChat.Layout.isEmbedded()) {
+					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: roomName }), roomName });
+				}
+
+				FlowRouter.goToRoomById(room._id);
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
 			return;
+		} else {
+			const username = $(e.currentTarget).data('username');
+
+			openProfileTabOrOpenDM(e, instance, username);
 		}
-
-		const username = $(e.currentTarget).data('username');
-
-		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
