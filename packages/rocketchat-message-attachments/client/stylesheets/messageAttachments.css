@@ -93,6 +93,8 @@ html.rtl .attachment {
 
 		& .attachment-field {
 			flex: 1 0 100%;
+			padding-top: 5px;
+			padding-bottom: 5px;
 
 			&.attachment-field-short {
 				display: inline-block;
