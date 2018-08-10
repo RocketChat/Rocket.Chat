@@ -17682,6 +17682,15 @@
       "npm_version": "5.6.0",
       "pull_requests": [
         {
+          "pr": "11630",
+          "title": "Release 0.68.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "c0dzilla",
+            "sampaiodiego"
+          ]
+        },
+        {
           "pr": "11544",
           "title": "[FIX] Incorrect migration version in v130.js",
           "userLogin": "c0dzilla",
@@ -17697,6 +17706,17 @@
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
       "pull_requests": [
+        {
+          "pr": "11650",
+          "title": "Release 0.68.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "rndmh3ro",
+            "MarcosSpessatto"
+          ]
+        },
         {
           "pr": "11639",
           "title": "[FIX] Missing chat history for users without permission `preview-c-room`",
@@ -17747,6 +17767,40 @@
             "Hudell",
             "sampaiodiego",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11719",
+          "title": "[FIX] Default server language not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11708",
+          "title": "[FIX] Broken logo on setup wizard",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11646",
+          "title": "[FIX] Regression in prune by user, and update lastMessage",
+          "userLogin": "vynmera",
+          "milestone": "0.68.4",
+          "contributors": [
+            "vynmera",
+            "ggazzo"
           ]
         }
       ]
