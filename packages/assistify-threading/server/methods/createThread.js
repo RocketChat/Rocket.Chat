@@ -1,6 +1,7 @@
 /* UserRoles RoomRoles*/
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {FlowRouter} from 'meteor/kadira:flow-router';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
 
 /*
  * When a message is eligible to be answered as a independent question then it can be threaded into a new channel.
@@ -43,12 +44,12 @@ export class ThreadBuilder {
 		attachments.forEach(attachment =>
 			attachment.ts = attachment.ts ? attachment.ts.toISOString() : ''
 		);
-		const newMessage = {_id: Random.id(), rid: room.rid, msg: message, attachments, channels, mentions};
+		const newMessage = { _id: Random.id(), rid: room.rid, msg: message, attachments, channels, mentions };
 		return RocketChat.sendMessage(user, newMessage, room);
 	}
 
 	_getMessageUrl(msgId) {
-		return FlowRouter.path('message', {id: msgId});
+		return FlowRouter.path('message', { id: msgId });
 	}
 
 	_linkMessages(roomCreated, parentRoom, message) {
@@ -109,14 +110,14 @@ export class ThreadBuilder {
 		const parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
 		// Generate RoomName for xthe new room to be created.
 		this.name = `${ parentRoom.name }-${ ThreadBuilder.getNextId() }`;
-		const roomCreateResult = RocketChat.createRoom(parentRoom.t, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, {parentRoomId: this._parentRoomId});
+		const threadRoom = RocketChat.createRoom(parentRoom.t, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, { parentRoomId: this._parentRoomId });
 
 		if (parentRoom.name) {
-			RocketChat.saveRoomTopic(roomCreateResult.rid, parentRoom.name, Meteor.user());
+			RocketChat.saveRoomTopic(threadRoom.rid, parentRoom.name, Meteor.user());
 		}
 
 		// Create messages in the newly created thread and it's parent which link the two rooms
-		const room = RocketChat.models.Rooms.findOneById(roomCreateResult.rid);
+		const room = RocketChat.models.Rooms.findOneById(threadRoom.rid);
 		if (room && parentRoom) {
 			// Post message
 			const message = this._postMessage(
@@ -129,7 +130,7 @@ export class ThreadBuilder {
 			this._linkMessages(room, parentRoom, message);
 		}
 
-		return roomCreateResult;
+		return threadRoom;
 	}
 }
 
@@ -137,10 +138,18 @@ export class ThreadBuilder {
 Meteor.methods({
 	createThread(parentRoomId, openingQuestion) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'ThreadCreation'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ThreadCreation' });
 		}
 
 		return new ThreadBuilder(parentRoomId, openingQuestion).create();
+	},
+	createThreadFromMessage(message) {
+		const thread = Meteor.call('createThread', message.rid, message);
+		if (thread) {
+			//remove the original message from the display
+			RocketChat.models.Messages.setHiddenById(message._id);
+			return thread;
+		}
 	}
 });
 

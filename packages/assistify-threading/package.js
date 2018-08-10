@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	// api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
 
 	api.addFiles('config.js', 'server');
+	api.addFiles('auth.js', 'server');
 	api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
 
 	// Libraries
@@ -31,7 +32,7 @@ Package.onUse(function(api) {
 	// api.addFiles('server/migrations.js', 'server');
 
 	// UI artifacts which are pre-processed or packaged by the server
-	// api.addAssets('client/public/icons.svg', 'server');
+	api.addAssets('client/public/icons.svg', 'server');
 
 	///////// Client
 
@@ -44,7 +45,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client'); // TODO: add wordcloud - but when doing this, ensure the sizes are based on the member-count (non-linear!)
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
-	// api.addFiles('client/views/messageActions/ThreadMessageAction.js', 'client'); // TODO: Re-add
+	api.addFiles('client/views/createThreadMessageAction.js', 'client');
 
 	//styling
 	api.addFiles('client/public/stylesheets/threading.css', 'client');
