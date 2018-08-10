@@ -22,7 +22,7 @@ const validateAttachmentsFields = attachmentFields => {
 
 	check(attachmentFields, objectMaybeIncluding({
 		title: String,
-		value: Match.OneOf(String, Match.Integer)
+		value: Match.OneOf(String, Match.Integer, Boolean)
 	}));
 };
 
