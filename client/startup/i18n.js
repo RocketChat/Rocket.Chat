@@ -56,29 +56,25 @@ Meteor.startup(() => {
 		loadMomentLocale(language).then(locale => moment.locale(locale), error => console.error(error));
 	};
 
-	const setLanguage = language => {
-		currentLanguage.set(filterLanguage(language));
-		localStorage.setItem('userLanguage', currentLanguage.get());
+	const setLanguage = (language) => {
+		const lang = filterLanguage(language);
+		currentLanguage.set(lang);
+		localStorage.setItem('userLanguage', lang);
 	};
-
 	window.setLanguage = setLanguage;
 
-	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
+	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { username: 1 }});
-		const userLanguage = user && user.language;
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { language: 1 }});
 
-		const defaultLanguage = userLanguage || RocketChat.settings.get('Language') || 'en';
+		setLanguage((user && user.language) || defaultUserLanguage());
+	});
 
-		if (!currentLanguage.get()) {
-			setLanguage(defaultLanguage);
+	Tracker.autorun(() => {
+		if (currentLanguage.get()) {
+			applyLanguage(currentLanguage.get());
 		}
-
-		if (userLanguage && userLanguage !== currentLanguage.get()) {
-			setLanguage(userLanguage);
-		}
-
-		applyLanguage(currentLanguage.get());
 	});
 });
