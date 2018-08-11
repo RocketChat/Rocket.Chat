@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {
@@ -110,18 +112,16 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	}
 
 	if (message.parseUrls !== false) {
-		message.html = message.msg;
-		message = RocketChat.Markdown.code(message);
-
-		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
+		const renderedMessage = RocketChat.callbacks.run('renderMessage', {
+			...message,
+			html: s.trim(message.msg) ? s.escapeHTML(message.msg) : ''
+		});
+		const tokens = (renderedMessage.tokens && renderedMessage.tokens.reverse()) || [];
+		const html = tokens.reduce((html, { token, text }) => html.replace(token, () => text), renderedMessage.html);
+		const urls = html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
+			message.urls = urls.map(url => ({ url }));
 		}
-
-		message = RocketChat.Markdown.mountTokensBack(message, false);
-		message.msg = message.html;
-		delete message.html;
-		delete message.tokens;
 	}
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
