@@ -365,7 +365,6 @@ RocketChat.Livechat = {
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		} else {
-			RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
 			return RocketChat.Livechat.returnRoomAsInquiry(room._id, transferData.departmentId);
 		}
 
@@ -373,9 +372,6 @@ RocketChat.Livechat = {
 
 		if (agent && agent.agentId !== servedBy._id) {
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
-			if (transferData.departmentId) {
-				RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
-			}
 
 			const subscriptionData = {
 				rid: room._id,

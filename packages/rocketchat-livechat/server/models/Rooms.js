@@ -275,19 +275,6 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 	this.update(query, update);
 };
 
-RocketChat.models.Rooms.changeDepartmentIdByRoomId = function(roomId, departmentId) {
-	const query = {
-		_id: roomId
-	};
-	const update = {
-		$set: {
-			departmentId
-		}
-	};
-
-	this.update(query, update);
-};
-
 RocketChat.models.Rooms.saveCRMDataByRoomId = function(roomId, crmData) {
 	const query = {
 		_id: roomId

@@ -41,10 +41,6 @@ RocketChat.QueueMethods = {
 			waitingResponse: true
 		}, roomInfo);
 
-		if (guest.department) {
-			room.departmentId = guest.department;
-		}
-
 		const subscriptionData = {
 			rid: message.rid,
 			fname: guest.name || guest.username,
@@ -142,10 +138,6 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true
 		}, roomInfo);
-
-		if (guest.department) {
-			room.departmentId = guest.department;
-		}
 
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);

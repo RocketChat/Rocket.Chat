@@ -65,6 +65,26 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
+		Best_first_response_time(date) {
+			let maxFrt;
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({metrics}) => {
+				if (metrics && metrics.response && metrics.response.ft) {
+					maxFrt = (maxFrt) ? Math.min(maxFrt, metrics.response.ft) : metrics.response.ft;
+				}
+			});
+
+			if (!maxFrt) { maxFrt = 0; }
+
+			return Math.round(maxFrt*100)/100;
+		},
+
+		/**
+		 *
+		 * @param {Object} date {gte: {Date}, lt: {Date}}
+		 *
+		 * @returns {Double}
+		 */
 		Avg_response_time(date) {
 			let art = 0;
 			let count = 0;
@@ -466,10 +486,11 @@ export const Analytics = {
 			};
 
 			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
-				servedBy
+				servedBy,
+				msgs
 			}) => {
 				if (servedBy) {
-					this.updateMap(agentMessages, servedBy.username, 1);
+					this.updateMap(agentMessages, servedBy.username, msgs);
 				}
 			});
 
@@ -533,6 +554,58 @@ export const Analytics = {
 				data.data.push({
 					name: key,
 					value: avg.toFixed(2)
+				});
+			});
+
+			this.sortByValue(data.data, false);		// sort array
+
+			data.data.forEach((obj) => {
+				obj.value = this.secondsToHHMMSS(obj.value);
+			});
+
+			return data;
+		},
+
+		/**
+		 *
+		 * @param {Date} from
+		 * @param {Date} to
+		 *
+		 * @returns {Array(Object), Array(Object)}
+		 */
+		Best_first_response_time(from, to) {
+			const agentFirstRespTime = new Map(); // stores avg response time for each agent
+			const date = {
+				gte: from,
+				lt: to.add(1, 'days')
+			};
+
+			const data = {
+				head: [{
+					name: 'Agent'
+				}, {
+					name: 'Best_first_response_time'
+				}],
+				data: []
+			};
+
+			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+				metrics,
+				servedBy
+			}) => {
+				if (servedBy && metrics && metrics.response && metrics.response.ft) {
+					if (agentFirstRespTime.has(servedBy.username)) {
+						agentFirstRespTime.set(servedBy.username, Math.min(agentFirstRespTime.get(servedBy.username), metrics.response.ft));
+					} else {
+						agentFirstRespTime.set(servedBy.username, metrics.response.ft);
+					}
+				}
+			});
+
+			agentFirstRespTime.forEach((value, key) => {	// calculate avg
+				data.data.push({
+					name: key,
+					value: value.toFixed(2)
 				});
 			});
 

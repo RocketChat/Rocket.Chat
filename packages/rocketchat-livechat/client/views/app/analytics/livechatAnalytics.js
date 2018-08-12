@@ -1,10 +1,63 @@
 /* globals popover */
 
+import {drawLineChart} from '../../../lib/chartHandler';
+import {setDateRange, updateDateRange} from '../../../lib/dateHandler';
+
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
 
+const analyticsAllOptions = () => {
+	return [{
+		name: 'Conversations',
+		value: 'conversations',
+		chartOptions: [{
+			name: 'Total_conversations',
+			value: 'total-conversations'
+		}, {
+			name: 'Avg_chat_duration',
+			value: 'avg-chat-duration'
+		}, {
+			name: 'Total_messages',
+			value: 'total-messages'
+		}]
+	}, {
+		name: 'Productivity',
+		value: 'productivity',
+		chartOptions: [{
+			name: 'First_response_time',
+			value: 'first-response-time'
+		}, {
+			name: 'Best_first_response_time',
+			value: 'best_first_response_time'
+		}, {
+			name: 'Avg_response_time',
+			value: 'avg-response-time'
+		}, {
+			name: 'Avg_reaction_time',
+			value: 'avg-reaction-time'
+		}]
+	}];
+};
 
-function updateAnalyticsChart() {
+/**
+ *
+ * @param {Array} arr
+ * @param {Integer} chunkCount
+ *
+ * @returns {Array{Array}} Array containing arrays
+ */
+const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arrays
+	const chunks = [];
+	while (arr.length) {
+		const chunkSize = Math.ceil(arr.length / chunkCount--);
+		const chunk = arr.slice(0, chunkSize);
+		chunks.push(chunk);
+		arr = arr.slice(chunkSize);
+	}
+	return chunks;
+};
+
+const updateAnalyticsChart = () => {
 	const options = {
 		daterange: templateInstance.daterange.get(),
 		chartOptions: templateInstance.chartOptions.get()
@@ -15,11 +68,11 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		if (result && result.chartLabel && result.dataLabels && result.dataPoints) {
-			chartContext = RocketChat.Livechat.Analytics.drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, result.chartLabel, result.dataLabels, result.dataPoints);
-		} else {
+		if (!(result && result.chartLabel && result.dataLabels && result.dataPoints)) {
 			console.log('livechat:getAnalyticsChartData => Missing Data');
 		}
+
+		chartContext = drawLineChart(document.getElementById('lc-analytics-chart'), chartContext, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 	});
 
 	Meteor.call('livechat:getAgentOverviewData', options, function(error, result) {
@@ -27,15 +80,15 @@ function updateAnalyticsChart() {
 			return handleError(error);
 		}
 
-		if (result) {
-			templateInstance.agentOverviewData.set(result);
-		} else {
+		if (!result) {
 			console.log('livechat:getAgentOverviewData => Missing Data');
 		}
-	});
-}
 
-function updateAnalyticsOverview() {
+		templateInstance.agentOverviewData.set(result);
+	});
+};
+
+const updateAnalyticsOverview = () => {
 	const options = {
 		daterange: templateInstance.daterange.get(),
 		analyticsOptions: templateInstance.analyticsOptions.get()
@@ -46,13 +99,13 @@ function updateAnalyticsOverview() {
 			return handleError(error);
 		}
 
-		if (result) {
-			templateInstance.analyticsOverviewData.set(RocketChat.Livechat.Analytics.chunkArray(result, 3));
-		} else {
+		if (!result) {
 			console.log('livechat:getAnalyticsOverviewData => Missing Data');
 		}
+
+		templateInstance.analyticsOverviewData.set(chunkArray(result, 3));
 	});
-}
+};
 
 Template.livechatAnalytics.helpers({
 	analyticsOverviewData() {
@@ -62,7 +115,7 @@ Template.livechatAnalytics.helpers({
 		return templateInstance.agentOverviewData.get();
 	},
 	analyticsAllOptions() {
-		return RocketChat.Livechat.Analytics.getAnalyticsAllOptions();
+		return analyticsAllOptions();
 	},
 	analyticsOptions() {
 		return templateInstance.analyticsOptions.get();
@@ -95,11 +148,11 @@ Template.livechatAnalytics.onCreated(function() {
 	this.analyticsOverviewData = new ReactiveVar();
 	this.agentOverviewData = new ReactiveVar();
 	this.daterange = new ReactiveVar({});
-	this.analyticsOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0]);		// default selected first
-	this.chartOptions = new ReactiveVar(RocketChat.Livechat.Analytics.getAnalyticsAllOptions()[0].chartOptions[0]);		// default selected first
+	this.analyticsOptions = new ReactiveVar(analyticsAllOptions()[0]);		// default selected first
+	this.chartOptions = new ReactiveVar(analyticsAllOptions()[0].chartOptions[0]);		// default selected first
 
 	this.autorun(() => {
-		RocketChat.Livechat.Analytics.setDateRange(templateInstance.daterange);
+		templateInstance.daterange.set(setDateRange());
 	});
 });
 
@@ -132,17 +185,17 @@ Template.livechatAnalytics.events({
 	'click .lc-daterange-prev'(e) {
 		e.preventDefault();
 
-		RocketChat.Livechat.Analytics.updateDateRange(templateInstance.daterange, -1);
+		templateInstance.daterange.set(updateDateRange(templateInstance.daterange.get(), -1));
 	},
 	'click .lc-daterange-next'(e) {
 		e.preventDefault();
 
-		RocketChat.Livechat.Analytics.updateDateRange(templateInstance.daterange, 1);
+		templateInstance.daterange.set(updateDateRange(templateInstance.daterange.get(), 1));
 	},
 	'change #lc-analytics-options'(e) {
 		e.preventDefault();
 
-		templateInstance.analyticsOptions.set(RocketChat.Livechat.Analytics.getAnalyticsAllOptions().filter(function(obj) {
+		templateInstance.analyticsOptions.set(analyticsAllOptions().filter(function(obj) {
 			return obj.value === e.currentTarget.value;
 		})[0]);
 		templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions[0]);

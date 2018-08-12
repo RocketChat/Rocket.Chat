@@ -1,6 +1,7 @@
 /* globals popover */
 
 import moment from 'moment';
+import {setDateRange} from '../../../lib/dateHandler';
 
 Template.livechatAnalyticsDaterange.helpers({
 	bold(prop) {
@@ -32,22 +33,22 @@ Template.livechatAnalyticsDaterange.events({
 				popover.open(config);
 				break;
 			case 'today':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('day'), moment().startOf('day'));
+				Template.currentData().daterange.set(setDateRange(value, moment().startOf('day'), moment().startOf('day')));
 				break;
 			case 'yesterday':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day'));
+				Template.currentData().daterange.set(setDateRange(value, moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').startOf('day')));
 				break;
 			case 'this-week':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('week'), moment().endOf('week'));
+				Template.currentData().daterange.set(setDateRange(value, moment().startOf('week'), moment().endOf('week')));
 				break;
 			case 'prev-week':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'weeks').startOf('week'), moment().subtract(1, 'weeks').endOf('week'));
+				Template.currentData().daterange.set(setDateRange(value, moment().subtract(1, 'weeks').startOf('week'), moment().subtract(1, 'weeks').endOf('week')));
 				break;
 			case 'this-month':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().startOf('month'), moment().endOf('month'));
+				Template.currentData().daterange.set(setDateRange(value, moment().startOf('month'), moment().endOf('month')));
 				break;
 			case 'prev-month':
-				RocketChat.Livechat.Analytics.setDateRange(Template.currentData().daterange, value, moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month'));
+				Template.currentData().daterange.set(setDateRange(value, moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month')));
 				break;
 		}
 	}
