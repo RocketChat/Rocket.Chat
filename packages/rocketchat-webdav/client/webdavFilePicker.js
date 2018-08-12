@@ -97,6 +97,7 @@ Template.webdavFilePicker.events({
 				return toastr.error(t(error.error));
 			}
 			if (!response.success) {
+				modal.close();
 				return toastr.error(t(response.message));
 			}
 			Session.set('webdavNodes', response.data);
@@ -108,9 +109,11 @@ Template.webdavFilePicker.events({
 		const file = this;
 		Meteor.call('getFileFromWebdav', accountId, file, function(error, response) {
 			if (error) {
+				modal.close();
 				return toastr.error(t(error.error));
 			}
 			if (!response.success) {
+				modal.close();
 				return toastr.error(t('Failed_to_get_webdav_file'));
 			}
 			const blob = new Blob([response.data], {type: response.type});
