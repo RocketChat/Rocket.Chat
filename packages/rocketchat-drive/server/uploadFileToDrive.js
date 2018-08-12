@@ -15,7 +15,7 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOne({_id: id});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'checkDriveAccess' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToDrive' });
 		}
 
 		if (!RocketChat.settings.get('Accounts_OAuth_Google')) {
