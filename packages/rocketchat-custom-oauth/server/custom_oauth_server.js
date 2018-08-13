@@ -104,6 +104,7 @@ export class CustomOAuth {
 			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
 			allOptions['params']['client_id'] = config.clientId;
 			allOptions['params']['appid'] = config.clientId;
+			allOptions['params']['secret'] = OAuth.openSecret(config.secret);
 		}
 
 		try {
@@ -114,6 +115,10 @@ export class CustomOAuth {
 		}
 
 		let data;
+		console.log('getAccessToken');
+		console.log(this.tokenPath);
+		console.log(allOptions);
+		console.log(response);
 		if (response.data) {
 			data = response.data;
 		} else {
@@ -123,12 +128,11 @@ export class CustomOAuth {
 		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
-			return data.access_token;
+			return data;
 		}
 	}
 
-	getIdentity(accessToken) {
-		const params = {};
+	getIdentity(accessToken, params = {}) {
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
 		};
@@ -138,7 +142,8 @@ export class CustomOAuth {
 		} else {
 			params.access_token = accessToken;
 		}
-		return {};
+
+		console.log('getIdentity');
 		console.log(this.identityPath);
 		console.log(params);
 
@@ -154,10 +159,10 @@ export class CustomOAuth {
 			if (response.data) {
 				data = response.data;
 			} else {
-				//data = JSON.parse(response.content);
+				data = JSON.parse(response.content);
 			}
 
-			//logger.debug('Identity response', JSON.stringify(data, null, 2));
+			logger.debug('Identity response', JSON.stringify(data, null, 2));
 
 			return data;
 		} catch (err) {
@@ -169,12 +174,16 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const accessToken = self.getAccessToken(query);
+			const pack = self.getAccessToken(query);
 			// console.log 'at:', accessToken
 
-			let identity = self.getIdentity(accessToken);
+			let identity = self.getIdentity(pack.access_token, {openid: pack.openid});
 
 			if (identity) {
+				if (identity.openid && !identity.id) {
+					identity.id = identity.openid;
+				}
+
 				// Set 'id' to '_id' for any sources that provide it
 				if (identity._id && !identity.id) {
 					identity.id = identity._id;
@@ -245,7 +254,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken,
+				accessToken: pack.access_token
 			};
 
 			_.extend(serviceData, identity);
@@ -260,6 +269,7 @@ export class CustomOAuth {
 			};
 
 			// console.log data
+			console.log(data);
 
 			return data;
 		});
