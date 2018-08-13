@@ -108,12 +108,7 @@ Meteor.methods({
 		}
 
 		function filterLabel(_, tag) {
-			query['attachments.0.title'] = new RegExp(s.escapeRegExp(tag), 'i');
-			return '';
-		}
-
-		function filterImageByComments(_, tag) {
-			query['attachments.description'] = new RegExp(s.escapeRegExp(tag), 'i');
+			query['attachments.0.labels'] = new RegExp(s.escapeRegExp(tag), 'i');
 			return '';
 		}
 
@@ -171,7 +166,6 @@ Meteor.methods({
 		text = text.replace(/has:location|has:map/g, filterLocation);
 		// Filter image tags
 		text = text.replace(/label:(\w+)/g, filterLabel);
-		text = text.replace(/desc:(\w+)/g, filterImageByComments);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
