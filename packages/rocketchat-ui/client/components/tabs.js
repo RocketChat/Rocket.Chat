@@ -4,7 +4,7 @@ Template.tabs.onCreated(function() {
 
 Template.tabs.events({
 	'click .tab'(e) {
-		const value = e.currentTarget.dataset.value;
+		const { value } = e.currentTarget.dataset;
 		Template.instance().activeTab.set(value);
 		Template.instance().data.tabs.onChange(value);
 	},

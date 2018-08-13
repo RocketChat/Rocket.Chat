@@ -5,7 +5,7 @@ class WebRTCTransportClass {
 		this.webrtcInstance = webrtcInstance;
 		this.callbacks = {};
 		RocketChat.Notifications.onRoom(this.webrtcInstance.room, 'webrtc', (type, data) => {
-			const onRemoteStatus = this.callbacks.onRemoteStatus;
+			const { onRemoteStatus } = this.callbacks;
 			this.log('WebRTCTransportClass - onRoom', type, data);
 			switch (type) {
 				case 'status':
@@ -16,9 +16,9 @@ class WebRTCTransportClass {
 		});
 	}
 
-	log() {
+	log(...args) {
 		if (this.debug === true) {
-			console.log.apply(console, arguments);
+			console.log.apply(console, args);
 		}
 	}
 
@@ -27,10 +27,7 @@ class WebRTCTransportClass {
 			return;
 		}
 		this.log('WebRTCTransportClass - onUser', type, data);
-		const onRemoteCall = this.callbacks.onRemoteCall;
-		const onRemoteJoin = this.callbacks.onRemoteJoin;
-		const onRemoteCandidate = this.callbacks.onRemoteCandidate;
-		const onRemoteDescription = this.callbacks.onRemoteDescription;
+		const { onRemoteCall, onRemoteJoin, onRemoteCandidate, onRemoteDescription } = this.callbacks;
 
 		switch (type) {
 			case 'call':
@@ -105,7 +102,7 @@ class WebRTCTransportClass {
 	}
 
 	onRemoteCall(fn) {
-		const callbacks = this.callbacks;
+		const { callbacks } = this;
 		if (callbacks.onRemoteCall == null) {
 			callbacks.onRemoteCall = [];
 		}
@@ -113,7 +110,7 @@ class WebRTCTransportClass {
 	}
 
 	onRemoteJoin(fn) {
-		const callbacks = this.callbacks;
+		const { callbacks } = this;
 		if (callbacks.onRemoteJoin == null) {
 			callbacks.onRemoteJoin = [];
 		}
@@ -121,7 +118,7 @@ class WebRTCTransportClass {
 	}
 
 	onRemoteCandidate(fn) {
-		const callbacks = this.callbacks;
+		const { callbacks } = this;
 		if (callbacks.onRemoteCandidate == null) {
 			callbacks.onRemoteCandidate = [];
 		}
@@ -129,7 +126,7 @@ class WebRTCTransportClass {
 	}
 
 	onRemoteDescription(fn) {
-		const callbacks = this.callbacks;
+		const { callbacks } = this;
 		if (callbacks.onRemoteDescription == null) {
 			callbacks.onRemoteDescription = [];
 		}
@@ -137,7 +134,7 @@ class WebRTCTransportClass {
 	}
 
 	onRemoteStatus(fn) {
-		const callbacks = this.callbacks;
+		const { callbacks } = this;
 		if (callbacks.onRemoteStatus == null) {
 			callbacks.onRemoteStatus = [];
 		}
@@ -221,18 +218,18 @@ class WebRTCClass {
 		// Meteor.setInterval(this.broadcastStatus.bind(@), 1000);
 	}
 
-	log() {
+	log(...args) {
 		if (this.debug === true) {
-			console.log.apply(console, arguments);
+			console.log.apply(console, args);
 		}
 	}
 
-	onError() {
-		console.error.apply(console, arguments);
+	onError(...args) {
+		console.error.apply(console, args);
 	}
 
 	checkPeerConnections() {
-		const peerConnections = this.peerConnections;
+		const { peerConnections } = this;
 		Object.keys(peerConnections).forEach((id) => {
 			const peerConnection = peerConnections[id];
 			if (peerConnection.iceConnectionState !== 'connected' && peerConnection.iceConnectionState !== 'completed' && peerConnection.createdAt + 5000 < Date.now()) {
@@ -244,7 +241,7 @@ class WebRTCClass {
 	updateRemoteItems() {
 		const items = [];
 		const itemsById = {};
-		const peerConnections = this.peerConnections;
+		const { peerConnections } = this;
 
 		Object.keys(peerConnections).forEach((id) => {
 			const peerConnection = peerConnections[id];
@@ -290,7 +287,7 @@ class WebRTCClass {
 			return;
 		}
 		const remoteConnections = [];
-		const peerConnections = this.peerConnections;
+		const { peerConnections } = this;
 		Object.keys(peerConnections).forEach((id) => {
 			const peerConnection = peerConnections[id];
 			remoteConnections.push({
@@ -520,8 +517,8 @@ class WebRTCClass {
   		@param callback {Function}
    */
 
-	getLocalUserMedia(callback) {
-		this.log('getLocalUserMedia', arguments);
+	getLocalUserMedia(callback, ...args) {
+		this.log('getLocalUserMedia', [callback, ...args]);
 		if (this.localStream != null) {
 			return callback(null, this.localStream);
 		}
@@ -530,7 +527,7 @@ class WebRTCClass {
 			this.localUrl.set(URL.createObjectURL(stream));
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
-			const peerConnections = this.peerConnections;
+			const { peerConnections } = this;
 			Object.keys(peerConnections).forEach((id) => {
 				const peerConnection = peerConnections[id];
 				peerConnection.addStream(stream);
@@ -663,8 +660,8 @@ class WebRTCClass {
   			video {Boolean}
    */
 
-	startCall(media = {}) {
-		this.log('startCall', arguments);
+	startCall(media = {}, ...args) {
+		this.log('startCall', [media, ...args]);
 		this.media = media;
 		this.getLocalUserMedia(() => {
 			this.active = true;
@@ -674,8 +671,8 @@ class WebRTCClass {
 		});
 	}
 
-	startCallAsMonitor(media = {}) {
-		this.log('startCallAsMonitor', arguments);
+	startCallAsMonitor(media = {}, ...args) {
+		this.log('startCallAsMonitor', [media, ...args]);
 		this.media = media;
 		this.active = true;
 		this.monitor = true;
@@ -771,7 +768,7 @@ class WebRTCClass {
   				desktop {Boolean}
    */
 
-	joinCall(data = {}) {
+	joinCall(data = {}, ...args) {
 		if (data.media && data.media.audio) {
 			this.media.audio = data.media.audio;
 		}
@@ -779,7 +776,7 @@ class WebRTCClass {
 			this.media.video = data.media.video;
 		}
 		data.media = this.media;
-		this.log('joinCall', arguments);
+		this.log('joinCall', [data, ...args]);
 		this.getLocalUserMedia(() => {
 			this.remoteMonitoring = data.monitor;
 			this.active = true;
@@ -788,11 +785,11 @@ class WebRTCClass {
 	}
 
 
-	onRemoteJoin(data) {
+	onRemoteJoin(data, ...args) {
 		if (this.active !== true) {
 			return;
 		}
-		this.log('onRemoteJoin', arguments);
+		this.log('onRemoteJoin', [data, ...args]);
 		let peerConnection = this.getPeerConnection(data.from);
 
 		// needsRefresh = false
@@ -844,12 +841,12 @@ class WebRTCClass {
 	}
 
 
-	onRemoteOffer(data) {
+	onRemoteOffer(data, ...args) {
 		if (this.active !== true) {
 			return;
 		}
 
-		this.log('onRemoteOffer', arguments);
+		this.log('onRemoteOffer', [data, ...args]);
 		let peerConnection = this.getPeerConnection(data.from);
 
 		if (['have-local-offer', 'stable'].includes(peerConnection.signalingState) && (peerConnection.createdAt < data.ts)) {
@@ -898,14 +895,14 @@ class WebRTCClass {
   			candidate {RTCIceCandidate JSON encoded}
    */
 
-	onRemoteCandidate(data) {
+	onRemoteCandidate(data, ...args) {
 		if (this.active !== true) {
 			return;
 		}
 		if (data.to !== this.selfId) {
 			return;
 		}
-		this.log('onRemoteCandidate', arguments);
+		this.log('onRemoteCandidate', [data, ...args]);
 		const peerConnection = this.getPeerConnection(data.from);
 		if (peerConnection.iceConnectionState !== 'closed' && peerConnection.iceConnectionState !== 'failed' && peerConnection.iceConnectionState !== 'disconnected' && peerConnection.iceConnectionState !== 'completed') {
 			peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -926,14 +923,14 @@ class WebRTCClass {
   				desktop {Boolean}
    */
 
-	onRemoteDescription(data) {
+	onRemoteDescription(data, ...args) {
 		if (this.active !== true) {
 			return;
 		}
 		if (data.to !== this.selfId) {
 			return;
 		}
-		this.log('onRemoteDescription', arguments);
+		this.log('onRemoteDescription', [data, ...args]);
 		const peerConnection = this.getPeerConnection(data.from);
 		if (data.type === 'offer') {
 			peerConnection.remoteMedia = data.media;

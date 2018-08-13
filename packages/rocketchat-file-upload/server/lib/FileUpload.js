@@ -112,7 +112,7 @@ Object.assign(FileUpload, {
 						if (err != null) {
 							console.error(err);
 						}
-						const size = fs.lstatSync(tempFilePath).size;
+						const { size } = fs.lstatSync(tempFilePath);
 						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
 						future.return();
 					}));
@@ -170,7 +170,7 @@ Object.assign(FileUpload, {
 				.then(Meteor.bindEnvironment(() => {
 					fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
 						fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
-							const size = fs.lstatSync(tmpFile).size;
+							const { size } = fs.lstatSync(tmpFile);
 							this.getCollection().direct.update({ _id: file._id }, {
 								$set: {
 									size,

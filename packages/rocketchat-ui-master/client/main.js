@@ -51,7 +51,7 @@ Template.body.onRendered(function() {
 	});
 
 	$(document.body).on('keydown', function(e) {
-		const target = e.target;
+		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
 			return;
 		}

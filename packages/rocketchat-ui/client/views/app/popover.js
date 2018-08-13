@@ -20,7 +20,7 @@ this.popover = {
 
 		Blaze.remove(this.renderedPopover);
 
-		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
+		const { activeElement } = this.renderedPopover.dataVar.curValue;
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
@@ -44,7 +44,7 @@ Template.popover.onRendered(function() {
 		}
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
-	const activeElement = this.data.activeElement;
+	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 
@@ -147,7 +147,7 @@ Template.popover.events({
 		popover.close();
 	},
 	'click [data-type="messagebox-action"]'(event, t) {
-		const id = event.currentTarget.dataset.id;
+		const { id } = event.currentTarget.dataset;
 		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
 			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });

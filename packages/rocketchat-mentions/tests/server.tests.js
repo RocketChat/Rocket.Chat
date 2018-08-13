@@ -12,7 +12,7 @@ beforeEach(function() {
 		pattern: '[0-9a-zA-Z-_.]+',
 		messageMaxAll: () => 4, // || RocketChat.settings.get('Message_MaxAll')
 		getUsers: (usernames) =>
-			 [{
+			[{
 				_id: 1,
 				username: 'rocket.cat',
 			}, {
@@ -49,7 +49,7 @@ describe('Mention Server', () => {
 		describe('for one user', () => {
 			beforeEach(() => {
 				mention.getChannel = () =>
-					 ({
+					({
 						usernames:[{
 							_id: 1,
 							username: 'rocket.cat',

@@ -8,7 +8,7 @@ import hljs from 'highlight.js';
 
 const inlinecode = (message) =>
 	// Support `text`
-	 message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
+	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
 		const token = ` =!=${ Random.id() }=!=`;
 
 		message.tokens.push({

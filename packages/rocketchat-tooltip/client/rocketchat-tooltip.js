@@ -55,7 +55,7 @@ RocketChat.tooltip = {
 		const tip = $('.tooltip');
 
 		let top = sourcePos.top - tip.outerHeight() - 5;
-		let left = sourcePos.left;
+		let { left } = sourcePos;
 
 		left = left + (sourceWidth / 2) - (tip.outerWidth() / 2);
 

@@ -134,6 +134,7 @@ const sendNotification = ({
 
 				return true;
 			}
+			return false;
 		});
 	}
 
@@ -184,7 +185,7 @@ function sendAllNotifications(message, room) {
 		}],
 	};
 
-	['audio', 'desktop', 'mobile', 'email'].map((kind) => {
+	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
 		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
 
 		const filter = { [notificationField]: 'all' };

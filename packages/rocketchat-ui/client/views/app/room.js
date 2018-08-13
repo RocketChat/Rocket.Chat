@@ -503,7 +503,7 @@ Template.room.events({
 	},
 
 	'touchstart .message'(e, t) {
-		const touches = e.originalEvent.touches;
+		const { touches } = e.originalEvent;
 		if (touches && touches.length) {
 			lastTouchX = touches[0].pageX;
 			lastTouchY = touches[0].pagey;
@@ -568,7 +568,7 @@ Template.room.events({
 	},
 
 	'touchmove .message'(e, t) {
-		const touches = e.originalEvent.touches;
+		const { touches } = e.originalEvent;
 		if (touches && touches.length) {
 			const deltaX = Math.abs(lastTouchX - touches[0].pageX);
 			const deltaY = Math.abs(lastTouchY - touches[0].pageY);
@@ -635,7 +635,7 @@ Template.room.events({
 			return;
 		}
 
-		const username = this._arguments[1].u.username;
+		const { username } = this._arguments[1].u;
 
 		openProfileTabOrOpenDM(e, instance, username);
 	},
@@ -931,7 +931,7 @@ Template.room.onCreated(function() {
 			handleError(error);
 		}
 
-		return Array.from(results).map((record) => {
+		return Array.from(results).forEach((record) => {
 			delete record._id;
 			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
 		});

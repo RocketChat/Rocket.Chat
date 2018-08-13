@@ -111,10 +111,8 @@ Template.mailMessagesInstructions.events({
 		t.reset(true);
 	},
 	'click .js-send'(e, instance) {
-		const selectedUsers = instance.selectedUsers;
-		const selectedEmails = instance.selectedEmails;
+		const { selectedUsers, selectedEmails, selectedMessages } = instance;
 		const $emailsInput = instance.$('[name="emails"]');
-		const selectedMessages = instance.selectedMessages;
 		const subject = instance.$('[name="subject"]').val();
 
 		if (!selectedUsers.get().length && !selectedEmails.get().length && $emailsInput.val().trim() === '') {
@@ -229,10 +227,10 @@ Template.mailMessagesInstructions.onRendered(function() {
 		users.set(usersArr);
 	});
 
-	const selectedMessages = this.selectedMessages;
+	const { selectedMessages } = this;
 
 	$('.messages-box .message').on('click', function() {
-		const id = this.id;
+		const { id } = this;
 		const messages = selectedMessages.get();
 
 		if ($(this).hasClass('selected')) {

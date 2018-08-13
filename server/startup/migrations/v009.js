@@ -32,7 +32,7 @@ RocketChat.Migrations.add({
 
 			source.find().forEach((doc) =>
 				// use upsert to account for GENERAL room created by initialData
-				 target.upsert({
+				target.upsert({
 					_id: doc._id,
 				}, doc)
 			);

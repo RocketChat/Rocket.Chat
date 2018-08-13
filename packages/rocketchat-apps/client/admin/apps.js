@@ -44,6 +44,7 @@ Template.apps.onCreated(function() {
 				index = i;
 				return true;
 			}
+			return false;
 		});
 
 		apps.splice(index, 1);
