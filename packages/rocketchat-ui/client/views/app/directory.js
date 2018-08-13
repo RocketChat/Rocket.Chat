@@ -1,16 +1,5 @@
-import moment from 'moment';
 import _ from 'underscore';
-
-function timeAgo(time) {
-	if (!time) {
-		return;
-	}
-
-	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-
-	return (now.getDate() === time.getDate() && moment(time).format('LT')) || (yesterday.getDate() === time.getDate() && t('yesterday')) || moment(time).format('MMM D, YYYY');
-}
+import { timeAgo } from './helpers';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
