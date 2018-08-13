@@ -305,8 +305,8 @@ Template.room.helpers({
 		return {
 			_id: this._id,
 			onResize: () => {
-				if (instance.sendToBottomIfNecessary) {
-					instance.sendToBottomIfNecessary();
+				if (instance.sendToBottomIfNecessaryDebounced) {
+					instance.sendToBottomIfNecessaryDebounced();
 				}
 			},
 		};
@@ -981,10 +981,7 @@ Template.room.onRendered(function() {
 
 	const messageBox = $('.messages-box');
 
-	template.isAtBottom = function(scrollThreshold) {
-		if (scrollThreshold == null) {
-			scrollThreshold = 0;
-		}
+	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
@@ -1018,7 +1015,7 @@ Template.room.onRendered(function() {
 	if ((window.MutationObserver == null)) {
 		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	} else {
-		const observer = new MutationObserver((mutations) => mutations.forEach(() => template.sendToBottomIfNecessaryDebounced()));
+		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
 		observer.observe(wrapperUl, { childList: true });
 	}
