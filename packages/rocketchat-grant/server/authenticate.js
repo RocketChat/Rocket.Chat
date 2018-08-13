@@ -55,8 +55,8 @@ function getAccessToken(req) {
 
 export async function authenticate(providerName, req) {
 	let tokens;
-	const accessToken = getAccessToken(req);
 	const provider = Providers.get(providerName);
+	const accessToken = provider.getAccessToken ? provider.getAccessToken(req) : getAccessToken(req);
 
 	if (!provider) {
 		throw new GrantError(`Provider '${ providerName }' not found`);
