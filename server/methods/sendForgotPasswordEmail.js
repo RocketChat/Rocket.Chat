@@ -10,7 +10,7 @@ Meteor.methods({
 
 		if (user) {
 			const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
-			email = (user.emails || []).map(item => item.address).find(userEmail => regex.test(userEmail));
+			email = (user.emails || []).map((item) => item.address).find((userEmail) => regex.test(userEmail));
 
 			if (RocketChat.settings.get('Forgot_Password_Customized')) {
 				const data = { name: user.name, email };
@@ -19,7 +19,7 @@ Meteor.methods({
 
 				Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
 
-				Accounts.emailTemplates.resetPassword.subject = function(/*userModel*/) {
+				Accounts.emailTemplates.resetPassword.subject = function(/* userModel*/) {
 					return subject;
 				};
 
@@ -33,7 +33,7 @@ Meteor.methods({
 			} catch (error) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 					method: 'registerUser',
-					message: error.message
+					message: error.message,
 				});
 			}
 
@@ -41,5 +41,5 @@ Meteor.methods({
 		}
 
 		return false;
-	}
+	},
 });

@@ -59,7 +59,7 @@ RocketChat.EmojiPicker = {
 		const sourcePos = $(this.source).offset();
 		const left = sourcePos.left;
 		const top = sourcePos.top;
-		const cssProperties = {top, left};
+		const cssProperties = { top, left };
 
 		if (top + this.height >= windowHeight) {
 			cssProperties.top = windowHeight - this.height - windowBorder;
@@ -125,7 +125,7 @@ RocketChat.EmojiPicker = {
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [
 			RocketChat.emoji.packages.base.emojisByCategory.recent,
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket,
 		];
 
 		dynamicEmojiLists.forEach((category) => {
@@ -138,5 +138,5 @@ RocketChat.EmojiPicker = {
 				}
 			}
 		});
-	}
+	},
 };

@@ -8,6 +8,6 @@ Meteor.startup(function() {
 		},
 		removed(data) {
 			Session.set(`roomData${ data._id }`, undefined);
-		}
+		},
 	});
 });

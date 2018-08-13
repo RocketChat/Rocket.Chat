@@ -18,13 +18,13 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 				_id: Random.id(),
 				rid: message.rid,
 				ts: new Date,
-				msg: TAPi18n.__('error-action-not-allowed', { action }, language)
+				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 
 			// Also throw to stop propagation of 'sendMessage'.
 			throw new Meteor.Error('error-action-not-allowed', 'Notify here in this room not allowed', {
 				method: 'filterATHereTag',
-				action: 'Notify_active_in_this_room'
+				action: 'Notify_active_in_this_room',
 			});
 		}
 	}

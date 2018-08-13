@@ -11,5 +11,5 @@ Template.roomSearch.helpers({
 		if (this.type === 'u') {
 			return `status-${ this.status }`;
 		}
-	}
+	},
 });

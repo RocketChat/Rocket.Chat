@@ -7,7 +7,7 @@ Meteor.methods({
 		Accounts._insertLoginToken(userId, token);
 		return {
 			userId,
-			authToken: token.token
+			authToken: token.token,
 		};
-	}
+	},
 });

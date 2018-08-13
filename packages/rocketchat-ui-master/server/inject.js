@@ -3,12 +3,12 @@ import _ from 'underscore';
 
 const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-	const colors = RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1, editor: 1}}).fetch().filter(color => color && color.value);
+	const colors = RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).fetch().filter((color) => color && color.value);
 
 	if (!colors) {
 		return;
 	}
-	const css = colors.map(({_id, value, editor}) => {
+	const css = colors.map(({ _id, value, editor }) => {
 		if (editor === 'expression') {
 			return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
 		}
@@ -23,8 +23,8 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-RocketChat.models.Settings.find({_id:/theme-color-rc/i}, {fields: { value: 1}}).observe({
-	changed: renderDynamicCssList
+RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
+	changed: renderDynamicCssList,
 });
 
 Inject.rawHead('noreferrer', '<meta name="referrer" content="origin-when-crossorigin">');
@@ -87,9 +87,7 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 			return html.replace(/<\/body>/, `${ script }\n</body>`);
 		});
 	} else {
-		Inject.rawModHtml(key, (html) => {
-			return html;
-		});
+		Inject.rawModHtml(key, (html) => html);
 	}
 });
 

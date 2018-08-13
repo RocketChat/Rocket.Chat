@@ -14,7 +14,7 @@ function timeAgo(time) {
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
-		cb(result && result.results && result.results.length && result.results.map(result => {
+		cb(result && result.results && result.results.length && result.results.map((result) => {
 			if (config.type === 'channels') {
 				return {
 					name: result.name,
@@ -23,7 +23,7 @@ function directorySearch(config, cb) {
 					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
 					description: result.description,
 					archived: result.archived,
-					topic: result.topic
+					topic: result.topic,
 				};
 			}
 
@@ -31,7 +31,7 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
-					createdAt: timeAgo(result.createdAt)
+					createdAt: timeAgo(result.createdAt),
 				};
 			}
 		}));
@@ -71,7 +71,7 @@ Template.directory.helpers({
 			searchSortBy,
 			results,
 			end,
-			page
+			page,
 		} = Template.instance();
 		return {
 			tabs: [
@@ -81,15 +81,15 @@ Template.directory.helpers({
 					condition() {
 						return true;
 					},
-					active: true
+					active: true,
 				},
 				{
 					label: t('Users'),
 					value: 'users',
 					condition() {
 						return true;
-					}
-				}
+					},
+				},
 			],
 			onChange(value) {
 				results.set([]);
@@ -98,7 +98,7 @@ Template.directory.helpers({
 				sortDirection.set('asc');
 				page.set(0);
 				searchType.set(value);
-			}
+			},
 		};
 	},
 	onTableItemClick() {
@@ -155,7 +155,7 @@ Template.directory.helpers({
 			searchSortBy.set(type);
 			sortDirection.set('asc');
 		};
-	}
+	},
 });
 
 Template.directory.events({
@@ -164,7 +164,7 @@ Template.directory.events({
 		t.sortDirection.set('asc');
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
-	}, 300)
+	}, 300),
 });
 
 Template.directory.onRendered(function() {
@@ -175,7 +175,7 @@ Template.directory.onRendered(function() {
 			sortBy: this.searchSortBy.get(),
 			sortDirection: this.sortDirection.get(),
 			limit: this.limit.get(),
-			page: this.page.get()
+			page: this.page.get(),
 		};
 		if (this.end.get() || this.loading) {
 			return;
