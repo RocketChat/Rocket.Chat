@@ -10,7 +10,7 @@ const acEvents = {
 	},
 	'click .rc-input__icon-svg--book-alt'(e, t) {
 		e.preventDefault();
-		t.channelSelectionEnabled.set(true);
+		t.showChannelSelection.set(true);
 	},
 	'click #more-topics'(e, t) {
 		e.preventDefault();
