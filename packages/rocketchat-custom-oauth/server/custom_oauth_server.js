@@ -103,6 +103,7 @@ export class CustomOAuth {
 		} else {
 			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
 			allOptions['params']['client_id'] = config.clientId;
+			allOptions['params']['appid'] = config.clientId;
 		}
 
 		try {
@@ -137,6 +138,9 @@ export class CustomOAuth {
 		} else {
 			params['access_token'] = accessToken;
 		}
+		return {};
+		console.log(this.identityPath);
+		console.log(params);
 
 		try {
 			const response = HTTP.get(this.identityPath, {
@@ -145,14 +149,15 @@ export class CustomOAuth {
 			});
 
 			let data;
-
+			
+			console.log(response);
 			if (response.data) {
 				data = response.data;
 			} else {
-				data = JSON.parse(response.content);
+				//data = JSON.parse(response.content);
 			}
 
-			logger.debug('Identity response', JSON.stringify(data, null, 2));
+			//logger.debug('Identity response', JSON.stringify(data, null, 2));
 
 			return data;
 		} catch (err) {
