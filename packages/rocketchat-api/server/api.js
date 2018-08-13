@@ -139,7 +139,7 @@ class API extends Restivus {
 			routes = [routes];
 		}
 
-		const version = this._config.version;
+		const { version } = this._config;
 
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
@@ -362,7 +362,7 @@ class API extends Restivus {
 	}
 }
 
-const getUserAuth = function _getUserAuth() {
+const getUserAuth = function _getUserAuth(...args) {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
@@ -375,7 +375,7 @@ const getUserAuth = function _getUserAuth() {
 				const method = RocketChat.API.v1.authMethods[i];
 
 				if (typeof method === 'function') {
-					const result = method.apply(this, arguments);
+					const result = method.apply(this, args);
 					if (!invalidResults.includes(result)) {
 						return result;
 					}

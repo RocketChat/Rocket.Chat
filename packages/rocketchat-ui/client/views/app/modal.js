@@ -116,7 +116,7 @@ Template.rc_modal.events({
 	},
 	'click .js-confirm'(e, instance) {
 		e.stopPropagation();
-		const dontAskAgain = instance.data.dontAskAgain;
+		const { dontAskAgain } = instance.data;
 		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
 			const dontAskAgainObject = {
 				action: dontAskAgain.action,

@@ -88,7 +88,7 @@ Template.appInstall.events({
 			return;
 		}
 
-		const files = $('#upload-app')[0].files;
+		const { files } = $('#upload-app')[0];
 		if (!(files instanceof FileList)) {
 			return;
 		}

@@ -9,7 +9,7 @@ RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 		if (!RocketChat.authz.hasPermission(message.u._id, 'mention-all') && !RocketChat.authz.hasPermission(message.u._id, 'mention-all', message.rid)) {
 
 			// Get the language of the user for the error notification.
-			const language = RocketChat.models.Users.findOneById(message.u._id).language;
+			const { language } = RocketChat.models.Users.findOneById(message.u._id);
 			const action = TAPi18n.__('Notify_all_in_this_room', {}, language);
 
 			// Add a notification to the chat, informing the user that this

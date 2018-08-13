@@ -65,12 +65,12 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 	}
 
-	const setHeader = res.setHeader;
-	res.setHeader = function(key, val) {
+	const { setHeader } = res;
+	res.setHeader = function(key, val, ...args) {
 		if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
 			return;
 		}
-		return setHeader.apply(this, arguments);
+		return setHeader.apply(this, [key, val, ...args]);
 	};
 	return next();
 });

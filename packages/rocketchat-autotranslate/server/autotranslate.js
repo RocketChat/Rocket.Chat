@@ -93,7 +93,7 @@ class AutoTranslate {
 
 		for (const tokenIndex in message.tokens) {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
-				const token = message.tokens[tokenIndex].token;
+				const { token } = message.tokens[tokenIndex];
 				if (token.indexOf('notranslate') === -1) {
 					const newToken = `<i class=notranslate>{${ count++ }}</i>`;
 					message.msg = message.msg.replace(token, newToken);
