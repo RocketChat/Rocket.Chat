@@ -171,7 +171,7 @@ Meteor.methods({
 		text = text.replace(/has:location|has:map/g, filterLocation);
 		// Filter image tags
 		text = text.replace(/label:(\w+)/g, filterLabel);
-		text = text.replace(/label:(\w+)/g, filterImageComments);
+		text = text.replace(/desc:(\w+)/g, filterImageComments);
 		// Filtering before/after/on a date
 		// matches dd-MM-yyyy, dd/MM/yyyy, dd-MM-yyyy, prefixed by before:, after: and on: respectively.
 		// Example: before:15/09/2016 after: 10-08-2016
