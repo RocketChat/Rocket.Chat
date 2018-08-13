@@ -1,7 +1,5 @@
 FROM registry.access.redhat.com/rhscl/nodejs-8-rhel7
 
-ENV RC_VERSION 0.68.4
-
 MAINTAINER buildmaster@rocket.chat
 
 LABEL name="Rocket.Chat" \
