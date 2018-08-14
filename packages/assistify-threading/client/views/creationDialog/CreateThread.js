@@ -164,6 +164,12 @@ Template.CreateThread.helpers({
 		};
 
 		return hideMe;
+	},
+
+	styleSelectParent() {
+		const instance = Template.instance();
+
+		return instance.selectParent.get() ? 'display: true' : 'display: none';
 	}
 });
 
@@ -297,7 +303,7 @@ Template.CreateThread.onCreated(function() {
 	// trigger the validation once
 	instance.debounceValidateParentChannel(instance.parentChannel.get());
 
-	this.ac = new AutoComplete({
+	instance.ac = new AutoComplete({
 		selector: {
 			item: '.rc-popup-list__item',
 			container: '.rc-popup-list__list'
