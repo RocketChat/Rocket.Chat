@@ -1,4 +1,5 @@
-/* globals swal */
+/* globals */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 Template.survey.events({

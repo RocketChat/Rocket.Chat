@@ -11,6 +11,7 @@ import { RocketChatAnnouncement } from './RocketChatAnnouncement';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
 import { hide, leave, erase } from './ChannelActions';
 import { call } from './callMethod';
+import { LoginPresence } from './LoginPresence';
 
 export {
 	call,
@@ -22,5 +23,6 @@ export {
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
 	UiTextContext,
-	RocketChatAnnouncement
+	RocketChatAnnouncement,
+	LoginPresence
 };

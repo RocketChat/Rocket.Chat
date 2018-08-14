@@ -22,8 +22,9 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:ui-master',
-		'raix:push',
-		'raix:ui-dropped-event'
+		'rocketchat:push',
+		'raix:ui-dropped-event',
+		'rocketchat:lazy-load'
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -122,6 +123,12 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/icon.html', 'client');
 	api.addFiles('client/components/icon.js', 'client');
+
+	api.addFiles('client/components/table.html', 'client');
+	api.addFiles('client/components/table.js', 'client');
+
+	api.addFiles('client/components/tabs.html', 'client');
+	api.addFiles('client/components/tabs.js', 'client');
 
 	api.addFiles('client/components/popupList.html', 'client');
 	api.addFiles('client/components/popupList.js', 'client');

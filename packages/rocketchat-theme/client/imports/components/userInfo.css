@@ -142,10 +142,6 @@
 			}
 		}
 
-		& .rc-switch-double__label {
-			color: #a1a1a1;
-		}
-
 		&--separator {
 
 			margin: 14px 0;
@@ -294,6 +290,8 @@
 
 	word-break: break-word;
 
+	color: #444;
+
 	&__description {
 		margin: 5px 2px;
 
@@ -314,7 +312,7 @@
 		}
 
 		&.disabled {
-			color: inherit;
+			opacity: 0.3;
 		}
 	}
 

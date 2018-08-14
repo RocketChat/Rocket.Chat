@@ -1,47 +1,88 @@
 RocketChat.Migrations.add({
 	version: 116,
 	up() {
-		const userOptions = {
-			fields: {
-				_id : 1
+		RocketChat.models.Subscriptions.tryDropIndex({
+			unread: 1
+		});
+
+		// set pref origin to all existing preferences
+		RocketChat.models.Subscriptions.update({
+			desktopNotifications: { $exists: true }
+		}, {
+			$set: {
+				desktopPrefOrigin: 'subscription'
 			}
-		};
-
-		const users = RocketChat.models.Users.model.find({}, userOptions).fetch();
-		const userIds = users.map((user) => user._id);
-
-		const subscriptionQuery = {
-			'u._id' : {
-				'$nin' : userIds
+		}, {
+			multi: true
+		});
+		RocketChat.models.Subscriptions.update({
+			mobilePushNotifications: { $exists: true }
+		}, {
+			$set: {
+				mobilePrefOrigin: 'subscription'
 			}
-		};
-
-		const subscriptionOptions = {
-			fields : {
-				_id : 1,
-				rid : 1,
-				'u._id' : 1
+		}, {
+			multi: true
+		});
+		RocketChat.models.Subscriptions.update({
+			emailNotifications: { $exists: true }
+		}, {
+			$set: {
+				emailPrefOrigin: 'subscription'
 			}
-		};
+		}, {
+			multi: true
+		});
 
-		const subscriptions = RocketChat.models.Subscriptions.find(subscriptionQuery, subscriptionOptions);
-
-		subscriptions.forEach((subscription) => {
-			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
-			if (room) {
-				// If the room is a direct message, remove all subscriptions and messages that it has
-				if (room.t === 'd') {
-					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
-					RocketChat.models.Messages.removeByRoomId(subscription.rid);
-					RocketChat.models.Rooms.removeById(subscription.rid);
-				} else if (room.t !== 'c' && room.usernames.length === 1) {
-					// Remove non-channel rooms with only 1 user (the one being deleted)
-					RocketChat.models.Rooms.removeById(subscription.rid);
-					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
-				}
+		// set user preferences on subscriptions
+		RocketChat.models.Users.find({
+			$or: [
+				{ 'settings.preferences.desktopNotifications': { $exists: true } },
+				{ 'settings.preferences.mobileNotifications': { $exists: true } },
+				{ 'settings.preferences.emailNotificationMode': { $exists: true } }
+			]
+		}).forEach(user => {
+			if (user.settings.preferences.desktopNotifications && user.settings.preferences.desktopNotifications !== 'default') {
+				RocketChat.models.Subscriptions.update({
+					'u._id': user._id,
+					desktopPrefOrigin: { $exists: false }
+				}, {
+					$set: {
+						desktopNotifications: user.settings.preferences.desktopNotifications,
+						desktopPrefOrigin: 'user'
+					}
+				}, {
+					multi: true
+				});
 			}
 
-			RocketChat.models.Subscriptions.model.remove({ _id: subscription._id.toString() });
+			if (user.settings.preferences.mobileNotifications && user.settings.preferences.mobileNotifications !== 'default') {
+				RocketChat.models.Subscriptions.update({
+					'u._id': user._id,
+					mobilePrefOrigin: { $exists: false }
+				}, {
+					$set: {
+						mobileNotifications: user.settings.preferences.mobileNotifications,
+						mobilePrefOrigin: 'user'
+					}
+				}, {
+					multi: true
+				});
+			}
+
+			if (user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode !== 'default') {
+				RocketChat.models.Subscriptions.update({
+					'u._id': user._id,
+					emailPrefOrigin: { $exists: false }
+				}, {
+					$set: {
+						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' || user.settings.preferences.emailNotificationMode === 'nothing' ? 'nothing' : 'mentions',
+						emailPrefOrigin: 'user'
+					}
+				}, {
+					multi: true
+				});
+			}
 		});
 	}
 });

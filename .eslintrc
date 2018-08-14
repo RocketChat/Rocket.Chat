@@ -131,6 +131,7 @@
 		"parentCall"                  : false,
 		"Promise"                     : false,
 		"Random"                      : false,
+		"ReactiveDict"                : false,
 		"ReactiveVar"                 : false,
 		"Reload"                      : false,
 		"RocketChat"                  : true,

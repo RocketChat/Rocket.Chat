@@ -73,7 +73,9 @@ Package.onUse(function(api) {
 		'client/admin/appInstall.html',
 		'client/admin/appInstall.js',
 		'client/admin/appLogs.html',
-		'client/admin/appLogs.js'
+		'client/admin/appLogs.js',
+		'client/admin/appWhatIsIt.html',
+		'client/admin/appWhatIsIt.js'
 	], 'client');
 
 	api.addFiles('assets/stylesheets/apps.css', 'client');
@@ -87,6 +89,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'busboy': '0.2.13',
-	'@rocket.chat/apps-engine': '0.5.11',
-	'@rocket.chat/apps-ts-definition': '0.9.8'
+	'@rocket.chat/apps-engine': '0.6.10',
+	'@rocket.chat/apps-ts-definition': '0.9.13'
 });

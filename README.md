@@ -1,4 +1,4 @@
-![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
+![Rocket.Chat logo](https://upload.wikimedia.org/wikipedia/commons/1/12/Rocket.Chat_Logo.svg)
 
 # The Ultimate Open Source WebChat Platform
 
@@ -129,7 +129,7 @@ Host your own Rocket.Chat server in a few seconds.
 
 Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
 
-[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/gh-pages/img/deploy.png)](https://dfabric.github.io/DPlatform-ShellCore)
+[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
 ## IndieHosters
 Get your Rocket.Chat instance hosted in a "as a Service" style. You register and we manage it for you! (updates, backup...).
@@ -216,7 +216,7 @@ Follow their [deployment instructions](https://rocket.chat/docs/installation/paa
 ## WeDeploy
 Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
 
-[![Install](https://avatars3.githubusercontent.com/u/10002920?v=4&s=100)](https://rocket.chat/docs/installation/paas-deployments/wedeploy/)
+[![Deploy](https://cdn.wedeploy.com/images/deploy.svg)](https://console.wedeploy.com/deploy?repo=https://github.com/wedeploy-examples/rocketchat-example)
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
@@ -391,6 +391,8 @@ Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
+
+> Meteor automatically installs a hidden [NodeJS v8](https://nodejs.org/download/release/v8.9.3/), [Python v2.7](https://www.python.org/downloads/release/python-270/) and [MongoDB v3.6](https://www.mongodb.com/mongodb-3.6) to be used when you run your app in development mode using the `meteor` command.
 
 Now just clone and start the app:
 

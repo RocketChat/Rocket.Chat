@@ -41,10 +41,8 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		// const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
-		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !mergeChannels && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
+		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return groupByType && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
 	}
 
 	showJoinLink(roomId) {
@@ -75,6 +73,7 @@ export class PublicRoomType extends RoomTypeConfig {
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
+			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;
 		}

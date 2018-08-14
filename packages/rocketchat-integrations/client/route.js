@@ -60,3 +60,12 @@ FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
 		});
 	}
 });
+
+FlowRouter.route('/admin/integrations/additional/zapier', {
+	name: 'admin-integrations-additional-zapier',
+	action() {
+		BlazeLayout.render('main', {
+			center: 'integrationsAdditionalZapier'
+		});
+	}
+});

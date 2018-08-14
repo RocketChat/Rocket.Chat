@@ -27,13 +27,14 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(room.usernames) === false || room.usernames.includes(data.username) === false) {
+		const removedUser = RocketChat.models.Users.findOneByUsername(data.username);
+
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, { fields: { _id: 1 } });
+		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'removeUserFromRoom'
 			});
 		}
-
-		const removedUser = RocketChat.models.Users.findOneByUsername(data.username);
 
 		if (RocketChat.authz.hasRole(removedUser._id, 'owner', room._id)) {
 			const numOwners = RocketChat.authz.getUsersInRole('owner', room._id).fetch().length;
@@ -44,8 +45,6 @@ Meteor.methods({
 				});
 			}
 		}
-
-		RocketChat.models.Rooms.removeUsernameById(data.rid, data.username);
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 

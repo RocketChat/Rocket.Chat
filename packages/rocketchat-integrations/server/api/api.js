@@ -1,6 +1,8 @@
 /* globals Meteor Restivus logger processWebhookMessage*/
 // TODO: remove globals
 
+import Fiber from 'fibers';
+import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
 import vm from 'vm';
@@ -60,10 +62,15 @@ const Api = new Restivus({
 const compiledScripts = {};
 function buildSandbox(store = {}) {
 	const sandbox = {
+		scriptTimeout(reject) {
+			return setTimeout(() => reject('timed out'), 3000);
+		},
 		_,
 		s,
 		console,
 		moment,
+		Fiber,
+		Promise,
 		Livechat: RocketChat.Livechat,
 		Store: {
 			set(key, val) {
@@ -236,9 +243,20 @@ function executeIntegrationRest() {
 			sandbox.script = script;
 			sandbox.request = request;
 
-			const result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, {
+			const result = Future.fromPromise(vm.runInNewContext(`
+				new Promise((resolve, reject) => {
+					Fiber(() => {
+						scriptTimeout(reject);
+						try {
+							resolve(script.process_incoming_request({ request: request }));
+						} catch(e) {
+							reject(e);
+						}
+					}).run();
+				}).catch((error) => { throw new Error(error); });
+			`, sandbox, {
 				timeout: 3000
-			});
+			})).wait();
 
 			if (!result) {
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
