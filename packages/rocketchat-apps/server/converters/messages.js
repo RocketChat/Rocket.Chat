@@ -45,7 +45,8 @@ export class AppMessagesConverter {
 			avatarUrl: msgObj.avatar,
 			alias: msgObj.alias,
 			customFields: msgObj.customFields,
-			attachments
+			attachments,
+			reactions: msgObj.reactions
 		};
 	}
 
@@ -103,7 +104,8 @@ export class AppMessagesConverter {
 			avatar: message.avatarUrl,
 			alias: message.alias,
 			customFields: message.customFields,
-			attachments
+			attachments,
+			reactions: message.reactions
 		};
 	}
 
