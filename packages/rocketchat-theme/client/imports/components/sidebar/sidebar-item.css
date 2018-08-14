@@ -41,8 +41,8 @@
 
 	&--unread,
 	&--mention {
-    	color: var(--sidebar-item-unread-color);
-			font-weight: var(--sidebar-item-unread-font-weight);
+		color: var(--sidebar-item-unread-color);
+		font-weight: var(--sidebar-item-unread-font-weight);
 	}
 
 	&__popup-active {
@@ -137,8 +137,8 @@
 }
 
 .rtl .sidebar-item__menu {
-  left: 0;
-  right: auto;
+	left: 0;
+	right: auto;
 }
 
 .rtl .sidebar-item__user-status {
