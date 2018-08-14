@@ -40,6 +40,14 @@ Meteor.startup(() => {
 		public: true,
 		enableQuery: {_id: 'Select_Parent', value: true}
 	});
+
+	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
+		group: 'Accounts',
+		section: 'Accounts_Default_User_Preferences',
+		type: 'boolean',
+		'public': true,
+		i18nLabel: 'Threads_in_sidebar'
+	});
 });
 
 

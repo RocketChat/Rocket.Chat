@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 	api.addFiles('config.js', 'server');
 	api.addFiles('auth.js', 'server');
 	api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
+	api.addFiles('lib/threadRoomType.js');
 
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
@@ -46,6 +47,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client'); // TODO: add wordcloud - but when doing this, ensure the sizes are based on the member-count (non-linear!)
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	api.addFiles('client/views/createThreadMessageAction.js', 'client');
+	api.addFiles('client/views/threadList.html', 'client');
+	api.addFiles('client/views/threadList.js', 'client');
 
 	//styling
 	api.addFiles('client/public/stylesheets/threading.css', 'client');

@@ -790,6 +790,10 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			...extraData
 		};
 
+		if (room.parentRoomId) {
+			subscription.parentRoomId = room.parentRoomId;
+		}
+
 		const result = this.insert(subscription);
 
 		RocketChat.models.Rooms.incUsersCountById(room._id);

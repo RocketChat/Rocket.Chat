@@ -22,3 +22,16 @@
 
 		max-height: 250px;
 }
+
+.create-thread-sidebar {
+	margin-bottom: 22px;
+}
+
+.create-thread-sidebar button {
+	font-size: 100%;
+	margin-top: 6px;
+}
+
+.create-thread-sidebar .rooms-list__list {
+	margin-bottom: 0px;
+}
