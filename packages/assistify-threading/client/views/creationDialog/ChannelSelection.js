@@ -11,11 +11,13 @@ function drawWords() {
 }
 
 Template.ChannelSelection.events({
-// To Do
+	'click .full-modal__back-button'(event, instance) {
+		instance.data.hideMe();
+	}
 });
 
 Template.ChannelSelection.helpers({
-// To Do
+	// To Do
 });
 
 Template.ChannelSelection.onRendered(function() {
