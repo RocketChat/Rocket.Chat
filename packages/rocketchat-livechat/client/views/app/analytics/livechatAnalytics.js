@@ -24,8 +24,8 @@ const analyticsAllOptions = () => {
 		name: 'Productivity',
 		value: 'productivity',
 		chartOptions: [{
-			name: 'First_response_time',
-			value: 'first-response-time'
+			name: 'Avg_first_response_time',
+			value: 'avg-first-response-time'
 		}, {
 			name: 'Best_first_response_time',
 			value: 'best_first_response_time'

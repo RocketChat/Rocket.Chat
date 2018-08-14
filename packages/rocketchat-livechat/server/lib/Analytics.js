@@ -45,7 +45,7 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
-		First_response_time(date) {
+		Avg_first_response_time(date) {
 			let frt = 0;
 			let count = 0;
 			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({metrics}) => {
@@ -289,7 +289,7 @@ export const Analytics = {
 				'title': 'Avg_response_time',
 				'value': this.secondsToHHMMSS(avgResponseTime.toFixed(2))
 			}, {
-				'title': 'First_response_time',
+				'title': 'Avg_first_response_time',
 				'value': this.secondsToHHMMSS(firstResponseTime.toFixed(2))
 			}, {
 				'title': 'Avg_reaction_time',
@@ -513,7 +513,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		First_response_time(from, to) {
+		Avg_first_response_time(from, to) {
 			const agentAvgRespTime = new Map(); // stores avg response time for each agent
 			const date = {
 				gte: from,
@@ -524,7 +524,7 @@ export const Analytics = {
 				head: [{
 					name: 'Agent'
 				}, {
-					name: 'First_response_time'
+					name: 'Avg_first_response_time'
 				}],
 				data: []
 			};
@@ -696,7 +696,7 @@ export const Analytics = {
 				head: [{
 					name: 'Agent'
 				}, {
-					name: 'First_reaction_time'
+					name: 'Avg_reaction_time'
 				}],
 				data: []
 			};

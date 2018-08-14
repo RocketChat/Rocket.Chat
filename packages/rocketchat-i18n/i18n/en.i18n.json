@@ -367,6 +367,7 @@
   "Avatar_URL": "Avatar URL",
   "Avatar_url_invalid_or_error": "The url provided is invalid or not accessible. Please try again, but with a different url.",
 	"Avg_chat_duration": "Avg Chat Duration",
+	"Avg_first_response_time": "Avg First Response Time",
   "Avg_response_time": "Avg Response Time",
   "Avg_reaction_time": "Avg Reaction Time",
   "away": "away",
