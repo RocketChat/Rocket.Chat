@@ -85,8 +85,10 @@ class AppClientOrchestrator {
 Meteor.startup(function _rlClientOrch() {
 	window.Apps = new AppClientOrchestrator();
 
-	Meteor.call('apps/is-enabled', (error, isEnabled) => {
-		window.Apps.load(isEnabled);
+	RocketChat.CachedCollectionManager.onLogin(() => {
+		Meteor.call('apps/is-enabled', (error, isEnabled) => {
+			window.Apps.load(isEnabled);
+		});
 	});
 });
 

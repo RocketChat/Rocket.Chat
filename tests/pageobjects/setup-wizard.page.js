@@ -14,6 +14,8 @@ class SetupWizard extends Page {
 	get siteName() { return browser.element('input[name="Site_Name"]'); }
 	get language() { return browser.element('select[name="Language"]'); }
 	get serverType() { return browser.element('select[name="Server_Type"]'); }
+	get registeredServer() { return browser.element('input[name="registerServer"][value="true"]'); }
+	get standaloneServer() { return browser.element('input[name="registerServer"][value="false"]'); }
 
 	login() {
 		browser.execute(function(email, password) {

@@ -37,6 +37,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/core.js');
 
+	api.addFiles('lib/settings.js');
+
 	// DEBUGGER
 	api.addFiles('server/lib/debug.js', 'server');
 
@@ -54,7 +56,6 @@ Package.onUse(function(api) {
 
 	// COMMON LIB
 	api.addFiles('lib/getURL.js');
-	api.addFiles('lib/settings.js');
 	api.addFiles('lib/callbacks.js');
 	api.addFiles('lib/fileUploadRestrictions.js');
 	api.addFiles('lib/getAvatarColor.js');
@@ -65,6 +66,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/RoomTypesCommon.js');
 	api.addFiles('lib/slashCommand.js');
 	api.addFiles('lib/Message.js');
+	api.addFiles('lib/MessageProperties.js');
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
@@ -85,6 +87,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
 	api.addFiles('server/functions/createRoom.js', 'server');
+	api.addFiles('server/functions/cleanRoomHistory.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
 	api.addFiles('server/functions/deleteUser.js', 'server');
 	api.addFiles('server/functions/getFullUserData.js', 'server');
@@ -139,9 +142,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
 
-	// CACHE
-	api.addFiles('server/startup/cache/CacheLoad.js', 'server');
-
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.js', 'server');
 
@@ -154,7 +154,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/blockUser.js', 'server');
 	api.addFiles('server/methods/checkRegistrationSecretURL.js', 'server');
 	api.addFiles('server/methods/checkUsernameAvailability.js', 'server');
-	api.addFiles('server/methods/cleanChannelHistory.js', 'server');
 	api.addFiles('server/methods/cleanRoomHistory.js', 'server');
 	api.addFiles('server/methods/createChannel.js', 'server');
 	api.addFiles('server/methods/createToken.js', 'server');
@@ -205,6 +204,7 @@ Package.onUse(function(api) {
 	// CLIENT LIB
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
+	api.addFiles('client/UserDeleted.js', 'client');
 	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');

@@ -85,11 +85,9 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.entries(languages).map(language => {
-			const obj = language[1];
-			obj.key = language[0];
-			return obj;
-		}).sort((a, b) => a.key - b.key);
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
 			'name': 'Default',
@@ -99,9 +97,9 @@ Template.admin.helpers({
 
 		return result;
 	},
-	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	isAppLanguage(key) {
+		const languageKey = RocketChat.settings.get('Language');
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');
@@ -415,16 +413,27 @@ Template.admin.events({
 	'click .rc-header__section-button .save'() {
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
-		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
-		if (!_.isEmpty(settings)) {
-			RocketChat.settings.batchSet(settings, function(err) {
-				if (err) {
-					return handleError(err);
-				}
-				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
-				toastr.success(TAPi18n.__('Settings_updated'));
-			});
+		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch() || [];
+		if (settings.length === 0) {
+			return;
 		}
+
+		RocketChat.settings.batchSet(settings, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+
+			TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
+
+			if (settings.some(({ _id }) => _id === 'Language')) {
+				const lng = Meteor.user().language
+					|| settings.filter(({ _id }) => _id === 'Language').shift().value
+					|| 'en';
+				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
+			}
+			toastr.success(TAPi18n.__('Settings_updated'));
+		});
+
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {

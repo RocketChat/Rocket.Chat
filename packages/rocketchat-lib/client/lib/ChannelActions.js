@@ -12,6 +12,10 @@ export function hide(type, rid, name) {
 		confirmButtonText: t('Yes_hide_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
+		dontAskAgain: {
+			action: 'hideRoom',
+			label: t('Hide_room')
+		},
 		html: false
 	}, async function() {
 		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {

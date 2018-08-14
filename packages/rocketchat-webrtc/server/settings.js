@@ -4,12 +4,12 @@ RocketChat.settings.addGroup('WebRTC', function() {
 		group: 'WebRTC',
 		'public': true
 	});
-	this.add('WebRTC_Enable_Private', true, {
+	this.add('WebRTC_Enable_Private', false, {
 		type: 'boolean',
 		group: 'WebRTC',
 		'public': true
 	});
-	this.add('WebRTC_Enable_Direct', true, {
+	this.add('WebRTC_Enable_Direct', false, {
 		type: 'boolean',
 		group: 'WebRTC',
 		'public': true

@@ -13,12 +13,11 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription) {
 			return false;
 		}
 
 		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	}
 });
-

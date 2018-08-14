@@ -67,7 +67,7 @@ Meteor.methods({
 			sort: {	ts: 1 }
 		}).map(function(message) {
 			const dateTime = moment(message.ts).locale(data.language).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br />${ RocketChat.Message.parse(message, data.language) }</p>`;
+			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ RocketChat.Message.parse(message, data.language) }</p>`;
 		}).join('');
 
 		Meteor.defer(function() {

@@ -39,7 +39,8 @@ RocketChat.settings.addGroup('OAuth', function() {
 					key: 'custom',
 					i18nLabel: 'Accounts_OAuth_Wordpress_server_type_custom'
 				}
-			]
+			],
+			i18nLabel: 'Server_Type'
 		});
 
 		const customOAuthQuery = [{

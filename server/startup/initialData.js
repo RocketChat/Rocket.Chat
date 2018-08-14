@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 Meteor.startup(function() {
-	Meteor.defer(() => RocketChat.models._CacheControl.withValue(false, function() {
+	Meteor.defer(() => {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				'default': true
@@ -201,5 +201,5 @@ Meteor.startup(function() {
 
 			return RocketChat.addUserToDefaultChannels(adminUser, true);
 		}
-	}));
+	});
 });

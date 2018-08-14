@@ -90,4 +90,12 @@ export class RoomTypesCommon {
 
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
+
+	/**
+	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
+	 * @param {RoomTypeConfig} roomConfig room's type configuration
+	 */
+	getConfig(roomType) {
+		return this.roomTypes[roomType];
+	}
 }

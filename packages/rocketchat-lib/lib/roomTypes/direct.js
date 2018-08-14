@@ -61,9 +61,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !mergeChannels && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return groupByType && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	}
 
 	getUserStatus(roomId) {
@@ -111,5 +110,24 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	/**
+	 * Returns details to use on notifications
+	 *
+	 * @param {object} room
+	 * @param {object} user
+	 * @param {string} notificationMessage
+	 * @return {object} Notification details
+	 */
+	getNotificationDetails(room, user, notificationMessage) {
+		if (!Meteor.isServer) {
+			return {};
+		}
+
+		const title = RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
+		const text = notificationMessage;
+
+		return { title, text };
 	}
 }

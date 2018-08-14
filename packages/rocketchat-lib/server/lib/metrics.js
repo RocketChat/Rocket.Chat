@@ -13,7 +13,7 @@ RocketChat.metrics = {};
 RocketChat.metrics.meteorMethods = new client.Summary({
 	name: 'rocketchat_meteor_methods',
 	help: 'summary of meteor methods count and time',
-	labelNames: ['method']
+	labelNames: ['method', 'has_connection', 'has_user']
 });
 
 RocketChat.metrics.rocketchatCallbacks = new client.Summary({
@@ -94,6 +94,10 @@ const setPrometheusData = () => {
 	RocketChat.metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	RocketChat.metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map(s => s.userId)).length, date);
 
+	if (!RocketChat.models.Statistics) {
+		return;
+	}
+
 	const statistics = RocketChat.models.Statistics.findLast();
 	if (!statistics) {
 		return;
@@ -117,7 +121,7 @@ const setPrometheusData = () => {
 	RocketChat.metrics.totalChannels.set(statistics.totalChannels, date);
 	RocketChat.metrics.totalPrivateGroups.set(statistics.totalPrivateGroups, date);
 	RocketChat.metrics.totalDirect.set(statistics.totalDirect, date);
-	RocketChat.metrics.totalLivechat.set(statistics.totlalLivechat, date);
+	RocketChat.metrics.totalLivechat.set(statistics.totalLivechat, date);
 
 	// Message statistics
 	RocketChat.metrics.totalMessages.set(statistics.totalMessages, date);
@@ -140,10 +144,17 @@ app.use('/metrics', (req, res) => {
 const server = http.createServer(app);
 
 let timer;
-RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
-	if (value === true) {
+const updatePrometheusConfig = () => {
+	const port = RocketChat.settings.get('Prometheus_Port');
+	const enabled = RocketChat.settings.get('Prometheus_Enabled');
+
+	if (port == null || enabled == null) {
+		return;
+	}
+
+	if (enabled === true) {
 		server.listen({
-			port: 9100,
+			port,
 			host: process.env.BIND_IP || '0.0.0.0'
 		});
 		timer = Meteor.setInterval(setPrometheusData, 5000);
@@ -151,4 +162,7 @@ RocketChat.settings.get('Prometheus_Enabled', (key, value) => {
 		server.close();
 		Meteor.clearInterval(timer);
 	}
-});
+};
+
+RocketChat.settings.get('Prometheus_Enabled', updatePrometheusConfig);
+RocketChat.settings.get('Prometheus_Port', updatePrometheusConfig);

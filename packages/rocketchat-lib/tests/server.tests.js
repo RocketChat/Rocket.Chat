@@ -3,6 +3,7 @@ import 'babel-polyfill';
 import assert from 'assert';
 
 import PasswordPolicyClass from '../server/lib/PasswordPolicyClass';
+import {messageProperties} from '../lib/MessageProperties';
 
 describe('PasswordPolicyClass', () => {
 	describe('Default options', () => {
@@ -201,6 +202,23 @@ describe('PasswordPolicyClass', () => {
 			assert.equal(passwordPolice.validate('AAAaAAA'), false);
 			assert.equal(passwordPolice.validate('AAAa1AAA'), false);
 			assert.equal(passwordPolice.validate('AAAa@AAA'), true);
+		});
+	});
+});
+
+const messages = {
+	'Sample Message': 14,
+	'Sample 1 ⛳': 10,
+	'Sample 2 ❤': 10,
+	'Sample 3 ⛳❤⛳❤': 13
+};
+
+describe('Message Properties', () => {
+	describe('Check Message Length', () => {
+		Object.keys(messages).forEach((objectKey) => {
+			it('should treat emojis as single characters', () => {
+				assert.equal(messageProperties.length(objectKey), messages[objectKey]);
+			});
 		});
 	});
 });

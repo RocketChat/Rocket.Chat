@@ -14,6 +14,14 @@ Template.messageAttachment.helpers({
 			msg: this.text
 		});
 	},
+	markdownInPretext() {
+		return this.mrkdwn_in && this.mrkdwn_in.includes('pretext');
+	},
+	parsedPretext() {
+		return renderMessageBody({
+			msg: this.pretext
+		});
+	},
 	loadImage() {
 		if (this.downloadImages !== true) {
 			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, {fields: {'settings.autoImageLoad' : 1}});

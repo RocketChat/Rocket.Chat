@@ -67,15 +67,12 @@ Meteor.methods({
 			}
 
 			if (type.rooms === true && RocketChat.authz.hasPermission(userId, 'view-c-room')) {
-				const username = RocketChat.models.Users.findOneById(userId, {
-					username: 1
-				}).username;
-
 				const searchableRoomTypes = Object.entries(RocketChat.roomTypes.roomTypes)
 					.filter((roomType)=>roomType[1].includeInRoomSearch())
 					.map((roomType)=>roomType[0]);
 
-				result.rooms = fetchRooms(userId, RocketChat.models.Rooms.findByNameAndTypesNotContainingUsername(regex, searchableRoomTypes, username, roomOptions).fetch());
+				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, {fields: {rid: 1}}).fetch().map(s => s.rid);
+				result.rooms = fetchRooms(userId, RocketChat.models.Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
 			}
 		} else if (type.users === true && rid) {
 			const subscriptions = RocketChat.models.Subscriptions.find({

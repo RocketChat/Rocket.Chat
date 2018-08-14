@@ -12,7 +12,7 @@ Template.sideNav.helpers({
 	},
 
 	footer() {
-		return RocketChat.settings.get('Layout_Sidenav_Footer');
+		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
 	roomType() {
@@ -34,7 +34,7 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
-		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
+		const viewMode = RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode ? viewMode : 'condensed';
 	},
 
@@ -76,16 +76,15 @@ Template.sideNav.onRendered(function() {
 });
 
 Template.sideNav.onCreated(function() {
-	this.mergedChannels = new ReactiveVar(false);
+	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.roomsListExhibitionMode': 1,
-				'settings.preferences.mergeChannels': 1
+				'settings.preferences.sidebarGroupByType': 1
 			}
 		});
-		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'mergeChannels');
-		this.mergedChannels.set(userPref ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
+		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));
 	});
 });

@@ -1,4 +1,4 @@
-/*globals defaultUserLanguage, KonchatNotification */
+/*globals KonchatNotification */
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -37,22 +37,21 @@ Template.accountPreferences.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.keys(languages).map((key) => {
-			const language = languages[key];
-			return _.extend(language, { key });
+		const result = Object.entries(languages)
+			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
+
+		result.unshift({
+			'name': 'Default',
+			'en': 'Default',
+			'key': ''
 		});
 
-		return _.sortBy(result, 'key');
-	},
-	userLanguage(key) {
-		const user = Meteor.user();
-		let result = undefined;
-		if (user.language) {
-			result = user.language === key;
-		} else if (defaultUserLanguage()) {
-			result = defaultUserLanguage() === key;
-		}
 		return result;
+	},
+	isUserLanguage(key) {
+		const languageKey = Meteor.user().language;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	checked(property, value, defaultValue=undefined) {
 		return checkedSelected(property, value, defaultValue);
@@ -81,7 +80,7 @@ Template.accountPreferences.helpers({
 		return RocketChat.getUserPreference(Meteor.user(), 'idleTimeLimit');
 	},
 	defaultIdleTimeLimit() {
-		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit');
+		return RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit');
 	},
 	defaultDesktopNotification() {
 		return notificationLabels[RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications')];
@@ -100,6 +99,9 @@ Template.accountPreferences.helpers({
 	},
 	notificationsSoundVolume() {
 		return RocketChat.getUserPreference(Meteor.user(), 'notificationsSoundVolume');
+	},
+	dontAskAgainList() {
+		return RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
 	}
 });
 
@@ -160,6 +162,9 @@ Template.accountPreferences.onCreated(function() {
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
+		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map(option => {
+			return {action: option.value, label: option.text};
+		});
 
 		let reload = false;
 
@@ -187,7 +192,7 @@ Template.accountPreferences.onCreated(function() {
 			reload = true;
 		}
 
-		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeoutLimit') : parseInt($('input[name=idleTimeLimit]').val());
+		const idleTimeLimit = $('input[name=idleTimeLimit]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_idleTimeLimit') : parseInt($('input[name=idleTimeLimit]').val());
 		data.idleTimeLimit = idleTimeLimit;
 		if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
 			localStorage.setItem('idleTimeLimit', idleTimeLimit);
@@ -309,5 +314,14 @@ Template.accountPreferences.events({
 			const $audio = $(`audio#${ audio }`);
 			return $audio && $audio[0] && $audio[0].play();
 		}
+	},
+	'click .js-dont-ask-remove'(e) {
+		e.preventDefault();
+		const selectEl = document.getElementById('dont-ask');
+		const options = selectEl.options;
+		const selectedOption = selectEl.value;
+		const optionIndex = Array.from(options).findIndex(option => option.value === selectedOption);
+
+		selectEl.remove(optionIndex);
 	}
 });

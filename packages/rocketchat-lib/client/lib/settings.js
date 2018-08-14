@@ -9,7 +9,8 @@
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
-	userRelated: false
+	userRelated: false,
+	listenChangesForLoggedUsersOnly: true
 });
 
 RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection;
@@ -82,6 +83,10 @@ Meteor.startup(function() {
 				});
 			}
 		}, 100);
+		const documentDomain = RocketChat.settings.get('Document_Domain');
+		if (documentDomain) {
+			window.document.domain = documentDomain;
+		}
 		return c.stop();
 	});
 });

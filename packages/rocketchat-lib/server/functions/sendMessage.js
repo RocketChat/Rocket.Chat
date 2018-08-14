@@ -20,7 +20,7 @@ const validateAttachmentsFields = attachmentFields => {
 		short: Boolean
 	}));
 
-	check(attachmentFields, Match.ObjectIncluding({
+	check(attachmentFields, objectMaybeIncluding({
 		title: String,
 		value: String
 	}));
@@ -30,7 +30,7 @@ const validateAttachment = attachment => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: String,
+		ts: Match.OneOf(String, Match.Integer),
 		thumb_url: String,
 		message_link: String,
 		collapsed: Boolean,
@@ -89,15 +89,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 
 	if (message.ts == null) {
 		message.ts = new Date();
-	}
-
-	if (!room.usernames || room.usernames.length === 0) {
-		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
-		if (updated_room) {
-			room = updated_room;
-		} else {
-			room.usernames = [];
-		}
 	}
 
 	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {

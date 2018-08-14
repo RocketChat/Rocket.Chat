@@ -18,6 +18,10 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
+		if (RocketChat.authz.canAccessRoom(null, null, doc)) {
+			return true;
+		}
+
 		return false;
 	},
 	update(userId, doc) {

@@ -72,7 +72,7 @@ describe('Mention', function() {
 				'@rocket.cat',
 				' @rocket.cat ',
 				'hello @rocket.cat',
-				'hello,@rocket.cat',
+				//'hello,@rocket.cat', // this test case is ignored since is not compatible with the message box behavior
 				'@rocket.cat, hello',
 				'@rocket.cat,hello',
 				'hello @rocket.cat how are you?'
@@ -190,7 +190,7 @@ describe('replace methods', function() {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mention.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link-me mention-link-all background-attention-color">@all</a>', result);
+			assert.equal('<a class="mention-link mention-link-me mention-link-all">@all</a>', result);
 		});
 		const str2 = '@rocket.cat';
 		it(`should render for ${ str2 }`, () => {
@@ -208,7 +208,7 @@ describe('replace methods', function() {
 		});
 		it('should render for me', () => {
 			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="">@me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link-me" data-username="me" title="">@me</a>');
 		});
 	});
 
@@ -218,7 +218,7 @@ describe('replace methods', function() {
 		});
 		it('should render for @all', () => {
 			const result = mention.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link-me mention-link-all background-attention-color">@all</a>', result);
+			assert.equal('<a class="mention-link mention-link-me mention-link-all">@all</a>', result);
 		});
 
 		const str2 = '@rocket.cat';
@@ -245,7 +245,7 @@ describe('replace methods', function() {
 		});
 		it('should render for me', () => {
 			const result = mention.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link-me background-primary-action-color" data-username="me" title="me">Me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link-me" data-username="me" title="me">Me</a>');
 		});
 	});
 

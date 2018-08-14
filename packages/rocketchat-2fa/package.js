@@ -30,5 +30,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/models/users.js', 'server');
 
+	api.addFiles('server/startup/settings.js', 'server');
 	api.addFiles('server/loginHandler.js', 'server');
 });

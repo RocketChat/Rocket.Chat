@@ -265,6 +265,13 @@ Template.livechatAppearance.events({
 	'change .js-input-check'(e, instance) {
 		instance[e.currentTarget.name].set(e.currentTarget.checked);
 	},
+	'change .preview-settings, keyup .preview-settings'(e, instance) {
+		let value = e.currentTarget.value;
+		if (e.currentTarget.type === 'radio') {
+			value = value === 'true';
+		}
+		instance[e.currentTarget.name].set(value);
+	},
 	'click .reset-settings'(e, instance) {
 		e.preventDefault();
 
@@ -309,7 +316,6 @@ Template.livechatAppearance.events({
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
-
 		const settings = [
 			{
 				_id: 'Livechat_title',

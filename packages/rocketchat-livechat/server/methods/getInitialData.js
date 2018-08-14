@@ -21,6 +21,7 @@ Meteor.methods({
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
 			videoCall: null,
+			fileUpload: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null
@@ -68,6 +69,7 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
@@ -86,7 +88,6 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
-
 		return info;
 	}
 });

@@ -2,7 +2,7 @@
 /* globals expect */
 /* eslint no-unused-vars: 0 */
 
-import {getCredentials, api, login, request, credentials, directMessage, log } from '../../data/api-data.js';
+import {getCredentials, api, login, request, credentials, directMessage, log, apiUsername, apiEmail } from '../../data/api-data.js';
 import {adminEmail, password} from '../../data/user.js';
 import supertest from 'supertest';
 
@@ -135,5 +135,98 @@ describe('[Direct Messages]', function() {
 				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
+	});
+
+	describe('fname property', () => {
+		const username = `fname_${ apiUsername }`;
+		const name = `Name fname_${ apiUsername }`;
+		const updatedName = `Updated Name fname_${ apiUsername }`;
+		const email = `fname_${ apiEmail }`;
+		let userId;
+		let directMessageId;
+
+		before((done) => {
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name,
+					username,
+					password,
+					active: true,
+					roles: ['user'],
+					joinDefaultChannels: true,
+					verified: true
+				})
+				.expect((res) => {
+					userId = res.body.user._id;
+				})
+				.end(done);
+		});
+
+		before((done) => {
+			request.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: `@${ username }`,
+					text: 'This message was sent using the API'
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
+					expect(res.body).to.have.nested.property('message.rid');
+					directMessageId = res.body.message.rid;
+				})
+				.end(done);
+		});
+
+		it('should have fname property', (done) => {
+			request.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: directMessageId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('name', username);
+					expect(res.body.subscription).to.have.property('fname', name);
+				})
+				.end(done);
+		});
+
+		it('should update user\'s name', (done) => {
+			request.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId,
+					data: {
+						name: updatedName
+					}
+				})
+				.expect((res) => {
+					expect(res.body.user).to.have.property('name', updatedName);
+				})
+				.end(done);
+		});
+
+		it('should have fname property updated', (done) => {
+			request.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: directMessageId
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('name', username);
+					expect(res.body.subscription).to.have.property('fname', updatedName);
+				})
+				.end(done);
+		});
 	});
 });

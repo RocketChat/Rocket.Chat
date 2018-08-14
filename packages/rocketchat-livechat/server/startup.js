@@ -4,11 +4,14 @@ Meteor.startup(() => {
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		return room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
+		return room && room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
 	});
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user, extraData) {
-		return room.t === 'l' && extraData && extraData.token && room.v && room.v.token === extraData.token;
+		if (!room && extraData && extraData.rid) {
+			room = RocketChat.models.Rooms.findOneById(extraData.rid);
+		}
+		return room && room.t === 'l' && extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	});
 
 	RocketChat.callbacks.add('beforeLeaveRoom', function(user, room) {
