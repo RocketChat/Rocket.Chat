@@ -5,12 +5,6 @@ Meteor.methods({
 		check(sort, Match.Optional(String));
 		check(limit, Match.Optional(Number));
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'requestsList'
-			});
-		}
-
 		const options = {
 			fields: {
 				name: 1,
