@@ -1,9 +1,5 @@
-.create-thread {
-	margin-top: 15%;
-
-	max-width: 100%;
-
-	padding: 0.25rem 2rem;
+.create-thread .create-channel__title {
+	padding: 25% 0 1rem;
 }
 
 .create-thread header.create-channel__header {

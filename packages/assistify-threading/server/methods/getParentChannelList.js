@@ -1,4 +1,3 @@
-/* globals _ */
 Meteor.methods({
 	'getParentChannelList'({sort, limit}) {
 		this.unblock();
@@ -8,6 +7,8 @@ Meteor.methods({
 		const options = {
 			fields: {
 				name: 1,
+				usersCount: 1,
+				msgs: 1,
 				t: 1
 			},
 			sort: {
@@ -15,7 +16,7 @@ Meteor.methods({
 			}
 		};
 
-		if (_.isNumber(limit)) {
+		if (Number.isInteger(limit)) {
 			options.limit = limit;
 		}
 
@@ -30,6 +31,12 @@ Meteor.methods({
 					options.sort = {
 						msgs: -1
 					};
+					break;
+				case 'members':
+					options.sort = {
+						usersCount: -1
+					};
+					break;
 			}
 		}
 

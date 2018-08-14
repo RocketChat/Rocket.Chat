@@ -1,7 +1,7 @@
 /* globals TAPi18n, AutoComplete */
 /* globals _ */
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {ReactiveVar} from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -10,7 +10,7 @@ const acEvents = {
 	},
 	'click .rc-input__icon-svg--book-alt'(e, t) {
 		e.preventDefault();
-		t.channelSelectionEnabled.set(true);
+		t.showChannelSelection.set(true);
 	},
 	'click #more-topics'(e, t) {
 		e.preventDefault();
@@ -104,14 +104,14 @@ Template.CreateThread.helpers({
 		const instance = Template.instance();
 		const parentChannels = instance.parentChannelsList.get();
 
-		function getRandomArbitrary(min, max) {
-			return Math.random() * (max - min) + min;
+		function getSize(channel) {
+			return Math.random() * (4 - 10) + 4;
 		}
 
 		function getWordList() {
 			const list = [];
 			parentChannels.forEach(function(parentChannel) {
-				list.push([parentChannel.name, getRandomArbitrary(4, 10)]);
+				list.push([parentChannel.name, getSize(parentChannel)]);
 			});
 			return list;
 		}
@@ -154,6 +154,16 @@ Template.CreateThread.helpers({
 			hover: onWordHover()
 			//setCanvas: getCanvas
 		};
+	},
+
+	hideWordcloud() {
+		const instance = Template.instance();
+
+		const hideMe = function() {
+			instance.showChannelSelection.set(false);
+		};
+
+		return hideMe;
 	}
 });
 
@@ -223,7 +233,7 @@ Template.CreateThread.onRendered(function() {
 
 	instance.ac.element = parentChannelElement;
 	instance.ac.$element = $(instance.ac.element);
-	instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+	instance.ac.$element.on('autocompleteselect', function(e, { item }) {
 		instance.parentChannel.set(item.name);
 		$('input[name="parentChannel"]').val(item.name);
 		instance.debounceValidateParentChannel(item.name);
@@ -242,7 +252,7 @@ Template.CreateThread.onRendered(function() {
 			instance.ac.element = this.find('#parentChannel-search');
 			instance.ac.$element = $(instance.ac.element);
 			$('input[name="parentChannel-search"]').val(parentChannel.name); // copy the selected value to screen field
-			instance.ac.$element.on('autocompleteselect', function(e, {item}) {
+			instance.ac.$element.on('autocompleteselect', function(e, { item }) {
 				instance.parentChannel.set(item.name);
 				$('input[name="parentChannel-search"]').val(item.name);
 				instance.debounceValidateParentChannel(item.name);

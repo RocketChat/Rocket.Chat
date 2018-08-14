@@ -60,7 +60,9 @@
 						</form>
 					</div>
 				</section>
-				{{else}} {{> ChannelSelection properties=getWordcloudProperties}} {{/unless}}
+				{{else}}
+					{{> ChannelSelection properties=getWordcloudProperties hideMe=hideWordcloud}}
+				{{/unless}}
 			</div>
 		</div>
 	</div>
