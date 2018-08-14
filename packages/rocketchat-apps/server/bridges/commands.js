@@ -158,7 +158,7 @@ export class AppCommandsBridge {
 		});
 
 		return line.split(' ').map(item => {
-			return item.replace(/\u2008/g, ' ');
+			return item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"');
 		});
 	}
 
