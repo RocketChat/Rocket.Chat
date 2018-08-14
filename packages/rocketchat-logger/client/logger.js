@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 const Template = Package.templating.Template;
 
 Template.log = false;

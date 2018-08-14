@@ -1,14 +1,17 @@
 /* globals isSetNotNull */
+import s from 'underscore.string';
+
 /*
  * emojiParser is a function that will replace emojis
  * @param {Object} message - The message object
  */
 RocketChat.callbacks.add('renderMessage', (message) => {
-	if (isSetNotNull(() => Meteor.user().settings.preferences.useEmojis) && !Meteor.user().settings.preferences.useEmojis) {
+	if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) &&
+		!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
 		return message;
 	}
 
-	if (_.trim(message.html)) {
+	if (s.trim(message.html)) {
 		//&#39; to apostrophe (') for emojis such as :')
 		message.html = message.html.replace(/&#39;/g, '\'');
 
@@ -27,7 +30,7 @@ RocketChat.callbacks.add('renderMessage', (message) => {
 					continue;
 				}
 
-				if (_.trim(child.text()) === '') {
+				if (s.trim(child.text()) === '') {
 					continue;
 				}
 

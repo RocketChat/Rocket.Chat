@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'underscore',
 		'tracker',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
@@ -30,6 +29,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupConfig.html', 'client');
 	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
 	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommandPreview.html', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommandPreview.js', 'client');
 	api.addFiles('client/popup/messagePopupUser.html', 'client');
 
 	api.addFiles('client/message.js', 'client');

@@ -1,7 +1,6 @@
 import './settings.js';
 import './models/Rooms.js';
-
-const googleLanguage = Npm.require('@google-cloud/language');
+import googleLanguage from '@google-cloud/language';
 
 let languageClient;
 

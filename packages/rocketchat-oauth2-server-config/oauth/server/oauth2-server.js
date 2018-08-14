@@ -79,5 +79,5 @@ RocketChat.API.v1.addAuthMethod(function() {
 	if (user == null) {
 		return;
 	}
-	return { user: _.omit(user, '$loki') };
+	return { user };
 });

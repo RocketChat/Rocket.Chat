@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 if (_.isUndefined(RocketChat.models.Users)) {
 	RocketChat.models.Users = {};
 }
@@ -9,7 +11,7 @@ Object.assign(RocketChat.models.Users, {
 			roles: roleName
 		};
 
-		return !_.isUndefined(this.findOne(query));
+		return !_.isUndefined(this.findOne(query, {fields: {roles: 1}}));
 	},
 
 	findUsersInRoles(roles, scope, options) {

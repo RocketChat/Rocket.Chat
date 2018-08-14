@@ -1,4 +1,5 @@
 /* global WebAppHashing, WebAppInternals */
+import _ from 'underscore';
 
 import sizeOf from 'image-size';
 import mime from 'mime-type/with-db';
@@ -16,6 +17,20 @@ const assets = {
 	logo: {
 		label: 'logo (svg, png, jpg)',
 		defaultUrl: 'images/logo/logo.svg',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+			width: undefined,
+			height: undefined
+		},
+		wizard: {
+			step: 3,
+			order: 2
+		}
+	},
+	background: {
+		label: 'login background (svg, png, jpg)',
+		defaultUrl: undefined,
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
@@ -75,7 +90,7 @@ const assets = {
 	},
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
-		defaultUrl: 'images/logo/512x512.png',
+		defaultUrl: 'images/logo/android-chrome-512x512.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -101,6 +116,16 @@ const assets = {
 			extensions: ['png'],
 			width: 180,
 			height: 180
+		}
+	},
+	tile_70: {
+		label: 'mstile 70x70 (png)',
+		defaultUrl: 'images/logo/mstile-70x70.png',
+		constraints: {
+			type: 'image',
+			extensions: ['png'],
+			width: 144,
+			height: 144
 		}
 	},
 	tile_144: {
@@ -295,7 +320,8 @@ function addAssetToSetting(key, value) {
 		fileConstraints: value.constraints,
 		i18nLabel: value.label,
 		asset: key,
-		public: true
+		public: true,
+		wizard: value.wizard
 	});
 }
 
@@ -390,7 +416,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
 				action: 'Managing_assets'
 			});
@@ -408,7 +434,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
 				action: 'Managing_assets'
 			});
@@ -426,7 +452,7 @@ Meteor.methods({
 
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
 		if (!hasPermission) {
-			throw new Meteor.Error('error-action-now-allowed', 'Managing assets not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
 				action: 'Managing_assets'
 			});

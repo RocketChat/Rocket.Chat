@@ -1,4 +1,6 @@
 /* globals AutoComplete */
+import _ from 'underscore';
+
 //  Events on template instances, sent to the autocomplete class
 const acEvents = {
 	'keydown'(e, t) {

@@ -45,19 +45,16 @@ Meteor.startup(function() {
 			'message-mobile'
 		],
 		action(event) {
-			const data = Blaze.getData(event.currentTarget);
-
 			event.stopPropagation();
-
-			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
-			});
+			RocketChat.EmojiPicker.open(event.currentTarget, emoji => Meteor.call('setReaction', `:${ emoji }:`, this._arguments[1]._id));
 		},
 		condition(message) {
 			const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
 			const user = Meteor.user();
 
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			if (!room) {
+				return false;
+			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
 			} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 				return false;

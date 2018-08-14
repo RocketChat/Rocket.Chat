@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 class ModelUsers extends RocketChat.models._Base {
 	constructor() {
 		super(...arguments);
@@ -9,8 +12,6 @@ class ModelUsers extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'active': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'statusConnection': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'type': 1 });
-
-		this.cache.ensureIndex('username', 'unique');
 	}
 
 	findOneByImportId(_id, options) {
@@ -18,19 +19,23 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findOneByUsername(username, options) {
-		const query =	{username};
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ username }$`, 'i');
+		}
+
+		const query = {username};
 
 		return this.findOne(query, options);
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query =	{'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i')};
+		const query = {'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i')};
 
 		return this.findOne(query, options);
 	}
 
 	findOneAdmin(admin, options) {
-		const query =	{admin};
+		const query = {admin};
 
 		return this.findOne(query, options);
 	}
@@ -44,12 +49,22 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.findOne(query, options);
 	}
 
+	findOneById(userId, options) {
+		const query = { _id: userId };
+
+		return this.findOne(query, options);
+	}
 
 	// FIND
 	findById(userId) {
-		const query =	{_id: userId};
+		const query = { _id: userId };
 
 		return this.find(query);
+	}
+
+	findByIds(users, options) {
+		const query = { _id: { $in: users } };
+		return this.find(query, options);
 	}
 
 	findUsersNotOffline(options) {
@@ -67,33 +82,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 
 	findByUsername(username, options) {
-		const query =	{username};
-
-		return this.find(query, options);
-	}
-
-	findUsersByUsernamesWithHighlights(usernames, options) {
-		if (this.useCache) {
-			const result = {
-				fetch() {
-					return RocketChat.models.Users.getDynamicView('highlights').data().filter(record => usernames.indexOf(record.username) > -1);
-				},
-				count() {
-					return result.fetch().length;
-				},
-				forEach(fn) {
-					return result.fetch().forEach(fn);
-				}
-			};
-			return result;
-		}
-
-		const query = {
-			username: { $in: usernames },
-			'settings.preferences.highlights.0': {
-				$exists: true
-			}
-		};
+		const query = { username };
 
 		return this.find(query, options);
 	}
@@ -194,13 +183,13 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findLDAPUsers(options) {
-		const query =	{ldap: true};
+		const query = {ldap: true};
 
 		return this.find(query, options);
 	}
 
 	findCrowdUsers(options) {
-		const query =	{crowd: true};
+		const query = {crowd: true};
 
 		return this.find(query, options);
 	}
@@ -233,11 +222,40 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findUsersWithUsernameByIds(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			},
+			username: {
+				$exists: 1
+			}
+		};
+
+		return this.find(query, options);
+	}
+
+	findUsersWithUsernameByIdsNotOffline(ids, options) {
+		const query = {
+			_id: {
+				$in: ids
+			},
+			username: {
+				$exists: 1
+			},
+			status: {
+				$in: ['online', 'away', 'busy']
+			}
+		};
+
+		return this.find(query, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
 
-		const query =	{_id};
+		const query = {_id};
 
 		const update = {
 			$addToSet: {
@@ -428,11 +446,26 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update(_id, update);
 	}
 
-	setPreferences(_id, preferences) {
+	clearSettings(_id) {
 		const update = {
 			$set: {
-				'settings.preferences': preferences
+				settings: {}
 			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	setPreferences(_id, preferences) {
+		const settings = Object.assign(
+			{},
+			...Object.keys(preferences).map(key => {
+				return {[`settings.preferences.${ key }`]: preferences[key]};
+			})
+		);
+
+		const update = {
+			$set: settings
 		};
 
 		return this.update(_id, update);
@@ -500,6 +533,46 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	setReason(_id, reason) {
+		const update = {
+			$set: {
+				reason
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetReason(_id) {
+		const update = {
+			$unset: {
+				reason: true
+			}
+		};
+
+		return this.update(_id, update);
+	}
+
+	addBannerById(_id, banner) {
+		const update = {
+			$set: {
+				[`banners.${ banner.id }`]: banner
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	removeBannerById(_id, banner) {
+		const update = {
+			$unset: {
+				[`banners.${ banner.id }`]: true
+			}
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
@@ -538,7 +611,17 @@ Find users to send a message by email if:
 			'emails.verified': true
 		};
 
-		return this.find(query, { fields: { name: 1, username: 1, emails: 1, 'settings.preferences.emailNotificationMode': 1 } });
+		const options = {
+			fields: {
+				name: 1,
+				username: 1,
+				emails: 1,
+				'settings.preferences.emailNotificationMode': 1,
+				language: 1
+			}
+		};
+
+		return this.find(query, options);
 	}
 }
 

@@ -1,3 +1,4 @@
+import _ from 'underscore';
 
 /*
 * RocketChat.settings holds all packages settings

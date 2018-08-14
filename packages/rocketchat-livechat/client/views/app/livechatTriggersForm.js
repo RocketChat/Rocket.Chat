@@ -56,12 +56,16 @@ Template.livechatTriggersForm.events({
 
 		$('.each-action').each(function() {
 			if ($('.trigger-action', this).val() === 'send-message') {
+				const params = {
+					sender: $('[name=send-message-sender]', this).val(),
+					msg: $('[name=send-message-msg]', this).val()
+				};
+				if (params.sender === 'custom') {
+					params.name = $('[name=send-message-name]', this).val();
+				}
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					params: {
-						name: $('[name=send-message-name]', this).val(),
-						msg: $('[name=send-message-msg]', this).val()
-					}
+					params
 				});
 			} else {
 				data.actions.push({

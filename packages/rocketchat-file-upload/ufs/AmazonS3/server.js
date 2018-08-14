@@ -1,5 +1,5 @@
-import {_} from 'meteor/underscore';
 import {UploadFS} from 'meteor/jalik:ufs';
+import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 import stream from 'stream';
 
@@ -138,7 +138,7 @@ export class AmazonS3Store extends UploadFS.Store {
 				Key: this.getPath(file),
 				Body: writeStream,
 				ContentType: file.type,
-				ContentDisposition: `inline; filename=${ file.name }`
+				ContentDisposition: `inline; filename="${ encodeURI(file.name) }"`
 
 			}, (error) => {
 				if (error) {

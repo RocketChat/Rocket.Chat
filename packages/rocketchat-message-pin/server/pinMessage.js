@@ -1,6 +1,26 @@
+const recursiveRemove = (msg, deep = 1) => {
+	if (!msg) {
+		return;
+	}
+
+	if (deep > RocketChat.settings.get('Message_QuoteChainLimit')) {
+		delete msg.attachments;
+		return msg;
+	}
+
+	msg.attachments = Array.isArray(msg.attachments) ? msg.attachments.map(
+		nestedMsg => recursiveRemove(nestedMsg, deep + 1)
+	) : null;
+
+	return msg;
+};
+
+const shouldAdd = (attachments, attachment) => !attachments.some(({message_link}) => message_link && message_link === attachment.message_link);
+
 Meteor.methods({
 	pinMessage(message, pinnedAt) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'pinMessage'
 			});
@@ -13,8 +33,8 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription) {
 			return false;
 		}
 
@@ -31,27 +51,48 @@ Meteor.methods({
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
 		}
 
-		const me = RocketChat.models.Users.findOneById(Meteor.userId());
+		const me = RocketChat.models.Users.findOneById(userId);
+
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
 		originalMessage.pinnedBy = {
-			_id: Meteor.userId(),
+			_id: userId,
 			username: me.username
 		};
 
 		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
+
 		RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 
-		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
-			attachments: [
-				{
-					'text': originalMessage.msg,
-					'author_name': originalMessage.u.username,
-					'author_icon': getAvatarUrlFromUsername(originalMessage.u.username),
-					'ts': originalMessage.ts
+		const attachments = [];
+
+		if (Array.isArray(originalMessage.attachments)) {
+			originalMessage.attachments.forEach(attachment => {
+				if (!attachment.message_link || shouldAdd(attachments, attachment)) {
+					attachments.push(attachment);
 				}
-			]
-		});
+			});
+		}
+
+		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
+			'message_pinned',
+			originalMessage.rid,
+			'',
+			me,
+			{
+				attachments: [
+					{
+						text: originalMessage.msg,
+						author_name: originalMessage.u.username,
+						author_icon: getAvatarUrlFromUsername(
+							originalMessage.u.username
+						),
+						ts: originalMessage.ts,
+						attachments: recursiveRemove(attachments)
+					}
+				]
+			}
+		);
 	},
 	unpinMessage(message) {
 		if (!Meteor.userId()) {
@@ -67,9 +108,8 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
-
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription) {
 			return false;
 		}
 

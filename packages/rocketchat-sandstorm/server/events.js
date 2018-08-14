@@ -1,5 +1,7 @@
 /* globals getHttpBridge, waitPromise */
 
+import _ from 'underscore';
+
 RocketChat.Sandstorm.notify = function() {};
 
 if (process.env.SANDSTORM === '1') {

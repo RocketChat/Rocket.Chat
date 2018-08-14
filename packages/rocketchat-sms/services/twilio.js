@@ -1,11 +1,15 @@
 /* globals RocketChat */
+import twilio from 'twilio';
+
 class Twilio {
 	constructor() {
 		this.accountSid = RocketChat.settings.get('SMS_Twilio_Account_SID');
 		this.authToken = RocketChat.settings.get('SMS_Twilio_authToken');
 	}
 	parse(data) {
-		return {
+		let numMedia = 0;
+
+		const returnData = {
 			from: data.From,
 			to: data.To,
 			body: data.Body,
@@ -21,9 +25,37 @@ class Twilio {
 				fromZip: data.FromZip
 			}
 		};
+
+		if (data.NumMedia) {
+			numMedia = parseInt(data.NumMedia, 10);
+		}
+
+		if (isNaN(numMedia)) {
+			console.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			return returnData;
+		}
+
+		returnData.media = [];
+
+		for (let mediaIndex = 0; mediaIndex < numMedia; mediaIndex++) {
+			const media = {
+				'url': '',
+				'contentType': ''
+			};
+
+			const mediaUrl = data[`MediaUrl${ mediaIndex }`];
+			const contentType = data[`MediaContentType${ mediaIndex }`];
+
+			media.url = mediaUrl;
+			media.contentType = contentType;
+
+			returnData.media.push(media);
+		}
+
+		return returnData;
 	}
 	send(fromNumber, toNumber, message) {
-		const client = Npm.require('twilio')(this.accountSid, this.authToken);
+		const client = twilio(this.accountSid, this.authToken);
 
 		client.messages.create({
 			to: toNumber,

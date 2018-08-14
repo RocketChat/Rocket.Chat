@@ -1,5 +1,6 @@
 /* globals fileUploadHandler */
 
+import s from 'underscore.string';
 import toastr from 'toastr';
 import mime from 'mime-type/with-db';
 
@@ -32,7 +33,7 @@ Template.avatarPrompt.helpers({
 	},
 	suggestAvatar(service) {
 		const suggestions = Template.instance().suggestions.get();
-		return RocketChat.settings.get(`Accounts_OAuth_${ _.capitalize(service) }`) && !suggestions.avatars[service];
+		return RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service) }`) && !suggestions.avatars[service];
 	},
 	upload() {
 		return Template.instance().upload.get();
@@ -61,7 +62,7 @@ Template.avatarPrompt.events({
 				}
 			});
 		} else if (this.service === 'url') {
-			if (_.trim($('#avatarurl').val())) {
+			if (s.trim($('#avatarurl').val())) {
 				Meteor.call('setAvatarFromService', $('#avatarurl').val(), '', this.service, function(err) {
 					if (err) {
 						if (err.details.timeToReset && err.details.timeToReset) {
@@ -123,7 +124,7 @@ Template.avatarPrompt.events({
 		}
 	},
 	'click .login-with-service'(event, template) {
-		const loginWithService = `loginWith${ _.capitalize(this) }`;
+		const loginWithService = `loginWith${ s.capitalize(this) }`;
 		const serviceConfig = {};
 		Meteor[loginWithService](serviceConfig, function(error) {
 			if (error && error.error) {

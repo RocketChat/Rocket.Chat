@@ -1,0 +1,3 @@
+type Mutation {
+	addReactionToMessage(id: MessageIdentifier!, icon: String!): Message
+}

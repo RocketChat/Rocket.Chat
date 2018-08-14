@@ -13,7 +13,13 @@ class EmojiCustom extends RocketChat.models._Base {
 	}
 
 	//find
-	findByNameOrAlias(name, options) {
+	findByNameOrAlias(emojiName, options) {
+		let name = emojiName;
+
+		if (typeof emojiName === 'string') {
+			name = emojiName.replace(/:/g, '');
+		}
+
 		const query = {
 			$or: [
 				{name},

@@ -16,14 +16,9 @@
 					</label>
 				</div>
 			</div>
-			{{#if canCreate}}
-				<button class="rc-button rc-button--square rc-tooltip" aria-label="{{ _ 'Create_A_New_Channel' }}">
-					{{> icon block="toolbar__icon" icon="plus" classes="toolbar__search-create-channel"}}
-				</button>
-			{{/if}}
 		</form>
-		{{> messagePopup popupConfig}}
 	</div>
+	{{> messagePopup popupConfig}}
 </template>
 
 <template name="toolbarSearchList">

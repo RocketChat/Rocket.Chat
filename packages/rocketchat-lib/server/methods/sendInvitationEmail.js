@@ -1,3 +1,4 @@
+import _ from 'underscore';
 
 Meteor.methods({
 	sendInvitationEmail(emails) {

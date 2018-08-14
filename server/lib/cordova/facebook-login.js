@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function getIdentity(accessToken) {
 	try {
 		return HTTP.get('https://graph.facebook.com/me', {

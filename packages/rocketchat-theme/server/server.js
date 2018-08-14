@@ -1,5 +1,6 @@
 /* globals WebAppHashing */
 
+import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
 import crypto from 'crypto';

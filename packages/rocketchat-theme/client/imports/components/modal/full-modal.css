@@ -12,6 +12,8 @@
 	&__wrapper {
 		position: relative;
 
+		display: flex;
+
 		width: var(--modal-wrapper-width);
 		margin: var(--modal-wrapper-margin) 0;
 	}
@@ -22,6 +24,8 @@
 		right: 0;
 
 		display: flex;
+
+		margin: 0 30px;
 
 		color: var(--modal-back-button-color);
 		align-items: center;

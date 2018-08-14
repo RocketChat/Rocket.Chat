@@ -52,7 +52,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			if (ldap.isUserInGroup (loginRequest.username)) {
+			if (ldap.isUserInGroup (loginRequest.username, users[0].dn)) {
 				ldapUser = users[0];
 			} else {
 				throw new Error('User not in a valid group');
@@ -126,7 +126,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 		syncUserData(user, ldapUser);
 
-		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
+		if (RocketChat.settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
 		}
 
@@ -147,5 +147,11 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	// Create new user
-	return addLdapUser(ldapUser, username, loginRequest.ldapPass);
+	const result = addLdapUser(ldapUser, username, loginRequest.ldapPass);
+
+	if (result instanceof Error) {
+		throw result;
+	}
+
+	return result;
 });

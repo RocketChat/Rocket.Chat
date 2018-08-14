@@ -3,7 +3,7 @@
 		"sourceType": "module",
 		"ecmaVersion": 2017,
 		"ecmaFeatures": {
-				"experimentalObjectRestSpread" : true,
+				"experimentalObjectRestSpread" : true
 		}
 	},
 	"env": {
@@ -76,7 +76,7 @@
 		"curly": [2, "all"],
 		"eqeqeq": [2, "allow-null"],
 		"new-cap":  [2, {
-			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
+			"capIsNewExceptions": ["Match.Optional", "Match.Maybe", "Match.OneOf", "Match.Where", "Match.ObjectIncluding", "Push.Configure", "SHA256"]
 		}],
 		"use-isnan": 2,
 		"valid-typeof": 2,
@@ -89,11 +89,11 @@
 		"object-shorthand": 2
 	},
 	"globals": {
-		"_"                           : false,
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
 		"Accounts"                    : false,
 		"AgentUsers"                  : false,
+		"Apps"                        : false,
 		"Assets"                      : false,
 		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
@@ -123,6 +123,7 @@
 		"Logger"                      : false,
 		"Match"                       : false,
 		"Meteor"                      : false,
+		"modal"                       : false,
 		"moment"                      : false,
 		"Mongo"                       : false,
 		"Npm"                         : false,
@@ -130,18 +131,18 @@
 		"parentCall"                  : false,
 		"Promise"                     : false,
 		"Random"                      : false,
+		"ReactiveDict"                : false,
 		"ReactiveVar"                 : false,
+		"Reload"                      : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
-		"s"                           : false,
 		"ServiceConfiguration"        : false,
 		"Session"                     : false,
 		"Settings"                    : false,
 		"SHA256"                      : false,
 		"SideNav"                     : false,
-		"swal"                        : false,
 		"t"                           : false,
 		"TAPi18n"                     : false,
 		"TAPi18next"                  : false,

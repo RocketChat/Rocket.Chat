@@ -1,4 +1,6 @@
 /* globals EventEmitter LoggerManager SystemLogger Log*/
+import _ from 'underscore';
+import s from 'underscore.string';
 
 //TODO: change this global to import
 LoggerManager = new class extends EventEmitter { // eslint-disable-line no-undef

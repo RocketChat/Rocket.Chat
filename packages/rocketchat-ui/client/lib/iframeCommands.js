@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 const commands = {
 	go(data) {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
@@ -28,7 +30,7 @@ const commands = {
 			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
 
 			if (customOauth) {
-				const customLoginWith = Meteor[`loginWith${ _.capitalize(customOauth.service, true) }`];
+				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
 			}
@@ -52,9 +54,9 @@ const commands = {
 		});
 	},
 
-	'set-toolbar-button'({ id, icon, label }) {
+	'set-toolbar-button'({ id, icon, label: i18nTitle }) {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		toolbar.buttons[id] = { icon, label };
+		toolbar.buttons[id] = { icon, i18nTitle };
 		Session.set('toolbarButtons', toolbar);
 	},
 

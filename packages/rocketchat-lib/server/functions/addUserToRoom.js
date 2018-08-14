@@ -13,7 +13,10 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 	}
 
 	const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
-	RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
+	if (muted) {
+		RocketChat.models.Rooms.muteUsernameByRoomId(rid, user.username);
+	}
+
 	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,

@@ -5,19 +5,11 @@ Package.describe({
 	git: ''
 });
 
-Npm.depends({
-	'he': '1.1.0',
-	'jschardet': '1.4.1',
-	'iconv-lite': '0.4.13',
-	'ip-range-check': '0.0.2'
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'http',
 		'templating',
 		'ecmascript',
-		'underscore',
 		'konecty:change-case',
 		'rocketchat:lib'
 	]);

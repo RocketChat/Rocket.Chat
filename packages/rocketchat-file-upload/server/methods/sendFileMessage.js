@@ -1,5 +1,7 @@
+import _ from 'underscore';
+
 Meteor.methods({
-	'sendFileMessage'(roomId, store, file, msgData = {}) {
+	async 'sendFileMessage'(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
@@ -20,7 +22,7 @@ Meteor.methods({
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = `/file-upload/${ file._id }/${ file.name }`;
+		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
 		const attachment = {
 			title: file.name,
@@ -37,6 +39,7 @@ Meteor.methods({
 			if (file.identify && file.identify.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
+			attachment.image_preview = await FileUpload.resizeImagePreview(file);
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
 			attachment.audio_type = file.type;

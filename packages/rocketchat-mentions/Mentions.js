@@ -2,7 +2,7 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import _ from 'underscore';
+import s from 'underscore.string';
 export default class {
 	constructor({pattern, useRealName, me}) {
 		this.pattern = pattern;
@@ -28,40 +28,41 @@ export default class {
 		return typeof this._useRealName === 'function' ? this._useRealName() : this._useRealName;
 	}
 	get userMentionRegex() {
-		return new RegExp(`@(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>)@(${ this.pattern })`, 'gm');
 	}
 	get channelMentionRegex() {
-		return new RegExp(`#(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>)#(${ this.pattern })`, 'gm');
 	}
 	replaceUsers(str, message, me) {
-		return str.replace(this.userMentionRegex, (match, username) => {
+		return str.replace(this.userMentionRegex, (match, prefix, username) => {
 			if (['all', 'here'].includes(username)) {
-				return `<a class="mention-link mention-link-me mention-link-all background-attention-color">${ match }</a>`;
+				return `${ prefix }<a class="mention-link mention-link-me mention-link-all">@${ username }</a>`;
 			}
 
-			const mentionObj = _.findWhere(message.mentions, {username});
+			const mentionObj = message.mentions && message.mentions.find(m => m.username === username);
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
-			const name = this.useRealName && mentionObj && mentionObj.name;
+			const name = this.useRealName && mentionObj && s.escapeHTML(mentionObj.name);
 
-			return `<a class="mention-link ${ username === me ? 'mention-link-me background-primary-action-color':'' }" data-username="${ username }" title="${ name ? username : '' }">${ name || match }</a>`;
+			return `${ prefix }<a class="mention-link ${ username === me ? 'mention-link-me' : '' }" data-username="${ username }" title="${ name ? username : '' }">${ name || `@${ username }` }</a>`;
 		});
 	}
 	replaceChannels(str, message) {
 		//since apostrophe escaped contains # we need to unescape it
-		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, name) => {
-			if (message.temp == null && _.findWhere(message.channels, {name}) == null) {
+		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
+			if (!message.temp && !(message.channels && message.channels.find(c => c.name === name))) {
 				return match;
 			}
-			return `<a class="mention-link" data-channel="${ name }">${ match }</a>`;
+
+			return `${ prefix }<a class="mention-link" data-channel="${ name }">${ `#${ name }` }</a>`;
 		});
 	}
 	getUserMentions(str) {
-		return str.match(this.userMentionRegex) || [];
+		return (str.match(this.userMentionRegex) || []).map(match => match.trim());
 	}
 	getChannelMentions(str) {
-		return str.match(this.channelMentionRegex) || [];
+		return (str.match(this.channelMentionRegex) || []).map(match => match.trim());
 	}
 	parse(message) {
 		let msg = (message && message.html) || '';

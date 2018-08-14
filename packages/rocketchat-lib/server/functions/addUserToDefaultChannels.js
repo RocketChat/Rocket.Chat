@@ -5,7 +5,9 @@ RocketChat.addUserToDefaultChannels = function(user, silenced) {
 
 		// put user in default rooms
 		const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
-		RocketChat.models.Rooms.addUsernameById(room._id, user.username, muted);
+		if (muted) {
+			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, user.username);
+		}
 
 		if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
 

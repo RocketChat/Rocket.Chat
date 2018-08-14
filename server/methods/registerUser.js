@@ -1,7 +1,10 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	registerUser(formData) {
 		const AllowAnonymousRead = RocketChat.settings.get('Accounts_AllowAnonymousRead');
 		const AllowAnonymousWrite = RocketChat.settings.get('Accounts_AllowAnonymousWrite');
+		const manuallyApproveNewUsers = RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
 			const userId = Accounts.insertUserDoc({}, {
 				globalRoles: [
@@ -17,7 +20,8 @@ Meteor.methods({
 				email: String,
 				pass: String,
 				name: String,
-				secretURL: Match.Optional(String)
+				secretURL: Match.Optional(String),
+				reason: Match.Optional(String)
 			}));
 		}
 
@@ -27,11 +31,15 @@ Meteor.methods({
 			throw new Meteor.Error ('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
 		}
 
+		RocketChat.passwordPolicy.validate(formData.pass);
+
 		RocketChat.validateEmailDomain(formData.email);
 
 		const userData = {
 			email: s.trim(formData.email.toLowerCase()),
-			password: formData.pass
+			password: formData.pass,
+			name: formData.name,
+			reason: formData.reason
 		};
 
 		// Check if user has already been imported and never logged in. If so, set password and let it through
@@ -45,6 +53,11 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.setName(userId, s.trim(formData.name));
+
+		const reason = s.trim(formData.reason);
+		if (manuallyApproveNewUsers && reason) {
+			RocketChat.models.Users.setReason(userId, reason);
+		}
 
 		RocketChat.saveCustomFields(userId, formData);
 

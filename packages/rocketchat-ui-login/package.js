@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'underscore',
 		'rocketchat:lib',
 		'rocketchat:assets',
 		'rocketchat:2fa'
@@ -43,5 +42,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/login/header.js', 'client');
 	api.addFiles('client/login/services.js', 'client');
 	api.addFiles('client/login/social.js', 'client');
+	api.addFiles('client/username/layout.js', 'client');
 	api.addFiles('client/username/username.js', 'client');
 });

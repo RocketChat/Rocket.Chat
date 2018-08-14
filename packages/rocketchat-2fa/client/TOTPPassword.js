@@ -45,7 +45,7 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			return cb(error);
 		}
 
-		swal({
+		modal.open({
 			title: t('Two-factor_authentication'),
 			text: t('Open_your_authentication_app_and_enter_the_code'),
 			type: 'input',

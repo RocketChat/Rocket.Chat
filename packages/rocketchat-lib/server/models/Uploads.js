@@ -1,4 +1,6 @@
 /* globals InstanceStatus */
+import _ from 'underscore';
+import s from 'underscore.string';
 
 RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 	constructor() {
@@ -12,7 +14,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'uploadedAt': 1 });
 	}
 
-	findNotHiddenFilesOfRoom(roomId, limit) {
+	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
@@ -21,6 +23,10 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 				$ne: true
 			}
 		};
+
+		if (searchText) {
+			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
+		}
 
 		const fileOptions = {
 			limit,

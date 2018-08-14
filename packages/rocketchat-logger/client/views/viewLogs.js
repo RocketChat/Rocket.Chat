@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import moment from 'moment';
 // TODO: remove this globals
 /* globals ansispan stdout readMessage*/

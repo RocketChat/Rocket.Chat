@@ -9,7 +9,7 @@ Template.livechatTriggers.events({
 		e.preventDefault();
 		e.stopPropagation();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -23,7 +23,7 @@ Template.livechatTriggers.events({
 				if (error) {
 					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('Trigger_removed'),
 					type: 'success',
@@ -42,7 +42,7 @@ Template.livechatTriggers.events({
 	'click .delete-trigger'(e/*, instance*/) {
 		e.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -57,7 +57,7 @@ Template.livechatTriggers.events({
 					return handleError(error);
 				}
 
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('Trigger_removed'),
 					type: 'success',

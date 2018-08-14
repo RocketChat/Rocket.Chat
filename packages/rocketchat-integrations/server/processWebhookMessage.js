@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import s from 'underscore.string';
+
 this.processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
@@ -34,7 +37,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 				throw new Meteor.Error('invalid-channel');
 		}
 
-		if (mustBeJoined && !room.usernames.includes(user.username)) {
+		if (mustBeJoined && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
 			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
 			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
 		}
@@ -46,8 +49,8 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
-			msg: _.trim(messageObj.text || messageObj.msg || ''),
-			attachments: messageObj.attachments,
+			msg: s.trim(messageObj.text || messageObj.msg || ''),
+			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
@@ -67,7 +70,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 			for (let i = 0; i < message.attachments.length; i++) {
 				const attachment = message.attachments[i];
 				if (attachment.msg) {
-					attachment.text = _.trim(attachment.msg);
+					attachment.text = s.trim(attachment.msg);
 					delete attachment.msg;
 				}
 			}

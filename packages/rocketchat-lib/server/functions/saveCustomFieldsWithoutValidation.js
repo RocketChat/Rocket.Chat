@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 	if (s.trim(RocketChat.settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;
@@ -10,6 +12,9 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 		const customFields = {};
 		Object.keys(customFieldsMeta).forEach(key => customFields[key] = formData[key]);
 		RocketChat.models.Users.setCustomFields(userId, customFields);
+
+		// Update customFields of all Direct Messages' Rooms for userId
+		RocketChat.models.Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
 
 		Object.keys(customFields).forEach((fieldName) => {
 			if (!customFieldsMeta[fieldName].modifyRecordField) {

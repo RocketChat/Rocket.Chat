@@ -3,15 +3,15 @@ this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
 
-msgStream.allowRead(function(eventName) {
+msgStream.allowRead(function(eventName, args) {
 	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId);
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
 
 		if (!room) {
 			return false;
 		}
 
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && room.usernames.indexOf(room.username) === -1) {
+		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
@@ -32,7 +32,7 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 			return false;
 		}
 
-		options.roomParticipant = room.usernames.indexOf(room.username) > -1;
+		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
 		options.roomType = room.t;
 
 		return true;
@@ -63,19 +63,12 @@ Meteor.startup(function() {
 		}
 	}
 
-	return RocketChat.models.Messages._db.on('change', function({action, id, data/*, oplog*/}) {
-		switch (action) {
-			case 'insert':
-				data._id = id;
-				publishMessage('inserted', data);
-				break;
-			case 'update:record':
-				publishMessage('updated', data);
-				break;
-			case 'update:diff':
-				publishMessage('updated', RocketChat.models.Messages.findOne({
-					_id: id
-				}));
+	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/*, oplog*/ }) {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				const message = data || RocketChat.models.Messages.findOne({ _id: id });
+				publishMessage(clientAction, message);
 				break;
 		}
 	});

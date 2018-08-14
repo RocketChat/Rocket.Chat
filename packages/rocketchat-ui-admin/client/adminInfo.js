@@ -1,3 +1,4 @@
+import s from 'underscore.string';
 import moment from 'moment';
 
 Template.adminInfo.helpers({
@@ -12,9 +13,9 @@ Template.adminInfo.helpers({
 	},
 	inGB(size) {
 		if (size > 1073741824) {
-			return `${ _.numberFormat(size / 1024 / 1024 / 1024, 2) } GB`;
+			return `${ s.numberFormat(size / 1024 / 1024 / 1024, 2) } GB`;
 		}
-		return `${ _.numberFormat(size / 1024 / 1024, 2) } MB`;
+		return `${ s.numberFormat(size / 1024 / 1024, 2) } MB`;
 	},
 	humanReadableTime(time) {
 		const days = Math.floor(time / 86400);
@@ -42,7 +43,7 @@ Template.adminInfo.helpers({
 		}
 	},
 	numFormat(number) {
-		return _.numberFormat(number, 2);
+		return s.numberFormat(number, 2);
 	},
 	info() {
 		return RocketChat.Info;

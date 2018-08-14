@@ -1,4 +1,5 @@
 /* globals KonchatNotification */
+import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
 	return FlowRouter.path(path, kw.hash);
@@ -68,6 +69,17 @@ FlowRouter.route('/home', {
 	}
 });
 
+FlowRouter.route('/directory', {
+	name: 'directory',
+
+	action() {
+		BlazeLayout.render('main', {center: 'directory'});
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}]
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 
@@ -75,25 +87,12 @@ FlowRouter.route('/account/:group?', {
 		if (!params.group) {
 			params.group = 'Preferences';
 		}
-		params.group = _.capitalize(params.group, true);
+		params.group = s.capitalize(params.group, true);
 		BlazeLayout.render('main', { center: `account${ params.group }` });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
 	}]
-});
-
-FlowRouter.route('/history/private', {
-	name: 'privateHistory',
-
-	subscriptions(/*params, queryParams*/) {
-		this.register('privateHistory', Meteor.subscribe('privateHistory'));
-	},
-
-	action() {
-		Session.setDefault('historyFilter', '');
-		BlazeLayout.render('main', {center: 'privateHistory'});
-	}
 });
 
 FlowRouter.route('/terms-of-service', {
@@ -149,3 +148,26 @@ FlowRouter.route('/register/:hash', {
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 	}
 });
+
+FlowRouter.route('/setup-wizard', {
+	name: 'setup-wizard',
+
+	action() {
+		BlazeLayout.render('setupWizard');
+	}
+});
+
+FlowRouter.route('/setup-wizard/final', {
+	name: 'setup-wizard-final',
+
+	action() {
+		BlazeLayout.render('setupWizardFinal');
+	}
+});
+
+FlowRouter.notFound = {
+	action() {
+		BlazeLayout.render('pageNotFound');
+	}
+};
+

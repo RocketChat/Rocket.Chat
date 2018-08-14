@@ -14,12 +14,24 @@ function Archive(command, params, item) {
 		room = RocketChat.models.Rooms.findOneByName(channel);
 	}
 
+	const user = Meteor.users.findOne(Meteor.userId());
+
+	if (!room) {
+		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: TAPi18n.__('Channel_doesnt_exist', {
+				postProcess: 'sprintf',
+				sprintf: [channel]
+			}, user.language)
+		});
+	}
+
 	// You can not archive direct messages.
 	if (room.t === 'd') {
 		return;
 	}
-
-	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (room.archived) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
@@ -49,4 +61,7 @@ function Archive(command, params, item) {
 	return Archive;
 }
 
-RocketChat.slashCommands.add('archive', Archive);
+RocketChat.slashCommands.add('archive', Archive, {
+	description: 'Archive',
+	params: '#channel'
+});

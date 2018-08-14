@@ -6,7 +6,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use([
 		'ecmascript',
 		'check',

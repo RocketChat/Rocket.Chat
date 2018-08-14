@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.createCombinedFlex.helpers({
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
@@ -74,14 +76,6 @@ Template.createCombinedFlex.events({
 
 	'click .cancel-channel'(e, instance) {
 		return SideNav.closeFlex(() => instance.clearForm());
-	},
-
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
 	},
 
 	'keydown input[type="text"]'() {

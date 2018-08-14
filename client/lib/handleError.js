@@ -1,4 +1,7 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import toastr from 'toastr';
+
 this.handleError = function(error, useToastr = true) {
 	if (_.isObject(error.details)) {
 		for (const key in error.details) {
@@ -9,8 +12,13 @@ this.handleError = function(error, useToastr = true) {
 	}
 
 	if (useToastr) {
-		return toastr.error(_.escapeHTML(TAPi18n.__(error.error, error.details)), error.details && error.details.errorTitle ? _.escapeHTML(TAPi18n.__(error.details.errorTitle)) : null);
+		const details = Object.entries(error.details || {})
+			.reduce((obj, [ key, value ]) => ({ ...obj, [key] : s.escapeHTML(value) }), {});
+		const message = TAPi18n.__(error.error, details);
+		const title = details.errorTitle && TAPi18n.__(details.errorTitle);
+
+		return toastr.error(message, title);
 	}
 
-	return _.escapeHTML(TAPi18n.__(error.error, error.details));
+	return s.escapeHTML(TAPi18n.__(error.error, error.details));
 };

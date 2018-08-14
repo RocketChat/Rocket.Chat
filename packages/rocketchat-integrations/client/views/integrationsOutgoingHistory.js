@@ -1,5 +1,6 @@
 /* global ChatIntegrations, ChatIntegrationHistory */
 
+import _ from 'underscore';
 import hljs from 'highlight.js';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -94,16 +95,12 @@ Template.integrationsOutgoingHistory.helpers({
 	},
 
 	jsonStringify(data) {
-		return data ? hljs.highlight('json', JSON.stringify(data, null, 2)).value : '';
-	},
-
-	hljsStack(errorStack) {
-		if (!errorStack) {
+		if (!data) {
 			return '';
-		} else if (typeof errorStack === 'object') {
-			return hljs.highlight('json', JSON.stringify(errorStack, null, 2)).value;
+		} else if (typeof data === 'object') {
+			return hljs.highlight('json', JSON.stringify(data, null, 2)).value;
 		} else {
-			return hljs.highlight('json', errorStack).value;
+			return hljs.highlight('json', data).value;
 		}
 	},
 

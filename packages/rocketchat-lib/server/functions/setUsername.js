@@ -1,3 +1,4 @@
+import s from 'underscore.string';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);
@@ -65,6 +66,7 @@ RocketChat._setUsername = function(userId, u) {
 		RocketChat.models.Rooms.replaceUsernameOfUserByUserId(user._id, username);
 		RocketChat.models.Subscriptions.setUserUsernameByUserId(user._id, username);
 		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
+		RocketChat.models.LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);

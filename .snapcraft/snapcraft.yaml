@@ -38,27 +38,29 @@ apps:
         command: env LC_ALL=c initcaddy
 parts:
     node:
-        plugin: nodejs
-        node-engine: 4.8.4
+        plugin: dump 
+        prepare: ./resources/preparenode  
         build-packages:
             # For fibers
             - python
             - build-essential
             - nodejs
     rocketchat-server:
+        build-packages:
+            - curl
         plugin: dump
-        prepare: cd programs/server; npm install
+        prepare: ./resources/prepareRocketChat
         after: [node]
-        source: https://download.rocket.chat/build/#{RC_VERSION}.tgz
-        source-type: tar
+        source: .
         stage-packages:
-            - graphicsmagick
+            - execstack
+            - fontconfig-config
         stage:
             - programs
             - main.js
             - .node_version.txt
+            - etc
             - usr
-            - lib
     mongodb:
         build-packages:
             - wget

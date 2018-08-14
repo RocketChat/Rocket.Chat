@@ -1,9 +1,14 @@
 /* global logger, processWebhookMessage */
+import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
+import vm from 'vm';
+import Fiber from 'fibers';
+import Future from 'fibers/future';
 
 RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
-		this.vm = Npm.require('vm');
+		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
@@ -81,15 +86,14 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (data) {
-			history.data = data;
+			history.data = { ...data };
 
 			if (data.user) {
-				history.data.user = _.omit(data.user, ['meta', '$loki', 'services']);
+				history.data.user = _.omit(data.user, ['services']);
 			}
 
 			if (data.room) {
-				history.data.room = _.omit(data.room, ['meta', '$loki', 'usernames']);
-				history.data.room.usernames = ['this_will_be_filled_in_with_usernames_when_replayed'];
+				history.data.room = data.room;
 			}
 		}
 
@@ -130,7 +134,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (typeof httpResult !== 'undefined') {
-			history.httpResult = httpResult;
+			history.httpResult = JSON.stringify(httpResult, null, 2);
 		}
 
 		if (typeof error !== 'undefined') {
@@ -199,7 +203,15 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 	buildSandbox(store = {}) {
 		const sandbox = {
-			_, s, console, moment,
+			scriptTimeout(reject) {
+				return setTimeout(() => reject('timed out'), 3000);
+			},
+			_,
+			s,
+			console,
+			moment,
+			Fiber,
+			Promise,
 			Store: {
 				set: (key, val) => store[key] = val,
 				get: (key) => store[key]
@@ -300,7 +312,21 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			sandbox.params = params;
 
 			this.updateHistory({ historyId, step: `execute-script-before-running-${ method }` });
-			const result = this.vm.runInNewContext('script[method](params)', sandbox, { timeout: 3000 });
+
+			const result = Future.fromPromise(this.vm.runInNewContext(`
+				new Promise((resolve, reject) => {
+					Fiber(() => {
+						scriptTimeout(reject);
+						try {
+							resolve(script[method](params))
+						} catch(e) {
+							reject(e);
+						}
+					}).run();
+				}).catch((error) => { throw new Error(error); });
+			`, sandbox, {
+				timeout: 3000
+			})).wait();
 
 			logger.outgoing.debug(`Script method "${ method }" result of the Integration "${ integration.name }" is:`);
 			logger.outgoing.debug(result);

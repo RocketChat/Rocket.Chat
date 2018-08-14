@@ -159,7 +159,7 @@ function configurePush() {
 			apn,
 			gcm,
 			production: RocketChat.settings.get('Push_production'),
-			sendInterval: 1000,
+			sendInterval: 5000,
 			sendBatchSize: 10
 		});
 

@@ -1,7 +1,11 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
+import s from 'underscore.string';
 
 RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+
+this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -16,7 +20,7 @@ Template.body.onRendered(function() {
 		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			return swal({
+			modal.open({
 				title: t('Clear_all_unreads_question'),
 				type: 'warning',
 				confirmButtonText: t('Yes_clear_all'),
@@ -60,11 +64,11 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('textarea.rc-message-box__textarea');
+		const inputMessage = $('.rc-message-box__textarea');
 		if (inputMessage.length === 0) {
 			return;
 		}
-		return inputMessage.focus();
+		inputMessage.focus();
 	});
 
 	$(document.body).on('click', function(e) {
@@ -86,7 +90,7 @@ Template.body.onRendered(function() {
 	Tracker.autorun(function(c) {
 		const w = window;
 		const d = document;
-		const s = 'script';
+		const script = 'script';
 		const l = 'dataLayer';
 		const i = RocketChat.settings.get('GoogleTagManager_id');
 		if (Match.test(i, String) && i.trim() !== '') {
@@ -103,7 +107,7 @@ Template.body.onRendered(function() {
 				j.async = true;
 				j.src = `//www.googletagmanager.com/gtm.js?id=${ i }${ dl }`;
 				return f.parentNode.insertBefore(j, f);
-			}(w, d, s, l, i));
+			}(w, d, script, l, i));
 		}
 	});
 	if (Meteor.isCordova) {
@@ -113,6 +117,10 @@ Template.body.onRendered(function() {
 
 RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
+	removeSidenav() {
+		const { modal } = this;
+		return (modal || typeof modal === 'function' ? modal() : modal) || RocketChat.Layout.isEmbedded();
+	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
 	},
@@ -167,6 +175,12 @@ Template.main.helpers({
 		if (RocketChat.Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
+	},
+	showSetupWizard() {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
 	}
 });
 
@@ -177,7 +191,6 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
@@ -187,13 +200,13 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		swal.setDefaults({
-			cancelButtonText: t('Cancel')
-		});
-		const user = Meteor.user();
-		const settings = user && user.settings;
-		const prefs = settings && settings.preferences;
-		if (prefs && prefs.hideUsernames != null) {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
+			FlowRouter.go('setup-wizard');
+		}
+		if (RocketChat.getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});

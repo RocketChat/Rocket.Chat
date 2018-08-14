@@ -29,6 +29,7 @@ Meteor.startup(function() {
 				// This logic is duplicated in /client/startup/unread.coffee.
 				const hasFocus = readMessage.isEnable();
 				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+				const muteFocusedConversations = RocketChat.getUserPreference(Meteor.user(), 'muteFocusedConversations');
 
 				fireGlobalEvent('notification', {
 					notification,
@@ -42,10 +43,13 @@ Meteor.startup(function() {
 						KonchatNotification.newMessage(notification.payload.rid);
 						KonchatNotification.showDesktop(notification);
 					}
-				} else if (!(hasFocus && messageIsInOpenedRoom)) {
+				} else if (!hasFocus || !messageIsInOpenedRoom) {
 					// Play a sound and show a notification.
 					KonchatNotification.newMessage(notification.payload.rid);
 					KonchatNotification.showDesktop(notification);
+				} else if (!muteFocusedConversations) {
+					// Play a notification sound
+					KonchatNotification.newMessage(notification.payload.rid);
 				}
 			});
 
@@ -56,14 +60,15 @@ Meteor.startup(function() {
 				// This logic is duplicated in /client/startup/unread.coffee.
 				const hasFocus = readMessage.isEnable();
 				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+				const muteFocusedConversations = RocketChat.getUserPreference(Meteor.user(), 'muteFocusedConversations');
 
 				if (RocketChat.Layout.isEmbedded()) {
 					if (!hasFocus && messageIsInOpenedRoom) {
-						// Play a sound and show a notification.
+						// Play a notification sound
 						KonchatNotification.newMessage(notification.payload.rid);
 					}
-				} else if (!(hasFocus && messageIsInOpenedRoom)) {
-					// Play a sound and show a notification.
+				} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+					// Play a notification sound
 					KonchatNotification.newMessage(notification.payload.rid);
 				}
 			});

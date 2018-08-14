@@ -7,7 +7,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('ecmascript');
-	api.use('underscore');
 	api.use('random');
 	api.use('logging');
 	api.use('nooitaf:colors');

@@ -1,10 +1,12 @@
+import _ from 'underscore';
+
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&
 		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 
-		// Check if the user has permissions to use @all.
-		if (!RocketChat.authz.hasPermission(message.u._id, 'mention-all')) {
+		// Check if the user has permissions to use @all in both global and room scopes.
+		if (!RocketChat.authz.hasPermission(message.u._id, 'mention-all') && !RocketChat.authz.hasPermission(message.u._id, 'mention-all', message.rid)) {
 
 			// Get the language of the user for the error notification.
 			const language = RocketChat.models.Users.findOneById(message.u._id).language;

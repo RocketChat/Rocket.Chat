@@ -33,7 +33,7 @@ Template.resetPassword.events({
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
 					console.log(error);
-					swal({
+					modal.open({
 						title: t('Error_changing_password'),
 						type: 'error'
 					});
@@ -49,7 +49,7 @@ Template.resetPassword.events({
 						RocketChat.callbacks.run('userPasswordReset');
 						FlowRouter.go('login');
 					} else {
-						swal({
+						modal.open({
 							title: t('Error_changing_password'),
 							type: 'error'
 						});

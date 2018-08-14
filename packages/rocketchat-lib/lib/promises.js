@@ -1,3 +1,4 @@
+import _ from 'underscore';
 
 /*
 * Callback hooks provide an easy way to add extra steps to common operations.
@@ -17,6 +18,7 @@ RocketChat.promises.priority = {
 	LOW: 1000
 };
 
+const getHook = hookName => RocketChat.promises[hookName] || [];
 
 /*
 * Add a callback function to a hook
@@ -25,14 +27,14 @@ RocketChat.promises.priority = {
 */
 
 RocketChat.promises.add = function(hook, callback, p = RocketChat.promises.priority.MEDIUM, id) {
-	const priority = !_.isNumber(p) ? RocketChat.promises.priority.MEDIUM : p;
-	callback.priority = priority;
+	callback.priority = _.isNumber(p) ? p : RocketChat.promises.priority.MEDIUM;
 	callback.id = id || Random.id();
-	RocketChat.promises[hook] = RocketChat.promises[hook] || [];
+	RocketChat.promises[hook] = getHook(hook);
 	if (RocketChat.promises[hook].find(cb => cb.id === callback.id)) {
 		return;
 	}
 	RocketChat.promises[hook].push(callback);
+	RocketChat.promises[hook] = _.sortBy(RocketChat.promises[hook], callback => callback.priority || RocketChat.promises.priority.MEDIUM);
 };
 
 
@@ -42,8 +44,8 @@ RocketChat.promises.add = function(hook, callback, p = RocketChat.promises.prior
 * @param {string} id - The callback's id
 */
 
-RocketChat.promises.remove = function(hookName, id) {
-	RocketChat.promises[hookName] = _.reject(RocketChat.promises[hookName], (callback) => callback.id === id);
+RocketChat.promises.remove = function(hook, id) {
+	RocketChat.promises[hook] = getHook(hook).filter(callback => callback.id !== id);
 };
 
 
@@ -56,16 +58,11 @@ RocketChat.promises.remove = function(hookName, id) {
 */
 
 RocketChat.promises.run = function(hook, item, constant) {
-	let callbacks = RocketChat.promises[hook];
+	const callbacks = RocketChat.promises[hook];
 	if (callbacks == null || callbacks.length === 0) {
 		return Promise.resolve(item);
 	}
-	callbacks = _.sortBy(callbacks, (callback) => callback.priority || RocketChat.promises.priority.MEDIUM);
-	return callbacks.reduce(function(previousPromise, callback) {
-		return new Promise(function(resolve, reject) {
-			return previousPromise.then((result) => callback(result, constant).then(resolve, reject));
-		});
-	}, Promise.resolve(item));
+	return callbacks.reduce((previousPromise, callback) => previousPromise.then(result => callback(result, constant)), Promise.resolve(item));
 };
 
 
@@ -81,9 +78,5 @@ RocketChat.promises.runAsync = function(hook, item, constant) {
 	if (!Meteor.isServer || callbacks == null || callbacks.length === 0) {
 		return item;
 	}
-	Meteor.defer(() => {
-		_.sortBy(callbacks, (callback) => callback.priority || RocketChat.promises.priority.MEDIUM).forEach(function(callback) {
-			callback(item, constant);
-		});
-	});
+	Meteor.defer(() => callbacks.forEach(callback => callback(item, constant)));
 };

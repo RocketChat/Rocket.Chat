@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import moment from 'moment';
 
 Meteor.methods({
@@ -55,7 +56,7 @@ Meteor.methods({
 		if (data.language !== 'en') {
 			const localeFn = Meteor.call('loadLocale', data.language);
 			if (localeFn) {
-				Function(localeFn)({moment});
+				Function(localeFn).call({moment});
 				moment.locale(data.language);
 			}
 		}
@@ -66,7 +67,7 @@ Meteor.methods({
 			sort: {	ts: 1 }
 		}).map(function(message) {
 			const dateTime = moment(message.ts).locale(data.language).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br />${ RocketChat.Message.parse(message, data.language) }</p>`;
+			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ RocketChat.Message.parse(message, data.language) }</p>`;
 		}).join('');
 
 		Meteor.defer(function() {

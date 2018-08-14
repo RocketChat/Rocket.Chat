@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	'robot.modelCall'(model, method, args) {
 		check(model, String);

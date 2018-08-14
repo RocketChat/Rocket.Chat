@@ -9,7 +9,7 @@ Template.livechatCustomFields.events({
 		e.preventDefault();
 		e.stopPropagation();
 
-		swal({
+		modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -23,7 +23,7 @@ Template.livechatCustomFields.events({
 				if (error) {
 					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Removed'),
 					text: t('Field_removed'),
 					type: 'success',

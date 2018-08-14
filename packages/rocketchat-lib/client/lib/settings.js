@@ -9,7 +9,8 @@
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
-	userRelated: false
+	userRelated: false,
+	listenChangesForLoggedUsersOnly: true
 });
 
 RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection;
@@ -61,7 +62,7 @@ Meteor.startup(function() {
 		Meteor.setTimeout(function() {
 			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 			if (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
-				swal({
+				modal.open({
 					type: 'warning',
 					title: t('Warning'),
 					text: `${ t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Site_Url'), siteUrl, currentUrl) }<br/><br/>${ t('Do_you_want_to_change_to_s_question', currentUrl) }`,
@@ -72,7 +73,7 @@ Meteor.startup(function() {
 					html: true
 				}, function() {
 					Meteor.call('saveSetting', 'Site_Url', currentUrl, function() {
-						swal({
+						modal.open({
 							title: t('Saved'),
 							type: 'success',
 							timer: 1000,
@@ -82,6 +83,10 @@ Meteor.startup(function() {
 				});
 			}
 		}, 100);
+		const documentDomain = RocketChat.settings.get('Document_Domain');
+		if (documentDomain) {
+			window.document.domain = documentDomain;
+		}
 		return c.stop();
 	});
 });

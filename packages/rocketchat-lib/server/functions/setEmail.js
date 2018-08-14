@@ -1,4 +1,6 @@
-RocketChat._setEmail = function(userId, email) {
+import s from 'underscore.string';
+
+RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 	email = s.trim(email);
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
@@ -25,6 +27,9 @@ RocketChat._setEmail = function(userId, email) {
 	// Set new email
 	RocketChat.models.Users.setEmail(user._id, email);
 	user.email = email;
+	if (shouldSendVerificationEmail === true) {
+		Meteor.call('sendConfirmationEmail', user.email);
+	}
 	return user;
 };
 

@@ -7,6 +7,7 @@ function Leave(command, params, item) {
 	if (command !== 'leave' && command !== 'part') {
 		return;
 	}
+
 	try {
 		Meteor.call('leaveRoom', item.rid);
 	} catch ({error}) {
@@ -18,14 +19,6 @@ function Leave(command, params, item) {
 		});
 	}
 }
-if (Meteor.isClient) {
-	RocketChat.slashCommands.add('leave', undefined, {
-		description: 'Leave_the_current_channel'
-	});
-	RocketChat.slashCommands.add('part', undefined, {
-		description: 'Leave_the_current_channel'
-	});
-} else {
-	RocketChat.slashCommands.add('leave', Leave);
-	RocketChat.slashCommands.add('part', Leave);
-}
+
+RocketChat.slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
+RocketChat.slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Meteor.methods({
 	updateOAuthApp(applicationId, application) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-oauth-apps')) {

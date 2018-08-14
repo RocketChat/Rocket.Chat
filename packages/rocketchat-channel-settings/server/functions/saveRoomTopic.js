@@ -4,7 +4,7 @@ RocketChat.saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) {
 			'function': 'RocketChat.saveRoomTopic'
 		});
 	}
-	roomTopic = s.escapeHTML(roomTopic);
+
 	const update = RocketChat.models.Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
 		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', rid, roomTopic, user);

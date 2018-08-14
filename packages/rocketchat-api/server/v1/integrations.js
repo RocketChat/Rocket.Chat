@@ -108,10 +108,9 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 			return RocketChat.API.v1.failure('An integrationId or target_url needs to be provided.');
 		}
 
+		let integration;
 		switch (this.bodyParams.type) {
 			case 'webhook-outgoing':
-				let integration;
-
 				if (this.bodyParams.target_url) {
 					integration = RocketChat.models.Integrations.findOne({ urls: this.bodyParams.target_url });
 				} else if (this.bodyParams.integrationId) {

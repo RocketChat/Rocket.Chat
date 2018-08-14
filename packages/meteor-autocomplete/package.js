@@ -7,7 +7,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use(['blaze', 'templating', 'jquery'], 'client');
-	api.use(['underscore', 'ecmascript']); // both
+	api.use(['ecmascript']); // both
 	api.use(['mongo', 'ddp']);
 
 	api.use('dandv:caret-position@2.1.0-3', 'client');

@@ -34,7 +34,11 @@ Template.otrFlexTab.events({
 		if (otr) {
 			otr.handshake();
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open({
+					title: t('Timeout'),
+					type: 'error',
+					timer: 2000
+				});
 				otr.establishing.set(false);
 			}, 10000);
 		}
@@ -46,7 +50,11 @@ Template.otrFlexTab.events({
 			otr.reset();
 			otr.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open({
+					title: t('Timeout'),
+					type: 'error',
+					timer: 2000
+				});
 				otr.establishing.set(false);
 			}, 10000);
 		}

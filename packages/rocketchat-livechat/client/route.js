@@ -124,11 +124,19 @@ AccountBox.addRoute({
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
-	name: 'livechat-integrations',
-	path: '/integrations',
+	name: 'livechat-webhooks',
+	path: '/webhooks',
 	sideNav: 'livechatFlex',
-	i18nPageTitle: 'Integrations',
-	pageTemplate: 'livechatIntegrations'
+	i18nPageTitle: 'Webhooks',
+	pageTemplate: 'livechatIntegrationWebhook'
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-facebook',
+	path: '/facebook',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Facebook Messenger',
+	pageTemplate: 'livechatIntegrationFacebook'
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({

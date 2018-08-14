@@ -1,0 +1,39 @@
+<template name="channelSettings__tokenpass">
+	<li class="channelSettings-tokenpass setting-block {{editing}}">
+		<div class="header">
+			<button type="button" class="button edit js-edit">
+				<i class="icon-pencil"></i>
+			</button>
+
+			<label>Tokenpass</label>
+		</div>
+		<div class="details">
+			<div class="boolean">
+				<label>{{requiredLabel}}</label>
+				<div class="setting-block">
+					<div class="input checkbox toggle">
+						<input type="checkbox" id="requireAllTokens" name="requireAllTokens" {{requiredChecked}} {{requiredDisabled}}>
+						<label for="requireAllTokens"></label>
+					</div>
+				</div>
+			</div>
+
+			{{#if list}}
+				<ul class="chip-container">
+					{{#each list}}
+					<li class="js-remove rc-tooltip" aria-label="balance: {{balance}}" title="{{token}} {{balance}}">{{#if editing}}<i class="icon-cancel-circled"></i>{{/if}}{{token}}</li>
+					{{/each}}
+				</ul>
+			{{/if}}
+			{{#if editing}}
+				<form class="channelSettings-tokenpass__form">
+					<input type="text" name="token" class="channelSettings-tokenpass__input content-background-color editing" placeholder="{{_ "Token_required"}}"/>
+					<input type="number" min="0" name="balance" class="channelSettings-tokenpass__input content-background-color editing" placeholder="{{_ "Minimum_balance"}}" />
+					<button type="button" class="button js-add" title="{{_ 'Add'}}" {{addDisabled}}><i class="icon-plus"></i></button>
+					<button type="button" class="button js-cancel" title="{{_ 'Cancel'}}" >{{_ "Cancel"}}</button>
+					{{#if save}}<button type="button" class="button primary js-save">{{_ "Save"}}</button>{{/if}}
+				</form>
+			{{/if}}
+		</div>
+	</li>
+</template>

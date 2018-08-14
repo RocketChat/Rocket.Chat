@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 RocketChat.fileUploadMediaWhiteList = function() {
 	const mediaTypeWhiteList = RocketChat.settings.get('FileUpload_MediaTypeWhiteList');
 

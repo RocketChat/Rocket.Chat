@@ -1,11 +1,6 @@
 <template name="adminImport">
 	<section class="page-container page-home page-static page-settings">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Import"}}</span>
-			</h2>
-		</header>
+		{{> header sectionName="Import"}}
 		<div class="content">
 			{{#unless isAdmin}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>

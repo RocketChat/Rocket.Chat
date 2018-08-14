@@ -1,22 +1,41 @@
 <template name="uploadedFilesList">
-	<div class=" list-view flex-tab__header">
-		<div class="title">
-			<h2>{{_ "Room_uploaded_file_list"}}</h2>
+	<form class="search-form" role="form">
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Search_by_file_name"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="magnifier"}}
+					</div>
+					<input type="text" class="rc-input__element uploaded-files-list__search-input" name="file-search" placeholder={{_ "File_name_Placeholder"}} autocomplete="off" />
+				</div>
+			</label>
 		</div>
-	</div>
-	<div class="uploaded-files-list list-view flex-tab__result js-list">
-		<ul class="list clearfix lines">
+	</form>
+
+	<div class="flex-tab__result">
+		<ul class="attachments">
 			{{#each files}}
-				<li>
-					{{#if canDelete}}
-					<i class="icon-trash file-delete"></i>
-					{{/if}}
-					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="file-download" download="">
-						<i class="icon-download file-download"></i>
-					</a>
-					<a title="{{escapedName}}" href="{{fixCordova url}}" target="_blank" class="room-file-item file-name {{customClassForFileType}}">
-						<i class="{{getFileIcon type}}"></i>
-						<p>{{name}}</p>
+				<li class="attachments__item">
+					<a href="{{fixCordova url}}" title="{{name}}" data-description="{{description}}"
+						class="attachments__item-link {{fileTypeClass}}"
+						download rel="noopener noreferrer" target="_blank">
+						{{#with thumb}}
+							<span class="attachments__thumb" style="background-image: url('{{escapeCssUrl .}}');"></span>
+						{{else}}
+							{{#with fileTypeIcon}}
+							<span class="attachments__file attachments__file--{{type}}">
+								{{>icon icon=id}}
+								<div class="attachments__type">{{extension}}</div>
+							</span>
+							{{/with}}
+						{{/with}}
+
+						<span class="attachments__content">
+							<span class="attachments__name">{{name}}</span>
+							<span class="attachments__details attachments__bold">@{{user.username}}</span>
+							<span class="attachments__details">{{formatTimestamp uploadedAt}}</span>
+						</span>
 					</a>
 				</li>
 			{{/each}}

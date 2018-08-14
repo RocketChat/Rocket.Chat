@@ -9,19 +9,31 @@ if (!Accounts.saml) {
 // If we find a samlProvider, and we are using single
 // logout we will initiate logout from rocketchat via saml.
 // If not using single logout, we just do the standard logout.
+// This can be overridden by a configured logout behaviour.
 //
 // TODO: This may need some work as it is not clear if we are really
 // logging out of the idp when doing the standard logout.
 
 const MeteorLogout = Meteor.logout;
+const logoutBehaviour = {
+	TERMINATE_SAML: 'SAML',
+	ONLY_RC: 'Local'
+};
 
 Meteor.logout = function() {
-	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
-			if (samlService.idpSLORedirectURL) {
-				return Meteor.logoutWithSaml({ provider });
+			if (samlService.logoutBehaviour == null || samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
+				if (samlService.idpSLORedirectURL) {
+					console.info('SAML session terminated via SLO');
+					return Meteor.logoutWithSaml({ provider });
+				}
+			}
+
+			if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
+				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 			}
 		}
 	}

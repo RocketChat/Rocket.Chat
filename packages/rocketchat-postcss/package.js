@@ -12,7 +12,7 @@ Package.registerBuildPlugin({
 	],
 	npmDependencies: {
 		'app-module-path': '2.2.0',
-		'postcss': '5.2.17',
+		'postcss': '6.0.13',
 		'source-map': '0.5.6'
 	},
 	sources: [

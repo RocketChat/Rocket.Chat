@@ -1,4 +1,6 @@
 /* global Babel */
+import _ from 'underscore';
+import s from 'underscore.string';
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
@@ -70,7 +72,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' });
 			}
 
-			if (record.usernames && !RocketChat.authz.hasPermission(this.userId, 'manage-integrations') && RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations') && !record.usernames.includes(Meteor.user().username)) {
+			if (!RocketChat.authz.hasAllPermission(this.userId, 'manage-integrations', 'manage-own-integrations') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' });
 			}
 		}
