@@ -24,8 +24,8 @@
 									<span>{{ targetChannelText }}</span>
 									<span class="action-link js-select-parent">{{_ "Thread_select_different_parent"}}</span>
 								</div>
-								{{else}}
-								<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}}">
+								{{/unless}}
+								<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}}" style={{ styleSelectParent }}>
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "Thread_target_channel"}}</div>
 										<div class="rc-input__wrapper">
@@ -52,7 +52,6 @@
 										{{/if}} {{/with}}
 									</label>
 								</div>
-								{{/unless}}
 								<div class="submit">
 									<div class="rc-input">
 										<button class="rc-button rc-button--primary js-save-thread {{createIsDisabled}}" {{createIsDisabled}}>{{_ " Create "}}</button>
