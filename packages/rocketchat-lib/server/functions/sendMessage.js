@@ -24,11 +24,11 @@ const validateAttachmentsFields = attachmentField => {
 		title: String,
 		value: Match.OneOf(String, Match.Integer, Boolean)
 	}));
-	
+
 	if (typeof(attachmentField.value) !== undefined) {
 		attachmentField.value = String(attachmentField.value);
 	}
-	
+
 };
 
 const validateAttachment = attachment => {
