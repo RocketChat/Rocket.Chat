@@ -22,7 +22,7 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:ui-master',
-		'raix:push',
+		'rocketchat:push',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load'
 	]);
