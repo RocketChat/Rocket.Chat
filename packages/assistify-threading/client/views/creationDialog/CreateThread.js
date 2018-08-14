@@ -104,7 +104,7 @@ Template.CreateThread.helpers({
 		const instance = Template.instance();
 		const parentChannels = instance.parentChannelsList.get();
 
-		function getSize(channel) {
+		function getSize(/*channel*/) {
 			return Math.random() * (4 - 10) + 4;
 		}
 
