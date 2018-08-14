@@ -1,4 +1,5 @@
 import moment from 'moment';
+const visitorHistory = new Mongo.Collection('visitor_history');
 
 Template.visitorHistory.helpers({
 	historyLoaded() {
@@ -6,7 +7,7 @@ Template.visitorHistory.helpers({
 	},
 
 	previousChats() {
-		return ChatRoom.find({
+		return visitorHistory.find({
 			_id: { $ne: this.rid },
 			'v._id': Template.instance().visitorId.get()
 		}, {

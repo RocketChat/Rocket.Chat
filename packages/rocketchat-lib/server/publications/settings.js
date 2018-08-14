@@ -1,11 +1,8 @@
-import _ from 'underscore';
-
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true && record['public'] === true;
-		});
+		const records = RocketChat.models.Settings.findNotHiddenPublic().fetch();
+
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
@@ -34,9 +31,7 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
 			return [];
 		}
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true;
-		});
+		const records = RocketChat.models.Settings.findNotHidden().fetch();
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
@@ -58,11 +53,30 @@ Meteor.methods({
 	}
 });
 
-RocketChat.models.Settings.cache.on('changed', function(type, setting) {
-	if (setting['public'] === true) {
-		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value', 'editor', 'properties'));
+RocketChat.models.Settings.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			const setting = data || RocketChat.models.Settings.findOneById(id);
+			const value = {
+				_id: setting._id,
+				value: setting.value,
+				editor: setting.editor,
+				properties: setting.properties
+			};
+
+			if (setting['public'] === true) {
+				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+			} else {
+				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
+			}
+			break;
+
+		case 'removed':
+			RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+			RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
+			break;
 	}
-	return RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', type, setting);
 });
 
 RocketChat.Notifications.streamAll.allowRead('private-settings-changed', function() {

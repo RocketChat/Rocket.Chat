@@ -87,7 +87,7 @@ Template.membersList.helpers({
 		const usersLimit = Template.instance().usersLimit.get();
 		if (usersLimit) {
 			hasMore = users.length > usersLimit;
-			users = _.first(users, usersLimit);
+			users = _.first(users, usersLimit) || [];
 		}
 		const totalShowing = users.length;
 

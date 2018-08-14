@@ -1,4 +1,6 @@
 .rc-switch {
+	padding: 0 0.25rem;
+
 	&__label {
 		display: flex;
 

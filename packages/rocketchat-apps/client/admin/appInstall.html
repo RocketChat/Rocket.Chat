@@ -49,8 +49,14 @@
 					</div>
 				</div>
 				<div class="rc-button-group">
-					<button class="rc-button rc-button--secondary js-cancel">{{ _ "Cancel" }}</button>
-					<button class="rc-button rc-button--primary js-install" disabled='{{disabled}}'>{{ _ "Install" }}</button>
+					<button class="rc-button rc-button--secondary js-cancel">{{_ "Cancel"}}</button>
+					<button class="rc-button rc-button--primary js-install" disabled='{{disabled}}'>
+						{{#if isUpdating}}
+							{{_ "Update"}}
+						{{else}}
+							{{_ "Install"}}
+						{{/if}}
+					</button>
 				</div>
 			{{/if}}
 		</div>

@@ -82,6 +82,21 @@ Template.livechatAppearance.helpers({
 	conversationFinishedMessage() {
 		return Template.instance().conversationFinishedMessage.get();
 	},
+	registrationFormEnabled() {
+		if (Template.instance().registrationFormEnabled.get()) {
+			return 'checked';
+		}
+	},
+	registrationFormNameFieldEnabled() {
+		if (Template.instance().registrationFormNameFieldEnabled.get()) {
+			return 'checked';
+		}
+	},
+	registrationFormEmailFieldEnabled() {
+		if (Template.instance().registrationFormEmailFieldEnabled.get()) {
+			return 'checked';
+		}
+	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
 			return Template.instance().colorOffline.get();
@@ -181,6 +196,9 @@ Template.livechatAppearance.onCreated(function() {
 	this.colorOffline = new ReactiveVar(null);
 	this.offlineEmail = new ReactiveVar(null);
 	this.conversationFinishedMessage = new ReactiveVar(null);
+	this.registrationFormEnabled = new ReactiveVar(null);
+	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
+	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
 
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title');
@@ -226,11 +244,26 @@ Template.livechatAppearance.onCreated(function() {
 		const setting = LivechatAppearance.findOne('Livechat_conversation_finished_message');
 		this.conversationFinishedMessage.set(setting && setting.value);
 	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_registration_form');
+		this.registrationFormEnabled.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_name_field_registration_form');
+		this.registrationFormNameFieldEnabled.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_email_field_registration_form');
+		this.registrationFormEmailFieldEnabled.set(setting && setting.value);
+	});
 });
 
 Template.livechatAppearance.events({
 	'change .preview-mode'(e, instance) {
 		instance.previewState.set(e.currentTarget.value);
+	},
+	'change .js-input-check'(e, instance) {
+		instance[e.currentTarget.name].set(e.currentTarget.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
 		let value = e.currentTarget.value;
@@ -271,10 +304,18 @@ Template.livechatAppearance.events({
 
 		const settingConversationFinishedMessage = LivechatAppearance.findOne('Livechat_conversation_finished_message');
 		instance.conversationFinishedMessage.set(settingConversationFinishedMessage && settingConversationFinishedMessage.value);
+
+		const settingRegistrationFormEnabled = LivechatAppearance.findOne('Livechat_registration_form');
+		instance.registrationFormEnabled.set(settingRegistrationFormEnabled && settingRegistrationFormEnabled.value);
+
+		const settingRegistrationFormNameFieldEnabled = LivechatAppearance.findOne('Livechat_name_field_registration_form');
+		instance.registrationFormNameFieldEnabled.set(settingRegistrationFormNameFieldEnabled && settingRegistrationFormNameFieldEnabled.value);
+
+		const settingRegistrationFormEmailFieldEnabled = LivechatAppearance.findOne('Livechat_email_field_registration_form');
+		instance.registrationFormEmailFieldEnabled.set(settingRegistrationFormEmailFieldEnabled && settingRegistrationFormEmailFieldEnabled.value);
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
-
 		const settings = [
 			{
 				_id: 'Livechat_title',
@@ -319,6 +360,18 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_conversation_finished_message',
 				value: s.trim(instance.conversationFinishedMessage.get())
+			},
+			{
+				_id: 'Livechat_registration_form',
+				value: instance.registrationFormEnabled.get()
+			},
+			{
+				_id: 'Livechat_name_field_registration_form',
+				value: instance.registrationFormNameFieldEnabled.get()
+			},
+			{
+				_id: 'Livechat_email_field_registration_form',
+				value: instance.registrationFormEmailFieldEnabled.get()
 			}
 		];
 

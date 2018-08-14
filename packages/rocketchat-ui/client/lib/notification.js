@@ -120,7 +120,9 @@ const KonchatNotification = {
 	// $('.link-room-' + rid).addClass('new-room-highlight')
 
 	removeRoomNotification(rid) {
-		Tracker.nonreactive(() => Session.set('newRoomSound', []));
+		let newRoomSound = Session.get('newRoomSound');
+		newRoomSound = _.without(newRoomSound, rid);
+		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
 		return $(`.link-room-${ rid }`).removeClass('new-room-highlight');
 	}

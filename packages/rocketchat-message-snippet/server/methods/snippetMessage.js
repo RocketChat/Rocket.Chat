@@ -1,6 +1,6 @@
 Meteor.methods({
 	snippetMessage(message, filename) {
-		if ((typeof Meteor.userId() === 'undefined') || (Meteor.userId() === null)) {
+		if (Meteor.userId() == null) {
 			//noinspection JSUnresolvedFunction
 			throw new Meteor.Error('error-invalid-user', 'Invalid user',
 				{method: 'snippetMessage'});
@@ -12,7 +12,8 @@ Meteor.methods({
 			return false;
 		}
 
-		if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) === -1)) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription) {
 			return false;
 		}
 

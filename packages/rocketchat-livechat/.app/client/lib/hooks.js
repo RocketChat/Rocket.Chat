@@ -7,7 +7,7 @@ const api = {
 			Triggers.processRequest(info);
 		}
 
-		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
+		Meteor.call('livechat:pageVisited', visitor.getToken(), visitor.getRoom(), info);
 	},
 
 	setCustomField(key, value, overwrite = true) {
@@ -37,6 +37,34 @@ const api = {
 
 	widgetClosed() {
 		Livechat.setWidgetClosed();
+	},
+
+	setGuestToken(token) {
+		visitor.setToken(token);
+	},
+
+	setGuestName(name) {
+		visitor.setName(name);
+	},
+
+	setGuestEmail(email) {
+		visitor.setEmail(email);
+	},
+
+	registerGuest(data) {
+		if (typeof data !== 'object') {
+			return;
+		}
+
+		if (!data.token) {
+			data.token = Random.id();
+		}
+
+		Meteor.call('livechat:registerGuest', data, function(error, result) {
+			if (!error && result.visitor && result.visitor.token) {
+				visitor.setToken(result.visitor.token);
+			}
+		});
 	}
 };
 

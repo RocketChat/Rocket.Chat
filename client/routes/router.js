@@ -149,6 +149,22 @@ FlowRouter.route('/register/:hash', {
 	}
 });
 
+FlowRouter.route('/setup-wizard', {
+	name: 'setup-wizard',
+
+	action() {
+		BlazeLayout.render('setupWizard');
+	}
+});
+
+FlowRouter.route('/setup-wizard/final', {
+	name: 'setup-wizard-final',
+
+	action() {
+		BlazeLayout.render('setupWizardFinal');
+	}
+});
+
 FlowRouter.notFound = {
 	action() {
 		BlazeLayout.render('pageNotFound');

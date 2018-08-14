@@ -1,9 +1,15 @@
 import _ from 'underscore';
 
 RocketChat.TabBar = new (class TabBar {
+	get size() {
+		return this._size.get();
+	}
+	set size(s) {
+		this._size.set(s);
+	}
 	constructor() {
 		this.buttons = new ReactiveVar({});
-
+		this._size = new ReactiveVar(4);
 		this.extraGroups = {};
 	}
 

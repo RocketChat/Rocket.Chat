@@ -19,7 +19,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = RocketChat.models.Messages.findVisibleByRoomId(rid, { sort: { 'ts' : 1 }});
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { 'ts' : 1 }});
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 

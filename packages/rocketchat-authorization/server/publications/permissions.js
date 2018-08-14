@@ -1,6 +1,8 @@
 Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
+		// TODO: should we return this for non logged users?
+		// TODO: we could cache this collection
 
 		const records = RocketChat.models.Permissions.find().fetch();
 
@@ -17,7 +19,17 @@ Meteor.methods({
 	}
 });
 
+RocketChat.models.Permissions.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			data = data || RocketChat.models.Permissions.findOneById(id);
+			break;
 
-RocketChat.models.Permissions.on('changed', (type, permission) => {
-	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
+		case 'removed':
+			data = { _id: id };
+			break;
+	}
+
+	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });

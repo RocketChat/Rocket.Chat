@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 Template.username.onCreated(function() {
 	const self = this;
 	self.username = new ReactiveVar;
@@ -14,6 +16,14 @@ Template.username.onCreated(function() {
 Template.username.helpers({
 	username() {
 		return Template.instance().username.get();
+	},
+
+	backgroundUrl() {
+		const asset = RocketChat.settings.get('Assets_background');
+		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		if (asset && (asset.url || asset.defaultUrl)) {
+			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
+		}
 	}
 });
 
@@ -57,6 +67,7 @@ Template.username.events({
 					username.error = true;
 				}
 				username.username = value;
+				username.escaped = _.escape(value);
 			}
 
 			RocketChat.Button.reset(button);

@@ -20,6 +20,9 @@ Template.accountSecurity.helpers({
 	isRegistering() {
 		return Template.instance().state.get() === 'registering';
 	},
+	isAllowed() {
+		return RocketChat.settings.get('Accounts_TwoFactorAuthentication_Enabled');
+	},
 	codesRemaining() {
 		if (Template.instance().codesRemaining.get()) {
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });

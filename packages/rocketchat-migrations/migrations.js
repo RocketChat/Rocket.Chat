@@ -272,9 +272,7 @@ Migrations._migrateTo = function(version, rerun) {
 		log.info(`Running ${ direction }() on version ${ migration.version }${ maybeName() }`);
 
 		try {
-			RocketChat.models._CacheControl.withValue(false, function() {
-				migration[direction](migration);
-			});
+			migration[direction](migration);
 		} catch (e) {
 			console.log(makeABox([
 				'ERROR! SERVER STOPPED',

@@ -70,7 +70,7 @@ RocketChat.API = {
 
 		return new Promise(function _jqueryFormDataPromise(resolve, reject) {
 			jQuery.ajax({
-				url: `${ Meteor.absoluteUrl() }api/${ endpoint }${ query }`,
+				url: `${ window.location.origin }/api/${ endpoint }${ query }`,
 				headers: {
 					'X-User-Id': localStorage['Meteor.userId'],
 					'X-Auth-Token': localStorage['Meteor.loginToken']

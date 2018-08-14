@@ -110,13 +110,16 @@ rocketchat:otr
 rocketchat:postcss
 rocketchat:push-notifications
 rocketchat:reactions
+rocketchat:retention-policy
 rocketchat:apps
 rocketchat:sandstorm
+rocketchat:setup-wizard
 rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
 rocketchat:slashcommands-help
+rocketchat:slashcommands-hide
 rocketchat:slashcommands-invite
 rocketchat:slashcommands-invite-all
 rocketchat:slashcommands-join
@@ -140,6 +143,7 @@ rocketchat:tutum
 rocketchat:ui
 rocketchat:ui-account
 rocketchat:ui-admin
+rocketchat:ui-clean-history
 rocketchat:ui-flextab
 rocketchat:ui-login
 rocketchat:ui-master
@@ -179,7 +183,7 @@ ostrio:cookies
 pauli:accounts-linkedin
 percolate:synced-cron
 raix:handlebar-helpers
-raix:push
+rocketchat:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
 todda00:friendly-slugs
@@ -189,3 +193,6 @@ rocketchat:version-check
 
 rocketchat:search
 chatpal:search
+rocketchat:lazy-load
+tap:i18n
+underscore

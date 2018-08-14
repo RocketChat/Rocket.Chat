@@ -6,6 +6,8 @@ import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 window.chatMessages = window.chatMessages || {};
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -120,6 +122,91 @@ const mountPopover = (e, i, outerContext) => {
 	popover.open(config);
 };
 
+const wipeFailedUploads = () => {
+	const uploads = Session.get('uploading');
+
+	if (uploads) {
+		Session.set('uploading', uploads.filter(upload => !upload.error));
+	}
+};
+
+function roomHasGlobalPurge(room) {
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	switch (room.t) {
+		case 'c':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+		case 'p':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+		case 'd':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+	}
+	return false;
+}
+
+function roomHasPurge(room) {
+	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	if (room.retention && room.retention.enabled !== undefined) {
+		return room.retention.enabled;
+	}
+
+	return roomHasGlobalPurge(room);
+}
+
+function roomFilesOnly(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.filesOnly;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+}
+
+function roomExcludePinned(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.excludePinned;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+}
+
+function roomMaxAge(room) {
+	if (!room) {
+		return;
+	}
+	if (!roomHasPurge(room)) {
+		return;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.maxAge;
+	}
+
+	if (room.t === 'c') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if (room.t === 'p') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if (room.t === 'd') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
+}
+
+RocketChat.callbacks.add('enter-room', wipeFailedUploads);
+
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
@@ -222,8 +309,8 @@ Template.room.helpers({
 		return {
 			_id: this._id,
 			onResize: () => {
-				if (instance.sendToBottomIfNecessary) {
-					instance.sendToBottomIfNecessary();
+				if (instance.sendToBottomIfNecessaryDebounced) {
+					instance.sendToBottomIfNecessaryDebounced();
 				}
 			}
 		};
@@ -281,7 +368,12 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) { return 'show'; }
+		const hasUnreadData = unreadData && (unreadData.count && unreadData.since);
+		const isUploading = uploading && uploading.length;
+
+		if (hasUnreadData || isUploading) {
+			return 'show';
+		}
 	},
 
 	formatUnreadSince() {
@@ -371,6 +463,25 @@ Template.room.helpers({
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
+	},
+	hasPurge() {
+		return roomHasPurge(Session.get(`roomData${ this._id }`));
+	},
+	filesOnly() {
+		return roomFilesOnly(Session.get(`roomData${ this._id }`));
+	},
+	excludePinned() {
+		return roomExcludePinned(Session.get(`roomData${ this._id }`));
+	},
+	purgeTimeout() {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
+
+		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000 * 60 * 60 * 24).humanize();
 	}
 });
 
@@ -536,6 +647,9 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
+
+		lazyloadtick();
+
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -714,7 +828,7 @@ Template.room.events({
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	},
-	'click .announcement'(e) {
+	'click .announcement'() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
@@ -722,7 +836,7 @@ Template.room.events({
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: $(e.target).attr('aria-label'),
+				text: roomData.announcement,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: t('Close')
@@ -739,6 +853,9 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+
+	lazyloadtick();
+
 	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = FlowRouter.getQueryParam('msg') ? false : true;
 	this.unreadCount = new ReactiveVar(0);
@@ -872,10 +989,7 @@ Template.room.onRendered(function() {
 
 	const messageBox = $('.messages-box');
 
-	template.isAtBottom = function(scrollThreshold) {
-		if (scrollThreshold == null) {
-			scrollThreshold = 0;
-		}
+	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
@@ -898,6 +1012,8 @@ Template.room.onRendered(function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
 			template.sendToBottom();
 		}
+
+		lazyloadtick();
 	};
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
@@ -907,7 +1023,7 @@ Template.room.onRendered(function() {
 	if ((window.MutationObserver == null)) {
 		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	} else {
-		const observer = new MutationObserver((mutations) => mutations.forEach(() => template.sendToBottomIfNecessaryDebounced()));
+		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
 		observer.observe(wrapperUl, { childList: true });
 	}

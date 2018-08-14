@@ -86,7 +86,7 @@
 			}
 
 			& + .rc-input__element {
-				padding: 0.5rem 1rem 0.5rem 2.25rem;
+				padding: 0.5rem 1.5rem 0.5rem 2.25rem;
 			}
 
 			&-svg--plus {
