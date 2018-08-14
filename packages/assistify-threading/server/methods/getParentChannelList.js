@@ -8,6 +8,7 @@ Meteor.methods({
 			fields: {
 				name: 1,
 				usersCount: 1,
+				default: 1,
 				msgs: 1,
 				t: 1
 			},

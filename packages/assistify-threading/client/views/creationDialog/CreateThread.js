@@ -272,10 +272,10 @@ Template.CreateThread.onRendered(function() {
 
 Template.CreateThread.onCreated(function() {
 	const instance = this;
-	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Parent_Channel')); //determine parent Channel from setting and allow to overwrite
+	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Thread_default_parent_Channel')); //determine parent Channel from setting and allow to overwrite
 	instance.parentChannelId = new ReactiveVar('');
 	instance.parentChannelError = new ReactiveVar(null);
-	instance.selectParent = new ReactiveVar(RocketChat.settings.get('Select_Parent'));
+	instance.selectParent = new ReactiveVar(false);
 	instance.parentChannelsList = new ReactiveVar('');
 	instance.error = new ReactiveVar(null);
 	instance.openingQuestion = new ReactiveVar('');

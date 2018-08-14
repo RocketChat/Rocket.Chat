@@ -1,11 +1,6 @@
 function getParentChannels() {
-	const result = Meteor.call('getParentChannelList', {sort: 'name'});
-	if (!result) {
-		return [{
-			key: 'general',
-			i18nLabel: 'general'
-		}];
-	}
+	const result = Meteor.call('getParentChannelList', {sort: 'name', default: -1});
+
 	return result.channels.map((channel) => {
 		if (channel.name !== null) {
 			return {
@@ -25,20 +20,14 @@ Meteor.startup(() => {
 		type: 'int',
 		public: true
 	});
-	RocketChat.settings.add('Select_Parent', false, {
-		group: 'Threading',
-		i18nLabel: 'Select_Parent',
-		type: 'boolean',
-		public: true
-	});
 
-	RocketChat.settings.add('Parent_Channel', '', {
+	const potentialParentChannels = getParentChannels();
+	RocketChat.settings.add('Thread_default_parent_Channel', potentialParentChannels[0].name, {
 		group: 'Threading',
-		i18nLabel: 'Parent_Channel',
+		i18nLabel: 'Thread_default_parent_Channel',
 		type: 'select',
-		values: getParentChannels(), // load parent channels
-		public: true,
-		enableQuery: {_id: 'Select_Parent', value: true}
+		values: potentialParentChannels, // load parent channels
+		public: true
 	});
 
 	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
