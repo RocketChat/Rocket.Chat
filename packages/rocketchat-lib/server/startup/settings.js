@@ -754,7 +754,7 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'string',
 		'public': true
 	});
-	this.add('CDN_PREFIX_ALL', false, {
+	this.add('CDN_PREFIX_ALL', true, {
 		type: 'boolean',
 		'public': true
 	});
