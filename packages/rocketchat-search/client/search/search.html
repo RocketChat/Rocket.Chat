@@ -21,19 +21,9 @@
 								{{> icon block="rc-input__icon-svg" icon=provider.icon}}
 							</div>
 							<input value="{{text}}" type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" />
-									
-							</div>
-							{{#if showMessage}}
-										<ul id= "modifier">
-											{{#each getModifierPatterns}}
-												<li>{{this}}</li>
-											{{/each}}
-										</ul>
-									{{/if}}
+						</div>
 					</label>
-					
 				</div>
-				
 				{{#if suggestions}}
 				<div id="rocket-search-suggestions">
 					{{#each suggestions}}
@@ -50,8 +40,5 @@
 			{{> Template.dynamic template=provider.resultTemplate data=scope}}
 		</div>
 	</div>
-	
 	{{/unless}}
-	
 </template>
-

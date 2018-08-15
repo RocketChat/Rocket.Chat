@@ -63,19 +63,3 @@
 	background-color: var(--button-primary-background);
 	color: white;
 }
-
-#modifier li  {
-	border: 1px solid white;
-	margin-top: -1px;
-	background-color: white;
-	padding: 12px;
-	text-decoration: none;
-	font-size: 14px;
-	font-weight: 800;
-	color: grey;
-	display: block
-  }
-
-  #modifier li :hover:not(.header){
-	background-color: white;
-  }
