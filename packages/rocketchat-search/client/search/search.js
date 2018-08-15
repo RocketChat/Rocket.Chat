@@ -9,6 +9,7 @@ Template.RocketSearch.onCreated(function() {
 	this.error = new ReactiveVar();
 	this.suggestions = new ReactiveVar();
 	this.suggestionActive = new ReactiveVar();
+	this.messageVisible = new ReactiveVar(false);
 
 	Meteor.call('rocketchatSearch.getProvider', (error, provider) => {
 		if (!error && provider) {
@@ -142,7 +143,13 @@ Template.RocketSearch.events = {
 	},
 	'mouseenter .rocket-search-suggestion-item'(e, t) {
 		t.suggestionActive.set(t.suggestions.get().indexOf(this));
-	}
+	},
+	'mouseenter .rc-input'(e, t) {
+		t.messageVisible.set(true);
+	  },
+	  'mouseleave .rc-input'(e, t) {
+		t.messageVisible.set(false);
+	  }
 };
 
 Template.RocketSearch.helpers({
@@ -169,6 +176,13 @@ Template.RocketSearch.helpers({
 	},
 	suggestionSelected(index) {
 		return Template.instance().suggestionActive.get() === index ? 'active' : '';
+	},
+	showMessage() {
+		return Template.instance().messageVisible.get();
+	  },
+	
+	getModifierPatterns() {
+		return ['has:', 'label:', 'is: pin', 'desc:', 'before:', 'after:', 'on:', 'mention:'];
 	}
 
 });
