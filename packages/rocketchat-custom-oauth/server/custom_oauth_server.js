@@ -115,10 +115,6 @@ export class CustomOAuth {
 		}
 
 		let data;
-		console.log('getAccessToken');
-		console.log(this.tokenPath);
-		console.log(allOptions);
-		console.log(response);
 		if (response.data) {
 			data = response.data;
 		} else {
@@ -143,9 +139,6 @@ export class CustomOAuth {
 			params.access_token = accessToken;
 		}
 
-		console.log('getIdentity');
-		console.log(this.identityPath);
-		console.log(params);
 
 		try {
 			const response = HTTP.get(this.identityPath, {
@@ -155,7 +148,6 @@ export class CustomOAuth {
 
 			let data;
 
-			console.log(response);
 			if (response.data) {
 				data = response.data;
 			} else {
@@ -269,7 +261,6 @@ export class CustomOAuth {
 			};
 
 			// console.log data
-			console.log(data);
 
 			return data;
 		});
