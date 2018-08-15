@@ -110,7 +110,8 @@ export class ThreadBuilder {
 		const parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
 		// Generate RoomName for xthe new room to be created.
 		this.name = `${ parentRoom.name }-${ ThreadBuilder.getNextId() }`;
-		const threadRoom = RocketChat.createRoom(parentRoom.t, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, { parentRoomId: this._parentRoomId });
+		const threadRoomType = parentRoom.t === 'd' ? 'p' : parentRoom.t;
+		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, { parentRoomId: this._parentRoomId });
 
 		if (parentRoom.name) {
 			RocketChat.saveRoomTopic(threadRoom.rid, parentRoom.name, Meteor.user());
