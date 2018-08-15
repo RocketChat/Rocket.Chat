@@ -5,7 +5,7 @@ FlowRouter.route('/create-channel', {
 	name: 'create-channel',
 
 	triggersEnter: [function() {
-		oldRoute = FlowRouter.current().oldRoute;
+		({ oldRoute } = FlowRouter.current());
 	}],
 
 	action() {

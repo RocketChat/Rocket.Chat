@@ -129,12 +129,12 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		// Avoid saving sandstormSessionId to the database
 		let sandstormSessionId = null;
 		if (message.sandstormSessionId) {
-			sandstormSessionId = message.sandstormSessionId;
+			({ sandstormSessionId } = message);
 			delete message.sandstormSessionId;
 		}
 
 		if (message._id && upsert) {
-			const _id = message._id;
+			const { _id } = message;
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,

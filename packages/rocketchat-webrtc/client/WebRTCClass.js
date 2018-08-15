@@ -557,7 +557,7 @@ class WebRTCClass {
 	}
 
 	stopAllPeerConnections() {
-		const peerConnections = this.peerConnections;
+		const { peerConnections } = this;
 
 		Object.keys(peerConnections).forEach((id) => {
 			this.stopPeerConnection(id);

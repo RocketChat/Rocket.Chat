@@ -131,12 +131,12 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		if (typeof subscription !== 'undefined' && subscription.open) {
 			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 			unreadsFrom = subscription.ls || subscription.ts;
-			userMentions = subscription.userMentions;
+			({ userMentions } = subscription);
 			joined = true;
 		}
 
 		if (access || joined) {
-			msgs = room.msgs;
+			({ msgs } = room);
 			latest = lm;
 			members = room.usersCount;
 		}

@@ -30,7 +30,7 @@ Template.emojiEdit.events({
 		let { files } = e.target;
 		if (files == null || files.length === 0) {
 			if (e.dataTransfer != null && e.dataTransfer.files != null) {
-				files = e.dataTransfer.files;
+				({ files } = e.dataTransfer);
 			} else {
 				files = [];
 			}

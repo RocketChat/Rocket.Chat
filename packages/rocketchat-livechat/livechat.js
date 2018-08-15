@@ -2,7 +2,7 @@
 import _ from 'underscore';
 import url from 'url';
 
-WebApp = Package.webapp.WebApp;
+({ WebApp } = Package.webapp);
 const { Autoupdate } = Package.autoupdate.Autoupdate;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {

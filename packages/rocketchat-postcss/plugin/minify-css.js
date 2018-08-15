@@ -88,7 +88,7 @@ const mergeCss = (css) => {
 				throw postres;
 			}
 
-			css = postres.css;
+			({ css } = postres);
 
 			const ast = CssTools.parseCss(css, parseOptions);
 			ast.filename = filename;
