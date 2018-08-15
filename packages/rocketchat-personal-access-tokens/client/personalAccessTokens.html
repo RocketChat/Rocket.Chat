@@ -1,7 +1,7 @@
 <template name="personalAccessTokens">
 	<section class="preferences-page">
 		<div class="preferences-page__content">
-			<div class="container">
+			<div class="">
 				{{# if isAllowed}}
 					<fieldset>
 						<div class="section">
@@ -17,33 +17,43 @@
 								<button name="add" class="button primary save-token">{{_ "Add"}}</button>
 							</form>
 							<br>
-							<div class="list">
-								<table>
+							<div class="rc-table-content">
+								{{#table}}
 									<thead>
-									<tr>
-										<th width="40%">{{_ "API_Personal_Access_Token_Name"}}</th>
-										<th width="40%">{{_ "Created_at"}}</th>
-										<th width="20%">{{_ "Last_token_part"}}</th>
-										<th></th>
-									</tr>
+										<tr>
+											<th width="30%">
+												<div class="table-fake-th">{{_ "API_Personal_Access_Token_Name"}}</div>
+											</th>
+											<th>
+												<div class="table-fake-th">{{_ "Created_at"}}</div>
+											</th>
+											<th>
+												<div class="table-fake-th">{{_ "Last_token_part"}}</div>
+											</th>
+											<th></th>
+										</tr>
 									</thead>
 									<tbody>
-									{{#unless hasTokens}}
-										<tr>
-											<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
-										</tr>
-									{{/unless}}
-									{{#each tokens}}
-										<tr data-id="{{name}}">
-											<td>{{name}}</td>
-											<td>{{dateFormated createdAt}}</td>
-											<td>...{{lastTokenPart}}</td>
-											<td><a class="regenerate-personal-access-token"><i class="icon-ccw"></i></a></td>
-											<td><a class="remove-personal-access-token"><i class="icon-block"></i></a></td>
-										</tr>
-									{{/each}}
+										{{#unless hasTokens}}
+											<tr>
+												<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
+											</tr>
+										{{/unless}}
+										{{#each tokens}}
+											<tr data-id="{{name}}">
+												<td>
+													<div class="rc-table-title">
+														{{name}}
+													</div>
+												</td>
+												<td>{{dateFormated createdAt}}</td>
+												<td>...{{lastTokenPart}}</td>
+												<td><a class="regenerate-personal-access-token"><i class="icon-ccw"></i></a></td>
+												<td><a class="remove-personal-access-token"><i class="icon-block"></i></a></td>
+											</tr>
+										{{/each}}
 									</tbody>
-								</table>
+								{{/table}}
 							</div>
 						</div>
 					</fieldset>

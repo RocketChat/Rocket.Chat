@@ -103,3 +103,8 @@ Template.personalAccessTokens.onCreated(function() {
 		this.tokens.set(PersonalAccessTokens.find().fetch()[0]);
 	});
 });
+
+Template.personalAccessTokens.onRendered(function() {
+	const height = document.querySelector('#security').offsetHeight + document.querySelector('.rc-header').offsetHeight + 150;
+	$('.rc-table-content')[0].style.height = `calc(100vh - ${ height }px)`;
+});
