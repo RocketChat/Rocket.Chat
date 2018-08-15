@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'personalAccessTokens:regenerateToken'({ tokenName }) {
 		if (!Meteor.userId()) {
@@ -16,7 +18,6 @@ Meteor.methods({
 		}
 
 		Meteor.call('personalAccessTokens:removeToken', { tokenName });
-		const token = Meteor.call('personalAccessTokens:generateToken', { tokenName });
-		return token;
+		return Meteor.call('personalAccessTokens:generateToken', { tokenName });
 	}
 });

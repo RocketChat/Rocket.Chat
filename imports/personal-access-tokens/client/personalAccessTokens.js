@@ -1,16 +1,17 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import moment from 'moment';
+
+import './personalAccessTokens.html';
+
 const PersonalAccessTokens = new Mongo.Collection('personal_access_tokens');
 
-Template.personalAccessTokens.helpers({
+Template.accountTokens.helpers({
 	isAllowed() {
 		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
 	},
-	hasTokens() {
-		return Template.instance().tokens.get() && Template.instance().tokens.get().tokens.length > 0;
-	},
 	tokens() {
-		return Template.instance().tokens.get() && Template.instance().tokens.get().tokens || [];
+		return PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens || [];
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
@@ -20,10 +21,7 @@ Template.personalAccessTokens.helpers({
 const showSuccessModal = token => {
 	modal.open({
 		title: t('API_Personal_Access_Token_Generated'),
-		text: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-			postProcess: 'sprintf',
-			sprintf: [token, Meteor.userId()]
-		}),
+		text: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', { token, userId: Meteor.userId() }),
 		type: 'success',
 		confirmButtonColor: '#DD6B55',
 		confirmButtonText: 'Ok',
@@ -32,7 +30,7 @@ const showSuccessModal = token => {
 	}, () => {
 	});
 };
-Template.personalAccessTokens.events({
+Template.accountTokens.events({
 	'submit #form-tokens'(e, instance) {
 		e.preventDefault();
 		const tokenName = e.currentTarget.elements['tokenName'].value.trim();
@@ -93,13 +91,10 @@ Template.personalAccessTokens.events({
 	}
 });
 
-Template.personalAccessTokens.onCreated(function() {
-	this.tokens = new ReactiveVar();
+Template.accountTokens.onCreated(function() {
 	this.ready = new ReactiveVar(true);
-
+	const subscription = this.subscribe('personalAccessTokens');
 	this.autorun(() => {
-		const subscription = this.subscribe('personalAccessTokens');
 		this.ready.set(subscription.ready());
-		this.tokens.set(PersonalAccessTokens.find().fetch()[0]);
 	});
 });

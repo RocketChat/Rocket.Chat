@@ -1,10 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Accounts } from 'meteor/accounts-base';
+
 Meteor.methods({
 	'personalAccessTokens:generateToken'({ tokenName }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:generateToken'});
 		}
 		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:generateToken'});
+			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled', { method: 'personalAccessTokens:generateToken'});
 		}
 
 		const token = Random.secret();

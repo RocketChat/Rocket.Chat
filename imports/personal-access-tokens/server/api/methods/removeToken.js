@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'personalAccessTokens:removeToken'({ tokenName }) {
 		if (!Meteor.userId()) {
