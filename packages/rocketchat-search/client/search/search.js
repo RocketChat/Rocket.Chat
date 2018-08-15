@@ -186,7 +186,7 @@ Template.RocketSearch.helpers({
 	  },
 	
 	getModifierPatterns() {
-		return ['has:', 'label:', 'is: pin', 'desc:', 'before:', 'after:', 'on:', 'mention:'];
+		return ["has:", "label:", "is: pin", "desc:", "before:", "after:", "on:", "mention:"];
 	}
 });
 
