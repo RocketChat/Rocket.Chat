@@ -49,7 +49,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/createThreadMessageAction.js', 'client');
 	api.addFiles('client/views/threadList.html', 'client');
 	api.addFiles('client/views/threadList.js', 'client');
-	api.addFiles('client/router.js', 'client');
 
 
 	//styling

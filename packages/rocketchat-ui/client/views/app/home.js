@@ -6,6 +6,6 @@ Template.home.helpers({
 		return RocketChat.settings.get('Layout_Home_Body');
 	},
 	threadingOnHome() {
-		return true; // TODO provide setting
+		return RocketChat.settings.get('Thread_creation_on_home');
 	}
 });

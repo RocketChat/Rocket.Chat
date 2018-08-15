@@ -2425,6 +2425,7 @@
   "Thread_start": "Thread starten",
   "thread-created" : "__username__ hat einen neuen Thread angelegt: __message__.",
   "Threading_description": "Hilf dabei, die Übersicht zu behalten! Indem Du einen Thread anlegst, wird ein Unterkanal mit passenden Mitgliedern erstellt.",
+  "Thread_creation_on_home": "Threads von der Home-Seite aus anlegen",
   "Thread_default_parent_Channel": "Standard-Kanal für neue Threads",
   "Thread_target_channel": "Übergeordneter Kanal oder Gruppe",
   "Thread_target_channel_description": "Wähle einen Kanal oder eine Gruppe aus, die zu Deinem Anliegen passt",

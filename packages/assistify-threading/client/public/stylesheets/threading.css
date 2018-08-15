@@ -1,11 +1,3 @@
-.create-thread .create-channel__title {
-	padding: 25% 0 1rem;
-}
-
-.create-thread header.create-channel__header {
-    text-align: center;
-}
-
 .create-thread textarea {
 		width: 100%;
 
@@ -23,15 +15,30 @@
 		max-height: 250px;
 }
 
+.content .threading-wrapper {
+	max-width: 650px;
+    margin-top: 50px;
+}
+
+.create-thread .action-link {
+	cursor: pointer;
+}
+
 .create-thread-sidebar {
 	margin-bottom: 22px;
 }
 
 .create-thread-sidebar button {
 	font-size: 100%;
-	margin-top: 6px;
+	margin-top: 10px;
+	margin-right: auto;
+    min-height: 24px;
 }
 
 .create-thread-sidebar .rooms-list__list {
 	margin-bottom: 0px;
+}
+
+.create-thread-sidebar .rooms-list__empty-room {
+	margin-bottom: 6px;
 }

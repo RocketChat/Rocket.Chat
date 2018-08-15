@@ -3,6 +3,25 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+const parent = document.querySelector('.main-content');
+
+FlowRouter.route('/create-thread', {
+	name: 'create-thread',
+
+	action() {
+		if (parent) {
+			Blaze.renderWithData(Template.fullModal, {template: 'CreateThread'}, parent);
+		} else {
+			BlazeLayout.render('main', {center: 'fullModal', template: 'CreateThread'});
+		}
+	},
+
+	triggersExit: [function() {
+		Blaze.remove(Blaze.getView(document.getElementsByClassName('full-modal')[0]));
+		$('.main-content').addClass('rc-old');
+	}]
+});
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
