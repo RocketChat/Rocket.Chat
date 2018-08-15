@@ -24,6 +24,10 @@
 	cursor: pointer;
 }
 
+.create-thread .create-channel {
+	height: 100%;
+}
+
 .create-thread-sidebar {
 	margin-bottom: 22px;
 }
@@ -32,6 +36,8 @@
 	font-size: 100%;
 	margin-top: 10px;
 	margin-right: auto;
+	margin-left: auto;
+	width: 100%;
     min-height: 24px;
 }
 
