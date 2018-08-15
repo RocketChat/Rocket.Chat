@@ -1,13 +1,8 @@
 <template name="home">
-	<section class="page-container page-home page-static content-background-color">
-		{{> header sectionName=title}}
-		<div class="content">
-			{{{body}}}
-			{{#if threadingOnHome}}
-			<div class="threading-wrapper">
-				{{> CreateThread }}
+		<section class="page-container page-home page-static content-background-color">
+			{{> header sectionName=title}}
+			<div class="content">
+				{{{body}}}
 			</div>
-			{{/if}}
-		</div>
-	</section>
-</template>
+		</section>
+	</template>

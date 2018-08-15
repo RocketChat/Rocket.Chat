@@ -29,13 +29,6 @@ Meteor.startup(() => {
 		RocketChat.models.Settings.updateValueById('Thread_default_parent_Channel', defaultChannel);
 	}
 
-	RocketChat.settings.add('Thread_creation_on_home', false, {
-		group: 'Threading',
-		type: 'boolean',
-		'public': true,
-		i18nLabel: 'Thread_creation_on_home'
-	});
-
 	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
 		group: 'Accounts',
 		section: 'Accounts_Default_User_Preferences',

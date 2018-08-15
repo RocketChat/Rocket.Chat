@@ -10,9 +10,9 @@ FlowRouter.route('/create-thread', {
 
 	action() {
 		if (parent) {
-			Blaze.renderWithData(Template.fullModal, {template: 'CreateThread'}, parent);
+			Blaze.renderWithData('CreateThread', parent);
 		} else {
-			BlazeLayout.render('main', {center: 'fullModal', template: 'CreateThread'});
+			BlazeLayout.render('main', { center: 'CreateThread'});
 		}
 	},
 
@@ -248,6 +248,9 @@ Template.CreateThread.events({
 				FlowRouter.goToRoomById(result.rid);
 			});
 		}
+	},
+	'click .full-modal__back-button'() {
+		FlowRouter.go('home'); //back would be nicer but somewhat this seems difficult
 	}
 });
 
