@@ -137,6 +137,8 @@ Template.loginForm.events({
 					if (error != null) {
 						if (error.error === 'no-valid-email') {
 							instance.state.set('email-verification');
+						} else if (error.error === 'error-user-is-not-activated') {
+							toastr.error(t('Wait_activation_warning'));
 						} else {
 							toastr.error(t('User_not_found_or_incorrect_password'));
 						}
