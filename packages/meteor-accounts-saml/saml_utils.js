@@ -79,13 +79,13 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 	// Post-auth destination
 	let callbackUrl;
 	if (this.options.callbackUrl) {
-		callbackUrl = this.options.callbackUrl;
+		({ callbackUrl } = this.options);
 	} else {
 		callbackUrl = this.options.protocol + req.headers.host + this.options.path;
 	}
 
 	if (this.options.id) {
-		id = this.options.id;
+		({ id } = this.options);
 	}
 
 	let request =

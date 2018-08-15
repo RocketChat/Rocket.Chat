@@ -134,7 +134,7 @@ const configureSamlService = function(samlConfigs) {
 	let privateCert = false;
 	let privateKey = false;
 	if (samlConfigs.secret.privateKey && samlConfigs.secret.publicCert) {
-		privateKey = samlConfigs.secret.privateKey;
+		({ privateKey } = samlConfigs.secret);
 		privateCert = samlConfigs.secret.publicCert;
 	} else if (samlConfigs.secret.privateKey || samlConfigs.secret.publicCert) {
 		logger.error('You must specify both cert and key files.');

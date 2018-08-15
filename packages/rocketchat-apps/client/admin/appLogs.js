@@ -64,9 +64,9 @@ Template.appLogs.helpers({
 		if (!data) {
 			return value;
 		} else if (typeof data === 'object') {
-			value = hljs.highlight('json', JSON.stringify(data, null, 2)).value;
+			({ value } = hljs.highlight('json', JSON.stringify(data, null, 2)));
 		} else {
-			value = hljs.highlight('json', data).value;
+			({ value } = hljs.highlight('json', data));
 		}
 
 		return value.replace(/\\\\n/g, '<br>');

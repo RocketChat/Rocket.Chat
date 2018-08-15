@@ -93,8 +93,8 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	let chunksTotalLength = 0;
 	const stream = request(opts);
 	stream.on('response', function(response) {
-		statusCode = response.statusCode;
-		headers = response.headers;
+		({ statusCode } = response);
+		({ headers } = response);
 		if (response.statusCode !== 200) {
 			return stream.abort();
 		}

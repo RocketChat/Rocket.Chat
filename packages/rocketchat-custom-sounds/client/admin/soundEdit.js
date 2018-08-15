@@ -30,7 +30,7 @@ Template.soundEdit.events({
 		let { files } = e.target;
 		if (e.target.files == null || files.length === 0) {
 			if (e.dataTransfer.files != null) {
-				files = e.dataTransfer.files;
+				({ files } = e.dataTransfer);
 			} else {
 				files = [];
 			}
