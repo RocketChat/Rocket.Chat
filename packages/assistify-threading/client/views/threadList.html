@@ -1,17 +1,17 @@
 <template name="ThreadList">
 	<div class="create-thread-sidebar">
-	<h3 class="rooms-list__type">
-		{{_ "Threads"}}
-	</h3>
-	<ul class="rooms-list__list">
-			{{#each room in rooms}}
-				{{> chatRoomItem room }}
-			{{else}}
+		<h3 class="rooms-list__type">
+			{{_ "Threads"}}
+		</h3>
+		<ul class="rooms-list__list">
+			{{#each room in rooms}} {{> chatRoomItem room }} {{else}}
+			<p class="rooms-list__empty-room">
 				{{ _ "No_threads_yet"}}
+			</p>
 			{{/each}}
-	</ul>
-	<div class="sidebar-item">
-		<button class="js-create-thread">{{> icon icon="plus"}} {{_ "Thread_start"}}</button>
+		</ul>
+		<p class="rooms-list__empty-room">
+			<button class="js-create-thread">{{> icon icon="plus"}} {{_ "Thread_start"}}</button>
+		</p>
 	</div>
-</div>
 </template>

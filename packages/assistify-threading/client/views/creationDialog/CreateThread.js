@@ -74,7 +74,7 @@ Template.CreateThread.helpers({
 	},
 	targetChannelText() {
 		const instance = Template.instance();
-		return `${ TAPi18n.__('Target_channel_prefix') } "${ instance.parentChannel.get() }"`;
+		return `${ TAPi18n.__('Thread_target_channel_prefix') } "${ instance.parentChannel.get() }"`;
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
