@@ -1,32 +1,30 @@
-const objectMaybeIncluding = (types) => {
-	return Match.Where((value) => {
-		Object.keys(types).forEach(field => {
-			if (value[field] != null) {
-				try {
-					check(value[field], types[field]);
-				} catch (error) {
-					error.path = field;
-					throw error;
-				}
+const objectMaybeIncluding = (types) => Match.Where((value) => {
+	Object.keys(types).forEach((field) => {
+		if (value[field] != null) {
+			try {
+				check(value[field], types[field]);
+			} catch (error) {
+				error.path = field;
+				throw error;
 			}
-		});
-
-		return true;
+		}
 	});
-};
 
-const validateAttachmentsFields = attachmentFields => {
+	return true;
+});
+
+const validateAttachmentsFields = (attachmentFields) => {
 	check(attachmentFields, objectMaybeIncluding({
-		short: Boolean
+		short: Boolean,
 	}));
 
 	check(attachmentFields, objectMaybeIncluding({
 		title: String,
-		value: String
+		value: String,
 	}));
 };
 
-const validateAttachment = attachment => {
+const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
@@ -43,7 +41,7 @@ const validateAttachment = attachment => {
 		image_url: String,
 		audio_url: String,
 		video_url: String,
-		fields: [Match.Any]
+		fields: [Match.Any],
 	}));
 
 	if (attachment.fields && attachment.fields.length) {
@@ -51,7 +49,7 @@ const validateAttachment = attachment => {
 	}
 };
 
-const validateBodyAttachments = attachments => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
@@ -65,7 +63,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		alias: String,
 		emoji: String,
 		avatar: String,
-		attachments: [Match.Any]
+		attachments: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -79,7 +77,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	message.u = {
 		_id,
 		username,
-		name
+		name,
 	};
 	message.rid = room._id;
 
@@ -89,15 +87,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 
 	if (message.ts == null) {
 		message.ts = new Date();
-	}
-
-	if (!room.usernames || room.usernames.length === 0) {
-		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
-		if (updated_room) {
-			room = updated_room;
-		} else {
-			room.usernames = [];
-		}
 	}
 
 	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
@@ -149,7 +138,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,
-				'u._id': message.u._id
+				'u._id': message.u._id,
 			}, message);
 			message._id = _id;
 		} else {

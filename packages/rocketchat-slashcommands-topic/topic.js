@@ -25,5 +25,5 @@ function Topic(command, params, item) {
 
 RocketChat.slashCommands.add('topic', Topic, {
 	description: 'Slash_Topic_Description',
-	params: 'Slash_Topic_Params'
+	params: 'Slash_Topic_Params',
 });

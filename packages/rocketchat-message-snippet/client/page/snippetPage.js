@@ -25,7 +25,7 @@ Template.snippetPage.helpers({
 		if (snippet !== undefined) {
 			return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 		}
-	}
+	},
 });
 
 Template.snippetPage.onCreated(function() {

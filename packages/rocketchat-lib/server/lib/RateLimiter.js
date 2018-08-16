@@ -20,7 +20,7 @@ RocketChat.RateLimiter = new class {
 			} else {
 				throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(rateLimitResult.timeToReset / 1000) } seconds before trying again.`, {
 					timeToReset: rateLimitResult.timeToReset,
-					seconds: Math.ceil(rateLimitResult.timeToReset / 1000)
+					seconds: Math.ceil(rateLimitResult.timeToReset / 1000),
 				});
 			}
 		};
@@ -32,7 +32,7 @@ RocketChat.RateLimiter = new class {
 		}
 		const match = {
 			type: 'method',
-			name: methodName
+			name: methodName,
 		};
 		_.each(matchers, function(matcher, key) {
 			return match[key] = matchers[key];

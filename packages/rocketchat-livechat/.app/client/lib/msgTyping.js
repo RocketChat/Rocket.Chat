@@ -1,4 +1,4 @@
-/* globals Notifications */
+/* globals Notifications, Livechat */
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 
@@ -10,6 +10,7 @@ export const MsgTyping = (function() {
 	const selfTyping = new ReactiveVar(false);
 	const usersTyping = {};
 	const dep = new Tracker.Dependency;
+	let oldRoom;
 
 	const addStream = function(room) {
 		if (!_.isEmpty(usersTyping[room] && usersTyping[room].users)) {
@@ -37,8 +38,12 @@ export const MsgTyping = (function() {
 	};
 
 	Tracker.autorun(() => {
-		if (visitor.getRoom() && visitor.getId()) {
-			addStream(visitor.getRoom());
+		if (Livechat.room && visitor.getId()) {
+			if (oldRoom) {
+				Notifications.unRoom(oldRoom, 'typing');
+			}
+			addStream(Livechat.room);
+			oldRoom = Livechat.room;
 		}
 	});
 

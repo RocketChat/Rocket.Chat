@@ -1,10 +1,11 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
-RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
 
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -25,10 +26,10 @@ Template.body.onRendered(function() {
 				confirmButtonText: t('Yes_clear_all'),
 				showCancelButton: true,
 				cancelButtonText: t('Cancel'),
-				confirmButtonColor: '#DD6B55'
+				confirmButtonColor: '#DD6B55',
 			}, function() {
 				const subscriptions = ChatSubscription.find({
-					open: true
+					open: true,
 				}, {
 					fields: {
 						unread: 1,
@@ -36,11 +37,11 @@ Template.body.onRendered(function() {
 						rid: 1,
 						t: 1,
 						name: 1,
-						ls: 1
-					}
+						ls: 1,
+					},
 				});
 
-				subscriptions.forEach((subscription) =>{
+				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
 						Meteor.call('readMessages', subscription.rid);
 					}
@@ -78,7 +79,7 @@ Template.body.onRendered(function() {
 				e.stopPropagation();
 				if (RocketChat.Layout.isEmbedded()) {
 					return fireGlobalEvent('click-message-link', {
-						link: link.pathname + link.search
+						link: link.pathname + link.search,
 					});
 				}
 				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
@@ -98,7 +99,7 @@ Template.body.onRendered(function() {
 				w[l] = w[l] || [];
 				w[l].push({
 					'gtm.start': new Date().getTime(),
-					event: 'gtm.js'
+					event: 'gtm.js',
 				});
 				const f = d.getElementsByTagName(s)[0];
 				const j = d.createElement(s);
@@ -116,6 +117,10 @@ Template.body.onRendered(function() {
 
 RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
+	removeSidenav() {
+		const { modal } = this;
+		return (modal || typeof modal === 'function' ? modal() : modal) || RocketChat.Layout.isEmbedded();
+	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
 	},
@@ -176,17 +181,16 @@ Template.main.helpers({
 		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
 
 		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
-	}
+	},
 });
 
 Template.main.events({
 	'click .burger'() {
 		return menu.toggle();
-	}
+	},
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {

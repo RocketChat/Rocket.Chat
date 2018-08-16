@@ -1,4 +1,4 @@
-/*globals defaultUserLanguage, KonchatNotification */
+/* globals KonchatNotification */
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -6,15 +6,15 @@ import toastr from 'toastr';
 const notificationLabels = {
 	all: 'All_messages',
 	mentions: 'Mentions',
-	nothing: 'Nothing'
+	nothing: 'Nothing',
 };
 
 const emailLabels = {
 	nothing: 'Email_Notification_Mode_Disabled',
-	mentions: 'Email_Notification_Mode_All'
+	mentions: 'Email_Notification_Mode_All',
 };
 
-function checkedSelected(property, value, defaultValue=undefined) {
+function checkedSelected(property, value, defaultValue = undefined) {
 	if (defaultValue && defaultValue.hash) {
 		defaultValue = undefined;
 	}
@@ -37,27 +37,26 @@ Template.accountPreferences.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.keys(languages).map((key) => {
-			const language = languages[key];
-			return _.extend(language, { key });
+		const result = Object.entries(languages)
+			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
+
+		result.unshift({
+			name: 'Default',
+			en: 'Default',
+			key: '',
 		});
 
-		return _.sortBy(result, 'key');
-	},
-	userLanguage(key) {
-		const user = Meteor.user();
-		let result = undefined;
-		if (user.language) {
-			result = user.language === key;
-		} else if (defaultUserLanguage()) {
-			result = defaultUserLanguage() === key;
-		}
 		return result;
 	},
-	checked(property, value, defaultValue=undefined) {
+	isUserLanguage(key) {
+		const languageKey = Meteor.user().language;
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
+	},
+	checked(property, value, defaultValue = undefined) {
 		return checkedSelected(property, value, defaultValue);
 	},
-	selected(property, value, defaultValue=undefined) {
+	selected(property, value, defaultValue = undefined) {
 		return checkedSelected(property, value, defaultValue);
 	},
 	highlights() {
@@ -103,7 +102,7 @@ Template.accountPreferences.helpers({
 	},
 	dontAskAgainList() {
 		return RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
-	}
+	},
 });
 
 Template.accountPreferences.onCreated(function() {
@@ -163,9 +162,7 @@ Template.accountPreferences.onCreated(function() {
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 			return s.trim(e);
 		}));
-		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map(option => {
-			return {action: option.value, label: option.text};
-		});
+		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
 
 		let reload = false;
 
@@ -221,13 +218,13 @@ Template.accountPreferences.onCreated(function() {
 	};
 
 	this.downloadMyData = function(fullExport = false) {
-		Meteor.call('requestDataDownload', {fullExport}, function(error, results) {
+		Meteor.call('requestDataDownload', { fullExport }, function(error, results) {
 			if (results) {
 				if (results.requested) {
 					modal.open({
 						title: t('UserDataDownload_Requested'),
 						text: t('UserDataDownload_Requested_Text'),
-						type: 'success'
+						type: 'success',
 					});
 
 					return true;
@@ -238,7 +235,7 @@ Template.accountPreferences.onCreated(function() {
 						modal.open({
 							title: t('UserDataDownload_Requested'),
 							text: t('UserDataDownload_CompletedRequestExisted_Text'),
-							type: 'success'
+							type: 'success',
 						});
 
 						return true;
@@ -247,14 +244,14 @@ Template.accountPreferences.onCreated(function() {
 					modal.open({
 						title: t('UserDataDownload_Requested'),
 						text: t('UserDataDownload_RequestExisted_Text'),
-						type: 'success'
+						type: 'success',
 					});
 					return true;
 				}
 
 				modal.open({
 					title: t('UserDataDownload_Requested'),
-					type: 'success'
+					type: 'success',
 				});
 				return true;
 			}
@@ -299,10 +296,10 @@ Template.accountPreferences.events({
 		e.preventDefault();
 		KonchatNotification.notify({
 			duration: $('input[name=desktopNotificationDuration]').val(),
-			payload: { sender: { username: 'rocket.cat' }
+			payload: { sender: { username: 'rocket.cat' },
 			},
 			title: TAPi18n.__('Desktop_Notification_Test'),
-			text: TAPi18n.__('This_is_a_desktop_notification')
+			text: TAPi18n.__('This_is_a_desktop_notification'),
 		});
 	},
 	'change .audio'(e) {
@@ -321,8 +318,8 @@ Template.accountPreferences.events({
 		const selectEl = document.getElementById('dont-ask');
 		const options = selectEl.options;
 		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex(option => option.value === selectedOption);
+		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
 
 		selectEl.remove(optionIndex);
-	}
+	},
 });

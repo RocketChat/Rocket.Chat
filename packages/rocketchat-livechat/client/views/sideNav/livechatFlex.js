@@ -4,16 +4,16 @@ Template.livechatFlex.helpers({
 			name: t(name),
 			icon,
 			pathSection: section,
-			darken: true
+			darken: true,
 		};
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
-	}
+	},
 });
 
 Template.livechatFlex.events({
 	'click [data-action="close"]'() {
 		SideNav.closeFlex();
-	}
+	},
 });

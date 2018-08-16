@@ -37,7 +37,7 @@ const DefaultMigration = {
 	up() {
 		// @TODO: check if collection "migrations" exist
 		// If exists, rename and rerun _migrateTo
-	}
+	},
 };
 
 const Migrations = this.Migrations = {
@@ -56,12 +56,12 @@ const Migrations = this.Migrations = {
 		// max number of attempts to retry unlock
 		maxAttempts: 30,
 		// migrations collection name
-		collectionName: 'migrations'
+		collectionName: 'migrations',
 		// collectionName: "rocketchat_migrations"
 	},
 	config(opts) {
 		this.options = _.extend({}, this.options, opts);
-	}
+	},
 };
 
 Migrations._collection = new Mongo.Collection(Migrations.options.collectionName);
@@ -74,9 +74,7 @@ function makeABox(message, color = 'red') {
 	const len = _(message).reduce(function(memo, msg) {
 		return Math.max(memo, msg.length);
 	}, 0) + 4;
-	const text = message.map((msg) => {
-		return '|' [color] + s.lrpad(msg, len)[color] + '|' [color];
-	}).join('\n');
+	const text = message.map((msg) => '|' [color] + s.lrpad(msg, len)[color] + '|' [color]).join('\n');
 	const topLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
 	const separator = '|' [color] + s.pad('', len, '') + '|' [color];
 	const bottomLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
@@ -111,12 +109,12 @@ function createLogger(prefix) {
 			logger({
 				level,
 				message,
-				tag: prefix
+				tag: prefix,
 			});
 
 		} else {
 			Log[level]({
-				message: `${ prefix }: ${ message }`
+				message: `${ prefix }: ${ message }`,
 			});
 		}
 	};
@@ -208,7 +206,7 @@ Migrations.migrateTo = function(command) {
 			`Commit: ${ RocketChat.Info.commit.hash }`,
 			`Date: ${ RocketChat.Info.commit.date }`,
 			`Branch: ${ RocketChat.Info.commit.branch }`,
-			`Tag: ${ RocketChat.Info.commit.tag }`
+			`Tag: ${ RocketChat.Info.commit.tag }`,
 		]));
 		process.exit(1);
 	}
@@ -272,9 +270,7 @@ Migrations._migrateTo = function(version, rerun) {
 		log.info(`Running ${ direction }() on version ${ migration.version }${ maybeName() }`);
 
 		try {
-			RocketChat.models._CacheControl.withValue(false, function() {
-				migration[direction](migration);
-			});
+			migration[direction](migration);
 		} catch (e) {
 			console.log(makeABox([
 				'ERROR! SERVER STOPPED',
@@ -292,7 +288,7 @@ Migrations._migrateTo = function(version, rerun) {
 				`Commit: ${ RocketChat.Info.commit.hash }`,
 				`Date: ${ RocketChat.Info.commit.date }`,
 				`Branch: ${ RocketChat.Info.commit.branch }`,
-				`Tag: ${ RocketChat.Info.commit.tag }`
+				`Tag: ${ RocketChat.Info.commit.tag }`,
 			]));
 			process.exit(1);
 		}
@@ -310,22 +306,22 @@ Migrations._migrateTo = function(version, rerun) {
 		return self._collection.update({
 			_id: 'control',
 			$or: [{
-				locked: false
+				locked: false,
 			}, {
 				lockedAt: {
-					$lt: dateMinusInterval
-				}
+					$lt: dateMinusInterval,
+				},
 			}, {
 				buildAt: {
-					$ne: build
-				}
-			}]
+					$ne: build,
+				},
+			}],
 		}, {
 			$set: {
 				locked: true,
 				lockedAt: date,
-				buildAt: build
-			}
+				buildAt: build,
+			},
 		}) === 1;
 	}
 
@@ -334,7 +330,7 @@ Migrations._migrateTo = function(version, rerun) {
 	function unlock() {
 		self._setControl({
 			locked: false,
-			version: currentVersion
+			version: currentVersion,
 		});
 	}
 
@@ -344,7 +340,7 @@ Migrations._migrateTo = function(version, rerun) {
 			currentVersion = self._list[i + 1].version;
 			self._setControl({
 				locked: true,
-				version: currentVersion
+				version: currentVersion,
 			});
 		}
 	} else {
@@ -353,7 +349,7 @@ Migrations._migrateTo = function(version, rerun) {
 			currentVersion = self._list[i - 1].version;
 			self._setControl({
 				locked: true,
-				version: currentVersion
+				version: currentVersion,
 			});
 		}
 	}
@@ -365,12 +361,12 @@ Migrations._migrateTo = function(version, rerun) {
 // gets the current control record, optionally creating it if non-existant
 Migrations._getControl = function() {
 	const control = this._collection.findOne({
-		_id: 'control'
+		_id: 'control',
 	});
 
 	return control || this._setControl({
 		version: 0,
-		locked: false
+		locked: false,
 	});
 };
 
@@ -381,14 +377,14 @@ Migrations._setControl = function(control) {
 	check(control.locked, Boolean);
 
 	this._collection.update({
-		_id: 'control'
+		_id: 'control',
 	}, {
 		$set: {
 			version: control.version,
-			locked: control.locked
-		}
+			locked: control.locked,
+		},
 	}, {
-		upsert: true
+		upsert: true,
 	});
 
 	return control;
@@ -403,11 +399,11 @@ Migrations._findIndexByVersion = function(version) {
 	throw new Meteor.Error(`Can't find migration version ${ version }`);
 };
 
-//reset (mainly intended for tests)
+// reset (mainly intended for tests)
 Migrations._reset = function() {
 	this._list = [{
 		version: 0,
-		up() {}
+		up() {},
 	}];
 	this._collection.remove({});
 };

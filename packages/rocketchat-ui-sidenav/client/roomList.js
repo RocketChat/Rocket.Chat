@@ -1,6 +1,5 @@
 /* globals RocketChat */
 import { UiTextContext } from 'meteor/rocketchat:lib';
-import _ from 'underscore';
 
 Template.roomList.helpers({
 	rooms() {
@@ -12,12 +11,12 @@ Template.roomList.helpers({
 				show unread
 		*/
 		if (this.anonymous) {
-			return RocketChat.models.Rooms.find({t: 'c'}, {sort: {name: 1}});
+			return RocketChat.models.Rooms.find({ t: 'c' }, { sort: { name: 1 } });
 		}
 		const user = Meteor.userId();
 		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
-			open: true
+			open: true,
 		};
 
 		const sort = {};
@@ -26,14 +25,13 @@ Template.roomList.helpers({
 			sort.lm = -1;
 		} else { // alphabetical
 			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
-			sort['name'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.hideUnreadStatus = {$ne: true};
+			query.hideUnreadStatus = { $ne: true };
 
-			return ChatSubscription.find(query, {sort});
+			return ChatSubscription.find(query, { sort });
 		}
 
 		const favoritesEnabled = !!(RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites'));
@@ -59,16 +57,16 @@ Template.roomList.helpers({
 
 			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
-					{alert: {$ne: true}},
-					{hideUnreadStatus: true}
+					{ alert: { $ne: true } },
+					{ hideUnreadStatus: true },
 				];
 			}
-			query.t = {$in: types};
+			query.t = { $in: types };
 			if (favoritesEnabled) {
-				query.f = {$ne: favoritesEnabled};
+				query.f = { $ne: favoritesEnabled };
 			}
 		}
-		return ChatSubscription.find(query, {sort});
+		return ChatSubscription.find(query, { sort });
 	},
 
 	isLivechat() {
@@ -98,35 +96,47 @@ Template.roomList.helpers({
 
 	showRoomCounter() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
-	}
+	},
 });
 
-const getLowerCaseNames = (room, nameDefault = '') => {
+const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
-	const fname = room.fname || name;
+	const fname = room.fname || fnameDefault || name;
 	return {
 		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase()
+		lowerCaseFName: fname.toLowerCase(),
 	};
 };
 
-// RocketChat.Notifications['onUser']('rooms-changed', );
-
-const mergeSubRoom = (record/*, t*/) => {
-	const room = Tracker.nonreactive(() => RocketChat.models.Rooms.findOne({ _id: record.rid }));
-	if (!room) {
-		return record;
-	}
-	record.lastMessage = room.lastMessage;
-	record.lm = room._updatedAt;
-	return _.extend(record, getLowerCaseNames(record));
+const mergeSubRoom = (subscription) => {
+	const room = RocketChat.models.Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
+	subscription.lastMessage = room.lastMessage;
+	subscription.lm = room._updatedAt;
+	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
-RocketChat.callbacks.add('cachedCollection-received-rooms', (room) => {
+const mergeRoomSub = (room) => {
 	const sub = RocketChat.models.Subscriptions.findOne({ rid: room._id });
-	const $set = {lastMessage : room.lastMessage, lm: room._updatedAt, ...getLowerCaseNames(room, sub.name)};
-	RocketChat.models.Subscriptions.update({ rid: room._id }, {$set});
-});
+	if (!sub) {
+		return room;
+	}
+
+	RocketChat.models.Subscriptions.update({
+		rid: room._id,
+	}, {
+		$set: {
+			lastMessage: room.lastMessage,
+			lm: room._updatedAt,
+			...getLowerCaseNames(room, sub.name, sub.fname),
+		},
+	});
+
+	return room;
+};
+
+RocketChat.callbacks.add('cachedCollection-received-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-sync-rooms', mergeRoomSub);
+RocketChat.callbacks.add('cachedCollection-loadFromServer-rooms', mergeRoomSub);
 
 RocketChat.callbacks.add('cachedCollection-received-subscriptions', mergeSubRoom);
 RocketChat.callbacks.add('cachedCollection-sync-subscriptions', mergeSubRoom);

@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:mentions-flextab',
 	version: '0.0.1',
 	summary: 'Mentions Flextab',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'less',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('templating', 'client');
@@ -21,10 +21,10 @@ Package.onUse(function(api) {
 		'client/views/mentionsFlexTab.html',
 		'client/views/mentionsFlexTab.js',
 		'client/actionButton.js',
-		'client/tabBar.js'
+		'client/tabBar.js',
 	], 'client');
 
 	api.addFiles([
-		'server/publications/mentionedMessages.js'
+		'server/publications/mentionedMessages.js',
 	], 'server');
 });

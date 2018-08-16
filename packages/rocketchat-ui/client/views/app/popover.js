@@ -9,7 +9,7 @@ this.popover = {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
 		const data = {
 			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
-			...config
+			...config,
 		};
 		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
 	},
@@ -24,13 +24,13 @@ this.popover = {
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
-	}
+	},
 };
 
 Template.popover.helpers({
 	hasAction() {
 		return !!this.action;
-	}
+	},
 });
 
 Template.popover.onRendered(function() {
@@ -57,8 +57,8 @@ Template.popover.onRendered(function() {
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
 
 		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
-			x: this.data.targetRect[horizontalDirection === 'left'? 'right' : 'left'],
-			y: this.data.targetRect[verticalDirection]
+			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
+			y: this.data.targetRect[verticalDirection],
 		};
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
@@ -176,7 +176,7 @@ Template.popover.events({
 				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
 				cancelButtonText: TAPi18n.__('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, (inputValue) => {
 				if (inputValue === false) {
 					return false;
@@ -194,7 +194,7 @@ Template.popover.events({
 					text: TAPi18n.__('Thank_you_exclamation_mark '),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 			popover.close();
@@ -246,9 +246,9 @@ Template.popover.events({
 
 			return false;
 		}
-	}
+	},
 });
 
 Template.popover.helpers({
-	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent),
 });

@@ -1,6 +1,6 @@
 Template.chatRoomItem.helpers({
 	roomData() {
-		let {name} = this;
+		let { name } = this;
 		if (this.fname) {
 			const realNameForDirectMessages = this.t === 'd' && RocketChat.settings.get('UI_Use_Real_Name');
 			const realNameForChannel = this.t !== 'd' && RocketChat.settings.get('UI_Allow_room_names_with_special_chars');
@@ -9,17 +9,17 @@ Template.chatRoomItem.helpers({
 			}
 		}
 
-		const openedRomm = Tracker.nonreactive(() => Session.get('openedRoom'));
+		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
-		// if (this.unread > 0 && (!hasFocus || openedRomm !== this.rid)) {
+		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
 		// 	unread = this.unread;
 		// }
 
-		const active = [this.rid, this._id].includes(id => id === openedRomm);
+		const active = [this.rid, this._id].includes((id) => id === openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		this.alert = !this.hideUnreadStatus && this.alert; //&& (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
+		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
@@ -34,7 +34,7 @@ Template.chatRoomItem.helpers({
 			unread,
 			active,
 			archivedClass,
-			status: this.t === 'd' || this.t === 'l'
+			status: this.t === 'd' || this.t === 'l',
 		};
 		roomData.username = roomData.username || roomData.name;
 
@@ -43,7 +43,7 @@ Template.chatRoomItem.helpers({
 			roomData.lastMessage = room && room.lastMessage || { msg: t('No_messages_yet') };
 		}
 		return roomData;
-	}
+	},
 });
 
 RocketChat.callbacks.add('enter-room', (sub) => {

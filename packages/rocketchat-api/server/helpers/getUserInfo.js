@@ -10,7 +10,8 @@ const getInfoFromUserObject = (user) => {
 		active,
 		language,
 		roles,
-		settings
+		settings,
+		customFields,
 	} = user;
 	return {
 		_id,
@@ -23,7 +24,8 @@ const getInfoFromUserObject = (user) => {
 		active,
 		language,
 		roles,
-		settings
+		settings,
+		customFields,
 	};
 };
 
@@ -49,7 +51,7 @@ RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 	const verifiedEmail = isVerifiedEmail();
 	me.email = verifiedEmail ? verifiedEmail.address : undefined;
 	me.settings = {
-		preferences: getUserPreferences()
+		preferences: getUserPreferences(),
 	};
 
 	return me;

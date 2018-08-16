@@ -61,12 +61,12 @@ RocketChat.tooltip = {
 
 		if (left < 0) {
 			$('.tooltip .tooltip-arrow').css({
-				'margin-left': `${ left - 5 }px`
+				'margin-left': `${ left - 5 }px`,
 			});
 			left = 0;
 		} else {
 			$('.tooltip .tooltip-arrow').css({
-				'margin-left': ''
+				'margin-left': '',
 			});
 		}
 
@@ -80,7 +80,7 @@ RocketChat.tooltip = {
 		return tip
 			.css({
 				top: `${ top }px`,
-				left: `${ left }px`
+				left: `${ left }px`,
 			});
-	}
+	},
 };

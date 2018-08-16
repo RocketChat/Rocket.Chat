@@ -15,4 +15,4 @@ function IssueLink(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', IssueLink, RocketChat.callbacks.priority.MEDIUM);
+RocketChat.callbacks.add('renderMessage', IssueLink, RocketChat.callbacks.priority.MEDIUM, 'issuelink');
