@@ -8,7 +8,7 @@ Template.emojiEdit.helpers({
 
 	name() {
 		return this.name || this._id;
-	}
+	},
 });
 
 Template.emojiEdit.events({
@@ -36,13 +36,13 @@ Template.emojiEdit.events({
 			}
 		}
 
-		//using let x of y here seems to have incompatibility with some phones
+		// using let x of y here seems to have incompatibility with some phones
 		for (const file in files) {
 			if (files.hasOwnProperty(file)) {
 				Template.instance().emojiFile = files[file];
 			}
 		}
-	}
+	},
 });
 
 Template.emojiEdit.onCreated(function() {
@@ -121,7 +121,7 @@ Template.emojiEdit.onCreated(function() {
 						const reader = new FileReader();
 						reader.readAsBinaryString(this.emojiFile);
 						reader.onloadend = () => {
-							Meteor.call('uploadEmojiCustom', reader.result, this.emojiFile.type, emojiData, (uploadError/*, data*/) => {
+							Meteor.call('uploadEmojiCustom', reader.result, this.emojiFile.type, emojiData, (uploadError/* , data*/) => {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);

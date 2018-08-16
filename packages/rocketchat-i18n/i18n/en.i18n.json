@@ -2029,6 +2029,7 @@
   "Public_Community": "Public Community",
   "Public_Relations": "Public Relations",
   "Push": "Push",
+  "Push_Setting_Requires_Restart_Alert": "Changing this value requires restarting Rocket.Chat.",
   "Push_apn_cert": "APN Cert",
   "Push_apn_dev_cert": "APN Dev Cert",
   "Push_apn_dev_key": "APN Dev Key",

@@ -11,7 +11,7 @@ this.AudioRecorder = new class {
 		window.URL = window.URL || window.webkitURL;
 		window.audioContext = new AudioContext;
 
-		const ok = stream => {
+		const ok = (stream) => {
 			this.startUserMedia(stream);
 			return (cb != null ? cb.call(this) : undefined);
 		};
@@ -20,7 +20,7 @@ this.AudioRecorder = new class {
 			return cb(false);
 		}
 
-		return navigator.getUserMedia({audio: true}, ok, e => console.log(`No live audio input: ${ e }`));
+		return navigator.getUserMedia({ audio: true }, ok, (e) => console.log(`No live audio input: ${ e }`));
 	}
 
 	startUserMedia(stream) {
@@ -28,7 +28,7 @@ this.AudioRecorder = new class {
 		const input = window.audioContext.createMediaStreamSource(stream);
 		this.recorder = new Recorder(input, {
 			workerPath: 'mp3-realtime-worker.js',
-			numChannels: 1
+			numChannels: 1,
 		});
 		return this.recorder.record();
 	}

@@ -1,41 +1,41 @@
 /* globals fileUpload device modal */
 
 import mime from 'mime-type/with-db';
-import {VRecDialog} from 'meteor/rocketchat:ui-vrecord';
+import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
 	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action({messageBox}) {
+	action({ messageBox }) {
 		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
-	}
+	},
 });
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
-	action({event}) {
+	action({ event }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
 		$input.attr({
 			id: 'fileupload-input',
 			type: 'file',
-			multiple: 'multiple'
+			multiple: 'multiple',
 		});
 
 		$(document.body).append($input);
 
 		$input.one('change', function(e) {
-			const filesToUpload = [...e.target.files].map(file => {
+			const filesToUpload = [...e.target.files].map((file) => {
 				Object.defineProperty(file, 'type', {
-					value: mime.lookup(file.name)
+					value: mime.lookup(file.name),
 				});
 				return {
 					file,
-					name: file.name
+					name: file.name,
 				};
 			});
 
@@ -49,14 +49,14 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 		if ((typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') || navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
 			$input.click();
 		}
-	}
+	},
 });
 
 RocketChat.messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
 	condition: () => RocketChat.Geolocation.get() !== false,
-	action({rid}) {
+	action({ rid }) {
 		const position = RocketChat.Geolocation.get();
 		const latitude = position.coords.latitude;
 		const longitude = position.coords.longitude;
@@ -68,7 +68,7 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 			showCancelButton: true,
 			closeOnConfirm: true,
 			closeOnCancel: true,
-			html: true
+			html: true,
 		}, function(isConfirm) {
 			if (isConfirm !== true) {
 				return;
@@ -79,9 +79,9 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 				msg: '',
 				location: {
 					type: 'Point',
-					coordinates: [longitude, latitude]
-				}
+					coordinates: [longitude, latitude],
+				},
 			});
 		});
-	}
+	},
 });

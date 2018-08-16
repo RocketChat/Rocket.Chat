@@ -1,23 +1,23 @@
 Package.describe({
 	name: 'rocketchat:livechat',
 	version: '0.0.1',
-	summary: 'Livechat plugin for Rocket.Chat'
+	summary: 'Livechat plugin for Rocket.Chat',
 });
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
 	use: [],
 	sources: [
-		'plugin/build-livechat.js'
+		'plugin/build-livechat.js',
 	],
 	npmDependencies: {
-		'shelljs': '0.8.1',
-		'uglify-js': '2.8.29'
-	}
+		shelljs: '0.8.1',
+		'uglify-js': '2.8.29',
+	},
 });
 
 Npm.depends({
-	'ua-parser-js': '0.7.17'
+	'ua-parser-js': '0.7.17',
 });
 
 Package.onUse(function(api) {
@@ -70,7 +70,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
-	//client startup
+	// client startup
 	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
 
 	// client views

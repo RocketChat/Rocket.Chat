@@ -4,12 +4,12 @@ Meteor.methods({
 
 		check(data, Match.ObjectIncluding({
 			rid: String,
-			username: String
+			username: String,
 		}));
 
 		if (!RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'unmuteUserInRoom'
+				method: 'unmuteUserInRoom',
 			});
 		}
 
@@ -17,21 +17,21 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'unmuteUserInRoom'
+				method: 'unmuteUserInRoom',
 			});
 		}
 
 		if (['c', 'p'].includes(room.t) === false) {
 			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'unmuteUserInRoom',
-				type: room.t
+				type: room.t,
 			});
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'unmuteUserInRoom'
+				method: 'unmuteUserInRoom',
 			});
 		}
 
@@ -44,10 +44,10 @@ Meteor.methods({
 		RocketChat.models.Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
-			}
+				username: fromUser.username,
+			},
 		});
 
 		return true;
-	}
+	},
 });

@@ -1,6 +1,6 @@
 import Busboy from 'busboy';
 
-function findRoomByIdOrName({ params, checkedArchived = true}) {
+function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -42,12 +42,12 @@ RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 		if (Array.isArray(result)) {
 			result = {
 				update: result,
-				remove: []
+				remove: [],
 			};
 		}
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
@@ -69,7 +69,7 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 				}
 
 				const fileDate = [];
-				file.on('data', data => fileDate.push(data));
+				file.on('data', (data) => fileDate.push(data));
 
 				file.on('end', () => {
 					files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
@@ -100,7 +100,7 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			size: file.fileBuffer.length,
 			type: file.mimetype,
 			rid: this.urlParams.rid,
-			userId: this.userId
+			userId: this.userId,
 		};
 
 		Meteor.runAsUser(this.userId, () => {
@@ -114,7 +114,7 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
@@ -137,7 +137,7 @@ RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		saveNotifications(notifications, roomId);
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
@@ -153,7 +153,7 @@ RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', room._id, favorite));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
@@ -181,6 +181,6 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 

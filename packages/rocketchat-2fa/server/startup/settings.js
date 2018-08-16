@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 	this.section('Two Factor Authentication', function() {
 		this.add('Accounts_TwoFactorAuthentication_Enabled', true, {
 			type: 'boolean',
-			public: true
+			public: true,
 		});
 		this.add('Accounts_TwoFactorAuthentication_MaxDelta', 1, {
 			type: 'int',
@@ -10,8 +10,8 @@ RocketChat.settings.addGroup('Accounts', function() {
 			i18nLabel: 'Accounts_TwoFactorAuthentication_MaxDelta',
 			enableQuery: {
 				_id: 'Accounts_TwoFactorAuthentication_Enabled',
-				value: true
-			}
+				value: true,
+			},
 		});
 	});
 });

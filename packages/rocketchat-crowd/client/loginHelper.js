@@ -10,7 +10,7 @@ Meteor.loginWithCrowd = function(username, password, callback) {
 	const loginRequest = {
 		crowd: true,
 		username,
-		crowdPassword: password
+		crowdPassword: password,
 	};
 	Accounts.callLoginMethod({
 		methodArguments: [loginRequest],
@@ -22,6 +22,6 @@ Meteor.loginWithCrowd = function(username, password, callback) {
 			} else if (callback) {
 				callback();
 			}
-		}
+		},
 	});
 };

@@ -2,7 +2,7 @@ Package.describe({
 	name: 'mizzao:autocomplete',
 	summary: 'Client/server autocompletion designed for Meteor\'s collections and reactivity',
 	version: '0.5.1',
-	git: 'https://github.com/mizzao/meteor-autocomplete.git'
+	git: 'https://github.com/mizzao/meteor-autocomplete.git',
 });
 
 Package.onUse(function(api) {
@@ -17,11 +17,11 @@ Package.onUse(function(api) {
 		'client/autocomplete.css',
 		'client/inputs.html',
 		'client/autocomplete-client.js',
-		'client/templates.js'
+		'client/templates.js',
 	], 'client');
 
 	api.addFiles([
-		'server/autocomplete-server.js'
+		'server/autocomplete-server.js',
 	], 'server');
 
 	api.export('Autocomplete', 'server');

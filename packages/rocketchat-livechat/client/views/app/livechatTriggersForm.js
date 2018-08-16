@@ -27,7 +27,7 @@ Template.livechatTriggersForm.helpers({
 		}
 
 		return trigger.actions;
-	}
+	},
 });
 
 Template.livechatTriggersForm.events({
@@ -42,15 +42,15 @@ Template.livechatTriggersForm.events({
 			_id: FlowRouter.getParam('_id'),
 			name: instance.$('input[name=name]').val(),
 			description: instance.$('input[name=description]').val(),
-			enabled: instance.$('input[name=enabled]:checked').val() === '1' ? true : false,
+			enabled: instance.$('input[name=enabled]:checked').val() === '1',
 			conditions: [],
-			actions: []
+			actions: [],
 		};
 
 		$('.each-condition').each(function() {
 			data.conditions.push({
 				name: $('.trigger-condition', this).val(),
-				value: $(`.${ $('.trigger-condition', this).val() }-value`).val()
+				value: $(`.${ $('.trigger-condition', this).val() }-value`).val(),
 			});
 		});
 
@@ -58,24 +58,24 @@ Template.livechatTriggersForm.events({
 			if ($('.trigger-action', this).val() === 'send-message') {
 				const params = {
 					sender: $('[name=send-message-sender]', this).val(),
-					msg: $('[name=send-message-msg]', this).val()
+					msg: $('[name=send-message-msg]', this).val(),
 				};
 				if (params.sender === 'custom') {
 					params.name = $('[name=send-message-name]', this).val();
 				}
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					params
+					params,
 				});
 			} else {
 				data.actions.push({
 					name: $('.trigger-action', this).val(),
-					value: $(`.${ $('.trigger-action', this).val() }-value`).val()
+					value: $(`.${ $('.trigger-action', this).val() }-value`).val(),
 				});
 			}
 		});
 
-		Meteor.call('livechat:saveTrigger', data, function(error/*, result*/) {
+		Meteor.call('livechat:saveTrigger', data, function(error/* , result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return handleError(error);
@@ -87,10 +87,10 @@ Template.livechatTriggersForm.events({
 		});
 	},
 
-	'click button.back'(e/*, instance*/) {
+	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-triggers');
-	}
+	},
 });
 
 Template.livechatTriggersForm.onCreated(function() {

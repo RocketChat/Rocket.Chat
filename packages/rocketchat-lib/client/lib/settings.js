@@ -10,7 +10,7 @@ RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',
 	eventType: 'onAll',
 	userRelated: false,
-	listenChangesForLoggedUsersOnly: true
+	listenChangesForLoggedUsersOnly: true,
 });
 
 RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection;
@@ -40,7 +40,7 @@ RocketChat.settings.init = function() {
 			delete Meteor.settings[record._id];
 			RocketChat.settings.dict.set(record._id, null);
 			RocketChat.settings.load(record._id, null, initialLoad);
-		}
+		},
 	});
 	initialLoad = false;
 };
@@ -56,7 +56,7 @@ Meteor.startup(function() {
 		if (!siteUrl || (Meteor.userId() == null)) {
 			return;
 		}
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin') === false || Meteor.settings['public'].sandstorm) {
+		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin') === false || Meteor.settings.public.sandstorm) {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {
@@ -70,14 +70,14 @@ Meteor.startup(function() {
 					confirmButtonText: t('Yes'),
 					cancelButtonText: t('Cancel'),
 					closeOnConfirm: false,
-					html: true
+					html: true,
 				}, function() {
 					Meteor.call('saveSetting', 'Site_Url', currentUrl, function() {
 						modal.open({
 							title: t('Saved'),
 							type: 'success',
 							timer: 1000,
-							showConfirmButton: false
+							showConfirmButton: false,
 						});
 					});
 				});

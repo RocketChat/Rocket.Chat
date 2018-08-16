@@ -8,7 +8,7 @@ Template.videoFlexTab.helpers({
 		} else {
 			return RocketChat.settings.get('Jitsi_Open_New_Window');
 		}
-	}
+	},
 });
 
 Template.videoFlexTab.onCreated(function() {
@@ -24,7 +24,7 @@ Template.videoFlexTab.onRendered(function() {
 	const height = 500;
 
 	const configOverwrite = {
-		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension')
+		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension'),
 	};
 	const interfaceConfigOverwrite = {};
 
@@ -47,7 +47,7 @@ Template.videoFlexTab.onRendered(function() {
 		showCancelButton: true,
 		confirmButtonText: t('Yes'),
 		cancelButtonText: t('Cancel'),
-		html: false
+		html: false,
 	}, (dismiss) => {
 		if (!dismiss) {
 			return closePanel();
@@ -60,7 +60,7 @@ Template.videoFlexTab.onRendered(function() {
 
 					const domain = RocketChat.settings.get('Jitsi_Domain');
 					const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId;
-					const noSsl = RocketChat.settings.get('Jitsi_SSL') ? false : true;
+					const noSsl = !RocketChat.settings.get('Jitsi_SSL');
 
 					if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 						jitsiRoomActive = null;
@@ -80,7 +80,7 @@ Template.videoFlexTab.onRendered(function() {
 						if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
 							Meteor.call('jitsi:updateTimeout', roomId);
 
-							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
+							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
 							let newWindow = null;
 							if (Meteor.isCordova) {
 								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, '_system');
@@ -101,7 +101,6 @@ Template.videoFlexTab.onRendered(function() {
 							}
 
 
-
 						// Lets make sure its loaded before we try to show it.
 						} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
@@ -120,7 +119,7 @@ Template.videoFlexTab.onRendered(function() {
 
 								Meteor.call('jitsi:updateTimeout', roomId);
 
-								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10*1000);
+								timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
 							}
 
 							// Execute any commands that might be reactive.  Like name changing.
