@@ -39,6 +39,9 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem'
+		}, {
+			key: 'GoogleDrive',
+			i18nLabel: 'GoogleDrive'
 		}],
 		public: true
 	});
@@ -226,6 +229,23 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav'
+			}
+		});
+	});
+
+	this.section('GoogleDrive', function() {
+		this.add('FileUpload_GoogleDrive_AccessToken', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleDrive'
+			}
+		});
+		this.add('FileUpload_GoogleDrive_RefreshToken', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'GoogleDrive'
 			}
 		});
 	});

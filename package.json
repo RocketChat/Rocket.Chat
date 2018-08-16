@@ -137,6 +137,7 @@
 		"emailreplyparser": "^0.0.5",
 		"file-type": "^8.0.0",
 		"filesize": "^3.6.1",
+		"googleapis": "^32.0.0",
 		"grapheme-splitter": "^1.0.2",
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.1.1",
