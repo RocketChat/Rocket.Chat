@@ -5,13 +5,13 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomModerator'
+				method: 'addRoomModerator',
 			});
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-moderator', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'addRoomModerator'
+				method: 'addRoomModerator',
 			});
 		}
 
@@ -19,7 +19,7 @@ Meteor.methods({
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomModerator'
+				method: 'addRoomModerator',
 			});
 		}
 
@@ -27,13 +27,13 @@ Meteor.methods({
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomModerator'
+				method: 'addRoomModerator',
 			});
 		}
 
 		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
 			throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
-				method: 'addRoomModerator'
+				method: 'addRoomModerator',
 			});
 		}
 
@@ -44,9 +44,9 @@ Meteor.methods({
 		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
 			},
-			role: 'moderator'
+			role: 'moderator',
 		});
 
 		if (RocketChat.settings.get('UI_DisplayRoles')) {
@@ -56,12 +56,12 @@ Meteor.methods({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: fromUser.name
+					name: fromUser.name,
 				},
-				scope: rid
+				scope: rid,
 			});
 		}
 
 		return true;
-	}
+	},
 });

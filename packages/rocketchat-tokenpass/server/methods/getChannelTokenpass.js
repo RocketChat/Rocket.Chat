@@ -13,5 +13,5 @@ Meteor.methods({
 		}
 
 		return room.tokenpass;
-	}
+	},
 });

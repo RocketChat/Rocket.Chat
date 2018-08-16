@@ -5,13 +5,13 @@ Meteor.methods({
 
 		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'saveUserProfile'
+				method: 'saveUserProfile',
 			});
 		}
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'saveUserProfile'
+				method: 'saveUserProfile',
 			});
 		}
 
@@ -24,7 +24,7 @@ Meteor.methods({
 
 			const passCheck = Accounts._checkPassword(user, {
 				digest: typedPassword,
-				algorithm: 'sha-256'
+				algorithm: 'sha-256',
 			});
 
 			if (passCheck.error) {
@@ -46,7 +46,7 @@ Meteor.methods({
 		if (settings.email) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
+					method: 'saveUserProfile',
 				});
 			}
 
@@ -57,14 +57,14 @@ Meteor.methods({
 		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile'
+					method: 'saveUserProfile',
 				});
 			}
 
 			RocketChat.passwordPolicy.validate(settings.newPassword);
 
 			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
-				logout: false
+				logout: false,
 			});
 		}
 
@@ -75,5 +75,5 @@ Meteor.methods({
 		}
 
 		return true;
-	}
+	},
 });

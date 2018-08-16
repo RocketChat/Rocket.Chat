@@ -24,5 +24,5 @@ Template.oembedBaseWidget.helpers({
 			return 'oembedSandstormGrain';
 		}
 		return 'oembedUrlWidget';
-	}
+	},
 });

@@ -2,7 +2,7 @@
 Package.describe({
 	name: 'rocketchat:dolphin',
 	version: '0.0.2',
-	summary: 'RocketChat settings for Dolphin Oauth'
+	summary: 'RocketChat settings for Dolphin Oauth',
 });
 
 Package.onUse(function(api) {

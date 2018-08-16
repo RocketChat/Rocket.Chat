@@ -12,7 +12,7 @@ Meteor.methods({
 
 		return {
 			secret: secret.base32,
-			url: RocketChat.TOTP.generateOtpauthURL(secret, user.username)
+			url: RocketChat.TOTP.generateOtpauthURL(secret, user.username),
 		};
-	}
+	},
 });
