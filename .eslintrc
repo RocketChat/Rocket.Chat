@@ -64,7 +64,7 @@
 		"prefer-rest-params": 2,
 		"arrow-spacing": 2,
 		"arrow-body-style": [2, "as-needed"],
-		"no-confusing-arrow": 2,
+		"no-confusing-arrow": [2, { "allowParens": true }],
 		"dot-notation": 2,
 		"no-nested-ternary": 2,
 		"no-unneeded-ternary": 2,

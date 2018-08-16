@@ -135,7 +135,7 @@ Template.accountSecurity.onCreated(function() {
 	this.codesRemaining = new ReactiveVar();
 
 	this.showBackupCodes = (userCodes) => {
-		const backupCodes = userCodes.map((value, index) => (index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `).join('');
+		const backupCodes = userCodes.map((value, index) => ((index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `)).join('');
 		const codes = `<code class="text-center allow-text-selection">${ backupCodes }</code>`;
 		modal.open({
 			title: t('Backup_codes'),

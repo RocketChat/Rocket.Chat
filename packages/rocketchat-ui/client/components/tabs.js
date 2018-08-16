@@ -12,7 +12,7 @@ Template.tabs.events({
 
 Template.tabs.helpers({
 	tabs() {
-		return Template.instance().data.tabs.tabs.filter((tab) => tab.condition ? tab.condition() : tab);
+		return Template.instance().data.tabs.tabs.filter((tab) => (tab.condition ? tab.condition() : tab));
 	},
 	isActive(value) {
 		return Template.instance().activeTab.get() === value;

@@ -140,7 +140,7 @@ class AutoTranslate {
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
-				message.msg = message.msg.replace(token, () => noHtml ? noHtml : text);
+				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
 			}
 		}
 		return message.msg;

@@ -48,7 +48,7 @@ class MarkdownClass {
 	mountTokensBack(message, useHtml = true) {
 		if (message.tokens && message.tokens.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
-				message.html = message.html.replace(token, () => useHtml ? text : noHtml); // Uses lambda so doesn't need to escape $
+				message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
 			}
 		}
 
