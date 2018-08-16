@@ -208,10 +208,9 @@ function configurePush() {
 				});
 			};
 		}
-		return Push.enabled = true;
+
+		Push.enabled = true;
 	}
 }
 
-Meteor.startup(function() {
-	return configurePush();
-});
+Meteor.startup(configurePush);
