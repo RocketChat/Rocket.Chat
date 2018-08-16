@@ -13,10 +13,8 @@ function AutoLinker(message) {
 	}
 
 	if (s.trim(message.html)) {
-		const regUrls = new RegExp(RocketChat.settings.get('AutoLinker_UrlsRegExp'));
-
-		const autolinker = new Autolinker({
-			stripPrefix: RocketChat.settings.get('AutoLinker_StripPrefix'),
+		const options = {
+			newWindow: RocketChat.settings.get('AutoLinker_NewWindow'),
 			urls: {
 				schemeMatches: RocketChat.settings.get('AutoLinker_Urls_Scheme'),
 				wwwMatches: RocketChat.settings.get('AutoLinker_Urls_www'),
@@ -24,11 +22,14 @@ function AutoLinker(message) {
 			},
 			email: RocketChat.settings.get('AutoLinker_Email'),
 			phone: RocketChat.settings.get('AutoLinker_Phone'),
-			twitter: false,
-			stripTrailingSlash: false,
+			mention: false,
+			hashtag: false,
+			stripPrefix: RocketChat.settings.get('AutoLinker_StripPrefix'),
+			stripTrailingSlash: RocketChat.settings.get('AutoLinker_StripTrailingSlash'),
+			decodePercentEncoding: RocketChat.settings.get('AutoLinker_DecodePercentEncoding'),
 			replaceFn(match) {
 				if (match.getType() === 'url') {
-					if (regUrls.test(match.matchedText)) {
+					if (/(:\/\/|www\.).+/.test(match.matchedText)) {
 						if (match.matchedText.indexOf(Meteor.absoluteUrl()) === 0) {
 							// returns an `Autolinker.HtmlTag` instance for an <a> tag
 							const tag = match.buildTag();
@@ -43,7 +44,14 @@ function AutoLinker(message) {
 
 				return null;
 			}
-		});
+		};
+		if (RocketChat.settings.get('AutoLinker_Truncate')) {
+			options.truncate = {
+				length: RocketChat.settings.get('AutoLinker_Truncate_Length'),
+				'location': RocketChat.settings.get('AutoLinker_Truncate_Location')
+			};
+		}
+		const autolinker = new Autolinker(options);
 
 		let regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/;
 		if (RocketChat.settings.get('Katex_Enabled')) {

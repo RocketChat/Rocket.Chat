@@ -2,7 +2,6 @@ RocketChat.Migrations.add({
 	version: 110,
 	up() {
 		if (RocketChat && RocketChat.models) {
-
 			if (RocketChat.models.Settings) {
 				const setting = RocketChat.models.Settings.findOne({ _id: 'Accounts_Default_User_Preferences_viewMode' });
 				if (setting && setting.value) {
