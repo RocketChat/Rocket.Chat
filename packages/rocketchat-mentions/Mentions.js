@@ -28,10 +28,10 @@ export default class {
 		return typeof this._useRealName === 'function' ? this._useRealName() : this._useRealName;
 	}
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s)@(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>)@(${ this.pattern })`, 'gm');
 	}
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s)#(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>)#(${ this.pattern })`, 'gm');
 	}
 	replaceUsers(str, message, me) {
 		return str.replace(this.userMentionRegex, (match, prefix, username) => {
@@ -51,7 +51,7 @@ export default class {
 	replaceChannels(str, message) {
 		//since apostrophe escaped contains # we need to unescape it
 		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
-			if (!message.temp && !message.channels.find(c => c.name === name)) {
+			if (!message.temp && !(message.channels && message.channels.find(c => c.name === name))) {
 				return match;
 			}
 

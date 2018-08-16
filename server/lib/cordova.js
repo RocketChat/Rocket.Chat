@@ -159,7 +159,7 @@ function configurePush() {
 			apn,
 			gcm,
 			production: RocketChat.settings.get('Push_production'),
-			sendInterval: 1000,
+			sendInterval: 5000,
 			sendBatchSize: 10
 		});
 
@@ -208,10 +208,9 @@ function configurePush() {
 				});
 			};
 		}
-		return Push.enabled = true;
+
+		Push.enabled = true;
 	}
 }
 
-Meteor.startup(function() {
-	return configurePush();
-});
+Meteor.startup(configurePush);

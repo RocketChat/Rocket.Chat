@@ -110,7 +110,7 @@ class CachedCollection {
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		useCache = true,
-		version = 7,
+		version = 8,
 		maxCacheTime = 60*60*24*30,
 		onSyncData = (/* action, record */) => {}
 	}) {

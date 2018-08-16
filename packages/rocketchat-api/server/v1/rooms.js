@@ -177,7 +177,7 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanRoomHistory', { roomId: findResult._id, latest, oldest, inclusive });
+			Meteor.call('cleanRoomHistory', { roomId: findResult._id, latest, oldest, inclusive, limit: this.bodyParams.limit, excludePinned: this.bodyParams.excludePinned, filesOnly: this.bodyParams.filesOnly, fromUsers: this.bodyParams.users });
 		});
 
 		return RocketChat.API.v1.success();

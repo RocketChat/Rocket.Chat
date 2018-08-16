@@ -1,5 +1,18 @@
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
+
+const onDeleteMessageStream = msg => ChatMessage.remove({ _id: msg._id });
+const onDeleteMessageBulkStream = ({rid, ts, excludePinned, users}) => {
+	const query = { rid, ts };
+	if (excludePinned) {
+		query.pinned = { $ne: true };
+	}
+	if (users && users.length) {
+		query['u.username'] = { $in: users };
+	}
+	ChatMessage.remove(query);
+};
+
 const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
@@ -58,6 +71,7 @@ const RoomManager = new function() {
 							);
 
 							RocketChat.Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+							RocketChat.Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
 					}
 					Meteor.defer(() => {
@@ -95,6 +109,7 @@ const RoomManager = new function() {
 				if (openedRooms[typeName].rid != null) {
 					msgStream.removeAllListeners(openedRooms[typeName].rid);
 					RocketChat.Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+					RocketChat.Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 				}
 
 				openedRooms[typeName].ready = false;
@@ -277,10 +292,6 @@ Meteor.startup(() => {
 		}
 	});
 });
-
-
-const onDeleteMessageStream = msg => ChatMessage.remove({_id: msg._id});
-
 
 Tracker.autorun(function() {
 	if (Meteor.userId()) {

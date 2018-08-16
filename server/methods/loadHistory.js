@@ -38,7 +38,7 @@ Meteor.methods({
 		const canAnonymous = RocketChat.settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = RocketChat.authz.hasPermission(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canAnonymous && !canPreview && RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+		if (room.t === 'c' && !canAnonymous && !canPreview && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
