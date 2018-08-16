@@ -4,9 +4,21 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 const parent = document.querySelector('.main-content');
+let oldRoute = '';
 
+/*
+	provide a dedicated route to enter the threading creation screen.
+	Unfortunately, it is not easily possible to re-use the full-modal-dynamic template:
+	If one opens the create *channel* modal and the triggers the thread creation modal,
+	the complete application is getting stuck. Thus, we opted for duplicating the code
+	and triggering an exclusive modal template.
+*/
 FlowRouter.route('/create-thread', {
 	name: 'create-thread',
+
+	triggersEnter: [function() {
+		oldRoute = FlowRouter.current().oldRoute;
+	}],
 
 	action() {
 		if (parent) {
@@ -185,10 +197,10 @@ Template.CreateThread.helpers({
 		return hideMe;
 	},
 
-	styleSelectParent() {
+	selectParentVisibility() {
 		const instance = Template.instance();
 
-		return instance.selectParent.get() ? 'display: true' : 'display: none';
+		return instance.selectParent.get() ? '' : 'hidden';
 	}
 });
 
@@ -250,7 +262,7 @@ Template.CreateThread.events({
 		}
 	},
 	'click .full-modal__back-button'() {
-		FlowRouter.go('home'); //back would be nicer but somewhat this seems difficult
+		oldRoute ? history.back() : FlowRouter.go('home');
 	}
 });
 

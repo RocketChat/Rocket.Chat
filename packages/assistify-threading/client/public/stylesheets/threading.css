@@ -28,6 +28,10 @@
 	height: 100%;
 }
 
+.create-thread .full-modal__back-text {
+	font-size: 11px; /*no clue, why we have to specify this explicitly. Dirty hack.*/
+}
+
 .create-thread-sidebar {
 	margin-bottom: 22px;
 }

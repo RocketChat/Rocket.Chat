@@ -29,7 +29,7 @@
 									<span class="color-primary-action-color action-link js-select-parent">{{_ "Thread_target_channel_suffix"}}</span>
 								</div>
 								{{/unless}}
-								<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}}" style={{ styleSelectParent }}>
+								<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}} {{selectParentVisibility}}">
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "Thread_target_channel"}}</div>
 										<div class="rc-input__wrapper">
