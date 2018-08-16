@@ -4,7 +4,7 @@ RocketChat.settings.add('IssueLinks_Enabled', false, {
 	i18nDescription: 'IssueLinks_Incompatible',
 	group: 'Message',
 	section: 'Issue_Links',
-	public: true
+	public: true,
 });
 
 RocketChat.settings.add('IssueLinks_Template', '', {
@@ -13,5 +13,5 @@ RocketChat.settings.add('IssueLinks_Template', '', {
 	i18nDescription: 'IssueLinks_LinkTemplate_Description',
 	group: 'Message',
 	section: 'Issue_Links',
-	public: true
+	public: true,
 });

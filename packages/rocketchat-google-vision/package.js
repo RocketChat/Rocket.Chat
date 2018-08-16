@@ -2,13 +2,13 @@ Package.describe({
 	name: 'rocketchat:google-vision',
 	version: '0.0.1',
 	summary: 'Rocket.Chat Google Vision Integration',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.addFiles('client/googlevision.js', 'client');

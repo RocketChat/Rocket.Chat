@@ -9,9 +9,9 @@ Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 	}
 	const cursorHandle = RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, rid, {
 		sort: {
-			ts: -1
+			ts: -1,
 		},
-		limit
+		limit,
 	}).observeChanges({
 		added(_id, record) {
 			record.mentionedList = true;
@@ -23,7 +23,7 @@ Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 		},
 		removed(_id) {
 			return publication.removed('rocketchat_mentioned_message', _id);
-		}
+		},
 	});
 	this.ready();
 	return this.onStop(function() {

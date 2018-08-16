@@ -46,10 +46,10 @@ Meteor.methods({
 				triggerWordAnywhere: integration.triggerWordAnywhere,
 				runOnEdits: integration.runOnEdits,
 				_updatedAt: new Date(),
-				_updatedBy: RocketChat.models.Users.findOne(this.userId, {fields: {username: 1}})
-			}
+				_updatedBy: RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } }),
+			},
 		});
 
 		return RocketChat.models.Integrations.findOne(integrationId);
-	}
+	},
 });

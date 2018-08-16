@@ -7,7 +7,7 @@ if (Meteor.isCordova) {
 		UserPresence.setAway();
 		readMessage.disable();
 
-		//Only disconnect after one minute of being in the background
+		// Only disconnect after one minute of being in the background
 		timer = setTimeout(() => {
 			Meteor.disconnect();
 			timer = undefined;
