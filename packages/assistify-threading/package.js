@@ -17,7 +17,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('config.js', 'server');
 	api.addFiles('auth.js', 'server');
-	api.addFiles('lib/messageTypes/threadMessage.js'); // TODO: Decide what to do with the rendered message types. They are less usable on mobile,but provide good experience on browser.
+	api.addFiles('lib/messageTypes/threadMessage.js');
 	api.addFiles('lib/threadRoomType.js');
 
 	// Libraries
@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 
 	// Extensions to the rest of RC
 	api.addFiles('server/models/RoomsExtension.js', 'server');
-	api.addFiles('server/publications/channelAutocomplete.js', 'server');
+	api.addFiles('server/publications/threadParentAutocomplete.js', 'server');
 
 	//Methods
 	api.addFiles('server/methods/createThread.js', 'server');

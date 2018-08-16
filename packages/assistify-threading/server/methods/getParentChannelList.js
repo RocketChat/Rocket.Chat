@@ -47,11 +47,7 @@ Meteor.methods({
 		}
 
 		return {
-			channels: RocketChat.models.Rooms.find({
-				t: {
-					$in: roomTypes
-				}
-			}, options).fetch()
+			channels: RocketChat.models.Rooms.findThreadParentByNameStarting('', options).fetch()
 		};
 	}
 });

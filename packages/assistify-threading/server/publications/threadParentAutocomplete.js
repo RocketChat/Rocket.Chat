@@ -1,4 +1,4 @@
-Meteor.publish('channelAutocomplete', function(selector) {
+Meteor.publish('threadParentAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();
 	}
@@ -19,7 +19,7 @@ Meteor.publish('channelAutocomplete', function(selector) {
 		}
 	};
 
-	const cursorHandle = RocketChat.models.Rooms.findPublicChannelByNameStarting(selector.name, options).observeChanges({
+	const cursorHandle = RocketChat.models.Rooms.findThreadParentByNameStarting(selector.name, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

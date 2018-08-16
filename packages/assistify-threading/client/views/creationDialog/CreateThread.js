@@ -51,6 +51,9 @@ const acEvents = {
 		t.ac.onKeyDown(e);
 	},
 	'keyup [name="parentChannel"]'(e, t) {
+		if (e.target.value === '' && t.showDropDown.get() === '') {
+			t.showDropDown.set('isShowing');
+		}
 		t.ac.onKeyUp(e);
 	},
 	'focus [name="parentChannel"]'(e, t) {
@@ -345,8 +348,8 @@ Template.CreateThread.onCreated(function() {
 		limit: 10,
 		inputDelay: 300,
 		rules: [{
-			collection: '', // check for proper collection
-			subscription: RocketChat.authz.hasAllPermission('view-other-user-channels') ? 'channelAndPrivateAutocomplete' : 'channelAutocomplete',
+			collection: 'CachedChannelList',
+			subscription: 'threadParentAutocomplete',
 			field: 'name',
 			matchAll: true,
 			doNotChangeWidth: false,
