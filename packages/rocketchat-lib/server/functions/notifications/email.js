@@ -13,7 +13,7 @@ RocketChat.settings.get('Email_Footer', (key, value) => {
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
 function getEmailContent({ message, user, room }) {
-	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);

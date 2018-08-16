@@ -223,7 +223,7 @@ Template.pushNotificationsFlexTab.events({
 
 		switch (key) {
 			case 'audioNotificationValue':
-				const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
+				const audioAssets = (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
 				const audioAssetsArray = audioAssets.map((audio) => ({
 					id: `audioNotificationValue${ audio.name }`,
 					name: 'audioNotificationValue',

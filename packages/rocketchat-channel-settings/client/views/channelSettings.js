@@ -697,7 +697,7 @@ Template.channelSettingsEditing.helpers({
 	},
 	retentionEnabled(value) {
 		const { room } = Template.instance();
-		return value || value === undefined && retentionEnabled(room);
+		return (value || value === undefined) && retentionEnabled(room);
 	},
 	retentionMaxAgeLabel(label) {
 		const { room } = Template.instance();

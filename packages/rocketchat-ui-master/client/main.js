@@ -55,7 +55,7 @@ Template.body.onRendered(function() {
 		if (e.ctrlKey === true || e.metaKey === true) {
 			return;
 		}
-		if (!(e.keyCode > 45 && e.keyCode < 91 || e.keyCode === 8)) {
+		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
 			return;
 		}
 		if (/input|textarea|select/i.test(target.tagName)) {
