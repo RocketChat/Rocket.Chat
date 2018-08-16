@@ -217,7 +217,7 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 				limit: this.bodyParams.limit,
 				excludePinned: this.bodyParams.excludePinned,
 				filesOnly: this.bodyParams.filesOnly,
-				fromUsers: this.bodyParams.users
+				fromUsers: this.bodyParams.users,
 			});
 		});
 
