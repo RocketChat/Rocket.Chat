@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 
 Meteor.methods({
 	sendInvitationEmail(emails) {
@@ -41,7 +40,7 @@ Meteor.methods({
 		validEmails.forEach((email) => {
 			this.unblock();
 			html = RocketChat.placeholders.replace(html, {
-				email: s.escapeHTML(email),
+				email,
 			});
 			try {
 				Email.send({

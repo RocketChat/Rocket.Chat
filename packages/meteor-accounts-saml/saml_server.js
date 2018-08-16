@@ -49,7 +49,7 @@ Meteor.methods({
 		}, {
 			'services.saml': 1,
 		});
-		let nameID = user.services.saml.nameID;
+		let { nameID } = user.services.saml;
 		const sessionIndex = user.services.saml.idpSession;
 		nameID = sessionIndex;
 		if (Accounts.saml.settings.debug) {

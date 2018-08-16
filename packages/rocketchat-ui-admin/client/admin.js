@@ -119,7 +119,7 @@ Template.admin.helpers({
 				if (_.isString(setting.i18nDefaultQuery)) {
 					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery);
 				} else {
-					i18nDefaultQuery = setting.i18nDefaultQuery;
+					({ i18nDefaultQuery } = setting);
 				}
 				if (!_.isArray(i18nDefaultQuery)) {
 					i18nDefaultQuery = [i18nDefaultQuery];
@@ -163,7 +163,7 @@ Template.admin.helpers({
 		if (_.isString(this.enableQuery)) {
 			enableQuery = JSON.parse(this.enableQuery);
 		} else {
-			enableQuery = this.enableQuery;
+			({ enableQuery } = this);
 		}
 		if (!_.isArray(enableQuery)) {
 			enableQuery = [enableQuery];
@@ -494,10 +494,10 @@ Template.admin.events({
 	},
 	'change input[type=file]'(ev) {
 		const e = ev.originalEvent || ev;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (!files || files.length === 0) {
 			if (e.dataTransfer && e.dataTransfer.files) {
-				files = e.dataTransfer.files;
+				({ files } = e.dataTransfer);
 			} else {
 				files = [];
 			}

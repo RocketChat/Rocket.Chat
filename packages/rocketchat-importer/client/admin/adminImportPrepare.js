@@ -72,6 +72,7 @@ Template.adminImportPrepare.events({
 					template.preparing.set(false);
 				});
 			};
+			return file;
 		});
 	},
 

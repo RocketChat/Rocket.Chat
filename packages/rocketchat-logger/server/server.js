@@ -256,9 +256,9 @@ class _Logger {
 		return lines;
 	}
 
-	_log(options) {
+	_log(options, ...args) {
 		if (LoggerManager.enabled === false) {
-			LoggerManager.addToQueue(this, arguments);
+			LoggerManager.addToQueue(this, [options, ...args]);
 			return;
 		}
 		if (options.level == null) {
@@ -274,7 +274,7 @@ class _Logger {
 		if (options.box === true && _.isString(options.arguments[0])) {
 			let color = undefined;
 			if (defaultTypes[options.type]) {
-				color = defaultTypes[options.type].color;
+				({ color } = defaultTypes[options.type]);
 			}
 
 			const box = this.makeABox(options.arguments[0], options.arguments[1]);
@@ -327,7 +327,7 @@ SystemLogger = new Logger('System', { // eslint-disable-line no-undef
 const StdOut = new class extends EventEmitter {
 	constructor() {
 		super();
-		const write = process.stdout.write;
+		const { write } = process.stdout;
 		this.queue = [];
 		process.stdout.write = (...args) => {
 			write.apply(process.stdout, args);

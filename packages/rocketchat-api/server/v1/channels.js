@@ -105,7 +105,7 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 	get() {
 		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
-		const userId = this.requestParams().userId;
+		const { userId } = this.requestParams();
 		let user = this.userId;
 		let unreads = null;
 		let userMentions = null;
@@ -131,12 +131,12 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		if (typeof subscription !== 'undefined' && subscription.open) {
 			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 			unreadsFrom = subscription.ls || subscription.ts;
-			userMentions = subscription.userMentions;
+			({ userMentions } = subscription);
 			joined = true;
 		}
 
 		if (access || joined) {
-			msgs = room.msgs;
+			({ msgs } = room);
 			latest = lm;
 			members = room.usersCount;
 		}
@@ -174,10 +174,7 @@ function createChannelValidator(params) {
 }
 
 function createChannel(userId, params) {
-	let readOnly = false;
-	if (typeof params.readOnly !== 'undefined') {
-		readOnly = params.readOnly;
-	}
+	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
 
 	let id;
 	Meteor.runAsUser(userId, () => {
@@ -197,8 +194,7 @@ RocketChat.API.channels.create = {
 
 RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 	post() {
-		const userId = this.userId;
-		const bodyParams = this.bodyParams;
+		const { userId, bodyParams } = this;
 
 		let error;
 
@@ -340,20 +336,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 			oldestDate = new Date(this.queryParams.oldest);
 		}
 
-		let inclusive = false;
-		if (this.queryParams.inclusive) {
-			inclusive = this.queryParams.inclusive;
-		}
+		const inclusive = this.queryParams.inclusive || false;
 
 		let count = 20;
 		if (this.queryParams.count) {
 			count = parseInt(this.queryParams.count);
 		}
 
-		let unreads = false;
-		if (this.queryParams.unreads) {
-			unreads = this.queryParams.unreads;
-		}
+		const unreads = this.queryParams.unreads || false;
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {

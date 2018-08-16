@@ -27,9 +27,9 @@ Accounts.emailTemplates.userToActivate = {
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
 		const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
-			name: s.escapeHTML(options.name),
-			email: s.escapeHTML(options.email),
-			reason: s.escapeHTML(options.reason),
+			name: options.name,
+			email: options.email,
+			reason: options.reason,
 		});
 
 		return header + html + footer;
@@ -38,7 +38,8 @@ Accounts.emailTemplates.userToActivate = {
 
 Accounts.emailTemplates.userActivated = {
 	subject({ active, username }) {
-		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
 		const subject = `Accounts_Email_${ action }_Subject`;
 		const siteName = RocketChat.settings.get('Site_Name');
 
@@ -49,10 +50,11 @@ Accounts.emailTemplates.userActivated = {
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
 
 		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
-			name: s.escapeHTML(name),
+			name,
 		});
 
 		return header + html + footer;
@@ -99,8 +101,8 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 	html = RocketChat.placeholders.replace(html, {
-		name: s.escapeHTML(user.name),
-		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
+		name: user.name,
+		email: user.emails && user.emails[0] && user.emails[0].address,
 	});
 
 	return header + html + footer;

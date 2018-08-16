@@ -25,7 +25,7 @@ export default class SlackAdapter {
 	connect(apiToken) {
 		this.apiToken = apiToken;
 
-		const RTMClient = this.slackClient.RTMClient;
+		const { RTMClient } = this.slackClient;
 		if (RTMClient != null) {
 			RTMClient.disconnect;
 		}
@@ -1029,11 +1029,11 @@ export default class SlackAdapter {
 			if (data && data.purpose && data.purpose.value) {
 				if (topic_last_set) {
 					if (topic_last_set < data.purpose.last_set) {
-						topic = data.purpose.topic;
+						({ topic } = data.purpose);
 						topic_creator = data.purpose.creator;
 					}
 				} else {
-					topic = data.purpose.topic;
+					({ topic } = data.purpose);
 					topic_creator = data.purpose.creator;
 				}
 			}

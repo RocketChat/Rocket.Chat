@@ -287,7 +287,7 @@ function firefoxPasteUpload(fn) {
 	if (!user || user[1] > 49) {
 		return fn;
 	}
-	return function(event, instance) {
+	return function(event, instance, ...args) {
 		if ((event.originalEvent.ctrlKey || event.originalEvent.metaKey) && (event.keyCode === 86)) {
 			const textarea = instance.find('textarea');
 			const { selectionStart, selectionEnd } = textarea;
@@ -328,7 +328,7 @@ function firefoxPasteUpload(fn) {
 				}
 			}, 150);
 		}
-		return fn && fn.apply(this, arguments);
+		return fn && fn.apply(this, [event, instance, ...args]);
 	};
 }
 
@@ -369,9 +369,7 @@ Template.messageBox.events({
 	},
 	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		if (chatMessages[this._id]) {
-			chatMessages[this._id].input = instance.find('.js-input-message');
-		}
+		chatMessages[this._id].input = instance.find('.js-input-message');
 	},
 	'click .js-send'(event, instance) {
 		const input = instance.find('.js-input-message');
@@ -403,15 +401,15 @@ Template.messageBox.events({
 			return;
 		}
 		const items = [...e.originalEvent.clipboardData.items];
-		const files = items.map((item) => {
-			if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+		const files = items
+			.filter((item) => (item.kind === 'file' && item.type.indexOf('image/') !== -1))
+			.map((item) => {
 				e.preventDefault();
 				return {
 					file: item.getAsFile(),
 					name: `Clipboard - ${ moment().format(RocketChat.settings.get('Message_TimeAndDateFormat')) }`,
 				};
-			}
-		}).filter((e) => e);
+			});
 		if (files.length) {
 			return fileUpload(files);
 		} else {

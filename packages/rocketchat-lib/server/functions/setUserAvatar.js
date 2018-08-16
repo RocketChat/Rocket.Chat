@@ -35,8 +35,8 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	} else {
 		const fileData = RocketChatFile.dataURIParse(dataURI);
 		encoding = 'base64';
-		image = fileData.image;
-		contentType = fileData.contentType;
+		({ image } = fileData);
+		({ contentType } = fileData);
 	}
 
 	const buffer = new Buffer(image, encoding);

@@ -68,7 +68,7 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 			user = ruserId;
 		}
 		const rs = findDirectMessageRoom(this.requestParams(), { _id: user });
-		const room = rs.room;
+		const { room } = rs;
 		const dm = rs.subscription;
 		lm = room.lm ? room.lm : room._updatedAt;
 
@@ -77,12 +77,12 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 				unreads = dm.unread;
 				unreadsFrom = dm.ls;
 			}
-			userMentions = dm.userMentions;
+			({ userMentions } = dm);
 			joined = true;
 		}
 
 		if (access || joined) {
-			msgs = room.msgs;
+			({ msgs } = room);
 			latest = lm;
 			members = room.usersCount;
 		}
@@ -144,20 +144,14 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 			oldestDate = new Date(this.queryParams.oldest);
 		}
 
-		let inclusive = false;
-		if (this.queryParams.inclusive) {
-			inclusive = this.queryParams.inclusive;
-		}
+		const inclusive = this.queryParams.inclusive || false;
 
 		let count = 20;
 		if (this.queryParams.count) {
 			count = parseInt(this.queryParams.count);
 		}
 
-		let unreads = false;
-		if (this.queryParams.unreads) {
-			unreads = this.queryParams.unreads;
-		}
+		const unreads = this.queryParams.unreads || false;
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
@@ -245,7 +239,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const roomId = this.queryParams.roomId;
+		const { roomId } = this.queryParams;
 		if (!roomId || !roomId.trim()) {
 			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 		}
