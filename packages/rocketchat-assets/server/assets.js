@@ -311,18 +311,27 @@ RocketChat.settings.add('Assets_SvgFavicon_Enable', true, {
 	i18nLabel: 'Enable_Svg_Favicon'
 });
 
-function addAssetToSetting(key, value) {
-	return RocketChat.settings.add(`Assets_${ key }`, {
+function addAssetToSetting(asset, value) {
+	const key = `Assets_${ asset }`;
+
+	RocketChat.settings.add(key, {
 		defaultUrl: value.defaultUrl
 	}, {
 		type: 'asset',
 		group: 'Assets',
 		fileConstraints: value.constraints,
 		i18nLabel: value.label,
-		asset: key,
+		asset,
 		public: true,
 		wizard: value.wizard
 	});
+
+	const currentValue = RocketChat.settings.get(key);
+
+	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
+		currentValue.defaultUrl = assets[asset].defaultUrl;
+		RocketChat.settings.updateById(key, currentValue);
+	}
 }
 
 for (const key of Object.keys(assets)) {
