@@ -158,7 +158,9 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			}
 			let value = this.form[field].get();
 
-			value = typeof value === 'boolean' ? value ? '1' : '0' : value;
+			if (typeof value === 'boolean') {
+				value = value ? '1' : '0';
+			}
 			const rid = Session.get('openedRoom');
 			switch (field) {
 				case 'desktopNotificationDuration':

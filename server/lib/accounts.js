@@ -38,7 +38,8 @@ Accounts.emailTemplates.userToActivate = {
 
 Accounts.emailTemplates.userActivated = {
 	subject({ active, username }) {
-		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
 		const subject = `Accounts_Email_${ action }_Subject`;
 		const siteName = RocketChat.settings.get('Site_Name');
 
@@ -49,7 +50,8 @@ Accounts.emailTemplates.userActivated = {
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-		const action = active ? (username ? 'Activated' : 'Approved') : 'Deactivated';
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
 
 		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
 			name,
