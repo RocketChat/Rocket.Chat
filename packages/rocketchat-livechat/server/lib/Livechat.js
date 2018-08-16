@@ -1,6 +1,8 @@
-/* globals HTTP */
+/* globals HTTP, emailSettings */
 import _ from 'underscore';
 import s from 'underscore.string';
+import moment from 'moment';
+import dns from 'dns';
 import UAParser from 'ua-parser-js';
 import LivechatVisitors from '../models/LivechatVisitors';
 
@@ -660,7 +662,128 @@ RocketChat.Livechat = {
 		} else {
 			return false;
 		}
+	},
+
+	sendEmail(from, to, replyTo, subject, html) {
+		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+
+		emailSettings = {
+			to,
+			from,
+			replyTo,
+			subject,
+			html: header + html + footer
+		};
+
+		Meteor.defer(() => {
+			Email.send(emailSettings);
+		});
+	},
+
+	sendTranscript({ token, rid, email }) {
+		check(rid, String);
+		check(email, String);
+
+		const room = RocketChat.models.Rooms.findOneById(rid);
+
+		const visitor = LivechatVisitors.getVisitorByToken(token);
+		const userLanguage = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
+
+		// allow to only user to send transcripts from their own chats
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { 'ts' : 1 }});
+
+		let html = '<div> <hr>';
+		messages.forEach(message => {
+			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
+				return;
+			}
+
+			let author;
+			if (message.u._id === visitor._id) {
+				author = TAPi18n.__('You', { lng: userLanguage });
+			} else {
+				author = message.u.username;
+			}
+
+			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const singleMessage = `
+				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
+				<p>${ message.msg }</p>
+			`;
+			html = html + singleMessage;
+		});
+
+		html = `${ html }</div>`;
+
+		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+
+		if (fromEmail) {
+			fromEmail = fromEmail[0];
+		} else {
+			fromEmail = RocketChat.settings.get('From_Email');
+		}
+
+		const subject = TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+
+		this.sendEmail(fromEmail, email, fromEmail, subject, html);
+
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('livechat.sendTranscript', messages, email);
+		});
+
+		return true;
+	},
+
+	sendOfflineMessage(data = {}) {
+		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
+			return false;
+		}
+
+		const message = (`${ data.message }`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+
+		const html = `
+			<h1>New livechat message</h1>
+			<p><strong>Visitor name:</strong> ${ data.name }</p>
+			<p><strong>Visitor email:</strong> ${ data.email }</p>
+			<p><strong>Message:</strong><br>${ message }</p>`;
+
+		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+
+		if (fromEmail) {
+			fromEmail = fromEmail[0];
+		} else {
+			fromEmail = RocketChat.settings.get('From_Email');
+		}
+
+		if (RocketChat.settings.get('Livechat_validate_offline_email')) {
+			const emailDomain = data.email.substr(data.email.lastIndexOf('@') + 1);
+
+			try {
+				Meteor.wrapAsync(dns.resolveMx)(emailDomain);
+			} catch (e) {
+				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', { method: 'livechat:sendOfflineMessage' });
+			}
+		}
+
+		const to = RocketChat.settings.get('Livechat_offline_email');
+		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
+		const replyTo = `${ data.name } <${ data.email }>`;
+		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
+
+		this.sendEmail(from, to, replyTo, subject, html);
+
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('livechat.offlineMessage', data);
+		});
+
+		return true;
 	}
+
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');

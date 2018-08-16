@@ -26,7 +26,7 @@ export default {
 		});
 	},
 
-	room(visitorToken, departmentId) {
+	room(visitorToken/*, departmentId*/) {
 		let room;
 		const roomInfo = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
 			fields: {
