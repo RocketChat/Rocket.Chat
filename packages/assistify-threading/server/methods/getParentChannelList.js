@@ -41,10 +41,15 @@ Meteor.methods({
 			}
 		}
 
+		const roomTypes = ['c'];
+		if (RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
+			roomTypes.push('p');
+		}
+
 		return {
 			channels: RocketChat.models.Rooms.find({
 				t: {
-					$in: ['p', 'c']
+					$in: roomTypes
 				}
 			}, options).fetch()
 		};
