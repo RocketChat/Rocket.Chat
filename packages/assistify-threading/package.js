@@ -23,6 +23,10 @@ Package.onUse(function(api) {
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
 
+	// Extensions to the rest of RC
+	api.addFiles('server/models/RoomsExtension.js', 'server');
+	api.addFiles('server/publications/channelAutocomplete.js', 'server');
+
 	//Methods
 	api.addFiles('server/methods/createThread.js', 'server');
 	api.addFiles('server/methods/getParentChannelId.js', 'server');
@@ -44,7 +48,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/CreateThreadAutocomplete.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelNotFound.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
-	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client'); // TODO: add wordcloud - but when doing this, ensure the sizes are based on the member-count (non-linear!)
+	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	api.addFiles('client/views/createThreadMessageAction.js', 'client');
 	api.addFiles('client/views/threadList.html', 'client');

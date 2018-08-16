@@ -346,7 +346,7 @@ Template.CreateThread.onCreated(function() {
 		inputDelay: 300,
 		rules: [{
 			collection: 'CachedChannelList', // check for proper collection
-			subscription: 'channelAndPrivateAutocomplete', // Provide another subscription exposing `c` and `p`
+			subscription: RocketChat.authz.hasAllPermission('view-other-user-channels') ? 'channelAndPrivateAutocomplete' : 'channelAutocomplete', // Provide another subscription exposing `c` and `p`
 			field: 'name',
 			matchAll: true,
 			doNotChangeWidth: false,
