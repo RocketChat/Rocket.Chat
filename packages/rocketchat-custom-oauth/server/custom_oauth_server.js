@@ -114,7 +114,7 @@ export class CustomOAuth {
 
 		let data;
 		if (response.data) {
-			({ data } = response);
+			data = response.data;
 		} else {
 			data = JSON.parse(response.content);
 		}
@@ -147,7 +147,7 @@ export class CustomOAuth {
 			let data;
 
 			if (response.data) {
-				({ data } = response);
+				data = response.data;
 			} else {
 				data = JSON.parse(response.content);
 			}

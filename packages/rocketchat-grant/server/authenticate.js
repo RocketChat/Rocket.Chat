@@ -80,7 +80,7 @@ export async function authenticate(providerName, req) {
 
 		const loginResult = await AccountsServer.loginWithUser({ id: user.id });
 
-		({ tokens } = loginResult);
+		tokens = loginResult.tokens;
 	} else {
 		const id = Accounts.createUser({
 			email: userData.email,
@@ -100,7 +100,7 @@ export async function authenticate(providerName, req) {
 
 		const loginResult = await AccountsServer.loginWithUser({ id });
 
-		({ tokens } = loginResult);
+		tokens = loginResult.tokens;
 	}
 
 	return tokens;

@@ -77,12 +77,12 @@ RocketChat.API.v1.addRoute(['dm.counters', 'im.counters'], { authRequired: true 
 				unreads = dm.unread;
 				unreadsFrom = dm.ls;
 			}
-			({ userMentions } = dm);
+			userMentions = dm.userMentions;
 			joined = true;
 		}
 
 		if (access || joined) {
-			({ msgs } = room);
+			msgs = room.msgs;
 			latest = lm;
 			members = room.usersCount;
 		}

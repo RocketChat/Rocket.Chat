@@ -136,7 +136,7 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		}
 
 		if (access || joined) {
-			({ msgs } = room);
+			msgs = room.msgs;
 			latest = lm;
 			members = room.usersCount;
 		}

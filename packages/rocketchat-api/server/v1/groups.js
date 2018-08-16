@@ -153,12 +153,12 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 				unreadsFrom = subscription.ls;
 			}
-			({ userMentions } = subscription);
+			userMentions = subscription.userMentions;
 			joined = true;
 		}
 
 		if (access || joined) {
-			({ msgs } = room);
+			msgs = room.msgs;
 			latest = lm;
 			members = room.usersCount;
 		}
