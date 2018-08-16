@@ -31,6 +31,9 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
 				return false;
 			}
+			if (RocketChat.settings.get('Thread_from_context_menu') !== 'button') {
+				return false;
+			}
 			if (message.u._id !== Meteor.userId()) {
 				return RocketChat.authz.hasAtLeastOnePermission('start-thread-other-user');
 			} else {

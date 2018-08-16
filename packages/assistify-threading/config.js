@@ -29,6 +29,17 @@ Meteor.startup(() => {
 		RocketChat.models.Settings.updateValueById('Thread_default_parent_Channel', defaultChannel);
 	}
 
+	RocketChat.settings.add('Thread_from_context_menu', 'button', {
+		group: 'Threading',
+		i18nLabel: 'Thread_from_context_menu',
+		type: 'select',
+		values: [
+			{key: 'button', i18nLabel: 'Threading_context_menu_button'},
+			{key: 'none', i18nLabel: 'Threading_context_menu_none'}
+		],
+		public: true
+	});
+
 	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
 		group: 'Accounts',
 		section: 'Accounts_Default_User_Preferences',
@@ -42,6 +53,7 @@ Meteor.startup(() => {
 		group: 'Threading',
 		i18nLabel: 'Thread_count',
 		type: 'int',
-		public: false
+		public: false,
+		hidden: true
 	});
 });
