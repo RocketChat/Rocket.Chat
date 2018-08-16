@@ -82,7 +82,7 @@ Template.message.helpers({
 		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
 	},
 	showUsername() {
-		return this.alias || RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name;
+		return this.alias || (RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name);
 	},
 	own() {
 		if (this.u && this.u._id === Meteor.userId()) {
@@ -131,7 +131,7 @@ Template.message.helpers({
 				},
 			});
 			const language = RocketChat.AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language];
+			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
 		}
 	},
 	edited() {

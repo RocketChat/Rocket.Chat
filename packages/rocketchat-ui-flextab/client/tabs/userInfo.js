@@ -31,7 +31,7 @@ Template.userInfo.helpers({
 
 		if (sCustomFieldsToShow) {
 			const user = Template.instance().user.get();
-			const userCustomFields = user && user.customFields || {};
+			const userCustomFields = (user && user.customFields) || {};
 			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
 
 			_.map(listOfCustomFieldsToShow, (el) => {

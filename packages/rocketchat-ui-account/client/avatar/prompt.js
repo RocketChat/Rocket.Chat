@@ -83,7 +83,7 @@ Template.avatarPrompt.events({
 		} else if (this.service === 'upload') {
 			let { files } = instance.find('input[type=file]');
 			if (!files || files.length === 0) {
-				files = event.dataTransfer && event.dataTransfer.files || [];
+				files = (event.dataTransfer && event.dataTransfer.files) || [];
 			}
 
 			for (let i = 0; i < files.length; i++) {

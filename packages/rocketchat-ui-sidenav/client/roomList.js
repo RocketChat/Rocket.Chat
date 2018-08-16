@@ -80,7 +80,7 @@ Template.roomList.helpers({
 		or is unread and has one room
 		*/
 
-		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
+		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
 	},
 
 	roomType(room) {

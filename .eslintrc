@@ -40,6 +40,24 @@
 		"no-inner-declarations": [2, "functions"],
 		"no-invalid-regexp": 2,
 		"no-irregular-whitespace": 2,
+		"no-mixed-operators": [2, {
+			"groups": [
+			  ["%", "**"],
+			  ["%", "+"],
+			  ["%", "-"],
+			  ["%", "*"],
+			  ["%", "/"],
+			  ["**", "+"],
+			  ["**", "-"],
+			  ["**", "*"],
+			  ["**", "/"],
+			  ["&", "|", "^", "~", "<<", ">>", ">>>"],
+			  ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+			  ["&&", "||"],
+			  ["in", "instanceof"]
+			],
+			"allowSamePrecedence": false
+		}],
 		"no-mixed-spaces-and-tabs": 2,
 		"no-sparse-arrays": 2,
 		"no-negated-in-lhs": 2,

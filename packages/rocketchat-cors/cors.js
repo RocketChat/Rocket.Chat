@@ -86,10 +86,10 @@ const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
 
-WebApp.httpServer.addListener('request', function(req, res) {
-	const next = (...args) => {
+WebApp.httpServer.addListener('request', function(req, res, ...args) {
+	const next = () => {
 		for (const oldListener of oldHttpServerListeners) {
-			oldListener.apply(WebApp.httpServer, args);
+			oldListener.apply(WebApp.httpServer, [req, res, ...args]);
 		}
 	};
 

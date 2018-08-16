@@ -654,7 +654,7 @@ Template.room.events({
 		}
 		lastScrollTop = e.target.scrollTop;
 
-		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
+		if ((RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true) || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
 				RoomHistoryManager.getMore(this._id);
 			} else if (RoomHistoryManager.hasMoreNext(this._id) === true && e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {

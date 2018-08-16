@@ -473,7 +473,7 @@ this.ChatMessages = class ChatMessages {
 		const k = event.which;
 
 		if (k === 13) {
-			if (sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop' && Meteor.Device.isDesktop()) {
+			if ((sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop') && Meteor.Device.isDesktop()) {
 				if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) { // Enter without shift/ctrl/alt
 					event.preventDefault();
 					event.stopPropagation();
