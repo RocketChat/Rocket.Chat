@@ -15,11 +15,11 @@ Template.visitorHistory.helpers({
 		return visitorHistory.find({
 			_id: { $ne: this.rid },
 			'v._id': Template.instance().visitorId.get(),
-			'servedBy._id': userId
+			'servedBy._id': userId,
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		});
 	},
 
@@ -31,7 +31,7 @@ Template.visitorHistory.helpers({
 		}
 
 		return title;
-	}
+	},
 });
 
 Template.visitorHistory.onCreated(function() {

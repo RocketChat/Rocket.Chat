@@ -24,7 +24,7 @@ Meteor.methods({
 			fileUpload: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
-			emailFieldRegistrationForm: null
+			emailFieldRegistrationForm: null,
 		};
 
 		const options = {
@@ -49,7 +49,7 @@ Meteor.methods({
 				name: 1,
 				username: 1,
 				visitorEmails: 1,
-				department: 1
+				department: 1,
 			}
 		});
 
@@ -91,5 +91,5 @@ Meteor.methods({
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 		return info;
-	}
+	},
 });

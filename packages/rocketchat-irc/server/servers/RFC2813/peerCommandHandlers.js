@@ -24,7 +24,7 @@ function PING() {
 	this.write({
 		prefix: this.config.server.name,
 		command: 'PONG',
-		parameters: [ this.config.server.name ]
+		parameters: [this.config.server.name],
 	});
 }
 
@@ -40,16 +40,16 @@ function NICK(parsedMessage) {
 				nick: parsedMessage.args[0],
 				username: parsedMessage.args[2],
 				host: parsedMessage.args[3],
-				name: parsedMessage.args[6]
-			}
+				name: parsedMessage.args[6],
+			},
 		};
 	} else { // Otherwise, it is a nick change
 		command = {
 			identifier: 'nickChanged',
 			args: {
 				nick: parsedMessage.nick,
-				newNick: parsedMessage.args[0]
-			}
+				newNick: parsedMessage.args[0],
+			},
 		};
 	}
 
@@ -61,8 +61,8 @@ function JOIN(parsedMessage) {
 		identifier: 'joinedChannel',
 		args: {
 			roomName: parsedMessage.args[0].substring(1),
-			nick: parsedMessage.prefix
-		}
+			nick: parsedMessage.prefix,
+		},
 	};
 
 	return command;
@@ -73,8 +73,8 @@ function PART(parsedMessage) {
 		identifier: 'leftChannel',
 		args: {
 			roomName: parsedMessage.args[0].substring(1),
-			nick: parsedMessage.prefix
-		}
+			nick: parsedMessage.prefix,
+		},
 	};
 
 	return command;
@@ -85,8 +85,8 @@ function PRIVMSG(parsedMessage) {
 		identifier: 'sentMessage',
 		args: {
 			nick: parsedMessage.prefix,
-			message: parsedMessage.args[1]
-		}
+			message: parsedMessage.args[1],
+		},
 	};
 
 	if (parsedMessage.args[0][0] === '#') {
@@ -102,8 +102,8 @@ function QUIT(parsedMessage) {
 	const command = {
 		identifier: 'disconnected',
 		args: {
-			nick: parsedMessage.prefix
-		}
+			nick: parsedMessage.prefix,
+		},
 	};
 
 	return command;

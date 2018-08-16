@@ -98,6 +98,7 @@ function sendFileMessage(file, roomId) {
 			return showError(error.message);
 		}
 
+		Livechat.room = result.room._id;
 		visitor.subscribeToRoom(result.room._id);
 		visitor.setRoom(result.room._id);
 		sendFileRequest(file, roomId, visitor.getToken());

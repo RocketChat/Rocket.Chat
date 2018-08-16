@@ -9,8 +9,8 @@ function getIdentity(accessToken) {
 			'https://www.googleapis.com/oauth2/v1/userinfo', {
 				headers: { 'User-Agent': userAgent },
 				params: {
-					access_token: accessToken
-				}
+					access_token: accessToken,
+				},
 			}).data;
 	} catch (err) {
 		throw new GrantError(`Failed to fetch identity from Google. ${ err.message }`);
@@ -20,7 +20,7 @@ function getIdentity(accessToken) {
 export function getUser(accessToken) {
 	const whitelisted = [
 		'id', 'email', 'verified_email', 'name',
-		'given_name', 'family_name', 'picture'
+		'given_name', 'family_name', 'picture',
 	];
 	const identity = getIdentity(accessToken, whitelisted);
 	const username = `${ identity.given_name.toLowerCase() }.${ identity.family_name.toLowerCase() }`;
@@ -30,7 +30,7 @@ export function getUser(accessToken) {
 		email: identity.email,
 		username,
 		name: identity.name,
-		avatar: identity.picture
+		avatar: identity.picture,
 	};
 }
 

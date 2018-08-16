@@ -9,7 +9,7 @@ const MentionsClient = new Mentions({
 	me() {
 		const me = Meteor.user();
 		return me && me.username;
-	}
+	},
 });
 
 RocketChat.callbacks.add('renderMessage', (message) => MentionsClient.parse(message), RocketChat.callbacks.priority.MEDIUM, 'mentions-message');

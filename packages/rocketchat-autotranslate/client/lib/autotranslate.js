@@ -52,7 +52,7 @@ RocketChat.AutoTranslate = {
 							message.translations = {};
 						}
 						if (subscription && subscription.autoTranslate !== message.autoTranslateShowInverse) {
-							message.translations['original'] = message.html;
+							message.translations.original = message.html;
 							if (message.translations[autoTranslateLanguage]) {
 								message.html = message.translations[autoTranslateLanguage];
 							}
@@ -86,7 +86,7 @@ RocketChat.AutoTranslate = {
 				RocketChat.callbacks.remove('streamMessage', 'autotranslate-stream');
 			}
 		});
-	}
+	},
 };
 
 Meteor.startup(function() {

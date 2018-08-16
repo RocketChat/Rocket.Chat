@@ -14,7 +14,7 @@ export function notifyDesktopUser({
 	message,
 	room,
 	duration,
-	notificationMessage
+	notificationMessage,
 }) {
 	const { title, text } = RocketChat.roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
@@ -28,8 +28,8 @@ export function notifyDesktopUser({
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
-		}
+			name: room.name,
+		},
 	});
 }
 
@@ -41,7 +41,7 @@ export function shouldNotifyDesktop({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType
+	roomType,
 }) {
 	if (disableAllMessageNotifications && desktopNotifications == null) {
 		return false;

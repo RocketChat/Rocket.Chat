@@ -9,7 +9,7 @@ Meteor.methods({
 		this.unblock();
 
 		return RocketChat.models.Users.setUtcOffset(this.userId, utcOffset);
-	}
+	},
 });
 
 DDPRateLimiter.addRule({
@@ -17,5 +17,5 @@ DDPRateLimiter.addRule({
 	name: 'userSetUtcOffset',
 	userId() {
 		return true;
-	}
+	},
 }, 1, 60000);

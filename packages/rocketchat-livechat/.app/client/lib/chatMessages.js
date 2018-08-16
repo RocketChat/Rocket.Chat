@@ -127,10 +127,11 @@ this.ChatMessages = class ChatMessages {
 					showError(error.reason);
 				}
 
+				Livechat.room = result.rid;
+
 				if (result && result.rid && !visitor.isSubscribed(result.rid)) {
 					Livechat.connecting = result.showConnecting;
 					ChatMessage.update(result._id, _.omit(result, '_id'));
-					Livechat.room = result.rid;
 
 					visitor.setConnected();
 
