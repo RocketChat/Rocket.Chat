@@ -396,7 +396,7 @@ export class HipChatEnterpriseImporter extends Base {
 				// Import the Direct Messages
 				for (const [directMsgRoom, directMessagesMap] of this.directMessages.entries()) {
 					const hipUser = this.getUserFromDirectMessageIdentifier(directMsgRoom);
-					if (!hipUser.do_import) {
+					if (!hipUser || !hipUser.do_import) {
 						continue;
 					}
 
