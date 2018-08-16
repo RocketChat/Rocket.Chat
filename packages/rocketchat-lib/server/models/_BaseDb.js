@@ -2,7 +2,7 @@
 import _ from 'underscore';
 
 const baseName = 'rocketchat_';
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 
 const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
@@ -38,12 +38,12 @@ class ModelsBaseDb extends EventEmitter {
 
 		let alreadyListeningToOplog = false;
 		// When someone start listening for changes we start oplog if available
-		this.on('newListener', (event/*, listener*/) => {
+		this.on('newListener', (event/* , listener*/) => {
 			if (event === 'change' && alreadyListeningToOplog === false) {
 				alreadyListeningToOplog = true;
 				if (isOplogEnabled) {
 					const query = {
-						collection: this.collectionName
+						collection: this.collectionName,
 					};
 
 					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
@@ -52,7 +52,7 @@ class ModelsBaseDb extends EventEmitter {
 			}
 		});
 
-		this.tryEnsureIndex({ '_updatedAt': 1 });
+		this.tryEnsureIndex({ _updatedAt: 1 });
 	}
 
 	get baseName() {
@@ -83,7 +83,7 @@ class ModelsBaseDb extends EventEmitter {
 		this.originals = {
 			insert: this.model.insert.bind(this.model),
 			update: this.model.update.bind(this.model),
-			remove: this.model.remove.bind(this.model)
+			remove: this.model.remove.bind(this.model),
 		};
 		const self = this;
 
@@ -103,9 +103,9 @@ class ModelsBaseDb extends EventEmitter {
 	_doNotMixInclusionAndExclusionFields(options) {
 		if (options && options.fields) {
 			const keys = Object.keys(options.fields);
-			const removeKeys = keys.filter(key => options.fields[key] === 0);
+			const removeKeys = keys.filter((key) => options.fields[key] === 0);
 			if (keys.length > removeKeys.length) {
-				removeKeys.forEach(key => delete options.fields[key]);
+				removeKeys.forEach((key) => delete options.fields[key]);
 			}
 		}
 	}
@@ -125,11 +125,11 @@ class ModelsBaseDb extends EventEmitter {
 	}
 
 	findOneByIds(ids, options) {
-		return this.findOne({ _id: { $in: ids }}, options);
+		return this.findOne({ _id: { $in: ids } }, options);
 	}
 
 	updateHasPositionalOperator(update) {
-		return Object.keys(update).some(key => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
+		return Object.keys(update).some((key) => key.includes('.$') || (Match.test(update[key], Object) && this.updateHasPositionalOperator(update[key])));
 	}
 
 	processOplogRecord(action) {
@@ -143,7 +143,7 @@ class ModelsBaseDb extends EventEmitter {
 				clientAction: 'inserted',
 				id: action.op.o._id,
 				data: action.op.o,
-				oplog: true
+				oplog: true,
 			});
 			return;
 		}
@@ -155,7 +155,7 @@ class ModelsBaseDb extends EventEmitter {
 					clientAction: 'updated',
 					id: action.id,
 					data: action.op.o,
-					oplog: true
+					oplog: true,
 				});
 				return;
 			}
@@ -182,7 +182,7 @@ class ModelsBaseDb extends EventEmitter {
 				clientAction: 'updated',
 				id: action.id,
 				diff,
-				oplog: true
+				oplog: true,
 			});
 			return;
 		}
@@ -192,7 +192,7 @@ class ModelsBaseDb extends EventEmitter {
 				action: 'remove',
 				clientAction: 'removed',
 				id: action.id,
-				oplog: true
+				oplog: true,
 			});
 			return;
 		}
@@ -211,7 +211,7 @@ class ModelsBaseDb extends EventEmitter {
 				clientAction: 'inserted',
 				id: result,
 				data: _.extend({}, record),
-				oplog: false
+				oplog: false,
 			});
 		}
 
@@ -229,12 +229,12 @@ class ModelsBaseDb extends EventEmitter {
 				records = [records];
 			}
 
-			ids = records.map(item => item._id);
+			ids = records.map((item) => item._id);
 			if (options.upsert !== true && this.updateHasPositionalOperator(update) === false) {
 				query = {
 					_id: {
-						$in: ids
-					}
+						$in: ids,
+					},
 				};
 			}
 		}
@@ -248,7 +248,7 @@ class ModelsBaseDb extends EventEmitter {
 					action: 'insert',
 					clientAction: 'inserted',
 					id: result.insertedId,
-					oplog: false
+					oplog: false,
 				});
 
 				return result;
@@ -259,7 +259,7 @@ class ModelsBaseDb extends EventEmitter {
 					action: 'update',
 					clientAction: 'updated',
 					id,
-					oplog: false
+					oplog: false,
 				});
 			}
 		}
@@ -283,7 +283,7 @@ class ModelsBaseDb extends EventEmitter {
 			record._deletedAt = new Date;
 			record.__collection__ = this.name;
 
-			trash.upsert({_id: record._id}, _.omit(record, '_id'));
+			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
 		}
 
 		query = { _id: { $in: ids } };
@@ -297,7 +297,7 @@ class ModelsBaseDb extends EventEmitter {
 					clientAction: 'removed',
 					id: record._id,
 					data: _.extend({}, record),
-					oplog: false
+					oplog: false,
 				});
 			}
 		}
@@ -310,7 +310,7 @@ class ModelsBaseDb extends EventEmitter {
 			const _id = args[0]._id;
 			delete args[0]._id;
 			args.unshift({
-				_id
+				_id,
 			});
 
 			this.upsert(...args);
@@ -361,7 +361,7 @@ class ModelsBaseDb extends EventEmitter {
 	trashFindOneById(_id, options) {
 		const query = {
 			_id,
-			__collection__: this.name
+			__collection__: this.name,
 		};
 
 		return trash.findOne(query, options);
@@ -370,7 +370,7 @@ class ModelsBaseDb extends EventEmitter {
 	trashFindDeletedAfter(deletedAt, query = {}, options) {
 		query.__collection__ = this.name;
 		query._deletedAt = {
-			$gt: deletedAt
+			$gt: deletedAt,
 		};
 
 		return trash.find(query, options);

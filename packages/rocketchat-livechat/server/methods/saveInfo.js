@@ -10,16 +10,16 @@ Meteor.methods({
 			_id: String,
 			name: Match.Optional(String),
 			email: Match.Optional(String),
-			phone: Match.Optional(String)
+			phone: Match.Optional(String),
 		}));
 
 		check(roomData, Match.ObjectIncluding({
 			_id: String,
 			topic: Match.Optional(String),
-			tags: Match.Optional(String)
+			tags: Match.Optional(String),
 		}));
 
-		const room = RocketChat.models.Rooms.findOneById(roomData._id, {fields: {t: 1, servedBy: 1}});
+		const room = RocketChat.models.Rooms.findOneById(roomData._id, { fields: { t: 1, servedBy: 1 } });
 
 		if (room == null || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
@@ -36,5 +36,5 @@ Meteor.methods({
 		});
 
 		return ret;
-	}
+	},
 });

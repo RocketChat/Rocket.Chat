@@ -6,8 +6,8 @@ RocketChat.Sandstorm.notify = function() {};
 
 if (process.env.SANDSTORM === '1') {
 	const ACTIVITY_TYPES = {
-		'message': 0,
-		'privateMessage': 1
+		message: 0,
+		privateMessage: 1,
 	};
 
 	RocketChat.Sandstorm.notify = function(message, userIds, caption, type) {
@@ -23,15 +23,15 @@ if (process.env.SANDSTORM === '1') {
 		}
 
 		if (caption) {
-			activity.notification = {caption: {defaultText: caption}};
+			activity.notification = { caption: { defaultText: caption } };
 		}
 
 		if (userIds) {
 			activity.users = _.map(userIds, function(userId) {
-				const user = Meteor.users.findOne({_id: userId}, {fields: {'services.sandstorm.id': 1}});
+				const user = Meteor.users.findOne({ _id: userId }, { fields: { 'services.sandstorm.id': 1 } });
 				return {
 					identity: waitPromise(httpBridge.getSavedIdentity(user.services.sandstorm.id)).identity,
-					mentioned: true
+					mentioned: true,
 				};
 			});
 		}

@@ -18,7 +18,7 @@ Template.customFieldsForm.helpers({
 			}
 			customFieldsArray.push({
 				fieldName: key,
-				field: value
+				field: value,
 			});
 		});
 
@@ -37,7 +37,7 @@ Template.customFieldsForm.helpers({
 		const formData = Template.instance().formData;
 
 		return formData[this.fieldName];
-	}
+	},
 });
 
 Template.customFieldsForm.onCreated(function() {

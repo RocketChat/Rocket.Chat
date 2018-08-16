@@ -21,7 +21,7 @@ Meteor.methods({
 		return RocketChat.Livechat.closeRoom({
 			user,
 			room,
-			comment
+			comment,
 		});
-	}
+	},
 });

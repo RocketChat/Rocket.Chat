@@ -38,21 +38,19 @@ const getExcludedPackages = () => {
 const isNotInExcludedPackages = (excludedPackages, pathInBundle) => {
 	let exclArr = [];
 	if (excludedPackages && excludedPackages instanceof Array) {
-		exclArr = excludedPackages.map(packageName => {
-			return pathInBundle && pathInBundle.indexOf(`packages/${ packageName.replace(':', '_') }`) > -1;
-		});
+		exclArr = excludedPackages.map((packageName) => pathInBundle && pathInBundle.indexOf(`packages/${ packageName.replace(':', '_') }`) > -1);
 	}
 
 	return exclArr.indexOf(true) === -1;
 };
 
-const isNotImport = inputFileUrl => !(/\.import\.css$/.test(inputFileUrl) || /(?:^|\/)imports\//.test(inputFileUrl));
+const isNotImport = (inputFileUrl) => !(/\.import\.css$/.test(inputFileUrl) || /(?:^|\/)imports\//.test(inputFileUrl));
 
-const mergeCss = css => {
+const mergeCss = (css) => {
 	const originals = {};
 	const excludedPackagesArr = getExcludedPackages();
 
-	const cssAsts = css.map(file => {
+	const cssAsts = css.map((file) => {
 		const filename = file.getPathInBundle();
 		originals[filename] = file;
 
@@ -63,15 +61,15 @@ const mergeCss = css => {
 		const isFileForPostCSS = isNotInExcludedPackages(excludedPackagesArr, file.getPathInBundle());
 		postCSS(isFileForPostCSS ? getPostCSSPlugins() : [])
 			.process(file.getContentsAsString(), {
-				from: process.cwd() + file._source.url.replace('_', '-')
+				from: process.cwd() + file._source.url.replace('_', '-'),
 			})
-			.then(result => {
-				result.warnings().forEach(warn => {
+			.then((result) => {
+				result.warnings().forEach((warn) => {
 					process.stderr.write(warn.toString());
 				});
 				f.return(result);
 			})
-			.catch(error => {
+			.catch((error) => {
 				if (error.name === 'CssSyntaxError') {
 					error.message = `${ error.message }\n\nCss Syntax Error.\n\n${ error.message }${ error.showSourceCode() }`;
 				}
@@ -81,7 +79,7 @@ const mergeCss = css => {
 		try {
 			const parseOptions = {
 				source: filename,
-				position: true
+				position: true,
 			};
 
 			postres = f.wait();
@@ -101,24 +99,24 @@ const mergeCss = css => {
 				file.error({
 					message: e.message,
 					line: e.line,
-					column: e.column
+					column: e.column,
 				});
 			} else if (e.reason) {
 				file.error({
 					message: e.reason,
 					line: e.line,
-					column: e.column
+					column: e.column,
 				});
 			} else {
 				file.error({
-					message: e.message
+					message: e.message,
 				});
 			}
 
 			return {
 				type: 'stylesheet',
 				stylesheet: { rules: [] },
-				filename
+				filename,
 			};
 		}
 	});
@@ -128,7 +126,7 @@ const mergeCss = css => {
 
 	const stringifiedCss = CssTools.stringifyCss(mergedCssAst, {
 		sourcemap: true,
-		inputSourcemaps: false
+		inputSourcemaps: false,
 	});
 
 	if (!stringifiedCss.code) {
@@ -136,13 +134,11 @@ const mergeCss = css => {
 	}
 
 	stringifiedCss.map.sourcesContent =
-		stringifiedCss.map.sources.map(filename => {
-			return originals[filename].getContentsAsString();
-		});
+		stringifiedCss.map.sources.map((filename) => originals[filename].getContentsAsString());
 
 	const newMap = sourcemap.SourceMapGenerator.fromSourceMap(new sourcemap.SourceMapConsumer(stringifiedCss.map));
 
-	Object.keys(originals).forEach(name => {
+	Object.keys(originals).forEach((name) => {
 		const file = originals[name];
 		if (!file.getSourceMap()) {
 			return false;
@@ -156,7 +152,7 @@ const mergeCss = css => {
 
 	return {
 		code: stringifiedCss.code,
-		sourceMap: newMap.toString()
+		sourceMap: newMap.toString(),
 	};
 };
 
@@ -170,7 +166,7 @@ class CssToolsMinifier {
 
 		const filesToMerge = [];
 
-		files.forEach(file => {
+		files.forEach((file) => {
 			if (isNotImport(file._source.url)) {
 				filesToMerge.push(file);
 			}
@@ -182,7 +178,7 @@ class CssToolsMinifier {
 			files[0].addStylesheet({
 				data: merged.code,
 				sourceMap: merged.sourceMap,
-				path: 'merged-stylesheets.css'
+				path: 'merged-stylesheets.css',
 			});
 			return false;
 		}
@@ -190,13 +186,13 @@ class CssToolsMinifier {
 		const minifiedFiles = CssTools.minifyCss(merged.code);
 
 		if (files.length) {
-			minifiedFiles.forEach(minified => {
+			minifiedFiles.forEach((minified) => {
 				files[0].addStylesheet({
-					data: minified
+					data: minified,
 				});
 			});
 		}
 	}
 }
 
-Plugin.registerMinifier({extensions: ['css']}, () => new CssToolsMinifier);
+Plugin.registerMinifier({ extensions: ['css'] }, () => new CssToolsMinifier);

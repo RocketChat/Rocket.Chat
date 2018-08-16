@@ -5,5 +5,5 @@ Template.loginHeader.helpers({
 		if (asset != null) {
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
-	}
+	},
 });

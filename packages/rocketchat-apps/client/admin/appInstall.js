@@ -26,7 +26,7 @@ Template.appInstall.helpers({
 		const instance = Template.instance();
 
 		return !!instance.isUpdatingId.get();
-	}
+	},
 });
 
 Template.appInstall.onCreated(function() {
@@ -129,5 +129,5 @@ Template.appInstall.events({
 		}
 
 		t.isInstalling.set(false);
-	}
+	},
 });
