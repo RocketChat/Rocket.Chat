@@ -131,7 +131,7 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		if (typeof subscription !== 'undefined' && subscription.open) {
 			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 			unreadsFrom = subscription.ls || subscription.ts;
-			({ userMentions } = subscription);
+			userMentions = subscription.userMentions;
 			joined = true;
 		}
 

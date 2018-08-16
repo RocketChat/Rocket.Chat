@@ -119,7 +119,7 @@ Template.admin.helpers({
 				if (_.isString(setting.i18nDefaultQuery)) {
 					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery);
 				} else {
-					({ i18nDefaultQuery } = setting);
+					i18nDefaultQuery = setting.i18nDefaultQuery;
 				}
 				if (!_.isArray(i18nDefaultQuery)) {
 					i18nDefaultQuery = [i18nDefaultQuery];
@@ -163,7 +163,7 @@ Template.admin.helpers({
 		if (_.isString(this.enableQuery)) {
 			enableQuery = JSON.parse(this.enableQuery);
 		} else {
-			({ enableQuery } = this);
+			enableQuery = this.enableQuery;
 		}
 		if (!_.isArray(enableQuery)) {
 			enableQuery = [enableQuery];
@@ -497,7 +497,7 @@ Template.admin.events({
 		let { files } = e.target;
 		if (!files || files.length === 0) {
 			if (e.dataTransfer && e.dataTransfer.files) {
-				({ files } = e.dataTransfer);
+				files = e.dataTransfer.files;
 			} else {
 				files = [];
 			}

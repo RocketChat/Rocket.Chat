@@ -2,7 +2,7 @@ Template.oembedBaseWidget.helpers({
 	template() {
 		let contentType;
 		if (this.headers) {
-			({ contentType } = this.headers);
+			contentType = this.headers.contentType;
 		}
 
 		if (this._overrideTemplate) {

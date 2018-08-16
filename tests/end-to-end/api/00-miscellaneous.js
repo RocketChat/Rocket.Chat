@@ -140,7 +140,7 @@ describe('miscellaneous', function() {
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
-					({ user } = res.body);
+					user = res.body.user;
 					done();
 				});
 		});
@@ -283,7 +283,7 @@ describe('miscellaneous', function() {
 				.set(credentials)
 				.send({ email, name: username, username, password })
 				.end((err, res) => {
-					({ user } = res.body);
+					user = res.body.user;
 					done();
 				});
 		});

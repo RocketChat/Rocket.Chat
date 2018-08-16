@@ -76,7 +76,18 @@
 		"no-nested-ternary": 2,
 		"prefer-rest-params": 2,
 		"array-callback-return": 2,
-		"prefer-destructuring": [2, {"object": true, "array": false}],
+		"prefer-destructuring": [2, {
+			"VariableDeclarator": {
+				"array": false,
+				"object": true
+			},
+			"AssignmentExpression": {
+			  "array": false,
+			  "object": false
+			}
+		}, {
+			"enforceForRenamedProperties": false
+		}],
 		"no-duplicate-imports": 2,
 		"arrow-parens": [2, "always"],
 		"quote-props": [2, "as-needed"],

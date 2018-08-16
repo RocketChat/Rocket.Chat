@@ -24,7 +24,7 @@ describe('Incoming Integrations', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
-				({ integration } = res.body);
+				integration = res.body.integration;
 			})
 			.end(done);
 	});

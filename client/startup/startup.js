@@ -58,7 +58,7 @@ Meteor.startup(function() {
 		UserPresence.start();
 
 		if (user.status !== status) {
-			({ status } = user);
+			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
 	});

@@ -1029,11 +1029,11 @@ export default class SlackAdapter {
 			if (data && data.purpose && data.purpose.value) {
 				if (topic_last_set) {
 					if (topic_last_set < data.purpose.last_set) {
-						({ topic } = data.purpose);
+						topic = data.purpose.topic;
 						topic_creator = data.purpose.creator;
 					}
 				} else {
-					({ topic } = data.purpose);
+					topic = data.purpose.topic;
 					topic_creator = data.purpose.creator;
 				}
 			}

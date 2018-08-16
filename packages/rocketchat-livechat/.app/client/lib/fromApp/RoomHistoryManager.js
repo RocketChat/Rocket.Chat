@@ -39,7 +39,7 @@ export const RoomHistoryManager = new class {
 
 		let ts;
 		if (lastMessage) {
-			({ ts } = lastMessage.ts);
+			ts = lastMessage.ts;
 		} else {
 			ts = new Date();
 		}
