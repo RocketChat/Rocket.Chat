@@ -181,6 +181,13 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_request_on_agent_message'
 	});
 
+	RocketChat.settings.add('Livechat_webhook_on_visitor_transfer', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_visitor_transfer'
+	});
+
 	RocketChat.settings.add('Send_visitor_navigation_history_livechat_webhook_request', false, {
 		type: 'boolean',
 		group: 'Livechat',

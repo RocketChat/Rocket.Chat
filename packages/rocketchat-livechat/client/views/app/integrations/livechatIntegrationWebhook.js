@@ -30,6 +30,10 @@ Template.livechatIntegrationWebhook.helpers({
 	sendOnAgentMessageChecked() {
 		const setting = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
 		return setting && setting.value;
+	},
+	sendOnVisitorTransferChecked() {
+		const setting = LivechatIntegration.findOne('Livechat_webhook_on_visitor_transfer');
+		return setting && setting.value;
 	}
 });
 
@@ -72,6 +76,7 @@ Template.livechatIntegrationWebhook.events({
 		const webhookOnOfflineMsg = LivechatIntegration.findOne('Livechat_webhook_on_offline_msg');
 		const webhookOnVisitorMessage = LivechatIntegration.findOne('Livechat_webhook_on_visitor_message');
 		const webhookOnAgentMessage = LivechatIntegration.findOne('Livechat_webhook_on_agent_message');
+		const webhookOnVisitorTransfer = LivechatIntegration.findOne('Livechat_webhook_on_visitor_transfer');
 
 		instance.$('#webhookUrl').val(webhookUrl && webhookUrl.value);
 		instance.$('#secretToken').val(secretToken && secretToken.value);
@@ -79,6 +84,7 @@ Template.livechatIntegrationWebhook.events({
 		instance.$('#sendOnOffline').get(0).checked = webhookOnOfflineMsg && webhookOnOfflineMsg.value;
 		instance.$('#sendOnVisitorMessage').get(0).checked = webhookOnVisitorMessage && webhookOnVisitorMessage.value;
 		instance.$('#sendOnAgentMessage').get(0).checked = webhookOnAgentMessage && webhookOnAgentMessage.value;
+		instance.$('#sendOnVisitorTransfer').get(0).checked = webhookOnVisitorTransfer && webhookOnVisitorTransfer.value;
 
 		instance.disableTest.set(!webhookUrl || _.isEmpty(webhookUrl.value));
 	},
@@ -91,7 +97,8 @@ Template.livechatIntegrationWebhook.events({
 			'Livechat_webhook_on_close': instance.$('#sendOnClose').get(0).checked,
 			'Livechat_webhook_on_offline_msg': instance.$('#sendOnOffline').get(0).checked,
 			'Livechat_webhook_on_visitor_message': instance.$('#sendOnVisitorMessage').get(0).checked,
-			'Livechat_webhook_on_agent_message': instance.$('#sendOnAgentMessage').get(0).checked
+			'Livechat_webhook_on_agent_message': instance.$('#sendOnAgentMessage').get(0).checked,
+			'Livechat_webhook_on_visitor_transfer': instance.$('#sendOnVisitorTransfer').get(0).checked
 		};
 		Meteor.call('livechat:saveIntegration', settings, (err) => {
 			if (err) {
