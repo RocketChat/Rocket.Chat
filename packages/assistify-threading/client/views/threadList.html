@@ -7,10 +7,8 @@
 			<button class="rc-button rc-button--primary js-create-thread">{{> icon icon="plus"}} {{_ "Thread_start"}}</button>
 		</p>
 		<ul class="rooms-list__list">
-			{{#each room in rooms}} {{> chatRoomItem room }} {{else}}
-			<p class="rooms-list__empty-room">
-				{{ _ "No_threads_yet"}}
-			</p>
+			{{#each room in rooms}}
+				{{> chatRoomItem room }}
 			{{/each}}
 		</ul>
 	</div>

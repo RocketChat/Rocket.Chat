@@ -66,7 +66,10 @@ export class ThreadBuilder {
 					channels: [{
 						_id: roomCreated._id, // Parent Room ID
 						name: roomCreated.name,
-						initialMessage: message.msg
+						initialMessage: {
+							_id: message._id,
+							text: message.msg
+						}
 					}]
 				});
 		}
