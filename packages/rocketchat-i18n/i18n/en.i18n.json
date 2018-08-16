@@ -2447,6 +2447,7 @@
   "Threading_description": "Help keeping an overview about what's going on! By creating a thread, a sub-channel of the one you selected is created and both are linked.",
   "Thread_creation_on_home": "Create threads on home screen",
   "Thread_default_parent_Channel": "Default channel for new Threads",
+  "Threading_first_message_title": "Your message",
   "Thread_target_channel": "Parent channel or group",
   "Thread_target_channel_description": "Select a channel which is related to what you want to ask",
   "Thread_target_channel_prefix": "You are creating a thread in",

@@ -111,11 +111,12 @@ export class ThreadBuilder {
 		// Generate RoomName for xthe new room to be created.
 		this.name = `${ parentRoom.name || parentRoom.usernames.join('-') }-${ ThreadBuilder.getNextId() }`;
 		const threadRoomType = parentRoom.t === 'd' ? 'p' : parentRoom.t;
-		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false, { parentRoomId: this._parentRoomId });
-
-		if (parentRoom.name) {
-			RocketChat.saveRoomTopic(threadRoom.rid, parentRoom.name, Meteor.user());
-		}
+		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
+			{
+				announcement: this._openingQuestion.msg,
+				topic: parentRoom.name ? parentRoom.name : '',
+				parentRoomId: this._parentRoomId
+			});
 
 		// Create messages in the newly created thread and it's parent which link the two rooms
 		const room = RocketChat.models.Rooms.findOneById(threadRoom.rid);
