@@ -2,7 +2,7 @@ import {
 	Base,
 	ProgressStep,
 	Selection,
-	SelectionUser
+	SelectionUser,
 } from 'meteor/rocketchat:importer';
 
 export class SlackUsersImporter extends Base {
@@ -11,7 +11,7 @@ export class SlackUsersImporter extends Base {
 
 		this.csvParser = require('csv-parse/lib/sync');
 		this.userMap = new Map();
-		this.admins = []; //Array of ids of the users which are admins
+		this.admins = []; // Array of ids of the users which are admins
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
@@ -51,7 +51,7 @@ export class SlackUsersImporter extends Base {
 
 		const userArray = Array.from(this.userMap.values());
 
-		const usersId = this.collection.insert({ 'import': this.importRecord._id, 'importer': this.name, 'type': 'users', 'users': userArray });
+		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: userArray });
 		this.users = this.collection.findOne(usersId);
 		super.updateRecord({ 'count.users': this.userMap.size });
 		super.addCountToTotal(this.userMap.size);
@@ -76,7 +76,7 @@ export class SlackUsersImporter extends Base {
 
 			this.userMap.set(user.user_id, u);
 		}
-		this.collection.update({ _id: this.users._id }, { $set: { 'users': Array.from(this.userMap.values()) }});
+		this.collection.update({ _id: this.users._id }, { $set: { users: Array.from(this.userMap.values()) } });
 
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
@@ -93,7 +93,7 @@ export class SlackUsersImporter extends Base {
 
 						let userId;
 						if (existantUser) {
-							//since we have an existing user, let's try a few things
+							// since we have an existing user, let's try a few things
 							userId = existantUser._id;
 							u.rocketId = existantUser._id;
 							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
@@ -109,7 +109,7 @@ export class SlackUsersImporter extends Base {
 							}
 
 							Meteor.runAsUser(userId, () => {
-								Meteor.call('setUsername', u.username, {joinDefaultChannelsSilenced: true});
+								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
 								RocketChat.models.Users.setName(userId, u.name);
 								RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
 								RocketChat.models.Users.setEmail(userId, u.email);

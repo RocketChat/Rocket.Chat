@@ -11,7 +11,7 @@ Meteor.methods({
 			_id: Random.id(),
 			rid: roomId || Random.id(),
 			msg: '',
-			ts: new Date()
+			ts: new Date(),
 		};
 
 		const { room } = RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
@@ -20,15 +20,15 @@ Meteor.methods({
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
 			actionLinks: [
 				{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall', params: '' },
-				{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' }
-			]
+				{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' },
+			],
 		});
 
 		return {
 			roomId: room._id,
 			domain: RocketChat.settings.get('Jitsi_Domain'),
-			jitsiRoom: RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId
+			jitsiRoom: RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId,
 		};
-	}
+	},
 });
 
