@@ -72,10 +72,15 @@
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 800;
-	color: grey;
-	display: block
+	color: lightgray;
+	display: block;
+	box-shadow:1px 5px 3px #F5F5F5;
   }
 
   #modifier li :hover:not(.header){
 	background-color: white;
+  }
+
+  h4 {
+	  color: grey;
   }

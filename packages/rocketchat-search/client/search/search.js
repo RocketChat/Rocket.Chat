@@ -148,8 +148,16 @@ Template.RocketSearch.events = {
 	'mouseenter .rc-input'(e, t) {
 		t.messageVisible.set(true);
 	  },
+	  'click .rc-input'(e, t) {
+		t.messageVisible.set(false);
+	  },
+
 	  'mouseleave .rc-input'(e, t) {
 		t.messageVisible.set(false);
+	  },
+
+	  'change #modifier'(e, t){
+		t.Clickmodifier.set(e.target.value);
 	  }
 
 };
@@ -184,7 +192,7 @@ Template.RocketSearch.helpers({
 	  },
 	
 	getModifierPatterns() {
-		return ['has:', 'label:', 'is: pin', 'desc:', 'before:', 'after:', 'on:', 'mention:'];
+		return ['has:star, url, link, location, map', 'pin:message', 'label:file title', 'is:pin', 'desc:file comment', 'before: date', 'after: date', 'on:date', 'mention:username'];
 	}
 
 });

@@ -22,13 +22,18 @@
 							</div>
 							<input value="{{text}}" type="text" class="rc-input__element" name="message-search" id="message-search" placeholder="{{_ 'Search_Messages'}}" autocomplete="off" />
 						</div>
-						{{#if showMessage}}
-							<ul id= "modifier">
+						<div>
+							
+							{{#if showMessage}}
+								<ul id= "modifier">
+								<h4>Narrow your search</h4>
 								{{#each getModifierPatterns}}
+
 									<li>{{this}}</li>
 								{{/each}}
-							</ul>
-						{{/if}}
+								</ul>
+							{{/if}}
+						</div>						
 					</label>
 				</div>
 				{{#if suggestions}}
