@@ -33,9 +33,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getParentChannelList.js', 'server');
 	// api.addFiles('server/methods/expertiseList.js', 'server');
 
-	// we have all migrations in one single file
-	// api.addFiles('server/migrations.js', 'server');
-
 	// UI artifacts which are pre-processed or packaged by the server
 	api.addAssets('client/public/icons.svg', 'server');
 
