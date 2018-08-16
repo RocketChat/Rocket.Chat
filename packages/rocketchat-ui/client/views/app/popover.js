@@ -51,7 +51,9 @@ Template.popover.onRendered(function() {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
-		const horizontalDirection = /left/.test(direction) ? 'left' : /right/.test(direction) ? 'right' : isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
+		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;

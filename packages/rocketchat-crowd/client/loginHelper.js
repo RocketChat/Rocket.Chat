@@ -1,12 +1,9 @@
-Meteor.loginWithCrowd = function(username, password, callback) {
-	// Retrieve arguments as array
-	const args = [];
-	for (let i = 0; i < arguments.length; i++) {
-		args.push(arguments[i]);
-	}
+Meteor.loginWithCrowd = function(...args) {
 	// Pull username and password
-	username = args.shift();
-	password = args.shift();
+	const username = args.shift();
+	const password = args.shift();
+	const callback = args.shift();
+
 	const loginRequest = {
 		crowd: true,
 		username,
@@ -15,12 +12,11 @@ Meteor.loginWithCrowd = function(username, password, callback) {
 	Accounts.callLoginMethod({
 		methodArguments: [loginRequest],
 		userCallback(error) {
-			if (error) {
-				if (callback) {
-					callback(error);
+			if (callback) {
+				if (error) {
+					return callback(error);
 				}
-			} else if (callback) {
-				callback();
+				return callback();
 			}
 		},
 	});
