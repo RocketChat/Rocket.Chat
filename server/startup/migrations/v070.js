@@ -10,5 +10,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Settings.remove({ _id });
 			RocketChat.models.Settings.insert(setting);
 		}
-	}
+	},
 });

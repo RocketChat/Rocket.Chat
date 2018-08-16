@@ -39,7 +39,7 @@ export class AppRealStorage extends AppStorage {
 			let doc;
 
 			try {
-				doc = this.db.findOne({ $or: [ {_id: id }, { id } ]});
+				doc = this.db.findOne({ $or: [{ _id: id }, { id }] });
 			} catch (e) {
 				return reject(e);
 			}

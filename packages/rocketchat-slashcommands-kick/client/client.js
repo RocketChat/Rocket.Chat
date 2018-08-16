@@ -6,5 +6,5 @@ RocketChat.slashCommands.add('kick', function(command, params) {
 	return username.replace('@', '');
 }, {
 	description: 'Remove_someone_from_room',
-	params: '@username'
+	params: '@username',
 });

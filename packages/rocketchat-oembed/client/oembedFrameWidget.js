@@ -5,5 +5,5 @@ Template.oembedFrameWidget.helpers({
 		} else {
 			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
-	}
+	},
 });

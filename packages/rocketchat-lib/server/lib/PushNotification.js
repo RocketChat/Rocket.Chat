@@ -37,13 +37,13 @@ class PushNotification {
 			gcm: {
 				style: 'inbox',
 				summaryText: '%n% new messages',
-				image: RocketChat.getURL(icon, { full: true })
-			}
+				image: RocketChat.getURL(icon, { full: true }),
+			},
 		};
 
 		if (category !== '') {
 			config.apn = {
-				category
+				category,
 			};
 		}
 

@@ -110,9 +110,9 @@ class CachedCollection {
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		useCache = true,
-		version = 7,
-		maxCacheTime = 60*60*24*30,
-		onSyncData = (/* action, record */) => {}
+		version = 8,
+		maxCacheTime = 60 * 60 * 24 * 30,
+		onSyncData = (/* action, record */) => {},
 	}) {
 		this.collection = collection || new Mongo.Collection(null);
 
@@ -181,7 +181,7 @@ class CachedCollection {
 			}
 
 			const now = new Date();
-			if (data && now - data.updatedAt >= 1000*this.maxCacheTime) {
+			if (data && now - data.updatedAt >= 1000 * this.maxCacheTime) {
 				this.clearCache();
 				callback(false);
 				return;
@@ -275,7 +275,7 @@ class CachedCollection {
 			});
 
 			for (const record of changes) {
-				RocketChat.callbacks.run(`cachedCollection-sync-${ this.name }`, record, record._deletedAt? 'removed' : 'changed');
+				RocketChat.callbacks.run(`cachedCollection-sync-${ this.name }`, record, record._deletedAt ? 'removed' : 'changed');
 				if (record._deletedAt) {
 					this.collection.remove({ _id: record._id });
 
@@ -315,7 +315,7 @@ class CachedCollection {
 			updatedAt: new Date,
 			version: this.version,
 			token: this.getToken(),
-			records: data
+			records: data,
 		});
 		this.log('saving cache (done)');
 	}
@@ -338,7 +338,7 @@ class CachedCollection {
 			RocketChat.callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
 				this.collection.remove(record._id);
-				RoomManager.close(record.t+record.name);
+				RoomManager.close(record.t + record.name);
 			} else {
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}

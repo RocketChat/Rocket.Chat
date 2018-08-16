@@ -15,10 +15,10 @@ RocketChat.promises = {};
 RocketChat.promises.priority = {
 	HIGH: -1000,
 	MEDIUM: 0,
-	LOW: 1000
+	LOW: 1000,
 };
 
-const getHook = hookName => RocketChat.promises[hookName] || [];
+const getHook = (hookName) => RocketChat.promises[hookName] || [];
 
 /*
 * Add a callback function to a hook
@@ -30,11 +30,11 @@ RocketChat.promises.add = function(hook, callback, p = RocketChat.promises.prior
 	callback.priority = _.isNumber(p) ? p : RocketChat.promises.priority.MEDIUM;
 	callback.id = id || Random.id();
 	RocketChat.promises[hook] = getHook(hook);
-	if (RocketChat.promises[hook].find(cb => cb.id === callback.id)) {
+	if (RocketChat.promises[hook].find((cb) => cb.id === callback.id)) {
 		return;
 	}
 	RocketChat.promises[hook].push(callback);
-	RocketChat.promises[hook] = _.sortBy(RocketChat.promises[hook], callback => callback.priority || RocketChat.promises.priority.MEDIUM);
+	RocketChat.promises[hook] = _.sortBy(RocketChat.promises[hook], (callback) => callback.priority || RocketChat.promises.priority.MEDIUM);
 };
 
 
@@ -45,7 +45,7 @@ RocketChat.promises.add = function(hook, callback, p = RocketChat.promises.prior
 */
 
 RocketChat.promises.remove = function(hook, id) {
-	RocketChat.promises[hook] = getHook(hook).filter(callback => callback.id !== id);
+	RocketChat.promises[hook] = getHook(hook).filter((callback) => callback.id !== id);
 };
 
 
@@ -62,7 +62,7 @@ RocketChat.promises.run = function(hook, item, constant) {
 	if (callbacks == null || callbacks.length === 0) {
 		return Promise.resolve(item);
 	}
-	return callbacks.reduce((previousPromise, callback) => previousPromise.then(result => callback(result, constant)), Promise.resolve(item));
+	return callbacks.reduce((previousPromise, callback) => previousPromise.then((result) => callback(result, constant)), Promise.resolve(item));
 };
 
 
@@ -78,5 +78,5 @@ RocketChat.promises.runAsync = function(hook, item, constant) {
 	if (!Meteor.isServer || callbacks == null || callbacks.length === 0) {
 		return item;
 	}
-	Meteor.defer(() => callbacks.forEach(callback => callback(item, constant)));
+	Meteor.defer(() => callbacks.forEach((callback) => callback(item, constant)));
 };

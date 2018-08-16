@@ -10,7 +10,7 @@ RocketChat.emoji.packages.emojione.render = function(emoji) {
 	return emojione.toImage(emoji);
 };
 
-//http://stackoverflow.com/a/26990347 function isSet() from Gajus
+// http://stackoverflow.com/a/26990347 function isSet() from Gajus
 function isSetNotNull(fn) {
 	let value;
 	try {

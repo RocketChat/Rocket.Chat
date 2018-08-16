@@ -21,14 +21,14 @@ export async function middleware(req, res, next) {
 	// handle app callback
 	if (route) {
 		const config = {
-			provider: route.provider
+			provider: route.provider,
 		};
 		const appConfig = getAppConfig(route.provider, route.app);
 
 		if (appConfig) {
 			const {
 				redirectUrl,
-				errorUrl
+				errorUrl,
 			} = appConfig;
 
 			try {

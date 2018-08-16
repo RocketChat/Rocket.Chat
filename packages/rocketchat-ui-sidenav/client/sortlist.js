@@ -23,11 +23,11 @@ Template.sortlist.helpers({
 	checked,
 	bold(...props) {
 		return checked(...props) ? 'rc-popover__item--bold' : '';
-	}
+	},
 });
 
 Template.sortlist.events({
-	'change input'({currentTarget}) {
+	'change input'({ currentTarget }) {
 		const name = currentTarget.getAttribute('name');
 		let value = currentTarget.getAttribute('type') === 'checkbox' ? currentTarget.checked : currentTarget.value;
 
@@ -36,8 +36,8 @@ Template.sortlist.events({
 			value = !value;
 		}
 		Meteor.call('saveUserPreferences', {
-			[name] : value
+			[name] : value,
 		});
 		popover.close();
-	}
+	},
 });
