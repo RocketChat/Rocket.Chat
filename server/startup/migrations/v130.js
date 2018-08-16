@@ -1,7 +1,7 @@
 import Future from 'fibers/future';
 
 RocketChat.Migrations.add({
-	version: 129,
+	version: 130,
 	up() {
 		RocketChat.models.Rooms._db.originals.update(
 			{

@@ -127,10 +127,11 @@ this.ChatMessages = class ChatMessages {
 					showError(error.reason);
 				}
 
+				Livechat.room = result.rid;
+
 				if (result && result.rid && !visitor.isSubscribed(result.rid)) {
 					Livechat.connecting = result.showConnecting;
 					ChatMessage.update(result._id, _.omit(result, '_id'));
-					Livechat.room = result.rid;
 
 					visitor.setConnected();
 
@@ -155,7 +156,7 @@ this.ChatMessages = class ChatMessages {
 			if (Livechat.guestEmail) {
 				guest.email = Livechat.guestEmail;
 			}
-			
+
 			Meteor.call('livechat:registerGuest', guest, (error, result) => {
 				if (error) {
 					return showError(error.reason);
@@ -163,7 +164,7 @@ this.ChatMessages = class ChatMessages {
 
 				visitor.setId(result.userId);
 				visitor.setData(result.visitor);
-				
+
 				sendMessage();
 			});
 		} else {

@@ -1,4 +1,4 @@
-/*globals OnePassword, device, setLanguage */
+/*globals OnePassword, device */
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -133,7 +133,6 @@ Template.loginForm.events({
 					loginMethod = 'loginWithCrowd';
 				}
 				return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
-					const user = Meteor.user();
 					instance.loading.set(false);
 					if (error != null) {
 						if (error.error === 'no-valid-email') {
@@ -144,10 +143,6 @@ Template.loginForm.events({
 						return;
 					}
 					Session.set('forceLogin', false);
-					if (user && user.language) {
-						localStorage.setItem('userLanguage', user.language);
-						return setLanguage(Meteor.user().language);
-					}
 				});
 			}
 		}
