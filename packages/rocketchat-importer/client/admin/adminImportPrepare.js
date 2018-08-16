@@ -38,7 +38,7 @@ Template.adminImportPrepare.events({
 			files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
 		}
 
-		return Array.from(files).map((file) => {
+		Array.from(files).forEach((file) => {
 			template.preparing.set(true);
 
 			const reader = new FileReader();
@@ -72,7 +72,6 @@ Template.adminImportPrepare.events({
 					template.preparing.set(false);
 				});
 			};
-			return file;
 		});
 	},
 

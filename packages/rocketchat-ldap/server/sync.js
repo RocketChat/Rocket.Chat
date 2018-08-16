@@ -133,8 +133,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 							(currKey === lastKey)
 								? obj[currKey] = tmpLdapField
 								: obj[currKey] = obj[currKey] || {}
-							, userData)
-						);
+						), userData);
 						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
 			}
