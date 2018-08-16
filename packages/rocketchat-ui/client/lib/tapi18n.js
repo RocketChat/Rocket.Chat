@@ -6,7 +6,7 @@ this.t = function(key, ...replaces) {
 	} else {
 		return TAPi18n.__(key, {
 			postProcess: 'sprintf',
-			sprintf: replaces
+			sprintf: replaces,
 		});
 	}
 };
@@ -17,7 +17,7 @@ this.tr = function(key, options, ...replaces) {
 	} else {
 		return TAPi18n.__(key, options, {
 			postProcess: 'sprintf',
-			sprintf: replaces
+			sprintf: replaces,
 		});
 	}
 };

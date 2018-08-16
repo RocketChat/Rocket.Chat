@@ -18,5 +18,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.unarchiveRoom(rid);
-	}
+	},
 });

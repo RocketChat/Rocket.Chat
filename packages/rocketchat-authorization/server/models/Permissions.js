@@ -6,7 +6,7 @@ class ModelPermissions extends RocketChat.models._Base {
 	// FIND
 	findByRole(role, options) {
 		const query = {
-			roles: role
+			roles: role,
 		};
 
 		return this.find(query, options);

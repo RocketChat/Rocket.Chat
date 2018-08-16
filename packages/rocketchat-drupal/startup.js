@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	this.section('Drupal', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Drupal',
-			value: true
+			value: true,
 		};
 
 		this.add('Accounts_OAuth_Drupal', false, { type: 'boolean' });

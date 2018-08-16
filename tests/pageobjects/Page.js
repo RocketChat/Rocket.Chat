@@ -4,7 +4,7 @@ class Page {
 	open(path) {
 		browser.windowHandleSize({
 			width: 1280,
-			height: 800
+			height: 800,
 		});
 
 		browser.url(`http://localhost:3000/${ path }`);

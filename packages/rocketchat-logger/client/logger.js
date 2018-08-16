@@ -33,7 +33,7 @@ const wrapHelpersAndEvents = function(original, prefix, color) {
 							console.log(`%c${ completeName }`, `color: ${ color }`, {
 								args: arguments,
 								scope: this,
-								result
+								result,
 							});
 						}
 					}
@@ -64,7 +64,7 @@ const wrapLifeCycle = function(original, prefix, color) {
 						console.log(`%c${ completeName }`, `color: ${ color }; font-weight: bold`, {
 							args: arguments,
 							scope: this,
-							result
+							result,
 						});
 					}
 				}
