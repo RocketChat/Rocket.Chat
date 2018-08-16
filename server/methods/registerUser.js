@@ -8,8 +8,8 @@ Meteor.methods({
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
 			const userId = Accounts.insertUserDoc({}, {
 				globalRoles: [
-					'anonymous'
-				]
+					'anonymous',
+				],
 			});
 
 			const { id, token } = Accounts._loginUser(this, userId);
@@ -21,7 +21,7 @@ Meteor.methods({
 				pass: String,
 				name: String,
 				secretURL: Match.Optional(String),
-				reason: Match.Optional(String)
+				reason: Match.Optional(String),
 			}));
 		}
 
@@ -39,7 +39,7 @@ Meteor.methods({
 			email: s.trim(formData.email.toLowerCase()),
 			password: formData.pass,
 			name: formData.name,
-			reason: formData.reason
+			reason: formData.reason,
 		};
 
 		// Check if user has already been imported and never logged in. If so, set password and let it through
@@ -75,5 +75,5 @@ Meteor.methods({
 		}
 
 		return userId;
-	}
+	},
 });

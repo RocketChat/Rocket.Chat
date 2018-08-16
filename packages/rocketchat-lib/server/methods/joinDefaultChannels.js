@@ -8,5 +8,5 @@ Meteor.methods({
 
 		this.unblock();
 		return RocketChat.addUserToDefaultChannels(Meteor.user(), silenced);
-	}
+	},
 });

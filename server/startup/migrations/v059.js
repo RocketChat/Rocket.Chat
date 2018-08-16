@@ -7,5 +7,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Settings.update({ createdAt: { $exists: 0 } }, { $set: { createdAt } }, { multi: true });
 			RocketChat.models.Statistics.update({ installedAt: { $exists: 0 } }, { $set: { installedAt: createdAt } }, { multi: true });
 		}
-	}
+	},
 });

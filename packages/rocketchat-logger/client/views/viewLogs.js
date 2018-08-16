@@ -15,8 +15,8 @@ Template.viewLogs.helpers({
 	logs() {
 		return stdout.find({}, {
 			sort: {
-				ts: 1
-			}
+				ts: 1,
+			},
 		});
 	},
 	ansispan(string) {
@@ -26,14 +26,14 @@ Template.viewLogs.helpers({
 	},
 	formatTS(date) {
 		return moment(date).format('YMMDD-HH:mm:ss.SSS(ZZ)');
-	}
+	},
 });
 
 Template.viewLogs.events({
 	'click .new-logs'() {
 		Template.instance().atBottom = true;
 		return Template.instance().sendToBottomIfNecessary();
-	}
+	},
 });
 
 Template.viewLogs.onRendered(function() {
@@ -81,7 +81,7 @@ Template.viewLogs.onRendered(function() {
 			});
 		});
 		observer.observe(wrapperUl, {
-			childList: true
+			childList: true,
 		});
 	}
 	template.onWindowResize = function() {

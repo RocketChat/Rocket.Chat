@@ -33,7 +33,7 @@ const toolbarSearch = {
 		$('.toolbar').css('display', 'block');
 		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
-	}
+	},
 };
 
 this.toolbarSearch = toolbarSearch;
@@ -64,14 +64,14 @@ const getFromServer = (cb, type) => {
 					_id: results.users[i]._id,
 					t: 'd',
 					name: results.users[i].username,
-					fname: results.users[i].name
+					fname: results.users[i].name,
 				});
 			}
 		}
 
 		if (roomsLength) {
 			for (let i = 0; i < roomsLength; i++) {
-				const alreadyOnClient = resultsFromClient.find(item => item._id === results.rooms[i]._id);
+				const alreadyOnClient = resultsFromClient.find((item) => item._id === results.rooms[i]._id);
 				if (alreadyOnClient) {
 					continue;
 				}
@@ -80,7 +80,7 @@ const getFromServer = (cb, type) => {
 					_id: results.rooms[i]._id,
 					t: results.rooms[i].t,
 					name: results.rooms[i].name,
-					lastMessage: results.rooms[i].lastMessage
+					lastMessage: results.rooms[i].lastMessage,
 				});
 			}
 		}
@@ -136,13 +136,13 @@ Template.toolbar.helpers({
 
 				const type = {
 					users: true,
-					rooms: true
+					rooms: true,
 				};
 
 				const query = {
 					rid: {
-						$ne: Session.get('openedRoom')
-					}
+						$ne: Session.get('openedRoom'),
+					},
 				};
 
 				if (!Meteor.userId()) {
@@ -166,13 +166,13 @@ Template.toolbar.helpers({
 				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
 				query.$or = [
 					{ name: searchQuery },
-					{ fname: searchQuery }
+					{ fname: searchQuery },
 				];
 
-				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
+				resultsFromClient = collection.find(query, { limit: 20, sort: { unread: -1, ls: -1 } }).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.users.findOne(Meteor.userId(), {fields: {name: 1, username:1}});
+				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username:1 } });
 				if (user) {
 					usernamesFromClient = [user];
 				}
@@ -192,15 +192,15 @@ Template.toolbar.helpers({
 			},
 
 			getValue(_id, collection, records) {
-				const doc = _.findWhere(records, {_id});
+				const doc = _.findWhere(records, { _id });
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
-			}
+			},
 		};
 
 		return config;
-	}
+	},
 });
 
 Template.toolbar.events({
@@ -241,5 +241,5 @@ Template.toolbar.events({
 		} else {
 			e.preventDefault();
 		}
-	}
+	},
 });

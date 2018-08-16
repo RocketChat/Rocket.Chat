@@ -5,7 +5,7 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings'});
+			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings' });
 		}
 
 		check(rid, String);
@@ -23,7 +23,7 @@ Meteor.methods({
 
 		switch (field) {
 			case 'autoTranslate':
-				RocketChat.models.Subscriptions.updateAutoTranslateById(subscription._id, value === '1' ? true : false);
+				RocketChat.models.Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
 				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
 					RocketChat.models.Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
 				}
@@ -34,5 +34,5 @@ Meteor.methods({
 		}
 
 		return true;
-	}
+	},
 });

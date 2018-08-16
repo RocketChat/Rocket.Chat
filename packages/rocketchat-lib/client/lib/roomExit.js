@@ -1,4 +1,4 @@
-/*globals currentTracker */
+/* globals currentTracker */
 this.roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI
 	if (window.matchMedia('(max-width: 500px)').matches) {
@@ -10,7 +10,7 @@ this.roomExit = function() {
 	}
 	RocketChat.callbacks.run('roomExit');
 	BlazeLayout.render('main', {
-		center: 'none'
+		center: 'none',
 	});
 
 	if (typeof currentTracker !== 'undefined') {
@@ -20,7 +20,7 @@ this.roomExit = function() {
 	if (mainNode == null) {
 		return;
 	}
-	return [...mainNode.children].forEach(child => {
+	return [...mainNode.children].forEach((child) => {
 		if (child == null) {
 			return;
 		}

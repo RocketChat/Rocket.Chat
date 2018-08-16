@@ -4,7 +4,7 @@ RocketChat.API.helperMethods.set('deprecationWarning', function _deprecationWarn
 	if (process.env.NODE_ENV === 'development') {
 		return {
 			warning: warningMessage,
-			...response
+			...response,
 		};
 	}
 

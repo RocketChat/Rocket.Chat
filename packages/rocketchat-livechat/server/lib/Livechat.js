@@ -9,8 +9,8 @@ RocketChat.Livechat = {
 
 	logger: new Logger('Livechat', {
 		sections: {
-			webhook: 'Webhook'
-		}
+			webhook: 'Webhook',
+		},
 	}),
 
 	getNextAgent(department) {
@@ -21,9 +21,9 @@ RocketChat.Livechat = {
 					const result = HTTP.call('GET', `${ RocketChat.settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
 						headers: {
 							'User-Agent': 'RocketChat Server',
-							'Accept': 'application/json',
-							'X-RocketChat-Secret-Token': RocketChat.settings.get('Livechat_External_Queue_Token')
-						}
+							Accept: 'application/json',
+							'X-RocketChat-Secret-Token': RocketChat.settings.get('Livechat_External_Queue_Token'),
+						},
 					});
 
 					if (result && result.data && result.data.username) {
@@ -32,7 +32,7 @@ RocketChat.Livechat = {
 						if (agent) {
 							return {
 								agentId: agent._id,
-								username: agent.username
+								username: agent.username,
 							};
 						}
 					}
@@ -126,8 +126,8 @@ RocketChat.Livechat = {
 		let userId;
 		const updateUser = {
 			$set: {
-				token
-			}
+				token,
+			},
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -146,7 +146,7 @@ RocketChat.Livechat = {
 			} else {
 				const userData = {
 					username,
-					department
+					department,
 				};
 
 				if (this.connection) {
@@ -161,13 +161,13 @@ RocketChat.Livechat = {
 
 		if (phone) {
 			updateUser.$set.phone = [
-				{ phoneNumber: phone.number }
+				{ phoneNumber: phone.number },
 			];
 		}
 
 		if (email && email.trim() !== '') {
 			updateUser.$set.visitorEmails = [
-				{ address: email }
+				{ address: email },
 			];
 		}
 
@@ -184,8 +184,8 @@ RocketChat.Livechat = {
 
 		const updateUser = {
 			$set: {
-				department
-			}
+				department,
+			},
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -220,20 +220,20 @@ RocketChat.Livechat = {
 
 		const closeData = {
 			closedAt: now,
-			chatDuration: (now.getTime() - room.ts) / 1000
+			chatDuration: (now.getTime() - room.ts) / 1000,
 		};
 
 		if (user) {
 			closeData.closer = 'user';
 			closeData.closedBy = {
 				_id: user._id,
-				username: user.username
+				username: user.username,
 			};
 		} else if (visitor) {
 			closeData.closer = 'visitor';
 			closeData.closedBy = {
 				_id: visitor._id,
-				username: visitor.username
+				username: visitor.username,
 			};
 		}
 
@@ -243,7 +243,7 @@ RocketChat.Livechat = {
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
-			groupable: false
+			groupable: false,
 		};
 
 		RocketChat.sendMessage(user, message, room);
@@ -284,7 +284,7 @@ RocketChat.Livechat = {
 			'FileUpload_Enabled',
 			'Livechat_conversation_finished_message',
 			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form'
+			'Livechat_email_field_registration_form',
 
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
@@ -310,7 +310,7 @@ RocketChat.Livechat = {
 	closeOpenChats(userId, comment) {
 		const user = RocketChat.models.Users.findOneById(userId);
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
-			this.closeRoom({ user, room, comment});
+			this.closeRoom({ user, room, comment });
 		});
 	},
 
@@ -331,8 +331,8 @@ RocketChat.Livechat = {
 			const extraData = {
 				navigation: {
 					page: pageInfo,
-					token
-				}
+					token,
+				},
 			};
 
 			if (!roomId) {
@@ -358,7 +358,7 @@ RocketChat.Livechat = {
 			const user = RocketChat.models.Users.findOneById(transferData.userId);
 			agent = {
 				agentId: user._id,
-				username: user.username
+				username: user.username,
 			};
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
@@ -381,12 +381,12 @@ RocketChat.Livechat = {
 				groupMentions: 0,
 				u: {
 					_id: agent.agentId,
-					username: agent.username
+					username: agent.username,
 				},
 				t: 'l',
 				desktopNotifications: 'all',
 				mobilePushNotifications: 'all',
-				emailNotifications: 'all'
+				emailNotifications: 'all',
 			};
 			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
@@ -398,7 +398,7 @@ RocketChat.Livechat = {
 
 			RocketChat.Livechat.stream.emit(room._id, {
 				type: 'agentData',
-				data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+				data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 			});
 
 			return true;
@@ -423,7 +423,7 @@ RocketChat.Livechat = {
 		}
 
 		const agentIds = [];
-		//get the agents of the department
+		// get the agents of the department
 		if (departmentId) {
 			let agents = RocketChat.Livechat.getOnlineAgents(departmentId);
 
@@ -440,14 +440,14 @@ RocketChat.Livechat = {
 			});
 		}
 
-		//delete agent and room subscription
+		// delete agent and room subscription
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
 		// remove user from room
 		RocketChat.models.Rooms.removeUsernameById(rid, user.username);
 
 		// find inquiry corresponding to room
-		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
+		const inquiry = RocketChat.models.LivechatInquiry.findOne({ rid });
 		if (!inquiry) {
 			return false;
 		}
@@ -465,7 +465,7 @@ RocketChat.Livechat = {
 
 			RocketChat.Livechat.stream.emit(room._id, {
 				type: 'agentData',
-				data: null
+				data: null,
 			});
 		}
 
@@ -476,9 +476,9 @@ RocketChat.Livechat = {
 		try {
 			const options = {
 				headers: {
-					'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token')
+					'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token'),
 				},
-				data: postData
+				data: postData,
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
@@ -520,8 +520,8 @@ RocketChat.Livechat = {
 				ip: visitor.ip,
 				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
 				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
-				customFields: visitor.livechatData
-			}
+				customFields: visitor.livechatData,
+			},
 		};
 
 		if (agent) {
@@ -529,7 +529,7 @@ RocketChat.Livechat = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
-				email: null
+				email: null,
 			};
 
 			if (agent.emails && agent.emails.length > 0) {
@@ -622,14 +622,14 @@ RocketChat.Livechat = {
 			enabled: Boolean,
 			name: String,
 			description: Match.Optional(String),
-			showOnRegistration: Boolean
+			showOnRegistration: Boolean,
 		});
 
 		check(departmentAgents, [
 			Match.ObjectIncluding({
 				agentId: String,
-				username: String
-			})
+				username: String,
+			}),
 		]);
 
 		if (_id) {
@@ -660,7 +660,7 @@ RocketChat.Livechat = {
 		} else {
 			return false;
 		}
-	}
+	},
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');

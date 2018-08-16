@@ -13,5 +13,5 @@ Meteor.methods({
 		} else {
 			return RocketChat.models.Statistics.findLast();
 		}
-	}
+	},
 });
