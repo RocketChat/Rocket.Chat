@@ -73,7 +73,7 @@ Template.flexTabBar.helpers({
 		});
 	},
 
-	embeddVersion() {
+	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
 	}
 });
