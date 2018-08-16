@@ -86,12 +86,12 @@ class RFC2813 {
 
 		this.write({
 			command: 'PASS',
-			parameters: [ this.config.passwords.local, '0210', 'ngircd' ]
+			parameters: [this.config.passwords.local, '0210', 'ngircd'],
 		});
 
 		this.write({
-			command: 'SERVER', parameters: [ this.config.server.name ],
-			trailer: this.config.server.description
+			command: 'SERVER', parameters: [this.config.server.name],
+			trailer: this.config.server.description,
 		});
 	}
 

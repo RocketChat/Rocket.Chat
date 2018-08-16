@@ -6,7 +6,7 @@ export function shouldNotifyAudio({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType
+	roomType,
 }) {
 	if (disableAllMessageNotifications && audioNotifications == null) {
 		return false;
@@ -31,7 +31,7 @@ export function notifyAudioUser(userId, message, room) {
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
-		}
+			name: room.name,
+		},
 	});
 }

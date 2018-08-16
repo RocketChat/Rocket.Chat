@@ -12,7 +12,7 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 // Revert change from Meteor 1.6.1 who set ignoreUndefined: true
 // more information https://github.com/meteor/meteor/pull/9444
 let mongoOptions = {
-	ignoreUndefined: false
+	ignoreUndefined: false,
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
@@ -116,10 +116,10 @@ WebApp.httpServer.addListener('request', function(req, res) {
 	}
 
 	if (!isLocal && !isSsl) {
-		let host = req.headers['host'] || url.parse(Meteor.absoluteUrl()).hostname;
+		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname;
 		host = host.replace(/:\d+$/, '');
 		res.writeHead(302, {
-			'Location': `https://${ host }${ req.url }`
+			Location: `https://${ host }${ req.url }`,
 		});
 		res.end();
 		return;

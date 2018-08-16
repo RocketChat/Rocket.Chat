@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	this.section('GitHub Enterprise', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_GitHub_Enterprise',
-			value: true
+			value: true,
 		};
 
 		this.add('Accounts_OAuth_GitHub_Enterprise', false, { type: 'boolean' });

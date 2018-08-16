@@ -16,7 +16,7 @@ export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 		},
 		removed(_id) {
 			return pub.removed('room_files', _id);
-		}
+		},
 	});
 
 	pub.ready();

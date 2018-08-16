@@ -1,7 +1,7 @@
 RocketChat.saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
-			'function': 'RocketChat.saveRoomTopic'
+			function: 'RocketChat.saveRoomTopic',
 		});
 	}
 

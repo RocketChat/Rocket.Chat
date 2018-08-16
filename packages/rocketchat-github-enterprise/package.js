@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:github-enterprise',
 	version: '0.0.1',
-	summary: 'RocketChat settings for GitHub Enterprise Oauth Flow'
+	summary: 'RocketChat settings for GitHub Enterprise Oauth Flow',
 });
 
 Package.onUse(function(api) {

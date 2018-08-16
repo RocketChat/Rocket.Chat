@@ -6,13 +6,13 @@ function testWebAppInternals(fn) {
 }
 RocketChat.settings.onload('CDN_PREFIX', function(key, value) {
 	if (_.isString(value) && value.trim()) {
-		return testWebAppInternals(WebAppInternals => WebAppInternals.setBundledJsCssPrefix(value));
+		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });
 
 Meteor.startup(function() {
 	const value = RocketChat.settings.get('CDN_PREFIX');
 	if (_.isString(value) && value.trim()) {
-		return testWebAppInternals(WebAppInternals => WebAppInternals.setBundledJsCssPrefix(value));
+		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });

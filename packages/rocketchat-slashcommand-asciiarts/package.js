@@ -2,12 +2,12 @@ Package.describe({
 	name: 'rocketchat:slashcommands-asciiarts',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will add ascii arts to messages',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('ecmascript');

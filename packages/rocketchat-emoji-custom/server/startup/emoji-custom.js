@@ -25,12 +25,12 @@ Meteor.startup(function() {
 
 	this.RocketChatFileEmojiCustomInstance = new RocketChatStore({
 		name: 'custom_emoji',
-		absolutePath: path
+		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params =
-			{emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))};
+			{ emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.emoji)) {
 			res.writeHead(403);
@@ -44,7 +44,7 @@ Meteor.startup(function() {
 		res.setHeader('Content-Disposition', 'inline');
 
 		if (file == null) {
-			//use code from username initials renderer until file upload is complete
+			// use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');
 			res.setHeader('Expires', '-1');

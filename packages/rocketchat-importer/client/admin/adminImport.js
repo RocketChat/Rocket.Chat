@@ -9,7 +9,7 @@ Template.adminImport.helpers({
 	},
 	importers() {
 		return Importers.getAll();
-	}
+	},
 });
 
 Template.adminImport.events({
@@ -25,5 +25,5 @@ Template.adminImport.events({
 
 			FlowRouter.go(`/admin/import/prepare/${ importer.key }`);
 		});
-	}
+	},
 });

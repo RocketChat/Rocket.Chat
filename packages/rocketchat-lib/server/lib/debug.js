@@ -4,12 +4,12 @@ import _ from 'underscore';
 const logger = new Logger('Meteor', {
 	methods: {
 		method: {
-			type: 'debug'
+			type: 'debug',
 		},
 		publish: {
-			type: 'debug'
-		}
-	}
+			type: 'debug',
+		},
+	},
 });
 
 let Log_Trace_Methods;
@@ -36,7 +36,7 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 			id: connection.id,
 			clientAddress: connection.clientAddress,
 			httpHeaders: connection.httpHeaders,
-			userId
+			userId,
 		});
 	} else {
 		console.log(name, 'no-connection');
@@ -49,7 +49,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 		const end = RocketChat.metrics.meteorMethods.startTimer({
 			method: name,
 			has_connection: this.connection != null,
-			has_user: this.userId != null
+			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(arguments, 1) : arguments;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
@@ -76,7 +76,7 @@ Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function() {
 		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
 		logger.publish(name, '-> userId:', this.userId, ', arguments: ', arguments);
-		const end = RocketChat.metrics.meteorSubscriptions.startTimer({subscription: name});
+		const end = RocketChat.metrics.meteorSubscriptions.startTimer({ subscription: name });
 
 		const originalReady = this.ready;
 		this.ready = function() {
