@@ -50,6 +50,38 @@ RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('rooms.fullInfo', { authRequired: true }, {
+	get() {
+		const { updatedSince } = this.queryParams;
+		const mountRoomWithSubscription = (rooms, subscriptions) => rooms.map((room) => ({
+			room,
+			subscription: subscriptions.find((sub) => sub.rid === room._id) || {},
+		}));
+
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+		}
+		const rooms = Meteor.runAsUser(this.userId, () => Meteor.call('rooms/get', updatedSinceDate));
+		const subscriptions = Meteor.runAsUser(this.userId, () => Meteor.call('subscriptions/get', updatedSinceDate));
+
+		if (updatedSince) {
+			return RocketChat.API.v1.success({
+				update: mountRoomWithSubscription(rooms.update, subscriptions.update),
+				remove: mountRoomWithSubscription(rooms.remove, subscriptions.remove),
+			});
+		}
+		return RocketChat.API.v1.success({
+			update: mountRoomWithSubscription(rooms, subscriptions),
+			remove: [],
+		});
+	},
+});
+
 RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
@@ -177,7 +209,16 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanRoomHistory', { roomId: findResult._id, latest, oldest, inclusive, limit: this.bodyParams.limit, excludePinned: this.bodyParams.excludePinned, filesOnly: this.bodyParams.filesOnly, fromUsers: this.bodyParams.users });
+			Meteor.call('cleanRoomHistory', {
+				roomId: findResult._id,
+				latest,
+				oldest,
+				inclusive,
+				limit: this.bodyParams.limit,
+				excludePinned: this.bodyParams.excludePinned,
+				filesOnly: this.bodyParams.filesOnly,
+				fromUsers: this.bodyParams.users
+			});
 		});
 
 		return RocketChat.API.v1.success();
