@@ -114,7 +114,7 @@ RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId = function(visitor
 	const query = {
 		open: true,
 		'v.token': visitorToken,
-		departmentId
+		departmentId,
 	};
 
 	return this.find(query, options);
@@ -208,12 +208,12 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 
 RocketChat.models.Rooms.changeDepartmentIdByRoomId = function(roomId, departmentId) {
 	const query = {
-		_id: roomId
+		_id: roomId,
 	};
 	const update = {
 		$set: {
-			departmentId
-		}
+			departmentId,
+		},
 	};
 
 	this.update(query, update);
@@ -249,12 +249,12 @@ RocketChat.models.Rooms.updateVisitorStatus = function(token, status) {
 
 RocketChat.models.Rooms.removeAgentByRoomId = function(roomId) {
 	const query = {
-		_id: roomId
+		_id: roomId,
 	};
 	const update = {
 		$unset: {
-			servedBy: 1
-		}
+			servedBy: 1,
+		},
 	};
 
 	this.update(query, update);

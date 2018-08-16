@@ -36,8 +36,8 @@ Meteor.methods({
 				usernames: 1,
 				v: 1,
 				servedBy: 1,
-				departmentId: 1
-			}
+				departmentId: 1,
+			},
 		};
 		const room = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
@@ -50,7 +50,7 @@ Meteor.methods({
 				username: 1,
 				visitorEmails: 1,
 				department: 1,
-			}
+			},
 		});
 
 		if (room) {
