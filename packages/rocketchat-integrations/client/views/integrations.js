@@ -13,5 +13,5 @@ Template.integrations.helpers({
 	},
 	eventTypeI18n(event) {
 		return TAPi18n.__(RocketChat.integrations.outgoingEvents[event].label);
-	}
+	},
 });

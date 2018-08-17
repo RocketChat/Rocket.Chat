@@ -1,6 +1,6 @@
 RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1 }
+		fields: { username: 1, avatarOrigin: 1 },
 	});
 
 	// Users without username can't do anything, so there is nothing to remove

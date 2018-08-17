@@ -9,7 +9,7 @@ Meteor.methods({
 
 		check(agent, Match.Maybe({
 			agentId: String,
-			username: String
+			username: String,
 		}));
 
 		const guest = LivechatVisitors.getVisitorByToken(token, {
@@ -17,8 +17,8 @@ Meteor.methods({
 				name: 1,
 				username: 1,
 				department: 1,
-				token: 1
-			}
+				token: 1,
+			},
 		});
 
 		if (!guest) {
@@ -32,9 +32,9 @@ Meteor.methods({
 				rid,
 				msg,
 				token,
-				attachments
+				attachments,
 			},
-			agent
+			agent,
 		});
-	}
+	},
 });

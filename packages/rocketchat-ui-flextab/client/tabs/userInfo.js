@@ -3,10 +3,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import {getActions} from './userActions';
+import { getActions } from './userActions';
 
 const more = function() {
-	return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(2);
+	return Template.instance().actions.get()
+		.map((action) => (typeof action === 'function' ? action.call(this) : action))
+		.filter((action) => action && (!action.condition || action.condition.call(this)))
+		.slice(2);
 };
 
 
@@ -17,7 +20,10 @@ Template.userInfo.helpers({
 	moreActions: more,
 
 	actions() {
-		return Template.instance().actions.get().map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this))).slice(0, 2);
+		return Template.instance().actions.get()
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)))
+			.slice(0, 2);
 	},
 	customField() {
 		const sCustomFieldsToShow = RocketChat.settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
@@ -25,7 +31,7 @@ Template.userInfo.helpers({
 
 		if (sCustomFieldsToShow) {
 			const user = Template.instance().user.get();
-			const userCustomFields = user && user.customFields || {};
+			const userCustomFields = (user && user.customFields) || {};
 			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
 
 			_.map(listOfCustomFieldsToShow, (el) => {
@@ -34,7 +40,7 @@ Template.userInfo.helpers({
 					_.map(el, (key, label) => {
 						const value = RocketChat.templateVarHandler(key, userCustomFields);
 						if (value) {
-							content = {label, value};
+							content = { label, value };
 						}
 					});
 				} else {
@@ -146,7 +152,7 @@ Template.userInfo.helpers({
 						return instance.loadedUsername.set(username);
 					}
 				}
-			}
+			},
 		};
 	},
 
@@ -156,7 +162,7 @@ Template.userInfo.helpers({
 			return;
 		}
 		const userRoles = UserRoles.findOne(user._id) || {};
-		const roomRoles = RoomRoles.findOne({'u._id': user._id, rid: Session.get('openedRoom') }) || {};
+		const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
 	},
@@ -164,7 +170,7 @@ Template.userInfo.helpers({
 	shouldDisplayReason() {
 		const user = Template.instance().user.get();
 		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
-	}
+	},
 });
 
 Template.userInfo.events({
@@ -172,20 +178,20 @@ Template.userInfo.events({
 		const actions = more.call(this);
 		const groups = [];
 		const columns = [];
-		const admin = actions.filter(actions => actions.group === 'admin');
-		const others = actions.filter(action => !action.group);
-		const channel = actions.filter(actions => actions.group === 'channel');
+		const admin = actions.filter((actions) => actions.group === 'admin');
+		const others = actions.filter((action) => !action.group);
+		const channel = actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
-			groups.push({items:others});
+			groups.push({ items:others });
 		}
 		if (channel.length) {
-			groups.push({items:channel});
+			groups.push({ items:channel });
 		}
 
 		if (admin.length) {
-			groups.push({items:admin});
+			groups.push({ items:admin });
 		}
-		columns[0] = {groups};
+		columns[0] = { groups };
 
 		$(e.currentTarget).blur();
 		e.preventDefault();
@@ -194,22 +200,22 @@ Template.userInfo.events({
 			data: {
 				rid: this._id,
 				username: instance.data.username,
-				instance
+				instance,
 			},
 			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10
+			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		popover.open(config);
 	},
 	'click .js-action'(e) {
-		return this.action && this.action.apply(this, [e, {instance : Template.instance()}]);
+		return this.action && this.action.apply(this, [e, { instance : Template.instance() }]);
 	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
 	},
 	'click .js-back'(e, instance) {
 		return instance.clear();
-	}
+	},
 });
 
 Template.userInfo.onCreated(function() {
@@ -227,7 +233,7 @@ Template.userInfo.onCreated(function() {
 		const actions = getActions({
 			user,
 			hideAdminControls: this.data.hideAdminControls,
-			directActions: this.data.showAll
+			directActions: this.data.showAll,
 		});
 		this.actions.set(actions);
 	});
@@ -248,9 +254,7 @@ Template.userInfo.onCreated(function() {
 
 		this.loadingUserInfo.set(true);
 
-		return this.subscribe('fullUserData', username, 1, () => {
-			return this.loadingUserInfo.set(false);
-		});
+		return this.subscribe('fullUserData', username, 1, () => this.loadingUserInfo.set(false));
 	});
 
 	this.autorun(() => {

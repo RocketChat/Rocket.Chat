@@ -22,9 +22,9 @@ Meteor.methods({
 		}
 
 		return email;
-	}
+	},
 });
 
 RocketChat.RateLimiter.limitMethod('setEmail', 1, 1000, {
-	userId(/*userId*/) { return true; }
+	userId(/* userId*/) { return true; },
 });

@@ -17,12 +17,12 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 		if (Array.isArray(result)) {
 			result = {
 				update: result,
-				remove: []
+				remove: [],
 			};
 		}
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
@@ -36,9 +36,9 @@ RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
 		return RocketChat.API.v1.success({
-			subscription
+			subscription,
 		});
-	}
+	},
 });
 
 /**
@@ -52,7 +52,7 @@ RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
-			rid: String
+			rid: String,
 		});
 
 		Meteor.runAsUser(this.userId, () =>
@@ -60,7 +60,7 @@ RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		);
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
@@ -75,7 +75,7 @@ RocketChat.API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
 		);
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 
