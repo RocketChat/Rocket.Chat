@@ -9,12 +9,12 @@ RocketChat.Migrations.add({
 		 */
 
 		const admins = Meteor.users.find({
-			admin: true
+			admin: true,
 		}, {
 			fields: {
 				_id: 1,
-				username: 1
-			}
+				username: 1,
+			},
 		}).fetch();
 
 		admins.forEach((admin) => {
@@ -23,10 +23,10 @@ RocketChat.Migrations.add({
 
 		Meteor.users.update({}, {
 			$unset: {
-				admin: ''
-			}
+				admin: '',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		let usernames = _.pluck(admins, 'username').join(', ');
@@ -49,7 +49,7 @@ RocketChat.Migrations.add({
 
 			if (creator) {
 				if (Meteor.users.findOne({
-					_id: creator
+					_id: creator,
 				})) {
 					return RocketChat.authz.addUserRoles(creator, ['moderator'], room._id);
 				} else {
@@ -59,5 +59,5 @@ RocketChat.Migrations.add({
 				}
 			}
 		});
-	}
+	},
 });

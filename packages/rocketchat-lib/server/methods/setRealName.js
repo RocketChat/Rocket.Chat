@@ -16,9 +16,9 @@ Meteor.methods({
 		}
 
 		return name;
-	}
+	},
 });
 
 RocketChat.RateLimiter.limitMethod('setRealName', 1, 1000, {
-	userId: () => true
+	userId: () => true,
 });

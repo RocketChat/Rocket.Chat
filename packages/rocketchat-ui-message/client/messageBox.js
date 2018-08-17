@@ -24,7 +24,7 @@ function applyMd(e, t) {
 
 	e.preventDefault();
 	const box = t.find('.js-input-message');
-	const {selectionEnd = box.value.length, selectionStart = 0} = box;
+	const { selectionEnd = box.value.length, selectionStart = 0 } = box;
 	const initText = box.value.slice(0, selectionStart);
 	const selectedText = box.value.slice(selectionStart, selectionEnd);
 	const finalText = box.value.slice(selectionEnd, box.value.length);
@@ -40,15 +40,11 @@ function applyMd(e, t) {
 
 	// removes markdown if selected text in inside the same clicked markdown
 	const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => {
-		return box.value.substr(selectionStart - index - 1, 1) === char;
-	});
+	const startPatternFound = [...startPattern].reverse().every((char, index) => box.value.substr(selectionStart - index - 1, 1) === char);
 
 	if (startPatternFound) {
 		const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => {
-			return box.value.substr(selectionEnd + index, 1) === char;
-		});
+		const endPatternFound = [...endPattern].every((char, index) => box.value.substr(selectionEnd + index, 1) === char);
 
 		if (endPatternFound) {
 			box.selectionStart = selectionStart - startPattern.length;
@@ -86,65 +82,65 @@ const markdownButtons = [
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '**{{text}}**',
 		command: 'b',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~~{{text}}~~',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'multi_line',
 		icon: 'multi-line',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled'
+		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: katexSyntax,
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => RocketChat.katex.katex_enabled()
-	}
+		condition: () => RocketChat.katex.katex_enabled(),
+	},
 ];
 
 const methods = {
 	actions() {
 		const groups = RocketChat.messageBox.actions.get();
 		return Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []);
-	}
+	},
 };
 
 Template.messageBox__actions.helpers(methods);
 Template.messageBox__actionsSmall.helpers(methods);
 Template.messageBox.helpers({
 	mdButtons() {
-		return markdownButtons.filter(button => !button.condition || button.condition());
+		return markdownButtons.filter((button) => !button.condition || button.condition());
 	},
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
@@ -153,11 +149,11 @@ Template.messageBox.helpers({
 		}
 		if (roomData.t === 'd') {
 			const chat = ChatSubscription.findOne({
-				rid: this._id
+				rid: this._id,
 			}, {
 				fields: {
-					name: 1
-				}
+					name: 1,
+				},
 			});
 			return chat && chat.name;
 		} else {
@@ -187,13 +183,13 @@ Template.messageBox.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (roomData && roomData.t === 'd') {
 			const subscription = ChatSubscription.findOne({
-				rid: this._id
+				rid: this._id,
 			}, {
 				fields: {
 					archived: 1,
 					blocked: 1,
-					blocker: 1
-				}
+					blocker: 1,
+				},
 			});
 			if (subscription && (subscription.archived || subscription.blocked || subscription.blocker)) {
 				return false;
@@ -205,12 +201,12 @@ Template.messageBox.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (roomData && roomData.t === 'd') {
 			const subscription = ChatSubscription.findOne({
-				rid: this._id
+				rid: this._id,
 			}, {
 				fields: {
 					blocked: 1,
-					blocker: 1
-				}
+					blocker: 1,
+				},
 			});
 			if (subscription && (subscription.blocked || subscription.blocker)) {
 				return true;
@@ -222,7 +218,7 @@ Template.messageBox.helpers({
 		return {
 			getInput() {
 				return template.find('.js-input-message');
-			}
+			},
 		};
 	},
 	/* globals MsgTyping*/
@@ -235,7 +231,7 @@ Template.messageBox.helpers({
 			return {
 				multi: false,
 				selfTyping: MsgTyping.selfTyping.get(),
-				users: users[0]
+				users: users[0],
 			};
 		}
 		let last = users.pop();
@@ -247,7 +243,7 @@ Template.messageBox.helpers({
 		return {
 			multi: true,
 			selfTyping: MsgTyping.selfTyping.get(),
-			users: usernames.join(` ${ t('and') } `)
+			users: usernames.join(` ${ t('and') } `),
 		};
 	},
 	groupAttachHidden() {
@@ -283,7 +279,7 @@ Template.messageBox.helpers({
 			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
 			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
 			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
-	}
+	},
 });
 
 function firefoxPasteUpload(fn) {
@@ -291,10 +287,10 @@ function firefoxPasteUpload(fn) {
 	if (!user || user[1] > 49) {
 		return fn;
 	}
-	return function(event, instance) {
+	return function(event, instance, ...args) {
 		if ((event.originalEvent.ctrlKey || event.originalEvent.metaKey) && (event.keyCode === 86)) {
 			const textarea = instance.find('textarea');
-			const {selectionStart, selectionEnd} = textarea;
+			const { selectionStart, selectionEnd } = textarea;
 			const contentEditableDiv = instance.find('#msg_contenteditable');
 			contentEditableDiv.focus();
 			Meteor.setTimeout(function() {
@@ -325,21 +321,21 @@ function firefoxPasteUpload(fn) {
 						return fileUpload([
 							{
 								file: blob,
-								name: 'Clipboard'
-							}
+								name: 'Clipboard',
+							},
 						]);
 					});
 				}
 			}, 150);
 		}
-		return fn && fn.apply(this, arguments);
+		return fn && fn.apply(this, [event, instance, ...args]);
 	};
 }
 
 Template.messageBox.events({
 	'click .js-message-actions .rc-popover__item, click .js-message-actions .js-message-action'(event, instance) {
 		const action = this.action || Template.parentData().action;
-		action.apply(this, [{rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: event.currentTarget, event}]);
+		action.apply(this, [{ rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: event.currentTarget, event }]);
 	},
 	'click .join'(event) {
 		event.stopPropagation();
@@ -373,7 +369,9 @@ Template.messageBox.events({
 	},
 	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		chatMessages[this._id].input = instance.find('.js-input-message');
+		if (chatMessages[this._id]) {
+			chatMessages[this._id].input = instance.find('.js-input-message');
+		}
 	},
 	'click .js-send'(event, instance) {
 		const input = instance.find('.js-input-message');
@@ -405,15 +403,15 @@ Template.messageBox.events({
 			return;
 		}
 		const items = [...e.originalEvent.clipboardData.items];
-		const files = items.map(item => {
-			if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+		const files = items
+			.filter((item) => (item.kind === 'file' && item.type.indexOf('image/') !== -1))
+			.map((item) => {
 				e.preventDefault();
 				return {
 					file: item.getAsFile(),
-					name: `Clipboard - ${ moment().format(RocketChat.settings.get('Message_TimeAndDateFormat')) }`
+					name: `Clipboard - ${ moment().format(RocketChat.settings.get('Message_TimeAndDateFormat')) }`,
 				};
-			}
-		}).filter(e => e);
+			});
 		if (files.length) {
 			return fileUpload(files);
 		} else {
@@ -422,7 +420,7 @@ Template.messageBox.events({
 	},
 	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
 		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
-			const action = markdownButtons.find(action => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
+			const action = markdownButtons.find((action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
 			if (action) {
 				applyMd.apply(action, [event, t]);
 			}
@@ -453,30 +451,30 @@ Template.messageBox.events({
 			popoverClass: 'message-box',
 			columns: [
 				{
-					groups: Object.keys(groups).map(group => {
+					groups: Object.keys(groups).map((group) => {
 						const items = [];
-						groups[group].forEach(item => {
+						groups[group].forEach((item) => {
 							items.push({
 								icon: item.icon,
 								name: t(item.label),
 								type: 'messagebox-action',
-								id: item.id
+								id: item.id,
 							});
 						});
 						return {
 							title: t(group),
-							items
+							items,
 						};
-					})
-				}
+					}),
+				},
 			],
 			offsetVertical: 10,
 			direction: 'top-inverted',
 			currentTarget: e.currentTarget.firstElementChild.firstElementChild,
 			data: {
-				rid: this._id
+				rid: this._id,
 			},
-			activeElement: e.currentTarget
+			activeElement: e.currentTarget,
 		};
 
 		popover.open(config);
@@ -491,9 +489,9 @@ Template.messageBox.events({
 		AudioRecorder.start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
-			audioMessageIntervalId = setInterval(()=> {
+			audioMessageIntervalId = setInterval(() => {
 				const now = new Date;
-				const distance = now-startTime;
+				const distance = now - startTime;
 				let minutes = Math.floor(distance / (1000 * 60));
 				let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 				if (minutes < 10) { minutes = `0${ minutes }`; }
@@ -502,7 +500,7 @@ Template.messageBox.events({
 			}, 1000);
 
 			mic.classList.remove('active');
-			recording_icons.forEach((e)=>{ e.classList.add('active'); });
+			recording_icons.forEach((e) => { e.classList.add('active'); });
 		});
 	},
 	'click .js-audio-message-cross'(event) {
@@ -511,7 +509,7 @@ Template.messageBox.events({
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
+		recording_icons.forEach((e) => { e.classList.remove('active'); });
 		mic.classList.add('active');
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
@@ -528,7 +526,7 @@ Template.messageBox.events({
 		const loader = document.querySelector('.js-audio-message-loading');
 		const recording_icons = document.querySelectorAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
 
-		recording_icons.forEach((e)=>{ e.classList.remove('active'); });
+		recording_icons.forEach((e) => { e.classList.remove('active'); });
 		loader.classList.add('active');
 		timer.innerHTML = '00:00';
 		if (audioMessageIntervalId) {
@@ -546,20 +544,20 @@ Template.messageBox.events({
 				size: blob.size,
 				type: 'audio/mp3',
 				rid: roomId,
-				description: ''
+				description: '',
 			};
 			const upload = fileUploadHandler('Uploads', record, blob);
 			let uploading = Session.get('uploading') || [];
 			uploading.push({
 				id: upload.id,
 				name: upload.getFileName(),
-				percentage: 0
+				percentage: 0,
 			});
 			Session.set('uploading', uploading);
 			upload.onProgress = function(progress) {
 				uploading = Session.get('uploading');
 
-				const item = _.findWhere(uploading, {id: upload.id});
+				const item = _.findWhere(uploading, { id: upload.id });
 				if (item != null) {
 					item.percentage = Math.round(progress * 100) || 0;
 					return Session.set('uploading', uploading);
@@ -581,7 +579,7 @@ Template.messageBox.events({
 					} else {
 						uploading.push({
 							error: error.error,
-							percentage: 0
+							percentage: 0,
 						});
 					}
 
@@ -596,7 +594,7 @@ Template.messageBox.events({
 							const uploading = Session.get('uploading');
 							if (uploading !== null) {
 								const item = _.findWhere(uploading, {
-									id: upload.id
+									id: upload.id,
 								});
 								return Session.set('uploading', _.without(uploading, item));
 							}
@@ -614,7 +612,7 @@ Template.messageBox.events({
 
 					uploading = Session.get('uploading');
 					if (uploading != null) {
-						item = _.findWhere(uploading, {id: upload.id});
+						item = _.findWhere(uploading, { id: upload.id });
 						if (item != null) {
 							item.percentage = 0;
 						}
@@ -624,7 +622,7 @@ Template.messageBox.events({
 					return Meteor.setTimeout(function() {
 						uploading = Session.get('uploading');
 						if (uploading != null) {
-							item = _.findWhere(uploading, {id: upload.id});
+							item = _.findWhere(uploading, { id: upload.id });
 							return Session.set('uploading', _.without(uploading, item));
 						}
 					}, 1000);
@@ -632,11 +630,11 @@ Template.messageBox.events({
 			});
 		});
 		return false;
-	}
+	},
 });
 
 Template.messageBox.onRendered(function() {
-	const input = this.find('.js-input-message'); //mssg box
+	const input = this.find('.js-input-message'); // mssg box
 	const self = this;
 	$(input).on('dataChange', () => {
 		const reply = $(input).data('reply');
@@ -645,14 +643,14 @@ Template.messageBox.onRendered(function() {
 	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
 	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
-		onInitialize: true
+		onInitialize: true,
 	}).on('autogrow', () => {
 		this.data && this.data.onResize && this.data.onResize();
 	}).focus()[0];
 });
 
 Template.messageBox.onCreated(function() {
-	this.dataReply = new ReactiveVar(''); //if user is replying to a mssg, this will contain data of the mssg being replied to
+	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
 });
@@ -662,9 +660,7 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		const MapView_GMapsAPIKey = RocketChat.settings.get('MapView_GMapsAPIKey');
 		if (RocketChat.settings.get('MapView_Enabled') === true && MapView_GMapsAPIKey && MapView_GMapsAPIKey.length && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
-			const success = (position) => {
-				return RocketChat.Geolocation.set(position);
-			};
+			const success = (position) => RocketChat.Geolocation.set(position);
 			const error = (error) => {
 				console.log('Error getting your geolocation', error);
 				return RocketChat.Geolocation.set(false);
@@ -672,7 +668,7 @@ Meteor.startup(function() {
 			const options = {
 				enableHighAccuracy: true,
 				maximumAge: 0,
-				timeout: 10000
+				timeout: 10000,
 			};
 			return navigator.geolocation.watchPosition(success, error, options);
 		} else {
@@ -680,7 +676,7 @@ Meteor.startup(function() {
 		}
 	});
 	RocketChat.callbacks.add('enter-room', function() {
-		setTimeout(()=> {
+		setTimeout(() => {
 			if (chatMessages[RocketChat.openedRoom].input) {
 				chatMessages[RocketChat.openedRoom].input.focus();
 				chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);

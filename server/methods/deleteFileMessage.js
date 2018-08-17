@@ -10,5 +10,5 @@ Meteor.methods({
 		}
 
 		return FileUpload.getStore('Uploads').deleteById(fileID);
-	}
+	},
 });

@@ -11,5 +11,5 @@ import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib
 export {
 	RoomSettingsEnum,
 	RoomTypeConfig,
-	RoomTypeRouteConfig
+	RoomTypeRouteConfig,
 };

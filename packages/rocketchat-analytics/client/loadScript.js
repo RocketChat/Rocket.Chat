@@ -44,7 +44,7 @@ Template.body.onRendered(() => {
 							const addTrackers = JSON.parse(piwikAdditionalTracker);
 							for (let i = 0; i < addTrackers.length; i++) {
 								const tracker = addTrackers[i];
-								window._paq.push(['addTracker', `${ tracker['trackerURL'] }js/`, tracker['siteId']]);
+								window._paq.push(['addTracker', `${ tracker.trackerURL }js/`, tracker.siteId]);
 							}
 						}
 					} catch (e) {
@@ -73,7 +73,7 @@ Template.body.onRendered(() => {
 
 			  ga('create', googleId, 'auto');
 			  ga('send', 'pageview');
-				/*eslint-enable */
+				/* eslint-enable */
 			}
 		}
 	});

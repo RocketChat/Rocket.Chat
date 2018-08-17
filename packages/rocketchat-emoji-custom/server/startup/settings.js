@@ -3,20 +3,20 @@ RocketChat.settings.addGroup('EmojiCustomFilesystem', function() {
 		type: 'select',
 		values: [{
 			key: 'GridFS',
-			i18nLabel: 'GridFS'
+			i18nLabel: 'GridFS',
 		}, {
 			key: 'FileSystem',
-			i18nLabel: 'FileSystem'
+			i18nLabel: 'FileSystem',
 		}],
-		i18nLabel: 'FileUpload_Storage_Type'
+		i18nLabel: 'FileUpload_Storage_Type',
 	});
 
 	this.add('EmojiUpload_FileSystemPath', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'EmojiUpload_Storage_Type',
-			value: 'FileSystem'
+			value: 'FileSystem',
 		},
-		i18nLabel: 'FileUpload_FileSystemPath'
+		i18nLabel: 'FileUpload_FileSystemPath',
 	});
 });

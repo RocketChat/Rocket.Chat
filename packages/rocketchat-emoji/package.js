@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:emoji',
 	version: '1.0.0',
 	summary: 'Package and message pre-processor that supports aggregating multiple emoji packages',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:theme',
-		'rocketchat:ui-message'
+		'rocketchat:ui-message',
 	]);
 
 	api.addFiles('client/function-isSet.js', 'client');
