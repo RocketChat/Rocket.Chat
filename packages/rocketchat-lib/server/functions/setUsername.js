@@ -45,9 +45,9 @@ RocketChat._setUsername = function(userId, u) {
 				RocketChat.setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
 				gravatar = null;
 				return true;
-			} else {
-				gravatar = avatarData;
 			}
+			gravatar = avatarData;
+			return false;
 		});
 		if (gravatar != null) {
 			RocketChat.setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');

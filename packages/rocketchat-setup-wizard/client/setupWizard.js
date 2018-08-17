@@ -93,7 +93,7 @@ Template.setupWizard.onCreated(function() {
 	}
 
 	const jsonString = localStorage.getItem('wizard');
-	const state = jsonString && JSON.parse(jsonString) || {};
+	const state = (jsonString && JSON.parse(jsonString)) || {};
 	Object.entries(state).forEach((entry) => this.state.set(...entry));
 
 	this.autorun((c) => {

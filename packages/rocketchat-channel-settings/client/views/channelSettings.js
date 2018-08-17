@@ -150,13 +150,15 @@ Template.channelSettingsEditing.events({
 			value: 'disabled',
 		}];
 
-		const value = this.value.get() ? 'enabled' : this.value.get() === false ? 'disabled' : 'default';
+		const falseOrDisabled = this.value.get() === false ? 'disabled' : 'default';
+		const value = this.value.get() ? 'enabled' : falseOrDisabled;
 		const config = {
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
 				change : (value) => {
-					const realValue = value === 'enabled' ? true : value === 'disabled' ? false : undefined;
+					const falseOrUndefined = value === 'disabled' ? false : undefined;
+					const realValue = value === 'enabled' ? true : falseOrUndefined;
 					return this.value.set(realValue);
 				},
 				value,
@@ -695,7 +697,7 @@ Template.channelSettingsEditing.helpers({
 	},
 	retentionEnabled(value) {
 		const { room } = Template.instance();
-		return value || value === undefined && retentionEnabled(room);
+		return (value || value === undefined) && retentionEnabled(room);
 	},
 	retentionMaxAgeLabel(label) {
 		const { room } = Template.instance();

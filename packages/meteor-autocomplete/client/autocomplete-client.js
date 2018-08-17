@@ -80,7 +80,7 @@ this.AutoComplete = class {
 			item: '.-autocomplete-item',
 			...settings.selector,
 		};
-		const rules = this.rules;
+		const { rules } = this;
 
 		Object.keys(rules).forEach((key) => {
 			const rule = rules[key];

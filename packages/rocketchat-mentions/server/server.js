@@ -10,7 +10,7 @@ const mention = new MentionsServer({
 	getChannels: (channels) => RocketChat.models.Rooms.find({ name: { $in: _.unique(channels) }, t: 'c'	}, { fields: { _id: 1, name: 1 } }).fetch(),
 	onMaxRoomMembersExceeded({ sender, rid }) {
 		// Get the language of the user for the error notification.
-		const language = this.getUser(sender._id).language;
+		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
 		RocketChat.Notifications.notifyUser(sender._id, 'message', {

@@ -33,7 +33,7 @@ Template.autoTranslateFlexTab.helpers({
 				autoTranslateLanguage: 1,
 			},
 		});
-		const autoTranslateLanguage = sub && sub.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage() || '';
+		const autoTranslateLanguage = (sub && sub.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage() || '';
 		const supportedLanguages = Template.instance().supportedLanguages.get();
 		let language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
 		if (language) {

@@ -167,8 +167,8 @@ Template.loginForm.events({
 			$('input[name=emailOrUsername]').val(credentials.username);
 			return $('input[name=pass]').val(credentials.password);
 		};
-		const errorCallback = function() {
-			return console.log('OnePassword errorCallback', arguments);
+		const errorCallback = function(...args) {
+			return console.log('OnePassword errorCallback', ...args);
 		};
 		return OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl());
 	},

@@ -2,7 +2,7 @@ Template.avatar.helpers({
 	src() {
 		let { url } = Template.instance().data;
 		if (!url) {
-			let username = this.username;
+			let { username } = this;
 			if (username == null && this.userId != null) {
 				const user = Meteor.users.findOne(this.userId);
 				username = user && user.username;

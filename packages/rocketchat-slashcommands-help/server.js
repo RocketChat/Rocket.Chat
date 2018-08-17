@@ -29,7 +29,7 @@ RocketChat.slashCommands.add('help', function Help(command, params, item) {
 		New_line_message_compose_input: 'Shift + Enter',
 	},
 	];
-	keys.map((key) => {
+	keys.forEach((key) => {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,

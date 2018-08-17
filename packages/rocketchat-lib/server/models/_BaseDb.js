@@ -87,16 +87,16 @@ class ModelsBaseDb extends EventEmitter {
 		};
 		const self = this;
 
-		this.model.insert = function() {
-			return self.insert(...arguments);
+		this.model.insert = function(...args) {
+			return self.insert(...args);
 		};
 
-		this.model.update = function() {
-			return self.update(...arguments);
+		this.model.update = function(...args) {
+			return self.update(...args);
 		};
 
-		this.model.remove = function() {
-			return self.remove(...arguments);
+		this.model.remove = function(...args) {
+			return self.remove(...args);
 		};
 	}
 
@@ -110,14 +110,14 @@ class ModelsBaseDb extends EventEmitter {
 		}
 	}
 
-	find() {
-		this._doNotMixInclusionAndExclusionFields(arguments[1]);
-		return this.model.find(...arguments);
+	find(...args) {
+		this._doNotMixInclusionAndExclusionFields(args[1]);
+		return this.model.find(...args);
 	}
 
-	findOne() {
-		this._doNotMixInclusionAndExclusionFields(arguments[1]);
-		return this.model.findOne(...arguments);
+	findOne(...args) {
+		this._doNotMixInclusionAndExclusionFields(args[1]);
+		return this.model.findOne(...args);
 	}
 
 	findOneById(_id, options) {
@@ -198,10 +198,10 @@ class ModelsBaseDb extends EventEmitter {
 		}
 	}
 
-	insert(record) {
+	insert(record, ...args) {
 		this.setUpdatedAt(record);
 
-		const result = this.originals.insert(...arguments);
+		const result = this.originals.insert(record, ...args);
 
 		record._id = result;
 
@@ -307,7 +307,7 @@ class ModelsBaseDb extends EventEmitter {
 
 	insertOrUpsert(...args) {
 		if (args[0] && args[0]._id) {
-			const _id = args[0]._id;
+			const { _id } = args[0];
 			delete args[0]._id;
 			args.unshift({
 				_id,
@@ -320,35 +320,35 @@ class ModelsBaseDb extends EventEmitter {
 		}
 	}
 
-	allow() {
-		return this.model.allow(...arguments);
+	allow(...args) {
+		return this.model.allow(...args);
 	}
 
-	deny() {
-		return this.model.deny(...arguments);
+	deny(...args) {
+		return this.model.deny(...args);
 	}
 
-	ensureIndex() {
-		return this.model._ensureIndex(...arguments);
+	ensureIndex(...args) {
+		return this.model._ensureIndex(...args);
 	}
 
-	dropIndex() {
-		return this.model._dropIndex(...arguments);
+	dropIndex(...args) {
+		return this.model._dropIndex(...args);
 	}
 
-	tryEnsureIndex() {
+	tryEnsureIndex(...args) {
 		try {
-			return this.ensureIndex(...arguments);
+			return this.ensureIndex(...args);
 		} catch (e) {
-			console.error('Error creating index:', this.name, '->', ...arguments, e);
+			console.error('Error creating index:', this.name, '->', ...args, e);
 		}
 	}
 
-	tryDropIndex() {
+	tryDropIndex(...args) {
 		try {
-			return this.dropIndex(...arguments);
+			return this.dropIndex(...args);
 		} catch (e) {
-			console.error('Error dropping index:', this.name, '->', ...arguments, e);
+			console.error('Error dropping index:', this.name, '->', ...args, e);
 		}
 	}
 

@@ -1,6 +1,6 @@
 class ModelRoles extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ scope: 1 });
 	}
