@@ -149,7 +149,7 @@ Template.livechatWindow.onCreated(function() {
 			}
 
 			let room;
-			if (result.room && (!result.room.departmentId || !Livechat.department || result.room.departmentId == Livechat.department)) {
+			if (result.room && (!result.room.departmentId || !Livechat.department || result.room.departmentId === Livechat.department)) {
 				room = result.room._id;
 
 				visitor.setConnected();

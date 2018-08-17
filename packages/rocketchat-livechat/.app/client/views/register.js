@@ -81,7 +81,7 @@ Template.register.events({
 				token: visitor.getToken(),
 				name,
 				email,
-				department: Livechat.department
+				department: Livechat.department,
 			};
 
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
