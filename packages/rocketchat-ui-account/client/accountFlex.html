@@ -17,7 +17,10 @@
 				{{/if}}
 
 				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
-				{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
+
+				{{#if accessTokensEnabled}}
+					{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
+				{{/if}}
 			</ul>
 		</div>
 	</aside>
