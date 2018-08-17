@@ -11,14 +11,14 @@ Template.accountTokens.helpers({
 		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
 	},
 	tokens() {
-		return PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens || [];
+		return (PersonalAccessTokens.find({}).fetch()[0] && PersonalAccessTokens.find({}).fetch()[0].tokens) || [];
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
-	}
+	},
 });
 
-const showSuccessModal = token => {
+const showSuccessModal = (token) => {
 	modal.open({
 		title: t('API_Personal_Access_Token_Generated'),
 		text: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', { token, userId: Meteor.userId() }),
@@ -26,14 +26,14 @@ const showSuccessModal = token => {
 		confirmButtonColor: '#DD6B55',
 		confirmButtonText: 'Ok',
 		closeOnConfirm: true,
-		html: true
+		html: true,
 	}, () => {
 	});
 };
 Template.accountTokens.events({
 	'submit #form-tokens'(e, instance) {
 		e.preventDefault();
-		const tokenName = e.currentTarget.elements['tokenName'].value.trim();
+		const tokenName = e.currentTarget.elements.tokenName.value.trim();
 		if (tokenName === '') {
 			return toastr.error(t('Please_fill_a_token_name'));
 		}
@@ -55,11 +55,11 @@ Template.accountTokens.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: true,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('personalAccessTokens:removeToken', {
-				tokenName: this.name
-			}, error => {
+				tokenName: this.name,
+			}, (error) => {
 				if (error) {
 					return toastr.error(t(error.error));
 				}
@@ -77,10 +77,10 @@ Template.accountTokens.events({
 			confirmButtonText: t('API_Personal_Access_Tokens_Regenerate_It'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: true,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('personalAccessTokens:regenerateToken', {
-				tokenName: this.name
+				tokenName: this.name,
 			}, (error, token) => {
 				if (error) {
 					return toastr.error(t(error.error));
@@ -88,7 +88,7 @@ Template.accountTokens.events({
 				showSuccessModal(token);
 			});
 		});
-	}
+	},
 });
 
 Template.accountTokens.onCreated(function() {

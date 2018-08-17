@@ -799,7 +799,7 @@ describe('[Users]', function() {
 			it('Enable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
 				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
 					.set(credentials)
-					.send({ 'value': true })
+					.send({ value: true })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -812,7 +812,7 @@ describe('[Users]', function() {
 					request.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -826,7 +826,7 @@ describe('[Users]', function() {
 					request.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -841,7 +841,7 @@ describe('[Users]', function() {
 					request.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -855,7 +855,7 @@ describe('[Users]', function() {
 					request.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName: 'tokenthatdoesnotexist'
+							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -883,7 +883,7 @@ describe('[Users]', function() {
 					request.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -896,7 +896,7 @@ describe('[Users]', function() {
 					request.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName: 'tokenthatdoesnotexist'
+							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -911,7 +911,7 @@ describe('[Users]', function() {
 			it('disable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
 				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
 					.set(credentials)
-					.send({ 'value': false })
+					.send({ value: false })
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -924,7 +924,7 @@ describe('[Users]', function() {
 					request.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -938,7 +938,7 @@ describe('[Users]', function() {
 					request.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -963,7 +963,7 @@ describe('[Users]', function() {
 					request.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName
+							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -977,7 +977,7 @@ describe('[Users]', function() {
 					request.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
-							tokenName: 'tokenthatdoesnotexist'
+							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)

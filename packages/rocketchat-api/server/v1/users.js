@@ -428,7 +428,7 @@ RocketChat.API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: 
 		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
 
 		return RocketChat.API.v1.success({ token });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
@@ -440,7 +440,7 @@ RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired
 		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:regenerateToken', { tokenName }));
 
 		return RocketChat.API.v1.success({ token });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
@@ -449,22 +449,18 @@ RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true
 			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled');
 		}
 		const loginTokens = RocketChat.models.Users.getLoginTokensByUserId(this.userId).fetch()[0];
-		const getPersonalAccessTokens = () => {
-			return loginTokens.services.resume.loginTokens
-				.filter(loginToken => loginToken.type && loginToken.type === 'personalAccessToken')
-				.map(loginToken => {
-					return {
-						name: loginToken.name,
-						createdAt: loginToken.createdAt,
-						lastTokenPart: loginToken.lastTokenPart
-					};
-				});
-		};
+		const getPersonalAccessTokens = () => loginTokens.services.resume.loginTokens
+			.filter((loginToken) => loginToken.type && loginToken.type === 'personalAccessToken')
+			.map((loginToken) => ({
+				name: loginToken.name,
+				createdAt: loginToken.createdAt,
+				lastTokenPart: loginToken.lastTokenPart,
+			}));
 
 		return RocketChat.API.v1.success({
-			tokens: getPersonalAccessTokens()
+			tokens: getPersonalAccessTokens(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
@@ -474,9 +470,9 @@ RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: tr
 			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
 		}
 		Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:removeToken', {
-			tokenName
+			tokenName,
 		}));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
