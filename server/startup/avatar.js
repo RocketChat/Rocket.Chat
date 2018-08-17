@@ -40,9 +40,9 @@ function userCanAccessAvatar(req) {
 }
 
 Meteor.startup(function() {
-	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params = {
-			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
+			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')),
 		};
 		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
 
@@ -112,8 +112,8 @@ Meteor.startup(function() {
 				if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
 					const user = RocketChat.models.Users.findOneByUsername(username, {
 						fields: {
-							name: 1
-						}
+							name: 1,
+						},
 					});
 
 					if (user && user.name) {

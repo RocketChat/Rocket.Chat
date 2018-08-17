@@ -20,7 +20,7 @@ Template.visitorNavigation.helpers({
 
 	accessDateTime() {
 		return moment(this.ts).format('L LTS');
-	}
+	},
 });
 
 Template.visitorNavigation.onCreated(function() {

@@ -8,5 +8,5 @@ Template.roomNotFound.helpers({
 	sameUser() {
 		const user = Meteor.user();
 		return user && user.username === this.name;
-	}
+	},
 });

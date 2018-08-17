@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:tokenpass',
 	version: '0.0.1',
-	summary: 'RocketChat settings for Tokenpass OAuth flow'
+	summary: 'RocketChat settings for Tokenpass OAuth flow',
 });
 
 Package.onUse(function(api) {

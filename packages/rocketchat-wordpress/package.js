@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:wordpress',
 	version: '0.0.1',
-	summary: 'RocketChat settings for WordPress Oauth Flow'
+	summary: 'RocketChat settings for WordPress Oauth Flow',
 });
 
 Package.onUse(function(api) {

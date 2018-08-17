@@ -16,9 +16,9 @@ Meteor.methods({
 			return true;
 		}
 		return RocketChat.checkUsernameAvailability(username);
-	}
+	},
 });
 
 RocketChat.RateLimiter.limitMethod('checkUsernameAvailability', 1, 1000, {
-	userId() { return true; }
+	userId() { return true; },
 });

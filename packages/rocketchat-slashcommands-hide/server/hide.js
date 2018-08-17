@@ -10,14 +10,14 @@ function Hide(command, param, item) {
 	const room = param.trim();
 	const user = Meteor.user();
 	// if there is not a param, hide the current room
-	let {rid} = item;
+	let { rid } = item;
 	if (room !== '') {
 		const [strippedRoom] = room.replace(/#|@/, '').split(' ');
 		const [type] = room;
 
 		const roomObject = type === '#' ? RocketChat.models.Rooms.findOneByName(strippedRoom) : RocketChat.models.Rooms.findOne({
 			t: 'd',
-			usernames: { $all: [user.username, strippedRoom] }
+			usernames: { $all: [user.username, strippedRoom] },
 		});
 
 		if (!roomObject) {
@@ -27,8 +27,8 @@ function Hide(command, param, item) {
 				ts: new Date,
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
-					sprintf: [room]
-				}, user.language)
+					sprintf: [room],
+				}, user.language),
 			});
 		}
 
@@ -39,20 +39,20 @@ function Hide(command, param, item) {
 				ts: new Date,
 				msg: TAPi18n.__('error-logged-user-not-in-room', {
 					postProcess: 'sprintf',
-					sprintf: [room]
-				}, user.language)
+					sprintf: [room],
+				}, user.language),
 			});
 		}
 		rid = roomObject._id;
 	}
 
-	Meteor.call('hideRoom', rid, error => {
+	Meteor.call('hideRoom', rid, (error) => {
 		if (error) {
 			return RocketChat.Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
-				msg: TAPi18n.__(error, null, user.language)
+				msg: TAPi18n.__(error, null, user.language),
 			});
 		}
 	});
