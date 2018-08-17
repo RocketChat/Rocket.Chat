@@ -66,7 +66,7 @@ Template.messages.helpers({
 		};
 	},
 	agentData() {
-		const { agent } = Livechat.agent;
+		const { agent } = Livechat;
 		if (!agent) {
 			return null;
 		}
