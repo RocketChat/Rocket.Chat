@@ -35,7 +35,7 @@ Meteor.publish('livechat:queue', function() {
 		},
 		removed(id) {
 			self.removed('livechatQueueUser', id);
-		}
+		},
 	});
 
 	this.ready();

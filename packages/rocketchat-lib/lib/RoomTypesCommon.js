@@ -30,7 +30,7 @@ export class RoomTypesCommon {
 
 		this.roomTypesOrder.push({
 			identifier: roomConfig.identifier,
-			order: roomConfig.order
+			order: roomConfig.order,
 		});
 
 		this.roomTypes[roomConfig.identifier] = roomConfig;
@@ -38,7 +38,7 @@ export class RoomTypesCommon {
 		if (roomConfig.route && roomConfig.route.path && roomConfig.route.name && roomConfig.route.action) {
 			const routeConfig = {
 				name: roomConfig.route.name,
-				action: roomConfig.route.action
+				action: roomConfig.route.action,
 			};
 
 			if (Meteor.isClient) {
@@ -67,7 +67,7 @@ export class RoomTypesCommon {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {
-				name: subData.name
+				name: subData.name,
 			};
 		}
 
@@ -84,7 +84,7 @@ export class RoomTypesCommon {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {
-				name: subData.name
+				name: subData.name,
 			};
 		}
 

@@ -2,7 +2,7 @@ import toastr from 'toastr';
 Template.mailer.helpers({
 	fromEmail() {
 		return RocketChat.settings.get('From_Email');
-	}
+	},
 });
 
 Template.mailer.events({
@@ -27,5 +27,5 @@ Template.mailer.events({
 			}
 			return toastr.success(TAPi18n.__('The_emails_are_being_sent'));
 		});
-	}
+	},
 });
