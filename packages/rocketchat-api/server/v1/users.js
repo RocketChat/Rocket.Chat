@@ -221,7 +221,7 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			} else {
 				const busboy = new Busboy({ headers: this.request.headers });
 				let fields = {};
-				const getUserFromFormData = fields => {
+				const getUserFromFormData = (fields) => {
 					let userFromFormData;
 					if (fields.userId) {
 						userFromFormData = RocketChat.models.Users.findOneById(fields.userId);

@@ -225,7 +225,7 @@ describe('[Users]', function() {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
 				.attach('image', imgURL)
-				.field({ 'username': targetUser.username})
+				.field({ username: targetUser.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -237,7 +237,7 @@ describe('[Users]', function() {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
 				.attach('image', imgURL)
-				.field({ 'userId': targetUser._id})
+				.field({ userId: targetUser._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
