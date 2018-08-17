@@ -16,7 +16,7 @@ const escapify = {
 		return new MouseEvent('click', {
 			bubbles: true,
 			cancelable: true,
-			view: window
+			view: window,
 		});
 	},
 
@@ -51,7 +51,7 @@ const escapify = {
 			document.querySelector('.sweet-alert .sa-button-container .cancel').dispatchEvent(this.getClickEvent());
 			return;
 		}
-	}
+	},
 };
 
 this.escapify = escapify;

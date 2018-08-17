@@ -4,5 +4,5 @@ import AccountsServer from '@accounts/server';
 
 
 export {
-	AccountsServer
+	AccountsServer,
 };

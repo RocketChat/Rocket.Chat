@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:custom-sounds',
 	version: '1.0.0',
 	summary: 'Custom sounds',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'templating',
 		'reactive-var',
-		'webapp'
+		'webapp',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -28,7 +28,7 @@ Package.onUse(function(api) {
 		'server/methods/deleteCustomSound.js',
 		'server/methods/insertOrUpdateSound.js',
 		'server/methods/listCustomSounds.js',
-		'server/methods/uploadCustomSound.js'
+		'server/methods/uploadCustomSound.js',
 	], 'server');
 
 	api.addFiles('assets/stylesheets/customSoundsAdmin.css', 'client');

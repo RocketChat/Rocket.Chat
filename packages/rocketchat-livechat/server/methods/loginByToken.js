@@ -9,7 +9,7 @@ Meteor.methods({
 		}
 
 		return {
-			_id: visitor._id
+			_id: visitor._id,
 		};
-	}
+	},
 });

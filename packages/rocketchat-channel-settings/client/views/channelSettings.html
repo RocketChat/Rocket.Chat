@@ -362,15 +362,15 @@
 						<div class="mail-messages__instructions-text">
 							{{#unless filesOnly}}
 								{{#unless excludePinned}}
-									{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+									{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
 								{{else}}
-									{{_ "RetentionPolicy_RoomWarning_Unpinned" purgeTimeout}}
+									{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
 								{{/unless}}
 							{{else}}
 								{{#unless excludePinned}}
-									{{_ "RetentionPolicy_RoomWarning_FilesOnly" purgeTimeout}}
+									{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
 								{{else}}
-									{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" purgeTimeout}}
+									{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
 								{{/unless}}
 							{{/unless}}
 						</div>

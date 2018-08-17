@@ -31,14 +31,14 @@ Template.createCombinedFlex.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get()),
 					},
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
 	},
 	privateSwitchDisabled() {
@@ -46,7 +46,7 @@ Template.createCombinedFlex.helpers({
 	},
 	privateSwitchChecked() {
 		return RocketChat.authz.hasAllPermission('create-c') ? '' : 'checked';
-	}
+	},
 });
 
 Template.createCombinedFlex.events({
@@ -63,7 +63,7 @@ Template.createCombinedFlex.events({
 		const self = this;
 
 		let users = Template.instance().selectedUsers.get();
-		users = _.reject(Template.instance().selectedUsers.get(), _id => _id === self.valueOf());
+		users = _.reject(Template.instance().selectedUsers.get(), (_id) => _id === self.valueOf());
 
 		Template.instance().selectedUsers.set(users);
 
@@ -132,7 +132,7 @@ Template.createCombinedFlex.events({
 		} else {
 			return instance.error.set({ fields: err });
 		}
-	}
+	},
 });
 
 Template.createCombinedFlex.onCreated(function() {

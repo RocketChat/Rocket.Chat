@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:theme',
 	version: '0.0.1',
 	summary: '',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
