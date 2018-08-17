@@ -81,9 +81,9 @@ Template.avatarPrompt.events({
 				toastr.error(t('Please_enter_value_for_url'));
 			}
 		} else if (this.service === 'upload') {
-			let files = instance.find('input[type=file]').files;
+			let { files } = instance.find('input[type=file]');
 			if (!files || files.length === 0) {
-				files = event.dataTransfer && event.dataTransfer.files || [];
+				files = (event.dataTransfer && event.dataTransfer.files) || [];
 			}
 
 			for (let i = 0; i < files.length; i++) {
@@ -139,7 +139,7 @@ Template.avatarPrompt.events({
 	},
 	'change .avatar-file-input'(event, template) {
 		const e = event.originalEvent || event;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (!files || files.length === 0) {
 			files = (e.dataTransfer && e.dataTransfer.files) || [];
 		}

@@ -38,7 +38,7 @@ Template.soundInfo.events({
 		e.preventDefault();
 		const sound = instance.sound.get();
 		if (sound != null) {
-			const _id = sound._id;
+			const { _id } = sound;
 			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Sound_Delete_Warning'),

@@ -120,9 +120,11 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 	post() {
 		const saveNotifications = (notifications, roomId) => {
-			Object.keys(notifications).map((notificationKey) => {
-				Meteor.runAsUser(this.userId, () => Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey]));
-			});
+			Object.keys(notifications).forEach((notificationKey) =>
+				Meteor.runAsUser(this.userId, () =>
+					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey])
+				)
+			);
 		};
 		const { roomId, notifications } = this.bodyParams;
 
@@ -171,14 +173,18 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 		const latest = new Date(this.bodyParams.latest);
 		const oldest = new Date(this.bodyParams.oldest);
 
-		let inclusive = false;
-		if (typeof this.bodyParams.inclusive !== 'undefined') {
-			inclusive = this.bodyParams.inclusive;
-		}
+		const inclusive = this.bodyParams.inclusive || false;
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanRoomHistory', { roomId: findResult._id, latest, oldest, inclusive, limit: this.bodyParams.limit, excludePinned: this.bodyParams.excludePinned, filesOnly: this.bodyParams.filesOnly, fromUsers: this.bodyParams.users });
-		});
+		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
+			roomId: findResult._id,
+			latest,
+			oldest,
+			inclusive,
+			limit: this.bodyParams.limit,
+			excludePinned: this.bodyParams.excludePinned,
+			filesOnly: this.bodyParams.filesOnly,
+			fromUsers: this.bodyParams.users,
+		}));
 
 		return RocketChat.API.v1.success();
 	},

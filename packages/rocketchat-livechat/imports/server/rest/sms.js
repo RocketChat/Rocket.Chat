@@ -51,7 +51,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 				message_link: curr.url,
 			};
 
-			const contentType = curr.contentType;
+			const { contentType } = curr;
 			switch (contentType.substr(0, contentType.indexOf('/'))) {
 				case 'image':
 					attachment.image_url = curr.url;

@@ -39,6 +39,24 @@
 		"no-inner-declarations": [2, "functions"],
 		"no-invalid-regexp": 2,
 		"no-irregular-whitespace": 2,
+		"no-mixed-operators": [2, {
+			"groups": [
+			  ["%", "**"],
+			  ["%", "+"],
+			  ["%", "-"],
+			  ["%", "*"],
+			  ["%", "/"],
+			  ["**", "+"],
+			  ["**", "-"],
+			  ["**", "*"],
+			  ["**", "/"],
+			  ["&", "|", "^", "~", "<<", ">>", ">>>"],
+			  ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+			  ["&&", "||"],
+			  ["in", "instanceof"]
+			],
+			"allowSamePrecedence": false
+		}],
 		"no-mixed-spaces-and-tabs": 2,
 		"no-sparse-arrays": 2,
 		"no-negated-in-lhs": 2,
@@ -55,6 +73,22 @@
 		"no-void": 2,
 		"no-var": 2,
 		"no-multiple-empty-lines": [2, { "max": 2 }],
+		"no-nested-ternary": 2,
+		"prefer-rest-params": 2,
+		"array-callback-return": 2,
+		"prefer-destructuring": [2, {
+			"VariableDeclarator": {
+				"array": false,
+				"object": true
+			},
+			"AssignmentExpression": {
+			  "array": false,
+			  "object": false
+			}
+		}, {
+			"enforceForRenamedProperties": false
+		}],
+		"no-duplicate-imports": 2,
 		"arrow-parens": [2, "always"],
 		"quote-props": [2, "as-needed"],
 		"no-array-constructor": 2,

@@ -128,7 +128,7 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 	get() {
-		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
+		const { ServiceConfiguration } = Package['service-configuration'];
 
 		return RocketChat.API.v1.success({
 			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),

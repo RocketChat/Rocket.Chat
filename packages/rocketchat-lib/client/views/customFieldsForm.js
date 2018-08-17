@@ -25,7 +25,7 @@ Template.customFieldsForm.helpers({
 		return customFieldsArray;
 	},
 	selectedField(current, field) {
-		const formData = Template.instance().formData;
+		const { formData } = Template.instance();
 
 		if (typeof formData[field.fieldName] !== 'undefined') {
 			return formData[field.fieldName] === current;
@@ -34,7 +34,7 @@ Template.customFieldsForm.helpers({
 		}
 	},
 	fieldValue() {
-		const formData = Template.instance().formData;
+		const { formData } = Template.instance();
 
 		return formData[this.fieldName];
 	},

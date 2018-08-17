@@ -342,48 +342,48 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 	}
 
-	eventNameArgumentsToObject() {
+	eventNameArgumentsToObject(...args) {
 		const argObject = {
-			event: arguments[0],
+			event: args[0],
 		};
 
 		switch (argObject.event) {
 			case 'sendMessage':
-				if (arguments.length >= 3) {
-					argObject.message = arguments[1];
-					argObject.room = arguments[2];
+				if (args.length >= 3) {
+					argObject.message = args[1];
+					argObject.room = args[2];
 				}
 				break;
 			case 'fileUploaded':
-				if (arguments.length >= 2) {
-					const arghhh = arguments[1];
+				if (args.length >= 2) {
+					const arghhh = args[1];
 					argObject.user = arghhh.user;
 					argObject.room = arghhh.room;
 					argObject.message = arghhh.message;
 				}
 				break;
 			case 'roomArchived':
-				if (arguments.length >= 3) {
-					argObject.room = arguments[1];
-					argObject.user = arguments[2];
+				if (args.length >= 3) {
+					argObject.room = args[1];
+					argObject.user = args[2];
 				}
 				break;
 			case 'roomCreated':
-				if (arguments.length >= 3) {
-					argObject.owner = arguments[1];
-					argObject.room = arguments[2];
+				if (args.length >= 3) {
+					argObject.owner = args[1];
+					argObject.room = args[2];
 				}
 				break;
 			case 'roomJoined':
 			case 'roomLeft':
-				if (arguments.length >= 3) {
-					argObject.user = arguments[1];
-					argObject.room = arguments[2];
+				if (args.length >= 3) {
+					argObject.user = args[1];
+					argObject.room = args[2];
 				}
 				break;
 			case 'userCreated':
-				if (arguments.length >= 2) {
-					argObject.user = arguments[1];
+				if (args.length >= 2) {
+					argObject.user = args[1];
 				}
 				break;
 			default:
@@ -479,10 +479,10 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 	}
 
-	executeTriggers() {
-		logger.outgoing.debug('Execute Trigger:', arguments[0]);
+	executeTriggers(...args) {
+		logger.outgoing.debug('Execute Trigger:', args[0]);
 
-		const argObject = this.eventNameArgumentsToObject(...arguments);
+		const argObject = this.eventNameArgumentsToObject(...args);
 		const { event, message, room } = argObject;
 
 		// Each type of event should have an event and a room attached, otherwise we
@@ -793,7 +793,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			throw new Meteor.Error('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
 		}
 
-		const event = history.event;
+		const { event } = history;
 		const message = RocketChat.models.Messages.findOneById(history.data.message_id);
 		const room = RocketChat.models.Rooms.findOneById(history.data.channel_id);
 		const user = RocketChat.models.Users.findOneById(history.data.user_id);
