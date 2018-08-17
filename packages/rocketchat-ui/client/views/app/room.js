@@ -842,7 +842,7 @@ Template.room.events({
 	'click .js-actionButton-sendMessage'(event, instance) {
 		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
-		const msgObject = { _id: Random.id(), rid, msg};
+		const msgObject = { _id: Random.id(), rid, msg };
 		if (!msg) {
 			return;
 		}
