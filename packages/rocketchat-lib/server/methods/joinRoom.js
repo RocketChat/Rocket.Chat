@@ -31,5 +31,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.addUserToRoom(rid, user);
-	}
+	},
 });

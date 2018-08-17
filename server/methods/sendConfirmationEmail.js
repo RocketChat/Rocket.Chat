@@ -10,7 +10,7 @@ Meteor.methods({
 				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
 				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');
 
-				Accounts.emailTemplates.verifyEmail.subject = function(/*userModel*/) {
+				Accounts.emailTemplates.verifyEmail.subject = function(/* userModel*/) {
 					return subject;
 				};
 
@@ -24,7 +24,7 @@ Meteor.methods({
 			} catch (error) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 					method: 'registerUser',
-					message: error.message
+					message: error.message,
 				});
 			}
 
@@ -32,5 +32,5 @@ Meteor.methods({
 		}
 
 		return false;
-	}
+	},
 });

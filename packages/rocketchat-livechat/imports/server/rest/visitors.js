@@ -8,7 +8,7 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken', { authRequired: tru
 
 		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.visitorToken);
 		return RocketChat.API.v1.success(visitor);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room', { authRequired: true }, {
@@ -24,9 +24,9 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room', { authRequired
 				cl: 1,
 				u: 1,
 				usernames: 1,
-				servedBy: 1
-			}
+				servedBy: 1,
+			},
 		}).fetch();
 		return RocketChat.API.v1.success({ rooms });
-	}
+	},
 });

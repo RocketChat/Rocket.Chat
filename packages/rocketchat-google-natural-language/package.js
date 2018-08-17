@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:google-natural-language',
 	version: '0.0.1',
 	summary: 'Rocket.Chat Google Natural Language integration',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

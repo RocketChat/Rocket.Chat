@@ -26,13 +26,13 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];
 							msg.attachments.push({
-								'text' : jumpToMessage.msg,
-								'translations': jumpToMessage.translations,
-								'author_name' : jumpToMessage.alias || jumpToMessage.u.username,
-								'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username),
-								'message_link' : item.url,
-								'attachments' : jumpToMessage.attachments || [],
-								'ts': jumpToMessage.ts
+								text : jumpToMessage.msg,
+								translations: jumpToMessage.translations,
+								author_name : jumpToMessage.alias || jumpToMessage.u.username,
+								author_icon : getAvatarUrlFromUsername(jumpToMessage.u.username),
+								message_link : item.url,
+								attachments : jumpToMessage.attachments || [],
+								ts: jumpToMessage.ts,
 							});
 							item.ignoreParse = true;
 						}

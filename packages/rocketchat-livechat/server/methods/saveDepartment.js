@@ -5,5 +5,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.Livechat.saveDepartment(_id, departmentData, departmentAgents);
-	}
+	},
 });

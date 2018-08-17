@@ -13,7 +13,7 @@
 
 const reg = /--(rc-color-.*?): (.*?);/igm;
 
-const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map(color => {
+const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map((color) => {
 	const [name, value] = color.split(': ');
 	return [name.replace('--', ''), value.replace(';', '')];
 });
@@ -26,7 +26,7 @@ colors.forEach(([key, color]) => 	{
 	RocketChat.theme.addPublicColor(key, color, 'Colors');
 });
 
-const majorColors= {
+const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
 	'primary-font-color': '#444444',
@@ -39,11 +39,11 @@ const majorColors= {
 	'pending-color': '#FCB316',
 	'error-color': '#BC2031',
 	'selection-color': '#02ACEC',
-	'attention-color': '#9C27B0'
+	'attention-color': '#9C27B0',
 };
 
 // Minor colours implement major colours by default, but can be overruled
-const minorColors= {
+const minorColors = {
 	'tertiary-background-color': '@component-color',
 	'tertiary-font-color': '@transparent-lightest',
 	'link-font-color': '@primary-action-color',
@@ -52,7 +52,7 @@ const minorColors= {
 	'status-online': '@success-color',
 	'status-away': '@pending-color',
 	'status-busy': '@error-color',
-	'status-offline': '@transparent-darker'
+	'status-offline': '@transparent-darker',
 };
 
 // Bulk-add settings for color scheme
@@ -74,6 +74,6 @@ RocketChat.settings.add('theme-custom-css', '', {
 	code: 'text/css',
 	multiline: true,
 	section: 'Custom CSS',
-	public: true
+	public: true,
 });
 

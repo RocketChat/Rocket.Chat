@@ -10,22 +10,22 @@ FlowRouter.route('/create-channel', {
 
 	action() {
 		if (parent) {
-			Blaze.renderWithData(Template.fullModal, {template: 'createChannel'}, parent);
+			Blaze.renderWithData(Template.fullModal, { template: 'createChannel' }, parent);
 		} else {
-			BlazeLayout.render('main', {center: 'fullModal', template: 'createChannel'});
+			BlazeLayout.render('main', { center: 'fullModal', template: 'createChannel' });
 		}
 	},
 
 	triggersExit: [function() {
 		Blaze.remove(Blaze.getView(document.getElementsByClassName('full-modal')[0]));
 		$('.main-content').addClass('rc-old');
-	}]
+	}],
 });
 
 Template.fullModal.events({
 	'click button'() {
 		oldRoute ? history.back() : FlowRouter.go('home');
-	}
+	},
 });
 
 Template.fullModal.onRendered(function() {

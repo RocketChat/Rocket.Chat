@@ -1,3 +1,1 @@
-Template.registerHelper('escapeCssUrl', url => {
-	return url.replace(/(['"])/g, '\\$1');
-});
+Template.registerHelper('escapeCssUrl', (url) => url.replace(/(['"])/g, '\\$1'));

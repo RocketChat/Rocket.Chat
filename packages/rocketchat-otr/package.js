@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:otr',
 	version: '0.0.1',
 	summary: 'Off-the-record messaging for Rocket.Chat',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'tracker',
-		'reactive-var'
+		'reactive-var',
 	]);
 
 	api.use('templating', 'client');
@@ -22,13 +22,13 @@ Package.onUse(function(api) {
 		'client/stylesheets/otr.css',
 		'client/views/otrFlexTab.html',
 		'client/views/otrFlexTab.js',
-		'client/tabBar.js'
+		'client/tabBar.js',
 	], 'client');
 
 	api.addFiles([
 		'server/settings.js',
 		'server/models/Messages.js',
 		'server/methods/deleteOldOTRMessages.js',
-		'server/methods/updateOTRAck.js'
+		'server/methods/updateOTRAck.js',
 	], 'server');
 });

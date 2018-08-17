@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:setup-wizard',
 	version: '0.0.1',
 	summary: '',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

@@ -37,7 +37,7 @@ const fields = {
 	sentiment: 1,
 	tokenpass: 1,
 	streamingOptions: 1,
-	broadcast: 1
+	broadcast: 1,
 };
 
 const roomMap = (record) => {
@@ -49,7 +49,7 @@ const roomMap = (record) => {
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		let options = {fields};
+		let options = { fields };
 
 		if (!Meteor.userId()) {
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
@@ -61,13 +61,13 @@ Meteor.methods({
 		this.unblock();
 
 		options = {
-			fields
+			fields,
 		};
 
 		if (updatedAt instanceof Date) {
 			return {
 				update: RocketChat.models.Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
-				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
@@ -106,10 +106,10 @@ Meteor.methods({
 		}
 
 		return roomMap(room);
-	}
+	},
 });
 
-RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
+RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -123,7 +123,7 @@ RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
 	}
 
 	if (data) {
-		RocketChat.models.Subscriptions.findByRoomId(id, {fields: {'u._id': 1}}).forEach(({u}) => {
+		RocketChat.models.Subscriptions.findByRoomId(id, { fields: { 'u._id': 1 } }).forEach(({ u }) => {
 			RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
 		});
 	}
