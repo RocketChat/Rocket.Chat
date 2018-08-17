@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:webrtc',
 	version: '0.0.1',
 	summary: 'Package WebRTC for Meteor server',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

@@ -1,4 +1,4 @@
-//Action Links Handler. This method will be called off the client.
+// Action Links Handler. This method will be called off the client.
 
 Meteor.methods({
 	actionLinkHandler(name, messageId) {
@@ -11,5 +11,5 @@ Meteor.methods({
 		const actionLink = message.actionLinks[name];
 
 		RocketChat.actionLinks.actions[actionLink.method_id](message, actionLink.params);
-	}
+	},
 });

@@ -7,11 +7,11 @@ RocketChat.updateMessage = function(message, user) {
 	message.editedAt = new Date();
 	message.editedBy = {
 		_id: user._id,
-		username: user.username
+		username: user.username,
 	};
 
 	const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g) || [];
-	message.urls = urls.map(url => ({ url }));
+	message.urls = urls.map((url) => ({ url }));
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 

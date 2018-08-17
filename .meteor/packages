@@ -183,7 +183,7 @@ ostrio:cookies
 pauli:accounts-linkedin
 percolate:synced-cron
 raix:handlebar-helpers
-raix:push
+rocketchat:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
 todda00:friendly-slugs

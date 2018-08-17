@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:channel-settings',
 	version: '0.0.1',
 	summary: 'Channel Settings Panel',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'tracker',
 		'templating',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.addFiles([
@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 		'client/startup/trackSettingsChange.js',
 		'client/views/channelSettings.html',
 		'client/views/channelSettings.js',
-		'client/stylesheets/channel-settings.css'
+		'client/stylesheets/channel-settings.css',
 	], 'client');
 
 	api.addFiles([
@@ -37,6 +37,6 @@ Package.onUse(function(api) {
 		'server/methods/saveRoomSettings.js',
 		'server/models/Messages.js',
 		'server/models/Rooms.js',
-		'server/startup.js'
+		'server/startup.js',
 	], 'server');
 });

@@ -18,7 +18,7 @@ RocketChat.Notifications = new class {
 			// });
 			if (RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
 				const subscriptions = RocketChat.models.Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
-				subscriptions.forEach(subscription => RocketChat.Notifications.notifyUser(subscription.u._id, e, ...args));
+				subscriptions.forEach((subscription) => RocketChat.Notifications.notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});
@@ -50,7 +50,7 @@ RocketChat.Notifications = new class {
 
 	notifyAll(eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyAll', arguments);
+			console.log('notifyAll', [eventName, ...args]);
 		}
 		args.unshift(eventName);
 		return this.streamAll.emit.apply(this.streamAll, args);
@@ -58,7 +58,7 @@ RocketChat.Notifications = new class {
 
 	notifyLogged(eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyLogged', arguments);
+			console.log('notifyLogged', [eventName, ...args]);
 		}
 		args.unshift(eventName);
 		return this.streamLogged.emit.apply(this.streamLogged, args);
@@ -66,7 +66,7 @@ RocketChat.Notifications = new class {
 
 	notifyRoom(room, eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyRoom', arguments);
+			console.log('notifyRoom', [room, eventName, ...args]);
 		}
 		args.unshift(`${ room }/${ eventName }`);
 		return this.streamRoom.emit.apply(this.streamRoom, args);
@@ -74,7 +74,7 @@ RocketChat.Notifications = new class {
 
 	notifyUser(userId, eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyUser', arguments);
+			console.log('notifyUser', [userId, eventName, ...args]);
 		}
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emit.apply(this.streamUser, args);
@@ -82,7 +82,7 @@ RocketChat.Notifications = new class {
 
 	notifyAllInThisInstance(eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyAll', arguments);
+			console.log('notifyAll', [eventName, ...args]);
 		}
 		args.unshift(eventName);
 		return this.streamAll.emitWithoutBroadcast.apply(this.streamAll, args);
@@ -90,7 +90,7 @@ RocketChat.Notifications = new class {
 
 	notifyLoggedInThisInstance(eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyLogged', arguments);
+			console.log('notifyLogged', [eventName, ...args]);
 		}
 		args.unshift(eventName);
 		return this.streamLogged.emitWithoutBroadcast.apply(this.streamLogged, args);
@@ -98,7 +98,7 @@ RocketChat.Notifications = new class {
 
 	notifyRoomInThisInstance(room, eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyRoomAndBroadcast', arguments);
+			console.log('notifyRoomAndBroadcast', [room, eventName, ...args]);
 		}
 		args.unshift(`${ room }/${ eventName }`);
 		return this.streamRoom.emitWithoutBroadcast.apply(this.streamRoom, args);
@@ -106,7 +106,7 @@ RocketChat.Notifications = new class {
 
 	notifyUserInThisInstance(userId, eventName, ...args) {
 		if (this.debug === true) {
-			console.log('notifyUserAndBroadcast', arguments);
+			console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		}
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emitWithoutBroadcast.apply(this.streamUser, args);
@@ -131,8 +131,8 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 
 		const user = Meteor.users.findOne(this.userId, {
 			fields: {
-				[key]: 1
-			}
+				[key]: 1,
+			},
 		});
 
 		if (!user) {
