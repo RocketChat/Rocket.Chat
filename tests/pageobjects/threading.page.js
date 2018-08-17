@@ -3,6 +3,7 @@ import Page from './Page';
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
+import {sendEnter} from './keyboard';
 
 class Threading extends Page {
 	// Sidebar - this should actually be part of the sidebar-file - leaving it here for mergability
@@ -23,7 +24,6 @@ class Threading extends Page {
 
 	// Action Menu
 	get startThreadContextItem() { return browser.element('[data-id="start-thread"][data-type="message-action"]'); }
-
 
 	//Modal
 	get createThreadModal() {
@@ -56,6 +56,8 @@ class Threading extends Page {
 		this.selectChannelAction.click();
 		this.parentChannelName.waitForVisible(1000);
 		this.parentChannelName.setValue(parentChannelName);
+		sendEnter();
+		browser.pause(2000); //wait for the autocompete to vanish
 
 		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel .js-save-thread');
@@ -65,4 +67,6 @@ class Threading extends Page {
 	}
 }
 
-module.exports = new Threading();
+const threading = new Threading();
+
+export {threading};
