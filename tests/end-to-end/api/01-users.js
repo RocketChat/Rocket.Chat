@@ -223,19 +223,17 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.update]', () => {
-		const updateSetting = (setting, value) => {
-			return new Promise((resolve) => {
-				request.post(`/api/v1/settings/${ setting }`)
-					.set(credentials)
-					.send({ value })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(resolve);
-			});
-		};
+		const updateSetting = (setting, value) => new Promise((resolve) => {
+			request.post(`/api/v1/settings/${ setting }`)
+				.set(credentials)
+				.send({ value })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(resolve);
+		});
 		before((done) => {
 			updateSetting('Accounts_AllowUserProfileChange', true)
 				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
@@ -324,8 +322,8 @@ describe('[Users]', function() {
 						.send({
 							userId: targetUser._id,
 							data: {
-								username: 'fake.name'
-							}
+								username: 'fake.name',
+							},
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -344,8 +342,8 @@ describe('[Users]', function() {
 						.send({
 							userId: targetUser._id,
 							data: {
-								name: 'Fake name'
-							}
+								name: 'Fake name',
+							},
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -364,8 +362,8 @@ describe('[Users]', function() {
 						.send({
 							userId: targetUser._id,
 							data: {
-								email: 'itsnotworking@email.com'
-							}
+								email: 'itsnotworking@email.com',
+							},
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -384,8 +382,8 @@ describe('[Users]', function() {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking'
-							}
+								password: 'itsnotworking',
+							},
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -404,8 +402,8 @@ describe('[Users]', function() {
 						.send({
 							userId: targetUser._id,
 							data: {
-								verified: true
-							}
+								verified: true,
+							},
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)

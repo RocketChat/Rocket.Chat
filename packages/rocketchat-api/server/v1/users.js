@@ -202,7 +202,7 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 
 		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
-				method: 'users.setAvatar'
+				method: 'users.setAvatar',
 			});
 		}
 

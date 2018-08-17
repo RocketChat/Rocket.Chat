@@ -182,35 +182,35 @@ RocketChat.saveUser = function(userId, userData) {
 		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 				method: 'insertOrUpdateUser',
-				action: 'Update_user'
+				action: 'Update_user',
 			});
 		}
 
 		if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 				method: 'insertOrUpdateUser',
-				action: 'Update_user'
+				action: 'Update_user',
 			});
 		}
 
 		if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 				method: 'insertOrUpdateUser',
-				action: 'Update_user'
+				action: 'Update_user',
 			});
 		}
 
 		if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 				method: 'insertOrUpdateUser',
-				action: 'Update_user'
+				action: 'Update_user',
 			});
 		}
 
 		if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 				method: 'insertOrUpdateUser',
-				action: 'Update_user'
+				action: 'Update_user',
 			});
 		}
 
