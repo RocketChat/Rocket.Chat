@@ -12,7 +12,7 @@ import {
 	apiEmail,
 	apiUsername,
 	targetUser,
-	log
+	log,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -21,11 +21,11 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 describe('[Users]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('[/users.create]', () => {
-		before(done => clearCustomFields(done));
-		after(done => clearCustomFields(done));
+		before((done) => clearCustomFields(done));
+		after((done) => clearCustomFields(done));
 
 		it('should create a new user', (done) => {
 			request.post(api('users.create'))
@@ -38,7 +38,7 @@ describe('[Users]', function() {
 					active: true,
 					roles: ['user'],
 					joinDefaultChannels: true,
-					verified: true
+					verified: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -77,7 +77,7 @@ describe('[Users]', function() {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						customFields
+						customFields,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -114,7 +114,7 @@ describe('[Users]', function() {
 							roles: ['user'],
 							joinDefaultChannels: true,
 							verified: true,
-							customFields
+							customFields,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -130,7 +130,7 @@ describe('[Users]', function() {
 		[
 			{ name: 'customFieldText', value: '', reason: 'is required and missing' },
 			{ name: 'customFieldText', value: '0', reason: 'length is less than minLength' },
-			{ name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength' }
+			{ name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength' },
 		].forEach((field) => {
 			failUserWithCustomField(field);
 		});
@@ -141,7 +141,7 @@ describe('[Users]', function() {
 			request.get(api('users.info'))
 				.set(credentials)
 				.query({
-					userId: targetUser._id
+					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -161,7 +161,7 @@ describe('[Users]', function() {
 			request.get(api('users.getPresence'))
 				.set(credentials)
 				.query({
-					userId: targetUser._id
+					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -188,11 +188,11 @@ describe('[Users]', function() {
 		});
 
 		it.skip('should query all users in the system by name', (done) => {
-			//filtering user list
+			// filtering user list
 			request.get(api('users.list'))
 				.set(credentials)
 				.query({
-					name: { '$regex': 'g' }
+					name: { $regex: 'g' },
 				})
 				.field('username', 1)
 				.sort('createdAt', -1)
@@ -264,8 +264,8 @@ describe('[Users]', function() {
 						username: `edited${ apiUsername }`,
 						password,
 						active: true,
-						roles: ['user']
-					}
+						roles: ['user'],
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -285,8 +285,8 @@ describe('[Users]', function() {
 				.send({
 					userId: targetUser._id,
 					data: {
-						email: `edited${ apiEmail }`
-					}
+						email: `edited${ apiEmail }`,
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -304,8 +304,8 @@ describe('[Users]', function() {
 				.send({
 					userId: targetUser._id,
 					data: {
-						verified: true
-					}
+						verified: true,
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -436,7 +436,7 @@ describe('[Users]', function() {
 			request.post(api('login'))
 				.send({
 					user: user.username,
-					password
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -447,9 +447,9 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		after(done => {
+		after((done) => {
 			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id
+				userId: user._id,
 			}).end(done);
 			user = undefined;
 		});
@@ -467,13 +467,13 @@ describe('[Users]', function() {
 						name: editedName,
 						username: editedUsername,
 						currentPassword: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
-						newPassword
-					}
+						newPassword,
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
@@ -486,13 +486,13 @@ describe('[Users]', function() {
 				.set(userCredentials)
 				.send({
 					data: {
-						username: editedUsername
-					}
+						username: editedUsername,
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 				})
@@ -504,8 +504,8 @@ describe('[Users]', function() {
 				.set(userCredentials)
 				.send({
 					data: {
-						email: editedEmail
-					}
+						email: editedEmail,
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -517,8 +517,8 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass'
-					}
+						newPassword: 'the new pass',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -530,8 +530,8 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({
 					data: {
-						name: '  '
-					}
+						name: '  ',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -547,13 +547,13 @@ describe('[Users]', function() {
 				.send({
 					data: {
 						email: editedEmail,
-						currentPassword: crypto.createHash('sha256').update(newPassword, 'utf8').digest('hex')
-					}
+						currentPassword: crypto.createHash('sha256').update(newPassword, 'utf8').digest('hex'),
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
@@ -581,7 +581,7 @@ describe('[Users]', function() {
 			request.post(api('login'))
 				.send({
 					user: user.username,
-					password
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -592,9 +592,9 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		afterEach(done => {
+		afterEach((done) => {
 			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id
+				userId: user._id,
 			}).end(done);
 			user = undefined;
 		});
@@ -604,7 +604,7 @@ describe('[Users]', function() {
 				request.post(api('users.createToken'))
 					.set(credentials)
 					.send({
-						username: user.username
+						username: user.username,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -622,7 +622,7 @@ describe('[Users]', function() {
 				request.post(api('users.createToken'))
 					.set(userCredentials)
 					.send({
-						username: user.username
+						username: user.username,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -640,7 +640,7 @@ describe('[Users]', function() {
 				request.post(api('users.createToken'))
 					.set(userCredentials)
 					.send({
-						username: 'rocket.cat'
+						username: 'rocket.cat',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -656,7 +656,7 @@ describe('[Users]', function() {
 			it('should return 401 unauthorized', (done) => {
 				request.post(api('users.createToken'))
 					.send({
-						username: user.username
+						username: user.username,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(401)
@@ -668,40 +668,20 @@ describe('[Users]', function() {
 		});
 
 		describe('Testing if the returned token is valid:', (done) => {
-			it('should return 200', (done) => {
-				return request.post(api('users.createToken'))
-					.set(credentials)
-					.send({ username: user.username })
-					.expect('Content-Type', 'application/json')
-					.end((err, res) => {
-						return err ? done() : request.get(api('me'))
-							.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
-			});
-		});
-	});
-
-	//DEPRECATED
-	// TODO: Remove this after three versions have been released. That means at 0.66 this should be gone.
-	describe('[/user.roles]', () => {
-
-		it('should return id and name of user, and an array of roles', (done) => {
-			request.get(api('user.roles'))
+			it('should return 200', (done) => request.post(api('users.createToken'))
 				.set(credentials)
-				.expect(200)
+				.send({ username: user.username })
 				.expect('Content-Type', 'application/json')
-				.expect((res) => {
-					expect(res.body).to.have.property('username');
-					expect(res.body).to.have.property('roles').and.to.be.a('array');
-					expect(res.body).to.have.property('_id');
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.end((err, res) => (err ? done() :
+					request.get(api('me'))
+						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done))
+				)
+			);
 		});
 	});
 
@@ -739,7 +719,7 @@ describe('[Users]', function() {
 		it('should send email to user (return success), when is a valid email', (done) => {
 			request.post(api('users.forgotPassword'))
 				.send({
-					email: adminEmail
+					email: adminEmail,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -752,7 +732,7 @@ describe('[Users]', function() {
 		it('should not send email to user(return error), when is a invalid email', (done) => {
 			request.post(api('users.forgotPassword'))
 				.send({
-					email: 'invalidEmail'
+					email: 'invalidEmail',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -774,7 +754,7 @@ describe('[Users]', function() {
 					email: `${ testUsername }.@teste.com`,
 					username: `${ testUsername }test`,
 					name: testUsername,
-					pass: password
+					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -787,7 +767,7 @@ describe('[Users]', function() {
 			request.post(api('login'))
 				.send({
 					user: targetUser.username,
-					password
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -809,6 +789,136 @@ describe('[Users]', function() {
 					expect(res.body.result).to.be.equal(testUsername);
 				})
 				.end(done);
+		});
+
+	});
+
+	describe('[/users.deleteOwnAccount]', () => {
+		const testUsername = `testuser${ +new Date() }`;
+		let targetUser;
+		let userCredentials;
+		it('register a new user...', (done) => {
+			request.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		it('Login...', (done) => {
+			request.post(api('login'))
+				.send({
+					user: targetUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
+			request.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
+				.set(credentials)
+				.send({ value: true })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should delete user own account', (done) => {
+			request.post(api('users.deleteOwnAccount'))
+				.set(userCredentials)
+				.send({
+					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+	});
+
+	describe('[/users.delete]', () => {
+		const updatePermission = (permission, roles) => new Promise((resolve) => {
+			request.post(api('permissions.update'))
+				.set(credentials)
+				.send({ permissions: [{ _id: permission, roles }] })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(resolve);
+		});
+		const testUsername = `testuser${ +new Date() }`;
+		let targetUser;
+		it('register a new user...', (done) => {
+			request.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
+					name: testUsername,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					targetUser = res.body.user;
+				})
+				.end(done);
+		});
+		it('should return an error when trying delete user account without "delete-user" permission', (done) => {
+			updatePermission('delete-user', ['user'])
+				.then(() => {
+					request.post(api('users.delete'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'unauthorized');
+						})
+						.end(done);
+				});
+		});
+		it('should delete user account when logged user has "delete-user" permission', (done) => {
+			updatePermission('delete-user', ['admin'])
+				.then(() => {
+					request.post(api('users.delete'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 		});
 
 	});

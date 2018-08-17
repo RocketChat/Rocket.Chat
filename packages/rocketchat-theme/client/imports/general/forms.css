@@ -207,7 +207,7 @@
 .rc-grid {
 	display: flex;
 	align-items: flex-start;
-	flex-wrap: wrap;
+	flex-flow: row wrap;
 }
 
 .rc-w50 {

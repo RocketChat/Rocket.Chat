@@ -4,5 +4,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'mail',
 	permissionGranted() {
 		return RocketChat.authz.hasAllPermission('access-mailer');
-	}
+	},
 });

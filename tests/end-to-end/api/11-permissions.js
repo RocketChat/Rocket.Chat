@@ -6,9 +6,9 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 describe('[Permissions]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
-	//DEPRECATED
+	// DEPRECATED
 	// TODO: Remove this after three versions have been released. That means at 0.69 this should be gone.
 	describe('[/permissions]', () => {
 		it('should return all permissions that exists on the server, with respective roles', (done) => {
@@ -51,9 +51,9 @@ describe('[Permissions]', function() {
 		it('should change the permissions on the server', (done) => {
 			const permissions = [
 				{
-					'_id': 'add-oauth-service',
-					'roles': ['admin', 'user']
-				}
+					_id: 'add-oauth-service',
+					roles: ['admin', 'user'],
+				},
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)
@@ -74,9 +74,9 @@ describe('[Permissions]', function() {
 		it('should 400 when trying to set an unknown permission', (done) => {
 			const permissions = [
 				{
-					'_id': 'this-permission-does-not-exist',
-					'roles': ['admin']
-				}
+					_id: 'this-permission-does-not-exist',
+					roles: ['admin'],
+				},
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)
@@ -91,9 +91,9 @@ describe('[Permissions]', function() {
 		it('should 400 when trying to assign a permission to an unknown role', (done) => {
 			const permissions = [
 				{
-					'_id': 'add-oauth-service',
-					'roles': ['this-role-does-not-exist']
-				}
+					_id: 'add-oauth-service',
+					roles: ['this-role-does-not-exist'],
+				},
 			];
 			request.post(api('permissions.update'))
 				.set(credentials)

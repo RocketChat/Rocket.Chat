@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.67.0-develop",
+	"version": "0.69.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -63,8 +63,9 @@
 		"start": "meteor npm i && meteor",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
-		"lint": "eslint .",
-		"lint-fix": "eslint . --fix",
+		"livechat-lint": "eslint ./packages/rocketchat-livechat/.app/",
+		"core-lint": "eslint .",
+		"lint": "npm run core-lint && npm run livechat-lint",
 		"stylelint": "stylelint packages/**/*.css",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
@@ -117,6 +118,7 @@
 		"@slack/client": "^4.2.2",
 		"adm-zip": "^0.4.11",
 		"archiver": "^2.1.1",
+		"arraybuffer-to-string": "^1.0.2",
 		"atlassian-crowd": "^0.5.0",
 		"autolinker": "^1.6.2",
 		"aws-sdk": "^2.250.1",
@@ -180,7 +182,6 @@
 		"webdav": "^1.5.2",
 		"wolfy87-eventemitter": "^5.2.4",
 		"xml-crypto": "^0.10.1",
-		"xml2js": "^0.4.19",
 		"xmlbuilder": "^10.0.0",
 		"xmldom": "^0.1.27",
 		"yaqrcode": "^0.2.1"
