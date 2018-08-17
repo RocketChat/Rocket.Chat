@@ -28,7 +28,7 @@ this.Commands = {
 				inputPlaceholder: t('Type_your_email'),
 				showCancelButton: true,
 				cancelButtonText: t('no'),
-				confirmButtonText: t('yes')
+				confirmButtonText: t('yes'),
 			}).then((result) => {
 				if ((typeof result.value === 'boolean') && !result.value) {
 					return true;
@@ -47,7 +47,7 @@ this.Commands = {
 						title: t('transcript_sent'),
 						type: 'success',
 						timer: 1000,
-						showConfirmButton: false
+						showConfirmButton: false,
 					});
 				});
 			});
@@ -56,5 +56,5 @@ this.Commands = {
 
 	connected() {
 		Livechat.connecting = false;
-	}
+	},
 };

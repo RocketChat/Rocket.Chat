@@ -8,7 +8,7 @@ function getIdentity(accessToken) {
 		return HTTP.get(
 			'https://api.github.com/user', {
 				headers: { 'User-Agent': userAgent }, // http://developer.github.com/v3/#user-agent-required
-				params: { access_token: accessToken }
+				params: { access_token: accessToken },
 			}).data;
 	} catch (err) {
 		throw new GrantError(`Failed to fetch identity from Github. ${ err.message }`);
@@ -20,7 +20,7 @@ function getEmails(accessToken) {
 		return HTTP.get(
 			'https://api.github.com/user/emails', {
 				headers: { 'User-Agent': userAgent }, // http://developer.github.com/v3/#user-agent-required
-				params: { access_token: accessToken }
+				params: { access_token: accessToken },
 			}).data;
 	} catch (err) {
 		return [];
@@ -30,7 +30,7 @@ function getEmails(accessToken) {
 export function getUser(accessToken) {
 	const identity = getIdentity(accessToken);
 	const emails = getEmails(accessToken);
-	const primaryEmail = (emails || []).find(email => email.primary === true);
+	const primaryEmail = (emails || []).find((email) => email.primary === true);
 
 	return {
 		id: identity.id,
@@ -38,7 +38,7 @@ export function getUser(accessToken) {
 		username: identity.login,
 		emails,
 		name: identity.name,
-		avatar: identity.avatar_url
+		avatar: identity.avatar_url,
 	};
 }
 

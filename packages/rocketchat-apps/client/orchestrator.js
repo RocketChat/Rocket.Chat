@@ -61,7 +61,7 @@ class AppClientOrchestrator {
 			i18nLabel: 'Apps',
 			permissionGranted() {
 				return RocketChat.authz.hasAtLeastOnePermission(['manage-apps']);
-			}
+			},
 		});
 	}
 
@@ -107,28 +107,28 @@ FlowRouter.route('/admin/apps', {
 	name: 'apps',
 	action() {
 		appsRouteAction('apps');
-	}
+	},
 });
 
 FlowRouter.route('/admin/app/install', {
 	name: 'app-install',
 	action() {
 		appsRouteAction('appInstall');
-	}
+	},
 });
 
 FlowRouter.route('/admin/apps/:appId', {
 	name: 'app-manage',
 	action() {
 		appsRouteAction('appManage');
-	}
+	},
 });
 
 FlowRouter.route('/admin/apps/:appId/logs', {
 	name: 'app-logs',
 	action() {
 		appsRouteAction('appLogs');
-	}
+	},
 });
 
 FlowRouter.route('/admin/app/what-is-it', {
@@ -141,5 +141,5 @@ FlowRouter.route('/admin/app/what-is-it', {
 				BlazeLayout.render('main', { center: 'appWhatIsIt' });
 			}
 		}));
-	}
+	},
 });

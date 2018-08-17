@@ -3,13 +3,13 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Role based authorization of actions',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('mongo', ['client', 'server']);

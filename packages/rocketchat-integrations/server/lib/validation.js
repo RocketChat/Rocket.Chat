@@ -51,17 +51,17 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 				case '#':
 					record = RocketChat.models.Rooms.findOne({
 						$or: [
-							{_id: channel},
-							{name: channel}
-						]
+							{ _id: channel },
+							{ name: channel },
+						],
 					});
 					break;
 				case '@':
 					record = RocketChat.models.Users.findOne({
 						$or: [
-							{_id: channel},
-							{username: channel}
-						]
+							{ _id: channel },
+							{ username: channel },
+						],
 					});
 					break;
 			}
@@ -92,7 +92,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		delete integration.channel;
 	}
 
-	//Moved to it's own function to statisfy the complexity rule
+	// Moved to it's own function to statisfy the complexity rule
 	_verifyRequiredFields(integration);
 
 	let channels = [];

@@ -3,5 +3,5 @@ RocketChat.API.v1.addRoute('emoji-custom', { authRequired: true }, {
 		const emojis = Meteor.call('listEmojiCustom');
 
 		return RocketChat.API.v1.success({ emojis });
-	}
+	},
 });
