@@ -85,15 +85,10 @@ Template.apps.helpers({
 		const searchText = instance.searchText.get().toLowerCase();
 		const sortColumn = instance.searchSortBy.get();
 		const inverted = instance.sortDirection.get() === 'desc';
-<<<<<<< HEAD
 		return sortByColumn(instance.apps.get().filter(({ name }) => name.toLowerCase().includes(searchText)), sortColumn, inverted);
-=======
-
-		return sortByColumn(instance.apps.get().filter((app) => app.latest.name.toLowerCase().includes(searchText)), sortColumn, inverted);
 	},
 	categories() {
 		return Template.instance().categories.get();
->>>>>>> Changes to actions
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
