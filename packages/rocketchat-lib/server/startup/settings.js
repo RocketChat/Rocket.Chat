@@ -452,7 +452,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 		});
 
 		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
-			type: 'boolean'
+			type: 'boolean',
 		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
