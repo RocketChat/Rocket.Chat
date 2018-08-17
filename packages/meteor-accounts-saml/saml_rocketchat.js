@@ -89,7 +89,7 @@ Meteor.methods({
 			type: 'boolean',
 			group: 'SAML',
 			section: name,
-			i18nLabel: 'SAML_Custom_Debug'
+			i18nLabel: 'SAML_Custom_Debug',
 		});
 		RocketChat.settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
 			type: 'select',
