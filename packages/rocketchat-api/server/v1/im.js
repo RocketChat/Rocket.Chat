@@ -314,7 +314,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields: fieldsWithUsernames()
+			fields: fieldsWithUsernames(),
 		}).fetch();
 
 		return RocketChat.API.v1.success({
