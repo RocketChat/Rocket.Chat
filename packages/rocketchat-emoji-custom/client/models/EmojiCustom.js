@@ -4,13 +4,13 @@ class EmojiCustom extends RocketChat.models._Base {
 		this._initModel('custom_emoji');
 	}
 
-	//find
+	// find
 	findByNameOrAlias(name, options) {
 		const query = {
 			$or: [
-				{name},
-				{aliases: name}
-			]
+				{ name },
+				{ aliases: name },
+			],
 		};
 
 		return this.find(query, options);

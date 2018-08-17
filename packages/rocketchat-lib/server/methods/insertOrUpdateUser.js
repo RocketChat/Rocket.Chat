@@ -8,5 +8,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.saveUser(Meteor.userId(), userData);
-	}
+	},
 });

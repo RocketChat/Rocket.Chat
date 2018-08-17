@@ -9,5 +9,5 @@ Meteor.methods({
 		}
 		RocketChat.models.OAuthApps.remove({ _id: applicationId });
 		return true;
-	}
+	},
 });
