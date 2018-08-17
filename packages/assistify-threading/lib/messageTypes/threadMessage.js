@@ -7,7 +7,7 @@ Meteor.startup(function() {
 		message: 'thread-created',
 		data(message) {
 			return {
-				message: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">&quot;${ message.channels[0].initialMessage }&quot;</a>`,
+				message: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">&quot;${ message.channels[0].initialMessage.text }&quot;</a>`,
 				username: `<a class="mention-link" data-username= ${ message.mentions[0].name } title="">@${ message.mentions[0].name }</a>`
 			};
 		}

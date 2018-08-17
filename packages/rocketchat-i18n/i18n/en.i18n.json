@@ -1810,6 +1810,7 @@
   "Confirm_New_Password_Placeholder": "Please re-enter new password...",
   "New_role": "New role",
   "New_Room_Notification": "New Room Notification",
+  "New_thread": "New thread",
   "New_thread_first_message": "Usually, a thread starts with a question, like \"How do I upload a picture?\"",
   "New_Trigger": "New Trigger",
   "New_version_available_(s)": "New version available (%s)",
