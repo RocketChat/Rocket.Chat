@@ -98,3 +98,10 @@ Template.accountTokens.onCreated(function() {
 		this.ready.set(subscription.ready());
 	});
 });
+
+Template.accountTokens.onRendered(function() {
+	Tracker.afterFlush(function() {
+		SideNav.setFlex('accountFlex');
+		SideNav.openFlex();
+	});
+});

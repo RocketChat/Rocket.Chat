@@ -2,55 +2,57 @@
 	<section class="preferences-page">
 		{{> header sectionName="Personal_Access_Tokens"}}
 		<div class="preferences-page__content">
-			<div class="container">
-				{{# if isAllowed}}
-					<fieldset>
-						<div class="section">
-							<h1>{{_ "API_Personal_Access_Tokens_To_REST_API"}}</h1>
-							<br>
-							<form id="form-tokens" class="inline">
-								<label>{{_ "API_Add_Personal_Access_Token"}}</label>
-								<input id="input-token-name"
-									   type="text"
-									   name="tokenName"
-									   placeholder={{_ "Enter_a_name"}}
-											   value="{{tokenName}}">
-								<button name="add" class="button primary save-token">{{_ "Add"}}</button>
-							</form>
-							<br>
-							<div class="list">
-								<table>
-									<thead>
-									<tr>
-										<th width="40%">{{_ "API_Personal_Access_Token_Name"}}</th>
-										<th width="40%">{{_ "Created_at"}}</th>
-										<th width="20%">{{_ "Last_token_part"}}</th>
-										<th></th>
-									</tr>
-									</thead>
-									<tbody>
-									{{#each tokens}}
-										<tr data-id="{{name}}">
-											<td>{{name}}</td>
-											<td>{{dateFormated createdAt}}</td>
-											<td>...{{lastTokenPart}}</td>
-											<td><a class="regenerate-personal-access-token"><i class="icon-ccw"></i></a>
-											</td>
-											<td><a class="remove-personal-access-token"><i class="icon-block"></i></a>
-											</td>
-										</tr>
-									{{else}}
-										<tr>
-											<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
-										</tr>
-									{{/each}}
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</fieldset>
-				{{/if}}
-			</div>
+			{{# if isAllowed}}
+				<h2>{{_ "API_Personal_Access_Tokens_To_REST_API"}}</h2>
+				<br>
+				<form id="form-tokens" class="inline">
+					<label>{{_ "API_Add_Personal_Access_Token"}}</label>
+					<input id="input-token-name"
+							type="text"
+							name="tokenName"
+							placeholder={{_ "Enter_a_name"}}
+							value="{{tokenName}}">
+					<button name="add" class="button primary save-token">{{_ "Add"}}</button>
+				</form>
+				<br>
+				<div class="rc-table-content">
+					{{#table}}
+						<thead>
+							<tr>
+								<th width="30%">
+									<div class="table-fake-th">{{_ "API_Personal_Access_Token_Name"}}</div>
+								</th>
+								<th>
+									<div class="table-fake-th">{{_ "Created_at"}}</div>
+								</th>
+								<th>
+									<div class="table-fake-th">{{_ "Last_token_part"}}</div>
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each tokens}}
+								<tr data-id="{{name}}">
+									<td>
+										<div class="rc-table-title">
+											{{name}}
+										</div>
+									</td>
+									<td>{{dateFormated createdAt}}</td>
+									<td>...{{lastTokenPart}}</td>
+									<td><button class="regenerate-personal-access-token"><i class="icon-ccw"></i></button></td>
+									<td><button class="remove-personal-access-token"><i class="icon-block"></i></button></td>
+								</tr>
+							{{else}}
+								<tr>
+									<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					{{/table}}
+				</div>
+			{{/if}}
 		</div>
 	</section>
 </template>
