@@ -1,12 +1,12 @@
 /* globals popover */
 
 import moment from 'moment';
-import {setDateRange} from '../../../lib/dateHandler';
+import { setDateRange } from '../../../lib/dateHandler';
 
 Template.livechatAnalyticsDaterange.helpers({
 	bold(prop) {
 		return (prop === Template.currentData().daterange.get().value) ? 'rc-popover__item--bold' : '';
-	}
+	},
 });
 
 Template.livechatAnalyticsDaterange.events({
@@ -26,9 +26,9 @@ Template.livechatAnalyticsDaterange.events({
 					currentTarget: target,
 					data: {
 						options,
-						daterange: Template.currentData().daterange
+						daterange: Template.currentData().daterange,
 					},
-					offsetVertical: target.clientHeight + 10
+					offsetVertical: target.clientHeight + 10,
 				};
 				popover.open(config);
 				break;
@@ -51,5 +51,5 @@ Template.livechatAnalyticsDaterange.events({
 				Template.currentData().daterange.set(setDateRange(value, moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month')));
 				break;
 		}
-	}
+	},
 });

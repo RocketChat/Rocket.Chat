@@ -4,7 +4,7 @@ Meteor.methods({
 	'livechat:getAnalyticsOverviewData'(options) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'livechat:getAnalyticsOverviewData'
+				method: 'livechat:getAnalyticsOverviewData',
 			});
 		}
 
@@ -27,5 +27,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.Livechat.Analytics.OverviewData[options.analyticsOptions.name](from, to);
-	}
+	},
 });

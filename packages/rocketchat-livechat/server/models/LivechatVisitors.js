@@ -79,11 +79,11 @@ class LivechatVisitors extends RocketChat.models._Base {
 		const query = {
 			_updatedAt: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt)	// ISODate, ts < date.lt
-			}
+				$lt: new Date(date.lt),	// ISODate, ts < date.lt
+			},
 		};
 
-		return this.find(query, { fields: {_id: 1} });
+		return this.find(query, { fields: { _id: 1 } });
 	}
 
 	/**

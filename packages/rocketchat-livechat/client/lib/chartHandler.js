@@ -1,58 +1,58 @@
 import Chart from 'chart.js/src/chart.js';
 
-const lineChartConfiguration = ({legends = false, anim = false, smallTicks = false}) => {
+const lineChartConfiguration = ({ legends = false, anim = false, smallTicks = false }) => {
 	const config = {
 		layout: {
 			padding: {
 				top: 10,
-				bottom: 0
-			}
+				bottom: 0,
+			},
 		},
 		legend: {
-			display: false
+			display: false,
 		},
 		title: {
-			display: false
+			display: false,
 		},
 		tooltips: {
 			enabled: true,
 			mode: 'point',
-			displayColors: false // hide color box
+			displayColors: false, // hide color box
 		},
 		scales: {
 			xAxes: [{
 				scaleLabel: {
-					display: false
+					display: false,
 				},
 				gridLines: {
 					display: true,
-					color: 'rgba(0, 0, 0, 0.03)'
-				}
+					color: 'rgba(0, 0, 0, 0.03)',
+				},
 			}],
 			yAxes: [{
 				scaleLabel: {
-					display: false
+					display: false,
 				},
 				gridLines: {
 					display: true,
-					color: 'rgba(0, 0, 0, 0.03)'
+					color: 'rgba(0, 0, 0, 0.03)',
 				},
 				ticks: {
-					beginAtZero: true
-				}
-			}]
+					beginAtZero: true,
+				},
+			}],
 		},
 		hover: {
-			animationDuration: 0 // duration of animations when hovering an item
+			animationDuration: 0, // duration of animations when hovering an item
 		},
 		responsive: true,
 		maintainAspectRatio: false,
-		responsiveAnimationDuration: 0 // animation duration after a resize
+		responsiveAnimationDuration: 0, // animation duration after a resize
 	};
 
 	if (!anim) {
 		config.animation = {
-			duration: 0 // general animation time
+			duration: 0, // general animation time
 		};
 	}
 
@@ -61,19 +61,19 @@ const lineChartConfiguration = ({legends = false, anim = false, smallTicks = fal
 			display: true,
 			labels: {
 				boxWidth: 20,
-				fontSize: 8
-			}
+				fontSize: 8,
+			},
 		};
 	}
 
 	if (smallTicks) {
 		config.scales.xAxes[0].ticks = {
-			fontSize: 8
+			fontSize: 8,
 		};
 
 		config.scales.yAxes[0].ticks = {
 			beginAtZero: true,
-			fontSize: 8
+			fontSize: 8,
 		};
 	}
 
@@ -81,42 +81,40 @@ const lineChartConfiguration = ({legends = false, anim = false, smallTicks = fal
 };
 
 
-const doughnutChartConfiguration = (title) => {
-	return {
-		layout: {
-			padding: {
-				top: 0,
-				bottom: 0
-			}
+const doughnutChartConfiguration = (title) => ({
+	layout: {
+		padding: {
+			top: 0,
+			bottom: 0,
 		},
-		legend: {
-			display: true,
-			position: 'right',
-			labels: {
-				boxWidth: 20,
-				fontSize: 8
-			}
+	},
+	legend: {
+		display: true,
+		position: 'right',
+		labels: {
+			boxWidth: 20,
+			fontSize: 8,
 		},
-		title: {
-			display: 'true',
-			text: title
-		},
-		tooltips: {
-			enabled: true,
-			mode: 'point',
-			displayColors: false // hide color box
-		},
-		// animation: {
-		// 	duration: 0 // general animation time
-		// },
-		hover: {
-			animationDuration: 0 // duration of animations when hovering an item
-		},
-		responsive: true,
-		maintainAspectRatio: false,
-		responsiveAnimationDuration: 0 // animation duration after a resize
-	};
-};
+	},
+	title: {
+		display: 'true',
+		text: title,
+	},
+	tooltips: {
+		enabled: true,
+		mode: 'point',
+		displayColors: false, // hide color box
+	},
+	// animation: {
+	// 	duration: 0 // general animation time
+	// },
+	hover: {
+		animationDuration: 0, // duration of animations when hovering an item
+	},
+	responsive: true,
+	maintainAspectRatio: false,
+	responsiveAnimationDuration: 0, // animation duration after a resize
+});
 
 
 /**
@@ -139,7 +137,7 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
 		'#2de0a5',
 		'#ffd21f',
 		'#f5455c',
-		'#cbced1'
+		'#cbced1',
 	];
 
 	const datasets = [];
@@ -149,13 +147,13 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
 			label: TAPi18n.__(chartLabel),	// chart label
 			data: dataSets[index],		// data points corresponding to data labels, x-axis points
 			backgroundColor: [
-				colors[index]
+				colors[index],
 			],
 			borderColor: [
-				colors[index]
+				colors[index],
 			],
 			borderWidth: 3,
-			fill: false
+			fill: false,
 		});
 	});
 
@@ -163,9 +161,9 @@ export const drawLineChart = (chart, chartContext, chartLabels, dataLabels, data
 		type: 'line',
 		data: {
 			labels: dataLabels,		// data labels, y-axis points
-			datasets
+			datasets,
 		},
-		options: lineChartConfiguration(options)
+		options: lineChartConfiguration(options),
 	});
 };
 
@@ -194,12 +192,12 @@ export const drawDoughnutChart = (chart, title, chartContext, dataLabels, dataPo
 					'#2de0a5',
 					'#ffd21f',
 					'#f5455c',
-					'#cbced1'
+					'#cbced1',
 				],
-				borderWidth: 0
-			}]
+				borderWidth: 0,
+			}],
 		},
-		options: doughnutChartConfiguration(title)
+		options: doughnutChartConfiguration(title),
 	});
 };
 

@@ -8,7 +8,7 @@ const calculateResponseTimings = (dbCursor) => {
 	let longest = 0;
 	let count = 0;
 
-	dbCursor.forEach(({metrics}) => {
+	dbCursor.forEach(({ metrics }) => {
 		if (metrics && metrics.response && metrics.response.avg) {
 			art += metrics.response.avg;
 			count++;
@@ -18,11 +18,11 @@ const calculateResponseTimings = (dbCursor) => {
 		}
 	});
 
-	const avgArt = (count) ? art/count : 0;
+	const avgArt = (count) ? art / count : 0;
 
 	return {
-		avg: Math.round(avgArt*100)/100,
-		longest
+		avg: Math.round(avgArt * 100) / 100,
+		longest,
 	};
 };
 
@@ -36,7 +36,7 @@ const calculateReactionTimings = (dbCursor) => {
 	let longest = 0;
 	let count = 0;
 
-	dbCursor.forEach(({metrics}) => {
+	dbCursor.forEach(({ metrics }) => {
 		if (metrics && metrics.reaction && metrics.reaction.ft) {
 			arnt += metrics.reaction.ft;
 			longest = Math.max(longest, metrics.reaction.ft);
@@ -44,11 +44,11 @@ const calculateReactionTimings = (dbCursor) => {
 		}
 	});
 
-	const avgArnt = (count) ? arnt/count : 0;
+	const avgArnt = (count) ? arnt / count : 0;
 
 	return {
-		avg: Math.round(avgArnt*100)/100,
-		longest
+		avg: Math.round(avgArnt * 100) / 100,
+		longest,
 	};
 };
 
@@ -62,7 +62,7 @@ const calculateDurationData = (dbCursor) => {
 	let longest = 0;
 	let count = 0;
 
-	dbCursor.forEach(({metrics}) => {
+	dbCursor.forEach(({ metrics }) => {
 		if (metrics && metrics.chatDuration) {
 			total += metrics.chatDuration;
 			longest = Math.max(longest, metrics.chatDuration);
@@ -70,11 +70,11 @@ const calculateDurationData = (dbCursor) => {
 		}
 	});
 
-	const avgCD = (count) ? total/count : 0;
+	const avgCD = (count) ? total / count : 0;
 
 	return {
-		avg: Math.round(avgCD*100)/100,
-		longest
+		avg: Math.round(avgCD * 100) / 100,
+		longest,
 	};
 };
 
@@ -129,7 +129,7 @@ export const getAgentStatusData = (dbCursor) => {
 		offline: 0,
 		available: 0,
 		away: 0,
-		busy: 0
+		busy: 0,
 	};
 
 	dbCursor.forEach((doc) => {
@@ -138,7 +138,7 @@ export const getAgentStatusData = (dbCursor) => {
 		} else if (doc.status === 'online' && doc.statusLivechat === 'available') {
 			data[doc.statusLivechat]++;
 		} else {
-			data['offline']++;
+			data.offline++;
 		}
 	});
 
@@ -163,10 +163,10 @@ export const getConversationsOverviewData = (dbCursor) => {
 
 	return [{
 		title: 'Total_conversations',
-		value: (total) ? total : 0
+		value: (total) ? total : 0,
 	}, {
 		title: 'Total_messages',
-		value: (totalMessages) ? totalMessages : 0
+		value: (totalMessages) ? totalMessages : 0,
 	}];
 };
 
@@ -191,9 +191,9 @@ export const getTimingsOverviewData = (dbCursor) => {
 
 	return [{
 		title: 'Avg_response_time',
-		value: (total) ? secondsToHHMMSS((totalReactionTime/total).toFixed(2)) : '-'
+		value: (total) ? secondsToHHMMSS((totalReactionTime / total).toFixed(2)) : '-',
 	}, {
 		title: 'Avg_reaction_time',
-		value: (total) ? secondsToHHMMSS((totalResponseTime/total).toFixed(2)) : '-'
+		value: (total) ? secondsToHHMMSS((totalResponseTime / total).toFixed(2)) : '-',
 	}];
 };

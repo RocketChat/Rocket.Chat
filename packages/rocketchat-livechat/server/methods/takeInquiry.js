@@ -15,7 +15,7 @@ Meteor.methods({
 		const agent = {
 			agentId: user._id,
 			username: user.username,
-			ts: new Date()
+			ts: new Date(),
 		};
 
 		// add subscription
@@ -48,7 +48,7 @@ Meteor.methods({
 		room.servedBy = {
 			_id: agent.agentId,
 			username: agent.username,
-			ts: agent.ts
+			ts: agent.ts,
 		};
 
 		// mark inquiry as taken

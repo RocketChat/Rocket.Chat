@@ -143,8 +143,8 @@ RocketChat.models.Rooms.setResponseByRoomId = function(roomId, response) {
 		$set: {
 			responseBy: {
 				_id: response.user._id,
-				username: response.user.username
-			}
+				username: response.user.username,
+			},
 		},
 		$unset: {
 			waitingResponse: 1,
@@ -156,13 +156,13 @@ RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(roomId, inc, analyt
 	if (inc == null) { inc = 1; }
 	const update = {
 		$set: {
-			'metrics.response.avg': analyticsData.avgResponseTime
+			'metrics.response.avg': analyticsData.avgResponseTime,
 		},
 		$inc: {
 			'metrics.response.total': inc,
 			'metrics.response.tt': analyticsData.responseTime,
-			'metrics.reaction.tt': analyticsData.reactionTime
-		}
+			'metrics.reaction.tt': analyticsData.reactionTime,
+		},
 	};
 	if (analyticsData.firstResponseTime) {
 		update.$set['metrics.response.fd'] = analyticsData.firstResponseDate;
@@ -172,13 +172,13 @@ RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(roomId, inc, analyt
 	}
 
 	return this.update({
-		_id: roomId
+		_id: roomId,
 	}, update);
 };
 
 RocketChat.models.Rooms.setLastMessageTimeById = function(room, message) {
 	const update = {
-		$set: {}
+		$set: {},
 	};
 
 	// livechat analytics : update last message timestamps
@@ -194,7 +194,7 @@ RocketChat.models.Rooms.setLastMessageTimeById = function(room, message) {
 	}
 
 	return this.update({
-		_id: room._id
+		_id: room._id,
 	}, update);
 };
 
@@ -209,8 +209,8 @@ RocketChat.models.Rooms.getTotalConversationsBetweenDate = function(t, date) {
 		t,
 		ts: {
 			$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-			$lt: new Date(date.lt)	// ISODate, ts < date.lt
-		}
+			$lt: new Date(date.lt),	// ISODate, ts < date.lt
+		},
 	};
 
 	return this.find(query).count();
@@ -221,11 +221,11 @@ RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate = function(t, date) {
 		t,
 		ts: {
 			$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-			$lt: new Date(date.lt)	// ISODate, ts < date.lt
-		}
+			$lt: new Date(date.lt),	// ISODate, ts < date.lt
+		},
 	};
 
-	return this.find(query, { fields: {ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1} });
+	return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 };
 
 RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
@@ -237,7 +237,7 @@ RocketChat.models.Rooms.closeByRoomId = function(roomId, closeInfo) {
 			closedBy: closeInfo.closedBy,
 			closedAt: closeInfo.closedAt,
 			'metrics.chatDuration': closeInfo.chatDuration,
-			'v.status': 'offline'
+			'v.status': 'offline',
 		},
 		$unset: {
 			open: 1,
@@ -263,9 +263,9 @@ RocketChat.models.Rooms.changeAgentByRoomId = function(roomId, newAgent) {
 			servedBy: {
 				_id: newAgent.agentId,
 				username: newAgent.username,
-				ts: new Date()
-			}
-		}
+				ts: new Date(),
+			},
+		},
 	};
 
 	if (newAgent.ts) {

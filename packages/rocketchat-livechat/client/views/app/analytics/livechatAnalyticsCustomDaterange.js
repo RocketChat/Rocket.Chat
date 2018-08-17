@@ -1,7 +1,7 @@
 /* globals popover */
 
 import moment from 'moment';
-import {setDateRange} from '../../../lib/dateHandler';
+import { setDateRange } from '../../../lib/dateHandler';
 
 
 Template.livechatAnalyticsCustomDaterange.helpers({
@@ -10,14 +10,14 @@ Template.livechatAnalyticsCustomDaterange.helpers({
 	},
 	to() {
 		return moment(Template.currentData().daterange.get().to, 'MMM D YYYY').format('L');
-	}
+	},
 });
 
 Template.livechatAnalyticsCustomDaterange.onRendered(function() {
 	this.$('.lc-custom-daterange').datepicker({
 		autoclose: true,
 		todayHighlight: true,
-		format: moment.localeData().longDateFormat('L').toLowerCase()
+		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
 });
 
@@ -31,9 +31,9 @@ Template.livechatAnalyticsCustomDaterange.events({
 		if (moment(from).isValid() && moment(to).isValid()) {
 			Template.currentData().daterange.set(setDateRange('custom', moment(new Date(from)), moment(new Date(to))));
 		} else {
-			handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Error_in_custom_dates'});
+			handleError({ details: { errorTitle: 'Invalid_dates' }, error: 'Error_in_custom_dates' });
 		}
 
 		popover.close();
-	}
+	},
 });

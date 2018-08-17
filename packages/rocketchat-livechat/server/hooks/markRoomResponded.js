@@ -18,8 +18,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		RocketChat.models.Rooms.setResponseByRoomId(room._id, {
 			user: {
 				_id: message.u._id,
-				username: message.u.username
-			}
+				username: message.u.username,
+			},
 		});
 	});
 

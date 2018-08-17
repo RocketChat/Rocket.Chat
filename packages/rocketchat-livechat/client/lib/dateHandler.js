@@ -41,7 +41,7 @@ export const setDateRange = (value, from, to) => {
 	moment.locale('en');		// using fixed locale
 
 	if (moment(from).isAfter(moment())) {
-		return handleError({details: {errorTitle: 'Invalid_dates'}, error: 'Start_date_incorrect'});
+		return handleError({ details: { errorTitle: 'Invalid_dates' }, error: 'Start_date_incorrect' });
 	}
 
 	if (value && from && to) {
@@ -50,13 +50,13 @@ export const setDateRange = (value, from, to) => {
 		return {
 			value,
 			from: moment(from).format('MMM D YYYY'),
-			to: moment(to).format('MMM D YYYY')
+			to: moment(to).format('MMM D YYYY'),
 		};
 	} else {
 		return {
 			value: 'this-week',
 			from: moment().startOf('week').format('MMM D YYYY'),
-			to: moment().endOf('week').format('MMM D YYYY')
+			to: moment().endOf('week').format('MMM D YYYY'),
 		};
 	}
 };
@@ -110,6 +110,6 @@ export const updateDateRange = (currentDaterange, order) => {
 			}
 			// break;
 		case 'custom':
-			handleError({details: {errorTitle: 'Navigation_didnot_work'}, error: 'You_have_selected_custom_dates'});
+			handleError({ details: { errorTitle: 'Navigation_didnot_work' }, error: 'You_have_selected_custom_dates' });
 	}
 };

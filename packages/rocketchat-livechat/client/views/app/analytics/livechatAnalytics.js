@@ -1,43 +1,41 @@
 /* globals popover */
 
-import {drawLineChart} from '../../../lib/chartHandler';
-import {setDateRange, updateDateRange} from '../../../lib/dateHandler';
+import { drawLineChart } from '../../../lib/chartHandler';
+import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
 
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
 
-const analyticsAllOptions = () => {
-	return [{
-		name: 'Conversations',
-		value: 'conversations',
-		chartOptions: [{
-			name: 'Total_conversations',
-			value: 'total-conversations'
-		}, {
-			name: 'Avg_chat_duration',
-			value: 'avg-chat-duration'
-		}, {
-			name: 'Total_messages',
-			value: 'total-messages'
-		}]
+const analyticsAllOptions = () => [{
+	name: 'Conversations',
+	value: 'conversations',
+	chartOptions: [{
+		name: 'Total_conversations',
+		value: 'total-conversations',
 	}, {
-		name: 'Productivity',
-		value: 'productivity',
-		chartOptions: [{
-			name: 'Avg_first_response_time',
-			value: 'avg-first-response-time'
-		}, {
-			name: 'Best_first_response_time',
-			value: 'best_first_response_time'
-		}, {
-			name: 'Avg_response_time',
-			value: 'avg-response-time'
-		}, {
-			name: 'Avg_reaction_time',
-			value: 'avg-reaction-time'
-		}]
-	}];
-};
+		name: 'Avg_chat_duration',
+		value: 'avg-chat-duration',
+	}, {
+		name: 'Total_messages',
+		value: 'total-messages',
+	}],
+}, {
+	name: 'Productivity',
+	value: 'productivity',
+	chartOptions: [{
+		name: 'Avg_first_response_time',
+		value: 'avg-first-response-time',
+	}, {
+		name: 'Best_first_response_time',
+		value: 'best_first_response_time',
+	}, {
+		name: 'Avg_response_time',
+		value: 'avg-response-time',
+	}, {
+		name: 'Avg_reaction_time',
+		value: 'avg-reaction-time',
+	}],
+}];
 
 /**
  *
@@ -60,7 +58,7 @@ const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arr
 const updateAnalyticsChart = () => {
 	const options = {
 		daterange: templateInstance.daterange.get(),
-		chartOptions: templateInstance.chartOptions.get()
+		chartOptions: templateInstance.chartOptions.get(),
 	};
 
 	Meteor.call('livechat:getAnalyticsChartData', options, function(error, result) {
@@ -91,7 +89,7 @@ const updateAnalyticsChart = () => {
 const updateAnalyticsOverview = () => {
 	const options = {
 		daterange: templateInstance.daterange.get(),
-		analyticsOptions: templateInstance.analyticsOptions.get()
+		analyticsOptions: templateInstance.analyticsOptions.get(),
 	};
 
 	Meteor.call('livechat:getAnalyticsOverviewData', options, (error, result) => {
@@ -138,7 +136,7 @@ Template.livechatAnalytics.helpers({
 			return false;
 		}
 		return true;
-	}
+	},
 });
 
 
@@ -176,9 +174,9 @@ Template.livechatAnalytics.events({
 			currentTarget: e.currentTarget,
 			data: {
 				options,
-				daterange: templateInstance.daterange
+				daterange: templateInstance.daterange,
 			},
-			offsetVertical: e.currentTarget.clientHeight + 10
+			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		popover.open(config);
 	},
@@ -206,5 +204,5 @@ Template.livechatAnalytics.events({
 		templateInstance.chartOptions.set(templateInstance.analyticsOptions.get().chartOptions.filter(function(obj) {
 			return obj.value === e.currentTarget.value;
 		})[0]);
-	}
+	},
 });

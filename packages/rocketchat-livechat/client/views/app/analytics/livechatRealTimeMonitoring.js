@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {drawLineChart, drawDoughnutChart, updateChart} from '../../../lib/chartHandler';
-import {getTimingsChartData, getAgentStatusData, getConversationsOverviewData, getTimingsOverviewData} from '../../../lib/dataHandler';
+import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';
+import { getTimingsChartData, getAgentStatusData, getConversationsOverviewData, getTimingsOverviewData } from '../../../lib/dataHandler';
 
 let chartContexts = {};			// stores context of current chart, used to clean when redrawing
 let templateInstance;
@@ -29,7 +29,7 @@ const initChart = {
 			document.getElementById('lc-chats-per-agent-chart'),
 			chartContexts['lc-chats-per-agent-chart'],
 			['Open', 'Closed'],
-			[], [[], []], {legends: true, anim: true, smallTicks: true});
+			[], [[], []], { legends: true, anim: true, smallTicks: true });
 	},
 
 	'lc-chats-per-dept-chart'() {
@@ -41,7 +41,7 @@ const initChart = {
 			document.getElementById('lc-chats-per-dept-chart'),
 			chartContexts['lc-chats-per-dept-chart'],
 			['Open', 'Closed'],
-			[], [[], []], {legends: true, anim: true, smallTicks: true});
+			[], [[], []], { legends: true, anim: true, smallTicks: true });
 	},
 
 	'lc-reaction-response-times-chart'() {
@@ -50,7 +50,7 @@ const initChart = {
 		const today = moment().startOf('day');
 		for (let m = today; m.diff(moment(), 'hours') < 0; m.add(1, 'hours')) {
 			const hour = m.format('H');
-			timingLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour)+1)%24, ['H']).format('hA') }`);
+			timingLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
 			initData.push(0);
 		}
 
@@ -59,7 +59,7 @@ const initChart = {
 			chartContexts['lc-reaction-response-times-chart'],
 			['Avg_reaction_time', 'Longest_reaction_time', 'Avg_response_time', 'Longest_response_time'],
 			timingLabels.slice(),
-			[initData.slice(), initData.slice(), initData.slice(), initData.slice()], {legends: true, anim: true, smallTicks: true});
+			[initData.slice(), initData.slice(), initData.slice(), initData.slice()], { legends: true, anim: true, smallTicks: true });
 	},
 
 	'lc-chat-duration-chart'() {
@@ -68,7 +68,7 @@ const initChart = {
 		const today = moment().startOf('day');
 		for (let m = today; m.diff(moment(), 'hours') < 0; m.add(1, 'hours')) {
 			const hour = m.format('H');
-			timingLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour)+1)%24, ['H']).format('hA') }`);
+			timingLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
 			initData.push(0);
 		}
 
@@ -77,8 +77,8 @@ const initChart = {
 			chartContexts['lc-chat-duration-chart'],
 			['Avg_chat_duration', 'Longest_chat_duration'],
 			timingLabels.slice(),
-			[initData.slice(), initData.slice()], {legends: true, anim: true, smallTicks: true});
-	}
+			[initData.slice(), initData.slice()], { legends: true, anim: true, smallTicks: true });
+	},
 };
 
 const initAllCharts = () => {
@@ -101,13 +101,13 @@ const updateChartData = (chartId, label, data) => {
 
 const metricsUpdated = (ts) => {
 	const hour = moment(ts).format('H');
-	const label = `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour)+1)%24, ['H']).format('hA') }`;
+	const label = `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`;
 
 	const query = {
-		'ts': {
+		ts: {
 			$gte: new Date(moment(ts).startOf('hour')),
-			$lt: new Date(moment(ts).add(1, 'hours').startOf('hour'))
-		}
+			$lt: new Date(moment(ts).add(1, 'hours').startOf('hour')),
+		},
 	};
 
 	const data = getTimingsChartData(LivechatMonitoring.find(query));
@@ -119,11 +119,11 @@ const metricsUpdated = (ts) => {
 const updateDepartmentsChart = (departmentId) => {
 	if (departmentId) {
 		// update for dept
-		const label = LivechatDepartment.findOne({_id: departmentId}).name;
+		const label = LivechatDepartment.findOne({ _id: departmentId }).name;
 
 		const data = {
-			open: LivechatMonitoring.find({departmentId, open: true}).count(),
-			closed: LivechatMonitoring.find({departmentId, open: {$exists: false}}).count()
+			open: LivechatMonitoring.find({ departmentId, open: true }).count(),
+			closed: LivechatMonitoring.find({ departmentId, open: { $exists: false } }).count(),
 		};
 
 		updateChartData('lc-chats-per-dept-chart', label, [data.open, data.closed]);
@@ -139,8 +139,8 @@ const updateAgentsChart = (agent) => {
 	if (agent) {
 		// update for the agent
 		const data = {
-			open: LivechatMonitoring.find({'servedBy.username': agent, open: true}).count(),
-			closed: LivechatMonitoring.find({'servedBy.username': agent, open: {$exists: false}}).count()
+			open: LivechatMonitoring.find({ 'servedBy.username': agent, open: true }).count(),
+			closed: LivechatMonitoring.find({ 'servedBy.username': agent, open: { $exists: false } }).count(),
 		};
 
 		updateChartData('lc-chats-per-agent-chart', agent, [data.open, data.closed]);
@@ -165,9 +165,9 @@ const updateAgentStatusChart = () => {
 
 const updateChatsChart = () => {
 	const chats = {
-		open: LivechatMonitoring.find({'metrics.chatDuration': {$exists: false}, 'servedBy': {$exists: true}}).count(),
-		closed: LivechatMonitoring.find({'metrics.chatDuration': {$exists: true}, 'servedBy': {$exists: true}}).count(),
-		queue: LivechatMonitoring.find({'servedBy': {$exists: false}}).count()
+		open: LivechatMonitoring.find({ 'metrics.chatDuration': { $exists: false }, servedBy: { $exists: true } }).count(),
+		closed: LivechatMonitoring.find({ 'metrics.chatDuration': { $exists: true }, servedBy: { $exists: true } }).count(),
+		queue: LivechatMonitoring.find({ servedBy: { $exists: false } }).count(),
 	};
 
 	updateChartData('lc-chats-chart', 'Open', [chats.open]);
@@ -195,7 +195,7 @@ const displayDepartmentChart = (val) => {
 const updateVisitorsCount = (count) => {
 	templateInstance.totalVisitors.set({
 		title: templateInstance.totalVisitors.get().title,
-		value: templateInstance.totalVisitors.get().value + count
+		value: templateInstance.totalVisitors.get().value + count,
 	});
 };
 
@@ -211,7 +211,7 @@ Template.livechatRealTimeMonitoring.helpers({
 	},
 	totalVisitors() {
 		return templateInstance.totalVisitors.get();
-	}
+	},
 });
 
 Template.livechatRealTimeMonitoring.onCreated(function() {
@@ -220,7 +220,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	this.timingOverview = new ReactiveVar();
 	this.totalVisitors = new ReactiveVar({
 		title: 'Total_visitors',
-		value: 0
+		value: 0,
 	});
 
 	AgentUsers.find().observeChanges({
@@ -230,7 +230,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		added(/* id, fields */) {
 			updateAgentStatusChart();
 		},
-		removed(/* id */) {}
+		removed(/* id */) {},
 	});
 
 	LivechatVisitors.find().observeChanges({
@@ -240,7 +240,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		},
 		removed(/* id */) {
 			updateVisitorsCount(-1);
-		}
+		},
 	});
 
 	LivechatDepartment.find().observeChanges({
@@ -252,12 +252,12 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			displayDepartmentChart(true);
 			updateDepartmentsChart(id);
 		},
-		removed(/* id */) {}
+		removed(/* id */) {},
 	});
 
 	LivechatMonitoring.find().observeChanges({
 		changed(id, fields) {
-			const ts = LivechatMonitoring.findOne({_id: id}).ts;
+			const { ts } = LivechatMonitoring.findOne({ _id: id });
 
 			if (fields.metrics) {
 				// metrics changed
@@ -287,7 +287,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			}
 		},
 		added(id, fields) {
-			const ts = LivechatMonitoring.findOne({_id: id}).ts;
+			const { ts } = LivechatMonitoring.findOne({ _id: id });
 
 			if (fields.metrics) {
 				// metrics changed
@@ -315,7 +315,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 				updateConversationsOverview();
 			}
 		},
-		removed(/* id */) {}
+		removed(/* id */) {},
 	});
 });
 

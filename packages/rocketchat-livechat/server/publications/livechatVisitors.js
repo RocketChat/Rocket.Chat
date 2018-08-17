@@ -8,7 +8,7 @@ Meteor.publish('livechat:visitors', function() {
 
 	const date = {
 		gte: moment().startOf('day'),
-		lt: moment().startOf('day').add(1, 'days')
+		lt: moment().startOf('day').add(1, 'days'),
 	};
 
 	const self = this;
@@ -22,7 +22,7 @@ Meteor.publish('livechat:visitors', function() {
 		},
 		removed(id) {
 			self.removed('livechatVisitors', id);
-		}
+		},
 	});
 
 	self.ready();
