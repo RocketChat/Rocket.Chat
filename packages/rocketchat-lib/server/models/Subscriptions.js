@@ -1,6 +1,6 @@
 class ModelSubscriptions extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });

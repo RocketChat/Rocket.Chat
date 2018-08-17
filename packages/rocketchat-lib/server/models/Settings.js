@@ -1,6 +1,6 @@
 class ModelSettings extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({ blocked: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ hidden: 1 }, { sparse: 1 });

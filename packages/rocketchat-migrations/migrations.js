@@ -168,8 +168,7 @@ Migrations.migrateTo = function(command) {
 		subcommand = command.split(',')[1];
 	}
 
-	const maxAttempts = Migrations.options.maxAttempts;
-	const retryInterval = Migrations.options.retryInterval;
+	const { maxAttempts, retryInterval } = Migrations.options;
 	let migrated;
 	for (let attempts = 1; attempts <= maxAttempts; attempts++) {
 		if (version === 'latest') {

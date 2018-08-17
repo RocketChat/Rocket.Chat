@@ -51,11 +51,11 @@ Template.body.onRendered(function() {
 	});
 
 	$(document.body).on('keydown', function(e) {
-		const target = e.target;
+		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
 			return;
 		}
-		if (!(e.keyCode > 45 && e.keyCode < 91 || e.keyCode === 8)) {
+		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
 			return;
 		}
 		if (/input|textarea|select/i.test(target.tagName)) {
