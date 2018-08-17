@@ -10,8 +10,8 @@ if (process.env.SANDSTORM === '1') {
 	RocketChat.Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
 		const httpBridge = getHttpBridge();
 		const session = httpBridge.getSessionContext(sessionId).context;
-		const api = httpBridge.getSandstormApi(sessionId).api;
-		const cap = waitPromise(api.restore(new Buffer(token, 'base64'))).cap;
+		const { api } = httpBridge.getSandstormApi(sessionId);
+		const { cap } = waitPromise(api.restore(new Buffer(token, 'base64')));
 		return waitPromise(session.offer(cap, undefined, { tags: [{
 			id: '15831515641881813735',
 			value: new Buffer(serializedDescriptor, 'base64'),
@@ -26,10 +26,10 @@ if (process.env.SANDSTORM === '1') {
 			const httpBridge = getHttpBridge();
 			const session = httpBridge.getSessionContext(sessionId).context;
 			const cap = waitPromise(session.claimRequest(token)).cap.castAs(Grain.UiView);
-			const api = httpBridge.getSandstormApi(sessionId).api;
+			const { api } = httpBridge.getSandstormApi(sessionId);
 			const newToken = waitPromise(api.save(cap)).token.toString('base64');
 			const viewInfo = waitPromise(cap.getViewInfo());
-			const appTitle = viewInfo.appTitle;
+			const { appTitle } = viewInfo;
 			const asset = waitPromise(viewInfo.grainIcon.getUrl());
 			const appIconUrl = `${ asset.protocol }://${ asset.hostPath }`;
 			return {

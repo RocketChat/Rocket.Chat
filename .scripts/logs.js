@@ -75,7 +75,7 @@ function getPRInfo(number, commit) {
 				.then((commits) => {
 					info.contributors = _.unique(_.flatten(commits.data.map((i) => {
 						if (!i.author || !i.committer) {
-							return;
+							return null;
 						}
 
 						return [i.author.login, i.committer.login];

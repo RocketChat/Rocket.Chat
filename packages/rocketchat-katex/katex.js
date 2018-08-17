@@ -101,7 +101,7 @@ class Katex {
 		const outer = new Boundary;
 
 		// The closing delimiter matching to the opening one
-		const closer = opening_delimiter_match.options.closer;
+		const { closer } = opening_delimiter_match.options;
 		outer.start = opening_delimiter_match.pos;
 		inner.start = opening_delimiter_match.pos + closer.length;
 

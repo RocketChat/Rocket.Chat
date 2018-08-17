@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const extend = require('util')._extend;
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 const processes = [];
 
 const baseDir = path.resolve(__dirname, '..');

@@ -754,6 +754,18 @@ RocketChat.settings.addGroup('General', function() {
 		type: 'string',
 		public: true,
 	});
+	this.add('CDN_PREFIX_ALL', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('CDN_JSCSS_PREFIX', '', {
+		type: 'string',
+		public: true,
+		enableQuery: {
+			_id: 'CDN_PREFIX_ALL',
+			value: false,
+		},
+	});
 	this.add('Force_SSL', false, {
 		type: 'boolean',
 		public: true,
