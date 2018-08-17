@@ -30,9 +30,9 @@ Blaze.toHTMLWithDataNonReactive = function(content, data) {
 	return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data));
 };
 
-Blaze.registerHelper('nrrargs', function() {
+Blaze.registerHelper('nrrargs', function(...args) {
 	return {
-		_arguments: arguments,
+		_arguments: args,
 	};
 });
 

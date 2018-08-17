@@ -164,11 +164,10 @@ const updateServices = debounce(() => {
 				$set: samlConfigs,
 			});
 			return configureSamlService(samlConfigs);
-		} else {
-			ServiceConfiguration.configurations.remove({
-				service: serviceName.toLowerCase(),
-			});
 		}
+		return ServiceConfiguration.configurations.remove({
+			service: serviceName.toLowerCase(),
+		});
 	}).filter((e) => e);
 }, 2000);
 

@@ -349,9 +349,9 @@ const uploadZipFile = function(exportOperation, callback) {
 	const stream = fs.createReadStream(filePath);
 
 	const contentType = 'application/zip';
-	const size = stat.size;
+	const { size } = stat;
 
-	const userId = exportOperation.userId;
+	const { userId } = exportOperation;
 	const user = RocketChat.models.Users.findOneById(userId);
 	const userDisplayName = user ? user.name : userId;
 	const utcDate = new Date().toISOString().split('T')[0];

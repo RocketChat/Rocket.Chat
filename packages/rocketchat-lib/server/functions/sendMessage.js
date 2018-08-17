@@ -134,7 +134,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (message._id && upsert) {
-			const _id = message._id;
+			const { _id } = message;
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,

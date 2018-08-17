@@ -186,7 +186,7 @@ describe('GraphQL Tests', function() {
 			.expect((res) => {
 				expect(res.body).to.have.property('data');
 				expect(res.body).to.not.have.property('errors');
-				const me = res.body.data.me;
+				const { me } = res.body.data;
 				expect(me).to.have.property('username', user.username);
 				expect(me).to.have.property('email', user.email);
 				expect(me.channels).to.be.an('array');

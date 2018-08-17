@@ -28,7 +28,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 });
 
-const calculateClientHash = WebAppHashing.calculateClientHash;
+const { calculateClientHash } = WebAppHashing;
 
 WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
 	const css = RocketChat.theme.getCss();

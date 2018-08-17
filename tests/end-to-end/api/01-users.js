@@ -344,7 +344,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
@@ -363,7 +363,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 				})
@@ -424,7 +424,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
@@ -543,13 +543,16 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({ username: user.username })
 				.expect('Content-Type', 'application/json')
-				.end((err, res) => (err ? done() : request.get(api('me'))
-					.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done))));
+				.end((err, res) => (err ? done() :
+					request.get(api('me'))
+						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done))
+				)
+			);
 		});
 	});
 

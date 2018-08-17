@@ -31,7 +31,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	fileTypeClass() {
-		const [, type] = this.type && /^(.+?)\//.exec(this.type) || [];
+		const [, type] = (this.type && /^(.+?)\//.exec(this.type)) || [];
 		if (type) {
 			return `room-files-${ type }`;
 		}

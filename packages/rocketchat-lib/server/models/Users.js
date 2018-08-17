@@ -2,8 +2,8 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 class ModelUsers extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });

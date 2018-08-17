@@ -49,7 +49,7 @@ RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Invalid integration id.');
 		}
 
-		const id = this.queryParams.id;
+		const { id } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
