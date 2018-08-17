@@ -3,7 +3,7 @@ import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;
-};
+}
 
 Template.livechatWindow.helpers({
 	title() {
@@ -44,7 +44,7 @@ Template.livechatWindow.helpers({
 			offlineMessage: Livechat.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
 			offlineSuccessMessage: Livechat.offlineSuccessMessage,
 			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
-			displayOfflineForm: Livechat.displayOfflineForm
+			displayOfflineForm: Livechat.displayOfflineForm,
 		};
 	},
 	videoCalling() {
@@ -55,7 +55,7 @@ Template.livechatWindow.helpers({
 	},
 	showWidget() {
 		return Livechat.online || Livechat.displayOfflineForm;
-	}
+	},
 });
 
 Template.livechatWindow.events({
@@ -68,12 +68,12 @@ Template.livechatWindow.events({
 	},
 	'click .sound'(event) {
 		event.stopPropagation();
-		Session.set({sound: !Session.get('sound')});
-	}
+		Session.set({ sound: !Session.get('sound') });
+	},
 });
 
 Template.livechatWindow.onCreated(function() {
-	Session.set({sound: true});
+	Session.set({ sound: true });
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
@@ -90,7 +90,7 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
-	const loadDepartments = departments => {
+	const loadDepartments = (departments) => {
 		Department.remove({});
 		departments.forEach((department) => {
 			Department.insert(department);
@@ -127,6 +127,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
+			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;

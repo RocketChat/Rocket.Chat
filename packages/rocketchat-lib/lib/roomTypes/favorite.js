@@ -7,7 +7,7 @@ export class FavoriteRoomType extends RoomTypeConfig {
 			order: 20,
 			header: 'favorite',
 			icon: 'star',
-			label: 'Favorites'
+			label: 'Favorites',
 		});
 	}
 	condition() {

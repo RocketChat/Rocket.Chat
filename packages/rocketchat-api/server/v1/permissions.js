@@ -13,7 +13,7 @@ RocketChat.API.v1.addRoute('permissions', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('permissions.list', { authRequired: true }, {
@@ -21,9 +21,9 @@ RocketChat.API.v1.addRoute('permissions.list', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success({
-			permissions: result
+			permissions: result,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
@@ -36,9 +36,9 @@ RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
 			permissions: [
 				Match.ObjectIncluding({
 					_id: String,
-					roles: [String]
-				})
-			]
+					roles: [String],
+				}),
+			],
 		});
 
 		let permissionNotFound = false;
@@ -74,7 +74,7 @@ RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success({
-			permissions: result
+			permissions: result,
 		});
-	}
+	},
 });

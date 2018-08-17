@@ -6,7 +6,7 @@ Meteor.methods({
 			token,
 			name,
 			email,
-			department
+			department,
 		});
 
 		// update visited page history to not expire
@@ -17,11 +17,11 @@ Meteor.methods({
 				token: 1,
 				name: 1,
 				username: 1,
-				visitorEmails: 1
-			}
+				visitorEmails: 1,
+			},
 		});
 
-		//If it's updating an existing visitor, it must also update the roomInfo
+		// If it's updating an existing visitor, it must also update the roomInfo
 		const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
 		cursor.forEach((room) => {
 			RocketChat.Livechat.saveRoomInfo(room, visitor);
@@ -29,7 +29,7 @@ Meteor.methods({
 
 		return {
 			userId,
-			visitor
+			visitor,
 		};
-	}
+	},
 });

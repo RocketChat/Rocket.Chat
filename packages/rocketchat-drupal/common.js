@@ -14,8 +14,8 @@ const config = {
 	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.drupal'],
-		forOtherUsers: ['services.drupal.name']
-	}
+		forOtherUsers: ['services.drupal.name'],
+	},
 };
 
 const Drupal = new CustomOAuth('drupal', config);

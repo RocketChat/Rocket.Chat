@@ -3,7 +3,7 @@ FlowRouter.route('/admin/chatpal', {
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'ChatpalAdmin',
-			pageTitle: t('Chatpal_AdminPage')
+			pageTitle: t('Chatpal_AdminPage'),
 		});
-	}
+	},
 });
