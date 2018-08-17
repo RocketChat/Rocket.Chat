@@ -3,8 +3,8 @@ RocketChat.Migrations.add({
 	up() {
 		const userOptions = {
 			fields: {
-				_id : 1
-			}
+				_id : 1,
+			},
 		};
 
 		const users = RocketChat.models.Users.model.find({}, userOptions).fetch();
@@ -12,16 +12,16 @@ RocketChat.Migrations.add({
 
 		const subscriptionQuery = {
 			'u._id' : {
-				'$nin' : userIds
-			}
+				$nin : userIds,
+			},
 		};
 
 		const subscriptionOptions = {
 			fields : {
 				_id : 1,
 				rid : 1,
-				'u._id' : 1
-			}
+				'u._id' : 1,
+			},
 		};
 
 		const subscriptions = RocketChat.models.Subscriptions.find(subscriptionQuery, subscriptionOptions);
@@ -43,5 +43,5 @@ RocketChat.Migrations.add({
 
 			RocketChat.models.Subscriptions.model.remove({ _id: subscription._id.toString() });
 		});
-	}
+	},
 });
