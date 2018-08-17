@@ -4,7 +4,7 @@ RocketChat.API.v1.addRoute('livechat/transcript', {
 			check(this.bodyParams, {
 				token: String,
 				rid: String,
-				email: String
+				email: String,
 			});
 
 			const { token, rid, email } = this.bodyParams;
@@ -16,5 +16,5 @@ RocketChat.API.v1.addRoute('livechat/transcript', {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
-	}
+	},
 });

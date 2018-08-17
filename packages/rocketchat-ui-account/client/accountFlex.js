@@ -1,7 +1,7 @@
 Template.accountFlex.events({
 	'click [data-action="close"]'() {
 		SideNav.closeFlex();
-	}
+	},
 });
 
 // Template.accountFlex.onRendered(function() {
@@ -18,10 +18,10 @@ Template.accountFlex.helpers({
 			icon,
 			pathSection: section,
 			pathGroup: group,
-			darken: true
+			darken: true,
 		};
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
-	}
+	},
 });

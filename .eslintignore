@@ -6,6 +6,7 @@ packages/rocketchat-emoji-emojione/generateEmojiIndex.js
 packages/rocketchat-favico/favico.js
 packages/rocketchat-katex/client/katex/katex.min.js
 packages/rocketchat-livechat/.app/node_modules
+packages/rocketchat-livechat/.app/.meteor
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 packages/rocketchat-theme/client/minicolors/jquery.minicolors.js
@@ -21,3 +22,4 @@ public/livechat/
 public/mp3-realtime-worker.js
 public/lame.min.js
 !.scripts
+!packages/rocketchat-livechat/.app

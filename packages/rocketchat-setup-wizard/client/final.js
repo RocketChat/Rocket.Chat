@@ -4,7 +4,7 @@ Template.setupWizardFinal.onCreated(function() {
 		FlowRouter.go('setup-wizard');
 	}
 
-	this.autorun(c => {
+	this.autorun((c) => {
 		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 		if (!showSetupWizard) {
 			// Setup Wizard state is not defined yet
@@ -41,11 +41,11 @@ Template.setupWizardFinal.events({
 			localStorage.removeItem('wizardFinal');
 			FlowRouter.go('home');
 		});
-	}
+	},
 });
 
 Template.setupWizardFinal.helpers({
 	siteUrl() {
 		return RocketChat.settings.get('Site_Url');
-	}
+	},
 });

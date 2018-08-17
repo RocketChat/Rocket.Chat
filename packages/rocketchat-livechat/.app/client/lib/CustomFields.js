@@ -29,6 +29,6 @@ this.CustomFields = (function() {
 
 	return {
 		init,
-		setCustomField
+		setCustomField,
 	};
 }());

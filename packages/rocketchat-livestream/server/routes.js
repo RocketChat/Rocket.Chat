@@ -1,5 +1,5 @@
 import google from 'googleapis';
-const OAuth2 = google.auth.OAuth2;
+const { OAuth2 } = google.auth;
 
 RocketChat.API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
@@ -9,17 +9,17 @@ RocketChat.API.v1.addRoute('livestream/oauth', {
 			access_type: 'offline',
 			scope: ['https://www.googleapis.com/auth/youtube'],
 			state: JSON.stringify({
-				userId
-			})
+				userId,
+			}),
 		});
 
 		return {
 			statusCode: 302,
 			headers: {
-				Location: url
-			}, body: 'Oauth redirect'
+				Location: url,
+			}, body: 'Oauth redirect',
 		};
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('livestream/oauth/callback', {
@@ -32,14 +32,14 @@ RocketChat.API.v1.addRoute('livestream/oauth/callback', {
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
-		RocketChat.models.Users.update({ _id: userId }, {$set: {
-			'settings.livestream' : ret
-		}});
+		RocketChat.models.Users.update({ _id: userId }, { $set: {
+			'settings.livestream' : ret,
+		} });
 
 		return {
 			headers: {
-				'content-type' : 'text/html'
-			}, body: '<script>window.close()</script>'
+				'content-type' : 'text/html',
+			}, body: '<script>window.close()</script>',
 		};
-	}
+	},
 });

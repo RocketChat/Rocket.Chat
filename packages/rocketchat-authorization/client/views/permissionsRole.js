@@ -3,7 +3,7 @@ import toastr from 'toastr';
 Template.permissionsRole.helpers({
 	role() {
 		return RocketChat.models.Roles.findOne({
-			_id: FlowRouter.getParam('name')
+			_id: FlowRouter.getParam('name'),
 		}) || {};
 	},
 
@@ -67,11 +67,11 @@ Template.permissionsRole.helpers({
 					sort: 'name',
 					selector(match) {
 						return {
-							name: match
+							name: match,
 						};
-					}
-				}
-			]
+					},
+				},
+			],
 		};
 	},
 
@@ -88,18 +88,18 @@ Template.permissionsRole.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch()
+						exceptions: instance.usersInRole.get() && instance.usersInRole.get().fetch(),
 					},
 					selector(match) {
 						return {
-							term: match
+							term: match,
 						};
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
-	}
+	},
 });
 
 Template.permissionsRole.events({
@@ -113,9 +113,9 @@ Template.permissionsRole.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
-			Meteor.call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get(), function(error/*, result*/) {
+			Meteor.call('authorization:removeUserFromRole', FlowRouter.getParam('name'), this.username, instance.searchRoom.get(), function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -125,29 +125,29 @@ Template.permissionsRole.events({
 					text: t('User_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 		});
 	},
 
-	'submit #form-role'(e/*, instance*/) {
+	'submit #form-role'(e/* , instance*/) {
 		e.preventDefault();
-		const oldBtnValue = e.currentTarget.elements['save'].value;
-		e.currentTarget.elements['save'].value = t('Saving');
+		const oldBtnValue = e.currentTarget.elements.save.value;
+		e.currentTarget.elements.save.value = t('Saving');
 		const roleData = {
-			description: e.currentTarget.elements['description'].value,
-			scope: e.currentTarget.elements['scope'].value
+			description: e.currentTarget.elements.description.value,
+			scope: e.currentTarget.elements.scope.value,
 		};
 
 		if (this._id) {
 			roleData.name = this._id;
 		} else {
-			roleData.name = e.currentTarget.elements['name'].value;
+			roleData.name = e.currentTarget.elements.name.value;
 		}
 
-		Meteor.call('authorization:saveRole', roleData, (error/*, result*/) => {
-			e.currentTarget.elements['save'].value = oldBtnValue;
+		Meteor.call('authorization:saveRole', roleData, (error/* , result*/) => {
+			e.currentTarget.elements.save.value = oldBtnValue;
 			if (error) {
 				return handleError(error);
 			}
@@ -156,7 +156,7 @@ Template.permissionsRole.events({
 
 			if (!this._id) {
 				return FlowRouter.go('admin-permissions-edit', {
-					name: roleData.name
+					name: roleData.name,
 				});
 			}
 		});
@@ -164,14 +164,14 @@ Template.permissionsRole.events({
 
 	'submit #form-users'(e, instance) {
 		e.preventDefault();
-		if (e.currentTarget.elements['username'].value.trim() === '') {
+		if (e.currentTarget.elements.username.value.trim() === '') {
 			return toastr.error(t('Please_fill_a_username'));
 		}
-		const oldBtnValue = e.currentTarget.elements['add'].value;
-		e.currentTarget.elements['add'].value = t('Saving');
+		const oldBtnValue = e.currentTarget.elements.add.value;
+		e.currentTarget.elements.add.value = t('Saving');
 
-		Meteor.call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements['username'].value, instance.searchRoom.get(), (error/*, result*/) => {
-			e.currentTarget.elements['add'].value = oldBtnValue;
+		Meteor.call('authorization:addUserToRole', FlowRouter.getParam('name'), e.currentTarget.elements.username.value, instance.searchRoom.get(), (error/* , result*/) => {
+			e.currentTarget.elements.add.value = oldBtnValue;
 			if (error) {
 				return handleError(error);
 			}
@@ -185,13 +185,13 @@ Template.permissionsRole.events({
 		return e.preventDefault();
 	},
 
-	'click .delete-role'(e/*, instance*/) {
+	'click .delete-role'(e/* , instance*/) {
 		e.preventDefault();
 		if (this.protected) {
 			return toastr.error(t('error-delete-protected-role'));
 		}
 
-		Meteor.call('authorization:deleteRole', this._id, function(error/*, result*/) {
+		Meteor.call('authorization:deleteRole', this._id, function(error/* , result*/) {
 			if (error) {
 				return handleError(error);
 			}
@@ -208,7 +208,7 @@ Template.permissionsRole.events({
 
 	'autocompleteselect input[name=room]'(event, template, doc) {
 		template.searchRoom.set(doc._id);
-	}
+	},
 });
 
 Template.permissionsRole.onCreated(function() {
@@ -231,8 +231,8 @@ Template.permissionsRole.onCreated(function() {
 
 		this.usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
 			sort: {
-				username: 1
-			}
+				username: 1,
+			},
 		}));
 	});
 });

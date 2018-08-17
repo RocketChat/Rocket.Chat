@@ -4,7 +4,7 @@ RocketChat.API.v1.addRoute('livechat/offline.message', {
 			check(this.bodyParams, {
 				name: String,
 				email: String,
-				message: String
+				message: String,
 			});
 
 			const { name, email, message } = this.bodyParams;
@@ -16,5 +16,5 @@ RocketChat.API.v1.addRoute('livechat/offline.message', {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
-	}
+	},
 });

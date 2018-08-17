@@ -11,7 +11,7 @@ Meteor.startup(() => {
 					return handleError(error);
 				}
 				const subscription = ChatSubscription.findOne({
-					rid: message.rid
+					rid: message.rid,
 				});
 				if (subscription == null) {
 					return;
@@ -24,6 +24,6 @@ Meteor.startup(() => {
 			return message.u._id !== Meteor.user()._id;
 		},
 		order: 22,
-		group: 'menu'
+		group: 'menu',
 	});
 });

@@ -10,9 +10,9 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 					email: Match.Maybe(String),
 					department: Match.Maybe(String),
 					phone: Match.Maybe(String),
-					username: Match.Maybe(String)
-					/*customFields: Match.Maybe(Array) // think about receiving visitor custom fields here..*/
-				})
+					username: Match.Maybe(String),
+					/* customFields: Match.Maybe(Array) // think about receiving visitor custom fields here..*/
+				}),
 			});
 
 			const visitorToken = this.bodyParams.visitor.token;
@@ -26,7 +26,7 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
-	}
+	},
 });
 
 /* authRequired: true needs to be removed */
@@ -38,7 +38,7 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken', { authRequired: tru
 
 		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.visitorToken);
 		return RocketChat.API.v1.success(visitor);
-	}
+	},
 });
 
 /* authRequired: true needs to be removed */
@@ -55,9 +55,9 @@ RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room', { authRequired
 				cl: 1,
 				u: 1,
 				usernames: 1,
-				servedBy: 1
-			}
+				servedBy: 1,
+			},
 		}).fetch();
 		return RocketChat.API.v1.success({ rooms });
-	}
+	},
 });

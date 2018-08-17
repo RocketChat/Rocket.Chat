@@ -31,7 +31,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	fileTypeClass() {
-		const [ , type ] = this.type && /^(.+?)\//.exec(this.type) || [];
+		const [, type] = (this.type && /^(.+?)\//.exec(this.type)) || [];
 		if (type) {
 			return `room-files-${ type }`;
 		}
@@ -44,13 +44,13 @@ Template.uploadedFilesList.helpers({
 	},
 
 	fileTypeIcon() {
-		const [ , extension ] = this.name.match(/.*?\.(.*)$/);
+		const [, extension] = this.name.match(/.*?\.(.*)$/);
 
 		if (this.type.match(/application\/pdf/)) {
 			return {
 				id: 'file-pdf',
 				type: 'pdf',
-				extension
+				extension,
 			};
 		}
 
@@ -58,7 +58,7 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-document',
 				type: 'document',
-				extension
+				extension,
 			};
 		}
 
@@ -67,7 +67,7 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-sheets',
 				type: 'sheets',
-				extension
+				extension,
 			};
 		}
 
@@ -75,14 +75,14 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-sheets',
 				type: 'ppt',
-				extension
+				extension,
 			};
 		}
 
 		return {
 			id: 'file-generic',
 			type: 'generic',
-			extension
+			extension,
 		};
 	},
 
@@ -96,7 +96,7 @@ Template.uploadedFilesList.helpers({
 
 	hasFiles() {
 		return roomFiles.find({ rid: this.rid }).count() > 0;
-	}
+	},
 });
 
 Template.uploadedFilesList.events({
@@ -109,5 +109,5 @@ Template.uploadedFilesList.events({
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}, 200)
+	}, 200),
 });
