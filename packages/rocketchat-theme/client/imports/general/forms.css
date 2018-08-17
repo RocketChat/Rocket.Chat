@@ -254,7 +254,11 @@
 
 	&__content {
 		overflow-y: auto;
+
+		display: flex;
+
 		flex: 1;
+		flex-direction: column;
 
 		width: 100%;
 		padding: 25px;
@@ -262,6 +266,12 @@
 
 	&--apps .preferences-page__header {
 		justify-content: space-between;
+	}
+
+	& .container {
+		flex: 1;
+
+		width: 100%;
 	}
 }
 
