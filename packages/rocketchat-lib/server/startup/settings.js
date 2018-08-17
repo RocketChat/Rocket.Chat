@@ -756,11 +756,11 @@ RocketChat.settings.addGroup('General', function() {
 	});
 	this.add('CDN_PREFIX_ALL', true, {
 		type: 'boolean',
-		'public': true
+		public: true
 	});
 	this.add('CDN_JSCSS_PREFIX', '', {
 		type: 'string',
-		'public': true,
+		public: true,
 		enableQuery: {
 			_id: 'CDN_PREFIX_ALL',
 			value: false
