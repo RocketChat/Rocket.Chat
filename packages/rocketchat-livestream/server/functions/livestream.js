@@ -1,8 +1,8 @@
 import google from 'googleapis';
-const OAuth2 = google.auth.OAuth2;
+const { OAuth2 } = google.auth;
 
 
-const p = fn => new Promise(function(resolve, reject) {
+const p = (fn) => new Promise(function(resolve, reject) {
 	fn(function(err, value) {
 		if (err) {
 			return reject(err);
@@ -16,18 +16,18 @@ export const getBroadcastStatus = async({
 	access_token,
 	refresh_token,
 	clientId,
-	clientSecret
+	clientSecret,
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
 		access_token,
-		refresh_token
+		refresh_token,
 	});
 	const youtube = google.youtube({ version:'v3', auth });
-	const result = await p(resolve => youtube.liveBroadcasts.list({
+	const result = await p((resolve) => youtube.liveBroadcasts.list({
 		part:'id,status',
-		id
+		id,
 	}, resolve));
 	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
 };
@@ -37,19 +37,19 @@ export const statusStreamLiveStream = async({
 	access_token,
 	refresh_token,
 	clientId,
-	clientSecret
+	clientSecret,
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
 		access_token,
-		refresh_token
+		refresh_token,
 	});
 
 	const youtube = google.youtube({ version:'v3', auth });
-	const result = await p(resolve => youtube.liveStreams.list({
+	const result = await p((resolve) => youtube.liveStreams.list({
 		part:'id,status',
-		id
+		id,
 	}, resolve));
 	return result.items && result.items[0].status.streamStatus;
 };
@@ -60,21 +60,21 @@ export const statusLiveStream = ({
 	refresh_token,
 	clientId,
 	clientSecret,
-	status
+	status,
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
 		access_token,
-		refresh_token
+		refresh_token,
 	});
 
 	const youtube = google.youtube({ version:'v3', auth });
 
-	return p(resolve => youtube.liveBroadcasts.transition({
+	return p((resolve) => youtube.liveBroadcasts.transition({
 		part:'id,status',
 		id,
-		broadcastStatus: status
+		broadcastStatus: status,
 	}, resolve));
 };
 
@@ -84,21 +84,21 @@ export const setBroadcastStatus = ({
 	refresh_token,
 	clientId,
 	clientSecret,
-	status
+	status,
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
 		access_token,
-		refresh_token
+		refresh_token,
 	});
 
 	const youtube = google.youtube({ version:'v3', auth });
 
-	return p(resolve => youtube.liveBroadcasts.transition({
+	return p((resolve) => youtube.liveBroadcasts.transition({
 		part:'id,status',
 		id,
-		broadcastStatus: status
+		broadcastStatus: status,
 	}, resolve));
 };
 
@@ -107,12 +107,12 @@ export const createLiveStream = async({
 	access_token,
 	refresh_token,
 	clientId,
-	clientSecret
+	clientSecret,
 }) => {
 	const auth = new OAuth2(clientId, clientSecret);
 	auth.setCredentials({
 		access_token,
-		refresh_token
+		refresh_token,
 	});
 	const youtube = google.youtube({ version:'v3', auth });
 
@@ -120,32 +120,32 @@ export const createLiveStream = async({
 		part: 'id,snippet,cdn,contentDetails,status',
 		resource: {
 			snippet: {
-				'title': room.name || 'RocketChat Broadcast'
+				title: room.name || 'RocketChat Broadcast',
 			},
-			'cdn': {
-				'format': '480p',
-				'ingestionType': 'rtmp'
-			}
-		}
-	}, resolve)), p((resolve)=> youtube.liveBroadcasts.insert({
+			cdn: {
+				format: '480p',
+				ingestionType: 'rtmp',
+			},
+		},
+	}, resolve)), p((resolve) => youtube.liveBroadcasts.insert({
 		part: 'id,snippet,contentDetails,status',
 		resource: {
 			snippet: {
-				'title': room.name || 'RocketChat Broadcast',
-				'scheduledStartTime' : new Date().toISOString()
+				title: room.name || 'RocketChat Broadcast',
+				scheduledStartTime : new Date().toISOString(),
 			},
-			'status': {
-				'privacyStatus': 'unlisted'
-			}
-		}
+			status: {
+				privacyStatus: 'unlisted',
+			},
+		},
 	}, resolve))]);
 
-	await p(resolve => youtube.liveBroadcasts.bind({
+	await p((resolve) => youtube.liveBroadcasts.bind({
 		part: 'id,snippet,status',
 		// resource: {
 		id: broadcast.id,
-		streamId: stream.id
+		streamId: stream.id,
 	}, resolve));
 
-	return {id: stream.cdn.ingestionInfo.streamName, stream, broadcast};
+	return { id: stream.cdn.ingestionInfo.streamName, stream, broadcast };
 };

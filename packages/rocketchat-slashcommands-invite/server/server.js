@@ -16,8 +16,8 @@ function Invite(command, params, item) {
 	}
 	let users = Meteor.users.find({
 		username: {
-			$in: usernames
-		}
+			$in: usernames,
+		},
 	});
 	const userId = Meteor.userId();
 	const currentUser = Meteor.users.findOne(userId);
@@ -28,8 +28,8 @@ function Invite(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('User_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [usernames.join(' @')]
-			}, currentUser.language)
+				sprintf: [usernames.join(' @')],
+			}, currentUser.language),
 		});
 		return;
 	}
@@ -44,8 +44,8 @@ function Invite(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
-				sprintf: [user.username]
-			}, currentUser.language)
+				sprintf: [user.username],
+			}, currentUser.language),
 		});
 		return false;
 	});
@@ -55,22 +55,22 @@ function Invite(command, params, item) {
 		try {
 			return Meteor.call('addUserToRoom', {
 				rid: item.rid,
-				username: user.username
+				username: user.username,
 			});
-		} catch ({error}) {
+		} catch ({ error }) {
 			if (error === 'cant-invite-for-direct-room') {
 				RocketChat.Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
-					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language)
+					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
 				RocketChat.Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
-					msg: TAPi18n.__(error, null, currentUser.language)
+					msg: TAPi18n.__(error, null, currentUser.language),
 				});
 			}
 		}
@@ -79,5 +79,5 @@ function Invite(command, params, item) {
 
 RocketChat.slashCommands.add('invite', Invite, {
 	description: 'Invite_user_to_join_channel',
-	params: '@username'
+	params: '@username',
 });

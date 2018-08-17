@@ -5,26 +5,26 @@ RocketChat.Migrations.add({
 			$or: [
 				{ 'settings.preferences.desktopNotifications': { $exists: true, $ne: 'default' } },
 				{ 'settings.preferences.mobileNotifications': { $exists: true, $ne: 'default' } },
-				{ 'settings.preferences.emailNotificationMode': { $exists: true, $ne: 'default' } }
-			]
+				{ 'settings.preferences.emailNotificationMode': { $exists: true, $ne: 'default' } },
+			],
 		}, {
 			fields: {
 				'settings.preferences.desktopNotifications': 1,
 				'settings.preferences.mobileNotifications': 1,
-				'settings.preferences.emailNotificationMode': 1
-			}
-		}).forEach(user => {
+				'settings.preferences.emailNotificationMode': 1,
+			},
+		}).forEach((user) => {
 			if (user.settings.preferences.desktopNotifications && user.settings.preferences.desktopNotifications !== 'default') {
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
 					desktopPrefOrigin: 'user',
-					desktopNotifications: null
+					desktopNotifications: null,
 				}, {
 					$set: {
-						desktopNotifications: user.settings.preferences.desktopNotifications
-					}
+						desktopNotifications: user.settings.preferences.desktopNotifications,
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 
@@ -32,13 +32,13 @@ RocketChat.Migrations.add({
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
 					mobilePrefOrigin: 'user',
-					mobilePushNotifications: null
+					mobilePushNotifications: null,
 				}, {
 					$set: {
-						mobilePushNotifications: user.settings.preferences.mobileNotifications
-					}
+						mobilePushNotifications: user.settings.preferences.mobileNotifications,
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 
@@ -46,15 +46,15 @@ RocketChat.Migrations.add({
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
 					emailPrefOrigin: 'user',
-					emailNotifications: null
+					emailNotifications: null,
 				}, {
 					$set: {
-						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' || user.settings.preferences.emailNotificationMode === 'nothing' ? 'nothing' : 'mentions'
-					}
+						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' || user.settings.preferences.emailNotificationMode === 'nothing' ? 'nothing' : 'mentions',
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 		});
-	}
+	},
 });

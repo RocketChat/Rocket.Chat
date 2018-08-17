@@ -7,7 +7,7 @@ Template.username.onCreated(function() {
 	return Meteor.call('getUsernameSuggestion', function(error, username) {
 		self.username.set({
 			ready: true,
-			username
+			username,
 		});
 		return Meteor.defer(() => self.find('input').focus());
 	});
@@ -24,7 +24,7 @@ Template.username.helpers({
 		if (asset && (asset.url || asset.defaultUrl)) {
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
-	}
+	},
 });
 
 Template.username.events({
@@ -74,5 +74,5 @@ Template.username.events({
 			instance.username.set(username);
 			return RocketChat.callbacks.run('usernameSet');
 		});
-	}
+	},
 });

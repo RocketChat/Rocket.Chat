@@ -9,7 +9,7 @@ Meteor.startup(function() {
 				i18nTitle: 'OTR',
 				icon: 'key',
 				template: 'otrFlexTab',
-				order: 11
+				order: 11,
 			});
 		} else {
 			RocketChat.OTR.enabled.set(false);
