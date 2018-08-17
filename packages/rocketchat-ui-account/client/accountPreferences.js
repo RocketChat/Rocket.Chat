@@ -316,7 +316,7 @@ Template.accountPreferences.events({
 	'click .js-dont-ask-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('dont-ask');
-		const options = selectEl.options;
+		const { options } = selectEl;
 		const selectedOption = selectEl.value;
 		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
 

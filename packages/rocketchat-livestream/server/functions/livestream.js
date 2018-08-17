@@ -1,5 +1,5 @@
 import google from 'googleapis';
-const OAuth2 = google.auth.OAuth2;
+const { OAuth2 } = google.auth;
 
 
 const p = (fn) => new Promise(function(resolve, reject) {

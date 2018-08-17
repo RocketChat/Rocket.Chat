@@ -15,17 +15,21 @@ import _ from 'underscore'
 			const self = this;
 			const $self = $(self);
 			const minHeight = $self.height();
-			var settings = $.extend({
-				postGrowCallback: null
-			}, options);
+
+			const settings = {
+				postGrowCallback: null,
+				...options
+			};
 
 			const maxHeight = window.getComputedStyle(self)['max-height'].replace('px', '');
+
+			let width = $self.width();
 
 			shadow.css({
 				position: 'absolute',
 				top: -10000,
 				left: -10000,
-				width: $self.width(),
+				width,
 				fontSize: $self.css('fontSize'),
 				fontFamily: $self.css('fontFamily'),
 				fontWeight: $self.css('fontWeight'),
@@ -34,20 +38,28 @@ import _ from 'underscore'
 				wordWrap: 'break-word'
 			});
 
-			const trigger = _.debounce(() => {
-				$self.trigger('autogrow', []);
-			})
+			const trigger = _.debounce(() => $self.trigger('autogrow', []), 500)
 
 			const times = function(string, number) {
-				for (let i = 0, r = ''; i < number; i++) r += string;
+				let r = '';
+				for (let i = 0; i < number; i++) r += string;
 				return r;
 			};
 
-			const runTimes = function (space) {
-				return times('&nbsp;', space.length - 1) + ' ';
-			}
+			const runTimes = (space) => times('&nbsp;', space.length - 1) + ' ';
 
-			const update = function (event) {
+			let lastWidth = width;
+			let lastHeight = minHeight;
+			let lastVal = self.value;
+
+			let length = 0;
+
+
+			const update = function update (event) {
+				if (lastHeight >= maxHeight && length && length < self.value.length) {
+					lastVal = self.value;
+					return true;
+				}
 
 				let val = self.value.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
@@ -61,34 +73,52 @@ import _ from 'underscore'
 					val += '<br/>';
 				}
 
-				shadow.css('width', $self.width());
-				shadow.html(val);
+				if (width !== lastWidth) {
+					shadow.css('width', width);
+					lastWidth = width;
+				}
 
-				let newHeight = Math.max(shadow.height() + 1, minHeight) + 1;
+				lastVal = self.value;
+				shadow[0].innerHTML = val;
+
+				let newHeight = Math.max(shadow[0].clientHeight + 1, minHeight) + 1;
 
 				let overflow = 'hidden';
 
-				if (maxHeight <= newHeight) {
+				if (newHeight >= maxHeight) {
 					newHeight = maxHeight;
 					overflow = ''
+				} else {
+					length = self.value.length;
 				}
 
-				if (newHeight == $self[0].offsetHeight) {
+				if (newHeight == lastHeight) {
 					return true;
 				}
 
-				$self.stop().animate({ height: newHeight }, { duration: 100, complete: trigger }).css('overflow', overflow);
+				lastHeight = newHeight;
+
+
+				$self.css({ overflow, height: newHeight });
+
+				trigger();
 
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
-
-				trigger()
 			}
-			const updateThrottle = _.throttle(update, 1000);
+
+			const updateWidthDebounce = _.debounce(() => {
+				length = 0;
+				width = $self.width();
+				update();
+			}, 300);
+
+			const updateThrottle = _.throttle(update, 300);
 
 			$self.on('focus change input', updateThrottle);
-			$(window).resize(updateThrottle);
+
+			$(window).resize(updateWidthDebounce);
 
 			update();
 			self.updateAutogrow = updateThrottle;

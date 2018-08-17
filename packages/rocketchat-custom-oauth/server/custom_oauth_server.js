@@ -326,11 +326,11 @@ export class CustomOAuth {
 }
 
 
-const updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
-Accounts.updateOrCreateUserFromExternalService = function(/* serviceName, serviceData, options*/) {
+const { updateOrCreateUserFromExternalService } = Accounts;
+Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
-		hook.apply(this, arguments);
+		hook.apply(this, args);
 	}
 
-	return updateOrCreateUserFromExternalService.apply(this, arguments);
+	return updateOrCreateUserFromExternalService.apply(this, args);
 };
