@@ -9,7 +9,7 @@ RocketChat.models.Reports = new class extends RocketChat.models._Base {
 			message,
 			description,
 			ts: new Date(),
-			userId
+			userId,
 		};
 		_.extend(record, extraData);
 		record._id = this.insert(record);

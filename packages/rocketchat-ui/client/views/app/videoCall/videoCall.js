@@ -88,7 +88,7 @@ Template.videoCall.helpers({
 	usernameByUserId(userId) {
 		const user = Meteor.users.findOne(userId);
 		return user != null ? user.username : undefined;
-	}
+	},
 });
 
 Template.videoCall.events({
@@ -125,5 +125,5 @@ Template.videoCall.events({
 	'loadstart video[muted]'(e) {
 		e.currentTarget.muted = true;
 		return e.currentTarget.volume = 0;
-	}
+	},
 });

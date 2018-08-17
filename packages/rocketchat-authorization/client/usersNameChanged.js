@@ -1,14 +1,14 @@
 /* globals RoomRoles */
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('Users:NameChanged', function({_id, name}) {
+	RocketChat.Notifications.onLogged('Users:NameChanged', function({ _id, name }) {
 		RoomRoles.update({
-			'u._id': _id
+			'u._id': _id,
 		}, {
 			$set: {
-				'u.name': name
-			}
+				'u.name': name,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 	});
 });

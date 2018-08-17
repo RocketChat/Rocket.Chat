@@ -4,7 +4,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: '',
 	git: '',
-	documentation: null
+	documentation: null,
 });
 
 Package.onUse(function(api) {

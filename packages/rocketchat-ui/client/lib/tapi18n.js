@@ -6,7 +6,7 @@ this.t = function(key, ...replaces) {
 	} else {
 		return TAPi18n.__(key, {
 			postProcess: 'sprintf',
-			sprintf: replaces
+			sprintf: replaces,
 		});
 	}
 };
@@ -17,12 +17,12 @@ this.tr = function(key, options, ...replaces) {
 	} else {
 		return TAPi18n.__(key, options, {
 			postProcess: 'sprintf',
-			sprintf: replaces
+			sprintf: replaces,
 		});
 	}
 };
 
 this.isRtl = (lang) => {
-	const language = lang ? lang : localStorage.getItem('userLanguage') ? localStorage.getItem('userLanguage') : 'en-US';
+	const language = lang || localStorage.getItem('userLanguage') || 'en-US';
 	return ['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi'].includes(language.split('-').shift().toLowerCase());
 };

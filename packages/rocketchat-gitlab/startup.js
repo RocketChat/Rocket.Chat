@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	this.section('GitLab', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Gitlab',
-			value: true
+			value: true,
 		};
 
 		this.add('Accounts_OAuth_Gitlab', false, { type: 'boolean', public: true });
