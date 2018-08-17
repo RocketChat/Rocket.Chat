@@ -47,10 +47,12 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
-	api.addFiles('client/views/createThreadMessageAction.js', 'client');
 	api.addFiles('client/views/threadList.html', 'client');
 	api.addFiles('client/views/threadList.js', 'client');
 
+	// Other UI extensions
+	api.addFiles('client/createThreadMessageAction.js', 'client');
+	api.addFiles('client/threadFromMessageBox.js', 'client');
 
 	//styling
 	api.addFiles('client/public/stylesheets/threading.css', 'client');
