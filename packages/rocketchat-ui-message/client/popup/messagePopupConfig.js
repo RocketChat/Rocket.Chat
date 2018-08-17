@@ -11,15 +11,15 @@ const reloadUsersFromRoomMessages = (userId, rid) => {
 	RocketChat.models.Messages.find({
 		rid,
 		'u.username': { $ne: user.username },
-		t: { $exists: false }
+		t: { $exists: false },
 	},
 	{
 		fields: {
 			'u.username': 1,
 			'u.name': 1,
-			ts: 1
+			ts: 1,
 		},
-		sort: { ts: -1 }
+		sort: { ts: -1 },
 	}).fetch()
 		.filter(({ u: { username } }) => {
 			const notMapped = !uniqueMessageUsersControl[username];
@@ -31,7 +31,7 @@ const reloadUsersFromRoomMessages = (userId, rid) => {
 			username,
 			name,
 			status: Tracker.nonreactive(() => Session.get(`user_${ username }_status`) || 'offline'),
-			ts
+			ts,
 		}));
 };
 
@@ -71,7 +71,7 @@ const fetchUsersFromServer = (filterText, records, cb, rid) => {
 						username,
 						name,
 						status,
-						sort: 3
+						sort: 3,
 					});
 				}
 			});
@@ -98,7 +98,7 @@ const fetchRoomsFromServer = (filterText, records, cb, rid) => {
 			return;
 		}
 
-		rooms.slice(0, 5).forEach(room => {
+		rooms.slice(0, 5).forEach((room) => {
 			if (records.length < 5) {
 				records.push(room);
 			}
@@ -124,28 +124,26 @@ const addEmojiToRecents = (emoji) => {
 	}
 };
 
-const emojiSort = (recents) => {
-	return (a, b) => {
-		let idA = a._id;
-		let idB = a._id;
+const emojiSort = (recents) => (a, b) => {
+	let idA = a._id;
+	let idB = a._id;
 
-		if (recents.includes(a._id)) {
-			idA = recents.indexOf(a._id) + idA;
-		}
-		if (recents.includes(b._id)) {
-			idB = recents.indexOf(b._id) + idB;
-		}
+	if (recents.includes(a._id)) {
+		idA = recents.indexOf(a._id) + idA;
+	}
+	if (recents.includes(b._id)) {
+		idB = recents.indexOf(b._id) + idB;
+	}
 
-		if (idA < idB) {
-			return -1;
-		}
+	if (idA < idB) {
+		return -1;
+	}
 
-		if (idA > idB) {
-			return 1;
-		}
+	if (idA > idB) {
+		return 1;
+	}
 
-		return 0;
-	};
+	return 0;
 };
 const exactFinalTone = new RegExp('^tone[1-5]:*$');
 const colorBlind = new RegExp('tone[1-5]:*$');
@@ -162,14 +160,12 @@ const getEmojis = function(collection, filter) {
 	}
 
 	const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
-	const recents = RocketChat.EmojiPicker.getRecent().map(item => `:${ item }:`);
-	return Object.keys(collection).map(_id => {
+	const recents = RocketChat.EmojiPicker.getRecent().map((item) => `:${ item }:`);
+	return Object.keys(collection).map((_id) => {
 		const data = collection[key];
 		return { _id, data };
 	})
-		.filter(({ _id }) => {
-			return regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id));
-		})
+		.filter(({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)))
 		.sort(emojiSort(recents))
 		.slice(0, 10);
 };
@@ -195,12 +191,12 @@ Template.messagePopupConfig.helpers({
 						ts: { $exists: true },
 						$or: [
 							{ username: filterRegex },
-							{ name: filterRegex }
-						]
+							{ name: filterRegex },
+						],
 					},
 					{
 						limit: 5,
-						sort: { ts: -1 }
+						sort: { ts: -1 },
 					}
 				)
 					.fetch();
@@ -217,16 +213,16 @@ Template.messagePopupConfig.helpers({
 										{
 											$or: [
 												{ name: filterRegex },
-												{ fname: filterRegex }
-											]
+												{ fname: filterRegex },
+											],
 										},
 										{
-											name: { $nin: usernamesAlreadyFetched }
-										}
-									]
+											name: { $nin: usernamesAlreadyFetched },
+										},
+									],
 								},
 								{
-									fields: { name: 1 }
+									fields: { name: 1 },
 								}
 							)
 							.map(({ name }) => name);
@@ -234,16 +230,16 @@ Template.messagePopupConfig.helpers({
 							.find(
 								{
 									username: {
-										$in: usernamesFromDMs
-									}
+										$in: usernamesFromDMs,
+									},
 								},
 								{
 									fields: {
 										username: 1,
 										name: 1,
-										status: 1
+										status: 1,
 									},
-									limit: 5 - usernamesAlreadyFetched.length
+									limit: 5 - usernamesAlreadyFetched.length,
 								}
 							)
 							.fetch()
@@ -252,7 +248,7 @@ Template.messagePopupConfig.helpers({
 								username,
 								name,
 								status,
-								sort: 1
+								sort: 1,
 							}));
 
 						items.push(...newItems);
@@ -263,26 +259,26 @@ Template.messagePopupConfig.helpers({
 								{
 									$or: [
 										{ username: filterRegex },
-										{ name: filterRegex }
-									]
+										{ name: filterRegex },
+									],
 								},
 								{
 									username: {
 										$nin: [
 											user && user.username,
-											...usernamesAlreadyFetched
-										]
-									}
-								}
-							]
+											...usernamesAlreadyFetched,
+										],
+									},
+								},
+							],
 						},
 						{
 							fields: {
 								username: 1,
 								name: 1,
-								status: 1
+								status: 1,
 							},
-							limit: 5 - usernamesAlreadyFetched.length
+							limit: 5 - usernamesAlreadyFetched.length,
 						})
 							.fetch()
 							.map(({ username, name, status }) => ({
@@ -290,7 +286,7 @@ Template.messagePopupConfig.helpers({
 								username,
 								name,
 								status,
-								sort: 1
+								sort: 1,
 							}));
 
 						items.push(...newItems);
@@ -307,7 +303,7 @@ Template.messagePopupConfig.helpers({
 					username: 'all',
 					system: true,
 					name: t('Notify_all_in_this_room'),
-					sort: 4
+					sort: 4,
 				};
 
 				const here = {
@@ -315,7 +311,7 @@ Template.messagePopupConfig.helpers({
 					username: 'here',
 					system: true,
 					name: t('Notify_active_in_this_room'),
-					sort: 4
+					sort: 4,
 				};
 
 				if (filterRegex.test(all.username)) {
@@ -330,7 +326,7 @@ Template.messagePopupConfig.helpers({
 			},
 			getValue(_id) {
 				return _id;
-			}
+			},
 		};
 		return config;
 	},
@@ -349,14 +345,14 @@ Template.messagePopupConfig.helpers({
 				const records = collection.find({
 					name: exp,
 					t: {
-						$in: ['c', 'p']
-					}
+						$in: ['c', 'p'],
+					},
 				}, {
 					reactive: 1,
 					limit: 5,
 					sort: {
-						ls: -1
-					}
+						ls: -1,
+					},
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
@@ -366,10 +362,10 @@ Template.messagePopupConfig.helpers({
 			},
 			getValue(_id, collection, records) {
 				const record = _.findWhere(records, {
-					_id
+					_id,
 				});
 				return record && record.name;
-			}
+			},
 		};
 		return config;
 	},
@@ -384,15 +380,15 @@ Template.messagePopupConfig.helpers({
 			template: 'messagePopupSlashCommand',
 			getInput: self.getInput,
 			getFilter(collection, filter) {
-				return Object.keys(collection).map(command => {
+				return Object.keys(collection).map((command) => {
 					const item = collection[command];
 					return {
 						_id: command,
 						params: item.params ? TAPi18n.__(item.params) : '',
 						description: TAPi18n.__(item.description),
-						permission: item.permission
+						permission: item.permission,
 					};
-				}).filter(command => {
+				}).filter((command) => {
 					const isMatch = command._id.indexOf(filter) > -1;
 
 					if (!isMatch) {
@@ -405,7 +401,7 @@ Template.messagePopupConfig.helpers({
 
 					return RocketChat.authz.hasAtLeastOnePermission(command.permission, Session.get('openedRoom'));
 				}).sort((a, b) => a._id > b._id).slice(0, 11);
-			}
+			},
 		};
 		return config;
 	},
@@ -427,7 +423,7 @@ Template.messagePopupConfig.helpers({
 				getValue(_id) {
 					addEmojiToRecents(_id);
 					return _id;
-				}
+				},
 			};
 		}
 	},
@@ -446,8 +442,8 @@ Template.messagePopupConfig.helpers({
 				getValue(_id) {
 					addEmojiToRecents(_id);
 					return _id;
-				}
+				},
 			};
 		}
-	}
+	},
 });

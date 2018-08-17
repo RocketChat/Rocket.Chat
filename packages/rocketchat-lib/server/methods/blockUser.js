@@ -1,5 +1,5 @@
 Meteor.methods({
-	blockUser({rid, blocked}) {
+	blockUser({ rid, blocked }) {
 
 		check(rid, String);
 		check(blocked, String);
@@ -18,5 +18,5 @@ Meteor.methods({
 		RocketChat.models.Subscriptions.setBlockedByRoomId(rid, blocked, Meteor.userId());
 
 		return true;
-	}
+	},
 });

@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:emoji-custom',
 	version: '1.0.0',
 	summary: 'Message pre-processor that will translate custom emoji',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
-		'webapp'
+		'webapp',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -29,7 +29,7 @@ Package.onUse(function(api) {
 		'server/methods/listEmojiCustom.js',
 		'server/methods/deleteEmojiCustom.js',
 		'server/methods/insertOrUpdateEmoji.js',
-		'server/methods/uploadEmojiCustom.js'
+		'server/methods/uploadEmojiCustom.js',
 	], 'server');
 
 	api.addFiles('assets/stylesheets/emojiCustomAdmin.css', 'client');
@@ -45,13 +45,13 @@ Package.onUse(function(api) {
 		'admin/emojiEdit.js',
 		'admin/emojiInfo.html',
 		'admin/emojiInfo.js',
-		'admin/route.js'
+		'admin/route.js',
 	], 'client');
 
 	api.addFiles([
 		'client/lib/emojiCustom.js',
 		'client/models/EmojiCustom.js',
 		'client/notifications/updateEmojiCustom.js',
-		'client/notifications/deleteEmojiCustom.js'
+		'client/notifications/deleteEmojiCustom.js',
 	], 'client');
 });
