@@ -100,7 +100,7 @@ class AppServerOrchestrator {
 
 RocketChat.settings.add('Apps_Framework_enabled', false, {
 	type: 'boolean',
-	hidden: true
+	hidden: true,
 });
 
 RocketChat.settings.get('Apps_Framework_enabled', (key, isEnabled) => {

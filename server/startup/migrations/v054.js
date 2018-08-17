@@ -6,5 +6,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Users.update({ 'settings.preferences.compactView': true }, { $set: { 'settings.preferences.viewMode': 1 }, $unset: { 'settings.preferences.compactView': 1 } }, { multi: true });
 			RocketChat.models.Users.update({ 'settings.preferences.viewMode': { $ne: 1 } }, { $set: { 'settings.preferences.viewMode': 0 } }, { multi: true });
 		}
-	}
+	},
 });

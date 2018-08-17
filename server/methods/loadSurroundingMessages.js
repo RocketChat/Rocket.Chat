@@ -7,7 +7,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadSurroundingMessages'
+				method: 'loadSurroundingMessages',
 			});
 		}
 
@@ -31,14 +31,14 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				ts: -1
+				ts: -1,
 			},
-			limit: Math.ceil(limit / 2)
+			limit: Math.ceil(limit / 2),
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
-				editedAt: 0
+				editedAt: 0,
 			};
 		}
 
@@ -46,7 +46,7 @@ Meteor.methods({
 
 		const messages = recordsBefore.map((message) => {
 			message.starred = _.findWhere(message.starred, {
-				_id: fromId
+				_id: fromId,
 			});
 			return message;
 		});
@@ -56,7 +56,7 @@ Meteor.methods({
 		messages.push(message);
 
 		options.sort = {
-			ts: 1
+			ts: 1,
 		};
 
 		options.limit = Math.floor(limit / 2);
@@ -64,7 +64,7 @@ Meteor.methods({
 		const recordsAfter = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
 		const afterMessages = recordsAfter.map((message) => {
 			message.starred = _.findWhere(message.starred, {
-				_id: fromId
+				_id: fromId,
 			});
 			return message;
 		});
@@ -74,7 +74,7 @@ Meteor.methods({
 		return {
 			messages: messages.concat(afterMessages),
 			moreBefore,
-			moreAfter
+			moreAfter,
 		};
-	}
+	},
 });

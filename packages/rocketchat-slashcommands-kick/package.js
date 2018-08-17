@@ -2,14 +2,14 @@ Package.describe({
 	name: 'rocketchat:slashcommands-kick',
 	version: '0.0.1',
 	summary: 'Command handler for the /kick command',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('templating', 'client');

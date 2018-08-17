@@ -95,7 +95,7 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const importId = Imports.insert({ 'type': this.info.name, 'ts': Date.now(), 'status': this.progress.step, 'valid': true, 'user': Meteor.user()._id });
+		const importId = Imports.insert({ type: this.info.name, ts: Date.now(), status: this.progress.step, valid: true, user: Meteor.user()._id });
 		this.importRecord = Imports.findOne(importId);
 
 		this.users = {};
@@ -129,7 +129,7 @@ export class Base {
 		}
 
 		this.updateProgress(ProgressStep.PREPARING_STARTED);
-		return this.updateRecord({ 'file': fileName });
+		return this.updateRecord({ file: fileName });
 	}
 
 	/**
@@ -202,7 +202,7 @@ export class Base {
 		}
 
 		this.logger.debug(`${ this.info.name } is now at ${ step }.`);
-		this.updateRecord({ 'status': this.progress.step });
+		this.updateRecord({ status: this.progress.step });
 
 		ImporterWebsocket.progressUpdated(this.progress);
 
@@ -231,8 +231,8 @@ export class Base {
 	addCountCompleted(count) {
 		this.progress.count.completed = this.progress.count.completed + count;
 
-		//Only update the database every 500 records
-		//Or the completed is greater than or equal to the total amount
+		// Only update the database every 500 records
+		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
 		}
@@ -272,7 +272,7 @@ export class Base {
 
 		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
 			const rawData = [];
-			res.on('data', chunk => rawData.push(chunk));
+			res.on('data', (chunk) => rawData.push(chunk));
 			res.on('end', Meteor.bindEnvironment(() => {
 				fileStore.insert(details, Buffer.concat(rawData), function(err, file) {
 					if (err) {
@@ -282,7 +282,7 @@ export class Base {
 
 						const attachment = {
 							title: file.name,
-							title_link: url
+							title_link: url,
 						};
 
 						if (/^image\/.+/.test(file.type)) {
@@ -309,14 +309,14 @@ export class Base {
 							ts: timeStamp,
 							msg: '',
 							file: {
-								_id: file._id
+								_id: file._id,
 							},
 							groupable: false,
-							attachments: [attachment]
+							attachments: [attachment],
 						};
 
 						if ((details.message_id != null) && (typeof details.message_id === 'string')) {
-							msg['_id'] = details.message_id;
+							msg._id = details.message_id;
 						}
 
 						return RocketChat.sendMessage(user, msg, room, true);

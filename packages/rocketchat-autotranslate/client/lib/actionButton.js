@@ -7,12 +7,12 @@ Meteor.startup(function() {
 				label: 'Toggle_original_translated',
 				context: [
 					'message',
-					'message-mobile'
+					'message-mobile',
 				],
 				action() {
 					const message = this._arguments[1];
 					const language = RocketChat.AutoTranslate.getLanguage(message.rid);
-					if ((!message.translations || !message.translations[language])) { //} && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
 						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -25,7 +25,7 @@ Meteor.startup(function() {
 				condition(message) {
 					return message && message.u && message.u._id !== Meteor.userId();
 				},
-				order: 90
+				order: 90,
 			});
 		} else {
 			RocketChat.MessageAction.removeButton('toggle-language');
