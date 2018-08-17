@@ -6,14 +6,14 @@ import {
 	getCredentials,
 	api,
 	request,
-	credentials
+	credentials,
 } from '../../data/api-data.js';
 import { imgURL } from '../../data/interactions.js';
 
 describe('[Assets]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	it('giving "manage-assets" permission to user', (done) => {
 		request.post(api('permissions.update'))
@@ -57,7 +57,7 @@ describe('[Assets]', function() {
 			request.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
-					assetName: 'logo'
+					assetName: 'logo',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -70,7 +70,7 @@ describe('[Assets]', function() {
 			request.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
-					assetName: 'invalidAsset'
+					assetName: 'invalidAsset',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

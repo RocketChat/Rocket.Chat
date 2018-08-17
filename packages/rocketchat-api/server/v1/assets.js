@@ -22,7 +22,7 @@ RocketChat.API.v1.addRoute('assets.setAsset', { authRequired: true }, {
 					asset = {
 						buffer: Buffer.concat(assetData),
 						name: fieldname,
-						mimetype
+						mimetype,
 					};
 				}));
 			}));
@@ -34,7 +34,7 @@ RocketChat.API.v1.addRoute('assets.setAsset', { authRequired: true }, {
 			Meteor.runAsUser(this.userId, () => Meteor.call('refreshClients'));
 		}
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('assets.unsetAsset', { authRequired: true }, {
@@ -49,5 +49,5 @@ RocketChat.API.v1.addRoute('assets.unsetAsset', { authRequired: true }, {
 			Meteor.runAsUser(this.userId, () => Meteor.call('refreshClients'));
 		}
 		return RocketChat.API.v1.success();
-	}
+	},
 });
