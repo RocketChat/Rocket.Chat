@@ -194,6 +194,7 @@ class API extends Restivus {
 		const loginCompatibility = (bodyParams) => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code } = bodyParams;
+			let usernameToLDAPLogin = '';
 
 			if (password == null) {
 				return bodyParams;
@@ -209,10 +210,13 @@ class API extends Restivus {
 
 			if (typeof user === 'string') {
 				auth.user = user.includes('@') ? { email: user } : { username: user };
+				usernameToLDAPLogin = user;
 			} else if (username) {
 				auth.user = { username };
+				usernameToLDAPLogin = username;
 			} else if (email) {
 				auth.user = { email };
+				usernameToLDAPLogin = email;
 			}
 
 			if (auth.user == null) {
@@ -227,9 +231,9 @@ class API extends Restivus {
 			}
 			const objectToLDAPLogin = {
 				ldap: true,
-				username: auth.user && auth.user.username ? auth.user.username : auth.user && auth.user.email ? auth.user.email : '',
+				username: usernameToLDAPLogin,
 				ldapPass: auth.password,
-				ldapOptions: {}
+				ldapOptions: {},
 			};
 			if (RocketChat.settings.get('LDAP_Enable') && !code) {
 				return objectToLDAPLogin;
