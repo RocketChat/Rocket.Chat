@@ -3,9 +3,6 @@ Template.messageAction.helpers({
 		return this.type === 'button';
 	},
 	areButtonsHorizontal() {
-		if (Template.parentData(1).button_alignment === 'horizontal') {
-			return true;
-		}
-		return false;
+		return Template.parentData(1).button_alignment === 'horizontal';
 	}
 });
