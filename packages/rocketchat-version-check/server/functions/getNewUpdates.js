@@ -6,7 +6,7 @@ import { HTTP } from 'meteor/http';
 export default () => {
 	try {
 		const uniqueID = RocketChat.models.Settings.findOne('uniqueID');
-		const _oplogHandle = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle;
+		const { _oplogHandle } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true;
 
 		const data = {

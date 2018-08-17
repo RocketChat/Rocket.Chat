@@ -75,7 +75,7 @@ const api = {
 				visitor.setData(result.visitor);
 			}
 		});
-	}
+	},
 };
 
 window.addEventListener('message', function(msg) {

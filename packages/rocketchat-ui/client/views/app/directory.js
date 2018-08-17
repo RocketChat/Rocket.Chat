@@ -23,6 +23,7 @@ function directorySearch(config, cb) {
 					createdAt: timeAgo(result.createdAt),
 				};
 			}
+			return null;
 		}));
 	});
 }
