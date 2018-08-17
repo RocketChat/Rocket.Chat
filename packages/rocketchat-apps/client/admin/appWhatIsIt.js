@@ -17,7 +17,7 @@ Template.appWhatIsIt.helpers({
 		}
 
 		return false;
-	}
+	},
 });
 
 Template.appWhatIsIt.events({
@@ -35,5 +35,5 @@ Template.appWhatIsIt.events({
 
 			FlowRouter.go('/admin/apps');
 		});
-	}
+	},
 });

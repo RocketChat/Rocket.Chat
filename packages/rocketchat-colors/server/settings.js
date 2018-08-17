@@ -3,5 +3,5 @@ RocketChat.settings.add('HexColorPreview_Enabled', true, {
 	i18nLabel: 'Enabled',
 	group: 'Message',
 	section: 'Hex_Color_Preview',
-	public: true
+	public: true,
 });

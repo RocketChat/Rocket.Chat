@@ -9,5 +9,5 @@ Meteor.methods({
 		const newStatus = user.statusLivechat === 'available' ? 'not-available' : 'available';
 
 		return RocketChat.models.Users.setLivechatStatus(user._id, newStatus);
-	}
+	},
 });
