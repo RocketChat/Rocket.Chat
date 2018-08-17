@@ -4,12 +4,12 @@ export default {
 	enable() {
 		const result = HTTP.call('POST', `${ gatewayURL }/facebook/enable`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
-				'content-type': 'application/json'
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
+				'content-type': 'application/json',
 			},
 			data: {
-				url: RocketChat.settings.get('Site_Url')
-			}
+				url: RocketChat.settings.get('Site_Url'),
+			},
 		});
 		return result.data;
 	},
@@ -17,9 +17,9 @@ export default {
 	disable() {
 		const result = HTTP.call('DELETE', `${ gatewayURL }/facebook/enable`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
-				'content-type': 'application/json'
-			}
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
+				'content-type': 'application/json',
+			},
 		});
 		return result.data;
 	},
@@ -27,8 +27,8 @@ export default {
 	listPages() {
 		const result = HTTP.call('GET', `${ gatewayURL }/facebook/pages`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-			}
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
+			},
 		});
 		return result.data;
 	},
@@ -36,8 +36,8 @@ export default {
 	subscribe(pageId) {
 		const result = HTTP.call('POST', `${ gatewayURL }/facebook/page/${ pageId }/subscribe`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-			}
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
+			},
 		});
 		return result.data;
 	},
@@ -45,8 +45,8 @@ export default {
 	unsubscribe(pageId) {
 		const result = HTTP.call('DELETE', `${ gatewayURL }/facebook/page/${ pageId }/subscribe`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
-			}
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
+			},
 		});
 		return result.data;
 	},
@@ -54,13 +54,13 @@ export default {
 	reply({ page, token, text }) {
 		return HTTP.call('POST', `${ gatewayURL }/facebook/reply`, {
 			headers: {
-				'authorization': `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`
+				authorization: `Bearer ${ RocketChat.settings.get('Livechat_Facebook_API_Key') }`,
 			},
 			data: {
 				page,
 				token,
-				text
-			}
+				text,
+			},
 		});
-	}
+	},
 };

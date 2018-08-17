@@ -65,7 +65,7 @@ const api = {
 				visitor.setToken(result.visitor.token);
 			}
 		});
-	}
+	},
 };
 
 window.addEventListener('message', function(msg) {

@@ -7,5 +7,5 @@ Meteor.methods({
 		check(triggerId, String);
 
 		return RocketChat.models.LivechatTrigger.removeById(triggerId);
-	}
+	},
 });

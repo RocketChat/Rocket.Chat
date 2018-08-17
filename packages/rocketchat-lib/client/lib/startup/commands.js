@@ -1,4 +1,4 @@
-//Track logins and when they login, get the commands
+// Track logins and when they login, get the commands
 (() => {
 	let oldUserId = null;
 

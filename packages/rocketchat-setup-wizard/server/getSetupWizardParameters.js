@@ -12,7 +12,7 @@ Meteor.methods({
 
 		return {
 			settings,
-			allowStandaloneServer
+			allowStandaloneServer,
 		};
-	}
+	},
 });

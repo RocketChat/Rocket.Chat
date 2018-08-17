@@ -34,7 +34,7 @@ Meteor.startup(function() {
 				fireGlobalEvent('notification', {
 					notification,
 					fromOpenedRoom: messageIsInOpenedRoom,
-					hasFocus
+					hasFocus,
 				});
 
 				if (RocketChat.Layout.isEmbedded()) {

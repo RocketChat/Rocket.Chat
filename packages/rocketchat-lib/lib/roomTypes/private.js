@@ -1,11 +1,11 @@
 /* globals openRoom */
-import {RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'group',
-			path: '/group/:name'
+			path: '/group/:name',
 		});
 	}
 
@@ -21,14 +21,14 @@ export class PrivateRoomType extends RoomTypeConfig {
 			order: 40,
 			icon: 'lock',
 			label: 'Private_Groups',
-			route: new PrivateRoomRoute()
+			route: new PrivateRoomRoute(),
 		});
 	}
 
 	findRoom(identifier) {
 		const query = {
 			t: 'p',
-			name: identifier
+			name: identifier,
 		};
 
 		return ChatRoom.findOne(query);

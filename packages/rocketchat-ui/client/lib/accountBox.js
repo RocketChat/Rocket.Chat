@@ -57,7 +57,7 @@ this.AccountBox = (function() {
 		}
 		const routeConfig = {
 			center: 'pageContainer',
-			pageTemplate: newRoute.pageTemplate
+			pageTemplate: newRoute.pageTemplate,
 		};
 		if (newRoute.i18nPageTitle != null) {
 			routeConfig.i18nPageTitle = newRoute.i18nPageTitle;
@@ -77,8 +77,8 @@ this.AccountBox = (function() {
 						SideNav.setFlex(newRoute.sideNav);
 						return SideNav.openFlex();
 					}
-				}
-			]
+				},
+			],
 		});
 	}
 	return {
@@ -89,6 +89,6 @@ this.AccountBox = (function() {
 		openFlex,
 		addRoute,
 		addItem,
-		getItems
+		getItems,
 	};
 }());
