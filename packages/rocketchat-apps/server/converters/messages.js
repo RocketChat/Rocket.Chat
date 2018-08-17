@@ -46,6 +46,7 @@ export class AppMessagesConverter {
 			alias: msgObj.alias,
 			customFields: msgObj.customFields,
 			attachments,
+			parseUrls: msgObj.parseUrls,
 		};
 	}
 
@@ -104,6 +105,7 @@ export class AppMessagesConverter {
 			alias: message.alias,
 			customFields: message.customFields,
 			attachments,
+			parseUrls: message.parseUrls,
 		};
 	}
 
