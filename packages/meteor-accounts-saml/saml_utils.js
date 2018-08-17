@@ -15,9 +15,9 @@ SAML = function(options) {
 	this.options = this.initialize(options);
 };
 
-function debugLog() {
+function debugLog(...args) {
 	if (Meteor.settings.debug) {
-		console.log.apply(this, arguments);
+		console.log.apply(this, args);
 	}
 }
 

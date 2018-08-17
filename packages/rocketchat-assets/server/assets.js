@@ -352,7 +352,7 @@ Meteor.startup(function() {
 	}, 200);
 });
 
-const calculateClientHash = WebAppHashing.calculateClientHash;
+const { calculateClientHash } = WebAppHashing;
 
 WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
 	for (const key of Object.keys(assets)) {

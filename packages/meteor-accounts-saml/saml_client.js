@@ -20,7 +20,7 @@ const logoutBehaviour = {
 	ONLY_RC: 'Local',
 };
 
-Meteor.logout = function() {
+Meteor.logout = function(...args) {
 	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
@@ -37,7 +37,7 @@ Meteor.logout = function() {
 			}
 		}
 	}
-	return MeteorLogout.apply(Meteor, arguments);
+	return MeteorLogout.apply(Meteor, args);
 };
 
 const openCenteredPopup = function(url, width, height) {

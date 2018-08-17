@@ -172,7 +172,7 @@ Template.createChannel.events({
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -182,7 +182,7 @@ Template.createChannel.events({
 	'input [name="name"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 
 		input.value = modified;

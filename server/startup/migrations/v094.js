@@ -12,6 +12,7 @@ RocketChat.Migrations.add({
 					emailAddress = email.address.address;
 					return true;
 				}
+				return false;
 			});
 			const existingUser = RocketChat.models.Users.findOne({ 'emails.address': emailAddress }, { fields: { _id: 1 } });
 			if (existingUser) {

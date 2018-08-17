@@ -23,7 +23,7 @@ this.alerts = {
 
 		Blaze.remove(this.renderedAlert);
 
-		const activeElement = this.renderedAlert.dataVar.curValue.activeElement;
+		const { activeElement } = this.renderedAlert.dataVar.curValue;
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}

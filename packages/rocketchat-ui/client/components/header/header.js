@@ -134,5 +134,5 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = (this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id)) || undefined;
 });
