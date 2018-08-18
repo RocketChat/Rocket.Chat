@@ -1,11 +1,11 @@
-import {searchProviderService} from '../service/providerService';
+import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
 
-	/*eslint no-unused-vars: [2, { "args": "none" }]*/
+	/* eslint no-unused-vars: [2, { "args": "none" }]*/
 	_pushError(name, value, payload) {
-		//TODO implement a (performant) cache
+		// TODO implement a (performant) cache
 		SearchLogger.debug(`Error on event '${ name }' with id '${ value }'`);
 	}
 
@@ -34,7 +34,7 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
  */
 
 
-RocketChat.models.Users.on('change', ({clientAction, id, data}) => {
+RocketChat.models.Users.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -48,7 +48,7 @@ RocketChat.models.Users.on('change', ({clientAction, id, data}) => {
 	}
 });
 
-RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
+RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':

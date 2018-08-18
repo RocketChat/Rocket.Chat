@@ -4,5 +4,5 @@ Meteor.methods({
 		if (message && room && RocketChat.AutoTranslate) {
 			return RocketChat.AutoTranslate.translateMessage(message, room, targetLanguage);
 		}
-	}
+	},
 });

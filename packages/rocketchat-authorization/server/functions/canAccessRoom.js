@@ -18,13 +18,11 @@ RocketChat.authz.roomAccessValidators = [
 		if (subscription) {
 			return RocketChat.models.Rooms.findOneById(subscription.rid);
 		}
-	}
+	},
 ];
 
 RocketChat.authz.canAccessRoom = function(room, user, extraData) {
-	return RocketChat.authz.roomAccessValidators.some((validator) => {
-		return validator.call(this, room, user, extraData);
-	});
+	return RocketChat.authz.roomAccessValidators.some((validator) => validator.call(this, room, user, extraData));
 };
 
 RocketChat.authz.addRoomAccessValidator = function(validator) {

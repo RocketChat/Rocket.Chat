@@ -15,5 +15,5 @@ Meteor.methods({
 		Meteor.call('canAccessRoom', msg.rid, Meteor.userId());
 
 		return msg;
-	}
+	},
 });

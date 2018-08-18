@@ -17,5 +17,5 @@ Template.oembedImageWidget.helpers({
 			const user = Meteor.user();
 			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
 		}
-	}
+	},
 });

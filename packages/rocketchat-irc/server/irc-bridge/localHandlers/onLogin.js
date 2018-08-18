@@ -16,17 +16,17 @@ export default function handleOnLogin(login) {
 			'profile.irc.fromIRC': false,
 			'profile.irc.username': `${ login.user.username }-rkt`,
 			'profile.irc.nick': `${ login.user.username }-rkt`,
-			'profile.irc.hostname': 'rocket.chat'
-		}
+			'profile.irc.hostname': 'rocket.chat',
+		},
 	});
 
 	const user = RocketChat.models.Users.findOne({
-		_id: login.user._id
+		_id: login.user._id,
 	});
 
 	this.sendCommand('registerUser', user);
 
 	const rooms = RocketChat.models.Rooms.findWithUsername(user.username).fetch();
 
-	rooms.forEach(room => this.sendCommand('joinedChannel', { room, user }));
+	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
 }
