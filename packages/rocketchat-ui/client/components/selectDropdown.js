@@ -3,17 +3,17 @@ Template.selectDropdown.events({
 		i.open.set(true);
 		console.log('asdasd');
 	}, 'blur input'(e, i) {
-		setTimeout(()=>{
+		setTimeout(() => {
 			i.open.set(false);
 
 		}, 100);
 		console.log('asdasd');
-	}
+	},
 });
 Template.selectDropdown.helpers({
 	open() {
 		return Template.instance().open.get();
-	}
+	},
 });
 Template.selectDropdown.onCreated(function() {
 	this.open = new ReactiveVar(false);

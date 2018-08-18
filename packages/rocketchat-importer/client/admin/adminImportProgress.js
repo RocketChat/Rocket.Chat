@@ -11,7 +11,7 @@ Template.adminImportProgress.helpers({
 	},
 	total() {
 		return Template.instance().total.get();
-	}
+	},
 });
 
 Template.adminImportProgress.onCreated(function() {

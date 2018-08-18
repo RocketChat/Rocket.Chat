@@ -14,5 +14,5 @@ Template.oauthApps.helpers({
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
-	}
+	},
 });

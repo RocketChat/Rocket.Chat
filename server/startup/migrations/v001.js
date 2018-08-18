@@ -3,11 +3,11 @@ RocketChat.Migrations.add({
 	up() {
 		return RocketChat.models.Users.find({
 			username: {
-				$exists: false
+				$exists: false,
 			},
 			lastLogin: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}).forEach((user) => {
 			const username = RocketChat.generateUsernameSuggestion(user);
 			if (username && username.trim() !== '') {
@@ -16,5 +16,5 @@ RocketChat.Migrations.add({
 				return console.log('User without username', JSON.stringify(user, null, ' '));
 			}
 		});
-	}
+	},
 });

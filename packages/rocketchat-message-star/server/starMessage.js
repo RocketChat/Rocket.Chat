@@ -2,14 +2,14 @@ Meteor.methods({
 	starMessage(message) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'starMessage'
+				method: 'starMessage',
 			});
 		}
 
 		if (!RocketChat.settings.get('Message_AllowStarring')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
 				method: 'pinMessage',
-				action: 'Message_starring'
+				action: 'Message_starring',
 			});
 		}
 
@@ -19,5 +19,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
-	}
+	},
 });

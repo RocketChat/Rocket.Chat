@@ -3,15 +3,15 @@ Meteor.publish('snippetedMessage', function(_id) {
 		return this.ready();
 	}
 
-	const snippet = RocketChat.models.Messages.findOne({_id, snippeted: true});
+	const snippet = RocketChat.models.Messages.findOne({ _id, snippeted: true });
 	const user = RocketChat.models.Users.findOneById(this.userId);
 	const roomSnippetQuery = {
-		'_id': snippet.rid,
-		'usernames': {
-			'$in': [
-				user.username
-			]
-		}
+		_id: snippet.rid,
+		usernames: {
+			$in: [
+				user.username,
+			],
+		},
 	};
 
 	if (RocketChat.models.Rooms.findOne(roomSnippetQuery) === undefined) {
@@ -36,7 +36,7 @@ Meteor.publish('snippetedMessage', function(_id) {
 		},
 		removed(_id) {
 			publication.removed('rocketchat_snippeted_message', _id);
-		}
+		},
 	});
 
 	this.ready();

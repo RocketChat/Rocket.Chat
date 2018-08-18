@@ -24,7 +24,7 @@ export class AppSettingsConverter {
 			i18nLabel: setting.i18nLabel,
 			i18nDescription: setting.i18nDescription,
 			createdAt: setting.ts,
-			updatedAt: setting._updatedAt
+			updatedAt: setting._updatedAt,
 		};
 	}
 
