@@ -145,7 +145,7 @@ Template.RocketSearch.events = {
 		t.suggestionActive.set(t.suggestions.get().indexOf(this));
 	},
 
-	'mouseenter .rc-input'(e, t) {
+	'keyup .rc-input'(e, t) {
 		t.messageVisible.set(true);
 	  },
 	'click .rc-input'(e, t) {
@@ -156,10 +156,9 @@ Template.RocketSearch.events = {
 		t.messageVisible.set(false);
 	  },
 
-	'change #modifier'(e, t){
-		t.Clickmodifier.set(e.target.value);
-	  }
-
+	'keydown .rc-input'(e, t) {
+		t.messageVisible.set(false);
+	  },
 };
 
 Template.RocketSearch.helpers({
