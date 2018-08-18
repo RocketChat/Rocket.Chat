@@ -82,7 +82,8 @@
 	font-style: sans-serif;
 	color: black;
 	display: block;
-	box-shadow:1px 5px 3px #F5F5F5;
+	box-shadow:1px 6px 3px 6px #F5F5F5;
+	overflow: auto;
 	
   }
 

@@ -158,7 +158,8 @@ Template.RocketSearch.events = {
 
 	'keydown .rc-input'(e, t) {
 		t.messageVisible.set(false);
-	  },
+	  }
+
 };
 
 Template.RocketSearch.helpers({
@@ -237,7 +238,6 @@ Template.RocketSearch.helpers({
 	}]
 
 	}
-
 });
 
 //add closer to suggestions
