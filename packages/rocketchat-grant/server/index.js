@@ -15,7 +15,7 @@ let grant;
 WebApp.connectHandlers.use(session({
 	secret: 'grant',
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
 }));
 
 // grant
@@ -53,5 +53,5 @@ export {
 	generateAppCallback,
 	Providers,
 	Settings,
-	GrantError
+	GrantError,
 };

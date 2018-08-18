@@ -1,7 +1,7 @@
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username
 	let user = RocketChat.models.Users.findOne({
-		'profile.irc.username': args.username
+		'profile.irc.username': args.username,
 	});
 
 	// If there is no user, create one...
@@ -20,9 +20,9 @@ export default async function handleUserRegistered(args) {
 					fromIRC: true,
 					nick: args.nick,
 					username: args.username,
-					hostname: args.hostname
-				}
-			}
+					hostname: args.hostname,
+				},
+			},
 		};
 
 		user = RocketChat.models.Users.create(userToInsert);
@@ -35,8 +35,8 @@ export default async function handleUserRegistered(args) {
 				status: 'online',
 				'profile.irc.nick': args.nick,
 				'profile.irc.username': args.username,
-				'profile.irc.hostname': args.hostname
-			}
+				'profile.irc.hostname': args.hostname,
+			},
 		});
 	}
 }

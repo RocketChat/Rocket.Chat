@@ -18,7 +18,7 @@ this.ChatMessages = class ChatMessages {
 	resize() {
 		const dif = 60 + $('.messages-container').find('footer').outerHeight();
 		return $('.messages-box').css({
-			height: `calc(100% - ${ dif }px)`
+			height: `calc(100% - ${ dif }px)`,
 		});
 	}
 
@@ -108,7 +108,7 @@ this.ChatMessages = class ChatMessages {
 				_id: Random.id(),
 				rid,
 				msg,
-				token: visitor.getToken()
+				token: visitor.getToken(),
 			};
 			MsgTyping.stop(rid);
 
@@ -117,7 +117,7 @@ this.ChatMessages = class ChatMessages {
 			if (currentAgent) {
 				agent = {
 					agentId: currentAgent._id,
-					username: currentAgent.username
+					username: currentAgent.username,
 				};
 			}
 
@@ -127,10 +127,11 @@ this.ChatMessages = class ChatMessages {
 					showError(error.reason);
 				}
 
+				Livechat.room = result.rid;
+
 				if (result && result.rid && !visitor.isSubscribed(result.rid)) {
 					Livechat.connecting = result.showConnecting;
 					ChatMessage.update(result._id, _.omit(result, '_id'));
-					Livechat.room = result.rid;
 
 					visitor.setConnected();
 
@@ -141,7 +142,7 @@ this.ChatMessages = class ChatMessages {
 
 		if (!visitor.getId()) {
 			const guest = {
-				token: visitor.getToken()
+				token: visitor.getToken(),
 			};
 
 			if (Livechat.department) {
@@ -155,7 +156,7 @@ this.ChatMessages = class ChatMessages {
 			if (Livechat.guestEmail) {
 				guest.email = Livechat.guestEmail;
 			}
-			
+
 			Meteor.call('livechat:registerGuest', guest, (error, result) => {
 				if (error) {
 					return showError(error.reason);
@@ -163,7 +164,7 @@ this.ChatMessages = class ChatMessages {
 
 				visitor.setId(result.userId);
 				visitor.setData(result.visitor);
-				
+
 				sendMessage();
 			});
 		} else {
@@ -201,7 +202,7 @@ this.ChatMessages = class ChatMessages {
 			$('.input-message').autogrow({
 				postGrowCallback: () => {
 					this.resize();
-				}
+				},
 			});
 		}
 	}
@@ -225,7 +226,7 @@ this.ChatMessages = class ChatMessages {
 			34, // Page Down
 			35, // Page Up
 			144, // Num Lock
-			145 // Scroll Lock
+			145, // Scroll Lock
 		];
 		for (i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
 		for (i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
