@@ -64,6 +64,13 @@
 	color: white;
 }
 
+.options {
+	color: lightgray;
+	font-size: 14px;
+	font-style: sans-serif;
+	font-weight: 800;
+}
+
 #modifier li  {
 	border: 1px solid white;
 	margin-top: -1px;
@@ -72,12 +79,14 @@
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 800;
-	color: lightgray;
+	font-style: sans-serif;
+	color: black;
 	display: block;
 	box-shadow:1px 5px 3px #F5F5F5;
+	
   }
 
-  #modifier li :hover:not(.header){
+#modifier li :hover:not(.header){
 	background-color: white;
   }
 

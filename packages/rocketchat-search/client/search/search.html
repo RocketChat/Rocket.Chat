@@ -27,7 +27,7 @@
 							{{#if showMessage}}
 								<ul id= "modifier">
 								{{#each getModifierPatterns}}
-									<li>{{this}}</li>
+									<li>{{this.tagName}}<span class="options">{{this.option}}</span></li>
 								{{/each}}
 								</ul>
 							{{/if}}

@@ -148,15 +148,15 @@ Template.RocketSearch.events = {
 	'mouseenter .rc-input'(e, t) {
 		t.messageVisible.set(true);
 	  },
-	  'click .rc-input'(e, t) {
+	'click .rc-input'(e, t) {
 		t.messageVisible.set(false);
 	  },
 
-	  'mouseleave .rc-input'(e, t) {
+	'mouseleave .rc-input'(e, t) {
 		t.messageVisible.set(false);
 	  },
 
-	  'change #modifier'(e, t){
+	'change #modifier'(e, t){
 		t.Clickmodifier.set(e.target.value);
 	  }
 
@@ -192,7 +192,51 @@ Template.RocketSearch.helpers({
 	  },
 	
 	getModifierPatterns() {
-		return ['has:star, url, link, location, map', 'pin:message', 'label:file title', 'is:pin', 'desc:file comment', 'before: date', 'after: date', 'on:date', 'mention:username'];
+	return [{
+		'tagName': 'has:  ',
+		'option': 'star, url, link, location, map, pin'
+	},
+
+	{
+		'tagName': 'is:  ',
+		'option': 'pin, star'
+	},
+
+	{
+		'tagName': 'label:  ',
+		'option': 'Name of File'
+	},
+
+	{
+		'tagName': 'desc:  ',
+		'option': 'Comment on file'
+	},
+
+	{
+		'tagName': 'before:  ',
+		'option': 'date'
+	},
+
+	{
+		'tagName': 'after:  ',
+		'option': 'date'
+	},
+
+	{
+		'tagName': 'on:  ',
+		'option': 'date'
+	},
+
+	{
+		'tagName': 'from:  ',
+		'option': 'team member'
+	},
+
+	{
+		'tagName': 'mention:  ',
+		'option': 'team member'
+	}]
+
 	}
 
 });
