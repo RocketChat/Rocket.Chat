@@ -8,42 +8,42 @@ RocketChat.saveBot = function(userId, botData) {
 	if (botData._id && userId !== botData._id && !RocketChat.authz.hasPermission(userId, 'edit-bot-account')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing bot is not allowed', {
 			method: 'insertOrUpdateBot',
-			action: 'Editing_bot'
+			action: 'Editing_bot',
 		});
 	}
 
 	if (!botData._id && !RocketChat.authz.hasPermission(userId, 'create-bot-account')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Creating bot account is not allowed', {
 			method: 'insertOrUpdateBot',
-			action: 'Creating_bot'
+			action: 'Creating_bot',
 		});
 	}
 
 	if (botData.roles && _.difference(botData.roles, existingRoles).length > 0) {
 		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', {
 			method: 'insertOrUpdateBot',
-			action: 'Assign_role'
+			action: 'Assign_role',
 		});
 	}
 
 	if (botData.roles && _.indexOf(botData.roles, 'admin') >= 0 && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateBot',
-			action: 'Assign_admin'
+			action: 'Assign_admin',
 		});
 	}
 
 	if (!botData._id && !s.trim(botData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateBot',
-			field: 'Name'
+			field: 'Name',
 		});
 	}
 
 	if (!botData._id && !s.trim(botData.username)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Username is required', {
 			method: 'insertOrUpdateBot',
-			field: 'Username'
+			field: 'Username',
 		});
 	}
 
@@ -59,14 +59,14 @@ RocketChat.saveBot = function(userId, botData) {
 		throw new Meteor.Error('error-input-is-not-a-valid-field', `${ _.escape(botData.username) } is not a valid username`, {
 			method: 'insertOrUpdateBot',
 			input: botData.username,
-			field: 'Username'
+			field: 'Username',
 		});
 	}
 
 	if (!botData._id && !botData.password) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateBot',
-			field: 'Password'
+			field: 'Password',
 		});
 	}
 
@@ -74,7 +74,7 @@ RocketChat.saveBot = function(userId, botData) {
 		if (!RocketChat.checkUsernameAvailability(botData.username)) {
 			throw new Meteor.Error('error-field-unavailable', `${ _.escape(botData.username) } is already in use :(`, {
 				method: 'insertOrUpdateBot',
-				field: botData.username
+				field: botData.username,
 			});
 		}
 
@@ -82,7 +82,7 @@ RocketChat.saveBot = function(userId, botData) {
 		const createBot = {
 			username: botData.username,
 			password: botData.password,
-			joinDefaultChannels: botData.joinDefaultChannels
+			joinDefaultChannels: botData.joinDefaultChannels,
 		};
 
 		const _id = Accounts.createUser(createBot);
@@ -92,8 +92,8 @@ RocketChat.saveBot = function(userId, botData) {
 				name: botData.name,
 				roles: botData.roles || ['bot'],
 				type: 'bot',
-				settings: botData.settings || {}
-			}
+				settings: botData.settings || {},
+			},
 		};
 
 		Meteor.users.update({ _id }, updateBot);
@@ -116,7 +116,7 @@ RocketChat.saveBot = function(userId, botData) {
 		}
 
 		const updateBot = {
-			$set: {}
+			$set: {},
 		};
 
 		if (botData.roles) {

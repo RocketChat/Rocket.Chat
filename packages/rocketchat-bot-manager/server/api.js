@@ -8,7 +8,7 @@ RocketChat.API.v1.addRoute('bots.getLiveStats', { authRequired: true }, {
 			}));
 		})();
 		return RocketChat.API.v1.success({ statistics });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('bots.getServerStats', { authRequired: true }, {
@@ -21,5 +21,5 @@ RocketChat.API.v1.addRoute('bots.getServerStats', { authRequired: true }, {
 			}));
 		})();
 		return RocketChat.API.v1.success({ statistics });
-	}
+	},
 });

@@ -30,6 +30,7 @@ Template.adminBots.helpers({
 				case 'offline':
 					return 1;
 			}
+			return 1;
 		});
 	},
 	isLoading() {
@@ -54,9 +55,9 @@ Template.adminBots.helpers({
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get()
+			data: Template.instance().tabBarData.get(),
 		};
-	}
+	},
 });
 
 Template.adminBots.onCreated(function() {
@@ -73,7 +74,7 @@ Template.adminBots.onCreated(function() {
 		i18nTitle: 'Add_Bot',
 		icon: 'plus',
 		template: 'adminBotCreate',
-		order: 1
+		order: 1,
 	});
 	RocketChat.TabBar.addButton({
 		groups: ['admin-bots'],
@@ -81,7 +82,7 @@ Template.adminBots.onCreated(function() {
 		i18nTitle: 'Bot_Info',
 		icon: 'hubot',
 		template: 'adminBotInfo',
-		order: 2
+		order: 2,
 	});
 	this.autorun(function() {
 		const filter = instance.filter.get();
@@ -92,7 +93,7 @@ Template.adminBots.onCreated(function() {
 	this.bots = function() {
 		let filter;
 		let query = {
-			type: 'bot'
+			type: 'bot',
 		};
 
 		if (instance.filter && instance.filter.get()) {
@@ -101,11 +102,11 @@ Template.adminBots.onCreated(function() {
 
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = {$or: [{ username: filterReg }, { name: filterReg}, { framework: filterReg }]};
+			query = { $or: [{ username: filterReg }, { name: filterReg }, { framework: filterReg }] };
 		}
 
 		const limit = instance.limit && instance.limit.get();
-		return Meteor.users.find(query, {limit}).fetch();
+		return Meteor.users.find(query, { limit }).fetch();
 	};
 });
 
@@ -144,5 +145,5 @@ Template.adminBots.events({
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
-	}
+	},
 });

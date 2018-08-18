@@ -3,9 +3,9 @@ FlowRouter.route('/admin/bots', {
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'adminBots',
-			pageTitle: t('Bots')
+			pageTitle: t('Bots'),
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/bots/:username', {
@@ -14,9 +14,9 @@ FlowRouter.route('/admin/bots/:username', {
 		return BlazeLayout.render('main', {
 			center: 'adminBotDetails',
 			pageTitle: t('Bot_Details'),
-			params
+			params,
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/bots/:username/logs', {
@@ -25,7 +25,7 @@ FlowRouter.route('/admin/bots/:username/logs', {
 		return BlazeLayout.render('main', {
 			center: 'adminBotLogs',
 			pageTitle: t('Bot_Logs'),
-			params
+			params,
 		});
-	}
+	},
 });

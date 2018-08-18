@@ -4,13 +4,13 @@ Meteor.methods({
 
 		if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'pauseBot'
+				method: 'pauseBot',
 			});
 		}
 
 		const start = process.hrtime();
 		await RocketChat.sendClientCommand(bot, { key: 'heartbeat' });
 		const diff = process.hrtime(start);
-		return diff[1]/1000000;
-	}
+		return diff[1] / 1000000;
+	},
 });

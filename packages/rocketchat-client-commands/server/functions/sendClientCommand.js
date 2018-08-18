@@ -18,7 +18,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 		// Must have the _id and username properties
 		if (user._id === undefined || user.username === undefined) {
 			const error = new Meteor.Error('error-invalid-user', 'Invalid user', {
-				function: 'sendClientCommand'
+				function: 'sendClientCommand',
 			});
 			return reject(error);
 		}
@@ -28,7 +28,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 		const clientCommand = {
 			_id: Random.id(),
 			cmd: command,
-			ts: new Date()
+			ts: new Date(),
 		};
 
 		// rejects with timeout error if timeout was not cleared after response
@@ -37,7 +37,7 @@ RocketChat.sendClientCommand = (user, command, timeout = 5) => {
 			const error = new Meteor.Error('error-client-command-response-timeout',
 				`${ _.escape(user.name) } didn't respond to the command in time`, {
 					method: 'sendClientCommand',
-					command: clientCommand
+					command: clientCommand,
 				});
 			reject(error);
 		}, msTimeout);

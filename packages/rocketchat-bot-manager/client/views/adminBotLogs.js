@@ -49,14 +49,14 @@ Template.adminBotLogs.helpers({
 	},
 	getUsername() {
 		return Template.instance().data.params().username;
-	}
+	},
 });
 
 Template.adminBotLogs.events({
 	'click .new-logs'() {
 		Template.instance().atBottom = true;
 		return Template.instance().sendToBottomIfNecessary();
-	}
+	},
 });
 
 Template.adminBotLogs.onRendered(function() {
@@ -104,7 +104,7 @@ Template.adminBotLogs.onRendered(function() {
 			});
 		});
 		observer.observe(wrapperUl, {
-			childList: true
+			childList: true,
 		});
 	}
 	template.onWindowResize = function() {

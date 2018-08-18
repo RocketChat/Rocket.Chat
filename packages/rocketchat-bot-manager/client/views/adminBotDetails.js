@@ -29,7 +29,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (err) {
 				return handleError(err);
 			}
-			const currentStats =_.assign(this.statistics.get(), statistics);
+			const currentStats = _.assign(this.statistics.get(), statistics);
 			this.statistics.set(currentStats);
 		});
 		if (this.isOnline(bot)) {
@@ -37,7 +37,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 				if (err) {
 					return handleError(err);
 				}
-				const currentStats =_.assign(this.statistics.get(), statistics);
+				const currentStats = _.assign(this.statistics.get(), statistics);
 				this.statistics.set(currentStats);
 			});
 		}
@@ -71,9 +71,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	/**
 	 * Checks whether the bot is online
 	 */
-	this.isOnline = (bot) => {
-		return bot.statusConnection && bot.statusConnection !== 'offline';
-	};
+	this.isOnline = (bot) => bot.statusConnection && bot.statusConnection !== 'offline';
 
 	/**
 	 * Calls pingBot each second, always waiting for the previous call to finish
@@ -239,8 +237,8 @@ Template.adminBotDetails.helpers({
 		if (!bot.roles) {
 			return [];
 		}
-		const roles = bot.roles;
-		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+		const { roles } = bot;
+		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	roleName() {
@@ -264,10 +262,10 @@ Template.adminBotDetails.helpers({
 			return {
 				key,
 				value,
-				description: `${ key }_description`
+				description: `${ key }_description`,
 			};
 		});
-	}
+	},
 });
 
 Template.adminBotDetails.events({
@@ -303,7 +301,7 @@ Template.adminBotDetails.events({
 		e.stopPropagation();
 		e.preventDefault();
 		const bot = t.bot.get();
-		bot.roles = bot.roles.filter(el => el !== this.valueOf());
+		bot.roles = bot.roles.filter((el) => el !== this.valueOf());
 		t.bot.set(bot);
 		$(`[title=${ this }]`).remove();
 		t.updateBot();
@@ -380,7 +378,7 @@ Template.adminBotDetails.events({
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('deleteBot', bot._id, (err) => {
 				if (err) {
@@ -392,7 +390,7 @@ Template.adminBotDetails.events({
 					text: t('The_account_has_been_deleted'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 
 				FlowRouter.go('admin-bots');
@@ -418,7 +416,7 @@ Template.adminBotDetails.events({
 				confirmButtonText: t('Yes_convert_it'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, () => {
 				Meteor.call('turnBotIntoUser', bot._id, email, (err) => {
 					if (err) {
@@ -430,7 +428,7 @@ Template.adminBotDetails.events({
 						text: t('Bot_is_now_a_user'),
 						type: 'success',
 						timer: 1000,
-						showConfirmButton: false
+						showConfirmButton: false,
 					});
 
 					FlowRouter.go('admin-bots');
@@ -444,10 +442,10 @@ Template.adminBotDetails.events({
 				type: 'input',
 				showCancelButton: true,
 				closeOnConfirm: false,
-				inputPlaceholder: 'example@rocket.chat'
+				inputPlaceholder: 'example@rocket.chat',
 			}, (email) => warningModal(email));
 		} else {
 			warningModal();
 		}
-	}
+	},
 });

@@ -9,19 +9,19 @@ Meteor.methods({
 
 		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'turnBotIntoUser'
+				method: 'turnBotIntoUser',
 			});
 		}
 		const bot = RocketChat.models.Users.findOneById(botId);
 		if (!bot.emails && !email) {
 			throw new Meteor.Error('error-missing-email', 'Can\'t convert bot account to user account without an e-mail', {
-				method: 'turnBotIntoUser'
+				method: 'turnBotIntoUser',
 			});
 		}
 
 		const userData = {
 			_id: botId,
-			email
+			email,
 		};
 
 		RocketChat.saveUser(Meteor.userId(), userData);
@@ -29,15 +29,15 @@ Meteor.methods({
 		const update = RocketChat.models.Users.update({ _id: botId }, {
 			$set: {
 				type: 'user',
-				roles: ['user']
-			}
+				roles: ['user'],
+			},
 		});
 		if (update <= 0) {
 			throw new Meteor.Error('error-not-updated', 'Bot not updated', {
-				method: 'turnBotIntoUser'
+				method: 'turnBotIntoUser',
 			});
 		}
 
 		return true;
-	}
+	},
 });

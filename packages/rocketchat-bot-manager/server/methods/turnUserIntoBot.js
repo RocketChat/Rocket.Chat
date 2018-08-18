@@ -8,22 +8,22 @@ Meteor.methods({
 
 		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'turnUserIntoBot'
+				method: 'turnUserIntoBot',
 			});
 		}
 
 		const update = RocketChat.models.Users.update({ _id: userId }, {
 			$set: {
 				type: 'bot',
-				roles: ['bot']
-			}
+				roles: ['bot'],
+			},
 		});
 		if (update <= 0) {
 			throw new Meteor.Error('error-not-updated', 'User not updated', {
-				method: 'turnUserIntoBot'
+				method: 'turnUserIntoBot',
 			});
 		}
 
 		return true;
-	}
+	},
 });

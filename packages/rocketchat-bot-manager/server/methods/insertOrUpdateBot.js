@@ -7,5 +7,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.saveBot(Meteor.userId(), botData);
-	}
+	},
 });

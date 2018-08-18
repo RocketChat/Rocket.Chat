@@ -11,5 +11,5 @@ Meteor.methods({
 		clientData.ipAddress = this.connection.clientAddress;
 
 		return RocketChat.setCustomClientData(user, clientData);
-	}
+	},
 });

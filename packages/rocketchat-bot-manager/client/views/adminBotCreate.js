@@ -15,7 +15,7 @@ Template.adminBotCreate.helpers({
 
 	roles() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	botRoles() {
@@ -24,7 +24,7 @@ Template.adminBotCreate.helpers({
 
 	name() {
 		return this.description || this._id;
-	}
+	},
 });
 
 Template.adminBotCreate.events({
@@ -39,7 +39,7 @@ Template.adminBotCreate.events({
 		e.stopPropagation();
 		e.preventDefault();
 		let roles = t.roles.get();
-		roles = roles.filter(el => el !== this.valueOf());
+		roles = roles.filter((el) => el !== this.valueOf());
 		t.roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
@@ -66,7 +66,7 @@ Template.adminBotCreate.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
-	}
+	},
 });
 
 
@@ -90,10 +90,8 @@ Template.adminBotCreate.onCreated(function() {
 		const roleSelect = this.$('.remove-role').toArray();
 
 		if (roleSelect.length > 0) {
-			const notSorted = roleSelect.map(role => {
-				return role.title;
-			});
-			//Remove duplicate strings from the array
+			const notSorted = roleSelect.map((role) => role.title);
+			// Remove duplicate strings from the array
 			botData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
 		return botData;
@@ -120,7 +118,7 @@ Template.adminBotCreate.onCreated(function() {
 		return errors.length === 0;
 	};
 
-	this.save = form => {
+	this.save = (form) => {
 		if (!this.validate()) {
 			return;
 		}

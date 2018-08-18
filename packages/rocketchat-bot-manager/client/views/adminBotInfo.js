@@ -70,9 +70,9 @@ Template.adminBotInfo.helpers({
 		if (!bot || !bot._id) {
 			return;
 		}
-		const roles = bot.roles;
+		const { roles } = bot;
 		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
-	}
+	},
 });
 
 Template.adminBotInfo.events({
@@ -107,7 +107,7 @@ Template.adminBotInfo.events({
 			}
 			toastr.success(TAPi18n.__('Bot_paused'));
 		});
-	}
+	},
 });
 
 Template.adminBotInfo.onCreated(function() {
@@ -126,9 +126,7 @@ Template.adminBotInfo.onCreated(function() {
 
 		this.loadingBotInfo.set(true);
 
-		return this.subscribe('fullUserData', username, 1, () => {
-			return this.loadingBotInfo.set(false);
-		});
+		return this.subscribe('fullUserData', username, 1, () => this.loadingBotInfo.set(false));
 	});
 
 	this.autorun(() => {

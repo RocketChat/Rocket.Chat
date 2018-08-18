@@ -4,7 +4,7 @@ Meteor.methods({
 
 		if (RocketChat.authz.hasPermission(Meteor.userId(), 'manage-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'getBotLiveStats'
+				method: 'getBotLiveStats',
 			});
 		}
 
@@ -15,11 +15,11 @@ Meteor.methods({
 				throw new Meteor.Error('error-unsuccessful-client-command',
 					'Client replied to ClientCommand with an error', {
 						method: 'getBotLiveStats',
-						error: response.error
+						error: response.error,
 					}
 				);
 			}
 			return response.statistics;
 		}
-	}
+	},
 });
