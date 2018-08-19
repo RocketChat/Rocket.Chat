@@ -121,8 +121,6 @@ this.ChatMessages = class ChatMessages {
 				};
 			}
 
-			hideError();
-
 			Meteor.call('sendMessageLivechat', msgObject, agent, (error, result) => {
 				if (error) {
 					ChatMessage.update(msgObject._id, { $set: { error: true } });

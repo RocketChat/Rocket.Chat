@@ -22,5 +22,5 @@ Meteor.methods({
 		};
 
 		return RocketChat.Livechat.transfer(room, visitor, transferData);
-	}
+	},
 });
