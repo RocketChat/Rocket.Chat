@@ -5,3 +5,4 @@ this.showError = (msg) => {
 this.hideError = () => {
 	$('.error').removeClass('show');
 };
+
