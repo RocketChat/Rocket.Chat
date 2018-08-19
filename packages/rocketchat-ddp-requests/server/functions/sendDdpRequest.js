@@ -25,11 +25,9 @@ RocketChat.sendDdpRequest = (user, request, timeout = 5) => {
 
 		const msTimeout = timeout * 1000;
 
-		const ddpRequest = {
-			_id: Random.id(),
-			cmd: request,
-			ts: new Date(),
-		};
+		const ddpRequest = request;
+		ddpRequest._id = Random.id();
+		ddpRequest.ts = new Date();
 
 		// rejects with timeout error if timeout was not cleared after response
 		const timeoutFunction = setTimeout(() => {

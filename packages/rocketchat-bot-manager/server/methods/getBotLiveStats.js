@@ -19,7 +19,7 @@ Meteor.methods({
 					}
 				);
 			}
-			return response.statistics;
+			return response.data;
 		}
 	},
 });
