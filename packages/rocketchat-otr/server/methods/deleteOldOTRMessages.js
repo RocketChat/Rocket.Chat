@@ -11,5 +11,5 @@ Meteor.methods({
 		} else {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'deleteOldOTRMessages' });
 		}
-	}
+	},
 });

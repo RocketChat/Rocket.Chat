@@ -7,7 +7,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Pinned_Messages',
 				icon: 'pin',
 				template: 'pinnedMessages',
-				order: 10
+				order: 10,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('pinned-messages');

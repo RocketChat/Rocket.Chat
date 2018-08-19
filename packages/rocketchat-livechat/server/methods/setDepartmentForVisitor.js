@@ -18,7 +18,7 @@ Meteor.methods({
 
 		const transferData = {
 			roomId,
-			departmentId
+			departmentId,
 		};
 
 		return RocketChat.Livechat.transfer(room, visitor, transferData);

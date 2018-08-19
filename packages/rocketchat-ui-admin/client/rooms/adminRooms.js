@@ -1,4 +1,4 @@
-/*globals AdminChatRoom, RocketChat */
+/* globals AdminChatRoom, RocketChat */
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -37,7 +37,7 @@ Template.adminRooms.helpers({
 		return TAPi18n.__(RocketChat.roomTypes.roomTypes[this.t].label);
 	},
 	'default'() {
-		if (this['default']) {
+		if (this.default) {
 			return t('True');
 		} else {
 			return t('False');
@@ -45,9 +45,9 @@ Template.adminRooms.helpers({
 	},
 	flexData() {
 		return {
-			tabBar: Template.instance().tabBar
+			tabBar: Template.instance().tabBar,
 		};
-	}
+	},
 });
 
 Template.adminRooms.onCreated(function() {
@@ -64,7 +64,7 @@ Template.adminRooms.onCreated(function() {
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'adminRoomInfo',
-		order: 1
+		order: 1,
 	});
 	RocketChat.ChannelSettings.addOption({
 		group: ['admin-room'],
@@ -75,7 +75,7 @@ Template.adminRooms.onCreated(function() {
 		},
 		validation() {
 			return RocketChat.authz.hasAllPermission('view-room-administration');
-		}
+		},
 	});
 	this.autorun(function() {
 		const filter = instance.filter.get();
@@ -100,13 +100,13 @@ Template.adminRooms.onCreated(function() {
 		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg } ]};
+			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
 		if (types.length) {
-			query['t'] = { $in: types };
+			query.t = { $in: types };
 		}
 		const limit = instance.limit && instance.limit.get();
-		return AdminChatRoom.find(query, { limit, sort: { 'default': -1, name: 1}});
+		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};
 	this.getSearchTypes = function() {
 		return _.map($('[name=room-type]:checked'), function(input) {
@@ -137,7 +137,7 @@ Template.adminRooms.events({
 	'click .room-info'(e, instance) {
 		e.preventDefault();
 		Session.set('adminRoomsSelected', {
-			rid: this._id
+			rid: this._id,
 		});
 		instance.tabBar.open('admin-room');
 	},
@@ -148,5 +148,5 @@ Template.adminRooms.events({
 	},
 	'change [name=room-type]'(e, t) {
 		t.types.set(t.getSearchTypes());
-	}
+	},
 });

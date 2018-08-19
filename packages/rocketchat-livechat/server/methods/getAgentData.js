@@ -17,5 +17,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Users.getAgentInfo(room.servedBy._id);
-	}
+	},
 });

@@ -11,12 +11,12 @@ Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 	const options = {
 		fields: {
 			_id: 1,
-			name: 1
+			name: 1,
 		},
 		limit: 10,
 		sort: {
-			name: 1
-		}
+			name: 1,
+		},
 	};
 
 	const cursorHandle = RocketChat.models.Rooms.findChannelAndPrivateByNameStarting(selector.name, options).observeChanges({
@@ -28,7 +28,7 @@ Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 		},
 		removed(_id, record) {
 			return pub.removed('autocompleteRecords', _id, record);
-		}
+		},
 	});
 
 	this.ready();

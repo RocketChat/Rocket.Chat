@@ -7,7 +7,7 @@ Template.fxOsInstallPrompt.onRendered(function() {
 		};
 		request.onerror = function() {
 			BlazeLayout.render('fxOsInstallError', {
-				installError: this.error.name
+				installError: this.error.name,
 			});
 		};
 	};

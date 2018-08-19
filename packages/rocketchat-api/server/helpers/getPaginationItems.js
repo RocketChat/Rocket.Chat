@@ -25,6 +25,6 @@ RocketChat.API.helperMethods.set('getPaginationItems', function _getPaginationIt
 
 	return {
 		offset,
-		count
+		count,
 	};
 });

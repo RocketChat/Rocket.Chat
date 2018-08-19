@@ -24,7 +24,7 @@ Meteor.methods({
 			fileUpload: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
-			emailFieldRegistrationForm: null
+			emailFieldRegistrationForm: null,
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -35,8 +35,8 @@ Meteor.methods({
 				u: 1,
 				usernames: 1,
 				v: 1,
-				servedBy: 1
-			}
+				servedBy: 1,
+			},
 		}).fetch();
 
 		if (room && room.length > 0) {
@@ -48,8 +48,8 @@ Meteor.methods({
 				name: 1,
 				username: 1,
 				visitorEmails: 1,
-				department: 1
-			}
+				department: 1,
+			},
 		});
 
 		if (room) {
@@ -90,5 +90,5 @@ Meteor.methods({
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 		return info;
-	}
+	},
 });

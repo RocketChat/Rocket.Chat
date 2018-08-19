@@ -12,7 +12,7 @@ Blaze.toHTMLWithDataNonReactive = function(content, data) {
 			return obj._depend({
 				added: true,
 				removed: true,
-				changed: true
+				changed: true,
 			});
 		}
 	};
@@ -20,7 +20,7 @@ Blaze.toHTMLWithDataNonReactive = function(content, data) {
 	makeCursorReactive(data);
 
 	if (data instanceof Spacebars.kw && Object.keys(data.hash).length > 0) {
-		Object.keys(data.hash).forEach(key => {
+		Object.keys(data.hash).forEach((key) => {
 			makeCursorReactive(data.hash[key]);
 		});
 
@@ -30,9 +30,9 @@ Blaze.toHTMLWithDataNonReactive = function(content, data) {
 	return Tracker.nonreactive(() => Blaze.toHTMLWithData(content, data));
 };
 
-Blaze.registerHelper('nrrargs', function() {
+Blaze.registerHelper('nrrargs', function(...args) {
 	return {
-		_arguments: arguments
+		_arguments: args,
 	};
 });
 
@@ -42,9 +42,7 @@ Blaze.renderNonReactive = function(templateName, data) {
 	[templateName, data] = _arguments;
 
 	return Tracker.nonreactive(() => {
-		const view = new Blaze.View('nrr', () => {
-			return HTML.Raw(Blaze.toHTMLWithDataNonReactive(Template[templateName], data));
-		});
+		const view = new Blaze.View('nrr', () => HTML.Raw(Blaze.toHTMLWithDataNonReactive(Template[templateName], data)));
 
 		view.onViewReady(() => {
 			const { onViewReady } = Template[templateName];

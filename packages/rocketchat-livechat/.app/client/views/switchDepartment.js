@@ -7,8 +7,8 @@ Template.switchDepartment.helpers({
 		return Department.find({
 			showOnRegistration: true,
 			_id: {
-				$ne: Livechat.department
-			}
+				$ne: Livechat.department,
+			},
 		});
 	},
 	error() {
@@ -16,7 +16,7 @@ Template.switchDepartment.helpers({
 	},
 	showError() {
 		return Template.instance().error.get() ? 'show' : '';
-	}
+	},
 });
 
 Template.switchDepartment.onCreated(function() {
@@ -43,7 +43,7 @@ Template.switchDepartment.events({
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('No'),
-			html: false
+			html: false,
 		}).then((result) => {
 			if (!result.value) {
 				return;
@@ -52,7 +52,7 @@ Template.switchDepartment.events({
 			const guestData = {
 				roomId: visitor.getRoom(),
 				visitorToken: visitor.getToken(),
-				departmentId: departmentId
+				departmentId,
 			};
 
 			Meteor.call('livechat:setDepartmentForVisitor', guestData, (error, result) => {
@@ -65,7 +65,7 @@ Template.switchDepartment.events({
 					swal({
 						title: t('Department_switched'),
 						type: 'success',
-						timer: 2000
+						timer: 2000,
 					});
 				} else {
 					instance.error.set(t('No_available_agents_to_transfer'));
@@ -76,5 +76,5 @@ Template.switchDepartment.events({
 
 	'click #btnCancel'() {
 		Livechat.showSwitchDepartmentForm = false;
-	}
+	},
 });

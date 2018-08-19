@@ -75,6 +75,6 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	return {
 		sort,
 		fields,
-		query
+		query,
 	};
 });

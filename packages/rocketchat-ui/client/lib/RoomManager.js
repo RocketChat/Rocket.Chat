@@ -1,8 +1,8 @@
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
 
-const onDeleteMessageStream = msg => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({rid, ts, excludePinned, users}) => {
+const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
@@ -24,7 +24,7 @@ const RoomManager = new function() {
 			this.prototype.openedRooms = openedRooms;
 			this.prototype.onlineUsers = onlineUsers;
 			this.prototype.computation = Tracker.autorun(() => {
-				Object.keys(openedRooms).forEach(typeName => {
+				Object.keys(openedRooms).forEach((typeName) => {
 					const record = openedRooms[typeName];
 					if (record.active !== true || record.ready === true) { return; }
 					const ready = CachedChatRoom.ready.get() && RocketChat.mainReady.get();
@@ -34,9 +34,7 @@ const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => {
-						return RocketChat.roomTypes.findRoom(type, name, user);
-					});
+					const room = Tracker.nonreactive(() => RocketChat.roomTypes.findRoom(type, name, user));
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -44,7 +42,7 @@ const RoomManager = new function() {
 
 						if (openedRooms[typeName].streamActive !== true) {
 							openedRooms[typeName].streamActive = true;
-							msgStream.on(openedRooms[typeName].rid, msg =>
+							msgStream.on(openedRooms[typeName].rid, (msg) =>
 
 								RocketChat.promises.run('onClientMessageReceived', msg).then(function(msg) {
 
@@ -53,11 +51,11 @@ const RoomManager = new function() {
 
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
-											const subscription = ChatSubscription.findOne({rid: openedRooms[typeName].rid});
-											upsertMessage({msg, subscription});
+											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
+											upsertMessage({ msg, subscription });
 											msg.room = {
 												type,
-												name
+												name,
 											};
 										}
 										msg.name = room.name;
@@ -83,7 +81,7 @@ const RoomManager = new function() {
 		}
 
 		getOpenedRoomByRid(rid) {
-			return Object.keys(openedRooms).map(typeName => openedRooms[typeName]).find(openedRoom => openedRoom.rid === rid);
+			return Object.keys(openedRooms).map((typeName) => openedRooms[typeName]).find((openedRoom) => openedRoom.rid === rid);
 		}
 
 		getDomOfRoom(typeName, rid) {
@@ -95,10 +93,10 @@ const RoomManager = new function() {
 			if ((room.dom == null) && (rid != null)) {
 				room.dom = document.createElement('div');
 				room.dom.classList.add('room-container');
-				const contentAsFunc = content => () => content;
+				const contentAsFunc = (content) => () => content;
 
 				room.template = Blaze._TemplateWith({ _id: rid }, contentAsFunc(Template.room));
-				Blaze.render(room.template, room.dom); //, nextNode, parentView
+				Blaze.render(room.template, room.dom); // , nextNode, parentView
 			}
 
 			return room.dom;
@@ -143,7 +141,7 @@ const RoomManager = new function() {
 
 
 		closeAllRooms() {
-			Object.keys(openedRooms).forEach(key => {
+			Object.keys(openedRooms).forEach((key) => {
 				const openedRoom = openedRooms[key];
 				this.close(openedRoom.typeName);
 			});
@@ -156,7 +154,7 @@ const RoomManager = new function() {
 					typeName,
 					active: false,
 					ready: false,
-					unreadSince: new ReactiveVar(undefined)
+					unreadSince: new ReactiveVar(undefined),
 				};
 			}
 
@@ -180,7 +178,7 @@ const RoomManager = new function() {
 				ready() {
 					Dep.depend();
 					return openedRooms[typeName].ready;
-				}
+				},
 			};
 		}
 
@@ -198,7 +196,7 @@ const RoomManager = new function() {
 				onlineUsersValue[user.username] = {
 					_id: user._id,
 					status,
-					utcOffset
+					utcOffset,
 				};
 			}
 
@@ -233,13 +231,13 @@ const RoomManager = new function() {
 };
 
 const loadMissedMessages = function(rid) {
-	const lastMessage = ChatMessage.findOne({rid, temp: { $exists: false } }, {sort: {ts: -1}, limit: 1});
+	const lastMessage = ChatMessage.findOne({ rid, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
 	if (lastMessage == null) {
 		return;
 	}
-	const subscription = ChatSubscription.findOne({rid});
+	const subscription = ChatSubscription.findOne({ rid });
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map(item => RocketChat.promises.run('onClientMessageReceived', item).then(msg => upsertMessage({msg, subscription})))
+		Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })))
 	);
 };
 
@@ -248,7 +246,7 @@ Tracker.autorun(function() {
 	const { connected } = Meteor.connection.status();
 
 	if (connected === true && connectionWasOnline === false && RoomManager.openedRooms != null) {
-		Object.keys(RoomManager.openedRooms).forEach(key => {
+		Object.keys(RoomManager.openedRooms).forEach((key) => {
 			const value = RoomManager.openedRooms[key];
 			if (value.rid != null) {
 				loadMissedMessages(value.rid);
@@ -267,9 +265,9 @@ Meteor.startup(() => {
 		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const roomTypes = RocketChat.roomTypes.roomTypes;
+			const { roomTypes } = RocketChat.roomTypes;
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(roomTypes).find(key => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			const roomType = Object.keys(roomTypes).find((key) => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
@@ -279,17 +277,17 @@ Meteor.startup(() => {
 	ChatMessage.find().observe({
 		removed(record) {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
-				const recordBefore = ChatMessage.findOne({ts: {$lt: record.ts}}, {sort: {ts: -1}});
+				const recordBefore = ChatMessage.findOne({ ts: { $lt: record.ts } }, { sort: { ts: -1 } });
 				if (recordBefore != null) {
-					ChatMessage.update({_id: recordBefore._id}, {$set: {tick: new Date}});
+					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date } });
 				}
 
-				const recordAfter = ChatMessage.findOne({ts: {$gt: record.ts}}, {sort: {ts: 1}});
+				const recordAfter = ChatMessage.findOne({ ts: { $gt: record.ts } }, { sort: { ts: 1 } });
 				if (recordAfter != null) {
-					return ChatMessage.update({_id: recordAfter._id}, {$set: {tick: new Date}});
+					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date } });
 				}
 			}
-		}
+		},
 	});
 });
 
@@ -297,7 +295,7 @@ Tracker.autorun(function() {
 	if (Meteor.userId()) {
 		return RocketChat.Notifications.onUser('message', function(msg) {
 			msg.u =
-			{username: 'rocket.cat'};
+			{ username: 'rocket.cat' };
 			msg.private = true;
 
 			return ChatMessage.upsert({ _id: msg._id }, msg);
@@ -311,9 +309,9 @@ RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms()
 
 RocketChat.CachedCollectionManager.onLogin(() => {
 	RocketChat.Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({rid: sub.rid}, {$unset : {ignored : ''}}, {multi : true});
+		ChatMessage.update({ rid: sub.rid }, { $unset : { ignored : '' } }, { multi : true });
 		if (sub && sub.ignored) {
-			ChatMessage.update({rid: sub.rid, t: {$ne: 'command'}, 'u._id': { $in : sub.ignored }}, { $set: {ignored : true}}, {multi : true});
+			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
 		}
 	});
 });
