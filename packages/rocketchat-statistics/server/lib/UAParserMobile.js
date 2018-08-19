@@ -40,8 +40,8 @@ const UAParserMobile = {
 				}
 
 				return value;
-			}
-		}
+			},
+		},
 	},
 
 	isMobileApp(uaString) {
@@ -62,14 +62,14 @@ const UAParserMobile = {
 
 		let obj = {
 			device: {
-				type: this.device
+				type: this.device,
 			},
 			app: {
-				name: splitUA[0]
-			}
+				name: splitUA[0],
+			},
 		};
 
-		splitUA.shift(); //remove first element
+		splitUA.shift(); // remove first element
 		if (splitUA.length === 0) {
 			return obj;
 		}

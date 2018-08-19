@@ -66,7 +66,7 @@ export class SAUMonitor {
 
 	_log() {
 		if (this._debug === true) {
-			console.log.apply(console, arguments);
+			console.log.apply(console, args);
 		}
 	}
 
@@ -111,7 +111,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		Meteor.onConnection(connection => {
+		Meteor.onConnection(((connection) => {
 			this._handleSession(connection, getDateObj());
 
 			connection.onClose(() => {
@@ -133,7 +133,7 @@ export class SAUMonitor {
 			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
 
-		Accounts.onLogout(info => {
+		Accounts.onLogout((info) => {
 			const sessionId = info.connection.id;
 			const userId = info.user._id;
 			RocketChat.models.Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
@@ -155,8 +155,8 @@ export class SAUMonitor {
 		const currentDay = getDateObj(currentDateTime);
 
 		if (JSON.stringify(this._today) !== JSON.stringify(currentDay)) {
-			const beforeDateTime = new Date(this._today.year, this._today.month-1, this._today.day, 23, 59, 59, 999);
-			const nextDateTime = new Date(currentDay.year, currentDay.month-1, currentDay.day, 0, 0, 0, 0);
+			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
+			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day, 0, 0, 0, 0);
 
 			const createSessions = ((objects, ids) => {
 				RocketChat.models.Sessions.createBatch(objects);
@@ -165,13 +165,13 @@ export class SAUMonitor {
 					RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
 			});
-			this._applyAllServerSessionBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay});
+			this._applyAllServerSessionBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
 			this._today = currentDay;
 			return;
 		}
 
 		//Otherwise, just update the lastActivityAt field
-		this._applyAllServerSessionsIds(sessions => {
+		this._applyAllServerSessionsIds((sessions) => {
 			RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
 		});
 	}
@@ -189,7 +189,7 @@ export class SAUMonitor {
 			ip,
 			host,
 			...this._getUserAgentInfo(connection),
-			...params
+			...params,
 		};
 
 		if (connection.loginAt) {
@@ -241,7 +241,7 @@ export class SAUMonitor {
 	}
 
 	_initActiveServerSessions() {
-		this._applyAllServerSessions(connectionHandle => {
+		this._applyAllServerSessions((connectionHandle) => {
 			this._handleSession(connectionHandle, getDateObj());
 		});
 	}
@@ -252,7 +252,7 @@ export class SAUMonitor {
 		}
 
 		const sessions = Object.values(Meteor.server.sessions);
-		sessions.forEach(session => {
+		sessions.forEach((session) => {
 			callback(session.connectionHandle);
 		});
 	}
@@ -263,7 +263,7 @@ export class SAUMonitor {
 		}
 
 		const sessions = Object.values(Meteor.server.sessions);
-		const sessionIds = sessions.map(s => s.id);
+		const sessionIds = sessions.map((s) => s.id);
 		while (sessionIds.length) {
 			callback(sessionIds.splice(0, 500));
 		}
@@ -274,9 +274,9 @@ export class SAUMonitor {
 			return;
 		}
 		if (Meteor.server.sessions[sessionId]) {
-			Object.keys(data).forEach(p => {
+			Object.keys(data).forEach((p) => {
 				Object.defineProperty(Meteor.server.sessions[sessionId].connectionHandle, p, {
-					value: data[p]
+					value: data[p],
 				});
 			});
 		}
