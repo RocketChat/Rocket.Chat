@@ -111,7 +111,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		Meteor.onConnection(((connection) => {
+		Meteor.onConnection((connection) => {
 			this._handleSession(connection, getDateObj());
 
 			connection.onClose(() => {
@@ -125,7 +125,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		Accounts.onLogin(info => {
+		Accounts.onLogin((info) => {
 			const userId = info.user._id;
 			const loginAt = new Date();
 			const params = { userId, loginAt, ...getDateObj() };
@@ -170,7 +170,7 @@ export class SAUMonitor {
 			return;
 		}
 
-		//Otherwise, just update the lastActivityAt field
+		// Otherwise, just update the lastActivityAt field
 		this._applyAllServerSessionsIds((sessions) => {
 			RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
 		});
@@ -216,8 +216,8 @@ export class SAUMonitor {
 
 		const info = {};
 
-		const removeEmptyProps = obj => {
-			Object.keys(obj).forEach(p => (!obj[p] || obj[p] === undefined) && delete obj[p]);
+		const removeEmptyProps = (obj) => {
+			Object.keys(obj).forEach((p) => (!obj[p] || obj[p] === undefined) && delete obj[p]);
 			return obj;
 		};
 

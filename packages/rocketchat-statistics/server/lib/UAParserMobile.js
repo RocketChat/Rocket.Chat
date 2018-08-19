@@ -26,7 +26,7 @@ const UAParserMobile = {
 	uaSeparator: ';',
 	props: {
 		os: {
-			list: ['name', 'version']
+			list: ['name', 'version'],
 		},
 		app: {
 			list: ['version', 'bundle'],
@@ -100,7 +100,7 @@ const UAParserMobile = {
 		});
 
 		return obj;
-	}
+	},
 };
 
 export { UAParserMobile };
