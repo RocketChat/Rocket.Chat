@@ -9,11 +9,11 @@ Meteor.methods({
 		}
 
 		// if the send fails, throw will be catched by the caller of pauseBot
-		const response = await RocketChat.sendClientCommand(bot, { key: 'pauseMessageStream' });
+		const response = await RocketChat.sendDdpRequest(bot, { key: 'pauseMessageStream' });
 		if (!response.success) {
-			throw new Meteor.Error('error-unsuccessful-client-command',
-				'Client replied to ClientCommand with an error', {
-					method: 'pauseBot',
+			throw new Meteor.Error('error-unsuccessful-ddp-request',
+				'Client replied to DDP Request with an error', {
+					method: 'pause',
 					error: response.error,
 				}
 			);

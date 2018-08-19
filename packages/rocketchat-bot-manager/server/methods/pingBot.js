@@ -9,7 +9,7 @@ Meteor.methods({
 		}
 
 		const start = process.hrtime();
-		await RocketChat.sendClientCommand(bot, { key: 'heartbeat' });
+		await RocketChat.sendDdpRequest(bot, { key: 'heartbeat' });
 		const diff = process.hrtime(start);
 		return diff[1] / 1000000;
 	},

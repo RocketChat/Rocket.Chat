@@ -52,7 +52,7 @@ rocketchat:bot-manager
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
-rocketchat:client-commands
+rocketchat:ddp-requests
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth

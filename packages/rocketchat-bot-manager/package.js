@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:theme');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:ui-flextab');
+	api.use('rocketchat:ddp-requests');
 	api.use('kadira:flow-router', 'client');
 
 	api.addFiles('client/startup.js', 'client');

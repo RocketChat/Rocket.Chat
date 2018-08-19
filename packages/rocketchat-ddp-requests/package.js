@@ -1,7 +1,7 @@
 Package.describe({
-	name: 'rocketchat:client-commands',
+	name: 'rocketchat:ddp-requests',
 	version: '0.0.1',
-	summary: 'Package that implements client commands',
+	summary: 'Package that implements DDP requests from the server to the client',
 	git: '',
 	documentation: 'README.md',
 });
@@ -20,10 +20,10 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup.js', 'server');
 
-	api.addFiles('server/functions/sendClientCommand.js', 'server');
+	api.addFiles('server/functions/sendDdpRequest.js', 'server');
 	api.addFiles('server/functions/setCustomClientData.js', 'server');
 	api.addFiles('server/functions/resetCustomClientData.js', 'server');
 
-	api.addFiles('server/methods/replyClientCommand.js', 'server');
+	api.addFiles('server/methods/replyToDdpRequest.js', 'server');
 	api.addFiles('server/methods/setCustomClientData.js', 'server');
 });

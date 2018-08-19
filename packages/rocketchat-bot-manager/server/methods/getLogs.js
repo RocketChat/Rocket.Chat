@@ -8,11 +8,14 @@ Meteor.methods({
 			});
 		}
 
-		const response = await RocketChat.sendClientCommand(bot, { key: 'getLogs' });
+		const response = await RocketChat.sendDdpRequest(bot, { key: 'getLogs' });
 		if (!response.success) {
-			throw new Meteor.Error('error-getting-logs', 'Client did not send logs', {
-				method: 'getLogs',
-			});
+			throw new Meteor.Error('error-unsuccessful-ddp-request',
+				'Client replied to DDP Request with an error', {
+					method: 'getLogs',
+					error: response.error,
+				}
+			);
 		}
 		return response.logs;
 	},

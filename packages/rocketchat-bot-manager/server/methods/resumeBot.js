@@ -9,10 +9,10 @@ Meteor.methods({
 		}
 
 		// if the send fails, throw will be catched by the caller of resumeBot
-		const response = await RocketChat.sendClientCommand(bot, { key: 'resumeMessageStream' });
+		const response = await RocketChat.sendDdpRequest(bot, { key: 'resumeMessageStream' });
 		if (!response.success) {
-			throw new Meteor.Error('error-unsuccessful-client-command',
-				'Client replied to ClientCommand with an error', {
+			throw new Meteor.Error('error-unsuccessful-ddp-request',
+				'Client replied to DDP Request with an error', {
 					method: 'resumeBot',
 					error: response.error,
 				}
