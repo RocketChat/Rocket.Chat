@@ -64,7 +64,7 @@ export class SAUMonitor {
 		return typeof this._started === 'boolean' && this._started === true;
 	}
 
-	_log() {
+	_log(...args) {
 		if (this._debug === true) {
 			console.log.apply(console, args);
 		}
