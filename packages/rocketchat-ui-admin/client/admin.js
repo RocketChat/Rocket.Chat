@@ -494,7 +494,7 @@ Template.admin.events({
 	},
 	'change input[type=file]'(ev) {
 		const e = ev.originalEvent || ev;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (!files || files.length === 0) {
 			if (e.dataTransfer && e.dataTransfer.files) {
 				files = e.dataTransfer.files;

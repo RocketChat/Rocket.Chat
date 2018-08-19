@@ -266,7 +266,7 @@ Template.livechatAppearance.events({
 		instance[e.currentTarget.name].set(e.currentTarget.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
-		let value = e.currentTarget.value;
+		let { value } = e.currentTarget;
 		if (e.currentTarget.type === 'radio') {
 			value = value === 'true';
 		}

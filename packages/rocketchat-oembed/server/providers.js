@@ -95,7 +95,7 @@ RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
 			queryString = QueryString.parse(data.parsedUrl.query);
 		}
 		if (queryString.url != null) {
-			const url = queryString.url;
+			const { url } = queryString;
 			const provider = providers.getProviderForUrl(url);
 			if (provider != null) {
 				if (data.content && data.content.body) {

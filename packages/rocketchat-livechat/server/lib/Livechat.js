@@ -370,7 +370,7 @@ RocketChat.Livechat = {
 			return RocketChat.Livechat.returnRoomAsInquiry(room._id, transferData.departmentId);
 		}
 
-		const servedBy = room.servedBy;
+		const { servedBy } = room;
 
 		if (agent && agent.agentId !== servedBy._id) {
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);

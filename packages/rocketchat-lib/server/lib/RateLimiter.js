@@ -16,7 +16,7 @@ RocketChat.RateLimiter = new class {
 			rateLimiter.increment(match);
 			const rateLimitResult = rateLimiter.check(match);
 			if (rateLimitResult.allowed) {
-				return fn.apply(null, arguments);
+				return fn.apply(null, args);
 			} else {
 				throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(rateLimitResult.timeToReset / 1000) } seconds before trying again.`, {
 					timeToReset: rateLimitResult.timeToReset,

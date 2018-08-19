@@ -25,7 +25,7 @@ export default class SlackAdapter {
 	connect(apiToken) {
 		this.apiToken = apiToken;
 
-		const RTMClient = this.slackClient.RTMClient;
+		const { RTMClient } = this.slackClient;
 		if (RTMClient != null) {
 			RTMClient.disconnect;
 		}

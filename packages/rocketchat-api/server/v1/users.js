@@ -200,6 +200,12 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			username: Match.Maybe(String),
 		}));
 
+		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+				method: 'users.setAvatar',
+			});
+		}
+
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
@@ -320,7 +326,7 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = RocketChat.models.Users.findOneById(this.userId);
 		if (user.settings) {
-			const preferences = user.settings.preferences;
+			const { preferences } = user.settings;
 			preferences.language = user.language;
 
 			return RocketChat.API.v1.success({
@@ -379,7 +385,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		};
 
 		if (this.bodyParams.data.language) {
-			const language = this.bodyParams.data.language;
+			const { language } = this.bodyParams.data;
 			delete this.bodyParams.data.language;
 			userData.language = language;
 		}

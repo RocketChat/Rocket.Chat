@@ -451,6 +451,10 @@ RocketChat.settings.addGroup('Accounts', function() {
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
 		});
 
+		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+			type: 'boolean',
+		});
+
 		return this.add('Accounts_SetDefaultAvatar', true, {
 			type: 'boolean',
 		});
@@ -753,6 +757,18 @@ RocketChat.settings.addGroup('General', function() {
 	this.add('CDN_PREFIX', '', {
 		type: 'string',
 		public: true,
+	});
+	this.add('CDN_PREFIX_ALL', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('CDN_JSCSS_PREFIX', '', {
+		type: 'string',
+		public: true,
+		enableQuery: {
+			_id: 'CDN_PREFIX_ALL',
+			value: false,
+		},
 	});
 	this.add('Force_SSL', false, {
 		type: 'boolean',

@@ -37,7 +37,7 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	});
 };
 
-const loginWithPassword = Meteor.loginWithPassword;
+const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function(email, password, cb) {
 	loginWithPassword(email, password, (error) => {

@@ -65,7 +65,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(emoji)) {
 			const emojiObject = RocketChat.emoji.list[emoji];
-			const emojiPackage = emojiObject.emojiPackage;
+			const { emojiPackage } = emojiObject;
 			let tone = '';
 			emoji = emoji.replace(/:/g, '');
 
@@ -228,7 +228,7 @@ Template.emojiPicker.events({
 	'click .emoji-list li'(event, instance) {
 		event.stopPropagation();
 
-		const emoji = event.currentTarget.dataset.emoji;
+		const { emoji } = event.currentTarget.dataset;
 		const actualTone = instance.tone;
 		let tone = '';
 

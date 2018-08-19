@@ -1,4 +1,4 @@
-/* globals Commands, Livechat */
+/* globals Commands, Livechat, UserPresence */
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -61,7 +61,7 @@ export default {
 	},
 
 	setToken(token) {
-		if (!token || token == this.token.get()) {
+		if (!token || token === this.token.get()) {
 			return;
 		}
 
@@ -92,7 +92,7 @@ export default {
 
 		const data = {
 			token: this.getToken(),
-			name
+			name,
 		};
 
 		Meteor.call('livechat:registerGuest', data);
@@ -107,7 +107,7 @@ export default {
 
 		const data = {
 			token: this.getToken(),
-			email
+			email,
 		};
 
 		Meteor.call('livechat:registerGuest', data);
@@ -171,5 +171,5 @@ export default {
 			UserPresence.awayTime = 300000; // 5 minutes
 			UserPresence.start(token);
 		});
-	}
+	},
 };
