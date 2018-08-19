@@ -39,6 +39,24 @@
 		"no-inner-declarations": [2, "functions"],
 		"no-invalid-regexp": 2,
 		"no-irregular-whitespace": 2,
+		"no-mixed-operators": [2, {
+			"groups": [
+			  ["%", "**"],
+			  ["%", "+"],
+			  ["%", "-"],
+			  ["%", "*"],
+			  ["%", "/"],
+			  ["**", "+"],
+			  ["**", "-"],
+			  ["**", "*"],
+			  ["**", "/"],
+			  ["&", "|", "^", "~", "<<", ">>", ">>>"],
+			  ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+			  ["&&", "||"],
+			  ["in", "instanceof"]
+			],
+			"allowSamePrecedence": false
+		}],
 		"no-mixed-spaces-and-tabs": 2,
 		"no-sparse-arrays": 2,
 		"no-negated-in-lhs": 2,
@@ -54,6 +72,35 @@
 		}],
 		"no-void": 2,
 		"no-var": 2,
+		"no-multiple-empty-lines": [2, { "max": 2 }],
+		"no-nested-ternary": 2,
+		"prefer-rest-params": 2,
+		"array-callback-return": 2,
+		"prefer-destructuring": [2, {
+			"VariableDeclarator": {
+				"array": false,
+				"object": true
+			},
+			"AssignmentExpression": {
+			  "array": false,
+			  "object": false
+			}
+		}, {
+			"enforceForRenamedProperties": false
+		}],
+		"no-duplicate-imports": 2,
+		"arrow-parens": [2, "always"],
+		"quote-props": [2, "as-needed"],
+		"no-array-constructor": 2,
+		"arrow-spacing": 2,
+		"arrow-body-style": [2, "as-needed"],
+		"no-confusing-arrow": [2, { "allowParens": true }],
+		"dot-notation": 2,
+		"no-unneeded-ternary": 2,
+		"spaced-comment": 2,
+		"space-infix-ops": 2,
+		"array-bracket-spacing": [2, "never"],
+		"object-curly-spacing": [2, "always"],
 		"one-var": [2, "never"],
 		"no-lonely-if": 2,
 		"no-trailing-spaces": 2,
@@ -63,7 +110,7 @@
 		"space-before-blocks": [2, "always"],
 		"indent": [2, "tab", {"SwitchCase": 1}],
 		"eol-last": [2, "always"],
-		"comma-dangle": [2, "never"],
+		"comma-dangle": [2, "always-multiline"],
 		"keyword-spacing": 2,
 		"block-spacing": 2,
 		"brace-style": [2, "1tbs", { "allowSingleLine": true }],

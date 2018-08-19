@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:colors',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will process colors',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:search',
 	version: '0.0.1',
 	summary: 'Rocketchat Search Providers',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:logger',
-		'kadira:flow-router'
+		'kadira:flow-router',
 	]);
 
 	api.addFiles([
@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 		'client/provider/suggestion.html',
 		'client/provider/result.html',
 		'client/provider/result.js',
-		'client/style/style.css'
+		'client/style/style.css',
 	], 'client');
 
 	api.mainModule('server/index.js', 'server');

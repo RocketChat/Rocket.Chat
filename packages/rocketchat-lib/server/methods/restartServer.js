@@ -18,7 +18,7 @@ Meteor.methods({
 
 		return {
 			message: 'The_server_will_restart_in_s_seconds',
-			params: [2]
+			params: [2],
 		};
-	}
+	},
 });

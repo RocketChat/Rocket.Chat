@@ -4,10 +4,10 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'openRoom'
+				method: 'openRoom',
 			});
 		}
 
 		return RocketChat.models.Subscriptions.openByRoomIdAndUserId(rid, Meteor.userId());
-	}
+	},
 });

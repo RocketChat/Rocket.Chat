@@ -5,7 +5,7 @@ Meteor.startup(function() {
 		let unreadCount = 0;
 		let unreadAlert = false;
 
-		const subscriptions = ChatSubscription.find({open: true, hideUnreadStatus: { $ne: true }}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
+		const subscriptions = ChatSubscription.find({ open: true, hideUnreadStatus: { $ne: true } }, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
 
 		let openedRoomId = undefined;
 		Tracker.nonreactive(function() {
@@ -63,7 +63,7 @@ Meteor.startup(function() {
 Meteor.startup(function() {
 	window.favico = new Favico({
 		position: 'up',
-		animation: 'none'
+		animation: 'none',
 	});
 
 	Tracker.autorun(function() {
@@ -74,7 +74,7 @@ Meteor.startup(function() {
 
 		if (favico) {
 			favico.badge(unread, {
-				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b'
+				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b',
 			});
 		}
 

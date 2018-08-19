@@ -14,7 +14,7 @@ const acEvents = {
 	},
 	'blur'(e, t) {
 		t.ac.onBlur(e);
-	}
+	},
 };
 
 Template.inputAutocomplete.events(acEvents);
@@ -22,7 +22,7 @@ Template.inputAutocomplete.events(acEvents);
 Template.textareaAutocomplete.events(acEvents);
 
 const attributes = function() {
-	return _.omit(this, 'settings'); //Render all but the settings parameter
+	return _.omit(this, 'settings'); // Render all but the settings parameter
 
 };
 
@@ -41,7 +41,7 @@ const autocompleteHelpers = {
 		return Blaze.With(ac, function() { //eslint-disable-line
 			return Template._autocompleteContainer;
 		});
-	})
+	}),
 };
 
 Template.inputAutocomplete.helpers(autocompleteHelpers);
@@ -69,7 +69,7 @@ Template._autocompleteContainer.events({
 	},
 	'mouseenter .-autocomplete-item'(e, t) {
 		t.data.onItemHover(this, e);
-	}
+	},
 });
 
 Template._autocompleteContainer.helpers({
@@ -78,6 +78,6 @@ Template._autocompleteContainer.helpers({
 	},
 	noMatchTemplate() {
 		return this.matchedRule().noMatchTemplate || Template._noMatch;
-	}
+	},
 });
 export { acEvents, attributes, autocompleteHelpers };

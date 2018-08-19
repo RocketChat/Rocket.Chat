@@ -15,6 +15,6 @@ Meteor.startup(function() {
 			return message.mentionedList === true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 });

@@ -9,8 +9,8 @@ const config = {
 	scope: 'basic',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.dolphin'],
-		forOtherUsers: ['services.dolphin.name']
-	}
+		forOtherUsers: ['services.dolphin.name'],
+	},
 };
 
 const Dolphin = new CustomOAuth('dolphin', config);
@@ -32,7 +32,7 @@ if (Meteor.isServer) {
 			changed() {
 				config.serverURL = RocketChat.settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
-			}
+			},
 		})
 	);
 
@@ -44,10 +44,10 @@ if (Meteor.isServer) {
 			clientId: RocketChat.settings.get('Accounts_OAuth_Dolphin_id'),
 			secret: RocketChat.settings.get('Accounts_OAuth_Dolphin_secret'),
 			serverURL: RocketChat.settings.get('Accounts_OAuth_Dolphin_URL'),
-			loginStyle: RocketChat.settings.get('Accounts_OAuth_Dolphin_login_style')
+			loginStyle: RocketChat.settings.get('Accounts_OAuth_Dolphin_login_style'),
 		};
 
-		ServiceConfiguration.configurations.upsert({service: 'dolphin'}, {$set: data});
+		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
 	}
 
 	RocketChat.callbacks.add('beforeCreateUser', DolphinOnCreateUser, RocketChat.callbacks.priority.HIGH);
