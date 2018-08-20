@@ -148,6 +148,18 @@
 					<div class="attachment-description">{{description}}</div>
 				{{/if}}
 			{{/unless}}
+					
+			{{#if actions}}
+				<div class="actions-container">
+					{{#each actions}}
+						{{> messageAction}}
+					{{/each}}
+				</div>
+			{{/if}}
+
+			{{#each actions}}
+				{{> messageAction}}
+			{{/each}}
 
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}
