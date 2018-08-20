@@ -3,7 +3,6 @@
 		{{#header sectionName="Apps" hideHelp=true fixedHeight=true fullpage=true}}
 			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus" data-button="install">{{> icon icon="plus"}}</button>
 		{{/header}}
-
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
 			<div class="rc-input rc-input--small rc-directory-search">
@@ -64,9 +63,10 @@
 								</td>
 								<td>
 									<!-- {{> icon icon="app-installed"}} -->
-									{{#if latest._installed}}
+									{{#if $eq latest._installed true}}
 										{{> icon icon="app-installed"}}
-									{{else}}
+									{{/if}}
+									{{#if renderDownloadButton latest}}
 										<button class="js-install installer" data-app="{{appId}}">
 											{{> icon icon="marketplace-installer"}}
 										</button>

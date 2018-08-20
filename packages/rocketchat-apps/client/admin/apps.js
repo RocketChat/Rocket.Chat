@@ -184,6 +184,15 @@ Template.apps.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	searchType() {
+		return Template.instance().searchType.get();
+	},
+	renderDownloadButton(latest) {
+		const isMarketplace = Template.instance().searchType.get() === 'marketplace';
+		const isDownloaded = latest._installed === false;
+
+		return isMarketplace && isDownloaded;
+	},
 	tabsData() {
 		const instance = Template.instance();
 
@@ -239,7 +248,7 @@ Template.apps.events({
 		console.log('installer', this, e);
 
 		RocketChat.API.post('apps/', { url });
-		// e.currentTarget.find('rc-icon').addClass('play');
+		e.currentTarget.find('rc-icon').addClass('play');
 		// play animation
 	},
 	'keyup .js-search'(e, t) {
