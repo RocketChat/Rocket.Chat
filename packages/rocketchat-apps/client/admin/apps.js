@@ -1,5 +1,6 @@
 import { AppEvents } from '../communication';
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
+const HOST = 'https://marketplace.rocket.chat';
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
 const sortByColumn = (array, column, inverted) => {
@@ -27,8 +28,12 @@ const getInstalledApps = (instance) => {
 	instance.isLoading.set(true);
 
 	RocketChat.API.get('apps').then((data) => {
+		const apps = data.apps.map((app) => {
+			return { latest: app };
+		});
+
 		instance.isLoading.set(false);
-		instance.apps.set(data.apps);
+		instance.apps.set(apps);
 		instance.ready.set(true);
 	});
 };
@@ -207,7 +212,11 @@ Template.apps.events({
 		FlowRouter.go('/admin/app/install');
 	},
 	'click .installer'(e) {
+		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
+
 		console.log('installer', this);
+
+		RocketChat.API.post('apps/', { url });
 		// e.currentTarget.find('rc-icon').addClass('play');
 		// play animation
 	},
