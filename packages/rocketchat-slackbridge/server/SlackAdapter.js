@@ -317,6 +317,9 @@ export default class SlackAdapter {
 	 */
 	onReactionRemoved(slackReactionMsg) {
 		if (slackReactionMsg) {
+			if (! this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
 			// Lets find our Rocket originated message
 			let rocketMsg = RocketChat.models.Messages.findOneBySlackTs(slackReactionMsg.item.ts);
@@ -358,6 +361,9 @@ export default class SlackAdapter {
 	 */
 	onReactionAdded(slackReactionMsg) {
 		if (slackReactionMsg) {
+			if (! this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
 
 			if (rocketUser.roles.includes('bot')) {
