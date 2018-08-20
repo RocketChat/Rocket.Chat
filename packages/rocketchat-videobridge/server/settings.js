@@ -30,7 +30,7 @@ Meteor.startup(function() {
 
 			this.add('bigbluebutton_enable_d', true, {
 				type: 'boolean',
-				i18nLabel: 'Enable to direct messages',
+				i18nLabel: 'WebRTC_Enable_Direct',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
 					value: true,
@@ -40,7 +40,7 @@ Meteor.startup(function() {
 
 			this.add('bigbluebutton_enable_p', true, {
 				type: 'boolean',
-				i18nLabel: 'Enable to private',
+				i18nLabel: 'WebRTC_Enable_Private',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
 					value: true,
@@ -50,7 +50,7 @@ Meteor.startup(function() {
 
 			this.add('bigbluebutton_enable_c', false, {
 				type: 'boolean',
-				i18nLabel: 'Shared_Secret',
+				i18nLabel: 'WebRTC_Enable_Channel',
 				enableQuery: {
 					_id: 'bigbluebutton_Enabled',
 					value: true,
