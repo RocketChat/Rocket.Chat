@@ -12,16 +12,22 @@ const sortByColumn = (array, column, inverted) => {
 };
 
 const getApps = (instance) => {
+	instance.isLoading.set(true);
+
 	fetch('https://marketplace.rocket.chat/v1/apps')
 		.then((response) => response.json())
 		.then((data) => {
+			instance.isLoading.set(false);
 			instance.apps.set(data);
 			instance.ready.set(true);
 		});
 };
 
 const getInstalledApps = (instance) => {
+	instance.isLoading.set(true);
+
 	RocketChat.API.get('apps').then((data) => {
+		instance.isLoading.set(false);
 		instance.apps.set(data.apps);
 		instance.ready.set(true);
 	});
