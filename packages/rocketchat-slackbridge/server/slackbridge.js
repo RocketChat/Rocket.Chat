@@ -19,9 +19,9 @@ class SlackBridge {
 
 		// Settings that we cache versus looking up at runtime
 		this.apiToken = false;
-		this.aliasFormat = {};
-		this.excludeBotnames = {};
-		this.isReactionsEnabled = {};
+		this.aliasFormat = '';
+		this.excludeBotnames = '';
+		this.isReactionsEnabled = true;
 
 		this.processSettings();
 	}

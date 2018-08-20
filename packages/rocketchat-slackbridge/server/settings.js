@@ -68,7 +68,7 @@ Meteor.startup(function() {
 			i18nDescription: 'Exclude_Botnames_Description',
 		});
 
-		this.add('SlackBridge_Reactions_Enabled', false, {
+		this.add('SlackBridge_Reactions_Enabled', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'SlackBridge_Enabled',
