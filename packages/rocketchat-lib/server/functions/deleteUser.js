@@ -25,7 +25,6 @@ RocketChat.deleteUser = function(userId) {
 					if (numOwners === 1) {
 						// If the user is the last owner of a public channel, then we need to abort the deletion
 						if (roomData.t === 'c') {
-							console.log(subscription.name);
 							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
 								method: 'deleteUser',
 							});
