@@ -64,10 +64,13 @@
 								</td>
 								<td>
 									<!-- {{> icon icon="app-installed"}} -->
-
-									<button class="js-install installer" data-app="{{appId}}">
-										{{> icon icon="marketplace-installer"}}
-									</button>
+									{{#if latest._installed}}
+										{{> icon icon="app-installed"}}
+									{{else}}
+										<button class="js-install installer" data-app="{{appId}}">
+											{{> icon icon="marketplace-installer"}}
+										</button>
+									{{/if}}
 								</td>
 							</tr>
 						{{/each}}

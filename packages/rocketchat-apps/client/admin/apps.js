@@ -11,20 +11,38 @@ const sortByColumn = (array, column, inverted) =>
 		return 1;
 	});
 
+const tagAlreadyInstalledApps = (instance, apps) => {
+	const installedApps = instance.installedApps.get() || [];
+	const installedIds = installedApps.map((app) => app.latest.id);
+
+	const tagged = apps.map((app) => {
+		console.log(app);
+		return {
+			latest: {
+				...app.latest,
+				_installed: installedIds.includes(app.latest.id),
+			},
+		};
+	});
+
+	return tagged;
+};
+
 const getApps = (instance) => {
 	instance.isLoading.set(true);
 
-	fetch('https://marketplace.rocket.chat/v1/apps')
+	fetch(`${ HOST }/v1/apps?version=0.9.13`)
 		.then((response) => response.json())
 		.then((data) => {
+			const tagged = tagAlreadyInstalledApps(instance, data);
+
 			instance.isLoading.set(false);
-			instance.apps.set(data);
+			instance.apps.set(tagged);
 			instance.ready.set(true);
 		});
 };
 
 const getInstalledApps = (instance) => {
-	instance.isLoading.set(true);
 
 	RocketChat.API.get('apps').then((data) => {
 		const apps = data.apps.map((app) => {
@@ -32,9 +50,7 @@ const getInstalledApps = (instance) => {
 			return { latest: app };
 		});
 
-		instance.isLoading.set(false);
-		instance.apps.set(apps);
-		instance.ready.set(true);
+		instance.installedApps.set(apps);
 	});
 };
 
@@ -42,6 +58,7 @@ Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
+	this.installedApps = new ReactiveVar([]);
 	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
@@ -53,6 +70,7 @@ Template.apps.onCreated(function() {
 	this.searchType = new ReactiveVar('marketplace');
 
 	getApps(instance);
+	getInstalledApps(instance);
 
 	fetch('https://marketplace.rocket.chat/v1/categories')
 		.then((response) => response.json())
@@ -194,7 +212,11 @@ Template.apps.helpers({
 			onChange(value) {
 				searchType.set(value);
 
-				value === 'marketplace' ? getApps(instance) : getInstalledApps(instance);
+				if (value === 'marketplace') {
+					getApps(instance);
+				} else {
+					instance.apps.set(instance.installedApps.get());
+				}
 			},
 		};
 	},
