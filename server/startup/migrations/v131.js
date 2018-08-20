@@ -29,15 +29,12 @@ RocketChat.Migrations.add({
 		subscriptions.forEach((subscription) => {
 			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
 			if (room) {
-				// If the room is a direct message, remove all subscriptions and messages that it has
-				if (room.t === 'd') {
+				// Remove direct messages and also non-channel rooms with only 1 user (the one being deleted)
+				if (room.t === 'd' || (room.t !== 'c' && RocketChat.models.Subscriptions.findByRoomId(room._id).count() === 1)) {
 					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
+					RocketChat.models.Messages.removeFilesByRoomId(subscription.rid);
 					RocketChat.models.Messages.removeByRoomId(subscription.rid);
 					RocketChat.models.Rooms.removeById(subscription.rid);
-				} else if (room.t !== 'c' && room.usernames.length === 1) {
-					// Remove non-channel rooms with only 1 user (the one being deleted)
-					RocketChat.models.Rooms.removeById(subscription.rid);
-					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
 				}
 			}
 
