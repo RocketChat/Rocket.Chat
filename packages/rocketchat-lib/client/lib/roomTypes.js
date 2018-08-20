@@ -113,4 +113,21 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
 	}
+
+	openRouteLink(roomType, subData, queryParams) {
+		if (!this.roomTypes[roomType]) {
+			return false;
+		}
+
+		let routeData = {};
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+			routeData = this.roomTypes[roomType].route.link(subData);
+		} else if (subData && subData.name) {
+			routeData = {
+				name: subData.name,
+			};
+		}
+
+		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
+	}
 };
