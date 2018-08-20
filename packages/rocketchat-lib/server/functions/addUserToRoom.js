@@ -12,8 +12,7 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	const muted = room.ro;
-	if (muted) {
+	if (room.ro) {
 		RocketChat.models.Rooms.muteUsernameByRoomId(rid, user.username);
 	}
 
