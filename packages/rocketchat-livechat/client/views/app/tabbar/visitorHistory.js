@@ -7,15 +7,9 @@ Template.visitorHistory.helpers({
 	},
 
 	previousChats() {
-		const userId = Meteor.userId();
-		if (!userId) {
-			return;
-		}
-
 		return visitorHistory.find({
 			_id: { $ne: this.rid },
 			'v._id': Template.instance().visitorId.get(),
-			'servedBy._id': userId,
 		}, {
 			sort: {
 				ts: -1,
