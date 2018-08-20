@@ -106,7 +106,7 @@ export class AppMessagesConverter {
 			alias: message.alias,
 			customFields: message.customFields,
 			attachments,
-			reactions: message.reactions
+			reactions: message.reactions,
 			actions: message.actions,
 		};
 	}
