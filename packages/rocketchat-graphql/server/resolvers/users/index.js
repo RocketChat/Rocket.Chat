@@ -11,12 +11,12 @@ export const schema = mergeTypes([
 	setStatus.schema,
 	// types
 	UserType.schema,
-	UserStatus.schema
+	UserStatus.schema,
 ]);
 
 export const resolvers = mergeResolvers([
 	// mutations
 	setStatus.resolver,
 	// types
-	UserType.resolver
+	UserType.resolver,
 ]);

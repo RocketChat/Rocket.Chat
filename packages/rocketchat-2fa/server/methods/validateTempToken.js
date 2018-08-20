@@ -12,7 +12,7 @@ Meteor.methods({
 
 		const verified = RocketChat.TOTP.verify({
 			secret: user.services.totp.tempSecret,
-			token: userToken
+			token: userToken,
 		});
 
 		if (verified) {
@@ -21,5 +21,5 @@ Meteor.methods({
 			RocketChat.models.Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
 			return { codes };
 		}
-	}
+	},
 });

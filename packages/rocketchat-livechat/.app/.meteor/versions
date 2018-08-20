@@ -39,7 +39,7 @@ jquery@1.11.11
 kadira:blaze-layout@2.3.0
 kadira:flow-router@2.12.1
 konecty:nrr@2.0.2
-konecty:user-presence@2.0.1
+konecty:user-presence@2.1.0
 less@2.7.12
 livedata@1.0.18
 localstorage@1.2.0

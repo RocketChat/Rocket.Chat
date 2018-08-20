@@ -9,7 +9,7 @@ Meteor.loginWithFacebookCordova = function(options, callback) {
 		data.cordova = true;
 		return Accounts.callLoginMethod({
 			methodArguments: [data],
-			userCallback: callback
+			userCallback: callback,
 		});
 	};
 	if (typeof facebookConnectPlugin !== 'undefined') {

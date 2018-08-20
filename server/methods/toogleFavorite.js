@@ -5,7 +5,7 @@ Meteor.methods({
 		check(f, Match.Optional(Boolean));
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'toggleFavorite'
+				method: 'toggleFavorite',
 			});
 		}
 
@@ -18,5 +18,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Subscriptions.setFavoriteByRoomIdAndUserId(rid, Meteor.userId(), f);
-	}
+	},
 });

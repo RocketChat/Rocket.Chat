@@ -1,11 +1,11 @@
 /* globals openRoom, LivechatInquiry */
-import {RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from 'meteor/rocketchat:lib';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:lib';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
-			path: '/live/:id'
+			path: '/live/:id',
 		});
 	}
 
@@ -15,28 +15,28 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 
 	link(sub) {
 		return {
-			id: sub.rid
+			id: sub.rid,
 		};
 	}
 }
 
-class LivechatRoomType extends RoomTypeConfig {
+export default class LivechatRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'l',
 			order: 5,
 			icon: 'livechat',
 			label: 'Livechat',
-			route: new LivechatRoomRoute()
+			route: new LivechatRoomRoute(),
 		});
 
 		this.notSubscribedTpl = {
-			template: 'livechatNotSubscribed'
+			template: 'livechatNotSubscribed',
 		};
 	}
 
 	findRoom(identifier) {
-		return ChatRoom.findOne({_id: identifier});
+		return ChatRoom.findOne({ _id: identifier });
 	}
 
 	roomName(roomData) {
@@ -48,7 +48,7 @@ class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({_id: roomId}, {fields: {open: 1}});
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
 		return room && room.open === true;
 	}
 
@@ -82,5 +82,3 @@ class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 }
-
-RocketChat.roomTypes.add(new LivechatRoomType());

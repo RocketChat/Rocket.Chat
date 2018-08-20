@@ -1,5 +1,5 @@
 // Do not disclose if user exists when password is invalid
-const _runLoginHandlers = Accounts._runLoginHandlers;
+const { _runLoginHandlers } = Accounts;
 Accounts._runLoginHandlers = function(methodInvocation, options) {
 	const result = _runLoginHandlers.call(Accounts, methodInvocation, options);
 
