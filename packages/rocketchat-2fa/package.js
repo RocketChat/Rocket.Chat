@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:ldap',
 		'rocketchat:custom-oauth',
 		'pauli:accounts-linkedin',
 		'steffo:meteor-accounts-saml',
@@ -27,6 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/TOTPOAuth.js', 'client');
 	api.addFiles('client/TOTPGoogle.js', 'client');
 	api.addFiles('client/TOTPSaml.js', 'client');
+	api.addFiles('client/TOTPLDAP.js', 'client');
 
 	api.addFiles('server/lib/totp.js', 'server');
 
