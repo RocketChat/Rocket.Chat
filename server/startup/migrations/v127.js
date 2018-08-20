@@ -16,5 +16,5 @@ RocketChat.Migrations.add({
 			// Revert permission
 			RocketChat.models.Permissions.remove({ _id: 'remove-closed-livechat-rooms' });
 		}
-	}
+	},
 });

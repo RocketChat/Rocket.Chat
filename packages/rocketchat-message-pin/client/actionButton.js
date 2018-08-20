@@ -23,7 +23,7 @@ Meteor.startup(function() {
 			return RocketChat.authz.hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 20,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -48,7 +48,7 @@ Meteor.startup(function() {
 			return RocketChat.authz.hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 21,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -70,7 +70,7 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -91,6 +91,6 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 101,
-		group: 'menu'
+		group: 'menu',
 	});
 });

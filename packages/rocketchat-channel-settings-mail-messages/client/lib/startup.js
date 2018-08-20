@@ -8,7 +8,7 @@ Meteor.startup(() => {
 		icon: 'mail',
 		template: 'mailMessagesInstructions',
 		order: 10,
-		condition: () => RocketChat.authz.hasAllPermission('mail-messages')
+		condition: () => RocketChat.authz.hasAllPermission('mail-messages'),
 	});
 
 	// RocketChat.callbacks.add('roomExit', () => resetSelection(false), RocketChat.callbacks.priority.MEDIUM, 'room-exit-mail-messages');

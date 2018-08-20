@@ -12,7 +12,7 @@ renderMessageBody = function(msg) {
 
 	if (message.tokens && message.tokens.length > 0) {
 		// Unmounting tokens(LIFO)
-		for (const {token, text} of message.tokens.reverse()) {
+		for (const { token, text } of message.tokens.reverse()) {
 			message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
 		}
 	}

@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
 	return this.record = new ReactiveVar({
-		username: 'rocket.cat'
+		username: 'rocket.cat',
 	});
 });
 
@@ -22,7 +22,7 @@ Template.integrationsIncoming.helpers({
 			if (RocketChat.authz.hasAllPermission('manage-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id });
 			} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
-				data = ChatIntegrations.findOne({_id: params.id, '_createdBy._id': Meteor.userId() });
+				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
 			}
 
 			if (data) {
@@ -46,7 +46,7 @@ Template.integrationsIncoming.helpers({
 			avatar: record.avatar,
 			msg: 'Example message',
 			bot: {
-				i: Random.id()
+				i: Random.id(),
 			},
 			groupable: false,
 			attachments: [{
@@ -54,13 +54,13 @@ Template.integrationsIncoming.helpers({
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
 				image_url: 'https://rocket.chat/images/mockup.png',
-				color: '#764FA5'
+				color: '#764FA5',
 			}],
 			ts: new Date(),
 			u: {
 				_id: Random.id(),
-				username: record.username
-			}
+				username: record.username,
+			},
 		};
 	},
 
@@ -76,8 +76,8 @@ Template.integrationsIncoming.helpers({
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
 				image_url: 'https://rocket.chat/images/mockup.png',
-				color: '#764FA5'
-			}]
+				color: '#764FA5',
+			}],
 		};
 
 		const invalidData = [null, ''];
@@ -107,8 +107,8 @@ Template.integrationsIncoming.helpers({
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
 				image_url: 'https://rocket.chat/images/mockup.png',
-				color: '#764FA5'
-			}]
+				color: '#764FA5',
+			}],
 		};
 
 		const invalidData = [null, ''];
@@ -128,7 +128,7 @@ Template.integrationsIncoming.helpers({
 			gutters: [
 				// 'CodeMirror-lint-markers'
 				'CodeMirror-linenumbers',
-				'CodeMirror-foldgutter'
+				'CodeMirror-foldgutter',
 			],
 			// lint: true,
 			foldGutter: true,
@@ -137,9 +137,9 @@ Template.integrationsIncoming.helpers({
 			autoCloseBrackets: true,
 			matchTags: true,
 			showTrailingSpace: true,
-			highlightSelectionMatches: true
+			highlightSelectionMatches: true,
 		};
-	}
+	},
 });
 
 Template.integrationsIncoming.events({
@@ -168,7 +168,7 @@ Template.integrationsIncoming.events({
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('deleteIncomingIntegration', params.id, (err) => {
 				if (err) {
@@ -179,7 +179,7 @@ Template.integrationsIncoming.events({
 						text: t('Your_entry_has_been_deleted'),
 						type: 'success',
 						timer: 1000,
-						showConfirmButton: false
+						showConfirmButton: false,
 					});
 
 					FlowRouter.go('admin-integrations');
@@ -228,7 +228,7 @@ Template.integrationsIncoming.events({
 			avatar: avatar !== '' ? avatar : undefined,
 			name: name !== '' ? name : undefined,
 			script: script !== '' ? script : undefined,
-			scriptEnabled: scriptEnabled === '1'
+			scriptEnabled: scriptEnabled === '1',
 		};
 
 		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
@@ -250,5 +250,5 @@ Template.integrationsIncoming.events({
 				FlowRouter.go('admin-integrations-incoming', { id: data._id });
 			});
 		}
-	}
+	},
 });

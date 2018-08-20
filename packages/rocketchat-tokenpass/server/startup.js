@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Tokenpass',
-			value: true
+			value: true,
 		};
 
 		this.add('Accounts_OAuth_Tokenpass', false, { type: 'boolean' });
@@ -23,7 +23,7 @@ function validateTokenAccess(userData, roomData) {
 
 Meteor.startup(function() {
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		if (!room.tokenpass || !user) {
+		if (!room || !room.tokenpass || !user) {
 			return false;
 		}
 
