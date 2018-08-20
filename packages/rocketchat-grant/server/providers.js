@@ -14,7 +14,7 @@ class Providers extends Storage {
 
 		this._add(name.toLowerCase(), {
 			scope: options.scope,
-			getUser
+			getUser,
 		});
 	}
 }
@@ -32,7 +32,7 @@ export function middleware(req, res, next) {
 		providers.forEach((_, name) => list.push(name));
 
 		res.end(JSON.stringify({
-			data: list
+			data: list,
 		}));
 		return;
 	}

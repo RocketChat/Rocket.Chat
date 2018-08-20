@@ -21,9 +21,10 @@ Meteor.methods({
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
 			videoCall: null,
+			fileUpload: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
-			emailFieldRegistrationForm: null
+			emailFieldRegistrationForm: null,
 		};
 
 		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
@@ -34,8 +35,8 @@ Meteor.methods({
 				u: 1,
 				usernames: 1,
 				v: 1,
-				servedBy: 1
-			}
+				servedBy: 1,
+			},
 		}).fetch();
 
 		if (room && room.length > 0) {
@@ -46,8 +47,8 @@ Meteor.methods({
 			fields: {
 				name: 1,
 				username: 1,
-				visitorEmails: 1
-			}
+				visitorEmails: 1,
+			},
 		});
 
 		if (room) {
@@ -68,6 +69,7 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
@@ -86,7 +88,6 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
-
 		return info;
-	}
+	},
 });

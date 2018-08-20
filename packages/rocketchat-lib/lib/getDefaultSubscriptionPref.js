@@ -5,7 +5,7 @@ RocketChat.getDefaultSubscriptionPref = function _getDefaultSubscriptionPref(use
 		desktopNotifications,
 		mobileNotifications,
 		emailNotificationMode,
-		highlights
+		highlights,
 	} = (userPref.settings && userPref.settings.preferences) || {};
 
 	if (Array.isArray(highlights) && highlights.length) {

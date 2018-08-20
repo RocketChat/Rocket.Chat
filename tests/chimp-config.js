@@ -112,8 +112,8 @@ module.exports = {
 		timeout: 40000,
 		reporter: 'spec',
 		slow: 100,
-		//retries: 3,
-		bail: true // bail after first test failure
+		// retries: 3,
+		bail: true, // bail after first test failure
 	},
 
 	// 	// - - - - JASMINE  - - - -
@@ -135,7 +135,7 @@ module.exports = {
 	// 	},
 
 	// 	// - - - - METEOR  - - - -
-	ddp: 'http://localhost:3000'
+	ddp: 'http://localhost:3000',
 // 	serverExecuteTimeout: 10000,
 
 // 	// - - - - PHANTOM  - - - -

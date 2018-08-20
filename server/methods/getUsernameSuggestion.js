@@ -22,7 +22,7 @@ function generateSuggestion(user) {
 	let usernames = [];
 	let username = undefined;
 
-	if (Meteor.settings['public'].sandstorm) {
+	if (Meteor.settings.public.sandstorm) {
 		usernames.push(user.services.sandstorm.preferredHandle);
 	}
 
@@ -58,9 +58,7 @@ function generateSuggestion(user) {
 	}
 
 	if (Array.isArray(user.services)) {
-		let services = user.services.map((service) => {
-			return _.values(_.pick(service, 'name', 'username', 'firstName', 'lastName'));
-		});
+		let services = user.services.map((service) => _.values(_.pick(service, 'name', 'username', 'firstName', 'lastName')));
 
 		services = _.uniq(_.flatten(services));
 
@@ -113,12 +111,12 @@ Meteor.methods({
 	getUsernameSuggestion() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getUsernameSuggestion'
+				method: 'getUsernameSuggestion',
 			});
 		}
 
 		const user = Meteor.user();
 
 		return generateSuggestion(user);
-	}
+	},
 });

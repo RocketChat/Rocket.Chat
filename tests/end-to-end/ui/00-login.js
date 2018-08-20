@@ -4,7 +4,7 @@ import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
 
 describe('[Login]', () => {
-	before(()=>{
+	before(() => {
 		loginPage.open();
 		// This Can Cause Timeouts erros if the server is slow so it should have a big wait
 		loginPage.emailOrUsernameField.waitForVisible(15000);
@@ -70,7 +70,7 @@ describe('[Login]', () => {
 });
 
 describe('[Setup Wizard]', () => {
-	before(()=>{
+	before(() => {
 		setupWizard.login();
 		setupWizard.organizationType.waitForVisible(15000);
 	});
@@ -116,6 +116,24 @@ describe('[Setup Wizard]', () => {
 
 		it('it should server type', () => {
 			setupWizard.serverType.isVisible().should.be.true;
+		});
+
+		after(() => {
+			setupWizard.goNext();
+		});
+	});
+
+	describe('[Render - Step 3]', () => {
+		it('it should have option for registered server', () => {
+			setupWizard.registeredServer.isExisting().should.be.true;
+		});
+
+		it('it should have option for standalone server', () => {
+			setupWizard.standaloneServer.isExisting().should.be.true;
+		});
+
+		it('it should check option for registered server by default', () => {
+			setupWizard.registeredServer.isSelected().should.be.true;
 		});
 
 		after(() => {

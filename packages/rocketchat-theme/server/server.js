@@ -8,9 +8,9 @@ import crypto from 'crypto';
 const logger = new Logger('rocketchat:theme', {
 	methods: {
 		stop_rendering: {
-			type: 'info'
-		}
-	}
+			type: 'info',
+		},
+	},
 });
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
@@ -28,7 +28,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 });
 
-const calculateClientHash = WebAppHashing.calculateClientHash;
+const { calculateClientHash } = WebAppHashing;
 
 WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
 	const css = RocketChat.theme.getCss();
@@ -64,7 +64,7 @@ RocketChat.theme = new class {
 			if (!initialLoad) {
 				Meteor.startup(function() {
 					process.emit('message', {
-						refresh: 'client'
+						refresh: 'client',
 					});
 				});
 			}
@@ -93,13 +93,13 @@ RocketChat.theme = new class {
 
 		content.push(...this.files.map((name) => Assets.getText(name)));
 
-		content.push(...this.packageCallbacks.map(name => name()));
+		content.push(...this.packageCallbacks.map((name) => name()));
 
 		content.push(this.customCSS);
 		content = content.join('\n');
 		const options = {
 			compress: true,
-			plugins: [new Autoprefixer()]
+			plugins: [new Autoprefixer()],
 		};
 		const start = Date.now();
 		return less.render(content, options, function(err, data) {
@@ -111,7 +111,7 @@ RocketChat.theme = new class {
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
 					return process.emit('message', {
-						refresh: 'client'
+						refresh: 'client',
 					});
 				}, 200);
 			});
@@ -125,7 +125,7 @@ RocketChat.theme = new class {
 			editor: 'color',
 			public: true,
 			properties,
-			section
+			section,
 		};
 
 		return RocketChat.settings.add(`theme-color-${ name }`, value, config);
@@ -134,7 +134,7 @@ RocketChat.theme = new class {
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
 		this.variables[name] = {
 			type,
-			value
+			value,
 		};
 		if (persist) {
 			const config = {
@@ -142,9 +142,9 @@ RocketChat.theme = new class {
 				type,
 				editor: editor || type,
 				section,
-				'public': true,
+				public: true,
 				allowedTypes,
-				property
+				property,
 			};
 			return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
 		}

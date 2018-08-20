@@ -24,7 +24,7 @@ export class AppRoomBridge {
 
 		let rid;
 		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call(method, rcRoom.usernames);
+			const info = Meteor.call(method, rcRoom.members);
 			rid = info.rid;
 		});
 

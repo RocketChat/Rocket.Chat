@@ -1,5 +1,5 @@
 /* globals UploadFS */
-//Expects the following details:
+// Expects the following details:
 // {
 // 	body: '<table>',
 // 	subject: 'Rocket.Chat, 17 Users, 24 Messages, 1 File, 799504 Minutes, in #random',
@@ -18,7 +18,7 @@ RocketChat.smarsh.sendEmail = (data) => {
 				const rs = UploadFS.getStore(file.store).getReadStream(fileId, file);
 				attachments.push({
 					filename: file.name,
-					streamSource: rs
+					streamSource: rs,
 				});
 			}
 		});
@@ -29,6 +29,6 @@ RocketChat.smarsh.sendEmail = (data) => {
 		from: RocketChat.settings.get('From_Email'),
 		subject: data.subject,
 		html: data.body,
-		attachments
+		attachments,
 	});
 };
