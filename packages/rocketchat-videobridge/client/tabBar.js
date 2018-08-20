@@ -43,7 +43,7 @@ Meteor.startup(function() {
 				iconColor: 'red',
 				template: 'videoFlexTab',
 				width: 600,
-				order: 12
+				order: 12,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('video');
@@ -70,7 +70,7 @@ Meteor.startup(function() {
 			if (Session.get('openedRoom')) {
 				const rid = Session.get('openedRoom');
 
-				const room = RocketChat.models.Rooms.findOne({_id: rid});
+				const room = RocketChat.models.Rooms.findOne({ _id: rid });
 				const currentTime = new Date().getTime();
 				const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 

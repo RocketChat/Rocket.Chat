@@ -38,7 +38,7 @@ export class AppUsersConverter {
 			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
-			lastLoginAt: user.lastLogin
+			lastLoginAt: user.lastLogin,
 		};
 	}
 

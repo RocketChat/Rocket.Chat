@@ -17,7 +17,7 @@ Meteor.publish('pinnedMessages', function(rid, limit = 50) {
 		},
 		removed(_id) {
 			return publication.removed('rocketchat_pinned_message', _id);
-		}
+		},
 	});
 	this.ready();
 	return this.onStop(function() {

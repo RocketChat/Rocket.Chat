@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:videobridge',
 	version: '0.2.0',
 	summary: 'jitsi integration',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'less',
 		'rocketchat:lib',
-		'rocketchat:bigbluebutton'
+		'rocketchat:bigbluebutton',
 	]);
 
 	api.use('templating', 'client');
@@ -27,7 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabBar.js', 'client');
 	api.addFiles('client/actionLink.js', 'client');
 
-	//Need to register the messageType with both the server and client
+	// Need to register the messageType with both the server and client
 	api.addFiles('lib/messageType.js', ['client', 'server']);
 
 	api.addFiles('server/settings.js', 'server');
