@@ -223,6 +223,33 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.update]', () => {
+		const updateSetting = (setting, value) => new Promise((resolve) => {
+			request.post(`/api/v1/settings/${ setting }`)
+				.set(credentials)
+				.send({ value })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(resolve);
+		});
+		before((done) => {
+			updateSetting('Accounts_AllowUserProfileChange', true)
+				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
+				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
+				.then(() => updateSetting('Accounts_AllowEmailChange', true))
+				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
+				.then(done);
+		});
+		after((done) => {
+			updateSetting('Accounts_AllowUserProfileChange', true)
+				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
+				.then(() => updateSetting('Accounts_AllowRealNameChange', true))
+				.then(() => updateSetting('Accounts_AllowEmailChange', true))
+				.then(() => updateSetting('Accounts_AllowPasswordChange', true))
+				.then(done);
+		});
 
 		it('should update a user\'s info by userId', (done) => {
 			request.post(api('users.update'))
@@ -286,6 +313,106 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+
+		it('should return an error when trying update username and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowUsernameChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								username: 'fake.name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an error when trying update user real name and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowRealNameChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								name: 'Fake name',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an error when trying update user email and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowEmailChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								email: 'itsnotworking@email.com',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an error when trying update user password and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowPasswordChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								password: 'itsnotworking',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
+
+		it('should return an error when trying update profile and it is not allowed', (done) => {
+			updateSetting('Accounts_AllowUserProfileChange', false)
+				.then(() => {
+					request.post(api('users.update'))
+						.set(credentials)
+						.send({
+							userId: targetUser._id,
+							data: {
+								verified: true,
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -344,7 +471,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
@@ -363,7 +490,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 				})
@@ -424,7 +551,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const user = res.body.user;
+					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
@@ -543,13 +670,16 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({ username: user.username })
 				.expect('Content-Type', 'application/json')
-				.end((err, res) => (err ? done() : request.get(api('me'))
-					.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done))));
+				.end((err, res) => (err ? done() :
+					request.get(api('me'))
+						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done))
+				)
+			);
 		});
 	});
 

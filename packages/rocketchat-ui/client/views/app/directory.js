@@ -23,6 +23,7 @@ function directorySearch(config, cb) {
 					createdAt: timeAgo(result.createdAt),
 				};
 			}
+			return null;
 		}));
 	});
 }
@@ -102,7 +103,7 @@ Template.directory.helpers({
 				type = 'd';
 				routeConfig = { name: item.username };
 			}
-			FlowRouter.go(RocketChat.roomTypes.getRouteLink(type, routeConfig));
+			RocketChat.roomTypes.openRouteLink(type, routeConfig);
 		};
 	},
 	isLoading() {

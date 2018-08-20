@@ -31,8 +31,8 @@ function timeAgo(time) {
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
 		moment(time).format('L')
 	);
 }

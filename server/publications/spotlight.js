@@ -39,7 +39,7 @@ Meteor.methods({
 				name: 1,
 			},
 		};
-		const userId = this.userId;
+		const { userId } = this;
 		if (userId == null) {
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				result.rooms = fetchRooms(userId, RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());

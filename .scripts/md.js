@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const semver = require('semver');
 const _ = require('underscore');
-const execSync = require('child_process').execSync;
+const { execSync } = require('child_process');
 
 const historyDataFile = path.join(__dirname, '../.github/history.json');
 const historyManualDataFile = path.join(__dirname, '../.github/history-manual.json');

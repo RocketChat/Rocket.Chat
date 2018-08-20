@@ -256,7 +256,7 @@ export default class RocketAdapter {
 		if (slackResults && slackResults.data && slackResults.data.ok === true && slackResults.data.user) {
 			const rocketUserData = slackResults.data.user;
 			const isBot = rocketUserData.is_bot === true;
-			const email = rocketUserData.profile && rocketUserData.profile.email || '';
+			const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 			let existingRocketUser;
 			if (!isBot) {
 				existingRocketUser = RocketChat.models.Users.findOneByEmailAddress(email) || RocketChat.models.Users.findOneByUsername(rocketUserData.name);
