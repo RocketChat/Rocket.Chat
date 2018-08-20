@@ -2,7 +2,6 @@
 
 import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
-import { getSettingValue } from '../../pageobjects/settings';
 
 describe('[Login]', () => {
 	before(()=>{
@@ -70,106 +69,87 @@ describe('[Login]', () => {
 	});
 });
 
-let alreadyExecuted = false;
-
 describe('[Setup Wizard]', () => {
-	before(async() => {
-		const setupWizardStatus = await getSettingValue('Show_Setup_Wizard');
-
-		alreadyExecuted = setupWizardStatus === 'completed';
-
+	before(()=>{
 		setupWizard.login();
 		setupWizard.organizationType.waitForVisible(15000);
 	});
 
-	it('Should only execute if the completed wizard has not run earlier on', () => {
-		if (alreadyExecuted) {
-			describe('Setup Wizard already completed earlier on', () => {
-				it.skip('skip the setup wizard tests', () => {
-					// kept at least one empty condition to show the execution log on the console.
-				});
-			});
-		} else {
-			describe('[Render - Step 1]', () => {
-				before(() => {
-					browser.pause(5000); // to make sure the wizard screen is visible
-				});
-				it('it should show organization type', () => {
-					setupWizard.organizationType.isVisible().should.be.true;
-				});
+	describe('[Render - Step 1]', () => {
+		it('it should show organization type', () => {
+			setupWizard.organizationType.isVisible().should.be.true;
+		});
 
-				it('it should show organization name', () => {
-					setupWizard.organizationName.isVisible().should.be.true;
-				});
+		it('it should show organization name', () => {
+			setupWizard.organizationName.isVisible().should.be.true;
+		});
 
-				it('it should show industry', () => {
-					setupWizard.industry.isVisible().should.be.true;
-				});
+		it('it should show industry', () => {
+			setupWizard.industry.isVisible().should.be.true;
+		});
 
-				it('it should show size', () => {
-					setupWizard.size.isVisible().should.be.true;
-				});
+		it('it should show size', () => {
+			setupWizard.size.isVisible().should.be.true;
+		});
 
-				it('it should show country', () => {
-					setupWizard.country.isVisible().should.be.true;
-				});
+		it('it should show country', () => {
+			setupWizard.country.isVisible().should.be.true;
+		});
 
-				it('it should show website', () => {
-					setupWizard.website.isVisible().should.be.true;
-				});
+		it('it should show website', () => {
+			setupWizard.website.isVisible().should.be.true;
+		});
 
-				after(() => {
-					setupWizard.goNext();
-				});
-			});
+		after(() => {
+			setupWizard.goNext();
+		});
+	});
 
-			describe('[Render - Step 2]', () => {
-				it('it should show site name', () => {
-					setupWizard.siteName.isVisible().should.be.true;
-				});
+	describe('[Render - Step 2]', () => {
+		it('it should show site name', () => {
+			setupWizard.siteName.isVisible().should.be.true;
+		});
 
-				it('it should show language', () => {
-					setupWizard.language.isVisible().should.be.true;
-				});
+		it('it should show language', () => {
+			setupWizard.language.isVisible().should.be.true;
+		});
 
-				it('it should server type', () => {
-					setupWizard.serverType.isVisible().should.be.true;
-				});
+		it('it should server type', () => {
+			setupWizard.serverType.isVisible().should.be.true;
+		});
 
-				after(() => {
-					setupWizard.goNext();
-				});
-			});
+		after(() => {
+			setupWizard.goNext();
+		});
+	});
 
-			describe('[Render - Step 3]', () => {
-				it('it should have option for registered server', () => {
-					setupWizard.registeredServer.isExisting().should.be.true;
-				});
+	describe('[Render - Step 3]', () => {
+		it('it should have option for registered server', () => {
+			setupWizard.registeredServer.isExisting().should.be.true;
+		});
 
-				it('it should have option for standalone server', () => {
-					setupWizard.standaloneServer.isExisting().should.be.true;
-				});
+		it('it should have option for standalone server', () => {
+			setupWizard.standaloneServer.isExisting().should.be.true;
+		});
 
-				it('it should check option for registered server by default', () => {
-					setupWizard.registeredServer.isSelected().should.be.true;
-				});
+		it('it should check option for registered server by default', () => {
+			setupWizard.registeredServer.isSelected().should.be.true;
+		});
 
-				after(() => {
-					setupWizard.goNext();
-				});
-			});
+		after(() => {
+			setupWizard.goNext();
+		});
+	});
 
-			describe('[Render - Final Step]', () => {
-				it('it should render "Go to your workspace button', () => {
-					setupWizard.goToWorkspace.waitForVisible(15000);
-					setupWizard.goToWorkspace.isVisible().should.be.true;
-				});
+	describe('[Render - Final Step]', () => {
+		it('it should render "Go to your workspace button', () => {
+			setupWizard.goToWorkspace.waitForVisible(15000);
+			setupWizard.goToWorkspace.isVisible().should.be.true;
+		});
 
-				after(() => {
-					setupWizard.goToHome();
-				});
-			});
-		}
+		after(() => {
+			setupWizard.goToHome();
+		});
 	});
 
 	after(() => {
