@@ -18,7 +18,6 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 	if (login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
 		if (login.type !== 'proxy') {
 			const { totp } = login.methodArguments[0];
-			console.log(totp);
 
 			if (!totp || !totp.code) {
 				throw new Meteor.Error('totp-required', 'TOTP Required');
