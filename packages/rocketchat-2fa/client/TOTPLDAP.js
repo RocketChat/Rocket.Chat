@@ -1,41 +1,30 @@
-Meteor.loginWithLDAPAndTOTP = function(selector, password, code, callback) {
-	let customLdapOptions;
-	const args = [];
-	for (let i = 0; i < arguments.length; i++) {
-		args.push(arguments[i]);
-	}
+Meteor.loginWithLDAPAndTOTP = function(...args) {
 	// Pull username and password
-	selector = args.shift();
-	password = args.shift();
+	const username = args.shift();
+	const ldapPass = args.shift();
 
-	// Check if last argument is a function
-	// if it is, pop it off and set callback to it
-	if (typeof args[args.length-1] === 'function') {
-		callback = args.pop();
-	} else {
-		callback = null;
-	}
+	// Check if last argument is a function. if it is, pop it off and set callback to it
+	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
+	// The last argument before the callback is the totp code
+	const code = args.pop();
 
 	// if args still holds options item, grab it
-	if (args.length > 0) {
-		customLdapOptions = args.shift();
-	} else {
-		customLdapOptions = {};
-	}
+	const ldapOptions = args.length > 0 ? args.shift() : {};
 
 	// Set up loginRequest object
 	const loginRequest = {
 		ldap: true,
-		username: selector,
-		ldapPass: password,
-		ldapOptions: customLdapOptions
+		username,
+		ldapPass,
+		ldapOptions,
 	};
+
 	Accounts.callLoginMethod({
 		methodArguments: [{
 			totp: {
 				login: loginRequest,
-				code
-			}
+				code,
+			},
 		}],
 		userCallback(error) {
 			if (error) {
@@ -44,13 +33,15 @@ Meteor.loginWithLDAPAndTOTP = function(selector, password, code, callback) {
 			} else {
 				callback && callback();
 			}
-		}
+		},
 	});
 };
 
-const loginWithLDAP = Meteor.loginWithLDAP;
+const { loginWithLDAP } = Meteor;
 
-Meteor.loginWithLDAP = function(username, password, cb) {
+Meteor.loginWithLDAP = function(...args) {
+	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
+
 	/* globals overrideLoginMethod*/
-	overrideLoginMethod(loginWithLDAP, [username, password], cb, Meteor.loginWithLDAPAndTOTP);
+	overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP);
 };
