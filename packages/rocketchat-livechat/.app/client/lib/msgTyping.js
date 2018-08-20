@@ -17,7 +17,7 @@ export const MsgTyping = (function() {
 			return;
 		}
 		usersTyping[room] = { users: {} };
-		return Notifications.onRoom(room, 'typing', function(username, typing, extraData) {
+		return Notifications.onRoom(room, 'typing', function(username, typing/* , extraData*/) {
 			const user = Meteor.user();
 			if (username === (user && user.username)) {
 				return;

@@ -23,21 +23,19 @@ RocketChat.messageBox.actions = new class {
 			this.actions[group] = [];
 		}
 
-		const actionExists = this.actions[group].find((action) => {
-			return action.label === label;
-		});
+		const actionExists = this.actions[group].find((action) => action.label === label);
 
 		if (actionExists) {
 			return;
 		}
 
-		this.actions[group].push({...config, label});
+		this.actions[group].push({ ...config, label });
 	}
 
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
-				const actions = this.actions[key].filter(action => !action.condition || action.condition());
+				const actions = this.actions[key].filter((action) => !action.condition || action.condition());
 				if (actions.length) {
 					ret[key] = actions;
 				}
@@ -45,7 +43,7 @@ RocketChat.messageBox.actions = new class {
 			}, {});
 		}
 
-		return this.actions[group].filter(action => !action.condition || action.condition());
+		return this.actions[group].filter((action) => !action.condition || action.condition());
 	}
 
 	getById(id) {
@@ -55,6 +53,6 @@ RocketChat.messageBox.actions = new class {
 			actions = actions.concat(messageActions[action]);
 		});
 
-		return actions.filter(action => action.id === id);
+		return actions.filter((action) => action.id === id);
 	}
 };

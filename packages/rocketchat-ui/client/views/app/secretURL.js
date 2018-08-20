@@ -1,13 +1,13 @@
 /* globals KonchatNotification */
 Template.secretURL.helpers({
 	registrationAllowed() {
-		const {hashIsValid} = Template.instance();
+		const { hashIsValid } = Template.instance();
 		return RocketChat.settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get();
 	},
 	ready() {
 		const instance = Template.instance();
 		return typeof instance.subscriptionsReady === 'function' && instance.subscriptionsReady() && instance.hashReady && instance.hashReady.get();
-	}
+	},
 });
 
 Template.secretURL.onCreated(function() {

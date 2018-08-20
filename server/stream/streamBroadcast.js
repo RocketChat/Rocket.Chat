@@ -1,7 +1,7 @@
 /* global InstanceStatus, DDP, LoggerManager */
 
 import _ from 'underscore';
-import {DDPCommon} from 'meteor/ddp-common';
+import { DDPCommon } from 'meteor/ddp-common';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -13,8 +13,8 @@ const logger = new Logger('StreamBroadcast', {
 	sections: {
 		connection: 'Connection',
 		auth: 'Auth',
-		stream: 'Stream'
-	}
+		stream: 'Stream',
+	},
 });
 
 function _authorizeConnection(instance) {
@@ -32,7 +32,7 @@ function _authorizeConnection(instance) {
 
 function authorizeConnection(instance) {
 	const query = {
-		_id: InstanceStatus.id()
+		_id: InstanceStatus.id(),
 	};
 
 	if (!InstanceStatus.getCollection().findOne(query)) {
@@ -47,14 +47,14 @@ function authorizeConnection(instance) {
 function startMatrixBroadcast() {
 	const query = {
 		'extraInformation.port': {
-			$exists: true
-		}
+			$exists: true,
+		},
 	};
 
 	const options = {
 		sort: {
-			_createdAt: -1
-		}
+			_createdAt: -1,
+		},
 	};
 
 	return InstanceStatus.getCollection().find(query, options).observe({
@@ -82,7 +82,7 @@ function startMatrixBroadcast() {
 			logger.connection.info('connecting in', instance);
 
 			connections[instance] = DDP.connect(instance, {
-				_dontPrintErrors: LoggerManager.logLevel < 2
+				_dontPrintErrors: LoggerManager.logLevel < 2,
 			});
 
 			connections[instance].instanceRecord = record;
@@ -102,7 +102,7 @@ function startMatrixBroadcast() {
 
 			const query = {
 				'extraInformation.host': record.extraInformation.host,
-				'extraInformation.port': record.extraInformation.port
+				'extraInformation.port': record.extraInformation.port,
 			};
 
 			if (connections[instance] && !InstanceStatus.getCollection().findOne(query)) {
@@ -110,7 +110,7 @@ function startMatrixBroadcast() {
 				connections[instance].disconnect();
 				return delete connections[instance];
 			}
-		}
+		},
 	});
 }
 
@@ -122,7 +122,7 @@ Meteor.methods({
 		this.unblock();
 
 		const query = {
-			_id: remoteId
+			_id: remoteId,
 		};
 
 		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && (InstanceStatus.getCollection().findOne(query))) {
@@ -152,7 +152,7 @@ Meteor.methods({
 		} else {
 			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
-	}
+	},
 });
 
 function startStreamCastBroadcast(value) {
@@ -161,7 +161,7 @@ function startStreamCastBroadcast(value) {
 	logger.connection.info('connecting in', instance, value);
 
 	const connection = DDP.connect(value, {
-		_dontPrintErrors: LoggerManager.logLevel < 2
+		_dontPrintErrors: LoggerManager.logLevel < 2,
 	});
 
 	connections[instance] = connection;
@@ -176,7 +176,7 @@ function startStreamCastBroadcast(value) {
 			return;
 		}
 
-		const {streamName, eventName, args} = msg.fields;
+		const { streamName, eventName, args } = msg.fields;
 
 		if (!streamName || !eventName || !args) {
 			return;
@@ -222,7 +222,7 @@ function startStreamBroadcast() {
 		}
 	});
 
-	function broadcast(streamName, eventName, args/*, userId*/) {
+	function broadcast(streamName, eventName, args/* , userId*/) {
 		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
 		const results = [];
 
@@ -272,13 +272,13 @@ Meteor.methods({
 	'instances/get'() {
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-statistics')) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
-				method: 'instances/get'
+				method: 'instances/get',
 			});
 		}
 
-		return Object.keys(connections).map(address => {
+		return Object.keys(connections).map((address) => {
 			const conn = connections[address];
 			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
 		});
-	}
+	},
 });

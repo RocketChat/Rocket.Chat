@@ -15,5 +15,5 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
 
 		return RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
-	}
+	},
 });
