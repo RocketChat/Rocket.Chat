@@ -7,7 +7,7 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return roomType.condition == null || roomType.condition();
 	}
 	getTypes() {
-		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter(type => !type.condition || type.condition());
+		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
 	}
 	getIcon(roomType) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].icon;
@@ -31,20 +31,20 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 	canSendMessage(roomId) {
 		return ChatSubscription.find({
-			rid: roomId
+			rid: roomId,
 		}).count() > 0;
 	}
 	readOnly(roomId, user) {
 		const fields = {
-			ro: 1
+			ro: 1,
 		};
 		if (user) {
 			fields.muted = 1;
 		}
 		const room = ChatRoom.findOne({
-			_id: roomId
+			_id: roomId,
 		}, {
-			fields
+			fields,
 		});
 		if (!user) {
 			return room && room.ro;
@@ -53,27 +53,27 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		const userOwner = RoomRoles.findOne({
 			rid: roomId,
 			'u._id': user._id,
-			roles: 'owner'
+			roles: 'owner',
 		}, {
 			fields: {
-				_id: 1
-			}
+				_id: 1,
+			},
 		});
 		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner);
 	}
 	archived(roomId) {
 		const fields = {
-			archived: 1
+			archived: 1,
 		};
 		const room = ChatRoom.findOne({
-			_id: roomId
+			_id: roomId,
 		}, {
-			fields
+			fields,
 		});
 		return room && room.archived === true;
 	}
 	verifyCanSendMessage(roomId) {
-		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 }});
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 } });
 
 		if (!room || !room.t) {
 			return;
@@ -87,11 +87,11 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 	verifyShowJoinLink(roomId) {
 		const room = ChatRoom.findOne({
-			_id: roomId
+			_id: roomId,
 		}, {
 			fields: {
-				t: 1
-			}
+				t: 1,
+			},
 		});
 		if (!room || !room.t) {
 			return;
@@ -103,7 +103,7 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return this.roomTypes[roomType].showJoinLink(roomId);
 	}
 	getNotSubscribedTpl(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 }});
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -112,5 +112,22 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return false;
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
+	}
+
+	openRouteLink(roomType, subData, queryParams) {
+		if (!this.roomTypes[roomType]) {
+			return false;
+		}
+
+		let routeData = {};
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+			routeData = this.roomTypes[roomType].route.link(subData);
+		} else if (subData && subData.name) {
+			routeData = {
+				name: subData.name,
+			};
+		}
+
+		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
 };

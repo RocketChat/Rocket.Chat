@@ -3,7 +3,7 @@ RocketChat.actionLinks.register('joinJitsiCall', function(message, params, insta
 	if (Session.get('openedRoom')) {
 		const rid = Session.get('openedRoom');
 
-		const room = RocketChat.models.Rooms.findOne({_id: rid});
+		const room = RocketChat.models.Rooms.findOne({ _id: rid });
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 

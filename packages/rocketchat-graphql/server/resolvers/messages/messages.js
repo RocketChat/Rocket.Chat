@@ -8,7 +8,7 @@ const resolver = {
 		messages: authenticated((root, args, { user }) => {
 			const messagesQuery = {};
 			const messagesOptions = {
-				sort: { ts: -1 }
+				sort: { ts: -1 },
 			};
 			const channelQuery = {};
 			const isPagination = !!args.cursor || args.count > 0;
@@ -44,7 +44,7 @@ const resolver = {
 				// search
 				if (typeof args.searchRegex === 'string') {
 					messagesQuery.msg = {
-						$regex: new RegExp(args.searchRegex, 'i')
+						$regex: new RegExp(args.searchRegex, 'i'),
 					};
 				}
 
@@ -79,13 +79,13 @@ const resolver = {
 			return {
 				cursor,
 				channel,
-				messagesArray
+				messagesArray,
 			};
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

@@ -20,7 +20,7 @@ function AutoLinker(message) {
 			urls: {
 				schemeMatches: RocketChat.settings.get('AutoLinker_Urls_Scheme'),
 				wwwMatches: RocketChat.settings.get('AutoLinker_Urls_www'),
-				tldMatches: RocketChat.settings.get('AutoLinker_Urls_TLD')
+				tldMatches: RocketChat.settings.get('AutoLinker_Urls_TLD'),
 			},
 			email: RocketChat.settings.get('AutoLinker_Email'),
 			phone: RocketChat.settings.get('AutoLinker_Phone'),
@@ -42,7 +42,7 @@ function AutoLinker(message) {
 				}
 
 				return null;
-			}
+			},
 		});
 
 		let regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/;

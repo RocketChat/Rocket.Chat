@@ -7,11 +7,11 @@ RocketChat.getPublicTokenpassBalances = function(accessToken) {
 			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/public/balances`, {
 				headers: {
 					Accept: 'application/json',
-					'User-Agent': userAgent
+					'User-Agent': userAgent,
 				},
 				params: {
-					oauth_token: accessToken
-				}
+					oauth_token: accessToken,
+				},
 			}).data;
 	} catch (error) {
 		throw new Error(`Failed to fetch public tokenpass balances from Tokenpass. ${ error.message }`);

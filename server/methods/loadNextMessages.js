@@ -7,7 +7,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadNextMessages'
+				method: 'loadNextMessages',
 			});
 		}
 
@@ -19,14 +19,14 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				ts: 1
+				ts: 1,
 			},
-			limit
+			limit,
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
-				editedAt: 0
+				editedAt: 0,
 			};
 		}
 
@@ -39,13 +39,13 @@ Meteor.methods({
 
 		const messages = records.map((message) => {
 			message.starred = _.findWhere(message.starred, {
-				_id: fromId
+				_id: fromId,
 			});
 			return message;
 		});
 
 		return {
-			messages
+			messages,
 		};
-	}
+	},
 });
