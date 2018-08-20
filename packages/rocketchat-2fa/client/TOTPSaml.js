@@ -9,23 +9,23 @@ Meteor.loginWithSamlAndTOTP = function(options, code, callback) {
 		options = {};
 		options.credentialToken = `id-${ Random.id() }`;
 	}
-	const credentialToken = options.credentialToken;
+	const { credentialToken } = options;
 
-	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
+	Accounts.saml.initiateLogin(options, function(/* error, result */) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
 				credentialToken,
 				totp: {
-					code
-				}
+					code,
+				},
 			}],
-			userCallback: callback
+			userCallback: callback,
 		});
 	});
 };
 
-const loginWithSaml = Meteor.loginWithSaml;
+const { loginWithSaml } = Meteor;
 
 Meteor.loginWithSaml = function(options, callback) {
 	/* globals overrideLoginMethod*/

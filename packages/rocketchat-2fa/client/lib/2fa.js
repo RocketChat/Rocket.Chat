@@ -33,7 +33,7 @@ this.overrideLoginMethod = function(loginMethod, loginArgs, cb, loginMethodTOTP)
 			showCancelButton: true,
 			closeOnConfirm: true,
 			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (code) => {
 			if (code === false) {
 				return cb();
@@ -69,10 +69,10 @@ this.createOAuthTotpLoginMethod = function(credentialProvider) {
 };
 
 const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
-CustomOAuth.prototype.configureLogin = function() {
+CustomOAuth.prototype.configureLogin = function(...args) {
 	const loginWithService = `loginWith${ s.capitalize(this.name) }`;
 
-	oldConfigureLogin.apply(this, arguments);
+	oldConfigureLogin.apply(this, args);
 
 	const oldMethod = Meteor[loginWithService];
 	const newMethod = (options, code, callback) => {

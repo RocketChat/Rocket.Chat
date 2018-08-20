@@ -31,7 +31,7 @@ const loginWithGoogleAndTOTP = function(options, code, callback) {
 	Google.requestCredential(options, credentialRequestCompleteCallback);
 };
 
-const loginWithGoogle = Meteor.loginWithGoogle;
+const { loginWithGoogle } = Meteor;
 Meteor.loginWithGoogle = function(options, cb) {
 	overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
 };
