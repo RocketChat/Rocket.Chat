@@ -15,26 +15,6 @@ Meteor.startup(function() {
 			i18nLabel: 'API_Token',
 		});
 
-		this.add('SlackBridge_AliasFormat', '', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SlackBridge_Enabled',
-				value: true,
-			},
-			i18nLabel: 'Alias_Format',
-			i18nDescription: 'Alias_Format_Description',
-		});
-
-		this.add('SlackBridge_ExcludeBotnames', '', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SlackBridge_Enabled',
-				value: true,
-			},
-			i18nLabel: 'Exclude_Botnames',
-			i18nDescription: 'Exclude_Botnames_Description',
-		});
-
 		this.add('SlackBridge_Out_Enabled', false, {
 			type: 'boolean',
 			enableQuery: {
@@ -66,6 +46,35 @@ Meteor.startup(function() {
 				_id: 'SlackBridge_Out_All',
 				value: false,
 			}],
+		});
+
+		this.add('SlackBridge_AliasFormat', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			i18nLabel: 'Alias_Format',
+			i18nDescription: 'Alias_Format_Description',
+		});
+
+		this.add('SlackBridge_ExcludeBotnames', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			i18nLabel: 'Exclude_Botnames',
+			i18nDescription: 'Exclude_Botnames_Description',
+		});
+
+		this.add('SlackBridge_Reactions_Enabled', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			i18nLabel: 'Reactions',
 		});
 	});
 });

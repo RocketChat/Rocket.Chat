@@ -56,6 +56,9 @@ export default class RocketAdapter {
 
 	onSetReaction(rocketMsgID, reaction) {
 		try {
+			if (!this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
@@ -79,6 +82,9 @@ export default class RocketAdapter {
 
 	onUnSetReaction(rocketMsgID, reaction) {
 		try {
+			if (!this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
