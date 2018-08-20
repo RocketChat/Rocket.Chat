@@ -11,6 +11,22 @@ const sortByColumn = (array, column, inverted) => {
 	});
 };
 
+const getApps = (instance) => {
+	fetch('https://marketplace.rocket.chat/v1/apps')
+		.then((response) => response.json())
+		.then((data) => {
+			instance.apps.set(data);
+			instance.ready.set(true);
+		});
+};
+
+const getInstalledApps = (instance) => {
+	RocketChat.API.get('apps').then((data) => {
+		instance.apps.set(data.apps);
+		instance.ready.set(true);
+	});
+};
+
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
@@ -23,13 +39,9 @@ Template.apps.onCreated(function() {
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(false);
+	this.searchType = new ReactiveVar('marketplace');
 
-	fetch('https://marketplace.rocket.chat/v1/apps')
-		.then((response) => response.json())
-		.then((data) => {
-			instance.apps.set(data);
-			instance.ready.set(true);
-		});
+	getApps(instance);
 
 	fetch('https://marketplace.rocket.chat/v1/categories')
 		.then((response) => response.json())
@@ -143,6 +155,38 @@ Template.apps.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	tabsData() {
+		const instance = Template.instance();
+
+		const {
+			searchType,
+		} = instance;
+
+		return {
+			tabs: [
+				{
+					label: t('Marketplace'),
+					value: 'marketplace',
+					condition() {
+						return true;
+					},
+					active: true,
+				},
+				{
+					label: t('Installed'),
+					value: 'installed',
+					condition() {
+						return true;
+					},
+				},
+			],
+			onChange(value) {
+				searchType.set(value);
+
+				value === 'marketplace' ? getApps(instance) : getInstalledApps(instance);
+			},
+		};
+	},
 });
 
 Template.apps.events({
@@ -159,7 +203,7 @@ Template.apps.events({
 	'click .installer'(e) {
 		console.log('installer', this);
 		// e.currentTarget.find('rc-icon').addClass('play');
-		//play animation
+		// play animation
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
