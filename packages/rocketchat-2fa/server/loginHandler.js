@@ -22,7 +22,7 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			secret: login.user.services.totp.secret,
 			token: totp.code,
 			userId: login.user._id,
-			backupTokens: login.user.services.totp.hashedBackup
+			backupTokens: login.user.services.totp.hashedBackup,
 		});
 
 		if (verified !== true) {

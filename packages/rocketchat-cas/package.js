@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:cas',
 	summary: 'CAS support for accounts',
 	version: '1.0.0',
-	git: 'https://github.com/rocketchat/rocketchat-cas'
+	git: 'https://github.com/rocketchat/rocketchat-cas',
 });
 
 Package.onUse(function(api) {

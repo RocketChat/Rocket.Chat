@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:spotify',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate spotify on messages',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:oembed',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.addFiles('lib/client/widget.js', 'client');

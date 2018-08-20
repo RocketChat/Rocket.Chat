@@ -20,5 +20,5 @@ Meteor.methods({
 		application._createdBy = RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } });
 		application._id = RocketChat.models.OAuthApps.insert(application);
 		return application;
-	}
+	},
 });

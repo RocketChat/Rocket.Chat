@@ -33,7 +33,7 @@ Template.register.helpers({
 	},
 	getEmail() {
 		return Livechat.guestEmail;
-	}
+	},
 });
 
 Template.register.events({
@@ -77,7 +77,7 @@ Template.register.events({
 				token: visitor.getToken(),
 				name,
 				email,
-				department: Livechat.department || departmentId
+				department: Livechat.department || departmentId,
 			};
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
@@ -98,7 +98,7 @@ Template.register.events({
 	},
 	'click .request-video'(e, instance) {
 		instance.request = 'video';
-	}
+	},
 });
 
 Template.register.onCreated(function() {
@@ -106,9 +106,7 @@ Template.register.onCreated(function() {
 	this.request = '';
 
 	this.validateForm = (form, fields) => {
-		const valid = fields.every((field) => {
-			return !_.isEmpty(s.trim(form.elements[field].value));
-		});
+		const valid = fields.every((field) => !_.isEmpty(s.trim(form.elements[field].value)));
 
 		return valid;
 	};

@@ -16,7 +16,7 @@ Template.table.onDestroyed(function() {
 });
 
 Template.table.events({
-	'click tbody tr:not(.table-loading)'(e, t) { t.data.onItemClick && t.data.onItemClick(this); },
+	'click tbody tr:not(.table-no-click)'(e, t) { t.data.onItemClick && t.data.onItemClick(this); },
 	'scroll .table-scroll': _.debounce((e, t) => t.data.onScroll && t.data.onScroll(e.currentTarget), 300),
-	'click .js-sort'(e, t) { t.data.onSort(e.currentTarget.dataset.sort); }
+	'click .js-sort'(e, t) { t.data.onSort(e.currentTarget.dataset.sort); },
 });

@@ -4,67 +4,67 @@ Meteor.startup(function() {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 			alert: 'This Feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_Domain', 'meet.jit.si', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'Domain',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_URL_Room_Prefix', 'RocketChat', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'URL_room_prefix',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_SSL', true, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'SSL',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_Open_New_Window', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'Always_open_in_new_window',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_Enable_Channels', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'Jitsi_Enable_Channels',
-			public: true
+			public: true,
 		});
 
 		this.add('Jitsi_Chrome_Extension', 'nocfbnnmjnndkbipkabodnheejiegccf', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Jitsi_Enabled',
-				value: true
+				value: true,
 			},
 			i18nLabel: 'Jitsi_Chrome_Extension',
-			public: true
+			public: true,
 		});
 	});
 });

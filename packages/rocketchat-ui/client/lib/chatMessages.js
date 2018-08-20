@@ -220,7 +220,7 @@ this.ChatMessages = class ChatMessages {
 			if (msg.slice(0, 2) === '+:') {
 				const reaction = msg.slice(1).trim();
 				if (RocketChat.emoji.list[reaction]) {
-					const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: -1 }});
+					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 					Meteor.call('setReaction', reaction, lastMessage._id);
 					input.value = '';
 					$(input).trigger('change').trigger('input');
@@ -253,7 +253,7 @@ this.ChatMessages = class ChatMessages {
 			this.hasValue.set(false);
 			this.stopTyping(rid);
 
-			//Check if message starts with /command
+			// Check if message starts with /command
 			if (msg[0] === '/') {
 				const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 				if (match) {
@@ -267,7 +267,7 @@ this.ChatMessages = class ChatMessages {
 							if (commandOptions.clientOnly) {
 								commandOptions.callback(command, param, msgObject);
 							} else {
-								Meteor.call('slashCommand', {cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, {cmd: command, params: param, msg: msgObject }));
+								Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject }));
 							}
 
 							return;
@@ -281,9 +281,9 @@ this.ChatMessages = class ChatMessages {
 							ts: new Date,
 							msg: TAPi18n.__('No_such_command', { command: match[1] }),
 							u: {
-								username: RocketChat.settings.get('InternalHubot_Username')
+								username: RocketChat.settings.get('InternalHubot_Username'),
 							},
-							private: true
+							private: true,
 						};
 
 						ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
@@ -323,14 +323,14 @@ this.ChatMessages = class ChatMessages {
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
-			html: false
+			html: false,
 		}, () => {
 			modal.open({
 				title: t('Deleted'),
 				text: t('Your_entry_has_been_deleted'),
 				type: 'success',
 				timer: 1000,
-				showConfirmButton: false
+				showConfirmButton: false,
 			});
 
 			if (this.editing.id === message._id) {
@@ -411,7 +411,7 @@ this.ChatMessages = class ChatMessages {
 		const [value] = input.value.match(/[^\s]+$/) || [];
 		if (!value) { return; }
 		const re = new RegExp(value, 'i');
-		const user = Meteor.users.findOne({username: re});
+		const user = Meteor.users.findOne({ username: re });
 		if (user) {
 			return input.value = input.value.replace(value, `@${ user.username } `);
 		}
@@ -431,9 +431,7 @@ this.ChatMessages = class ChatMessages {
 		if (message) {
 			return this.$input.data('reply', message).trigger('dataChange');
 		}
-		Meteor.call('getSingleMessage', msgId, (err, msg) => {
-			return !err && this.$input.data('reply', msg).trigger('dataChange');
-		});
+		Meteor.call('getSingleMessage', msgId, (err, msg) => !err && this.$input.data('reply', msg).trigger('dataChange'));
 	}
 
 	keyup(rid, event) {
@@ -455,7 +453,7 @@ this.ChatMessages = class ChatMessages {
 			34, // Page Down
 			35, // Page Up
 			144, // Num Lock
-			145 // Scroll Lock
+			145, // Scroll Lock
 		];
 		for (i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
 		for (i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
@@ -475,14 +473,14 @@ this.ChatMessages = class ChatMessages {
 		const k = event.which;
 
 		if (k === 13) {
-			if (sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop' && Meteor.Device.isDesktop()) {
+			if ((sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop') && Meteor.Device.isDesktop()) {
 				if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) { // Enter without shift/ctrl/alt
 					event.preventDefault();
 					event.stopPropagation();
 					this.send(rid, input);
 					return;
 				} else if (!event.shiftKey) {
-					return input.value +='\n';
+					return input.value += '\n';
 				}
 			} else if (sendOnEnter === 'alternative') {
 				if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) { // Enter with shift/ctrl/alt
@@ -493,7 +491,6 @@ this.ChatMessages = class ChatMessages {
 				}
 			}
 		}
-
 
 
 		if (k === 9) { // Tab
@@ -550,7 +547,7 @@ this.ChatMessages = class ChatMessages {
 		// }
 	}
 
-	valueChanged(/*rid, event*/) {
+	valueChanged(/* rid, event*/) {
 		if (this.input.value.length === 1) {
 			return this.determineInputDirection();
 		}

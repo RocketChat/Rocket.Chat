@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:emoji-emojione',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate emojis',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'emojione:emojione@2.2.6',
 		'rocketchat:emoji',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.addFiles('emojiPicker.js');

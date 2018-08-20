@@ -30,5 +30,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.removeUserFromRoom(rid, user);
-	}
+	},
 });
