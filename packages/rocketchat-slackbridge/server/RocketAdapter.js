@@ -157,9 +157,7 @@ export default class RocketAdapter {
 		}
 
 		const fileId = rocketMessage.file._id;
-		return rocketMessage.attachments.find((attachment) => {
-			return attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0;
-		});
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
 	}
 
 	getFileDownloadUrl(rocketMessage) {

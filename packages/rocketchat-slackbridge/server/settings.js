@@ -29,9 +29,9 @@ Meteor.startup(function() {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'SlackBridge_Enabled',
-				value: true
+				value: true,
 			},
-			i18nLabel: 'FileUpload'
+			i18nLabel: 'FileUpload',
 		});
 
 		this.add('SlackBridge_ExcludeBotnames', '', {
