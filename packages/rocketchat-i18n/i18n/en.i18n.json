@@ -1128,6 +1128,7 @@
   "Field_required": "Field required",
   "File_exceeds_allowed_size_of_bytes": "File exceeds allowed size of __size__.",
   "File_name_Placeholder": "Search files...",
+  "File_removed_by_automatic_prune": "File removed by automatic prune",
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_removed_by_prune": "File removed by prune",
   "File_type_is_not_accepted": "File type is not accepted.",
