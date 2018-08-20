@@ -23,7 +23,7 @@ Template.videoFlexTabBbb.helpers({
 	callManagement() {
 		const type = RocketChat.models.Rooms.findOne({ _id: this.rid }).t;
 		return type === 'd' || RocketChat.authz.hasAllPermission('call-management') || RocketChat.authz.hasAllPermission('call-management', this.rid);
-	}
+	},
 });
 
 Template.videoFlexTabBbb.onCreated(function() {
@@ -43,9 +43,9 @@ Template.videoFlexTabBbb.events({
 						source: result.url,
 						streamingOptions: result,
 						canOpenExternal: true,
-						showVideoControls: false
+						showVideoControls: false,
 					},
-					onCloseCallback: () => console.log('bye popout')
+					onCloseCallback: () => console.log('bye popout'),
 				});
 			}
 		});
@@ -59,5 +59,5 @@ Template.videoFlexTabBbb.events({
 			console.log(err, result);
 		});
 		// Get the link and open the iframe
-	}
+	},
 });

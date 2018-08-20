@@ -27,9 +27,7 @@ Meteor.startup(function() {
 			template: 'videoFlexTabBbb',
 			width: 600,
 			order: live ? -1 : 15,
-			class: () => {
-				return live && 'live';
-			}
+			class: () => live && 'live',
 		});
 	});
 

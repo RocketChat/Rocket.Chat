@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
 const parser = new xml2js.Parser({
-	explicitRoot: true
+	explicitRoot: true,
 });
 
 const parseString = Meteor.wrapAsync(parser.parseString);
@@ -44,7 +44,7 @@ Meteor.methods({
 			meta_html5navbar: false,
 			meta_html5autoswaplayout: true,
 			meta_html5autosharewebcam: false,
-			meta_html5hidepresentation: true
+			meta_html5hidepresentation: true,
 		});
 
 		const createResult = HTTP.get(createUrl);
@@ -55,7 +55,7 @@ Meteor.methods({
 
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
-				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`)
+				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`),
 			});
 
 			const hookResult = HTTP.get(hookApi);
@@ -67,18 +67,18 @@ Meteor.methods({
 			}
 
 			RocketChat.saveStreamingOptions(rid, {
-				type: 'call'
+				type: 'call',
 			});
 
 			return {
 				url: api.urlFor('join', {
-					password: 'mp', //mp if moderator ap if attendee
+					password: 'mp', // mp if moderator ap if attendee
 					meetingID,
 					fullName: user.username,
 					userID: user._id,
 					avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
-					clientURL: `${ url }/html5client/join`
-				})
+					clientURL: `${ url }/html5client/join`,
+				}),
 			};
 		}
 	},
@@ -100,7 +100,7 @@ Meteor.methods({
 		const meetingID = RocketChat.settings.get('uniqueID') + rid;
 		const endApi = api.urlFor('end', {
 			meetingID,
-			password: 'mp' //mp if moderator ap if attendee
+			password: 'mp', // mp if moderator ap if attendee
 		});
 
 		const endApiResult = HTTP.get(endApi);
@@ -116,7 +116,7 @@ Meteor.methods({
 		if (doc.response.returncode[0] === 'FAILED') {
 			RocketChat.saveStreamingOptions(rid, {});
 		}
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
@@ -154,5 +154,5 @@ RocketChat.API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: fal
 		// 		console.log(participantCount);
 		// 	}
 		// }
-	}
+	},
 });

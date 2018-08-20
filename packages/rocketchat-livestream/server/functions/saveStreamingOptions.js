@@ -10,7 +10,7 @@ RocketChat.saveStreamingOptions = function(rid, options) {
 		url: Match.Optional(String),
 		thumbnail: Match.Optional(String),
 		isAudioOnly: Match.Optional(String),
-		message: Match.Optional(String)
+		message: Match.Optional(String),
 	});
 
 	RocketChat.models.Rooms.setStreamingOptionsById(rid, options);
