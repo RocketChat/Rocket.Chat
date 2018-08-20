@@ -839,6 +839,17 @@ Template.room.events({
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	},
+	'click .js-actionButton-sendMessage'(event, instance) {
+		const rid = instance.data._id;
+		const msg = event.currentTarget.value;
+		const msgObject = { _id: Random.id(), rid, msg };
+		if (!msg) {
+			return;
+		}
+		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			Meteor.call('sendMessage', msgObject);
+		});
+	},
 });
 
 
