@@ -78,12 +78,17 @@ Template.apps.onCreated(function() {
 			instance.categories.set(data);
 		});
 
-	instance.onAppAdded = function _appOnAppAdded(appId) {
-		fetch(`https://marketplace.rocket.chat/v1/apps/${ appId }`).then((result) => {
-			const apps = instance.apps.get();
-			apps.push(result.app);
-			instance.apps.set(apps);
-		});
+	instance.onAppAdded = function _appOnAppAdded() {
+		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
+
+		// fetch(`https://marketplace.rocket.chat/v1/apps/${ appId }`).then((result) => {
+		// 	const installedApps = instance.installedApps.get();
+
+		// 	installedApps.push({
+		// 		latest: result.app,
+		// 	});
+		// 	instance.installedApps.set(installedApps);
+		// });
 	};
 
 	instance.onAppRemoved = function _appOnAppRemoved(appId) {
@@ -242,13 +247,16 @@ Template.apps.events({
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
 	},
-	'click .installer'(e) {
+	'click .installer'(e, template) {
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
 
 		console.log('installer', this, e);
 
-		RocketChat.API.post('apps/', { url });
-		e.currentTarget.find('rc-icon').addClass('play');
+		RocketChat.API.post('apps/', { url }).then(() => {
+			getInstalledApps(template);
+		});
+
+		$(e.currentTarget).find('.rc-icon').addClass('play');
 		// play animation
 	},
 	'keyup .js-search'(e, t) {
