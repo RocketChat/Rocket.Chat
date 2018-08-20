@@ -1,15 +1,13 @@
 import { AppEvents } from '../communication';
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const enabled = ({status}) => ENABLED_STATUS.includes(status);
+const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
-const sortByColumn = (array, column, inverted) => {
-	return array.sort((a, b) => {
-		if (a[column] < b[column] && !inverted) {
-			return -1;
-		}
-		return 1;
-	});
-};
+const sortByColumn = (array, column, inverted) => array.sort((a, b) => {
+	if (a[column] < b[column] && !inverted) {
+		return -1;
+	}
+	return 1;
+});
 
 Template.apps.onCreated(function() {
 	const instance = this;
@@ -46,6 +44,7 @@ Template.apps.onCreated(function() {
 				index = i;
 				return true;
 			}
+			return false;
 		});
 
 		apps.splice(index, 1);
@@ -76,13 +75,13 @@ Template.apps.helpers({
 		const searchText = instance.searchText.get().toLowerCase();
 		const sortColumn = instance.searchSortBy.get();
 		const inverted = instance.sortDirection.get() === 'desc';
-		return sortByColumn(instance.apps.get().filter(({name}) => name.toLowerCase().includes(searchText)), sortColumn, inverted);
+		return sortByColumn(instance.apps.get().filter(({ name }) => name.toLowerCase().includes(searchText)), sortColumn, inverted);
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
 	},
 	isActive(status) {
-		return enabled({status});
+		return enabled({ status });
 	},
 	searchResults() {
 		return Template.instance().results.get();
@@ -90,7 +89,7 @@ Template.apps.helpers({
 	sortIcon(key) {
 		const {
 			sortDirection,
-			searchSortBy
+			searchSortBy,
 		} = Template.instance();
 
 		return key === searchSortBy.get() && sortDirection.get() !== 'asc' ? 'sort-up' : 'sort-down';
@@ -133,7 +132,7 @@ Template.apps.helpers({
 			searchSortBy.set(type);
 			sortDirection.set('asc');
 		};
-	}
+	},
 });
 
 Template.apps.events({
@@ -153,5 +152,5 @@ Template.apps.events({
 	},
 	'submit .js-search'(e) {
 		e.preventDefault();
-	}
+	},
 });

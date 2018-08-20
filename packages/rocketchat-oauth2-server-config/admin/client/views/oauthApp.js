@@ -4,7 +4,7 @@ import toastr from 'toastr';
 Template.oauthApp.onCreated(function() {
 	this.subscribe('oauthApps');
 	this.record = new ReactiveVar({
-		active: true
+		active: true,
 	});
 });
 
@@ -27,7 +27,7 @@ Template.oauthApp.helpers({
 			}
 		}
 		return Template.instance().record.curValue;
-	}
+	},
 });
 
 Template.oauthApp.events({
@@ -42,7 +42,7 @@ Template.oauthApp.events({
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, function() {
 			Meteor.call('deleteOAuthApp', params.id, function() {
 				modal.open({
@@ -50,7 +50,7 @@ Template.oauthApp.events({
 					text: t('Your_entry_has_been_deleted'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 				FlowRouter.go('admin-oauth-apps');
 			});
@@ -70,7 +70,7 @@ Template.oauthApp.events({
 		const app = {
 			name,
 			active,
-			redirectUri
+			redirectUri,
 		};
 		if (typeof instance.data.params === 'function') {
 			const params = instance.data.params();
@@ -90,5 +90,5 @@ Template.oauthApp.events({
 			toastr.success(TAPi18n.__('Application_added'));
 			FlowRouter.go('admin-oauth-app', { id: data._id });
 		});
-	}
+	},
 });

@@ -4,12 +4,12 @@ function getIdentity(accessToken) {
 	try {
 		return HTTP.get('https://graph.facebook.com/me', {
 			params: {
-				access_token: accessToken
-			}
+				access_token: accessToken,
+			},
 		}).data;
 	} catch (error) {
 		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ error.message }`), {
-			response: error.response
+			response: error.response,
 		});
 	}
 }
@@ -24,13 +24,13 @@ Accounts.registerLoginHandler(function(loginRequest) {
 	const identity = getIdentity(loginRequest.accessToken);
 	const serviceData = {
 		accessToken: loginRequest.accessToken,
-		expiresAt: Date.now() + 1000 * loginRequest.expiresIn
+		expiresAt: Date.now() + 1000 * loginRequest.expiresIn,
 	};
 
 	const whitelisted = ['id', 'email', 'name', 'first_name', 'last_name', 'link', 'username', 'gender', 'locale', 'age_range'];
 	const fields = _.pick(identity, whitelisted);
 	const options = {
-		profile: {}
+		profile: {},
 	};
 
 	_.extend(serviceData, fields);

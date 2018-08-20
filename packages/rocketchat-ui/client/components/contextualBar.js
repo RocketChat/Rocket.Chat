@@ -1,7 +1,7 @@
 Template.contextualBar.events({
 	'click .js-close'(e, t) {
 		t.tabBar.close();
-	}
+	},
 });
 
 Template.contextualBar.onCreated(function() {
@@ -20,7 +20,7 @@ Template.contextualBar.helpers({
 	},
 	flexData() {
 		return Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar
+			tabBar: Template.instance().tabBar,
 		});
-	}
+	},
 });

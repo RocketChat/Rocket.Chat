@@ -10,7 +10,7 @@ const defaultFields = {
 	utcOffset: 1,
 	type: 1,
 	active: 1,
-	reason: 1
+	reason: 1,
 };
 
 const fullFields = {
@@ -22,7 +22,7 @@ const fullFields = {
 	services: 1,
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
-	roles: 1
+	roles: 1,
 };
 
 let publicCustomFields = {};
@@ -37,9 +37,9 @@ RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
 	}
 
 	try {
-		const customFields = JSON.parse(value.trim());
-		Object.keys(customFields).forEach(key => {
-			const element = customFields[key];
+		const customFieldsOnServer = JSON.parse(value.trim());
+		Object.keys(customFieldsOnServer).forEach((key) => {
+			const element = customFieldsOnServer[key];
 			if (element.public) {
 				publicCustomFields[`customFields.${ key }`] = 1;
 			}
@@ -48,28 +48,27 @@ RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
 	} catch (e) {
 		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${ e }`);
 	}
-
 });
 
 RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-
+	const userToRetrieveFullUserData = RocketChat.models.Users.findOneByUsername(username);
+	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
 	const viewFullOtherUserInfo = RocketChat.authz.hasPermission(userId, 'view-full-other-user-info');
-
 	const limit = !viewFullOtherUserInfo ? 1 : l;
 
 	if (!username && limit <= 1) {
 		return undefined;
 	}
 
-	const _customFields = viewFullOtherUserInfo ? customFields : publicCustomFields;
+	const _customFields = isMyOwnInfo || viewFullOtherUserInfo ? customFields : publicCustomFields;
 
 	const fields = viewFullOtherUserInfo ? { ...defaultFields, ...fullFields, ..._customFields } : { ...defaultFields, ..._customFields };
 
 	const options = {
 		fields,
 		limit,
-		sort: { username: 1 }
+		sort: { username: 1 },
 	};
 
 	if (!username) {

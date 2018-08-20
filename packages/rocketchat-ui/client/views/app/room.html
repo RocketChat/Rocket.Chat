@@ -20,8 +20,8 @@
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
-								<p>{{{RocketChatMarkdown roomAnnouncement}}}</p>
+							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
+								<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
 							</div>
 							{{/if}}
 						{{/unless}}
@@ -113,15 +113,15 @@
 														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
 														{{#unless filesOnly}}
 															{{#unless excludePinned}}
-																{{_ "RetentionPolicy_RoomWarning" purgeTimeout}}
+																{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
 															{{else}}
-																{{_ "RetentionPolicy_RoomWarning_Unpinned" purgeTimeout}}
+																{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
 															{{/unless}}
 														{{else}}
 															{{#unless excludePinned}}
-																{{_ "RetentionPolicy_RoomWarning_FilesOnly" purgeTimeout}}
+																{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
 															{{else}}
-																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" purgeTimeout}}
+																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
 															{{/unless}}
 														{{/unless}}
 														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}

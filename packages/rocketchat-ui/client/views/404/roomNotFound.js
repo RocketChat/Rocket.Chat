@@ -14,5 +14,5 @@ Template.roomNotFound.helpers({
 	},
 	customErrorMessage() {
 		return this.error.reason;
-	}
+	},
 });

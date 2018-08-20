@@ -1,4 +1,4 @@
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 import os from 'os';
 import Future from 'fibers/future';
 import async from 'async';
@@ -20,14 +20,14 @@ class VersionCompiler {
 				osRelease: os.release(),
 				totalMemory: os.totalmem(),
 				freeMemory: os.freemem(),
-				cpus: os.cpus().length
+				cpus: os.cpus().length,
 			};
 
 			if (process.env.TRAVIS_BUILD_NUMBER) {
 				output.travis = {
 					buildNumber: process.env.TRAVIS_BUILD_NUMBER,
 					branch: process.env.TRAVIS_BRANCH,
-					tag: process.env.TRAVIS_TAG
+					tag: process.env.TRAVIS_TAG,
 				};
 			}
 
@@ -38,7 +38,7 @@ class VersionCompiler {
 						hash: result.shift(),
 						date: result.shift(),
 						author: result.shift(),
-						subject: result.join('\n')
+						subject: result.join('\n'),
 					};
 				}
 
@@ -54,7 +54,7 @@ class VersionCompiler {
 						output = `RocketChat.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({
 							data: output,
-							path: `${ file.getPathInPackage() }.js`
+							path: `${ file.getPathInPackage() }.js`,
 						});
 						cb();
 					});
@@ -68,7 +68,7 @@ class VersionCompiler {
 }
 
 Plugin.registerCompiler({
-	extensions: ['info']
+	extensions: ['info'],
 }, function() {
 	return new VersionCompiler();
 });
