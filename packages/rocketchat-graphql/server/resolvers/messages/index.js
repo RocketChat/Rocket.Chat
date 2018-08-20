@@ -29,7 +29,7 @@ export const schema = mergeTypes([
 	MessageType.schema,
 	MessagesWithCursorType.schema,
 	MessageIdentifier.schema,
-	ReactionType.schema
+	ReactionType.schema,
 ]);
 
 export const resolvers = mergeResolvers([
@@ -43,5 +43,5 @@ export const resolvers = mergeResolvers([
 	// subscriptions
 	chatMessageAdded.resolver,
 	// types
-	MessageType.resolver
+	MessageType.resolver,
 ]);

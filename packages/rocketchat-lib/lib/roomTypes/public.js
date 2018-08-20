@@ -5,7 +5,7 @@ export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'channel',
-			path: '/channel/:name'
+			path: '/channel/:name',
 		});
 	}
 
@@ -21,14 +21,14 @@ export class PublicRoomType extends RoomTypeConfig {
 			order: 30,
 			icon: 'hashtag',
 			label: 'Channels',
-			route: new PublicRoomRoute()
+			route: new PublicRoomRoute(),
 		});
 	}
 
 	findRoom(identifier) {
 		const query = {
 			t: 'c',
-			name: identifier
+			name: identifier,
 		};
 		return ChatRoom.findOne(query);
 	}
@@ -46,7 +46,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	showJoinLink(roomId) {
-		return !!ChatRoom.findOne({_id: roomId, t: 'c'});
+		return !!ChatRoom.findOne({ _id: roomId, t: 'c' });
 	}
 
 	includeInRoomSearch() {

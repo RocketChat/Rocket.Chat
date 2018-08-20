@@ -12,10 +12,10 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 
 SyncedCron.add({
 	name: jobName,
-	schedule: parser => parser.text('at 2:00 am'),
+	schedule: (parser) => parser.text('at 2:00 am'),
 	job() {
 		checkVersionUpdate();
-	}
+	},
 });
 
 SyncedCron.start();
