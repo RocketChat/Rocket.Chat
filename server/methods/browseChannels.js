@@ -34,7 +34,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!page && !offset) {
+		if ((!page && page !== 0) && (!offset && offset !== 0)) {
 			return;
 		}
 
