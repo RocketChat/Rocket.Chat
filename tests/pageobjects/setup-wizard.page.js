@@ -1,5 +1,5 @@
 import Page from './Page';
-import {adminEmail, adminPassword} from '../data/user';
+import { adminEmail, adminPassword } from '../data/user';
 
 
 class SetupWizard extends Page {

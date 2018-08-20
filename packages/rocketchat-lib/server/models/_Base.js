@@ -29,105 +29,105 @@ class ModelsBase {
 			},
 			forEach(fn) {
 				return data.forEach(fn);
-			}
+			},
 		};
 	}
 
-	setUpdatedAt(/*record, checkQuery, query*/) {
-		return this._db.setUpdatedAt(...arguments);
+	setUpdatedAt(...args/* record, checkQuery, query*/) {
+		return this._db.setUpdatedAt(...args);
 	}
 
-	find() {
+	find(...args) {
 		try {
-			return this[this.origin].find(...arguments);
+			return this[this.origin].find(...args);
 		} catch (e) {
-			console.error('Exception on find', e, ...arguments);
+			console.error('Exception on find', e, ...args);
 		}
 	}
 
-	findOne() {
+	findOne(...args) {
 		try {
-			return this[this.origin].findOne(...arguments);
+			return this[this.origin].findOne(...args);
 		} catch (e) {
-			console.error('Exception on find', e, ...arguments);
+			console.error('Exception on find', e, ...args);
 		}
 	}
 
-	findOneById() {
+	findOneById(...args) {
 		try {
-			return this[this.origin].findOneById(...arguments);
+			return this[this.origin].findOneById(...args);
 		} catch (e) {
-			console.error('Exception on find', e, ...arguments);
+			console.error('Exception on find', e, ...args);
 		}
 	}
 
-	findOneByIds(ids, options) {
+	findOneByIds(ids, options, ...args) {
 		check(ids, [String]);
 
 		try {
 			return this[this.origin].findOneByIds(ids, options);
 		} catch (e) {
-			console.error('Exception on find', e, ...arguments);
+			console.error('Exception on find', e, [ids, options, ...args]);
 		}
 	}
 
-	insert(/*record*/) {
-		return this._db.insert(...arguments);
+	insert(...args/* record*/) {
+		return this._db.insert(...args);
 	}
 
-	update(/*query, update, options*/) {
-		return this._db.update(...arguments);
+	update(...args/* query, update, options*/) {
+		return this._db.update(...args);
 	}
 
-	upsert(/*query, update*/) {
-		return this._db.upsert(...arguments);
+	upsert(...args/* query, update*/) {
+		return this._db.upsert(...args);
 	}
 
-	remove(/*query*/) {
-		return this._db.remove(...arguments);
+	remove(...args/* query*/) {
+		return this._db.remove(...args);
 	}
 
-	insertOrUpsert() {
-		return this._db.insertOrUpsert(...arguments);
+	insertOrUpsert(...args) {
+		return this._db.insertOrUpsert(...args);
 	}
 
-	allow() {
-		return this._db.allow(...arguments);
+	allow(...args) {
+		return this._db.allow(...args);
 	}
 
-	deny() {
-		return this._db.deny(...arguments);
+	deny(...args) {
+		return this._db.deny(...args);
 	}
 
-	ensureIndex() {
-		return this._db.ensureIndex(...arguments);
+	ensureIndex(...args) {
+		return this._db.ensureIndex(...args);
 	}
 
-	dropIndex() {
-		return this._db.dropIndex(...arguments);
+	dropIndex(...args) {
+		return this._db.dropIndex(...args);
 	}
 
-	tryEnsureIndex() {
-		return this._db.tryEnsureIndex(...arguments);
+	tryEnsureIndex(...args) {
+		return this._db.tryEnsureIndex(...args);
 	}
 
-	tryDropIndex() {
-		return this._db.tryDropIndex(...arguments);
+	tryDropIndex(...args) {
+		return this._db.tryDropIndex(...args);
 	}
 
-	trashFind(/*query, options*/) {
-		return this._db.trashFind(...arguments);
+	trashFind(...args/* query, options*/) {
+		return this._db.trashFind(...args);
 	}
 
-	trashFindOneById(/*_id, options*/) {
-		return this._db.trashFindOneById(...arguments);
+	trashFindOneById(...args/* _id, options*/) {
+		return this._db.trashFindOneById(...args);
 	}
 
-	trashFindDeletedAfter(/*deletedAt, query, options*/) {
-		return this._db.trashFindDeletedAfter(...arguments);
+	trashFindDeletedAfter(...args/* deletedAt, query, options*/) {
+		return this._db.trashFindDeletedAfter(...args);
 	}
 
-	processQueryOptionsOnResult(result, options={}) {
+	processQueryOptionsOnResult(result, options = {}) {
 		if (result === undefined || result === null) {
 			return undefined;
 		}
@@ -219,6 +219,8 @@ class ModelsBase {
 					if (fieldsToGet.length > 0) {
 						return pickFields(record, fieldsToGet);
 					}
+
+					return null;
 				});
 			} else {
 				if (fieldsToRemove.length > 0) {

@@ -3,13 +3,13 @@ RocketChat.emoji = {
 		base: {
 			emojiCategories: { recent: 'Frequently_Used' },
 			emojisByCategory: {
-				recent: []
+				recent: [],
 			},
 			toneList: {},
 			render(html) {
 				return html;
-			}
-		}
+			},
+		},
 	},
-	list: {}
+	list: {},
 };

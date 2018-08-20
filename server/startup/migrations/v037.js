@@ -11,5 +11,5 @@ RocketChat.Migrations.add({
 				RocketChat.models.Permissions.remove({ _id: 'add-user' });
 			}
 		}
-	}
+	},
 });

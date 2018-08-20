@@ -93,7 +93,7 @@ export class AppCommandsBridge {
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)
+			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this),
 		};
 
 		RocketChat.slashCommands.commands[command.command.toLowerCase()] = item;
