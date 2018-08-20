@@ -3,14 +3,13 @@ const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const HOST = 'https://marketplace.rocket.chat';
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
-const sortByColumn = (array, column, inverted) => {
-	return array.sort((a, b) => {
+const sortByColumn = (array, column, inverted) =>
+	array.sort((a, b) => {
 		if (a.latest[column] < b.latest[column] && !inverted) {
 			return -1;
 		}
 		return 1;
 	});
-};
 
 const getApps = (instance) => {
 	instance.isLoading.set(true);
@@ -29,6 +28,7 @@ const getInstalledApps = (instance) => {
 
 	RocketChat.API.get('apps').then((data) => {
 		const apps = data.apps.map((app) => {
+			console.log(app);
 			return { latest: app };
 		});
 
@@ -214,7 +214,7 @@ Template.apps.events({
 	'click .installer'(e) {
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
 
-		console.log('installer', this);
+		console.log('installer', this, e);
 
 		RocketChat.API.post('apps/', { url });
 		// e.currentTarget.find('rc-icon').addClass('play');
