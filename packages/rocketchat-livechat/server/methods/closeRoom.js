@@ -1,6 +1,7 @@
 Meteor.methods({
 	'livechat:closeRoom'(roomId, comment) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'close-livechat-room')) {
+		const userId = Meteor.userId();
+		if (!userId || !RocketChat.authz.hasPermission(userId, 'close-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
@@ -12,14 +13,15 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if ((!room.usernames || room.usernames.indexOf(user.username) === -1) && !RocketChat.authz.hasPermission(Meteor.userId(), 'close-others-livechat-room')) {
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+		if (!subscription && !RocketChat.authz.hasPermission(userId, 'close-others-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
 		return RocketChat.Livechat.closeRoom({
 			user,
 			room,
-			comment
+			comment,
 		});
-	}
+	},
 });

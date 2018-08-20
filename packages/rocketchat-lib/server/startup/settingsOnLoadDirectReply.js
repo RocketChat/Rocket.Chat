@@ -1,6 +1,5 @@
 import _ from 'underscore';
-import { IMAPIntercepter } from '../lib/interceptDirectReplyEmails.js';
-import { POP3Helper } from '../lib/interceptDirectReplyEmails.js';
+import { IMAPIntercepter, POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 
 const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 	console.log('Starting Email Intercepter...');

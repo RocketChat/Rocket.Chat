@@ -30,7 +30,7 @@ Template.appManage.onCreated(function() {
 
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/settings`)
+		RocketChat.API.get(`apps/${ id }/settings`),
 	]).then((results) => {
 		instance.app.set(results[0].app);
 		console.log(instance.app.get());
@@ -77,16 +77,16 @@ Template.appManage.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
+		let result = Object.keys(languages).map((key) => {
 			const language = languages[key];
 			return _.extend(language, { key });
 		});
 
 		result = _.sortBy(result, 'key');
 		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
+			name: 'Default',
+			en: 'Default',
+			key: '',
 		});
 		return result;
 	},
@@ -158,7 +158,7 @@ Template.appManage.helpers({
 	},
 	saving() {
 		return Template.instance().loading.get();
-	}
+	},
 });
 
 Template.appManage.events({
@@ -226,7 +226,7 @@ Template.appManage.events({
 
 		try {
 			const toSave = [];
-			Object.keys(settings).forEach(k => {
+			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				if (setting.hasChanged) {
 					toSave.push(setting);
@@ -239,10 +239,10 @@ Template.appManage.events({
 			}
 			const result = await RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
-			result.updated.forEach(setting => {
+			result.updated.forEach((setting) => {
 				settings[setting.id].value = settings[setting.id].oldValue = setting.value;
 			});
-			Object.keys(settings).forEach(k => {
+			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				setting.hasChanged = false;
 			});
@@ -304,5 +304,5 @@ Template.appManage.events({
 				t.settings.set(t.settings.get());
 			}
 		}
-	}, 500)
+	}, 500),
 });

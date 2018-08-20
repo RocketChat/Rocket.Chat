@@ -9,36 +9,36 @@ RocketChat.models._Base = class {
 		return this.model = new Mongo.Collection(this._baseName() + name);
 	}
 
-	find() {
-		return this.model.find.apply(this.model, arguments);
+	find(...args) {
+		return this.model.find.apply(this.model, args);
 	}
 
-	findOne() {
-		return this.model.findOne.apply(this.model, arguments);
+	findOne(...args) {
+		return this.model.findOne.apply(this.model, args);
 	}
 
-	insert() {
-		return this.model.insert.apply(this.model, arguments);
+	insert(...args) {
+		return this.model.insert.apply(this.model, args);
 	}
 
-	update() {
-		return this.model.update.apply(this.model, arguments);
+	update(...args) {
+		return this.model.update.apply(this.model, args);
 	}
 
-	upsert() {
-		return this.model.upsert.apply(this.model, arguments);
+	upsert(...args) {
+		return this.model.upsert.apply(this.model, args);
 	}
 
-	remove() {
-		return this.model.remove.apply(this.model, arguments);
+	remove(...args) {
+		return this.model.remove.apply(this.model, args);
 	}
 
-	allow() {
-		return this.model.allow.apply(this.model, arguments);
+	allow(...args) {
+		return this.model.allow.apply(this.model, args);
 	}
 
-	deny() {
-		return this.model.deny.apply(this.model, arguments);
+	deny(...args) {
+		return this.model.deny.apply(this.model, args);
 	}
 
 	ensureIndex() {}

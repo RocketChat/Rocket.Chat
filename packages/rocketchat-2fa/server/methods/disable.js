@@ -10,7 +10,7 @@ Meteor.methods({
 			secret: user.services.totp.secret,
 			token: code,
 			userId: Meteor.userId(),
-			backupTokens: user.services.totp.hashedBackup
+			backupTokens: user.services.totp.hashedBackup,
 		});
 
 		if (!verified) {
@@ -18,5 +18,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Users.disable2FAByUserId(Meteor.userId());
-	}
+	},
 });

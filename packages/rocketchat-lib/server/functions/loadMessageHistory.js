@@ -22,14 +22,14 @@ RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
 RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const options = {
 		sort: {
-			ts: -1
+			ts: -1,
 		},
-		limit
+		limit,
 	};
 
 	if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 		options.fields = {
-			editedAt: 0
+			editedAt: 0,
 		};
 	}
 
@@ -44,7 +44,7 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 
 	const messages = records.map((message) => {
 		message.starred = _.findWhere(message.starred, {
-			_id: userId
+			_id: userId,
 		});
 		if (message.u && message.u._id && UI_Use_Real_Name) {
 			const user = RocketChat.models.Users.findOneById(message.u._id);
@@ -71,8 +71,8 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 			const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
 				limit: 1,
 				sort: {
-					ts: 1
-				}
+					ts: 1,
+				},
 			});
 
 			firstUnread = unreadMessages.fetch()[0];
@@ -83,6 +83,6 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 	return {
 		messages,
 		firstUnread,
-		unreadNotLoaded
+		unreadNotLoaded,
 	};
 };

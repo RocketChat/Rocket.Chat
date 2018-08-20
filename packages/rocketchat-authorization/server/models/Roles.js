@@ -1,8 +1,8 @@
 class ModelRoles extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
-		this.tryEnsureIndex({ 'name': 1 });
-		this.tryEnsureIndex({ 'scope': 1 });
+	constructor(...args) {
+		super(...args);
+		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ scope: 1 });
 	}
 
 	findUsersInRole(name, scope, options) {
@@ -65,5 +65,4 @@ class ModelRoles extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Roles = new ModelRoles('roles', true);
-RocketChat.models.Roles.cache.load();
+RocketChat.models.Roles = new ModelRoles('roles');

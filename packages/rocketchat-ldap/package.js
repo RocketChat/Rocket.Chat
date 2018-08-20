@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:ldap',
 	version: '0.0.1',
 	summary: 'Accounts login handler for LDAP using ldapjs from npm',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

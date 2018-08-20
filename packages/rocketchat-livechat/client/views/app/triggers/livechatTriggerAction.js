@@ -11,11 +11,11 @@ Template.livechatTriggerAction.helpers({
 		return Template.instance().sender.get() === 'custom' ? '' : 'hidden';
 	},
 	senderSelected(current) {
-		return this.params && this.params.sender === current ? true : false;
+		return !!(this.params && this.params.sender === current);
 	},
 	disableIfGuestPool() {
 		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
-	}
+	},
 });
 
 Template.livechatTriggerAction.events({
@@ -25,7 +25,7 @@ Template.livechatTriggerAction.events({
 	},
 	'change [name=send-message-sender]'(e, instance) {
 		instance.sender.set(e.currentTarget.value);
-	}
+	},
 });
 
 Template.livechatTriggerAction.onCreated(function() {

@@ -27,7 +27,7 @@ const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const waitForStreamStatus = async(id, status) => {
 	const streamActive = new Promise(async(resolve) => {
-		while (true) { //eslint-disable-line no-constant-condition
+		while (true) { // eslint-disable-line no-constant-condition
 			const currentStatus = await call('livestreamStreamStatus', { streamId: id });
 			if (currentStatus === status) {
 				return resolve(status);
@@ -39,7 +39,7 @@ const waitForStreamStatus = async(id, status) => {
 };
 const waitForBroadcastStatus = async(id, status) => {
 	const broadcastActive = new Promise(async(resolve) => {
-		while (true) { //eslint-disable-line no-constant-condition
+		while (true) { // eslint-disable-line no-constant-condition
 			const currentStatus = await call('getBroadcastStatus', { broadcastId: id });
 			if (currentStatus === status) {
 				return resolve(status);
@@ -56,7 +56,7 @@ Template.broadcastView.helpers({
 	},
 	mediaRecorder() {
 		Template.instance().mediaRecorder.get();
-	}
+	},
 });
 
 Template.broadcastView.onCreated(async function() {
@@ -87,18 +87,18 @@ Template.broadcastView.onRendered(async function() {
 	if (!navigator.getMedia) {
 		return alert('getUserMedia() is not supported in your browser!');
 	}
-	const localMediaStream = await new Promise((resolve, reject) => navigator.getMedia({video: true, audio: true}, resolve, reject));
+	const localMediaStream = await new Promise((resolve, reject) => navigator.getMedia({ video: true, audio: true }, resolve, reject));
 
 	const connection = this.connection.get();
 
 	this.mediaStream.set(localMediaStream);
-	let options = {mimeType: 'video/webm;codecs=vp9'};
+	let options = { mimeType: 'video/webm;codecs=vp9' };
 	if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-		options = {mimeType: 'video/webm;codecs=vp8'};
+		options = { mimeType: 'video/webm;codecs=vp8' };
 		if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-			options = {mimeType: 'video/webm'};
+			options = { mimeType: 'video/webm' };
 			if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-				options = {mimeType: ''};
+				options = { mimeType: '' };
 			}
 		}
 	}
@@ -125,9 +125,9 @@ Template.broadcastView.onRendered(async function() {
 
 Template.broadcastView.events({
 	async 'startStreaming .streaming-popup'(e, i) {
-		await call('setLivestreamStatus', {broadcastId: i.data.broadcast.id, status: 'live'});
+		await call('setLivestreamStatus', { broadcastId: i.data.broadcast.id, status: 'live' });
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStream'));
-		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', {id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg`});
+		await call('saveRoomSettings', Session.get('openedRoom'), 'streamingOptions', { id: i.data.broadcast.id, url: `https://www.youtube.com/embed/${ i.data.broadcast.id }`, thumbnail: `https://img.youtube.com/vi/${ i.data.broadcast.id }/0.jpg` });
 	},
 	async 'stopStreaming .streaming-popup'(e, i) {
 		await call('setBroadcastStatus', { broadcastId: i.data.broadcast.id, status: 'complete' });
@@ -146,5 +146,5 @@ Template.broadcastView.events({
 			i.mediaStream.get().getTracks().map((track) => track.stop());
 			i.mediaStream.set(null);
 		}
-	}
+	},
 });
