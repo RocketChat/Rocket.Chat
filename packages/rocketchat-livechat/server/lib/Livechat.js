@@ -146,7 +146,6 @@ RocketChat.Livechat = {
 			} else {
 				const userData = {
 					username,
-					department,
 				};
 
 				if (this.connection) {
@@ -173,6 +172,10 @@ RocketChat.Livechat = {
 
 		if (name) {
 			updateUser.$set.name = name;
+		}
+
+		if (department) {
+			updateUser.$set.department = department;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -371,6 +374,10 @@ RocketChat.Livechat = {
 		if (agent && agent.agentId !== servedBy._id) {
 			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
 
+			if (transferData.departmentId) {
+				RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
+			}
+
 			const subscriptionData = {
 				rid: room._id,
 				name: guest.name || guest.username,
@@ -438,13 +445,15 @@ RocketChat.Livechat = {
 			agents.forEach((agent) => {
 				agentIds.push(agent.agentId);
 			});
+
+			RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, departmentId);
 		}
 
 		// delete agent and room subscription
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 
-		// remove user from room
-		RocketChat.models.Rooms.removeUsernameById(rid, user.username);
+		// remove agent from room
+		RocketChat.models.Rooms.removeAgentByRoomId(rid);
 
 		// find inquiry corresponding to room
 		const inquiry = RocketChat.models.LivechatInquiry.findOne({ rid });
