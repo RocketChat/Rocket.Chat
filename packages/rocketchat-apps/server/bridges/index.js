@@ -21,5 +21,5 @@ export {
 	AppPersistenceBridge,
 	AppRoomBridge,
 	AppSettingBridge,
-	AppUserBridge
+	AppUserBridge,
 };

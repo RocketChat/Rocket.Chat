@@ -91,8 +91,8 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 	const updateOperations = {
 		$set: options,
 		$setOnInsert: {
-			createdAt: new Date
-		}
+			createdAt: new Date,
+		},
 	};
 	if (options.editor != null) {
 		updateOperations.$setOnInsert.editor = options.editor;
@@ -106,14 +106,14 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 		}
 	}
 	const query = _.extend({
-		_id
+		_id,
 	}, updateOperations.$set);
 	if (options.section == null) {
 		updateOperations.$unset = {
-			section: 1
+			section: 1,
 		};
 		query.section = {
-			$exists: false
+			$exists: false,
 		};
 	}
 	const existantSetting = RocketChat.models.Settings.db.findOne(query);
@@ -126,7 +126,7 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 		updateOperations.$set.ts = new Date;
 	}
 	return RocketChat.models.Settings.upsert({
-		_id
+		_id,
 	}, updateOperations);
 };
 
@@ -160,13 +160,13 @@ RocketChat.settings.addGroup = function(_id, options = {}, cb) {
 		options.hidden = true;
 	}
 	RocketChat.models.Settings.upsert({
-		_id
+		_id,
 	}, {
 		$set: options,
 		$setOnInsert: {
 			type: 'group',
-			createdAt: new Date
-		}
+			createdAt: new Date,
+		},
 	});
 	if (cb != null) {
 		cb.call({
@@ -186,9 +186,9 @@ RocketChat.settings.addGroup = function(_id, options = {}, cb) {
 						options.group = _id;
 						options.section = section;
 						return RocketChat.settings.add(id, value, options);
-					}
+					},
 				});
-			}
+			},
 		});
 	}
 };
@@ -276,10 +276,10 @@ RocketChat.settings.init = function() {
 				delete process.env[record._id];
 			}
 			return RocketChat.settings.load(record._id, undefined, RocketChat.settings.initialLoad);
-		}
+		},
 	});
 	RocketChat.settings.initialLoad = false;
-	RocketChat.settings.afterInitialLoad.forEach(fn => fn(Meteor.settings));
+	RocketChat.settings.afterInitialLoad.forEach((fn) => fn(Meteor.settings));
 };
 
 RocketChat.settings.afterInitialLoad = [];

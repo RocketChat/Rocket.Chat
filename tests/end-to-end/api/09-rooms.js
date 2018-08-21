@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 /* globals expect */
 
-import { getCredentials, api, request, credentials} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
 
 describe('[Rooms]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	it('/rooms.get', (done) => {
 		request.get(api('rooms.get'))
@@ -25,7 +25,7 @@ describe('[Rooms]', function() {
 		request.get(api('rooms.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date
+				updatedSince: new Date,
 			})
 			.expect(200)
 			.expect((res) => {
@@ -42,7 +42,7 @@ describe('[Rooms]', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -61,8 +61,8 @@ describe('[Rooms]', function() {
 						desktopNotifications: 'nothing',
 						desktopNotificationDuration: '2',
 						audioNotifications: 'all',
-						mobilePushNotifications: 'mentions'
-					}
+						mobilePushNotifications: 'mentions',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -80,7 +80,7 @@ describe('[Rooms]', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: testChannelName
+					name: testChannelName,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -92,7 +92,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					roomName: testChannelName,
-					favorite: true
+					favorite: true,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -105,7 +105,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					roomName: testChannelName,
-					favorite: false
+					favorite: false,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -118,7 +118,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					roomId: testChannel._id,
-					favorite: true
+					favorite: true,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -132,7 +132,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					roomId: testChannel._id,
-					favorite: false
+					favorite: false,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -146,7 +146,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					roomId: 'foo',
-					favorite: false
+					favorite: false,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -179,7 +179,7 @@ describe('[Rooms]', function() {
 			request.post(api('login'))
 				.send({
 					user: user.username,
-					password
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -190,9 +190,9 @@ describe('[Rooms]', function() {
 				})
 				.end(done);
 		});
-		afterEach(done => {
+		afterEach((done) => {
 			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id
+				userId: user._id,
 			}).end(done);
 			user = undefined;
 		});
@@ -200,7 +200,7 @@ describe('[Rooms]', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `testeChannel${ +new Date() }`
+					name: `testeChannel${ +new Date() }`,
 				})
 				.end((err, res) => {
 					publicChannel = res.body.channel;
@@ -211,7 +211,7 @@ describe('[Rooms]', function() {
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `testPrivateChannel${ +new Date() }`
+					name: `testPrivateChannel${ +new Date() }`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -224,7 +224,7 @@ describe('[Rooms]', function() {
 			request.post(api('im.create'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat'
+					username: 'rocket.cat',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -239,7 +239,7 @@ describe('[Rooms]', function() {
 				.send({
 					roomId: publicChannel._id,
 					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z'
+					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -254,7 +254,7 @@ describe('[Rooms]', function() {
 				.send({
 					roomId: privateChannel._id,
 					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z'
+					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -269,7 +269,7 @@ describe('[Rooms]', function() {
 				.send({
 					roomId: directMessageChannel._id,
 					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z'
+					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -284,7 +284,7 @@ describe('[Rooms]', function() {
 				.send({
 					roomId: directMessageChannel._id,
 					latest: '2016-12-09T13:42:25.304Z',
-					oldest: '2016-08-30T13:42:25.304Z'
+					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

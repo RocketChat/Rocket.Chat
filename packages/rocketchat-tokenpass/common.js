@@ -11,8 +11,8 @@ const config = {
 	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.tokenpass'],
-		forOtherUsers: ['services.tokenpass.name']
-	}
+		forOtherUsers: ['services.tokenpass.name'],
+	},
 };
 
 const Tokenpass = new CustomOAuth('tokenpass', config);

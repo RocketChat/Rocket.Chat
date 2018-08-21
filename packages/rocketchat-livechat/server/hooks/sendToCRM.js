@@ -30,7 +30,7 @@ function sendToCRM(type, room, includeMessages = true) {
 				username: message.u.username,
 				msg: message.msg,
 				ts: message.ts,
-				editedAt: message.editedAt
+				editedAt: message.editedAt,
 			};
 
 			if (message.u.username !== postData.visitor.username) {

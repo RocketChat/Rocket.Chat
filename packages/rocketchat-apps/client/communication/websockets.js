@@ -7,7 +7,7 @@ export const AppEvents = Object.freeze({
 	COMMAND_ADDED: 'command/added',
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
-	COMMAND_REMOVED: 'command/removed'
+	COMMAND_REMOVED: 'command/removed',
 });
 
 export class AppWebsocketReceiver {

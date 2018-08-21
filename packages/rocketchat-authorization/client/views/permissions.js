@@ -8,8 +8,8 @@ Template.permissions.helpers({
 	permission() {
 		return ChatPermissions.find({}, {
 			sort: {
-				_id: 1
-			}
+				_id: 1,
+			},
 		});
 	},
 
@@ -31,7 +31,7 @@ Template.permissions.helpers({
 
 	hasPermission() {
 		return RocketChat.authz.hasAllPermission('access-permissions');
-	}
+	},
 });
 
 Template.permissions.events({
@@ -44,7 +44,7 @@ Template.permissions.events({
 		} else {
 			return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 		}
-	}
+	},
 });
 
 Template.permissions.onCreated(function() {
@@ -52,7 +52,7 @@ Template.permissions.onCreated(function() {
 	this.permissionByRole = {};
 	this.actions = {
 		added: {},
-		removed: {}
+		removed: {},
 	};
 
 	Tracker.autorun(() => {
@@ -69,7 +69,7 @@ Template.permissions.onCreated(function() {
 			},
 			removed: (id) => {
 				delete this.permissionByRole[id];
-			}
+			},
 		});
 	});
 });
