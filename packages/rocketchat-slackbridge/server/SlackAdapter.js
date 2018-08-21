@@ -421,6 +421,9 @@ export default class SlackAdapter {
 				case 'channel_join':
 					this.processChannelJoin(slackMessage);
 					break;
+				case 'file_share':
+					this.processFileShare(slackMessage);
+					break;
 				default:
 					// Keeping backwards compatability for now, refactor later
 					this.processNewMessage(slackMessage, isImporting);
@@ -656,6 +659,36 @@ export default class SlackAdapter {
 		const rocketCh = this.rocket.addChannel(slackMessage.channel);
 		if (null != rocketCh) {
 			this.addSlackChannel(rocketCh._id, slackMessage.channel);
+		}
+	}
+
+	processFileShare(slackMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
+			const rocketChannel = this.rocket.getChannel(slackMessage);
+			const rocketUser = this.rocket.getUser(slackMessage.user);
+
+			// Hack to notify that a file was attempted to be uploaded
+			delete slackMessage.subtype;
+
+			// If the text includes the file link, simply use the same text for the rocket message.
+			// If the link was not included, then use it instead of the message.
+
+			if (slackMessage.text.indexOf(slackMessage.file.permalink) < 0) {
+				slackMessage.text = slackMessage.file.permalink;
+			}
+
+			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
+			const msgDataDefaults = {
+				_id: this.rocket.createRocketID(slackMessage.channel, slackMessage.ts),
+				ts,
+				updatedBySlack: true,
+			};
+
+			this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
 		}
 	}
 
