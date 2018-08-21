@@ -157,9 +157,7 @@ export class AppCommandsBridge {
 			line = line.replace(item, newItem);
 		});
 
-		return line.split(' ').map(item => {
-			return item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"');
-		});
+		return line.split(' ').map((item) => item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"'));
 	}
 
 	_appCommandExecutor(command, parameters, message) {
