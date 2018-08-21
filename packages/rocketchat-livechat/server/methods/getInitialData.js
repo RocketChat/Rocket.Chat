@@ -3,7 +3,7 @@ import _ from 'underscore';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
-	'livechat:getInitialData'(visitorToken) {
+	'livechat:getInitialData'(visitorToken, departmentId) {
 		const info = {
 			enabled: null,
 			title: null,
@@ -27,7 +27,7 @@ Meteor.methods({
 			emailFieldRegistrationForm: null,
 		};
 
-		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
+		const options = {
 			fields: {
 				name: 1,
 				t: 1,
@@ -36,9 +36,10 @@ Meteor.methods({
 				usernames: 1,
 				v: 1,
 				servedBy: 1,
+				departmentId: 1,
 			},
-		}).fetch();
-
+		};
+		const room = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}

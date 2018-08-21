@@ -119,8 +119,8 @@ RocketChat.MessageAction = new class {
 		}
 
 		const subData = RocketChat.models.Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
-		const routePath = RocketChat.roomTypes.getRouteLink(roomData.t, subData || roomData);
-		return `${ Meteor.absoluteUrl(routePath.replace(/^\//, '')) }?msg=${ msgId }`;
+		const roomURL = RocketChat.roomTypes.getURL(roomData.t, subData || roomData);
+		return `${ roomURL }?msg=${ msgId }`;
 	}
 };
 
