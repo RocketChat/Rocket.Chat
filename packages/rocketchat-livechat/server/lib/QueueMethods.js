@@ -18,7 +18,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 1,
 			lm: new Date(),
 			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
@@ -120,7 +120,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 0,
 			lm: new Date(),
 			fname: guest.name || guest.username,
