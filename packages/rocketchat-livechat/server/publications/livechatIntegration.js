@@ -18,7 +18,7 @@ Meteor.publish('livechat:integration', function() {
 		},
 		removed(id) {
 			self.removed('livechatIntegration', id);
-		}
+		},
 	});
 
 	self.ready();

@@ -12,7 +12,7 @@ const keys = {
 	ARROW_LEFT: 37,
 	ARROW_UP: 38,
 	ARROW_RIGHT: 39,
-	ARROW_DOWN: 40
+	ARROW_DOWN: 40,
 };
 
 function getCursorPosition(input) {
@@ -198,7 +198,7 @@ Template.messagePopup.onCreated(function() {
 		if (template.value.curValue == null) {
 			return;
 		}
-		const value = template.input.value;
+		const { value } = template.input;
 		const caret = getCursorPosition(template.input);
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
@@ -298,7 +298,7 @@ Template.messagePopup.events({
 		template.enterValue();
 		template.open.set(false);
 		return toolbarSearch.clear();
-	}
+	},
 });
 
 Template.messagePopup.helpers({
@@ -307,15 +307,15 @@ Template.messagePopup.helpers({
 	},
 	data() {
 		const template = Template.instance();
-		return Object.assign(template.records.get(), {toolbar: true});
+		return Object.assign(template.records.get(), { toolbar: true });
 	},
 	toolbarData() {
-		return {...Template.currentData(), toolbar: true};
+		return { ...Template.currentData(), toolbar: true };
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
 	},
 	sidebarWidth() {
 		return `${ document.querySelector('.sidebar').offsetWidth }px`;
-	}
+	},
 });

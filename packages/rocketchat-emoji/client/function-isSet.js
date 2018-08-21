@@ -1,5 +1,5 @@
 /* globals isSet:true, isSetNotNull:true */
-//http://stackoverflow.com/a/26990347 function isSet() from Gajus
+// http://stackoverflow.com/a/26990347 function isSet() from Gajus
 isSet = function(fn) {
 	let value;
 	try {

@@ -7,13 +7,13 @@ import {
 	api,
 	request,
 	credentials,
-	message
+	message,
 } from '../../data/api-data.js';
 
 describe('[Chat]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
 
@@ -24,7 +24,7 @@ describe('[Chat]', function() {
 					text: 'Sample message',
 					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png'
+					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -44,7 +44,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [ {
+					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -60,8 +60,8 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: ''
-					} ]
+						fields: '',
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -81,7 +81,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [ {
+					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -97,12 +97,12 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: [ {
+						fields: [{
 							short: true,
 							title: 12,
-							value: false
-						} ]
-					} ]
+							value: false,
+						}],
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -122,7 +122,7 @@ describe('[Chat]', function() {
 					alias: 'Gruggy',
 					emoji: ':smirk:',
 					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [ {
+					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
 						ts: '2016-12-09T16:53:06.761Z',
@@ -138,16 +138,16 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: [ {
+						fields: [{
 							short: true,
 							title: 'Test',
-							value: 'Testing out something or other'
+							value: 'Testing out something or other',
 						}, {
 							short: true,
 							title: 'Another Test',
-							value: '[Link](https://google.com/) something and this and that.'
-						} ]
-					} ]
+							value: '[Link](https://google.com/) something and this and that.',
+						}],
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -166,7 +166,7 @@ describe('[Chat]', function() {
 			request.get(api('chat.getMessage'))
 				.set(credentials)
 				.query({
-					msgId: message._id
+					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -188,8 +188,8 @@ describe('[Chat]', function() {
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png'
-					}
+						avatar: 'http://res.guggy.com/logo_128.png',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -210,7 +210,7 @@ describe('[Chat]', function() {
 						alias: 'Gruggy',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
-						attachments: [ {
+						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
 							ts: '2016-12-09T16:53:06.761Z',
@@ -226,9 +226,9 @@ describe('[Chat]', function() {
 							image_url: 'http://res.guggy.com/logo_128.png',
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: ''
-						} ]
-					}
+							fields: '',
+						}],
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -251,7 +251,7 @@ describe('[Chat]', function() {
 						alias: 'Gruggy',
 						emoji: ':smirk:',
 						avatar: 'http://res.guggy.com/logo_128.png',
-						attachments: [ {
+						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
 							ts: '2016-12-09T16:53:06.761Z',
@@ -267,17 +267,17 @@ describe('[Chat]', function() {
 							image_url: 'http://res.guggy.com/logo_128.png',
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: [ {
+							fields: [{
 								short: true,
 								title: 'Test',
-								value: 'Testing out something or other'
+								value: 'Testing out something or other',
 							}, {
 								short: true,
 								title: 'Another Test',
-								value: '[Link](https://google.com/) something and this and that.'
-							} ]
-						} ]
-					}
+								value: '[Link](https://google.com/) something and this and that.',
+							}],
+						}],
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -296,7 +296,7 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						name: `readonlychannel${ +new Date() }`,
-						readOnly: true
+						readOnly: true,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -312,8 +312,8 @@ describe('[Chat]', function() {
 					.send({
 						message: {
 							rid: readOnlyChannel._id,
-							msg: 'Sample message'
-						}
+							msg: 'Sample message',
+						},
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -334,7 +334,7 @@ describe('[Chat]', function() {
 				.send({
 					roomId: 'GENERAL',
 					msgId: message._id,
-					text: 'This message was edited via API'
+					text: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -352,7 +352,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API'
+					searchText: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -368,7 +368,7 @@ describe('[Chat]', function() {
 				.query({
 					roomId: 'GENERAL',
 					searchText: 'This message was edited via API',
-					count: 1
+					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -386,7 +386,7 @@ describe('[Chat]', function() {
 				.send({
 					emoji: ':squid:',
 					messageId: message._id,
-					shouldReact: false
+					shouldReact: false,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -400,7 +400,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					emoji: 'smile',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -415,7 +415,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					emoji: ':squid:',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -430,7 +430,7 @@ describe('[Chat]', function() {
 				.send({
 					emoji: ':squid:',
 					messageId: message._id,
-					shouldReact: true
+					shouldReact: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -445,7 +445,7 @@ describe('[Chat]', function() {
 				.send({
 					emoji: ':squid:',
 					messageId: message._id,
-					shouldReact: false
+					shouldReact: false,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -460,7 +460,7 @@ describe('[Chat]', function() {
 				.send({
 					emoji: ':squid:',
 					messageId: message._id,
-					shouldReact: true
+					shouldReact: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -474,7 +474,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					emoji: 'bee',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -488,7 +488,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					reaction: 'ant',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -537,7 +537,7 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						messageId: message._id,
-						description: 'test'
+						description: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -553,7 +553,7 @@ describe('[Chat]', function() {
 				request.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
-						messageId: message._id
+						messageId: message._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

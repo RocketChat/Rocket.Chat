@@ -89,12 +89,17 @@ html.rtl .attachment {
 	& .attachment-fields {
 		display: flex;
 		margin-top: 4px;
+		flex-wrap: wrap;
 
 		& .attachment-field {
+			flex: 1 0 100%;
+			padding-top: 5px;
+			padding-bottom: 5px;
+
 			&.attachment-field-short {
 				display: inline-block;
-
 				margin-right: 12px;
+				flex: 1 1;
 			}
 
 			& .attachment-field-title {
@@ -134,5 +139,9 @@ html.rtl .attachment {
 
 		border-width: 1px;
 		border-radius: 5px;
+	}
+
+	& .actions-container {
+		margin-top: 6px;
 	}
 }

@@ -39,7 +39,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 				}
 
 				const fileDate = [];
-				file.on('data', data => fileDate.push(data));
+				file.on('data', (data) => fileDate.push(data));
 
 				file.on('end', () => {
 					files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
@@ -65,7 +65,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 
 		if (!RocketChat.fileUploadIsValidContentType(file.mimetype)) {
 			return RocketChat.API.v1.failure({
-				reason: 'error-type-not-allowed'
+				reason: 'error-type-not-allowed',
 			});
 		}
 
@@ -73,7 +73,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		if (maxFileSize > -1 && file.fileBuffer.length > maxFileSize) {
 			return RocketChat.API.v1.failure({
 				reason: 'error-size-not-allowed',
-				sizeAllowed: filesize(maxFileSize)
+				sizeAllowed: filesize(maxFileSize),
 			});
 		}
 
@@ -84,7 +84,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 			size: file.fileBuffer.length,
 			type: file.mimetype,
 			rid: this.urlParams.rid,
-			visitorToken
+			visitorToken,
 		};
 
 		const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
@@ -93,5 +93,5 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 
 		delete fields.description;
 		RocketChat.API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
-	}
+	},
 });

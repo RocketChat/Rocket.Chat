@@ -13,7 +13,7 @@ RocketChat.API.v1.addRoute('commands.get', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({ command: cmd });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
@@ -32,16 +32,16 @@ RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		});
 
 		return RocketChat.API.v1.success({
 			commands,
 			offset,
 			count: commands.length,
-			total: totalCount
+			total: totalCount,
 		});
-	}
+	},
 });
 
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value' }
@@ -77,12 +77,12 @@ RocketChat.API.v1.addRoute('commands.run', { authRequired: true }, {
 			result = RocketChat.slashCommands.run(cmd, params, {
 				_id: Random.id(),
 				rid: body.roomId,
-				msg: `/${ cmd } ${ params }`
+				msg: `/${ cmd } ${ params }`,
 			});
 		});
 
 		return RocketChat.API.v1.success({ result });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
@@ -160,5 +160,5 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });

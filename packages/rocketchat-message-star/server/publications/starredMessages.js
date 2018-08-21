@@ -9,9 +9,9 @@ Meteor.publish('starredMessages', function(rid, limit = 50) {
 	}
 	const cursorHandle = RocketChat.models.Messages.findStarredByUserAtRoom(this.userId, rid, {
 		sort: {
-			ts: -1
+			ts: -1,
 		},
-		limit
+		limit,
 	}).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_starred_message', _id, record);
@@ -21,7 +21,7 @@ Meteor.publish('starredMessages', function(rid, limit = 50) {
 		},
 		removed(_id) {
 			return publication.removed('rocketchat_starred_message', _id);
-		}
+		},
 	});
 	this.ready();
 	return this.onStop(function() {
