@@ -9,6 +9,13 @@ const getDateObj = (dateTime) => {
 	return { day: dateTime.getDate(), month: dateTime.getMonth() + 1, year: dateTime.getFullYear() };
 };
 
+const isSameDateObj = (oldest, newest) => {
+	const oldDate = new Date(oldest.year, oldest.month - 1, oldest.day);
+	const newDate = new Date(newest.year, newest.month - 1, newest.day);
+
+	return oldDate.valueOf() === newDate.valueOf();
+};
+
 const logger = new Logger('SAUMonitor');
 
 /**
@@ -19,7 +26,7 @@ export class SAUMonitor {
 		this._serviceName = 'SAUMonitor';
 		this._started = false;
 		this._debug = false;
-		this._monitorTime = 600000;
+		this._monitorTime = 60000;
 		this._timer = null;
 		this._today = getDateObj();
 		this._instanceId = null;
@@ -154,9 +161,9 @@ export class SAUMonitor {
 		const currentDateTime = new Date();
 		const currentDay = getDateObj(currentDateTime);
 
-		if (JSON.stringify(this._today) !== JSON.stringify(currentDay)) {
+		if (!isSameDateObj(this._today, currentDay)) {
 			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
-			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day, 0, 0, 0, 0);
+			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
 			const createSessions = ((objects, ids) => {
 				RocketChat.models.Sessions.createBatch(objects);
@@ -165,7 +172,7 @@ export class SAUMonitor {
 					RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
 			});
-			this._applyAllServerSessionBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
+			this._applyAllServerSessionsBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
 			this._today = currentDay;
 			return;
 		}
@@ -281,7 +288,7 @@ export class SAUMonitor {
 			});
 		}
 	}
-	_applyAllServerSessionBatch(callback, params) {
+	_applyAllServerSessionsBatch(callback, params) {
 		const self = this;
 		const batch = (arr, limit) => {
 			if (!arr.length) {
