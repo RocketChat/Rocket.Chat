@@ -99,7 +99,7 @@ Template.livechatWindow.onCreated(function() {
 
 	this.autorun(() => {
 		// get all needed live chat info for the user
-		Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+		Meteor.call('livechat:getInitialData', visitor.getToken(), Livechat.department, (err, result) => {
 			if (err) {
 				return console.error(err);
 			}
@@ -131,23 +131,30 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
-			if (result.room) {
-				Livechat.room = result.room._id;
-
-				visitor.setConnected();
-			}
 
 			if (result.visitor) {
 				visitor.setData(result.visitor);
 
-				if (visitor.name) {
-					Livechat.guestName = visitor.name;
+				if (result.visitor.name) {
+					Livechat.guestName = result.visitor.name;
 				}
 
-				if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-					Livechat.guestEmail = visitor.visitorEmails[0].address;
+				if (result.visitor.visitorEmails && result.visitor.visitorEmails.length > 0) {
+					Livechat.guestEmail = result.visitor.visitorEmails[0].address;
+				}
+
+				if (!Livechat.department) {
+					Livechat.department = result.visitor.department;
 				}
 			}
+
+			let room;
+			if (result.room && (!result.room.departmentId || !Livechat.department || result.room.departmentId === Livechat.department)) {
+				room = result.room._id;
+
+				visitor.setConnected();
+			}
+			Livechat.room = room;
 
 			if (result.agentData) {
 				Livechat.agent = result.agentData;

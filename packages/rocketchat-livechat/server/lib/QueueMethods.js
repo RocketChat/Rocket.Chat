@@ -58,6 +58,10 @@ RocketChat.QueueMethods = {
 			emailNotifications: 'all',
 		};
 
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
+
 		RocketChat.models.Rooms.insert(room);
 
 		RocketChat.models.Subscriptions.insert(subscriptionData);
@@ -137,6 +141,10 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true,
 		}, roomInfo);
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
