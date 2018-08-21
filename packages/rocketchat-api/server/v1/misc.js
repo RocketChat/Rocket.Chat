@@ -156,8 +156,8 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 			type,
 			sortBy,
 			sortDirection,
-			page: offset,
-			limit: count,
+			offset: Math.max(0, offset),
+			limit: Math.max(0, count),
 		}));
 
 		if (!result) {

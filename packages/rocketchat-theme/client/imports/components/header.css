@@ -1,3 +1,22 @@
+.rc-header.rc-header--fullpage {
+	padding: 1.25rem 0.5rem 0.75rem;
+
+	& .rc-header__wrap {
+
+		padding: 0.75rem 0;
+
+		box-shadow: none;
+	}
+
+	& .rc-header__block {
+		font-size: 1.375rem;
+	}
+
+	& .rc-button {
+		margin: -10px 0;
+	}
+}
+
 .rc-header {
 	padding: 0 0.5rem;
 
@@ -30,7 +49,7 @@
 
 	&__block {
 		display: flex;
-
+		margin: 0 0.5rem;
 		align-items: center;
 	}
 
