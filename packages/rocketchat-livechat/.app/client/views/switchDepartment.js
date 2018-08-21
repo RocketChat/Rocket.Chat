@@ -36,7 +36,7 @@ Template.switchDepartment.events({
 
 		instance.error.set();
 		swal({
-			text: t('Are_you_sure_do_you_want_end_this_chat_and_switch_department'),
+			text: t('Are_you_sure_do_you_want_switch_the_department'),
 			title: '',
 			type: 'warning',
 			showCancelButton: true,
@@ -49,19 +49,17 @@ Template.switchDepartment.events({
 				return;
 			}
 
-			Meteor.call('livechat:closeByVisitor', { roomId: visitor.getRoom(), token: visitor.getToken() }, (error) => {
-				if (error) {
-					return console.log('Error ->', error);
-				}
+			const guestData = {
+				roomId: visitor.getRoom(),
+				visitorToken: visitor.getToken(),
+				departmentId,
+			};
 
-				const guestData = {
-					token: visitor.getToken(),
-					department: departmentId,
-				};
-				Meteor.call('livechat:setDepartmentForVisitor', guestData, (error) => {
-					if (error) {
-						return console.log('Error ->', error);
-					}
+			Meteor.call('livechat:setDepartmentForVisitor', guestData, (error, result) => {
+				if (error) {
+					instance.error.set(error.error);
+				} else if (result) {
+					instance.error.set();
 					Livechat.department = departmentId;
 					Livechat.showSwitchDepartmentForm = false;
 					swal({
@@ -69,7 +67,9 @@ Template.switchDepartment.events({
 						type: 'success',
 						timer: 2000,
 					});
-				});
+				} else {
+					instance.error.set(t('No_available_agents_to_transfer'));
+				}
 			});
 		});
 	},
