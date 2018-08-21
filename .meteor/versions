@@ -133,6 +133,7 @@ rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:autotranslate@0.0.1
+rocketchat:bigbluebutton@0.0.1
 rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
@@ -185,6 +186,7 @@ rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
+rocketchat:message-action@0.0.1
 rocketchat:message-attachments@0.0.1
 rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
