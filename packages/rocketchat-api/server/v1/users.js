@@ -220,15 +220,14 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 			} else {
 				const busboy = new Busboy({ headers: this.request.headers });
-				let fields = {};
+				const fields = {};
 				const getUserFromFormData = (fields) => {
-					let userFromFormData;
 					if (fields.userId) {
-						userFromFormData = RocketChat.models.Users.findOneById(fields.userId);
-					} else if (fields.username) {
-						userFromFormData = RocketChat.models.Users.findOneByUsername(fields.username);
+						return RocketChat.models.Users.findOneById(fields.userId, { _id: 1 });
 					}
-					return userFromFormData;
+					if (fields.username) {
+						return RocketChat.models.Users.findOneByUsername(fields.username, { _id: 1 });
+					}
 				};
 
 				Meteor.wrapAsync((callback) => {
@@ -248,13 +247,16 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 								if (!user) {
 									return callback(new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users'));
 								}
+								if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
+								}
 							}
 							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
 							callback();
 						}));
 					}));
 					busboy.on('field', (fieldname, val) => {
-						fields = Object.assign(fields, { [fieldname]: val });
+						fields[fieldname] = val;
 					});
 					this.request.pipe(busboy);
 				})();
