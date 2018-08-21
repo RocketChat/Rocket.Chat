@@ -15,15 +15,14 @@ const tagAlreadyInstalledApps = (instance, apps) => {
 	const installedApps = instance.installedApps.get() || [];
 	const installedIds = installedApps.map((app) => app.latest.id);
 
-	const tagged = apps.map((app) => {
-		console.log(app);
-		return {
+	const tagged = apps.map((app) =>
+		({
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
 			},
-		};
-	});
+		})
+	);
 
 	return tagged;
 };
@@ -45,10 +44,7 @@ const getApps = (instance) => {
 const getInstalledApps = (instance) => {
 
 	RocketChat.API.get('apps').then((data) => {
-		const apps = data.apps.map((app) => {
-			console.log(app);
-			return { latest: app };
-		});
+		const apps = data.apps.map((app) => ({ latest: app }));
 
 		instance.installedApps.set(apps);
 	});
