@@ -2,7 +2,7 @@
 <template name="appManage">
 	{{#with app}}
 
-		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true}}
+		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true fullpage=true}}
 		<div class="rc-header__block rc-header__block-action">
 			<div class="rc-switch rc-switch--blue">
 				<label class="rc-switch__label">
@@ -18,7 +18,7 @@
 
 		</div>
 		{{/header}}
-		<section class="page-settings flex-tab-main-content">
+		<section class="page-settings page-settings--new flex-tab-main-content">
 			{{#requiresPermission 'manage-apps'}}
 				{{#if isReady}}
 					<div class="rc-apps-details">
@@ -76,7 +76,7 @@
 											<div class="rc-input__error-icon">
 												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+											<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 										</div>
 									{{/if}}
 								</div>
@@ -97,7 +97,7 @@
 										<div class="rc-input__error-icon">
 											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+										<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 									</div>
 								{{/if}}
 							</div>
@@ -121,7 +121,7 @@
 											<div class="rc-input__error-icon">
 												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+											<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 										</div>
 									{{/if}}
 								</div>
@@ -145,7 +145,7 @@
 											<div class="rc-input__error-icon">
 												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+											<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 										</div>
 									{{/if}}
 								</div>
@@ -167,7 +167,7 @@
 											<div class="rc-input__error-icon">
 												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+											<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 										</div>
 									{{/if}}
 								</div>
@@ -191,7 +191,7 @@
 											<div class="rc-input__error-icon">
 												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+											<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 										</div>
 									{{/if}}
 								</div>
@@ -224,7 +224,7 @@
 										<div class="rc-input__error-icon">
 											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+										<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 									</div>
 									{{/if}}
 								</div>
@@ -250,7 +250,7 @@
 										<div class="rc-input__error-icon">
 											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+										<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 									</div>
 									{{/if}}
 								</div>
@@ -275,7 +275,7 @@
 										<div class="rc-input__error-icon">
 											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+										<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 									</div>
 									{{/if}}
 								</div>
@@ -325,7 +325,7 @@
 										<div class="rc-input__error-icon">
 											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
+										<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
 									</div>
 									{{/if}}
 								</div>
@@ -376,7 +376,7 @@
 										<div class="settings-description">{{{parseDescription i18nDescription}}}</div>
 										{{/if}}
 										{{#if i18nAlert}}
-										<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ i18nAlert}}}</div>
+										<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{parseDescription i18nAlert}}}</div>
 									{{/if}}
 								</div>
 							</div>

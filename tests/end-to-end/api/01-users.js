@@ -943,6 +943,203 @@ describe('[Users]', function() {
 						.end(done);
 				});
 		});
+	});
 
+	describe('Personal Access Tokens', () => {
+		const tokenName = `${ Date.now() }token`;
+		describe('successful cases', () => {
+			it('Enable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
+				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
+					.set(credentials)
+					.send({ value: true })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			describe('[/users.generatePersonalAccessToken]', () => {
+				it('should return a personal access token to user', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('token');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries generate a token with the same name', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.regeneratePersonalAccessToken]', () => {
+				it('should return a personal access token to user when user regenerates the token', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('token');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries regenerate a token that does not exist', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.getPersonalAccessTokens]', () => {
+				it('should return my personal access tokens', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('tokens').and.to.be.an('array');
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.removePersonalAccessToken]', () => {
+				it('should return success when user remove a personal access token', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries remove a token that does not exist', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+		describe('unsuccessful cases', () => {
+			it('disable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
+				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
+					.set(credentials)
+					.send({ value: false })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			describe('should return an error when setting "API_Enable_Personal_Access_Tokens" is disabled for the following routes', () => {
+				it('/users.generatePersonalAccessToken', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.regeneratePersonalAccessToken', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.getPersonalAccessTokens', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.removePersonalAccessToken', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries remove a token that does not exist', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+			});
+		});
 	});
 });
