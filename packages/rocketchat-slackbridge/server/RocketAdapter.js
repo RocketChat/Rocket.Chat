@@ -125,6 +125,10 @@ export default class RocketAdapter {
 				return rocketMessage;
 			}
 
+			if (rocketMessage.file) {
+				return this.processFileShare(rocketMessage);
+			}
+
 			// A new message from Rocket.Chat
 			this.processSendMessage(rocketMessage);
 		} catch (err) {
@@ -149,6 +153,51 @@ export default class RocketAdapter {
 		}
 	}
 
+	getMessageAttachment(rocketMessage) {
+		if (!rocketMessage.file) {
+			return;
+		}
+
+		if (!rocketMessage.attachments || !rocketMessage.attachments.length) {
+			return;
+		}
+
+		const fileId = rocketMessage.file._id;
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
+	}
+
+	getFileDownloadUrl(rocketMessage) {
+		const attachment = this.getMessageAttachment(rocketMessage);
+
+		if (attachment) {
+			return attachment.title_link;
+		}
+	}
+
+	processFileShare(rocketMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (rocketMessage.file.name) {
+			let file_name = rocketMessage.file.name;
+			let text = rocketMessage.msg;
+
+			const attachment = this.getMessageAttachment(rocketMessage);
+			if (attachment) {
+				file_name = Meteor.absoluteUrl(attachment.title_link);
+				if (!text) {
+					text = attachment.description;
+				}
+			}
+
+			const message = `${ text } ${ file_name }`;
+
+			rocketMessage.msg = message;
+			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+		}
+	}
+
 	processMessageChanged(rocketMessage) {
 		if (rocketMessage) {
 			if (rocketMessage.updatedBySlack) {
@@ -162,7 +211,6 @@ export default class RocketAdapter {
 			this.slack.postMessageUpdate(slackChannel, rocketMessage);
 		}
 	}
-
 
 	getChannel(slackMessage) {
 		return slackMessage.channel ? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel) : null;

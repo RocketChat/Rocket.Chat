@@ -15,6 +15,15 @@ Meteor.startup(function() {
 			i18nLabel: 'API_Token',
 		});
 
+		this.add('SlackBridge_FileUpload_Enabled', true, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+			i18nLabel: 'FileUpload',
+		});
+
 		this.add('SlackBridge_Out_Enabled', false, {
 			type: 'boolean',
 			enableQuery: {
