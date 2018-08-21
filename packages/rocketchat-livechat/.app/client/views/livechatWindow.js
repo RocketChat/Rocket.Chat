@@ -132,8 +132,14 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
 
+			loadDepartments(result.departments);
+
 			if (result.visitor) {
 				visitor.setData(result.visitor);
+
+				if (result.visitor.department) {
+					Livechat.department = result.visitor.department;
+				}
 
 				if (result.visitor.name) {
 					Livechat.guestName = result.visitor.name;
@@ -170,8 +176,6 @@ Template.livechatWindow.onCreated(function() {
 
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
-
-			loadDepartments(result.departments);
 
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 
