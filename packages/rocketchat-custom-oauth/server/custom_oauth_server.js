@@ -163,55 +163,59 @@ export class CustomOAuth {
 		}
 	}
 
-	fixThirdPartyRules(identity) {
-		// Fix WordPress-like identities having 'ID' instead of 'id'
-		if (identity.ID && !identity.id) {
-			identity.id = identity.ID;
-		}
-
-		// Fix Auth0-like identities having 'user_id' instead of 'id'
-		if (identity.user_id && !identity.id) {
-			identity.id = identity.user_id;
-		}
-
-		if (identity.CharacterID && !identity.id) {
-			identity.id = identity.CharacterID;
-		}
-
-		// Fix Dataporten having 'user.userid' instead of 'id'
-		if (identity.user && identity.user.userid && !identity.id) {
-			if (identity.user.userid_sec && identity.user.userid_sec[0]) {
-				identity.id = identity.user.userid_sec[0];
-			} else {
-				identity.id = identity.user.userid;
+	fixThirdPartyIdentityRules(identity) {
+		if (!identity.id) {
+			// Fix WordPress-like identities having 'ID' instead of 'id'
+			if (identity.ID) {
+				identity.id = identity.ID;
 			}
-			identity.email = identity.user.email;
-		}
-		// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-		if (identity.user && identity.user.user_id && !identity.id) {
-			identity.id = identity.user.user_id;
-			identity.email = identity.user.user_email;
-		}
-		// Fix general 'phid' instead of 'id' from phabricator
-		if (identity.phid && !identity.id) {
-			identity.id = identity.phid;
-		}
 
-		// Fix Keycloak-like identities having 'sub' instead of 'id'
-		if (identity.sub && !identity.id) {
-			identity.id = identity.sub;
-		}
+			// Fix Auth0-like identities having 'user_id' instead of 'id'
+			if (identity.user_id) {
+				identity.id = identity.user_id;
+			}
 
-		// Fix general 'userid' instead of 'id' from provider
-		if (identity.userid && !identity.id) {
-			identity.id = identity.userid;
-		}
+			if (identity.CharacterID) {
+				identity.id = identity.CharacterID;
+			}
 
-		// Fix Nextcloud provider
-		if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
-			identity.id = identity.ocs.data.id;
-			identity.name = identity.ocs.data.displayname;
-			identity.email = identity.ocs.data.email;
+			// Fix Dataporten having 'user.userid' instead of 'id'
+			if (identity.user && identity.user.userid) {
+				if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+					identity.id = identity.user.userid_sec[0];
+				} else {
+					identity.id = identity.user.userid;
+				}
+				identity.email = identity.user.email;
+			}
+
+			// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
+			if (identity.user && identity.user.user_id) {
+				identity.id = identity.user.user_id;
+				identity.email = identity.user.user_email;
+			}
+
+			// Fix general 'phid' instead of 'id' from phabricator
+			if (identity.phid) {
+				identity.id = identity.phid;
+			}
+
+			// Fix Keycloak-like identities having 'sub' instead of 'id'
+			if (identity.sub) {
+				identity.id = identity.sub;
+			}
+
+			// Fix general 'userid' instead of 'id' from provider
+			if (identity.userid) {
+				identity.id = identity.userid;
+			}
+
+			// Fix Nextcloud provider
+			if (identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+				identity.id = identity.ocs.data.id;
+				identity.name = identity.ocs.data.displayname;
+				identity.email = identity.ocs.data.email;
+			}
 		}
 
 		// Fix when authenticating from a meteor app with 'emails' field
@@ -242,7 +246,7 @@ export class CustomOAuth {
 					identity = identity.result;
 				}
 
-				self.fixThirdPartyRules(identity);
+				self.fixThirdPartyIdentityRules(identity);
 			}
 
 			const serviceData = {
