@@ -147,34 +147,26 @@ RocketChat.models.Rooms.setResponseByRoomId = function(roomId, response) {
 	});
 };
 
-RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(roomId, inc, analyticsData) {
-	if (inc == null) { inc = 1; }
+RocketChat.models.Rooms.saveAnalyticsDataByRoomId = function(room, message, analyticsData) {
 	const update = {
-		$set: {
-			'metrics.response.avg': analyticsData.avgResponseTime,
-		},
-		$inc: {
-			'metrics.response.total': inc,
-			'metrics.response.tt': analyticsData.responseTime,
-			'metrics.reaction.tt': analyticsData.reactionTime,
-		},
+		$set: {},
 	};
-	if (analyticsData.firstResponseTime) {
+
+	if (analyticsData) {
+		update.$set['metrics.response.avg'] = analyticsData.avgResponseTime;
+
+		update.$inc = {};
+		update.$inc['metrics.response.total'] = 1;
+		update.$inc['metrics.response.tt'] = analyticsData.responseTime;
+		update.$inc['metrics.reaction.tt'] = analyticsData.reactionTime;
+	}
+
+	if (analyticsData && analyticsData.firstResponseTime) {
 		update.$set['metrics.response.fd'] = analyticsData.firstResponseDate;
 		update.$set['metrics.response.ft'] = analyticsData.firstResponseTime;
 		update.$set['metrics.reaction.fd'] = analyticsData.firstReactionDate;
 		update.$set['metrics.reaction.ft'] = analyticsData.firstReactionTime;
 	}
-
-	return this.update({
-		_id: roomId,
-	}, update);
-};
-
-RocketChat.models.Rooms.setLastMessageTimeById = function(room, message) {
-	const update = {
-		$set: {},
-	};
 
 	// livechat analytics : update last message timestamps
 	const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;

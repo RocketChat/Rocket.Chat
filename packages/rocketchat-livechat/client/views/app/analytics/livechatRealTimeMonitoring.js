@@ -328,6 +328,9 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 
 	this.subscribe('livechat:departments');
 	this.subscribe('livechat:agents');
-	this.subscribe('livechat:monitoring');
+	this.subscribe('livechat:monitoring', {
+		gte: moment().startOf('day').format('MMM D YYYY'),
+		lt: moment().startOf('day').add(1, 'days').format('MMM D YYYY'),
+	});
 	this.subscribe('livechat:visitors');
 });

@@ -1,14 +1,19 @@
 import moment from 'moment';
 
-Meteor.publish('livechat:monitoring', function() {
+Meteor.publish('livechat:monitoring', function(date) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:monitoring' }));
 	}
 
-	const date = {
-		gte: moment().startOf('day'),
-		lt: moment().startOf('day').add(1, 'days'),
+	date = {
+		gte: moment(date.gte, 'MMM D YYYY'),
+		lt: moment(date.lt, 'MMM D YYYY'),
 	};
+
+	if (!(moment(date.gte).isValid() && moment(date.lt).isValid())) {
+		console.log('Invalid dates');
+		return;
+	}
 
 	const self = this;
 
