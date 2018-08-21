@@ -18,7 +18,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 1,
 			lm: new Date(),
 			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
@@ -58,6 +58,10 @@ RocketChat.QueueMethods = {
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
 		};
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.Rooms.insert(room);
 
@@ -121,7 +125,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 0,
 			lm: new Date(),
 			fname: guest.name || guest.username,
@@ -138,6 +142,10 @@ RocketChat.QueueMethods = {
 			open: true,
 			waitingResponse: true,
 		}, roomInfo);
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
