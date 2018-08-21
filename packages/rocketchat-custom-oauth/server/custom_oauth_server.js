@@ -76,8 +76,9 @@ export class CustomOAuth {
 		}
 	}
 
-	getAccessToken(query) {
-		const config = ServiceConfiguration.configurations.findOne({service: this.name});
+	queryAccessToken(query) {
+		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
+
 		if (!config) {
 			throw new ServiceConfiguration.ConfigError();
 		}
@@ -97,14 +98,19 @@ export class CustomOAuth {
 			}
 		};
 
+		const { clientId } = config;
+		const secret = OAuth.openSecret(config.secret);
+
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions['auth'] = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+			allOptions.auth = `${ clientId }:${ secret }`;
 		} else {
-			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
-			allOptions['params']['client_id'] = config.clientId;
-			allOptions['params']['appid'] = config.clientId;
-			allOptions['params']['secret'] = OAuth.openSecret(config.secret);
+			allOptions.params.client_secret = secret;
+			allOptions.params.client_id = clientId;
+
+			// Fix for WeChat:
+			allOptions.params.appid = clientId;
+			allOptions.params.secret = secret;
 		}
 
 		try {
@@ -126,6 +132,10 @@ export class CustomOAuth {
 		} else {
 			return data;
 		}
+	}
+
+	getAccessToken(query) {
+		return this.queryAccessToken(query).access_token;
 	}
 
 	getIdentity(accessToken, params = {}) {
@@ -216,6 +226,11 @@ export class CustomOAuth {
 				identity.name = identity.ocs.data.displayname;
 				identity.email = identity.ocs.data.email;
 			}
+
+			// Fix for WeChat
+			if (identity.openid) {
+				identity.id = identity.openid;
+			}
 		}
 
 		// Fix when authenticating from a meteor app with 'emails' field
@@ -227,9 +242,15 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const pack = self.getAccessToken(query);
+			const accessTokenPack = self.queryAccessToken(query);
+			const accessToken = accessTokenPack.access_token;
+			const identityParams = {};
 
-			let identity = self.getIdentity(pack.access_token, {openid: pack.openid});
+			if ('openid' in accessTokenPack) {
+				identityParams.openid = accessTokenPack.openid;
+			}
+
+			let identity = self.getIdentity(accessToken, identityParams);
 
 			if (identity) {
 				if (identity.openid && !identity.id) {
@@ -251,7 +272,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken: pack.access_token
+				accessToken: accessToken
 			};
 
 			_.extend(serviceData, identity);
@@ -334,12 +355,11 @@ export class CustomOAuth {
 	}
 }
 
-
-const updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
-Accounts.updateOrCreateUserFromExternalService = function(/*serviceName, serviceData, options*/) {
+const { updateOrCreateUserFromExternalService } = Accounts;
+Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		hook.apply(this, arguments);
 	}
 
-	return updateOrCreateUserFromExternalService.apply(this, arguments);
+	return updateOrCreateUserFromExternalService.apply(this, args);
 };
