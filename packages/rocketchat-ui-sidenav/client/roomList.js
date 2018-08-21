@@ -112,6 +112,7 @@ const mergeSubRoom = (subscription) => {
 	const room = RocketChat.models.Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
 	subscription.lastMessage = room.lastMessage;
 	subscription.lm = room._updatedAt;
+	subscription.streamingOptions = room.streamingOptions;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -127,6 +128,7 @@ const mergeRoomSub = (room) => {
 		$set: {
 			lastMessage: room.lastMessage,
 			lm: room._updatedAt,
+			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});
