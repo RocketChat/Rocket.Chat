@@ -60,22 +60,7 @@ RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 		_id,
 	};
 
-	return this.findOne(query, options);
-};
-
-RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
-	const options = {};
-
-	if (fields) {
-		options.fields = fields;
-	}
-
-	const query = {
-		t: 'l',
-		_id,
-	};
-
-	return this.findOne(query, options);
+	return this.find(query, options);
 };
 
 /**
