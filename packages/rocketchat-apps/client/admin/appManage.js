@@ -6,7 +6,7 @@ import { AppEvents } from '../communication';
 const isAppInstalled = (app, apps = []) => {
 	const installedIds = apps.map((app) => app.id);
 
-	return installedIds.includes(app.id)
+	return installedIds.includes(app.id);
 };
 
 Template.appManage.onCreated(function() {
