@@ -36,11 +36,11 @@
 									{{/if}}
 								</div>
 								<div class="rc-apps-details__row">
-									{{#unless isInstalled}}
-										<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+									{{#if isInstalled}}
+										<button class="rc-button rc-button- -cancel js-uninstall">{{_ "Uninstall" }}</button>
 									{{else}}
-
-									{{/unless}}
+										<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+									{{/if}}
 								</div>
 							</div>
 						</div>

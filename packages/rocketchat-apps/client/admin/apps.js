@@ -243,6 +243,8 @@ Template.apps.events({
 		FlowRouter.go('/admin/app/install');
 	},
 	'click .installer'(e, template) {
+		e.stopPropagation();
+
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
 
 		console.log('installer', this, e);
