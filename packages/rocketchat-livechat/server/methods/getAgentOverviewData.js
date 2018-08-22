@@ -13,8 +13,8 @@ Meteor.methods({
 			return;
 		}
 
-		const from = moment(options.daterange.from, 'MMM D YYYY');
-		const to = moment(options.daterange.to, 'MMM D YYYY');
+		const from = moment(options.daterange.from);
+		const to = moment(options.daterange.to);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.log('livechat:getAgentOverviewData => Invalid dates');

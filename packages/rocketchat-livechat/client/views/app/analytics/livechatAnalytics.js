@@ -1,5 +1,6 @@
 /* globals popover */
 
+import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
 
@@ -57,7 +58,10 @@ const chunkArray = (arr, chunkCount) => {	// split array into n almost equal arr
 
 const updateAnalyticsChart = () => {
 	const options = {
-		daterange: templateInstance.daterange.get(),
+		daterange: {
+			from: moment(templateInstance.daterange.get().from, 'MMM D YYYY').toISOString(),
+			to: moment(templateInstance.daterange.get().to, 'MMM D YYYY').toISOString(),
+		},
 		chartOptions: templateInstance.chartOptions.get(),
 	};
 
@@ -88,7 +92,10 @@ const updateAnalyticsChart = () => {
 
 const updateAnalyticsOverview = () => {
 	const options = {
-		daterange: templateInstance.daterange.get(),
+		daterange: {
+			from: moment(templateInstance.daterange.get().from, 'MMM D YYYY').toISOString(),
+			to: moment(templateInstance.daterange.get().to, 'MMM D YYYY').toISOString(),
+		},
 		analyticsOptions: templateInstance.analyticsOptions.get(),
 	};
 

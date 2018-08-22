@@ -38,8 +38,6 @@ export const checkDaterangeValue = (value, from, to) => {
  * @param {Date} to
  */
 export const setDateRange = (value, from, to) => {
-	moment.locale('en');		// using fixed locale
-
 	if (moment(from).isAfter(moment())) {
 		return handleError({ details: { errorTitle: 'Invalid_dates' }, error: 'Start_date_incorrect' });
 	}
