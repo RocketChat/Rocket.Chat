@@ -157,7 +157,7 @@ export class CustomOAuth {
 			});
 
 			let data;
-			
+
 			if (response.data) {
 				data = response.data;
 			} else {
@@ -272,7 +272,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken: accessToken
+				accessToken
 			};
 
 			_.extend(serviceData, identity);
