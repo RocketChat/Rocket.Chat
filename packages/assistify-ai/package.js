@@ -22,6 +22,10 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib'); //in order to make general settings load earlier
 	api.use('rocketchat:ui-master'); //for the loading animation
 	api.use('chatpal:search'); //for the loading animation
+	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
+
+	// Libraries
+	api.addFiles('server/inject.js', 'server');
 
 	// common components for client and server
 	api.addFiles('models/AssistifySmarti.js', ['client', 'server']);
@@ -54,7 +58,9 @@ Package.onUse(function(api) {
 
 	//Assets
 	api.addAssets('client/public/assistify.png', 'client');
-	//api.addAssets('client/public/assistify-beta.png', 'client');
+
+	// UI artifacts which are pre-processed or packaged by the server
+	api.addAssets('client/public/icons.svg', 'server');
 
 	//i18n in Rocket.Chat-package (packages/rocketchat-i18n/i18n
 
