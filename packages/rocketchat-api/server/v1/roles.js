@@ -11,13 +11,13 @@ RocketChat.API.v1.addRoute('roles.create', { authRequired: true }, {
 		check(this.bodyParams, {
 			name: String,
 			scope: Match.Maybe(String),
-			description: Match.Maybe(String)
+			description: Match.Maybe(String),
 		});
 
 		const roleData = {
 			name: this.bodyParams.name,
 			scope: this.bodyParams.scope,
-			description: this.bodyParams.description
+			description: this.bodyParams.description,
 		};
 
 		Meteor.runAsUser(this.userId, () => {
@@ -25,9 +25,9 @@ RocketChat.API.v1.addRoute('roles.create', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			role: RocketChat.models.Roles.findOneByIdOrName(roleData.name, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			role: RocketChat.models.Roles.findOneByIdOrName(roleData.name, { fields: RocketChat.API.v1.defaultFieldsToExclude }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('roles.addToUser', { authRequired: true }, {
@@ -35,7 +35,7 @@ RocketChat.API.v1.addRoute('roles.addToUser', { authRequired: true }, {
 		check(this.bodyParams, {
 			roleName: String,
 			username: String,
-			roomId: Match.Maybe(String)
+			roomId: Match.Maybe(String),
 		});
 
 		const user = this.getUserFromParams();
@@ -45,9 +45,9 @@ RocketChat.API.v1.addRoute('roles.addToUser', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			role: RocketChat.models.Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			role: RocketChat.models.Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: RocketChat.API.v1.defaultFieldsToExclude }),
 		});
-	}
+	},
 });
 
 // api.addFiles('server/methods/addUserToRole.js', 'server');

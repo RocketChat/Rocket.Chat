@@ -67,10 +67,10 @@ class ModelRoles extends RocketChat.models._Base {
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [{
-				_id: _idOrName
+				_id: _idOrName,
 			}, {
-				name: _idOrName
-			}]
+				name: _idOrName,
+			}],
 		};
 
 		return this.findOne(query, options);
