@@ -1,15 +1,20 @@
 import moment from 'moment';
 import LivechatVisitors from '../models/LivechatVisitors';
 
-Meteor.publish('livechat:visitors', function() {
+Meteor.publish('livechat:visitors', function(date) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitors' }));
 	}
 
-	const date = {
-		gte: moment().startOf('day'),
-		lt: moment().startOf('day').add(1, 'days'),
+	date = {
+		gte: moment(date.gte, 'MMM D YYYY'),
+		lt: moment(date.lt, 'MMM D YYYY'),
 	};
+
+	if (!(moment(date.gte).isValid() && moment(date.lt).isValid())) {
+		console.log('livechat:visitors => Invalid dates');
+		return;
+	}
 
 	const self = this;
 

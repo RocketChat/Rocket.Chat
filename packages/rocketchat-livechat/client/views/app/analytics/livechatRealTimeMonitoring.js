@@ -192,10 +192,10 @@ const displayDepartmentChart = (val) => {
 	elem.style.display = (val) ? 'block' : 'none';
 };
 
-const updateVisitorsCount = (count) => {
+const updateVisitorsCount = () => {
 	templateInstance.totalVisitors.set({
 		title: templateInstance.totalVisitors.get().title,
-		value: templateInstance.totalVisitors.get().value + count,
+		value: LivechatVisitors.find().count(),
 	});
 };
 
@@ -234,10 +234,10 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 
 	LivechatVisitors.find().observeChanges({
 		added() {
-			updateVisitorsCount(1);
+			updateVisitorsCount();
 		},
 		removed() {
-			updateVisitorsCount(-1);
+			updateVisitorsCount();
 		},
 	});
 
@@ -261,6 +261,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 			updateChatsChart();
 			updateAgentsChart();
 			updateTimingsOverview();
+			updateDepartmentsChart();
 		}
 
 		if (fields.servedBy) {
@@ -306,5 +307,8 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 		gte: moment().startOf('day').format('MMM D YYYY'),
 		lt: moment().startOf('day').add(1, 'days').format('MMM D YYYY'),
 	});
-	this.subscribe('livechat:visitors');
+	this.subscribe('livechat:visitors', {
+		gte: moment().startOf('day').format('MMM D YYYY'),
+		lt: moment().startOf('day').add(1, 'days').format('MMM D YYYY'),
+	});
 });
