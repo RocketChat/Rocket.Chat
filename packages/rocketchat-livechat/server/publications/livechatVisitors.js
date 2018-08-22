@@ -1,4 +1,3 @@
-import moment from 'moment';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.publish('livechat:visitors', function(date) {
@@ -7,14 +6,12 @@ Meteor.publish('livechat:visitors', function(date) {
 	}
 
 	date = {
-		gte: moment(date.gte, 'MMM D YYYY'),
-		lt: moment(date.lt, 'MMM D YYYY'),
+		gte: new Date(date.gte),
+		lt: new Date(date.lt),
 	};
 
-	if (!(moment(date.gte).isValid() && moment(date.lt).isValid())) {
-		console.log('livechat:visitors => Invalid dates');
-		return;
-	}
+	check(date.gte, Date);
+	check(date.lt, Date);
 
 	const self = this;
 

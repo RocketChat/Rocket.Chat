@@ -78,8 +78,8 @@ class LivechatVisitors extends RocketChat.models._Base {
 	getVisitorsBetweenDate(date) {
 		const query = {
 			_updatedAt: {
-				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
-				$lt: new Date(date.lt),	// ISODate, ts < date.lt
+				$gte: date.gte,	// ISO Date, ts >= date.gte
+				$lt: date.lt,	// ISODate, ts < date.lt
 			},
 		};
 
