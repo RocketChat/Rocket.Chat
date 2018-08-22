@@ -19,22 +19,39 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
 			const agentJoinTime = (room.servedBy && room.servedBy.ts) ? room.servedBy.ts : room.ts;
 
+			const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
+			const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
+
 			if (agentLastReply === room.ts) {		// first response
-				analyticsData = {};
-				analyticsData.firstResponseDate = now;
-				analyticsData.firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
-				analyticsData.responseTime = (now.getTime() - visitorLastQuery) / 1000;
-				analyticsData.avgResponseTime = (((room.metrics && room.metrics.response && room.metrics.response.tt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((room.metrics && room.metrics.response && room.metrics.response.total) ? room.metrics.response.total : 0) + 1);
+				const firstResponseDate = now;
+				const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
+				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+				const avgResponseTime = (((isResponseTt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((isResponseTotal) ? room.metrics.response.total : 0) + 1);
 
-				analyticsData.firstReactionDate = now;
-				analyticsData.firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
-				analyticsData.reactionTime = (now.getTime() - agentJoinTime) / 1000;
+				const firstReactionDate = now;
+				const firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
+				const reactionTime = (now.getTime() - agentJoinTime) / 1000;
+
+				analyticsData = {
+					firstResponseDate,
+					firstResponseTime,
+					responseTime,
+					avgResponseTime,
+					firstReactionDate,
+					firstReactionTime,
+					reactionTime,
+				};
 			} else if (visitorLastQuery > agentLastReply) {		// response, not first
-				analyticsData = {};
-				analyticsData.responseTime = (now.getTime() - visitorLastQuery) / 1000;
-				analyticsData.avgResponseTime = (((room.metrics && room.metrics.response && room.metrics.response.tt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((room.metrics && room.metrics.response && room.metrics.response.total) ? room.metrics.response.total : 0) + 1);
+				const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+				const avgResponseTime = (((isResponseTt) ? room.metrics.response.tt : 0) + analyticsData.responseTime) / (((isResponseTotal) ? room.metrics.response.total : 0) + 1);
 
-				analyticsData.reactionTime = (now.getTime() - visitorLastQuery) / 1000;
+				const reactionTime = (now.getTime() - visitorLastQuery) / 1000;
+
+				analyticsData = {
+					responseTime,
+					avgResponseTime,
+					reactionTime,
+				};
 			}	// ignore, its continuing response
 		}
 

@@ -224,35 +224,32 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 	});
 
 	AgentUsers.find().observeChanges({
-		changed(/* id, fields */) {
+		changed() {
 			updateAgentStatusChart();
 		},
-		added(/* id, fields */) {
+		added() {
 			updateAgentStatusChart();
 		},
-		removed(/* id */) {},
 	});
 
 	LivechatVisitors.find().observeChanges({
-		changed() {},
-		added(/* id, fields */) {
+		added() {
 			updateVisitorsCount(1);
 		},
-		removed(/* id */) {
+		removed() {
 			updateVisitorsCount(-1);
 		},
 	});
 
 	LivechatDepartment.find().observeChanges({
-		changed(id /* , fields */) {
+		changed(id) {
 			displayDepartmentChart(true);
 			updateDepartmentsChart(id);
 		},
-		added(id /* , fields */) {
+		added(id) {
 			displayDepartmentChart(true);
 			updateDepartmentsChart(id);
 		},
-		removed(/* id */) {},
 	});
 
 	LivechatMonitoring.find().observeChanges({
@@ -315,7 +312,6 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 				updateConversationsOverview();
 			}
 		},
-		removed(/* id */) {},
 	});
 });
 
