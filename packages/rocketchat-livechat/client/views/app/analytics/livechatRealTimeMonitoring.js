@@ -129,7 +129,7 @@ const updateDepartmentsChart = (departmentId) => {
 		updateChartData('lc-chats-per-dept-chart', label, [data.open, data.closed]);
 	} else {
 		// update for all
-		LivechatDepartment.find().forEach(function(dept) {
+		LivechatDepartment.find({ enabled: true }).forEach(function(dept) {
 			updateDepartmentsChart(dept._id);
 		});
 	}
@@ -241,7 +241,7 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		},
 	});
 
-	LivechatDepartment.find().observeChanges({
+	LivechatDepartment.find({ enabled: true }).observeChanges({
 		changed(id) {
 			displayDepartmentChart(true);
 			updateDepartmentsChart(id);
@@ -252,65 +252,43 @@ Template.livechatRealTimeMonitoring.onCreated(function() {
 		},
 	});
 
+	const updateMonitoringDashboard = (id, fields) => {
+		const { ts } = LivechatMonitoring.findOne({ _id: id });
+
+		if (fields.metrics) {
+			// metrics changed
+			metricsUpdated(ts);
+			updateChatsChart();
+			updateAgentsChart();
+			updateTimingsOverview();
+		}
+
+		if (fields.servedBy) {
+			// agent data changed
+			updateAgentsChart(fields.servedBy.username);
+			updateChatsChart();
+		}
+
+		if (fields.open) {
+			updateAgentsChart();
+			updateChatsChart();
+		}
+
+		if (fields.departmentId) {
+			updateDepartmentsChart(fields.departmentId);
+		}
+
+		if (fields.msgs) {
+			updateConversationsOverview();
+		}
+	};
+
 	LivechatMonitoring.find().observeChanges({
 		changed(id, fields) {
-			const { ts } = LivechatMonitoring.findOne({ _id: id });
-
-			if (fields.metrics) {
-				// metrics changed
-				metricsUpdated(ts);
-				updateChatsChart();
-				updateAgentsChart();
-				updateTimingsOverview();
-			}
-
-			if (fields.servedBy) {
-				// agent data changed
-				updateAgentsChart(fields.servedBy.username);
-				updateChatsChart();
-			}
-
-			if (fields.open) {
-				updateAgentsChart();
-				updateChatsChart();
-			}
-
-			if (fields.departmentId) {
-				updateDepartmentsChart(fields.departmentId);
-			}
-
-			if (fields.msgs) {
-				updateConversationsOverview();
-			}
+			updateMonitoringDashboard(id, fields);
 		},
 		added(id, fields) {
-			const { ts } = LivechatMonitoring.findOne({ _id: id });
-
-			if (fields.metrics) {
-				// metrics changed
-				metricsUpdated(ts);
-				updateChatsChart();
-				updateAgentsChart();
-				updateTimingsOverview();
-			}
-
-			if (fields.servedBy) {
-				// agent data changed
-				updateAgentsChart(fields.servedBy.username);
-			}
-
-			if (fields.open) {
-				updateAgentsChart();
-				updateChatsChart();
-			}
-
-			if (fields.departmentId) {
-				updateDepartmentsChart(fields.departmentId);
-			}
-
-			if (fields.msgs) {
-				updateConversationsOverview();
-			}
+			updateMonitoringDashboard(id, fields);
 		},
 	});
 });
