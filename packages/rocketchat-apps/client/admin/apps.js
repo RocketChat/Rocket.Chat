@@ -247,14 +247,12 @@ Template.apps.events({
 
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
 
-		console.log('installer', this, e);
-
 		RocketChat.API.post('apps/', { url }).then(() => {
 			getInstalledApps(template);
 		});
 
-		$(e.currentTarget).find('.rc-icon').addClass('play');
 		// play animation
+		$(e.currentTarget).find('.rc-icon').addClass('play');
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
