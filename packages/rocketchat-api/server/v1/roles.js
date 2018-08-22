@@ -30,7 +30,7 @@ RocketChat.API.v1.addRoute('roles.create', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('roles.addToUser', { authRequired: true }, {
+RocketChat.API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			roleName: String,
@@ -49,5 +49,3 @@ RocketChat.API.v1.addRoute('roles.addToUser', { authRequired: true }, {
 		});
 	},
 });
-
-// api.addFiles('server/methods/addUserToRole.js', 'server');
