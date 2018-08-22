@@ -74,6 +74,17 @@ Meteor.methods({
 	},
 
 	searchConversations(queryParams) {
+
+		const _getAclQuery = function() {
+			const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}).fetch().map(room => room.rid);
+			const publicChannels = RocketChat.models.Rooms.find({t: 'c'}).fetch().map(room => room._id);
+
+			const filterCriteria = `${ subscribedRooms.concat(publicChannels).join(' OR ') }`;
+			return filterCriteria
+				? `&fq=meta_channel_id:(${ filterCriteria })`
+				: '&fq=meta_channel_id:""'; //fallback: if the user's not authorized to view any room, filter for "nothing"
+		};
+
 		const queryString = querystring.stringify(queryParams);
 		SystemLogger.debug('QueryString: ', queryString);
 		const searchResult = RocketChat.RateLimiter.limitFunction(
@@ -82,7 +93,7 @@ Meteor.methods({
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
 				}
 			}
-		)(verbs.get, `conversation/search?${ queryString }`);
+		)(verbs.get, `conversation/search?${ queryString }${ _getAclQuery() }`);
 		SystemLogger.debug('SearchResult: ', JSON.stringify(searchResult, null, 2));
 		return searchResult;
 	}

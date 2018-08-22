@@ -1,17 +1,15 @@
-/* globals RocketChat, SystemLogger */
-
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 import {getKnowledgeAdapter} from '../lib/KnowledgeAdapterProvider';
 
+// unregister callbacks for livechat and the hard-coded api.ai
 RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 
 function isMessageRelevant(message, room) {
 
-	//do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
-	//todo: Remove dependency to bot. It should actually be the other way round.
-	//proposal: Make bot create metadata in the help-request collection
-	const botUsername = RocketChat.settings.get('Assistify_Bot_Username');
-	if (message.u.username === botUsername) {
-		return;
+	const user = RocketChat.models.Users.findOneById(message.u._id);
+	if (user.roles['bot']) {
+		return; 	//do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
 	}
 
 	let knowledgeEnabled = false;
@@ -27,10 +25,6 @@ function isMessageRelevant(message, room) {
 	if (!room) {
 		room = RocketChat.models.Rooms.findOneById(message.rid);
 	}
-
-	// if (!(room && (room.t === 'l' || room.t === 'r' || room.t === 'e'))) { // todo: decouple ai-package from help-request
-	// 	return false;
-	// }
 
 	return getKnowledgeAdapter();
 }

@@ -236,23 +236,23 @@ export class SmartiAdapter {
 			query = { $or: [{ outOfSync: true }, { outOfSync: { $exists: false } }] };
 		}
 
-		query.t = 'r';
+		query.t = 'c';
 		const requests = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of Requests to sync: ', requests.length);
+		SystemLogger.info('Number of public channels to sync: ', requests.length);
 		for (let i = 0; i < requests.length; i++) {
 			Meteor.defer(() => SmartiAdapter._tryResync(requests[i]._id, ignoreSyncFlag));
 		}
 
-		query.t = 'e';
+		query.t = 'p';
 		const topics = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of Topics to sync: ', topics.length);
+		SystemLogger.info('Number of private groups to sync: ', topics.length);
 		for (let i = 0; i < topics.length; i++) {
 			Meteor.defer(() => SmartiAdapter._tryResync(topics[i]._id, ignoreSyncFlag));
 		}
 
 		query.t = 'l';
 		const livechat = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of Topics to sync: ', livechat.length);
+		SystemLogger.info('Number of livechats to sync: ', livechat.length);
 		for (let i = 0; i < livechat.length; i++) {
 			Meteor.defer(() => SmartiAdapter._tryResync(livechat[i]._id, ignoreSyncFlag));
 		}

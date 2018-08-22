@@ -1,4 +1,5 @@
-/* globals RocketChat, SystemLogger*/
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
