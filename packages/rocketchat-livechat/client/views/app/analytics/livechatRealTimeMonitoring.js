@@ -301,6 +301,8 @@ Template.livechatRealTimeMonitoring.onRendered(function() {
 
 	displayDepartmentChart(false);
 
+	moment.locale('en');
+
 	this.subscribe('livechat:departments');
 	this.subscribe('livechat:agents');
 	this.subscribe('livechat:monitoring', {

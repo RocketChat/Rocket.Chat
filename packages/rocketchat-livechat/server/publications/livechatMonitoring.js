@@ -11,7 +11,7 @@ Meteor.publish('livechat:monitoring', function(date) {
 	};
 
 	if (!(moment(date.gte).isValid() && moment(date.lt).isValid())) {
-		console.log('Invalid dates');
+		console.log('livechat:monitoring => Invalid dates');
 		return;
 	}
 

@@ -17,7 +17,7 @@ Meteor.methods({
 		const to = moment(options.daterange.to, 'MMM D YYYY');
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.log('Invalid dates');
+			console.log('livechat:getAgentOverviewData => Invalid dates');
 			return;
 		}
 
