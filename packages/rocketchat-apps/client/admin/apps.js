@@ -11,8 +11,7 @@ const sortByColumn = (array, column, inverted) =>
 		return 1;
 	});
 
-const tagAlreadyInstalledApps = (instance, apps) => {
-	const installedApps = instance.installedApps.get() || [];
+const tagAlreadyInstalledApps = (installedApps, apps) => {
 	const installedIds = installedApps.map((app) => app.latest.id);
 
 	const tagged = apps.map((app) =>
@@ -33,7 +32,7 @@ const getApps = (instance) => {
 	fetch(`${ HOST }/v1/apps?version=0.9.13`)
 		.then((response) => response.json())
 		.then((data) => {
-			const tagged = tagAlreadyInstalledApps(instance, data);
+			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
 			instance.isLoading.set(false);
 			instance.apps.set(tagged);
@@ -236,8 +235,8 @@ Template.apps.events({
 	'click .manage'() {
 		const rl = this;
 
-		if (rl && rl.id) {
-			FlowRouter.go(`/admin/apps/${ rl.id }`);
+		if (rl && rl.latest && rl.latest.id) {
+			FlowRouter.go(`/admin/apps/${ rl.latest.id }`);
 		}
 	},
 	'click [data-button="install"]'() {
