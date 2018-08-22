@@ -12,21 +12,17 @@ function isMessageRelevant(message, room) {
 		return; 	//do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
 	}
 
-	let knowledgeEnabled = false;
-	RocketChat.settings.get('Assistify_AI_Enabled', function(key, value) {
-		knowledgeEnabled = value;
-	});
+	const knowledgeEnabled = RocketChat.settings.get('Assistify_AI_Enabled');
 
 	if (!knowledgeEnabled) {
 		return false;
 	}
 
-	//we only want to forward messages from livechat-rooms - requests are implemented in the help-request-package
 	if (!room) {
 		room = RocketChat.models.Rooms.findOneById(message.rid);
 	}
 
-	return getKnowledgeAdapter();
+	return !!getKnowledgeAdapter();
 }
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {

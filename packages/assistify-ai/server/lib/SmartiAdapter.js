@@ -1,5 +1,5 @@
-/* globals SystemLogger, RocketChat */
-
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 import { SmartiProxy, verbs } from '../SmartiProxy';
 
 /**
@@ -151,7 +151,7 @@ export class SmartiAdapter {
 	}
 
 	/**
-	 * Returns the cached conversationId from the analyzed conversations cache (LivechatExternalMessage).
+	 * Returns the cached conversationId from the analyzed conversations cache (model AssistifySmarti).
 	 * If the conversation is not cached it will be retrieved from Smarti's legacy/rocket.chat service.
 	 * Finally the mapping cache (roomID <-> smartiResult) is updated.
 	 *
@@ -192,7 +192,7 @@ export class SmartiAdapter {
 	static analysisCompleted(roomId, conversationId, analysisResult) {
 
 		if (roomId === null) {
-			const conversationCacheEntry = RocketChat.models.LivechatExternalMessage.findOneByConversationId(conversationId);
+			const conversationCacheEntry = RocketChat.models.AssistifySmarti.findOneByConversationId(conversationId);
 			if (conversationCacheEntry && conversationCacheEntry.rid) {
 				roomId = conversationCacheEntry.rid;
 			} else {
@@ -340,13 +340,21 @@ export class SmartiAdapter {
 
 		// create the conversation "header/metadata"
 		const supportArea = SmartiAdapter._getSupportArea(room);
+		let userId = '';
+
+		// we need a small decision tree for the owner of a room. There even are channels without owner (GENERAL)!
+		if (room.u) { //normal rooms
+			userId = room.u._id;
+		} else if (room.v) { // livechat rooms
+			userId = room.v._id;
+		}
 		const conversationBody = {
 			'meta': {
 				'support_area': [supportArea],
 				'channel_id': [room._id]
 			},
 			'user': {
-				'id': room.u ? room.u._id : room.v._id
+				'id': userId
 			},
 			'messages': [],
 			'context': {
@@ -395,19 +403,15 @@ export class SmartiAdapter {
 	 * @param {object} room - the room to get the support area for
 	 */
 	static _getSupportArea(room) {
-		const helpRequest = RocketChat.models.Rooms.findOne(room._id);
-		let supportArea = room.parentRoomId || room.topic || room.expertise;
+		let supportArea = room.topic || room.parentRoomId;
 		if (!supportArea) {
-			if (room.t === '') {
+			if (room.t === 'l') {
 				supportArea = 'livechat';
-			} else if (helpRequest && helpRequest.supportArea) {
-				supportArea = helpRequest.supportArea;
 			} else {
 				supportArea = room.name;
 			}
 		}
 
-		SystemLogger.debug('HelpRequest:', helpRequest);
 		SystemLogger.debug('Room:', room);
 		return supportArea;
 	}
@@ -476,7 +480,7 @@ export class SmartiAdapter {
 			SystemLogger.error(e);
 		}
 
-		RocketChat.models.LivechatExternalMessage.update(
+		RocketChat.models.AssistifySmarti.update(
 			{
 				_id: roomId
 			}, {
@@ -490,11 +494,11 @@ export class SmartiAdapter {
 	}
 
 	static _removeMapping(roomId) {
-		RocketChat.models.LivechatExternalMessage.remove({ _id: roomId });
+		RocketChat.models.AssistifySmarti.remove({ _id: roomId });
 	}
 
 	static _clearMapping() {
-		RocketChat.models.LivechatExternalMessage.clear();
+		RocketChat.models.AssistifySmarti.clear();
 	}
 
 	static _smartiAvailable() {

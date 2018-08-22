@@ -23,6 +23,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:ui-master'); //for the loading animation
 	api.use('chatpal:search'); //for the loading animation
 
+	// common components for client and server
+	api.addFiles('models/AssistifySmarti.js', ['client', 'server']);
+
 	//Server business logic
 	addDirectory(api, 'server/lib', 'server');
 	addDirectory(api, 'server/hooks', 'server');

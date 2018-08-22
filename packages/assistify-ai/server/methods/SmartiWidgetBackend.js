@@ -1,5 +1,5 @@
-/* globals SystemLogger, RocketChat */
-
+import {RocketChat} from 'meteor/rocketchat:lib';
+import {SystemLogger} from 'meteor/rocketchat:logger';
 import {SmartiProxy, verbs} from '../SmartiProxy';
 import {SmartiAdapter} from '../lib/SmartiAdapter';
 
@@ -77,9 +77,10 @@ Meteor.methods({
 
 		const _getAclQuery = function() {
 			const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}).fetch().map(room => room.rid);
-			const publicChannels = RocketChat.models.Rooms.find({t: 'c'}).fetch().map(room => room._id);
+			const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}).fetch().map(room => room._id) : [];
+			const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}).fetch().map(room => room._id) : [];
 
-			const filterCriteria = `${ subscribedRooms.concat(publicChannels).join(' OR ') }`;
+			const filterCriteria = `${ subscribedRooms.concat(publicChannels).concat(livechats).join(' OR ') }`;
 			return filterCriteria
 				? `&fq=meta_channel_id:(${ filterCriteria })`
 				: '&fq=meta_channel_id:""'; //fallback: if the user's not authorized to view any room, filter for "nothing"
