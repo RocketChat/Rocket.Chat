@@ -43,14 +43,16 @@
 					</div>
 					<div class="rc-apps-container">
 						<div class="rc-apps-details__content">
-							<div class="rc-apps-details__row rc-apps-details__block">
-								<h2> Categories </h2>
-								<div class="rc-apps-details__row">
-									{{#each category in categories}}
-										<span class="rc-apps-category">{{ category }}</span>
-									{{/each}}
+							{{#if categories}}
+								<div class="rc-apps-details__row rc-apps-details__block">
+									<h2> Categories </h2>
+									<div class="rc-apps-details__row">
+										{{#each category in categories}}
+											<span class="rc-apps-category">{{ category }}</span>
+										{{/each}}
+									</div>
 								</div>
-							</div>
+							{{/if}}
 							<div class="rc-apps-details__row rc-apps-details__block">
 								<h2> Contact </h2>
 								<div class="rc-apps-details__row">

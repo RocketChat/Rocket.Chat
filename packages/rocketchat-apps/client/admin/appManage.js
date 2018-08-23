@@ -14,6 +14,9 @@ function getApps(instance) {
 	]).then(([[remoteApp], [localApp]]) => {
 		if (localApp) {
 			localApp.installed = true;
+			if (remoteApp) {
+				localApp.categories = remoteApp.categories;
+			}
 		}
 
 		instance.app.set(localApp || remoteApp);
