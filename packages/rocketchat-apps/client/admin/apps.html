@@ -35,7 +35,11 @@
 							<tr class="rc-table-tr manage" data-name="{{latest.name}}">
 								<td>
 									<div class="rc-table-wrapper">
-										<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+										{{#if latest.iconFileData}}
+											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+										{{else}}
+											<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
+										{{/if}}
 										<div class="rc-table-info">
 											<span class="rc-table-title">
 												{{latest.name}}
