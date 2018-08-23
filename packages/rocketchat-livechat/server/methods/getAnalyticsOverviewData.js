@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 Meteor.methods({
 	'livechat:getAnalyticsOverviewData'(options) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -13,19 +11,6 @@ Meteor.methods({
 			return;
 		}
 
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
-
-		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.log('livechat:getAnalyticsOverviewData => Invalid dates');
-			return;
-		}
-
-		if (!RocketChat.Livechat.Analytics.OverviewData[options.analyticsOptions.name]) {
-			console.log(`Method RocketChat.Livechat.Analytics.OverviewData.${ options.analyticsOptions.name } does NOT exist`);
-			return;
-		}
-
-		return RocketChat.Livechat.Analytics.OverviewData[options.analyticsOptions.name](from, to);
+		return RocketChat.Livechat.Analytics.getAnalyticsOverviewData(options);
 	},
 });

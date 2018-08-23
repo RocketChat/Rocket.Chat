@@ -1,6 +1,115 @@
 import moment from 'moment';
 
+/**
+ * return readable time format from seconds
+ * @param  {Double} sec seconds
+ * @return {String}     Readable string format
+ */
+const secondsToHHMMSS = (sec) => {
+	sec = parseFloat(sec);
+
+	let hours = Math.floor(sec / 3600);
+	let minutes = Math.floor((sec - (hours * 3600)) / 60);
+	let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
+
+	if (hours < 10) { hours = `0${ hours }`; }
+	if (minutes < 10) { minutes = `0${ minutes }`; }
+	if (seconds < 10) { seconds = `0${ seconds }`; }
+
+	if (hours > 0) {
+		return `${ hours }:${ minutes }:${ seconds }`;
+	}
+	if (minutes > 0) {
+		return `${ minutes }:${ seconds }`;
+	}
+	return sec;
+};
+
 export const Analytics = {
+	getAgentOverviewData(options) {
+		const from = moment(options.daterange.from);
+		const to = moment(options.daterange.to);
+
+		if (!(moment(from).isValid() && moment(to).isValid())) {
+			console.log('livechat:getAgentOverviewData => Invalid dates');
+			return;
+		}
+
+		if (!this.AgentOverviewData[options.chartOptions.name]) {
+			console.log(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ options.chartOptions.name } does NOT exist`);
+			return;
+		}
+
+		return this.AgentOverviewData[options.chartOptions.name](from, to);
+	},
+
+	getAnalyticsChartData(options) {
+		// Check if function exists, prevent server error in case property altered
+		if (!this.ChartData[options.chartOptions.name]) {
+			console.log(`Method RocketChat.Livechat.Analytics.ChartData.${ options.chartOptions.name } does NOT exist`);
+			return;
+		}
+
+		const from = moment(options.daterange.from);
+		const to = moment(options.daterange.to);
+
+		if (!(moment(from).isValid() && moment(to).isValid())) {
+			console.log('livechat:getAnalyticsChartData => Invalid dates');
+			return;
+		}
+
+
+		const data = {
+			chartLabel: options.chartOptions.name,
+			dataLabels: [],
+			dataPoints: [],
+		};
+
+		if (from.diff(to) === 0) {	// data for single day
+			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'hours')) {
+				const hour = m.format('H');
+				data.dataLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
+
+				const date = {
+					gte: m,
+					lt: moment(m).add(1, 'hours'),
+				};
+
+				data.dataPoints.push(this.ChartData[options.chartOptions.name](date));
+			}
+		} else {
+			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+				data.dataLabels.push(m.format('M/D'));
+
+				const date = {
+					gte: m,
+					lt: moment(m).add(1, 'days'),
+				};
+
+				data.dataPoints.push(this.ChartData[options.chartOptions.name](date));
+			}
+		}
+
+		return data;
+	},
+
+	getAnalyticsOverviewData(options) {
+		const from = moment(options.daterange.from);
+		const to = moment(options.daterange.to);
+
+		if (!(moment(from).isValid() && moment(to).isValid())) {
+			console.log('livechat:getAnalyticsOverviewData => Invalid dates');
+			return;
+		}
+
+		if (!this.OverviewData[options.analyticsOptions.name]) {
+			console.log(`Method RocketChat.Livechat.Analytics.OverviewData.${ options.analyticsOptions.name } does NOT exist`);
+			return;
+		}
+
+		return this.OverviewData[options.analyticsOptions.name](from, to);
+	},
+
 	ChartData: {
 		/**
 		 *
@@ -144,29 +253,6 @@ export const Analytics = {
 		},
 
 		/**
-		 * return readable time format from seconds
-		 * @param  {Double} sec seconds
-		 * @return {String}     Readable string format
-		 */
-		secondsToHHMMSS(sec) {
-			let hours = Math.floor(sec / 3600);
-			let minutes = Math.floor((sec - (hours * 3600)) / 60);
-			let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
-
-			if (hours < 10) { hours = `0${ hours }`; }
-			if (minutes < 10) { minutes = `0${ minutes }`; }
-			if (seconds < 10) { seconds = `0${ seconds }`; }
-
-			if (hours > 0) {
-				return `${ hours }:${ minutes }:${ seconds }`;
-			}
-			if (minutes > 0) {
-				return `${ minutes }:${ seconds }`;
-			}
-			return sec;
-		},
-
-		/**
 		 *
 		 * @param {Date} from
 		 * @param {Date} to
@@ -287,13 +373,13 @@ export const Analytics = {
 
 			const data = [{
 				title: 'Avg_response_time',
-				value: this.secondsToHHMMSS(avgResponseTime.toFixed(2)),
+				value: secondsToHHMMSS(avgResponseTime.toFixed(2)),
 			}, {
 				title: 'Avg_first_response_time',
-				value: this.secondsToHHMMSS(firstResponseTime.toFixed(2)),
+				value: secondsToHHMMSS(firstResponseTime.toFixed(2)),
 			}, {
 				title: 'Avg_reaction_time',
-				value: this.secondsToHHMMSS(avgReactionTime.toFixed(2)),
+				value: secondsToHHMMSS(avgReactionTime.toFixed(2)),
 			}];
 
 			return data;
@@ -324,31 +410,6 @@ export const Analytics = {
 				}
 				return 0;
 			});
-		},
-
-		/**
-		 * return readable time format from seconds
-		 * @param  {Double} sec seconds
-		 * @return {String}     Readable string format
-		 */
-		secondsToHHMMSS(sec) {
-			sec = parseFloat(sec);
-
-			let hours = Math.floor(sec / 3600);
-			let minutes = Math.floor((sec - (hours * 3600)) / 60);
-			let seconds = Math.round(sec - (hours * 3600) - (minutes * 60));
-
-			if (hours < 10) { hours = `0${ hours }`; }
-			if (minutes < 10) { minutes = `0${ minutes }`; }
-			if (seconds < 10) { seconds = `0${ seconds }`; }
-
-			if (hours > 0) {
-				return `${ hours }:${ minutes }:${ seconds }`;
-			}
-			if (minutes > 0) {
-				return `${ minutes }:${ seconds }`;
-			}
-			return sec;
 		},
 
 		/**
@@ -456,7 +517,7 @@ export const Analytics = {
 			this.sortByValue(data.data, true);		// reverse sort array
 
 			data.data.forEach((obj) => {
-				obj.value = this.secondsToHHMMSS(obj.value);
+				obj.value = secondsToHHMMSS(obj.value);
 			});
 
 			return data;
@@ -560,7 +621,7 @@ export const Analytics = {
 			this.sortByValue(data.data, false);		// sort array
 
 			data.data.forEach((obj) => {
-				obj.value = this.secondsToHHMMSS(obj.value);
+				obj.value = secondsToHHMMSS(obj.value);
 			});
 
 			return data;
@@ -612,7 +673,7 @@ export const Analytics = {
 			this.sortByValue(data.data, false);		// sort array
 
 			data.data.forEach((obj) => {
-				obj.value = this.secondsToHHMMSS(obj.value);
+				obj.value = secondsToHHMMSS(obj.value);
 			});
 
 			return data;
@@ -672,7 +733,7 @@ export const Analytics = {
 			this.sortByValue(data.data, false);		// sort array
 
 			data.data.forEach((obj) => {
-				obj.value = this.secondsToHHMMSS(obj.value);
+				obj.value = secondsToHHMMSS(obj.value);
 			});
 
 			return data;
@@ -732,7 +793,7 @@ export const Analytics = {
 			this.sortByValue(data.data, false);		// sort array
 
 			data.data.forEach((obj) => {
-				obj.value = this.secondsToHHMMSS(obj.value);
+				obj.value = secondsToHHMMSS(obj.value);
 			});
 
 			return data;
