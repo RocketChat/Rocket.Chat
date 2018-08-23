@@ -3,11 +3,27 @@ import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
 
-const isAppInstalled = (app, apps = []) => {
-	const installedIds = apps.map((app) => app.id);
+const HOST = 'https://marketplace.rocket.chat';
 
-	return installedIds.includes(app.id);
-};
+function getApps(instance) {
+	const id = instance.id.get();
+
+	return Promise.all([
+		fetch(`${ HOST }/v1/apps/${ id }`).then((data) => data.json()),
+		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
+	]).then(([[remoteApp], [localApp]]) => {
+		if (localApp) {
+			localApp.installed = true;
+		}
+
+		instance.app.set(localApp || remoteApp);
+
+		instance.ready.set(true);
+	}).catch((e) => {
+		instance.hasError.set(true);
+		instance.theError.set(e.message);
+	});
+}
 
 Template.appManage.onCreated(function() {
 	const instance = this;
@@ -34,23 +50,7 @@ Template.appManage.onCreated(function() {
 		instance.settings.set(settings);
 	}
 
-	Promise.all([
-		fetch(`https://marketplace.rocket.chat/v1/apps/${ id }`).then((data) => data.json()),
-		RocketChat.API.get('apps/'),
-	]).then((results) => {
-		const appVersions = (results[0] || []);
-		const appsList = results[1].apps;
-
-		instance.app.set(appVersions[0]);
-		instance.appsList.set(appsList);
-
-		// _morphSettings(results[1].settings);
-
-		this.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+	getApps(instance);
 
 	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
 		if (appId !== id) {
@@ -156,13 +156,13 @@ Template.appManage.helpers({
 	isInstalled() {
 		const instance = Template.instance();
 
-		return isAppInstalled(instance.app.get(), instance.appsList.get());
+		return instance.app.get().installed === true;
 	},
 	app() {
 		return Template.instance().app.get();
 	},
 	categories() {
-		return ['Communication', 'Productivity']; // Template.instance().app.get('category').split(',');
+		return Template.instance().app.get().categories;
 	},
 	settings() {
 		return Object.values(Template.instance().settings.get());
@@ -179,6 +179,27 @@ Template.appManage.helpers({
 	},
 });
 
+function setActivate(actiavate, e, t) {
+	t.processingEnabled.set(true);
+
+	const el = $(e.currentTarget);
+	el.prop('disabled', true);
+
+	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
+	RocketChat.API.post(`apps/${ t.id.get() }/status`, { status }).then((result) => {
+		const info = t.app.get();
+		info.status = result.status;
+		t.app.set(info);
+	}).catch(() => {
+		t.processingEnabled.set(false);
+		// el.prop('checked', !el.prop('checked'));
+		// TODO alert
+	}).then(() => {
+		t.processingEnabled.set(false);
+		el.prop('disabled', false);
+	});
+}
+
 Template.appManage.events({
 	'click .expand': (e) => {
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
@@ -190,28 +211,17 @@ Template.appManage.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
+
 	'click .js-cancel'() {
 		FlowRouter.go('/admin/apps');
 	},
-	'change #enabled': (e, t) => {
-		t.processingEnabled.set(true);
-		$('#enabled').prop('disabled', true);
 
-		const status = $('#enabled').prop('checked') ? 'manually_enabled' : 'manually_disabled';
-		RocketChat.API.post(`apps/${ t.id.get() }/status`, { status }).then((result) => {
-			const info = t.app.get();
-			info.status = result.status;
-			t.app.set(info);
+	'click .js-activate'(e, t) {
+		setActivate(true, e, t);
+	},
 
-			if (info.status.indexOf('disabled') !== -1) {
-				$('#enabled').prop('checked', false);
-			}
-		}).catch(() => {
-			$('#enabled').prop('checked', !$('#enabled').prop('checked'));
-		}).then(() => {
-			t.processingEnabled.set(false);
-			$('#enabled').prop('disabled', false);
-		});
+	'click .js-deactivate'(e, t) {
+		setActivate(false, e, t);
 	},
 
 	'click .js-uninstall': async(e, t) => {
@@ -224,6 +234,21 @@ Template.appManage.events({
 		} finally {
 			t.ready.set(true);
 		}
+	},
+
+	'click .js-install': async(e, t) => {
+		const el = $(e.currentTarget);
+		el.prop('disabled', true);
+
+		const url = `${ HOST }/v1/apps/${ t.id.get() }/download`;
+
+		RocketChat.API.post('apps/', { url }).then(() => {
+			getApps(t).then(() => el.prop('disabled', false));
+		});
+
+		// play animation
+		// TODO this icon and animation are not working
+		$(e.currentTarget).find('.rc-icon').addClass('play');
 	},
 
 	'click .js-update': (e, t) => {

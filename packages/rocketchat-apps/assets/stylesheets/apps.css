@@ -1,12 +1,100 @@
 .rc-apps-marketplace {
+	* {
+		line-height: 20px;
+		font-family: SFProText-Regular;
+		font-size: 14px;
+		letter-spacing: 0;
+	}
+
+	a {
+		color: #1D74F5 !important;
+		font-family: SFProText-Medium;
+		font-weight: 500;
+	}
+
+	h1 {
+		color: #54585E;
+		font-size: 22px;
+		font-family: SFProText-Regular;
+		font-weight: normal;
+		letter-spacing: 0;
+		line-height: 28px;
+	}
+
+	h2 {
+		color: #2F343D;
+		font-size: 16px;
+		font-family: SFProText-Medium;
+		font-weight: 500;
+		letter-spacing: 0;
+		line-height: 24px;
+		margin-top: 10px;
+	}
+
+	h3 {
+		color: #9EA2A8;
+		font-size: 14px;
+		font-family: SFProText-Medium;
+		font-weight: 500;
+		text-align: left;
+		letter-spacing: 0;
+		line-height: 20px;
+	}
+
+	.rc-apps-details__photo {
+		background-color: #f7f7f7;
+		height: 96px;
+		width: 96px;
+		margin-right: 21px;
+	}
+
+	.rc-apps-details__content {
+		padding: 0px;
+	}
+
+	.rc-apps-details {
+		padding: 0px;
+	}
+
+	.rc-apps-container {
+		padding-bottom: 15px;
+	}
+
+	.rc-apps-container__header {
+		border-bottom: 1.5px solid #EFEFEF;
+	}
+
+	.js-install {
+		margin-top: 6px;
+	}
+
 	.app-author-name {
 		width: auto !important;
 		display: inline-block !important;
 	}
 
+	.rc-apps-details__col {
+		display: inline-block;
+		margin-right: 8px;
+	}
+
 	.rc-header .rc-button {
 		margin: 0;
 		min-height: 0;
+	}
+
+	.rc-apps-category {
+		margin-right: 8px;
+		padding: 8px;
+		background: #F3F4F5;
+		border-radius: 2px 2px 2px 2px;
+		color: #9DA2A9;
+		font-size: 12px;
+		font-family: SFProText-Medium;
+		font-weight: 500;
+		text-align: left;
+		text-transform: uppercase;
+		letter-spacing: -0.17px;
 	}
 
 	.app-enable-loading .loading-animation {

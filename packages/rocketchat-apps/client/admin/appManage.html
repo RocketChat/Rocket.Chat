@@ -4,42 +4,38 @@
 
 		{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
 		<div class="rc-header__block rc-header__block-action">
-			<div class="rc-switch rc-switch--blue">
-				<label class="rc-switch__label">
-					<input type="checkbox" class="rc-switch__input js-input-check" id="enabled" name="enabledToggle" checked="{{isEnabled}}">
-					<span class="rc-switch__button">
-						<span class="rc-switch__button-inside"></span>
-					</span>
-					<span class="rc-switch__text">
-						{{_ "Activate"}}
-					</span>
-				</label>
-			</div>
-
+			<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
 		</div>
 		{{/header}}
-		<section class="page-settings page-settings--new flex-tab-main-content">
+		<section class="page-settings page-settings--new flex-tab-main-content rc-apps-marketplace">
 			{{#requiresPermission 'manage-apps'}}
 				{{#if isReady}}
 					<div class="rc-apps-details">
 						<div class="rc-apps-container rc-apps-container__header">
+							{{#if iconFileData}}
 							<div class="rc-apps-details__photo" style="background-image:url(data:image/png;base64,{{iconFileData}})"></div>
+							{{else}}
+								<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
+							{{/if}}
 							<div class="rc-apps-details__content">
 								<div class="rc-apps-details__row">
-									<div class="rc-apps-details__name">{{name}}</div>
+									<h1>{{name}}</h1>
 								</div>
-								<div class="rc-apps-details__row">
 									{{#if author.name}}
 									<div class="rc-apps-details__version">
-										by {{author.name}} | Version {{version}}
+									<strong>by {{author.name}}</strong> | Version {{version}}
 									</div>
 									{{/if}}
-								</div>
 								<div class="rc-apps-details__row">
 									{{#if isInstalled}}
-										<button class="rc-button rc-button- -cancel js-uninstall">{{_ "Uninstall" }}</button>
+										<button class="rc-button rc-button--nude js-uninstall">{{> icon icon="trash"}} {{_ "Delete" }}</button>
+										{{#if isEnabled}}
+											<button class="rc-button rc-button--nude js-deactivate">{{> icon icon="ban"}} {{_ "Deactivate" }}</button>
+										{{else}}
+											<button class="rc-button rc-button--nude js-activate">{{> icon icon="check"}} {{_ "Activate" }}</button>
+										{{/if}}
 									{{else}}
-										<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+										<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="marketplace-installer"}} {{_ "Install"}}</button>
 									{{/if}}
 								</div>
 							</div>
@@ -51,31 +47,40 @@
 								<h2> Categories </h2>
 								<div class="rc-apps-details__row">
 									{{#each category in categories}}
-										<a href="#" class="rc-button rc-button--secondary">{{ category }}</a>
+										<span class="rc-apps-category">{{ category }}</span>
 									{{/each}}
 								</div>
 							</div>
 							<div class="rc-apps-details__row rc-apps-details__block">
 								<h2> Contact </h2>
 								<div class="rc-apps-details__row">
+									<div class="rc-apps-details__col">
 									{{#if author.homepage}}
-										<a href="{{author.homepage}}">Author Site</a>
+											<h3>Author Site</h3>
+											<a href="{{author.homepage}}">{{author.homepage}}</a>
 									{{/if}}
+									</div>
+									<div class="rc-apps-details__col">
 									{{#if author.support}}
-										<a href="{{author.support}}">Support</a>
+											<h3>Support</h3>
+											<a href="{{author.support}}">{{author.support}}</a>
 									{{/if}}
 								</div>
+							</div>
 							</div>
 							<div class="rc-apps-details__row">
 								<h2> Details </h2>
 							</div>
-							<div class="rc-apps-details__row">
+							{{#if summary}}
+								<div>
 								{{ summary }}
 							</div>
-							<div class="rc-apps-details__row rc-apps-details__description">
+							{{/if}}
+							{{#if description}}
+								<div class="rc-apps-details__description">
 								<p>{{ description }}</p>
-
 							</div>
+							{{/if}}
 						</div>
 					</div>
 					<div class="rc-apps-container rc-apps-settings">
