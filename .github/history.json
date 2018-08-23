@@ -17804,6 +17804,21 @@
           ]
         }
       ]
+    },
+    "0.68.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11830",
+          "title": "[FIX] Livechat open room method",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }
