@@ -75,6 +75,8 @@ Template.appManage.onCreated(function() {
 		});
 	};
 
+	instance.onSettingUpdated({ appId: id });
+
 	window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
 	window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
@@ -114,10 +116,10 @@ Template.appManage.helpers({
 	getColorVariable(color) {
 		return color.replace(/theme-color-/, '@');
 	},
-	disabled() {
+	dirty() {
 		const t = Template.instance();
 		const settings = t.settings.get();
-		return !Object.keys(settings).some((k) => settings[k].hasChanged);
+		return Object.keys(settings).some((k) => settings[k].hasChanged);
 	},
 	isReady() {
 		if (Template.instance().ready) {
@@ -260,6 +262,10 @@ Template.appManage.events({
 
 	'click .js-view-logs': (e, t) => {
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
+	},
+
+	'click .js-cancel-editing': async(e, t) => {
+		t.onSettingUpdated({ appId: t.id.get() });
 	},
 
 	'click .js-save': async(e, t) => {
