@@ -7,7 +7,9 @@ RocketChat.callbacks.add('enter-room', function(subscription) {
 		return; //looks awkward on mobile if panel is opened by default
 	}
 
-	if (subscription) { //no subscription: if a user joins a room without being subscribed to it, e. g. in live chat
-		$('.flex-tab-container:not(.opened) .flex-tab-bar .tab-button:not(.hidden) .tab-button-icon--lightbulb').parent().click(); //there is no ID of the tabbar's Button which we could use so far
+	if (subscription && subscription.t === 'l') { //no subscription: if a user joins a room without being subscribed to it
+		if ($('.rc-header .messages-container-wrapper .contextual-bar').length === 0) { //the tab bar is closed
+			Meteor.setTimeout(()=>$('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click(), 1000);
+		}
 	}
 });
