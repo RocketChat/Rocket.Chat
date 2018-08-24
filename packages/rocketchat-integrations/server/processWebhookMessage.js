@@ -21,19 +21,19 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 			default:
 				channelValue = channelType + channelValue;
 
-				//Try to find the room by id or name if they didn't include the prefix.
+				// Try to find the room by id or name if they didn't include the prefix.
 				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, joinChannel: true, errorOnEmpty: false });
 				if (room) {
 					break;
 				}
 
-				//We didn't get a room, let's try finding direct messages
+				// We didn't get a room, let's try finding direct messages
 				room = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: channelValue, type: 'd', tryDirectByUserIdOnly: true });
 				if (room) {
 					break;
 				}
 
-				//No room, so throw an error
+				// No room, so throw an error
 				throw new Meteor.Error('invalid-channel');
 		}
 
@@ -53,7 +53,7 @@ this.processWebhookMessage = function(messageObj, user, defaultValues = { channe
 			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
-			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false
+			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {

@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:autolinker',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate links on messages',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

@@ -1,11 +1,11 @@
-/*global OAuth2Server */
+/* global OAuth2Server */
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',
 	refreshTokensCollectionName: 'rocketchat_oauth_refresh_tokens',
 	authCodesCollectionName: 'rocketchat_oauth_auth_codes',
 	clientsCollection: RocketChat.models.OAuthApps.model,
-	debug: true
+	debug: true,
 });
 
 WebApp.connectHandlers.use(oauth2server.app);
@@ -16,7 +16,7 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 	}
 	const accessToken = req.headers.authorization.replace('Bearer ', '');
 	const token = oauth2server.oauth.model.AccessTokens.findOne({
-		accessToken
+		accessToken,
 	});
 	if (token == null) {
 		return res.sendStatus(401).send('Invalid Token');
@@ -34,7 +34,7 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 		birthdate: '',
 		preffered_username: user.username,
 		updated_at: user._updatedAt,
-		picture: `${ Meteor.absoluteUrl() }avatar/${ user.username }`
+		picture: `${ Meteor.absoluteUrl() }avatar/${ user.username }`,
 	});
 });
 
@@ -44,16 +44,16 @@ Meteor.publish('oauthClient', function(clientId) {
 	}
 	return RocketChat.models.OAuthApps.find({
 		clientId,
-		active: true
+		active: true,
 	}, {
 		fields: {
-			name: 1
-		}
+			name: 1,
+		},
 	});
 });
 
 RocketChat.API.v1.addAuthMethod(function() {
-	let headerToken = this.request.headers['authorization'];
+	let headerToken = this.request.headers.authorization;
 	const getToken = this.request.query.access_token;
 	if (headerToken != null) {
 		const matches = headerToken.match(/Bearer\s(\S+)/);

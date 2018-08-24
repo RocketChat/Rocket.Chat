@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:importer',
 	version: '0.0.1',
 	summary: 'RocketChat importer library',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,13 +10,13 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'check',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('rocketchat:logger', 'server');
 	api.use('templating', 'client');
 
-	//Import Framework
+	// Import Framework
 	api.addFiles('server/classes/ImporterBase.js', 'server');
 	api.addFiles('server/classes/ImporterProgress.js', 'server');
 	api.addFiles('server/classes/ImporterSelection.js', 'server');
@@ -28,11 +28,11 @@ Package.onUse(function(api) {
 	api.addFiles('lib/ImporterProgressStep.js');
 	api.addFiles('lib/Importers.js');
 
-	//Database models
+	// Database models
 	api.addFiles('server/models/Imports.js', 'server');
 	api.addFiles('server/models/RawImports.js', 'server');
 
-	//Server methods
+	// Server methods
 	api.addFiles('server/methods/getImportProgress.js', 'server');
 	api.addFiles('server/methods/getSelectionData.js', 'server');
 	api.addFiles('server/methods/prepareImport.js', 'server');
@@ -40,7 +40,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/setupImporter.js', 'server');
 	api.addFiles('server/methods/startImport.js', 'server');
 
-	//Client
+	// Client
 	api.addFiles('client/admin/adminImport.html', 'client');
 	api.addFiles('client/admin/adminImport.js', 'client');
 	api.addFiles('client/admin/adminImportPrepare.html', 'client');
@@ -48,7 +48,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/admin/adminImportProgress.html', 'client');
 	api.addFiles('client/admin/adminImportProgress.js', 'client');
 
-	//Imports database records cleanup, mark all as not valid.
+	// Imports database records cleanup, mark all as not valid.
 	api.addFiles('server/startup/setImportsToInvalid.js', 'server');
 
 	api.mainModule('client/index.js', 'client');

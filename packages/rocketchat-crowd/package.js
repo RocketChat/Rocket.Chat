@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:crowd',
 	version: '1.0.0',
 	summary: 'Accounts login handler for crowd using atlassian-crowd-client from npm',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

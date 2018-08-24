@@ -1,6 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 
-import {slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser} from './sync';
+import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 
 const logger = new Logger('LDAPHandler', {});
@@ -8,9 +8,9 @@ const logger = new Logger('LDAPHandler', {});
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
 		if (username.indexOf('@') === -1) {
-			username = {username};
+			username = { username };
 		} else {
-			username = {email: username};
+			username = { email: username };
 		}
 	}
 
@@ -20,8 +20,8 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 		user: username,
 		password: {
 			digest: SHA256(password),
-			algorithm: 'sha-256'
-		}
+			algorithm: 'sha-256',
+		},
 	};
 
 	return Accounts._runLoginHandlers(bind, loginRequest);
@@ -52,7 +52,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			if (ldap.isUserInGroup (loginRequest.username)) {
+			if (ldap.isUserInGroup (loginRequest.username, users[0].dn)) {
 				ldapUser = users[0];
 			} else {
 				throw new Error('User not in a valid group');
@@ -80,7 +80,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	if (Unique_Identifier_Field) {
 		userQuery = {
-			'services.ldap.id': Unique_Identifier_Field.value
+			'services.ldap.id': Unique_Identifier_Field.value,
 		};
 
 		logger.info('Querying user');
@@ -99,7 +99,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	if (!user) {
 		userQuery = {
-			username
+			username,
 		};
 
 		logger.debug('userQuery', userQuery);
@@ -120,19 +120,19 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 		Meteor.users.update(user._id, {
 			$push: {
-				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken)
-			}
+				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
+			},
 		});
 
 		syncUserData(user, ldapUser);
 
 		if (RocketChat.settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
-			Accounts.setPassword(user._id, loginRequest.ldapPass, {logout: false});
+			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
 
 		return {
 			userId: user._id,
-			token: stampedToken.token
+			token: stampedToken.token,
 		};
 	}
 

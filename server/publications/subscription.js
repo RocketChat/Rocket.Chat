@@ -30,7 +30,7 @@ const fields = {
 	disableNotifications: 1,
 	hideUnreadStatus: 1,
 	muteGroupMentions: 1,
-	ignored: 1
+	ignored: 1,
 };
 
 Meteor.methods({
@@ -51,21 +51,21 @@ Meteor.methods({
 					return record._updatedAt > updatedAt;
 				}),
 				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {
-					'u._id': Meteor.userId()
+					'u._id': Meteor.userId(),
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 
 		return records;
-	}
+	},
 });
 
-RocketChat.models.Subscriptions.on('change', ({clientAction, id, data}) => {
+RocketChat.models.Subscriptions.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
