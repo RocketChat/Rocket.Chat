@@ -10,6 +10,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		RocketChat.models.Settings.update({_id: /^Accounts_OAuth_.+/}, {$set: {_updatedAt: new Date}}, {multi: true});
-	}
+		RocketChat.models.Settings.update({ _id: /^Accounts_OAuth_.+/ }, { $set: { _updatedAt: new Date } }, { multi: true });
+	},
 });

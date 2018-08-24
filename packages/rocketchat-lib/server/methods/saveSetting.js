@@ -4,7 +4,7 @@ Meteor.methods({
 	saveSetting(_id, value, editor) {
 		if (Meteor.userId() === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
-				method: 'saveSetting'
+				method: 'saveSetting',
 			});
 		}
 
@@ -14,16 +14,15 @@ Meteor.methods({
 			)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
-				settingId: _id
 			});
 		}
 
-		//Verify the _id passed in is a string.
+		// Verify the _id passed in is a string.
 		check(_id, String);
 
 		const setting = RocketChat.models.Settings.db.findOneById(_id);
 
-		//Verify the value is what it should be
+		// Verify the value is what it should be
 		switch (setting.type) {
 			case 'roomPick':
 				check(value, Match.OneOf([Object], ''));
@@ -41,5 +40,5 @@ Meteor.methods({
 
 		RocketChat.settings.updateById(_id, value, editor);
 		return true;
-	}
+	},
 });

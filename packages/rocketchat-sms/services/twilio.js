@@ -22,8 +22,8 @@ class Twilio {
 				fromCountry: data.FromCountry,
 				fromState: data.FromState,
 				fromCity: data.FromCity,
-				fromZip: data.FromZip
-			}
+				fromZip: data.FromZip,
+			},
 		};
 
 		if (data.NumMedia) {
@@ -39,8 +39,8 @@ class Twilio {
 
 		for (let mediaIndex = 0; mediaIndex < numMedia; mediaIndex++) {
 			const media = {
-				'url': '',
-				'contentType': ''
+				url: '',
+				contentType: '',
 			};
 
 			const mediaUrl = data[`MediaUrl${ mediaIndex }`];
@@ -60,15 +60,15 @@ class Twilio {
 		client.messages.create({
 			to: toNumber,
 			from: fromNumber,
-			body: message
+			body: message,
 		});
 	}
 	response(/* message */) {
 		return {
 			headers: {
-				'Content-Type': 'text/xml'
+				'Content-Type': 'text/xml',
 			},
-			body: '<Response></Response>'
+			body: '<Response></Response>',
 		};
 	}
 	error(error) {
@@ -78,9 +78,9 @@ class Twilio {
 		}
 		return {
 			headers: {
-				'Content-Type': 'text/xml'
+				'Content-Type': 'text/xml',
 			},
-			body: `<Response>${ message }</Response>`
+			body: `<Response>${ message }</Response>`,
 		};
 	}
 }

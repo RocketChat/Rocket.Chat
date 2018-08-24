@@ -4,7 +4,7 @@
 */
 import s from 'underscore.string';
 export default class {
-	constructor({pattern, useRealName, me}) {
+	constructor({ pattern, useRealName, me }) {
 		this.pattern = pattern;
 		this.useRealName = useRealName;
 		this.me = me;
@@ -39,7 +39,7 @@ export default class {
 				return `${ prefix }<a class="mention-link mention-link-me mention-link-all">@${ username }</a>`;
 			}
 
-			const mentionObj = message.mentions && message.mentions.find(m => m.username === username);
+			const mentionObj = message.mentions && message.mentions.find((m) => m.username === username);
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
@@ -49,9 +49,9 @@ export default class {
 		});
 	}
 	replaceChannels(str, message) {
-		//since apostrophe escaped contains # we need to unescape it
+		// since apostrophe escaped contains # we need to unescape it
 		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
-			if (!message.temp && !(message.channels && message.channels.find(c => c.name === name))) {
+			if (!message.temp && !(message.channels && message.channels.find((c) => c.name === name))) {
 				return match;
 			}
 
@@ -59,10 +59,10 @@ export default class {
 		});
 	}
 	getUserMentions(str) {
-		return (str.match(this.userMentionRegex) || []).map(match => match.trim());
+		return (str.match(this.userMentionRegex) || []).map((match) => match.trim());
 	}
 	getChannelMentions(str) {
-		return (str.match(this.channelMentionRegex) || []).map(match => match.trim());
+		return (str.match(this.channelMentionRegex) || []).map((match) => match.trim());
 	}
 	parse(message) {
 		let msg = (message && message.html) || '';

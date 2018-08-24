@@ -70,7 +70,7 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:user-presence@2.1.0
+konecty:user-presence@2.2.0
 launch-screen@1.1.1
 less@2.7.12
 livedata@1.0.18
@@ -116,7 +116,6 @@ promise@0.10.2
 raix:eventemitter@0.1.3
 raix:eventstate@0.0.4
 raix:handlebar-helpers@0.2.5
-raix:push@3.3.0
 raix:ui-dropped-event@0.0.7
 random@1.1.0
 rate-limit@1.0.9
@@ -134,6 +133,7 @@ rocketchat:assets@0.0.1
 rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:autotranslate@0.0.1
+rocketchat:bigbluebutton@0.0.1
 rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
@@ -186,6 +186,7 @@ rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
+rocketchat:message-action@0.0.1
 rocketchat:message-attachments@0.0.1
 rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
@@ -199,6 +200,7 @@ rocketchat:oauth2-server-config@1.0.0
 rocketchat:oembed@0.0.1
 rocketchat:otr@0.0.1
 rocketchat:postcss@1.0.0
+rocketchat:push@3.3.1
 rocketchat:push-notifications@0.0.1
 rocketchat:reactions@0.0.1
 rocketchat:retention-policy@0.0.1

@@ -1,10 +1,10 @@
 /* globals ChatPermissions */
-import {permissionLevel} from '../../lib/rocketchat';
+import { permissionLevel } from '../../lib/rocketchat';
 
 const whereNotSetting = {
 	$where: function() {
 		return this.level !== permissionLevel.SETTING;
-	}.toString()
+	}.toString(),
 };
 
 Template.permissions.helpers({
@@ -13,26 +13,26 @@ Template.permissions.helpers({
 	},
 
 	permissions() {
-		return ChatPermissions.find(whereNotSetting, //the $where seems to have no effect - filtered as workaround after fetch()
+		return ChatPermissions.find(whereNotSetting, // the $where seems to have no effect - filtered as workaround after fetch()
 			{
 				sort: {
-					_id: 1
-				}
+					_id: 1,
+				},
 			}).fetch()
 			.filter((setting) => !setting.level);
 	},
 
 	settingPermissions() {
 		return ChatPermissions.find({
-			level: permissionLevel.SETTING
+			level: permissionLevel.SETTING,
 		},
 		{
-			sort: { //sorting seems not to be copied from the publication, we need to request it explicitly in find()
+			sort: { // sorting seems not to be copied from the publication, we need to request it explicitly in find()
 				group: 1,
-				section: 1
-			}
+				section: 1,
+			},
 		}).fetch()
-			.filter((setting) => setting.group); //group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
+			.filter((setting) => setting.group); // group permissions are assigned implicitly,  we can hide them. $exists: {group:false} not supported by Minimongo
 	},
 
 	hasPermission() {
@@ -45,13 +45,13 @@ Template.permissions.helpers({
 
 	settingPermissionExpanded() {
 		return Template.instance().settingPermissionsExpanded.get();
-	}
+	},
 });
 
 Template.permissions.events({
 	'click .js-toggle-setting-permissions'(event, instance) {
 		instance.settingPermissionsExpanded.set(!instance.settingPermissionsExpanded.get());
-	}
+	},
 });
 
 Template.permissions.onCreated(function() {
@@ -90,7 +90,11 @@ Template.permissionsTable.helpers({
 
 	permissionDescription(permission) {
 		return t(`${ permission._id }_description`);
-	}
+	},
+
+	hasPermission() {
+		return RocketChat.authz.hasAllPermission('access-permissions');
+	},
 });
 
 Template.permissionsTable.events({
@@ -104,14 +108,14 @@ Template.permissionsTable.events({
 		} else {
 			return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 		}
-	}
+	},
 });
 
 Template.permissionsTable.onCreated(function() {
 	this.permissionByRole = {};
 	this.actions = {
 		added: {},
-		removed: {}
+		removed: {},
 	};
 
 	Tracker.autorun(() => {
@@ -124,14 +128,14 @@ Template.permissionsTable.onCreated(function() {
 			},
 			removed: (id) => {
 				delete this.permissionByRole[id];
-			}
+			},
 		};
 		if (this.data.collection === 'Chat') {
 			ChatPermissions.find(whereNotSetting).observeChanges(observer);
 		}
 
 		if (this.data.collection === 'Setting') {
-			ChatPermissions.find({level: permissionLevel.SETTING}).observeChanges(observer);
+			ChatPermissions.find({ level: permissionLevel.SETTING }).observeChanges(observer);
 		}
 	});
 });

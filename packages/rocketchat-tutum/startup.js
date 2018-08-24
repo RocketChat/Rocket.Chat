@@ -10,7 +10,7 @@ if (process.env.DOCKERCLOUD_REDIS_HOST != null) {
 
 	const client = redis.createClient(process.env.DOCKERCLOUD_REDIS_HOST);
 
-	client.on('error', err => console.log('Redis error ->', err));
+	client.on('error', (err) => console.log('Redis error ->', err));
 
 	client.del(`frontend:${ process.env.DOCKERCLOUD_CLIENT_HOST }`);
 	client.rpush(`frontend:${ process.env.DOCKERCLOUD_CLIENT_HOST }`, process.env.DOCKERCLOUD_CLIENT_NAME);

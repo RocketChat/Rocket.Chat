@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import {PrivateSettingsCachedCollection} from './SettingsCachedCollection';
+import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
 
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
@@ -27,7 +27,7 @@ Template.adminFlex.helpers({
 	groups() {
 		const filter = Template.instance().settingsFilter.get();
 		const query = {
-			type: 'group'
+			type: 'group',
 		};
 		if (filter) {
 			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
@@ -41,7 +41,7 @@ Template.adminFlex.helpers({
 			groups = _.unique(groups);
 			if (groups.length > 0) {
 				query._id = {
-					$in: groups
+					$in: groups,
 				};
 			}
 		}
@@ -67,12 +67,12 @@ Template.adminFlex.helpers({
 			pathSection: section,
 			pathGroup: group,
 			darken: true,
-			isLightSidebar: true
+			isLightSidebar: true,
 		};
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
-	}
+	},
 });
 
 Template.adminFlex.events({
@@ -81,5 +81,5 @@ Template.adminFlex.events({
 	},
 	'keyup [name=settings-search]'(e, t) {
 		t.settingsFilter.set(e.target.value);
-	}
+	},
 });

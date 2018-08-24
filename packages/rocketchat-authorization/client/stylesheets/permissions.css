@@ -43,6 +43,7 @@
 
 		& .permission-name {
 			cursor: default;
+			white-space: nowrap;
 		}
 	}
 

@@ -46,5 +46,5 @@ Template.CodeMirror.helpers({
 
 	editorName() {
 		return this.name || 'code-mirror-textarea';
-	}
+	},
 });
