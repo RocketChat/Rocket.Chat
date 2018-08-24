@@ -8,8 +8,8 @@ const config = {
 	buttonColor: '#4fc134',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wechat'],
-		forOtherUsers: ['services.wechat.nickname']
-	}
+		forOtherUsers: ['services.wechat.nickname'],
+	},
 };
 
 class WeChatOAuth extends CustomOAuth {
@@ -72,13 +72,13 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 		const enabled = RocketChat.settings.get('Accounts_OAuth_WeChat');
 		if (enabled) {
 			ServiceConfiguration.configurations.upsert({
-				service: 'wechat'
+				service: 'wechat',
 			}, {
-				$set: config
+				$set: config,
 			});
 		} else {
 			ServiceConfiguration.configurations.remove({
-				service: 'wechat'
+				service: 'wechat',
 			});
 		}
 	}
