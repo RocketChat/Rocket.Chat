@@ -11,7 +11,6 @@ RocketChat.settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_WeChat_URL', '', { type: 'string', enableQuery, public: true, persistent });
 		this.add('Accounts_OAuth_WeChat_id', '', { type: 'string', enableQuery, persistent });
 		this.add('Accounts_OAuth_WeChat_secret', '', { type: 'string', enableQuery });
-		this.add('Accounts_OAuth_WeChat_callback_url', '_oauth/wechat', { type: 'relativeUrl', readonly: true, force: true, enableQuery, persistent });
 
 		this.add('Accounts_OAuth_WeChat_token_path', '/oauth/token', { type: 'string', persistent });
 		this.add('Accounts_OAuth_WeChat_token_sent_via', 'payload', { type: 'select', persistent, values: [ { key: 'header', i18nLabel: 'Header' }, { key: 'payload', i18nLabel: 'Payload' } ] });
@@ -19,9 +18,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 		this.add('Accounts_OAuth_WeChat_identity_path', '/me', { type: 'string', persistent });
 		this.add('Accounts_OAuth_WeChat_authorize_path', '/oauth/authorize', { type: 'string', persistent });
 		this.add('Accounts_OAuth_WeChat_scope', 'openid', { type: 'string', persistent });
-		this.add('Accounts_OAuth_WeChat_button_label_text', 'WeChat', { type: 'string', persistent });
-		this.add('Accounts_OAuth_WeChat_button_label_color', '#FFFFFF', { type: 'string', persistent });
-		this.add('Accounts_OAuth_WeChat_button_color', '#13679A', { type: 'string', persistent });
+
 		this.add('Accounts_OAuth_WeChat_username_field', '', { type: 'string', persistent });
 		this.add('Accounts_OAuth_WeChat_merge_users', false, { type: 'boolean', persistent });
 	});
