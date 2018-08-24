@@ -254,8 +254,6 @@ export class CustomOAuth {
 
 			if (identity) {
 				if (identity.openid && !identity.id) {
-					// quick & dirty for wechat email
-					identity.email = `${identity.openid}@wechat.app`;
 					identity.id = identity.openid;
 				}
 
