@@ -28,7 +28,9 @@
 									{{/if}}
 									<div class="rc-apps-details__row">
 										{{#if isInstalled}}
-											<!-- <button class="rc-button rc-button- -secondary js-update">{{_ "Update" }}</button> -->
+											{{#if newVersion}}
+												<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Update_to_version" version=newVersion }}</button>
+											{{/if}}
 											<button class="rc-button rc-button--nude js-uninstall">{{> icon icon="trash"}} {{_ "Delete" }}</button>
 											{{#if isEnabled}}
 												<button class="rc-button rc-button--nude js-deactivate">{{> icon icon="ban"}} {{_ "Deactivate" }}</button>
@@ -37,7 +39,7 @@
 											{{/if}}
 											<button class="rc-button rc-button--nude js-view-logs">{{> icon icon="list-alt"}} {{_ "View_Logs" }}</button>
 										{{else}}
-											<button class="rc-button rc-button--primary js-install" data-button="install" data-app="{{id}}">{{> icon icon="marketplace-installer"}} {{_ "Install"}}</button>
+											<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
 										{{/if}}
 									</div>
 								</div>

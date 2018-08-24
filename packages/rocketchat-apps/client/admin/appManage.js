@@ -16,6 +16,9 @@ function getApps(instance) {
 			localApp.installed = true;
 			if (remoteApp) {
 				localApp.categories = remoteApp.categories;
+				if (localApp.version !== remoteApp.version) {
+					localApp.newVersion = remoteApp.version;
+				}
 			}
 
 			instance.onSettingUpdated({ appId: id });
@@ -251,11 +254,19 @@ Template.appManage.events({
 	'click .js-install': async(e, t) => {
 		const el = $(e.currentTarget);
 		el.prop('disabled', true);
+		el.addClass('loading');
+
+		const app = t.app.get();
 
 		const url = `${ HOST }/v1/apps/${ t.id.get() }/download`;
 
-		RocketChat.API.post('apps/', { url }).then(() => {
-			getApps(t).then(() => el.prop('disabled', false));
+		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
+
+		RocketChat.API.post(api, { url }).then(() => {
+			getApps(t).then(() => {
+				el.prop('disabled', false);
+				el.removeClass('loading');
+			});
 		});
 
 		// play animation
