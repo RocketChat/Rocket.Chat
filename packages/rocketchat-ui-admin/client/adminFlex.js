@@ -66,7 +66,8 @@ Template.adminFlex.helpers({
 			icon,
 			pathSection: section,
 			pathGroup: group,
-			darken: true
+			darken: true,
+			isLightSidebar: true
 		};
 	},
 	embeddedVersion() {

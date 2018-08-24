@@ -29,3 +29,9 @@ Template.popupList_default.helpers({
 		};
 	}
 });
+
+Template.popupList_item_default.helpers({
+	showRealNames() {
+		return RocketChat.settings.get('UI_Use_Real_Name');
+	}
+});

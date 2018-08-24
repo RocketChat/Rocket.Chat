@@ -151,7 +151,7 @@
                 "name": "rocketchat"
             },
             "spec": {
-                "dockerImageRepository": "registry.connect.redhat.com/rocketchat",
+                "dockerImageRepository": "${ROCKETCHAT_IMAGE}",
                 "tags": [
                     {
                         "name": "latest",
@@ -208,7 +208,6 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "${NAMESPACE}",
                                 "name": "rocketchat:latest"
                             }
                         }
@@ -242,7 +241,7 @@
                         "containers": [
                             {
                                 "name": "rocketchat",
-                                "image": "registry.connect.redhat.com/rocketchat/rocketchat:latest",
+                                "image": "${ROCKETCHAT_IMAGE}:latest",
                                 "ports": [
                                     {
                                         "containerPort": 3000,
@@ -396,12 +395,6 @@
             "value": "512Mi"
         },
         {
-            "name": "NAMESPACE",
-            "displayName": "Namespace",
-            "description": "The OpenShift Namespace where the ImageStream resides.",
-            "value": "openshift"
-        },
-        {
             "name": "DATABASE_SERVICE_NAME",
             "displayName": "Database Service Name",
             "description": "The name of the OpenShift Service exposed for the database.",
@@ -428,8 +421,15 @@
             "name": "MONGODB_DATABASE",
             "displayName": "MongoDB Database Name",
             "description": "Name of the MongoDB database accessed.",
-            "value": "sampledb",
+            "value": "rocketchatdb",
             "required": true
+        },
+        {
+            "name": "ROCKETCHAT_IMAGE",
+            "displayName": "RocketChat Image",
+            "description": "The RocketChat image to use for this deployment",
+            "required": true,
+            "value": "rocketchat/rocket.chat"
         },
         {
             "name": "MONGODB_ADMIN_PASSWORD",

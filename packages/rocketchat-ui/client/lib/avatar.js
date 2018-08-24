@@ -10,7 +10,11 @@ this.getAvatarAsPng = function(username, cb) {
 		canvas.height = image.height;
 		const context = canvas.getContext('2d');
 		context.drawImage(image, 0, 0);
-		return cb(canvas.toDataURL('image/png'));
+		try {
+			return cb(canvas.toDataURL('image/png'));
+		} catch (e) {
+			return cb('');
+		}
 	};
 	return image.onerror = function() {
 		return cb('');

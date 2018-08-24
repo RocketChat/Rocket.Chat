@@ -1,5 +1,7 @@
-/* eslint-disable */
+/* eslint no-use-before-define:0 */
+/* globals Log*/
 import _ from 'underscore';
+import s from 'underscore.string';
 import moment from 'moment';
 /*
 	Adds migration capabilities. Migrations are defined like:
@@ -30,15 +32,15 @@ import moment from 'moment';
 */
 
 // since we'll be at version 0 by default, we should have a migration set for it.
-var DefaultMigration = {
+const DefaultMigration = {
 	version: 0,
-	up: function() {
+	up() {
 		// @TODO: check if collection "migrations" exist
 		// If exists, rename and rerun _migrateTo
 	}
 };
 
-Migrations = {
+const Migrations = this.Migrations = {
 	_list: [DefaultMigration],
 	options: {
 		// false disables logging
@@ -54,31 +56,31 @@ Migrations = {
 		// max number of attempts to retry unlock
 		maxAttempts: 30,
 		// migrations collection name
-		collectionName: "migrations"
-			// collectionName: "rocketchat_migrations"
+		collectionName: 'migrations'
+		// collectionName: "rocketchat_migrations"
 	},
-	config: function(opts) {
+	config(opts) {
 		this.options = _.extend({}, this.options, opts);
-	},
-}
+	}
+};
 
 Migrations._collection = new Mongo.Collection(Migrations.options.collectionName);
 
 /* Create a box around messages for displaying on a console.log */
 function makeABox(message, color = 'red') {
 	if (!_.isArray(message)) {
-		message = message.split("\n");
+		message = message.split('\n');
 	}
-	let len = _(message).reduce(function(memo, msg) {
-		return Math.max(memo, msg.length)
+	const len = _(message).reduce(function(memo, msg) {
+		return Math.max(memo, msg.length);
 	}, 0) + 4;
-	let text = message.map((msg) => {
-		return "|" [color] + s.lrpad(msg, len)[color] + "|" [color]
-	}).join("\n");
-	let topLine = "+" [color] + s.pad('', len, '-')[color] + "+" [color];
-	let separator = "|" [color] + s.pad('', len, '') + "|" [color];
-	let bottomLine = "+" [color] + s.pad('', len, '-')[color] + "+" [color];
-	return `\n${topLine}\n${separator}\n${text}\n${separator}\n${bottomLine}\n`;
+	const text = message.map((msg) => {
+		return '|' [color] + s.lrpad(msg, len)[color] + '|' [color];
+	}).join('\n');
+	const topLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
+	const separator = '|' [color] + s.pad('', len, '') + '|' [color];
+	const bottomLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
+	return `\n${ topLine }\n${ separator }\n${ text }\n${ separator }\n${ bottomLine }\n`;
 }
 
 /*
@@ -102,31 +104,27 @@ function createLogger(prefix) {
 		check(level, Match.OneOf('info', 'error', 'warn', 'debug'));
 		check(message, Match.OneOf(String, [String]));
 
-		var logger = Migrations.options && Migrations.options.logger;
+		const logger = Migrations.options && Migrations.options.logger;
 
 		if (logger && _.isFunction(logger)) {
 
 			logger({
-				level: level,
-				message: message,
+				level,
+				message,
 				tag: prefix
 			});
 
 		} else {
 			Log[level]({
-				message: prefix + ': ' + message
+				message: `${ prefix }: ${ message }`
 			});
 		}
-	}
+	};
 }
-
-var log;
-
-var options = Migrations.options;
 
 // collection holding the control record
 
-log = createLogger('Migrations');
+const log = createLogger('Migrations');
 
 ['info', 'warn', 'error', 'debug'].forEach(function(level) {
 	log[level] = _.partial(log, level);
@@ -142,14 +140,11 @@ log = createLogger('Migrations');
 //  name: String *optional
 // }
 Migrations.add = function(migration) {
-	if (typeof migration.up !== 'function')
-		throw new Meteor.Error('Migration must supply an up function.');
+	if (typeof migration.up !== 'function') { throw new Meteor.Error('Migration must supply an up function.'); }
 
-	if (typeof migration.version !== 'number')
-		throw new Meteor.Error('Migration must supply a version number.');
+	if (typeof migration.version !== 'number') { throw new Meteor.Error('Migration must supply a version number.'); }
 
-	if (migration.version <= 0)
-		throw new Meteor.Error('Migration version must be greater than 0');
+	if (migration.version <= 0) { throw new Meteor.Error('Migration version must be greater than 0'); }
 
 	// Freeze the migration object to make it hereafter immutable
 	Object.freeze(migration);
@@ -158,24 +153,26 @@ Migrations.add = function(migration) {
 	this._list = _.sortBy(this._list, function(m) {
 		return m.version;
 	});
-}
+};
 
 // Attempts to run the migrations using command in the form of:
 // e.g 'latest', 'latest,exit', 2
 // use 'XX,rerun' to re-run the migration at that version
 Migrations.migrateTo = function(command) {
-	if (_.isUndefined(command) || command === '' || this._list.length === 0)
-		throw new Error("Cannot migrate using invalid command: " + command);
+	if (_.isUndefined(command) || command === '' || this._list.length === 0) { throw new Error(`Cannot migrate using invalid command: ${ command }`); }
 
+	let version;
+	let subcommand;
 	if (typeof command === 'number') {
-		var version = command;
+		version = command;
 	} else {
-		var version = command.split(',')[0];
-		var subcommand = command.split(',')[1];
+		version = command.split(',')[0];
+		subcommand = command.split(',')[1];
 	}
 
 	const maxAttempts = Migrations.options.maxAttempts;
 	const retryInterval = Migrations.options.retryInterval;
+	let migrated;
 	for (let attempts = 1; attempts <= maxAttempts; attempts++) {
 		if (version === 'latest') {
 			migrated = this._migrateTo(_.last(this._list).version);
@@ -187,50 +184,49 @@ Migrations.migrateTo = function(command) {
 		} else {
 			let willRetry;
 			if (attempts < maxAttempts) {
-				willRetry = ` Trying again in ${retryInterval} seconds.`;
+				willRetry = ` Trying again in ${ retryInterval } seconds.`;
 				Meteor._sleepForMs(retryInterval * 1000);
 			} else {
-				willRetry = "";
+				willRetry = '';
 			}
-			console.log(`Not migrating, control is locked. Attempt ${attempts}/${maxAttempts}.${willRetry}`.yellow);
+			console.log(`Not migrating, control is locked. Attempt ${ attempts }/${ maxAttempts }.${ willRetry }`.yellow);
 		}
 	}
 	if (!migrated) {
-		let control = this._getControl(); // Side effect: upserts control document.
+		const control = this._getControl(); // Side effect: upserts control document.
 		console.log(makeABox([
-			"ERROR! SERVER STOPPED",
-			"",
-			"Your database migration control is locked.",
-			"Please make sure you are running the latest version and try again.",
-			"If the problem persists, please contact support.",
-			"",
-			"This Rocket.Chat version: " + RocketChat.Info.version,
-			"Database locked at version: " + control.version,
-			"Database target version: " + (version === 'latest' ? _.last(this._list).version : version),
-			"",
-			"Commit: " + RocketChat.Info.commit.hash,
-			"Date: " + RocketChat.Info.commit.date,
-			"Branch: " + RocketChat.Info.commit.branch,
-			"Tag: " + RocketChat.Info.commit.tag
+			'ERROR! SERVER STOPPED',
+			'',
+			'Your database migration control is locked.',
+			'Please make sure you are running the latest version and try again.',
+			'If the problem persists, please contact support.',
+			'',
+			`This Rocket.Chat version: ${ RocketChat.Info.version }`,
+			`Database locked at version: ${ control.version }`,
+			`Database target version: ${ version === 'latest' ? _.last(this._list).version : version }`,
+			'',
+			`Commit: ${ RocketChat.Info.commit.hash }`,
+			`Date: ${ RocketChat.Info.commit.date }`,
+			`Branch: ${ RocketChat.Info.commit.branch }`,
+			`Tag: ${ RocketChat.Info.commit.tag }`
 		]));
 		process.exit(1);
 	}
 
 	// remember to run meteor with --once otherwise it will restart
-	if (subcommand === 'exit')
-		process.exit(0);
-}
+	if (subcommand === 'exit') { process.exit(0); }
+};
 
 // just returns the current version
 Migrations.getVersion = function() {
 	return this._getControl().version;
-}
+};
 
 // migrates to the specific version passed in
 Migrations._migrateTo = function(version, rerun) {
-	var self = this;
-	var control = this._getControl(); // Side effect: upserts control document.
-	var currentVersion = control.version;
+	const self = this;
+	const control = this._getControl(); // Side effect: upserts control document.
+	let currentVersion = control.version;
 
 	if (lock() === false) {
 		// log.info('Not migrating, control is locked.');
@@ -239,7 +235,7 @@ Migrations._migrateTo = function(version, rerun) {
 	}
 
 	if (rerun) {
-		log.info('Rerunning version ' + version);
+		log.info(`Rerunning version ${ version }`);
 		migrate('up', this._findIndexByVersion(version));
 		log.info('Finished migrating.');
 		unlock();
@@ -248,55 +244,53 @@ Migrations._migrateTo = function(version, rerun) {
 
 	if (currentVersion === version) {
 		if (this.options.logIfLatest) {
-			log.info('Not migrating, already at version ' + version);
+			log.info(`Not migrating, already at version ${ version }`);
 		}
 		unlock();
 		return true;
 	}
 
-	var startIdx = this._findIndexByVersion(currentVersion);
-	var endIdx = this._findIndexByVersion(version);
+	const startIdx = this._findIndexByVersion(currentVersion);
+	const endIdx = this._findIndexByVersion(version);
 
 	// log.info('startIdx:' + startIdx + ' endIdx:' + endIdx);
-	log.info('Migrating from version ' + this._list[startIdx].version + ' -> ' + this._list[endIdx].version);
+	log.info(`Migrating from version ${ this._list[startIdx].version } -> ${ this._list[endIdx].version }`);
 
 	// run the actual migration
 	function migrate(direction, idx) {
-		var migration = self._list[idx];
+		const migration = self._list[idx];
 
 		if (typeof migration[direction] !== 'function') {
 			unlock();
-			throw new Meteor.Error('Cannot migrate ' + direction + ' on version ' + migration.version);
+			throw new Meteor.Error(`Cannot migrate ${ direction } on version ${ migration.version }`);
 		}
 
 		function maybeName() {
-			return migration.name ? ' (' + migration.name + ')' : '';
+			return migration.name ? ` (${ migration.name })` : '';
 		}
 
-		log.info('Running ' + direction + '() on version ' + migration.version + maybeName());
+		log.info(`Running ${ direction }() on version ${ migration.version }${ maybeName() }`);
 
 		try {
-			RocketChat.models._CacheControl.withValue(false, function() {
-				migration[direction](migration);
-			});
+			migration[direction](migration);
 		} catch (e) {
 			console.log(makeABox([
-				"ERROR! SERVER STOPPED",
-				"",
-				"Your database migration failed:",
+				'ERROR! SERVER STOPPED',
+				'',
+				'Your database migration failed:',
 				e.message,
-				"",
-				"Please make sure you are running the latest version and try again.",
-				"If the problem persists, please contact support.",
-				"",
-				"This Rocket.Chat version: " + RocketChat.Info.version,
-				"Database locked at version: " + control.version,
-				"Database target version: " + version,
-				"",
-				"Commit: " + RocketChat.Info.commit.hash,
-				"Date: " + RocketChat.Info.commit.date,
-				"Branch: " + RocketChat.Info.commit.branch,
-				"Tag: " + RocketChat.Info.commit.tag
+				'',
+				'Please make sure you are running the latest version and try again.',
+				'If the problem persists, please contact support.',
+				'',
+				`This Rocket.Chat version: ${ RocketChat.Info.version }`,
+				`Database locked at version: ${ control.version }`,
+				`Database target version: ${ version }`,
+				'',
+				`Commit: ${ RocketChat.Info.commit.hash }`,
+				`Date: ${ RocketChat.Info.commit.date }`,
+				`Branch: ${ RocketChat.Info.commit.branch }`,
+				`Tag: ${ RocketChat.Info.commit.tag }`
 			]));
 			process.exit(1);
 		}
@@ -343,7 +337,7 @@ Migrations._migrateTo = function(version, rerun) {
 	}
 
 	if (currentVersion < version) {
-		for (var i = startIdx; i < endIdx; i++) {
+		for (let i = startIdx; i < endIdx; i++) {
 			migrate('up', i + 1);
 			currentVersion = self._list[i + 1].version;
 			self._setControl({
@@ -352,7 +346,7 @@ Migrations._migrateTo = function(version, rerun) {
 			});
 		}
 	} else {
-		for (var i = startIdx; i > endIdx; i--) {
+		for (let i = startIdx; i > endIdx; i--) {
 			migrate('down', i);
 			currentVersion = self._list[i - 1].version;
 			self._setControl({
@@ -364,11 +358,11 @@ Migrations._migrateTo = function(version, rerun) {
 
 	unlock();
 	log.info('Finished migrating.');
-}
+};
 
 // gets the current control record, optionally creating it if non-existant
 Migrations._getControl = function() {
-	var control = this._collection.findOne({
+	const control = this._collection.findOne({
 		_id: 'control'
 	});
 
@@ -376,7 +370,7 @@ Migrations._getControl = function() {
 		version: 0,
 		locked: false
 	});
-}
+};
 
 // sets the control record
 Migrations._setControl = function(control) {
@@ -396,25 +390,24 @@ Migrations._setControl = function(control) {
 	});
 
 	return control;
-}
+};
 
 // returns the migration index in _list or throws if not found
 Migrations._findIndexByVersion = function(version) {
-	for (var i = 0; i < this._list.length; i++) {
-		if (this._list[i].version === version)
-			return i;
+	for (let i = 0; i < this._list.length; i++) {
+		if (this._list[i].version === version) { return i; }
 	}
 
-	throw new Meteor.Error('Can\'t find migration version ' + version);
-}
+	throw new Meteor.Error(`Can't find migration version ${ version }`);
+};
 
 //reset (mainly intended for tests)
 Migrations._reset = function() {
 	this._list = [{
 		version: 0,
-		up: function() {}
+		up() {}
 	}];
 	this._collection.remove({});
-}
+};
 
 RocketChat.Migrations = Migrations;

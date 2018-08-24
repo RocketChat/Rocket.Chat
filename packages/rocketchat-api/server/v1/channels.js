@@ -1,15 +1,12 @@
 import _ from 'underscore';
 
 //Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findChannelByIdOrName({ params, checkedArchived = true, returnUsernames = false }) {
+function findChannelByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const fields = { ...RocketChat.API.v1.defaultFieldsToExclude };
-	if (returnUsernames) {
-		delete fields.usernames;
-	}
 
 	let room;
 	if (params.roomId) {
@@ -83,34 +80,6 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
-	post() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-		if (!this.bodyParams.latest) {
-			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
-		}
-
-		if (!this.bodyParams.oldest) {
-			return RocketChat.API.v1.failure('Body parameter "oldest" is required.');
-		}
-
-		const latest = new Date(this.bodyParams.latest);
-		const oldest = new Date(this.bodyParams.oldest);
-
-		let inclusive = false;
-		if (typeof this.bodyParams.inclusive !== 'undefined') {
-			inclusive = this.bodyParams.inclusive;
-		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanChannelHistory', { roomId: findResult._id, latest, oldest, inclusive });
-		});
-
-		return RocketChat.API.v1.success();
-	}
-});
-
 RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
@@ -133,37 +102,133 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 	}
 });
 
-RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
-	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'create-c')) {
-			return RocketChat.API.v1.unauthorized();
-		}
+RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
+	get() {
+		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
+		const userId = this.requestParams().userId;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
 
-		if (!this.bodyParams.name) {
-			return RocketChat.API.v1.failure('Body param "name" is required');
+		if (userId) {
+			if (!access) {
+				return RocketChat.API.v1.unauthorized();
+			}
+			user = userId;
 		}
-
-		if (this.bodyParams.members && !_.isArray(this.bodyParams.members)) {
-			return RocketChat.API.v1.failure('Body param "members" must be an array if provided');
-		}
-
-		if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
-			return RocketChat.API.v1.failure('Body param "customFields" must be an object if provided');
-		}
-
-		let readOnly = false;
-		if (typeof this.bodyParams.readOnly !== 'undefined') {
-			readOnly = this.bodyParams.readOnly;
-		}
-
-		let id;
-		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createChannel', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
+		const room = findChannelByIdOrName({
+			params: this.requestParams(),
+			returnUsernames: true
 		});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		const lm = room.lm ? room.lm : room._updatedAt;
+
+		if (typeof subscription !== 'undefined' && subscription.open) {
+			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+			unreadsFrom = subscription.ls || subscription.ts;
+			userMentions = subscription.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = room.usersCount;
+		}
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions
 		});
+	}
+});
+
+// Channel -> create
+
+function createChannelValidator(params) {
+	if (!RocketChat.authz.hasPermission(params.user.value, 'create-c')) {
+		throw new Error('unauthorized');
+	}
+
+	if (!params.name || !params.name.value) {
+		throw new Error(`Param "${ params.name.key }" is required`);
+	}
+
+	if (params.members && params.members.value && !_.isArray(params.members.value)) {
+		throw new Error(`Param "${ params.members.key }" must be an array if provided`);
+	}
+
+	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
+		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
+	}
+}
+
+function createChannel(userId, params) {
+	let readOnly = false;
+	if (typeof params.readOnly !== 'undefined') {
+		readOnly = params.readOnly;
+	}
+
+	let id;
+	Meteor.runAsUser(userId, () => {
+		id = Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields);
+	});
+
+	return {
+		channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+	};
+}
+
+RocketChat.API.channels = {};
+RocketChat.API.channels.create = {
+	validate: createChannelValidator,
+	execute: createChannel
+};
+
+RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
+	post() {
+		const userId = this.userId;
+		const bodyParams = this.bodyParams;
+
+		let error;
+
+		try {
+			RocketChat.API.channels.create.validate({
+				user: {
+					value: userId
+				},
+				name: {
+					value: bodyParams.name,
+					key: 'name'
+				},
+				members: {
+					value: bodyParams.members,
+					key: 'members'
+				}
+			});
+		} catch (e) {
+			if (e.message === 'unauthorized') {
+				error = RocketChat.API.v1.unauthorized();
+			} else {
+				error = RocketChat.API.v1.failure(e.message);
+			}
+		}
+
+		if (error) {
+			return error;
+		}
+
+		return RocketChat.API.v1.success(RocketChat.API.channels.create.execute(userId, bodyParams));
 	}
 });
 
@@ -184,6 +249,12 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const addUserObjectToEveryObject = (file) => {
+			if (file.userId) {
+				file = this.insertUserObject({ object: file, userId: file.userId });
+			}
+			return file;
+		};
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('canAccessRoom', findResult._id, this.userId);
@@ -202,8 +273,9 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			files,
-			count: files.length,
+			files: files.map(addUserObjectToEveryObject),
+			count:
+			files.length,
 			offset,
 			total: RocketChat.models.Uploads.find(ourQuery).count()
 		});
@@ -285,7 +357,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult._id, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
+			result = Meteor.call('getChannelHistory', {
+				rid: findResult._id,
+				latest: latestDate,
+				oldest: oldestDate,
+				inclusive,
+				count,
+				unreads
+			});
 		});
 
 		if (!result) {
@@ -372,30 +451,34 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = RocketChat.authz.hasPermission(this.userId, 'view-c-room');
 
-			const ourQuery = Object.assign({}, query, { t: 'c' });
+			const ourQuery = { ...query, t: 'c' };
 
-			//Special check for the permissions
-			if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
-				ourQuery.usernames = {
-					$in: [ this.user.username ]
-				};
-			} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
-				return RocketChat.API.v1.unauthorized();
+			if (!hasPermissionToSeeAllPublicChannels) {
+				if (!RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
+					return RocketChat.API.v1.unauthorized();
+				}
+				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndType(this.userId, 'c', { fields: { rid: 1 } }).fetch().map(s => s.rid);
+				ourQuery._id = { $in: roomIds };
 			}
 
-			const rooms = RocketChat.models.Rooms.find(ourQuery, {
+			const cursor = RocketChat.models.Rooms.find(ourQuery, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
 				fields
-			}).fetch();
+			});
+
+			const total = cursor.count();
+
+			const rooms = cursor.fetch();
 
 			return RocketChat.API.v1.success({
 				channels: rooms,
 				count: rooms.length,
 				offset,
-				total: RocketChat.models.Rooms.find(ourQuery).count()
+				total
 			});
 		}
 	}
@@ -405,15 +488,17 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		let rooms = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', this.userId).fetch(), '_room');
-		const totalCount = rooms.length;
 
-		rooms = RocketChat.models.Rooms.processQueryOptionsOnResult(rooms, {
+		// TODO: CACHE: Add Breacking notice since we removed the query param
+		const cursor = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('c', this.userId, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
 			fields
 		});
+
+		const totalCount = cursor.count();
+		const rooms = cursor.fetch();
 
 		return RocketChat.API.v1.success({
 			channels: rooms,
@@ -426,65 +511,108 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false, returnUsernames: true });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false
+		});
 
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-
-		let sortFn = (a, b) => a > b;
-		if (Match.test(sort, Object) && Match.test(sort.username, Number) && sort.username === -1) {
-			sortFn = (a, b) => b < a;
+		if (findResult.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
+			return RocketChat.API.v1.unauthorized();
 		}
 
-		const members = RocketChat.models.Rooms.processQueryOptionsOnResult(Array.from(findResult.usernames).sort(sortFn), {
+		const { offset, count } = this.getPaginationItems();
+		const { sort = {} } = this.parseJsonQuery();
+
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(findResult._id, {
+			fields: { 'u._id': 1 },
+			sort: { 'u.username': sort.username != null ? sort.username : 1 },
 			skip: offset,
 			limit: count
 		});
 
-		const users = RocketChat.models.Users.find({ username: { $in: members } }, {
+		const total = subscriptions.count();
+
+		const members = subscriptions.fetch().map(s => s.u && s.u._id);
+
+		const users = RocketChat.models.Users.find({ _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: sort ? sort : { username: 1 }
+			sort: { username:  sort.username != null ? sort.username : 1 }
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
-			count: members.length,
+			count: users.length,
 			offset,
-			total: findResult.usernames.length
+			total
 		});
 	}
 });
 
 RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
+		const findResult = findChannelByIdOrName({
+			params: this.requestParams(),
+			checkedArchived: false
+		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
 		//Special check for the permissions
-		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !findResult.usernames.includes(this.user.username)) {
+		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
 			return RocketChat.API.v1.unauthorized();
-		} else if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
+		}
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-c-room')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const messages = RocketChat.models.Messages.find(ourQuery, {
+		const cursor = RocketChat.models.Messages.find(ourQuery, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
 			fields
-		}).fetch();
+		});
+
+		const total = cursor.count();
+		const messages = cursor.fetch();
 
 		return RocketChat.API.v1.success({
 			messages,
 			count: messages.length,
 			offset,
-			total: RocketChat.models.Messages.find(ourQuery).count()
+			total
 		});
 	}
 });
+// TODO: CACHE: I dont like this method( functionality and how we implemented ) its very expensive
+// TODO check if this code is better or not
+// RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
+// 	get() {
+// 		const { query } = this.parseJsonQuery();
+// 		const ourQuery = Object.assign({}, query, { t: 'c' });
+
+// 		const room = RocketChat.models.Rooms.findOne(ourQuery);
+
+// 		if (room == null) {
+// 			return RocketChat.API.v1.failure('Channel does not exists');
+// 		}
+
+// 		const ids = RocketChat.models.Subscriptions.find({ rid: room._id }, { fields: { 'u._id': 1 } }).fetch().map(sub => sub.u._id);
+
+// 		const online = RocketChat.models.Users.find({
+// 			username: { $exists: 1 },
+// 			_id: { $in: ids },
+// 			status: { $in: ['online', 'away', 'busy'] }
+// 		}, {
+// 			fields: { username: 1 }
+// 		}).fetch();
+
+// 		return RocketChat.API.v1.success({
+// 			online
+// 		});
+// 	}
+// });
 
 RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 	get() {
@@ -498,14 +626,13 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 		}
 
 		const online = RocketChat.models.Users.findUsersNotOffline({
-			fields: {
-				username: 1
-			}
+			fields: { username: 1 }
 		}).fetch();
 
 		const onlineInRoom = [];
 		online.forEach(user => {
-			if (room.usernames.indexOf(user.username) !== -1) {
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
+			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
 					username: user.username
@@ -575,7 +702,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The bodyParam "name" is required');
 		}
 
-		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId} });
+		const findResult = findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId } });
 
 		if (findResult.name === this.bodyParams.name) {
 			return RocketChat.API.v1.failure('The channel name is the same as what it would be renamed to.');
@@ -583,6 +710,46 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
+		});
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
+			return RocketChat.API.v1.failure('The bodyParam "customFields" is required with a type like object.');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+		});
+
+		return RocketChat.API.v1.success({
+			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.setDefault', { authRequired: true }, {
+	post() {
+		if (typeof this.bodyParams.default === 'undefined') {
+			return RocketChat.API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		if (findResult.default === this.bodyParams.default) {
+			return RocketChat.API.v1.failure('The channel default setting is the same as what it would be changed to.', 'error-channels-setdefault-missing-default-param');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'default', this.bodyParams.default.toString());
 		});
 
 		return RocketChat.API.v1.success({
@@ -697,6 +864,24 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	}
 });
 
+RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "announcement" is required');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', this.bodyParams.announcement);
+		});
+
+		return RocketChat.API.v1.success({
+			announcement: this.bodyParams.announcement
+		});
+	}
+});
+
 RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
@@ -732,5 +917,50 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, {
+	get() {
+		const { roomId } = this.requestParams();
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		if (!roomId) {
+			return RocketChat.API.v1.failure('The request param "roomId" is required');
+		}
+
+		const mentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {
+				sort: sort ? sort : { ts: 1 },
+				skip: offset,
+				limit: count
+			}
+		}));
+
+		const allMentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
+			roomId,
+			options: {}
+		}));
+
+		return RocketChat.API.v1.success({
+			mentions,
+			count: mentions.length,
+			offset,
+			total: allMentions.length
+		});
+	}
+});
+
+RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
+
+		return RocketChat.API.v1.success({
+			roles
+		});
 	}
 });

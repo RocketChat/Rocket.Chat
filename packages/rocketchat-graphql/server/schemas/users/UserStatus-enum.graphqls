@@ -1,0 +1,7 @@
+enum UserStatus {
+	ONLINE
+	AWAY
+	BUSY
+	INVISIBLE
+	OFFLINE
+}

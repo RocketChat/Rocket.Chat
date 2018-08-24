@@ -83,8 +83,20 @@ Template.createChannel.helpers({
 	typeDescription() {
 		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
 	},
+	broadcast() {
+		return Template.instance().broadcast.get();
+	},
+	readOnly() {
+		return Template.instance().readOnly.get();
+	},
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
+	},
+	cantCreateBothTypes() {
+		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+	},
+	roomTypeIsP() {
+		return Template.instance().type.get() === 'p';
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
@@ -113,8 +125,8 @@ Template.createChannel.helpers({
 	extensionsConfig() {
 		const instance = Template.instance();
 		return {
-			validations : Template.instance().extensions_validations,
-			submits: Template.instance().extensions_submits,
+			validations : instance.extensions_validations,
+			submits: instance.extensions_submits,
 			change: instance.change
 		};
 	},
@@ -146,16 +158,16 @@ Template.createChannel.events({
 		const {username} = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
 	},
-	'click .rc-tags__tag-icon'(e, t) {
-		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
-	},
 	'change [name=setTokensRequired]'(e, t) {
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
 	},
 	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'd');
+		t.change();
+	},
+	'change [name="broadcast"]'(e, t) {
+		t.broadcast.set(e.target.checked);
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {
@@ -192,6 +204,7 @@ Template.createChannel.events({
 		const name = e.target.name.value;
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
+		const broadcast = instance.broadcast.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -204,7 +217,7 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => {
 				return { ...result, ...instance.extensions_submits[key](instance) };
-			}, {});
+			}, {broadcast});
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -230,7 +243,7 @@ Template.createChannel.events({
 Template.createChannel.onRendered(function() {
 	const users = this.selectedUsers;
 
-	this.firstNode.querySelector('[name="name"]').focus();
+	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, {item}) {
@@ -239,20 +252,21 @@ Template.createChannel.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete Deps */
+/* global AutoComplete */
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
 	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
 	// this.onViewRead:??y(function() {
-	Deps.autorun(() => {
+	Tracker.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
 	});
 	this.extensions_validations = {};
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar('p');
+	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
+	this.broadcast = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
@@ -261,6 +275,14 @@ Template.createChannel.onCreated(function() {
 		Object.keys(this.extensions_validations).map(key => this.extensions_validations[key]).forEach(f => (valid = f(this) && valid));
 		this.extensions_invalid.set(!valid);
 	}, 300);
+
+	Tracker.autorun(() => {
+		const broadcast = this.broadcast.get();
+		if (broadcast) {
+			this.readOnly.set(true);
+		}
+	});
+
 	this.userFilter = new ReactiveVar('');
 	this.tokensRequired = new ReactiveVar(false);
 	this.checkChannel = _.debounce((name) => {

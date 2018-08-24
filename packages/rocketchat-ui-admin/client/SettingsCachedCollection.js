@@ -4,7 +4,8 @@ export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection
 	constructor() {
 		super({
 			name: 'private-settings',
-			eventType: 'onLogged'
+			eventType: 'onLogged',
+			useCache: false
 		});
 	}
 

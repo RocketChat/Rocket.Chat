@@ -3,6 +3,8 @@ import {permissionLevel} from '../../lib/rocketchat';
 Meteor.methods({
 	'permissions/get'(updatedAt) {
 		this.unblock();
+		// TODO: should we return this for non logged users?
+		// TODO: we could cache this collection
 
 		const records = RocketChat.models.Permissions.find().fetch();
 
@@ -24,15 +26,25 @@ Meteor.methods({
 	}
 });
 
+RocketChat.models.Permissions.on('change', ({clientAction, id, data}) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			data = data || RocketChat.models.Permissions.findOneById(id);
+			break;
 
-RocketChat.models.Permissions.on('changed', (type, permission) => {
-	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', type, permission);
+		case 'removed':
+			data = { _id: id };
+			break;
+	}
 
-	if (permission.level && permission.level === permissionLevel.SETTING) {
+	if (data.level && data.level === permissionLevel.SETTING) {
 		// if the permission changes, the effect on the visible settings depends on the role affected.
 		// The selected-settings-based consumers have to react accordingly and either add or remove the
 		// setting from the user's collection
-		const setting = RocketChat.models.Settings.findOneById(permission.settingId);
+		const setting = RocketChat.models.Settings.findOneById(data.settingId);
 		RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', 'auth', setting);
 	}
+
+	RocketChat.Notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 });

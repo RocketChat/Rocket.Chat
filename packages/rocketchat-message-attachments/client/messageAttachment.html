@@ -10,9 +10,17 @@
 						{{#if author_icon}}
 							<img src="{{fixCordova author_icon}}">
 						{{/if}}
-						<a href="{{fixCordova author_link}}" target="_blank">{{author_name}}</a>
+						<a href="{{fixCordova author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
-							<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+							{{#if message_link}}
+								<span class="time-link">
+									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+								</span>
+							{{else}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/if}}
 						{{/if}}
 					</div>
 				{{else}}
@@ -22,7 +30,15 @@
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
-						<span class="time">{{#if message_link}}<a href="{{message_link}}">{{time}}</a>{{else}}{{time}}{{/if}}</span>
+						{{#if message_link}}
+							<span class="time-link">
+								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+							</span>
+						{{else}}
+							<span class="time">
+								{{time}}
+							</span>
+						{{/if}}
 					{{/if}}
 					</div>
 				{{/if}}
@@ -30,9 +46,9 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
+						<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
-							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
+							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
 						{{/if}}
 					{{else}}
 						{{title}}
@@ -62,13 +78,11 @@
 			{{/unless}}
 
 			{{#if image_url}}
-				{{#unless collapsed}}
-					<div class="attachment-image">
+				{{#unless mediaCollapsed}}
+					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
-							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
-								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}" class="gallery-item" data-title="{{title}}" data-description="{{description}}">
-							</div>
+							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
 							{{#if labels}}
 								<div class="image-labels">
 									{{#each labels}}
@@ -91,7 +105,7 @@
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
 							<source src="{{fixCordova audio_url}}" type="{{audio_type}}" data-description="{{description}}">
@@ -102,7 +116,7 @@
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless collapsed}}
+				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
 							<source src="{{fixCordova video_url}}" type="{{video_type}}" data-description="{{description}}">

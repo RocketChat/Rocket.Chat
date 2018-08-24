@@ -1,3 +1,5 @@
+/* globals LivechatVisitor */
+
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -18,8 +20,9 @@ Template.visitorInfo.helpers({
 			}
 			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
 			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
-		}
 
+			user.status = RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
 		return user;
 	},
 
@@ -243,6 +246,6 @@ Template.visitorInfo.onCreated(function() {
 	}
 
 	this.autorun(() => {
-		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
+		this.user.set(LivechatVisitor.findOne({ '_id': this.visitorId.get() }));
 	});
 });

@@ -18,9 +18,6 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'client/lib/startup.js',
-		'client/stylesheets/mail-messages.less',
-		'client/views/channelSettingsMailMessages.html',
-		'client/views/channelSettingsMailMessages.js',
 		'client/views/mailMessagesInstructions.html',
 		'client/views/mailMessagesInstructions.js'
 	], 'client');

@@ -14,7 +14,3 @@ Package.onUse(function(api) {
 	api.addFiles('SMS.js', 'server');
 	api.addFiles('services/twilio.js', 'server');
 });
-
-Npm.depends({
-	'twilio': '2.9.1'
-});

@@ -32,6 +32,18 @@
 						{{_ "Send_request_on_offline_messages"}}
 					</label>
 				</div>
+				<div class="input-line">
+					<label for="sendOnVisitorMessage">
+						<input type="checkbox" name="sendOnVisitorMessage" id="sendOnVisitorMessage" value="1" checked="{{sendOnVisitorMessageChecked}}">
+						{{_ "Send_request_on_visitor_message"}}
+					</label>
+				</div>
+				<div class="input-line">
+					<label for="sendOnAgentMessage">
+						<input type="checkbox" name="sendOnAgentMessage" id="sendOnAgentMessage" value="1" checked="{{sendOnAgentMessageChecked}}">
+						{{_ "Send_request_on_agent_message"}}
+					</label>
+				</div>
 				<div class="submit">
 					<button class="button danger reset-settings" type="button"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
 					<button class="button secondary test" type="button" disabled="{{disableTest}}">{{_ "Send_Test"}}</button>

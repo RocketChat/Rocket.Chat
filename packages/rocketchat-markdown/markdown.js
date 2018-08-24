@@ -10,6 +10,8 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { marked } from './parser/marked/marked.js';
 import { original } from './parser/original/original.js';
 
+import { code } from './parser/original/code.js';
+
 const parsers = {
 	original,
 	marked
@@ -43,14 +45,18 @@ class MarkdownClass {
 		return parsers['original'](message);
 	}
 
-	mountTokensBack(message) {
+	mountTokensBack(message, useHtml = true) {
 		if (message.tokens && message.tokens.length > 0) {
-			for (const {token, text} of message.tokens) {
-				message.html = message.html.replace(token, () => text); // Uses lambda so doesn't need to escape $
+			for (const {token, text, noHtml} of message.tokens) {
+				message.html = message.html.replace(token, () => useHtml ? text : noHtml); // Uses lambda so doesn't need to escape $
 			}
 		}
 
 		return message;
+	}
+
+	code(...args) {
+		return code(...args);
 	}
 }
 
@@ -71,4 +77,8 @@ RocketChat.callbacks.add('renderMessage', MarkdownMessage, RocketChat.callbacks.
 if (Meteor.isClient) {
 	Blaze.registerHelper('RocketChatMarkdown', text => Markdown.parse(text));
 	Blaze.registerHelper('RocketChatMarkdownUnescape', text => Markdown.parseNotEscaped(text));
+	Blaze.registerHelper('RocketChatMarkdownInline', (text) => {
+		const output = Markdown.parse(text);
+		return output.replace(/^<p>/, '').replace(/<\/p>$/, '');
+	});
 }

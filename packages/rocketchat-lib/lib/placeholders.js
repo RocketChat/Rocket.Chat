@@ -16,6 +16,7 @@ RocketChat.placeholders.replace = function(str, data) {
 		str = str.replace(/\[lname\]/g, s.strRightBack(data.name, ' ') || '');
 		str = str.replace(/\[email\]/g, data.email || '');
 		str = str.replace(/\[password\]/g, data.password || '');
+		str = str.replace(/\[reason\]/g, data.reason || '');
 		str = str.replace(/\[User\]/g, data.user || '');
 		str = str.replace(/\[Room\]/g, data.room || '');
 

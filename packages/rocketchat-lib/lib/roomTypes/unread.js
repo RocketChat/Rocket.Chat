@@ -12,7 +12,6 @@ export class UnreadRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread';
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowUnread');
 	}
 }

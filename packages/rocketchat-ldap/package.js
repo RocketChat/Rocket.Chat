@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('yasaricli:slugify');
 	api.use('ecmascript');
+	api.use('underscore');
 	api.use('sha');
 
 	api.use('templating', 'client');

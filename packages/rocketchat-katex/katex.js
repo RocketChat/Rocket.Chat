@@ -5,7 +5,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 
-const katex = require('katex');
+import katex from 'katex';
 
 class Boundary {
 	constructor() {}

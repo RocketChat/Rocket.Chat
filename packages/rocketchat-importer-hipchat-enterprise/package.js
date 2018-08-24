@@ -23,7 +23,3 @@ Package.onUse(function(api) {
 	// Client files
 	api.addFiles('client/adder.js', 'client');
 });
-
-Npm.depends({
-	'tar-stream': '1.5.2'
-});

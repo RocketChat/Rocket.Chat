@@ -23,7 +23,3 @@ Package.onUse(function(api) {
 	// Client files
 	api.addFiles('client/adder.js', 'client');
 });
-
-Npm.depends({
-	'csv-parse': '1.2.0'
-});

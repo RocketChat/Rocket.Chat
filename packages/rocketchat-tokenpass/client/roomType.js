@@ -11,7 +11,7 @@ class TokenPassRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const user = Meteor.user();
+		const user = Meteor.users.findOne(Meteor.userId(), {fields: {'services.tokenpass': 1}});
 		const hasTokenpass = !!(user && user.services && user.services.tokenpass);
 
 		return hasTokenpass;

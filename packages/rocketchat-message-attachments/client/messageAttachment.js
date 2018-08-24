@@ -1,30 +1,11 @@
 import moment from 'moment';
+import { fixCordova } from 'meteor/rocketchat:lazy-load';
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
 	danger: '#D30230'
 };
-const fixCordova = function(url) {
-	if (url && url.indexOf('data:image') === 0) {
-		return url;
-	}
-	if (Meteor.isCordova && (url && url[0] === '/')) {
-		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem('Meteor.loginToken') }`;
-		if (url.indexOf('?') === -1) {
-			url = `${ url }?${ query }`;
-		} else {
-			url = `${ url }&${ query }`;
-		}
-	}
-	if (Meteor.settings['public'].sandstorm || url.match(/^(https?:)?\/\//i)) {
-		return url;
-	} else if (navigator.userAgent.indexOf('Electron') > -1) {
-		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-	}
-};
+
 /*globals renderMessageBody*/
 Template.messageAttachment.helpers({
 	fixCordova,
@@ -34,8 +15,8 @@ Template.messageAttachment.helpers({
 		});
 	},
 	loadImage() {
-		const user = Meteor.user();
 		if (this.downloadImages !== true) {
+			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, {fields: {'settings.autoImageLoad' : 1}});
 			if (RocketChat.getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
@@ -52,6 +33,12 @@ Template.messageAttachment.helpers({
 		return colors[this.color] || this.color;
 	},
 	collapsed() {
+		if (this.collapsed != null) {
+			return this.collapsed;
+		}
+		return false;
+	},
+	mediaCollapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {

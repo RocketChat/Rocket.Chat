@@ -25,25 +25,21 @@ RocketChat.Notifications = new class {
 		this.streamUser.allowWrite('logged');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('logged');
-		this.streamRoom.allowRead(function(eventName) {
-			if (this.userId == null) {
-				return false;
-			}
+		this.streamRoom.allowRead(function(eventName, extraData) {
 			const [roomId] = eventName.split('/');
-			const user = Meteor.users.findOne(this.userId, {
-				fields: {
-					username: 1
-				}
-			});
 			const room = RocketChat.models.Rooms.findOneById(roomId);
 			if (!room) {
 				console.warn(`Invalid streamRoom eventName: "${ eventName }"`);
 				return false;
 			}
-			if (room.t === 'l' && room.v._id === user._id) {
+			if (room.t === 'l' && extraData && extraData.token && room.v.token === extraData.token) {
 				return true;
 			}
-			return room.usernames.indexOf(user.username) > -1;
+			if (this.userId == null) {
+				return false;
+			}
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
+			return subscription != null;
 		});
 		this.streamRoomUsers.allowRead('none');
 		this.streamUser.allowRead(function(eventName) {
@@ -117,20 +113,33 @@ RocketChat.Notifications = new class {
 	}
 };
 
-RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username) {
-	const [, e] = eventName.split('/');
+RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
+	const [roomId, e] = eventName.split('/');
+
 	if (e === 'webrtc') {
 		return true;
 	}
 	if (e === 'typing') {
+		const key = RocketChat.settings.get('UI_Use_Real_Name') ? 'name' : 'username';
+		// typing from livechat widget
+		if (extraData && extraData.token) {
+			const room = RocketChat.models.Rooms.findOneById(roomId);
+			if (room && room.t === 'l' && room.v.token === extraData.token) {
+				return true;
+			}
+		}
+
 		const user = Meteor.users.findOne(this.userId, {
 			fields: {
-				username: 1
+				[key]: 1
 			}
 		});
-		if (user != null && user.username === username) {
-			return true;
+
+		if (!user) {
+			return false;
 		}
+
+		return user[key] === username;
 	}
 	return false;
 });

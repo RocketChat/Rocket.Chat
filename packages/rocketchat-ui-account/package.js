@@ -15,7 +15,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
-		'sha'
+		'sha',
+		'rocketchat:lazy-load'
 	]);
 
 	api.addFiles('client/account.html', 'client');

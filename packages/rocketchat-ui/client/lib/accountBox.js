@@ -2,7 +2,6 @@ import _ from 'underscore';
 
 this.AccountBox = (function() {
 	let status = 0;
-	const self = {};
 	const items = new ReactiveVar([]);
 	function setStatus(status) {
 		return Meteor.call('UserPresence:setDefaultStatus', status);
@@ -13,15 +12,9 @@ this.AccountBox = (function() {
 			return;
 		}
 		status = 1;
-		self.options.removeClass('animated-hidden');
-		self.box.addClass('active');
-		return SideNav.toggleArrow(1);
 	}
 	function close() {
 		status = 0;
-		self.options.addClass('animated-hidden');
-		self.box.removeClass('active');
-		return SideNav.toggleArrow(-1);
 	}
 	function toggle() {
 		if (status) {
@@ -32,12 +25,6 @@ this.AccountBox = (function() {
 	}
 	function openFlex() {
 		status = 0;
-		self.options.addClass('animated-hidden');
-		return self.box.removeClass('active');
-	}
-	function init() {
-		self.box = $('.account-box');
-		return self.options = self.box.find('.options');
 	}
 
 	/*
@@ -100,7 +87,6 @@ this.AccountBox = (function() {
 		open,
 		close,
 		openFlex,
-		init,
 		addRoute,
 		addItem,
 		getItems

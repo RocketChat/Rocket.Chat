@@ -74,6 +74,9 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 	if (hiddenSettings[_id] != null) {
 		options.hidden = true;
 	}
+	if (options.autocomplete == null) {
+		options.autocomplete = true;
+	}
 	if (typeof process !== 'undefined' && process.env && process.env[`OVERWRITE_SETTING_${ _id }`]) {
 		let value = process.env[`OVERWRITE_SETTING_${ _id }`];
 		if (value.toLowerCase() === 'true') {

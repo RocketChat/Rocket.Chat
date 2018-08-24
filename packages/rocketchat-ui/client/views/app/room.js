@@ -6,6 +6,8 @@ import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+
 window.chatMessages = window.chatMessages || {};
 const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -111,17 +113,99 @@ const mountPopover = (e, i, outerContext) => {
 			}
 		],
 		instance: i,
+		currentTarget: e.currentTarget,
 		data: outerContext,
-		mousePosition: {
-			x: e.clientX,
-			y: e.clientY
-		},
 		activeElement: $(e.currentTarget).parents('.message')[0],
 		onRendered: () => new Clipboard('.rc-popover__item')
 	};
 
 	popover.open(config);
 };
+
+const wipeFailedUploads = () => {
+	const uploads = Session.get('uploading');
+
+	if (uploads) {
+		Session.set('uploading', uploads.filter(upload => !upload.error));
+	}
+};
+
+function roomHasGlobalPurge(room) {
+	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	switch (room.t) {
+		case 'c':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+		case 'p':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+		case 'd':
+			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+	}
+	return false;
+}
+
+function roomHasPurge(room) {
+	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+		return false;
+	}
+
+	if (room.retention && room.retention.enabled !== undefined) {
+		return room.retention.enabled;
+	}
+
+	return roomHasGlobalPurge(room);
+}
+
+function roomFilesOnly(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.filesOnly;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+}
+
+function roomExcludePinned(room) {
+	if (!room) {
+		return false;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.excludePinned;
+	}
+
+	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+}
+
+function roomMaxAge(room) {
+	if (!room) {
+		return;
+	}
+	if (!roomHasPurge(room)) {
+		return;
+	}
+
+	if (room.retention && room.retention.overrideGlobal) {
+		return room.retention.maxAge;
+	}
+
+	if (room.t === 'c') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+	}
+	if (room.t === 'p') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+	}
+	if (room.t === 'd') {
+		return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+	}
+}
+
+RocketChat.callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
 	isTranslated() {
@@ -131,18 +215,6 @@ Template.room.helpers({
 
 	embeddedVersion() {
 		RocketChat.Layout.isEmbedded();
-	},
-
-	favorite() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'icon-star favorite-room pending-color'; }
-		return 'icon-star-empty';
-	},
-
-	favoriteLabel() {
-		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { f: 1 } });
-		if (((sub != null ? sub.f : undefined) != null) && sub.f && favoritesEnabled()) { return 'Unfavorite'; }
-		return 'Favorite';
 	},
 
 	subscribed() {
@@ -226,31 +298,12 @@ Template.room.helpers({
 		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
 	},
 
-	roomName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
-	},
-
-	secondaryName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData);
-	},
-
-	roomTopic() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return roomData.topic;
-	},
-
 	showAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		return (roomData.announcement !== undefined) && (roomData.announcement !== '');
+		return roomData.announcement != null && roomData.announcement !== '';
 	},
+
 	messageboxData() {
 		const instance = Template.instance();
 		return {
@@ -262,10 +315,17 @@ Template.room.helpers({
 			}
 		};
 	},
+
 	roomAnnouncement() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 		return roomData.announcement;
+	},
+
+	getAnnouncementStyle() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return ''; }
+		return roomData.announcementDetails && roomData.announcementDetails.style !== undefined ? roomData.announcementDetails.style : '';
 	},
 
 	roomIcon() {
@@ -308,7 +368,12 @@ Template.room.helpers({
 	},
 
 	containerBarsShow(unreadData, uploading) {
-		if ((((unreadData != null ? unreadData.count : undefined) > 0) && (unreadData.since != null)) || ((uploading != null ? uploading.length : undefined) > 0)) { return 'show'; }
+		const hasUnreadData = unreadData && (unreadData.count && unreadData.since);
+		const isUploading = uploading && uploading.length;
+
+		if (hasUnreadData || isUploading) {
+			return 'show';
+		}
 	},
 
 	formatUnreadSince() {
@@ -338,9 +403,9 @@ Template.room.helpers({
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
 	},
 
-	viewMode() {
+	messageViewMode() {
 		const user = Meteor.user();
-		const viewMode = RocketChat.getUserPreference(user, 'viewMode');
+		const viewMode = RocketChat.getUserPreference(user, 'messageViewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -363,6 +428,17 @@ Template.room.helpers({
 		return userCanDrop(this._id);
 	},
 
+	toolbarButtons() {
+		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
+		const buttons = Object.keys(toolbar.buttons).map(key => {
+			return {
+				id: key,
+				...toolbar.buttons[key]
+			};
+		});
+		return { buttons };
+	},
+
 	canPreview() {
 		const room = Session.get(`roomData${ this._id }`);
 		if (room && room.t !== 'c') {
@@ -380,16 +456,6 @@ Template.room.helpers({
 		return (RocketChat.models.Subscriptions.findOne({ rid: this._id }) != null);
 
 	},
-	toolbarButtons() {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		const buttons = Object.keys(toolbar.buttons).map(key => {
-			return {
-				id: key,
-				...toolbar.buttons[key]
-			};
-		});
-		return { buttons };
-	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
 	},
@@ -397,6 +463,25 @@ Template.room.helpers({
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
 			return 'has-leader';
 		}
+	},
+	hasPurge() {
+		return roomHasPurge(Session.get(`roomData${ this._id }`));
+	},
+	filesOnly() {
+		return roomFilesOnly(Session.get(`roomData${ this._id }`));
+	},
+	excludePinned() {
+		return roomExcludePinned(Session.get(`roomData${ this._id }`));
+	},
+	purgeTimeout() {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
+
+		return moment.duration(roomMaxAge(Session.get(`roomData${ this._id }`)) * 1000 * 60 * 60 * 24).humanize();
 	}
 });
 
@@ -407,10 +492,10 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
-	'click .iframe-toolbar button'() {
-		fireGlobalEvent('click-toolbar-button', { id: this.id });
+	'click .js-reply-broadcast'() {
+		const message = this._arguments[1];
+		RocketChat.roomTypes.openRouteLink('d', {name: this._arguments[1].u.username}, {...FlowRouter.current().queryParams, reply: message._id});
 	},
-
 	'click, touchend'(e, t) {
 		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
 	},
@@ -504,7 +589,7 @@ Template.room.events({
 		Meteor.clearTimeout(t.touchtime);
 	},
 
-	'click .upload-progress-text > button'(e) {
+	'click .upload-progress-close'(e) {
 		e.preventDefault();
 		Session.set(`uploading-cancel-${ this.id }`, true);
 	},
@@ -543,7 +628,7 @@ Template.room.events({
 		Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
 	},
 
-	'click .flex-tab .user-image > button'(e, instance) {
+	'click .user-image, click .rc-member-list__user'(e, instance) {
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -562,6 +647,9 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
+
+		lazyloadtick();
+
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
@@ -586,7 +674,42 @@ Template.room.events({
 		chatMessages[RocketChat.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-		mountPopover(e, i, this);
+		let context = $(e.target).parents('.message').data('context');
+		if (!context) {
+			context = 'message';
+		}
+
+		const [, message] = this._arguments;
+		const allItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map(item => {
+			return {
+				icon: item.icon,
+				name: t(item.label),
+				type: 'message-action',
+				id: item.id,
+				modifier: item.color
+			};
+		});
+		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const groups = [{ items }];
+
+		if (deleteItem.length) {
+			groups.push({ items: deleteItem });
+		}
+
+		const config = {
+			columns: [
+				{
+					groups
+				}
+			],
+			instance: i,
+			data: this,
+			currentTarget: e.currentTarget,
+			activeElement: $(e.currentTarget).parents('.message')[0],
+			onRendered: () => new Clipboard('.rc-popover__item')
+		};
+
+		popover.open(config);
 	},
 	'click .time a'(e) {
 		e.preventDefault();
@@ -705,14 +828,24 @@ Template.room.events({
 			addClass.forEach(message => $(`.messages-box #${ message }`).addClass('selected'));
 		}
 	},
-	'click .announcement'(e) {
-		modal.open({
-			title: t('Announcement'),
-			text: $(e.target).attr('aria-label'),
-			showConfirmButton: false,
-			showCancelButton: true,
-			cancelButtonText: t('Close')
-		});
+	'click .announcement'() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+			return RocketChat.callbacks.run(roomData.announcementDetails.callback, this._id);
+		} else {
+			modal.open({
+				title: t('Announcement'),
+				text: roomData.announcement,
+				showConfirmButton: false,
+				showCancelButton: true,
+				cancelButtonText: t('Close')
+			});
+		}
+	},
+	'click .toggle-hidden'(e) {
+		const id = e.currentTarget.dataset.message;
+		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	}
 });
 
@@ -720,6 +853,9 @@ Template.room.events({
 Template.room.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
+
+	lazyloadtick();
+
 	this.showUsersOffline = new ReactiveVar(false);
 	this.atBottom = FlowRouter.getQueryParam('msg') ? false : true;
 	this.unreadCount = new ReactiveVar(0);
@@ -879,6 +1015,8 @@ Template.room.onRendered(function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
 			template.sendToBottom();
 		}
+
+		lazyloadtick();
 	};
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);

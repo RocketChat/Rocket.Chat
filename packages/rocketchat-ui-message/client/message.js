@@ -6,6 +6,16 @@ Template.message.helpers({
 	encodeURI(text) {
 		return encodeURI(text);
 	},
+	broadcast() {
+		const instance = Template.instance();
+		return !this.private && !this.t && this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
+	},
+	isIgnored() {
+		return this.ignored;
+	},
+	ignoredClass() {
+		return this.ignored ? 'message--ignored' : '';
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';
@@ -42,11 +52,14 @@ Template.message.helpers({
 		});
 	},
 	isGroupable() {
-		if (this.groupable === false) {
+		if (Template.instance().room.broadcast || this.groupable === false) {
 			return 'false';
 		}
 	},
 	isSequential() {
+		return this.groupable !== false && !Template.instance().room.broadcast;
+	},
+	sequentialClass() {
 		if (this.groupable !== false) {
 			return 'sequential';
 		}
@@ -265,6 +278,20 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	channelName() {
+		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		return subscription && subscription.name;
+	},
+	roomIcon() {
+		const room = Session.get(`roomData${ this.rid }`);
+		if (room && room.t === 'd') {
+			return 'at';
+		}
+		return RocketChat.roomTypes.getIcon(room && room.t);
+	},
+	fromSearch() {
+		return this.customClass === 'search';
+	},
 	actionContext() {
 		return this.actionContext;
 	},
@@ -292,6 +319,14 @@ Template.message.onCreated(function() {
 	let msg = Template.currentData();
 
 	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
+
+	this.room = RocketChat.models.Rooms.findOne({
+		_id: msg.rid
+	}, {
+		fields: {
+			broadcast: 1
+		}
+	});
 
 	return this.body = (() => {
 		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
@@ -325,7 +360,19 @@ Template.message.onViewRendered = function(context) {
 	return this._domrange.onAttached(function(domRange) {
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
-		const previousNode = currentNode.previousElementSibling;
+		const getPreviousSentMessage = (currentNode) => {
+			if ($(currentNode).hasClass('temp')) {
+				return currentNode.previousElementSibling;
+			}
+			if (currentNode.previousElementSibling != null) {
+				let previousValid = currentNode.previousElementSibling;
+				while (previousValid != null && $(previousValid).hasClass('temp')) {
+					previousValid = previousValid.previousElementSibling;
+				}
+				return previousValid;
+			}
+		};
+		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 		const $currentNode = $(currentNode);
 		const $nextNode = $(nextNode);
@@ -358,7 +405,7 @@ Template.message.onViewRendered = function(context) {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
 					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day')) {
+				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
 					$nextNode.addClass('sequential');
 				}
 			}

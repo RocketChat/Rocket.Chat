@@ -1,17 +1,17 @@
 <template name="livechatTriggerCondition">
 	<div class="input-line each-condition">
 		<div class="trigger-option">
-			<select name="condition" class="trigger-condition">
+			<select name="condition" class="trigger-condition rc-input__element">
 				<option value="page-url" selected="{{conditionSelected 'page-url'}}">{{_ "Visitor_page_URL"}}</option>
 				<option value="time-on-site" selected="{{conditionSelected 'time-on-site'}}">{{_ "Visitor_time_on_site"}}</option>
 			</select>
 		</div>
 		<div class="trigger-value">
 			<div class="page-url trigger-condition-value {{hiddenValue 'page-url'}}">
-				<input type="text" name="page-url-value" class="page-url-value" placeholder="{{_ "Enter_a_regex"}}" value="{{valueFor 'page-url'}}">
+				<input type="text" name="page-url-value" class="page-url-value rc-input__element" placeholder="{{_ "Enter_a_regex"}}" value="{{valueFor 'page-url'}}">
 			</div>
 			<div class="time-on-site trigger-condition-value {{hiddenValue 'time-on-site'}}">
-				<input type="number" name="time-on-site-value" class="time-on-site-value" placeholder="{{_ "Time_in_seconds"}}" value="{{valueFor 'time-on-site'}}">
+				<input type="number" name="time-on-site-value" class="time-on-site-value rc-input__element" placeholder="{{_ "Time_in_seconds"}}" value="{{valueFor 'time-on-site'}}">
 			</div>
 		</div>
 	</div>

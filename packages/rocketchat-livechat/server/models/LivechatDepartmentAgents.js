@@ -118,6 +118,18 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 
 		return this.find(query, options);
 	}
+
+	replaceUsernameOfAgentByUserId(userId, username) {
+		const query = {'agentId': userId};
+
+		const update = {
+			$set: {
+				username
+			}
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 }
 
 RocketChat.models.LivechatDepartmentAgents = new LivechatDepartmentAgents();

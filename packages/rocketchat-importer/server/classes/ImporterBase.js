@@ -26,7 +26,7 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson').native();
+		const { BSON } = require('bson');
 		const bson = new BSON();
 		return bson.calculateObjectSize(item);
 	}
@@ -191,7 +191,7 @@ export class Base {
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', true);
 
 				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
-				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', 0);
+				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', -1);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:

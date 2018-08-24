@@ -43,7 +43,3 @@ Package.onUse(function(api) {
 	api.export('fileUploadHandler');
 	api.export('FileUpload');
 });
-
-Npm.depends({
-	'filesize': '3.3.0'
-});

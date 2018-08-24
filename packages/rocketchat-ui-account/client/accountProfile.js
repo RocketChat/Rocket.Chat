@@ -8,13 +8,22 @@ const validateUsername = (username) => {
 	return reg.test(username);
 };
 const validateName = (name) => name.length;
+const validatePassword = (password, confirmationPassword) => {
+	if (!confirmationPassword) {
+		return true;
+	}
+
+	return password === confirmationPassword;
+};
+
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
 };
 const filterEmail = (old) => {
 	return old.replace(' ', '');
 };
+
 const setAvatar = function(event, template) {
 	const {blob, contentType, service} = this.suggestion;
 
@@ -37,6 +46,8 @@ const loginWith = function(event, template) {
 		template.getSuggestions();
 	});
 };
+const isUserEmailVerified = user => user.emails && user.emails[0] && user.emails[0].verified;
+const getUserEmailAddress = user => user.emails && user.emails[0] && user.emails[0].address;
 
 Template.accountProfile.helpers({
 	emailInvalid() {
@@ -50,6 +61,10 @@ Template.accountProfile.helpers({
 	},
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
+	},
+	confirmationPasswordInvalid() {
+		const { password, confirmationPassword } = Template.instance();
+		return !validatePassword(password.get(), confirmationPassword.get());
 	},
 	selectUrl() {
 		return Template.instance().url.get().trim() ? '' : 'disabled';
@@ -86,6 +101,7 @@ Template.accountProfile.helpers({
 		const realname = instance.realname.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
+		const confirmationPassword = instance.confirmationPassword.get();
 		const email = instance.email.get();
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
@@ -100,7 +116,7 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		if (!avatar && user.name === realname && user.username === username && user.emails[0].address === email && !password) {
+		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
@@ -120,11 +136,11 @@ Template.accountProfile.helpers({
 	},
 	email() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].address;
+		return getUserEmailAddress(user);
 	},
 	emailVerified() {
 		const user = Meteor.user();
-		return user.emails && user.emails[0] && user.emails[0].verified;
+		return isUserEmailVerified(user);
 	},
 	allowRealNameChange() {
 		return RocketChat.settings.get('Accounts_AllowRealNameChange');
@@ -137,6 +153,10 @@ Template.accountProfile.helpers({
 	},
 	allowPasswordChange() {
 		return RocketChat.settings.get('Accounts_AllowPasswordChange');
+	},
+	canConfirmNewPassword() {
+		const password = Template.instance().password.get();
+		return RocketChat.settings.get('Accounts_AllowPasswordChange') && password && password !== '';
 	},
 	allowAvatarChange() {
 		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
@@ -151,9 +171,10 @@ Template.accountProfile.onCreated(function() {
 	const user = Meteor.user();
 	self.dep = new Tracker.Dependency;
 	self.realname = new ReactiveVar(user.name);
-	self.email = new ReactiveVar(user.emails[0].address);
+	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
 	self.password = new ReactiveVar;
+	self.confirmationPassword = new ReactiveVar;
 	self.suggestions = new ReactiveVar;
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
@@ -234,7 +255,7 @@ Template.accountProfile.onCreated(function() {
 				data.username = s.trim(self.username.get());
 			}
 		}
-		if (s.trim(self.email.get()) !== (user.emails && user.emails[0] && user.emails[0].address)) {
+		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
 			if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
 				toastr.remove();
 				toastr.error(t('Email_Change_Disabled'));
@@ -278,8 +299,6 @@ Template.accountProfile.onRendered(function() {
 		SideNav.setFlex('accountFlex');
 		SideNav.openFlex();
 	});
-	$('.main-content').removeClass('rc-old');
-	// TODO: remove this line (:
 });
 
 const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
@@ -349,6 +368,13 @@ Template.accountProfile.events({
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);
+
+		if (e.target.value.length === 0) {
+			instance.confirmationPassword.set('');
+		}
+	},
+	'input [name=confirmation-password]'(e, instance) {
+		instance.confirmationPassword.set(e.target.value);
 	},
 	'submit form'(e, instance) {
 		e.preventDefault();
@@ -358,7 +384,7 @@ Template.accountProfile.events({
 
 		const send = $(e.target.send);
 		send.addClass('loading');
-		const reqPass = ((email !== (user && user.emails && user.emails[0] && user.emails[0].address))
+		const reqPass = ((email !== getUserEmailAddress(user))
 			|| s.trim(password)) && (user && user.services && user.services.password && s.trim(user.services.password.bcrypt));
 		if (!reqPass) {
 			return instance.save(undefined, () => setTimeout(() => send.removeClass('loading'), 1000));
@@ -465,7 +491,7 @@ Template.accountProfile.events({
 		e.preventDefault();
 		e.currentTarget.innerHTML = `${ e.currentTarget.innerHTML } ...`;
 		e.currentTarget.disabled = true;
-		Meteor.call('sendConfirmationEmail', user.emails && user.emails[0] && user.emails[0].address, (error, results) => {
+		Meteor.call('sendConfirmationEmail', getUserEmailAddress(user), (error, results) => {
 			if (results) {
 				toastr.success(t('Verification_email_sent'));
 			} else if (error) {

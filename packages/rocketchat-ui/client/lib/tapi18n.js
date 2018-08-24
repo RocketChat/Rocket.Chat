@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 this.t = function(key, ...replaces) {
 	if (_.isObject(replaces[0])) {
-		return TAPi18n.__(key, replaces);
+		return TAPi18n.__(key, ...replaces);
 	} else {
 		return TAPi18n.__(key, {
 			postProcess: 'sprintf',
@@ -13,7 +13,7 @@ this.t = function(key, ...replaces) {
 
 this.tr = function(key, options, ...replaces) {
 	if (_.isObject(replaces[0])) {
-		return TAPi18n.__(key, options, replaces);
+		return TAPi18n.__(key, options, ...replaces);
 	} else {
 		return TAPi18n.__(key, options, {
 			postProcess: 'sprintf',
@@ -23,6 +23,6 @@ this.tr = function(key, options, ...replaces) {
 };
 
 this.isRtl = (lang) => {
-	const language = lang ? lang : localStorage.getItem('userLanguage');
+	const language = lang ? lang : localStorage.getItem('userLanguage') ? localStorage.getItem('userLanguage') : 'en-US';
 	return ['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi'].includes(language.split('-').shift().toLowerCase());
 };

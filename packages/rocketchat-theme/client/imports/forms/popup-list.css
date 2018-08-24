@@ -1,15 +1,23 @@
 .rc-popup-list {
 	position: absolute;
 
+	z-index: 1;
+
 	width: 100%;
 
+	padding: 0 4px;
+
 	&__list {
+		overflow-y: auto;
+
 		width: 100%;
+		max-height: 312px;
+
 		padding: 1rem;
 
 		border-radius: var(--popup-list-border-radius);
 		background-color: var(--popup-list-background);
-		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
+		box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 8px 0 rgba(47, 52, 61, 0.12);
 	}
 
 	&__item {

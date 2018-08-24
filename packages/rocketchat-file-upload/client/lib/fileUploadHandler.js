@@ -17,7 +17,6 @@ new UploadFS.Store({
 	})
 });
 
-
 fileUploadHandler = (directive, meta, file) => {
 	const store = UploadFS.getStore(directive);
 

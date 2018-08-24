@@ -19,7 +19,7 @@ export function setDirectMessageCreated(status) {
 }
 
 export function checkIfUserIsValid(username, email, password) {
-	if (!sideNav.accountBoxUserName.isVisible()) {
+	if (!sideNav.sidebarHeader.isVisible()) {
 		//if the user is not logged in.
 		console.log('	User not logged. logging in...');
 		loginPage.open();
@@ -35,11 +35,11 @@ export function checkIfUserIsValid(username, email, password) {
 			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
-	} else if (sideNav.accountBoxUserName.getAttribute('data-username') !== username) {
+	} else if (browser.execute(() => Meteor.user().username).value !== username) {
 		//if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
-		sideNav.accountMenu.waitForVisible(5000);
-		sideNav.accountMenu.click();
+		sideNav.sidebarUserMenu.waitForVisible(5000);
+		sideNav.sidebarUserMenu.click();
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
 
@@ -52,7 +52,7 @@ export function checkIfUserIsValid(username, email, password) {
 }
 
 export function checkIfUserIsAdmin(username, email, password) {
-	if (!sideNav.accountBoxUserName.isVisible()) {
+	if (!sideNav.sidebarHeader.isVisible()) {
 		//if the user is not logged in.
 		console.log('	User not logged. logging in...');
 		loginPage.open();
@@ -68,11 +68,11 @@ export function checkIfUserIsAdmin(username, email, password) {
 			browser.click('.submit > button');
 			mainContent.mainContent.waitForExist(5000);
 		}
-	} else if (sideNav.accountBoxUserName.getText() !== username) {
+	} else if (browser.execute(() => Meteor.user().username).value !== username) {
 		//if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
-		sideNav.accountMenu.waitForVisible(5000);
-		sideNav.accountMenu.click();
+		sideNav.sidebarUserMenu.waitForVisible(5000);
+		sideNav.sidebarUserMenu.click();
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
 

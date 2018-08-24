@@ -8,51 +8,20 @@
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 				{{#unless embeddedVersion}}
-					<header class="fixed-title content-background-color border-component-color">
-						{{> burger}}
-						<h2>
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
-							{{/if}}
-
-							{{#if tokenAccessChannel}}
-								<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
-							{{/if}}
-
-							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
-
-							<span class="room-title">{{roomName}}</span>
-							{{#if secondaryName}}
-								<span class="secondary-name">@{{secondaryName}}</span>
-							{{/if}}
-							{{#if sentimentSmile}}
-								<span class="sentiment">{{sentimentSmile}}</span>
-							{{/if}}
-							{{#if isTranslated}}
-								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-							{{/if}}
-							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
-						</h2>
-
-						{{#with toolbarButtons}}
-							<div class="iframe-toolbar">
-								{{#each buttons}}
-									<button class="{{id}}">
-										{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-										{{label}}
-									</button>
-								{{/each}}
+					{{# header}}
+						{{#with flexData}}
+							<div class="rc-header__block rc-header__block-action">
+								{{> RoomsActionTab}}
 							</div>
 						{{/with}}
-					</header>
-
+					{{/header}}
 				{{/unless}}
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
-								{{{RocketChatMarkdown roomAnnouncement}}}
+							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
+								<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
 							</div>
 							{{/if}}
 						{{/unless}}
@@ -84,7 +53,7 @@
 										<div class="upload-progress-text">
 											{{error}}
 										</div>
-										<button>
+										<button class="upload-progress-close">
 											{{_ "close"}}
 										</button>
 									{{else}}
@@ -92,14 +61,14 @@
 										<div class="upload-progress-text">
 											[{{percentage}}%] {{name}}
 										</div>
-										<button>
+										<button class="upload-progress-close">
 											{{_ "Cancel"}}
 										</button>
 									{{/if}}
 								</div>
 							{{/each}}
 						</div>
-						<div class="messages-box {{#if selectable}}selectable{{/if}} {{viewMode}} {{hasLeader}}">
+						<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
 							<div class="ticks-bar"></div>
 							<button class="new-message background-primary-action-color color-content-background-color not">
 								<i class="icon-down-big"></i>
@@ -139,13 +108,30 @@
 											</li>
 										{{else}}
 											<li class="start color-info-font-color">
+												{{#if hasPurge}}
+													<div class="start__purge-warning error-background error-border error-color">
+														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
+														{{#unless filesOnly}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
+															{{/unless}}
+														{{else}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
+															{{/unless}}
+														{{/unless}}
+														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
+													</div>
+												{{/if}}
 												{{_ "Start_of_conversation"}}
 											</li>
 										{{/if}}
 									{{/if}}
-									{{#each messagesHistory}}
-										{{#nrr nrrargs 'message' .}}{{/nrr}}
-									{{/each}}
+									{{#each messagesHistory}}{{#nrr nrrargs 'message' .}}{{/nrr}}{{/each}}
 									{{#if hasMoreNext}}
 										<li class="load-more">
 											{{#if isLoading}}
@@ -161,7 +147,7 @@
 						</footer>
 					</div>
 					{{#with flexData}}
-					{{> flexTabBar}}
+						{{> contextualBar}}
 					{{/with}}
 				</div>
 			</section>

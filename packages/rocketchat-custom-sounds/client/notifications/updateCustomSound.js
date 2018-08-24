@@ -1,3 +1,5 @@
 Meteor.startup(() =>
-	RocketChat.Notifications.onAll('updateCustomSound', data => RocketChat.CustomSounds.update(data.soundData))
+	RocketChat.CachedCollectionManager.onLogin(() =>
+		RocketChat.Notifications.onAll('updateCustomSound', data => RocketChat.CustomSounds.update(data.soundData))
+	)
 );

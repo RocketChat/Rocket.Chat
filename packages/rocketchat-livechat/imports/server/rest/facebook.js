@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+
+import LivechatVisitors from '../../../server/models/LivechatVisitors';
+
 /**
  * @api {post} /livechat/facebook Send Facebook message
  * @apiName Facebook
@@ -52,17 +55,15 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 				}
 			}
 		};
-
-		let visitor = RocketChat.models.Users.getVisitorByToken(this.bodyParams.token);
+		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.profile.token).fetch();
-
+			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
 				sendMessage.message.rid = Random.id();
 			}
-			sendMessage.message.token = visitor.profile.token;
+			sendMessage.message.token = visitor.token;
 		} else {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = this.bodyParams.token;

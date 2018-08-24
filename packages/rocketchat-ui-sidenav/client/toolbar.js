@@ -1,3 +1,4 @@
+
 /* global menu */
 import _ from 'underscore';
 
@@ -29,6 +30,7 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
+		$('.toolbar').css('display', 'block');
 		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
 	}
@@ -92,9 +94,6 @@ const getFromServer = (cb, type) => {
 const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
-	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
-	},
 	results() {
 		return Template.instance().resultsList.get();
 	},
@@ -126,7 +125,7 @@ Template.toolbar.helpers({
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '[role="search"] input',
+			input: '.toolbar__search .rc-input__element',
 			cleanOnEnter: true,
 			closeOnEsc: true,
 			blurOnSelectItem: true,
@@ -150,14 +149,15 @@ Template.toolbar.helpers({
 					query._id = query.rid;
 					delete query.rid;
 				}
-
-				if (filterText[0] === '#') {
+				const searchForChannels = filterText[0] === '#';
+				const searchForDMs = filterText[0] === '@';
+				if (searchForChannels) {
 					filterText = filterText.slice(1);
 					type.users = false;
 					query.t = 'c';
 				}
 
-				if (filterText[0] === '@') {
+				if (searchForDMs) {
 					filterText = filterText.slice(1);
 					type.rooms = false;
 					query.t = 'd';
@@ -172,7 +172,7 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.user();
+				const user = Meteor.users.findOne(Meteor.userId(), {fields: {name: 1, username:1}});
 				if (user) {
 					usernamesFromClient = [user];
 				}
@@ -215,6 +215,7 @@ Template.toolbar.events({
 			e.stopPropagation();
 
 			toolbarSearch.clear();
+			$('.toolbar').css('display', 'none');
 		}
 	},
 
@@ -224,10 +225,12 @@ Template.toolbar.events({
 
 	'click .toolbar__icon-search--right'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'blur [role="search"] input'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {

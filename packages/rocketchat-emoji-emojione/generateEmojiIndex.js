@@ -1,5 +1,5 @@
 // emoji.json from emojione@2.2.6
-var fs = require('fs');
+import fs from 'fs';
 
 var emojiList = JSON.parse(fs.readFileSync('emoji.json', 'utf-8'));
 
