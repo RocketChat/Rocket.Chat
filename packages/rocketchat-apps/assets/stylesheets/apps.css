@@ -41,6 +41,11 @@
 		line-height: 20px;
 	}
 
+	.rc-apps-details__description {
+		padding-bottom: 50px;
+		border-bottom: 1.5px solid #EFEFEF;
+	}
+
 	.rc-apps-details__photo {
 		background-color: #f7f7f7;
 		height: 96px;

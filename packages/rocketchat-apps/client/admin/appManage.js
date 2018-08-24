@@ -17,6 +17,13 @@ function getApps(instance) {
 			if (remoteApp) {
 				localApp.categories = remoteApp.categories;
 			}
+
+			instance.onSettingUpdated({ appId: id });
+
+			window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+			window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 		}
 
 		instance.app.set(localApp || remoteApp);
@@ -74,11 +81,6 @@ Template.appManage.onCreated(function() {
 			_morphSettings(result.settings);
 		});
 	};
-
-	instance.onSettingUpdated({ appId: id });
-
-	window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-	window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
 
 Template.apps.onDestroyed(function() {
@@ -120,6 +122,11 @@ Template.appManage.helpers({
 		const t = Template.instance();
 		const settings = t.settings.get();
 		return Object.keys(settings).some((k) => settings[k].hasChanged);
+	},
+	disabled() {
+		const t = Template.instance();
+		const settings = t.settings.get();
+		return !Object.keys(settings).some((k) => settings[k].hasChanged);
 	},
 	isReady() {
 		if (Template.instance().ready) {

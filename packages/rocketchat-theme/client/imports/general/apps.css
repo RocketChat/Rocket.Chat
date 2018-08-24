@@ -12,13 +12,17 @@
 		padding: 25px 0;
 		max-width: 705px;
 		margin: auto;
-    width: 100%;
+    	width: 100%;
 		display: flex;
 		padding-bottom: 25px;
 
 		&__header {
 			border-bottom: 1px solid #E1E1E1;
 		}
+	}
+
+	&-marketplace {
+		padding: 0 24px;
 	}
 
 	&-details {
@@ -30,18 +34,18 @@
 			height: 95px;
 			flex: 0 0 auto;
 			background-size: contain;
-	    background-repeat: no-repeat;
-	    background-position: center center;
+			background-repeat: no-repeat;
+			background-position: center center;
 			border: 1px solid #f7f7f7;
 		}
 
 		&__content {
 			flex: 1 1 auto;
-	    justify-content: space-between;
-	    padding: 0 15px;
-	    display: flex;
-	    flex-direction: column;
-	    overflow: hidden;
+			justify-content: space-between;
+			padding: 0 15px;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
 		}
 
 		&__row {
@@ -78,9 +82,9 @@
 
 		&__item {
 			white-space: nowrap;
-	    flex: 1 1 1px;
-	    overflow: hidden;
-	    text-overflow: ellipsis;
+			flex: 1 1 1px;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 	}
