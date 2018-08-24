@@ -94,6 +94,10 @@ Template.header.helpers({
 		return Template.instance().data.fixedHeight;
 	},
 
+	fullpage() {
+		return Template.instance().data.fullpage;
+	},
+
 	isChannel() {
 		return Template.instance().currentChannel != null;
 	},
