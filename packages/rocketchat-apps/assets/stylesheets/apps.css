@@ -19,6 +19,8 @@
 		font-weight: normal;
 		letter-spacing: 0;
 		line-height: 28px;
+		margin-bottom: 0 !important;
+		text-transform: initial !important;
 	}
 
 	h2 {
@@ -29,6 +31,8 @@
 		letter-spacing: 0;
 		line-height: 24px;
 		margin-top: 10px;
+		margin-bottom: 0 !important;
+		text-transform: initial !important;
 	}
 
 	h3 {
@@ -39,6 +43,8 @@
 		text-align: left;
 		letter-spacing: 0;
 		line-height: 20px;
+		margin-bottom: 0 !important;
+		text-transform: initial !important;
 	}
 
 	.rc-apps-details__description {
@@ -59,6 +65,7 @@
 
 	.rc-apps-details {
 		padding: 0px;
+		margin-bottom: 0 !important;
 	}
 
 	.rc-apps-container {
@@ -67,6 +74,7 @@
 
 	.rc-apps-container__header {
 		border-bottom: 1.5px solid #EFEFEF;
+		padding-top: 10px;
 	}
 
 	.js-install {
