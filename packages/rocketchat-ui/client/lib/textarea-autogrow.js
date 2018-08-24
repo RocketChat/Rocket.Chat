@@ -54,6 +54,13 @@ import _ from 'underscore'
 
 			let length = 0;
 
+			const updateWidth = () => {
+				length = 0;
+				width = $self.width();
+				update();
+			}
+
+			const updateWidthDebounce = _.debounce(updateWidth, 300);
 
 			const update = function update (event) {
 				if (lastHeight >= maxHeight && length && length < self.value.length) {
@@ -71,6 +78,10 @@ import _ from 'underscore'
 				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
 				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
 					val += '<br/>';
+				}
+
+				if(width < 10 ) {
+					width = $self.width();
 				}
 
 				if (width !== lastWidth) {
@@ -108,11 +119,6 @@ import _ from 'underscore'
 				}
 			}
 
-			const updateWidthDebounce = _.debounce(() => {
-				length = 0;
-				width = $self.width();
-				update();
-			}, 300);
 
 			const updateThrottle = _.throttle(update, 300);
 
