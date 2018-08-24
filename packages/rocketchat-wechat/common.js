@@ -12,7 +12,16 @@ const config = {
 	}
 };
 
-const WeChat = new CustomOAuth('wechat', config);
+class WeChatOAuth extends CustomOAuth {
+	fixThirdPartyIdentityRules(identity) {
+		super.fixThirdPartyIdentityRules(identity);
+
+		// quick & dirty for wechat email
+		identity.email = `${ identity.openid }@wechat.app`;
+	}
+}
+
+const WeChat = new WeChatOAuth('wechat', config);
 
 const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 	config.serverURL = RocketChat.settings.get('Accounts_OAuth_WeChat_URL').trim().replace(/\/*$/, '');
