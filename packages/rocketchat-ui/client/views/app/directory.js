@@ -82,7 +82,7 @@ Template.directory.helpers({
 		];
 
 		// add global search
-		if(RocketChat.settings.get('Global_search_in_directory')){
+		if (RocketChat.settings.get('Global_search_in_directory')) {
 			tabs[0].active = false;
 			tabs.unshift({
 				label: t('Search_Messages'),

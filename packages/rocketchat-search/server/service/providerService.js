@@ -85,7 +85,7 @@ class SearchProviderService {
 			self.add('Global_search_in_directory', true, {
 				type: 'boolean',
 				public: true,
-				i18nLabel: 'Global_search_in_directory'
+				i18nLabel: 'Global_search_in_directory',
 			});
 
 			self.add('Search.Provider', 'defaultProvider', {
