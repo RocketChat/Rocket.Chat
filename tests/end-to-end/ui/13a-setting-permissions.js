@@ -3,6 +3,7 @@ import { adminUsername, adminEmail, adminPassword, username, email, password } f
 import admin from '../../pageobjects/administration.page';
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
+import { assert } from 'chai';
 
 function openAdminView() {
 	sideNav.sidebarMenu.click();

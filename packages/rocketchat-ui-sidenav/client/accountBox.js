@@ -9,7 +9,7 @@ Template.accountBox.helpers({
 				status: 'online',
 				visualStatus: t('online'),
 				bullet: 'general-success-background',
-				username: 'anonymous'
+				username: 'anonymous',
 			};
 		}
 
@@ -24,7 +24,7 @@ Template.accountBox.helpers({
 			bullet: userStatus,
 			_id: Meteor.userId(),
 			username,
-			fname: RocketChat.settings.get('UI_Use_Real_Name') && name
+			fname: RocketChat.settings.get('UI_Use_Real_Name') && name,
 		};
 	},
 
@@ -32,7 +32,7 @@ Template.accountBox.helpers({
 		if (Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return 'disabled';
 		}
-	}
+	},
 });
 
 Template.accountBox.events({
@@ -43,7 +43,7 @@ Template.accountBox.events({
 				icon: 'customize',
 				name: t('Administration'),
 				type: 'open',
-				id: 'administration'
+				id: 'administration',
 			};
 		}
 
@@ -62,73 +62,71 @@ Template.accountBox.events({
 									name: t('Online'),
 									type: 'set-state',
 									id: 'online',
-									modifier: 'online'
+									modifier: 'online',
 								},
 								{
 									icon: 'circle',
 									name: t('Away'),
 									type: 'set-state',
 									id: 'away',
-									modifier: 'away'
+									modifier: 'away',
 								},
 								{
 									icon: 'circle',
 									name: t('Busy'),
 									type: 'set-state',
 									id: 'busy',
-									modifier: 'busy'
+									modifier: 'busy',
 								},
 								{
 									icon: 'circle',
 									name: t('Invisible'),
 									type: 'set-state',
 									id: 'offline',
-									modifier: 'offline'
-								}
-							]
+									modifier: 'offline',
+								},
+							],
 						},
 						{
-							items: AccountBox.getItems().map(item => {
-								return {
-									icon: item.icon,
-									name: t(item.name),
-									type: 'open',
-									id: item.name,
-									href: item.href,
-									sideNav: item.sideNav
-								};
-							}).concat([
+							items: AccountBox.getItems().map((item) => ({
+								icon: item.icon,
+								name: t(item.name),
+								type: 'open',
+								id: item.name,
+								href: item.href,
+								sideNav: item.sideNav,
+							})).concat([
 								adminOption,
 								{
 									icon: 'user',
 									name: t('My_Account'),
 									type: 'open',
-									id: 'account'
+									id: 'account',
 								},
 								{
 									icon: 'sign-out',
 									name: t('Logout'),
 									type: 'open',
-									id: 'logout'
-								}
-							])
-						}
+									id: 'logout',
+								},
+							]),
+						},
 
-					]
-				}
+					],
+				},
 			],
 			position: {
-				top: accountBox.offsetHeight
+				top: accountBox.offsetHeight,
 			},
 			customCSSProperties: {
 				width: `${ accountBox.offsetWidth - parseInt(getComputedStyle(accountBox)['padding-left'].replace('px', '')) * 2 }px`,
 				left: isRtl() ? 'auto' : getComputedStyle(accountBox)['padding-left'],
-				right: 'auto'
-			}
+				right: 'auto',
+			},
 		};
 
 		popover.open(config);
-	}
+	},
 });
 
 Template.accountBox.onRendered(() => AccountBox.init());

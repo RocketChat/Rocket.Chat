@@ -1,4 +1,4 @@
-import {permissionLevel} from '../../lib/rocketchat';
+import { permissionLevel } from '../../lib/rocketchat';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
