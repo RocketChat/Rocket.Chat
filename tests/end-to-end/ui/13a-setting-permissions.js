@@ -25,6 +25,12 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 
 	describe('Give User Permissions', function() {
 		before(() => {
+			try {
+				//If the tests run as a suite,a user may already be logged-in
+				logoutRocketchat();
+			} catch (e) {
+				// most possibly already logged off since started seperately => try to continue
+			}
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			openAdminView();
 			admin.permissionsLink.waitForVisible(5000);
