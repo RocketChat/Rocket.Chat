@@ -1,6 +1,7 @@
 /* global InstanceStatus, MongoInternals */
 import _ from 'underscore';
 import os from 'os';
+import {getUsages} from './getUsages';
 
 const wizardFields = [
 	'Organization_Type',
@@ -95,6 +96,8 @@ RocketChat.statistics.get = function _getStatistics() {
 	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
 	}
+
+	statistics.usages = getUsages();
 
 	return statistics;
 };
