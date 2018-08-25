@@ -2,31 +2,35 @@ import s from 'underscore.string';
 
 RocketChat.placeholders = {};
 
-RocketChat.placeholders.replace = function(str, data) {
+const replace = (str, data) => {
+	str = Object.entries(data)
+		.reduce((str, [key, value]) => str.replace(new RegExp(`\\[${ key }\\]`, 'g'), value || ''), str);
+
+	str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+
+	return str;
+};
+
+RocketChat.placeholders.replace = (str, data) => {
 	if (!str) {
 		return '';
 	}
 
-	str = str.replace(/\[Site_Name\]/g, RocketChat.settings.get('Site_Name') || '');
-	str = str.replace(/\[Site_URL\]/g, RocketChat.settings.get('Site_Url') || '');
+	return replace(str, {
+		Site_Name: RocketChat.settings.get('Site_Name'),
+		Site_Url: RocketChat.settings.get('Site_Url'),
+		...(data || {}),
+	});
+};
 
-	if (data) {
-		str = str.replace(/\[name\]/g, data.name || '');
-		str = str.replace(/\[fname\]/g, s.strLeft(data.name, ' ') || '');
-		str = str.replace(/\[lname\]/g, s.strRightBack(data.name, ' ') || '');
-		str = str.replace(/\[email\]/g, data.email || '');
-		str = str.replace(/\[password\]/g, data.password || '');
-		str = str.replace(/\[reason\]/g, data.reason || '');
-		str = str.replace(/\[User\]/g, data.user || '');
-		str = str.replace(/\[Room\]/g, data.room || '');
-
-		if (data.unsubscribe) {
-			str = str.replace(/\[unsubscribe\]/g, data.unsubscribe);
-		}
+RocketChat.placeholders.replaceEscaped = (str, data) => {
+	if (!str) {
+		return '';
 	}
 
-	str = str.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
-
-
-	return str;
+	return replace(str, {
+		Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
+		Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
+		...Object.assign({}, ...Object.entries(data || {}).map(([key, value]) => ({ [key]: s.escapeHTML(value) }))),
+	});
 };
