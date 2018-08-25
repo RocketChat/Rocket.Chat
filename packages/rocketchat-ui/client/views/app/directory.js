@@ -63,24 +63,39 @@ Template.directory.helpers({
 			end,
 			page,
 		} = Template.instance();
+		const tabs = [
+			{
+				label: t('Channels'),
+				value: 'channels',
+				condition() {
+					return true;
+				},
+				active: true,
+			},
+			{
+				label: t('Users'),
+				value: 'users',
+				condition() {
+					return true;
+				},
+			},
+		];
+
+		// add global search
+		if(RocketChat.settings.get('Global_search_in_directory')){
+			tabs[0].active = false;
+			tabs.unshift({
+				label: t('Search_Messages'),
+				value: 'global',
+				condition() {
+					return true;
+				},
+				active: true,
+			});
+		}
+
 		return {
-			tabs: [
-				{
-					label: t('Channels'),
-					value: 'channels',
-					condition() {
-						return true;
-					},
-					active: true,
-				},
-				{
-					label: t('Users'),
-					value: 'users',
-					condition() {
-						return true;
-					},
-				},
-			],
+			tabs,
 			onChange(value) {
 				results.set([]);
 				end.set(false);
@@ -191,7 +206,7 @@ Template.directory.onRendered(function() {
 
 Template.directory.onCreated(function() {
 	this.searchText = new ReactiveVar('');
-	this.searchType = new ReactiveVar('channels');
+	this.searchType = new ReactiveVar(RocketChat.settings.get('Global_search_in_directory') ? 'global' : 'channels');
 	this.searchSortBy = new ReactiveVar('usersCount');
 	this.sortDirection = new ReactiveVar('desc');
 	this.limit = new ReactiveVar(0);

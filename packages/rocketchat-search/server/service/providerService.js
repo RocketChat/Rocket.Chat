@@ -82,6 +82,12 @@ class SearchProviderService {
 
 			const self = this;
 
+			self.add('Global_search_in_directory', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Global_search_in_directory'
+			});
+
 			self.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: Object.keys(providers).map((key) => ({ key, i18nLabel: providers[key].i18nLabel })),
