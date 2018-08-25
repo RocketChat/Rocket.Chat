@@ -61,8 +61,8 @@ Meteor.methods({
 			}
 		}
 
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 		const html = RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
 			sort: {	ts: 1 },
 		}).map(function(message) {

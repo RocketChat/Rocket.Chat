@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 
 Meteor.methods({
 	sendInvitationEmail(emails) {
@@ -20,8 +19,8 @@ Meteor.methods({
 				return email;
 			}
 		}));
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 		let html;
 		let subject;
 		const user = Meteor.user();
@@ -40,8 +39,8 @@ Meteor.methods({
 		subject = RocketChat.placeholders.replace(subject);
 		validEmails.forEach((email) => {
 			this.unblock();
-			html = RocketChat.placeholders.replace(html, {
-				email: s.escapeHTML(email),
+			html = RocketChat.placeholders.replaceEscaped(html, {
+				email,
 			});
 			try {
 				Email.send({
