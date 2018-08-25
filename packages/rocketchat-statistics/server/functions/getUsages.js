@@ -9,26 +9,26 @@ export function getUsages() {
 	const usages = [];
 	const users = userDB.model.aggregate([
 		{
-			$unwind: '$emails'
+			$unwind: '$emails',
 		},
 		{
-			$project: { '_id': 1, 'emails.address': 1 }
-		}
+			$project: { _id: 1, 'emails.address': 1 },
+		},
 	]);
 
 	const readsArr = subDB.model.aggregate([
 		{
 			$match:
 				{
-					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
-				}
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) },
+				},
 		},
 		{
 			$group:
 				{
-					_id: { uid: '$u._id', subType: '$t'},
-					subs: { $sum: 1 }
-				}
+					_id: { uid: '$u._id', subType: '$t' },
+					subs: { $sum: 1 },
+				},
 		},
 		{
 			$group:
@@ -38,11 +38,11 @@ export function getUsages() {
 						$addToSet:
 								{
 									type: '$_id.subType',
-									subscriptions: '$subs'
-								}
-					}
-				}
-		}
+									subscriptions: '$subs',
+								},
+					},
+				},
+		},
 	]);
 	const reads = new Map(readsArr.map((i) => [i._id, i.roomTypes]));
 
@@ -50,8 +50,8 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
-				}
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) },
+				},
 		},
 		{
 			$lookup:
@@ -59,18 +59,18 @@ export function getUsages() {
 					from: 'rocketchat_room',
 					localField: 'rid',
 					foreignField: '_id',
-					as: 'msgRooms'
-				}
+					as: 'msgRooms',
+				},
 		},
 		{
-			$unwind: '$msgRooms'
+			$unwind: '$msgRooms',
 		},
 		{
 			$group:
 				{
-					_id: { uid: '$u._id', msgRoom: '$msgRooms.t'},
-					messages: { $sum: 1 }
-				}
+					_id: { uid: '$u._id', msgRoom: '$msgRooms.t' },
+					messages: { $sum: 1 },
+				},
 		},
 		{
 			$group:
@@ -80,11 +80,11 @@ export function getUsages() {
 						$addToSet:
 								{
 									type: '$_id.msgRoom',
-									messages: '$messages'
-								}
-					}
-				}
-		}
+									messages: '$messages',
+								},
+					},
+				},
+		},
 	]);
 	const writes = new Map(writesArr.map((i) => [i._id, i.roomTypes]));
 

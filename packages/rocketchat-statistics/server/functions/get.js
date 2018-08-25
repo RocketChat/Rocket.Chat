@@ -1,7 +1,7 @@
 /* global InstanceStatus, MongoInternals */
 import _ from 'underscore';
 import os from 'os';
-import {getUsages} from './getUsages';
+import { getUsages } from './getUsages';
 
 const wizardFields = [
 	'Organization_Type',

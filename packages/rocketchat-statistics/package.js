@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
-		'sha'
+		'sha',
 	]);
 
 	// Statistics
