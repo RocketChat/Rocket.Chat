@@ -81,4 +81,7 @@ Template.DefaultSearchResultTemplate.helpers({
 	message() {
 		return { customClass: 'search', actionContext: 'search', ...this };
 	},
+	shownInDirectory() {
+		return Template.instance().data.context === 'directory';
+	},
 });

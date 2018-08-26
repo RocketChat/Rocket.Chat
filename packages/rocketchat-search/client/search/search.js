@@ -48,6 +48,7 @@ Template.RocketSearch.onCreated(function() {
 		parentPayload: {},
 		payload: {},
 		search: _search,
+		context: this.data.context
 	};
 
 	this.search = (value) => {

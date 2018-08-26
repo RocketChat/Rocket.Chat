@@ -1,5 +1,6 @@
 <template name="DefaultSearchResultTemplate">
 	<div class="rocket-default-search-settings">
+		{{#unless shownInDirectory}}
 		<div>
 			{{#if globalSearchEnabled}}
 				<label>
@@ -7,6 +8,7 @@
 				</label>
 			{{/if}}
 		</div>
+		{{/unless}}
 	</div>
 	<div class="rocket-default-search-results">
 		{{#if result}}

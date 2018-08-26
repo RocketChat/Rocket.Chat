@@ -4,7 +4,7 @@
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
 			{{#if $eq searchType 'global'}}
-				{{>RocketSearch}}
+				{{>RocketSearch context="directory"}}
 			{{else}}
 				<div class="rc-input rc-input--small rc-directory-search">
 					<label class="rc-input__label">
