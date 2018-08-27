@@ -382,8 +382,9 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 				size: value.cache.size,
 				hash: value.cache.hash,
 			};
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = value.cache;
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ value.cache.extension }`] = value.cache;
+			// TODO: fix meteor 1.7
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = value.cache;
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ value.cache.extension }`] = value.cache;
 		} else {
 			const extension = value.defaultUrl.split('.').pop();
 			cache = {
@@ -396,8 +397,9 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 				hash: 'v3',
 			};
 
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ extension }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
+			// TODO: fix meteor 1.7
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ extension }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
 		}
 
 		const manifestItem = _.findWhere(manifest, {
