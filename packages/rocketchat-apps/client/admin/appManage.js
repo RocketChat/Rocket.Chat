@@ -2,6 +2,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
+import { Utilities } from '../../lib/misc/Utilities';
 
 
 Template.appManage.onCreated(function() {
@@ -16,6 +17,11 @@ Template.appManage.onCreated(function() {
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
+
+	this.__ = (key) => {
+		const appKey = Utilities.getI18nKeyForApp(key, id);
+		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey) : TAPi18n.__(key);
+	};
 
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
@@ -74,6 +80,9 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	_(key) {
+		return Template.instance().__(key);
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
@@ -150,7 +159,7 @@ Template.appManage.helpers({
 		return Object.values(Template.instance().settings.get());
 	},
 	parseDescription(i18nDescription) {
-		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: t(i18nDescription) });
+		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
 		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
 
