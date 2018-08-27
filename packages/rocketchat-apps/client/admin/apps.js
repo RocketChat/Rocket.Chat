@@ -29,7 +29,7 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 const getApps = (instance) => {
 	instance.isLoading.set(true);
 
-	fetch(`${ HOST }/v1/apps?version=0.9.13`)
+	fetch(`${ HOST }/v1/apps?version=${ RocketChat.Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
