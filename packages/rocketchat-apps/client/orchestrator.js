@@ -80,7 +80,6 @@ class AppClientOrchestrator {
 					return newTranslations;
 				}, {});
 
-				console.log(language, translations);
 				TAPi18next.addResourceBundle(language, 'project', translations);
 			} catch (e) {
 				// Failed to parse the json
