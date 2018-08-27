@@ -146,18 +146,18 @@ export class AppCommandsBridge {
 		}
 
 		const match = parameters.match(/((["'])(?:(?=(\\?))\3.)*?\2)/g);
-		if (!match) {
-			return [];
-		}
-
 		let line = parameters;
 
-		match.forEach((item) => {
-			const newItem = item.replace(/(^['"]|['"]$)/g, '').replace(/ +/g, '\u2008');
-			line = line.replace(item, newItem);
-		});
+		if (match) {
+			match.forEach((item) => {
+				const newItem = item.replace(/(^['"]|['"]$)/g, '').replace(/ +/g, '\u2008');
+				line = line.replace(item, newItem);
+			});
 
-		return line.split(' ').map((item) => item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"'));
+			return line.split(' ').map((item) => item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"'));
+		}
+
+		return line.split(' ');
 	}
 
 	_appCommandExecutor(command, parameters, message) {
