@@ -1,73 +1,85 @@
 .rc-apps-marketplace {
-	font-size: 14px;
+
 	overflow: auto;
+
+	font-size: 14px;
 
 	&.page-settings .rc-apps-container {
 		a {
 			color: var(--rc-color-button-primary);
+
 			font-weight: 500;
 		}
 	}
 
 	h1 {
-		color: #54585E;
+		margin-bottom: 0;
+
+		letter-spacing: 0;
+		text-transform: initial;
+
+		color: #54585e;
+
 		font-size: 22px;
 		font-weight: normal;
-		letter-spacing: 0;
 		line-height: 28px;
-		margin-bottom: 0;
-		text-transform: initial;
 	}
 
 	h2 {
-		color: var(--color-dark);
-		font-size: 16px;
-		font-weight: 500;
-		letter-spacing: 0;
-		line-height: 24px;
 		margin-top: 10px;
 		margin-bottom: 0;
+
+		letter-spacing: 0;
 		text-transform: initial;
+
+		color: var(--color-dark);
+
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 24px;
 	}
 
 	h3 {
-		color: var(--color-gray);
-		font-size: 14px;
-		font-weight: 500;
+		margin-bottom: 0;
+
 		text-align: left;
 		letter-spacing: 0;
-		line-height: 20px;
-		margin-bottom: 0;
 		text-transform: initial;
+
+		color: var(--color-gray);
+
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 20px;
 	}
 
-
 	.rc-apps-details {
-		padding: 0px;
 		margin-bottom: 0;
+		padding: 0;
 
 		&__description {
 			padding-bottom: 50px;
-			border-bottom: 1.5px solid #EFEFEF;
+
+			border-bottom: 1.5px solid #efefef;
 		}
 
 		&__photo {
-			background-color: #f7f7f7;
-			height: 96px;
 			width: 96px;
+			height: 96px;
 			margin-right: 21px;
+
+			background-color: #f7f7f7;
 		}
 
 		&__content {
-			padding: 0px;
+			padding: 0;
 		}
-
 
 		&__col {
 			display: inline-block;
+
 			margin-right: 8px;
 		}
-
 	}
 
 	.rc-apps-container {
@@ -75,46 +87,53 @@
 	}
 
 	.rc-apps-container__header {
-		border-bottom: 1.5px solid #EFEFEF;
 		padding-top: 10px;
+
+		border-bottom: 1.5px solid #efefef;
 	}
-/*
+
+	/*
 	.js-install {
 		margin-top: 6px;
 	} */
 
 	.rc-header .rc-button {
-		margin: 0;
 		min-height: 0;
+		margin: 0;
 	}
 
 	.rc-apps-category {
 		margin-right: 8px;
 		padding: 8px;
-		background: #F3F4F5;
-		border-radius: 2px 2px 2px 2px;
-		color: #9DA2A9;
+
+		text-align: left;
+		letter-spacing: -0.17px;
+		text-transform: uppercase;
+
+		color: #9da2a9;
+		border-radius: 2px;
+		background: #f3f4f5;
+
 		font-size: 12px;
 		font-weight: 500;
-		text-align: left;
-		text-transform: uppercase;
-		letter-spacing: -0.17px;
 	}
 
 	.app-enable-loading .loading-animation {
-		justify-content: left;
 		margin-left: 50px;
+		justify-content: left;
 	}
 
 	.apps-error {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+
+		width: 100%;
 		height: calc(100% - 60px);
 		padding: 25px 40px;
-		width: 100%;
+
 		font-size: 45px;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.rc-table-avatar {
@@ -128,30 +147,33 @@
 	}
 
 	.installer {
+		position: relative;
+
+		overflow: hidden;
+
 		width: 20px;
 		height: 20px;
-		overflow: hidden;
-		position: relative;
 
 		&--marketplace-installer {
 			position: absolute;
 			top: 0;
+
 			width: 818px;
 			height: 20px;
 
 			&.play {
 				animation: play90 steps(40) 4s forwards;
-
 			}
 		}
 	}
 }
 
 @keyframes play90 {
-  0% {
-    right: -798px;
-  }
-  100% {
-    right: 2px;
-  }
+	0% {
+		right: -798px;
+	}
+
+	100% {
+		right: 2px;
+	}
 }
