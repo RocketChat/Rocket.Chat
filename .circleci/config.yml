@@ -291,16 +291,16 @@ jobs:
               echo "Build preview Docker image"
               cp ~/repo/.docker-mongo/Dockerfile .
               cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat-preview:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat-preview:$CIRCLE_TAG
+              docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
+              docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
 
-              if [[ $CIRCLE_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
                 docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
                 docker push rocketchat/rocket.chat:latest
 
                 docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
                 docker push rocketchat/rocket.chat.preview:latest
-              else
+              elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
                 docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
                 docker push rocketchat/rocket.chat:release-candidate
 

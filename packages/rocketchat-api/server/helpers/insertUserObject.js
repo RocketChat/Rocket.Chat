@@ -5,7 +5,7 @@ RocketChat.API.helperMethods.set('insertUserObject', function _addUserToObject({
 		object.user = {
 			_id: userId,
 			username: user.username,
-			name: user.name
+			name: user.name,
 		};
 	}
 

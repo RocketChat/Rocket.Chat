@@ -14,21 +14,9 @@ export function notifyDesktopUser({
 	message,
 	room,
 	duration,
-	notificationMessage
+	notificationMessage,
 }) {
-	const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
-
-	let title = '';
-	let text = '';
-	if (room.t === 'd') {
-		title = UI_Use_Real_Name ? user.name : `@${ user.username }`;
-		text = notificationMessage;
-	} else if (room.name) {
-		title = `#${ room.name }`;
-		text = `${ UI_Use_Real_Name ? user.name : user.username }: ${ notificationMessage }`;
-	} else {
-		return;
-	}
+	const { title, text } = RocketChat.roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
 	RocketChat.metrics.notificationsSent.inc({ notification_type: 'desktop' });
 	RocketChat.Notifications.notifyUser(userId, 'notification', {
@@ -40,8 +28,8 @@ export function notifyDesktopUser({
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
-		}
+			name: room.name,
+		},
 	});
 }
 
@@ -53,7 +41,7 @@ export function shouldNotifyDesktop({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType
+	roomType,
 }) {
 	if (disableAllMessageNotifications && desktopNotifications == null) {
 		return false;

@@ -6,7 +6,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
 
@@ -14,7 +14,7 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
 
@@ -25,20 +25,21 @@ Meteor.methods({
 			}
 		}
 
-		if (RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
-			RocketChat.models.Messages.removeByRoomId(rid);
-			RocketChat.models.Subscriptions.removeByRoomId(rid);
-			const result = RocketChat.models.Rooms.removeById(rid);
-
-			if (Apps && Apps.isLoaded()) {
-				Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
-			}
-
-			return result;
-		} else {
+		if (!RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
-	}
+
+		RocketChat.models.Messages.removeFilesByRoomId(rid);
+		RocketChat.models.Messages.removeByRoomId(rid);
+		RocketChat.models.Subscriptions.removeByRoomId(rid);
+		const result = RocketChat.models.Rooms.removeById(rid);
+
+		if (Apps && Apps.isLoaded()) {
+			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
+		}
+
+		return result;
+	},
 });

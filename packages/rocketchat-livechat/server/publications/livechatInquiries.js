@@ -9,7 +9,7 @@ Meteor.publish('livechat:inquiry', function() {
 
 	const query = {
 		agents: this.userId,
-		status: 'open'
+		status: 'open',
 	};
 
 	return RocketChat.models.LivechatInquiry.find(query);

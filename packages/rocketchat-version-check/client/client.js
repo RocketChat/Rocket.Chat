@@ -19,9 +19,9 @@ Meteor.startup(function() {
 				},
 				onClose() {
 					Meteor.call('banner/dismiss', {
-						id: firstBanner.id
+						id: firstBanner.id,
 					});
-				}
+				},
 			});
 		}
 	});
