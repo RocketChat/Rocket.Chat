@@ -2,7 +2,7 @@
 <template name="appManage">
 	{{#with app}}
 
-		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true}}
+		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true fullpage=true}}
 		<div class="rc-header__block rc-header__block-action">
 			<div class="rc-switch rc-switch--blue">
 				<label class="rc-switch__label">
@@ -18,7 +18,7 @@
 
 		</div>
 		{{/header}}
-		<section class="page-settings flex-tab-main-content">
+		<section class="page-settings page-settings--new flex-tab-main-content">
 			{{#requiresPermission 'manage-apps'}}
 				{{#if isReady}}
 					<div class="rc-apps-details">

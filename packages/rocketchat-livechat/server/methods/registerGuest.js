@@ -1,7 +1,7 @@
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
-	'livechat:registerGuest'({ token, name, email, department } = {}) {
+	'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
 		const userId = RocketChat.Livechat.registerGuest.call(this, {
 			token,
 			name,
@@ -18,6 +18,7 @@ Meteor.methods({
 				name: 1,
 				username: 1,
 				visitorEmails: 1,
+				department: 1,
 			},
 		});
 
@@ -26,6 +27,19 @@ Meteor.methods({
 		cursor.forEach((room) => {
 			RocketChat.Livechat.saveRoomInfo(room, visitor);
 		});
+
+		if (customFields && customFields instanceof Array) {
+			customFields.forEach((customField) => {
+				if (typeof customField !== 'object') {
+					return;
+				}
+
+				if (!customField.scope || customField.scope !== 'room') {
+					const { key, value, overwrite } = customField;
+					LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+				}
+			});
+		}
 
 		return {
 			userId,
