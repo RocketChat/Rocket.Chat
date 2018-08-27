@@ -94,6 +94,9 @@ Template.RocketSearch.events = {
 				t.search(evt.target.value.trim());
 			}
 			t.suggestions.set();
+
+
+
 			return evt.preventDefault();
 		}
 
@@ -171,7 +174,18 @@ Template.RocketSearch.helpers({
 	suggestionSelected(index) {
 		return Template.instance().suggestionActive.get() === index ? 'active' : '';
 	},
-
+	classStatusSearchText() {
+		const instance = Template.instance();
+		return !instance.scope.text.get()
+			? 'searchtext-empty'
+			: '';
+	},
+	classStatusSuggestion() {
+		const instance = Template.instance();
+		return instance.suggestions.get()
+			? 'suggestions-visible'
+			: '';
+	},
 });
 
 // add closer to suggestions

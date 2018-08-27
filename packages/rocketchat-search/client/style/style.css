@@ -63,3 +63,30 @@
 	background-color: var(--button-primary-background);
 	color: white;
 }
+
+/* Global search in directory */
+.rc-directory .rocket-search-tab {
+    padding: 0px;
+    padding-top: 10px;
+}
+
+.rc-directory .searchtext-empty .rocket-search-result {
+	display: none;
+}
+
+/* TODO: Suggestions are not properly positioned:
+with "position: absolute, they were at the wrong place,
+with "initial" the were not overlappping the search results yet
+=> Workaround: use initial positioning hiding the result list in this case
+*/
+.rc-directory .suggestions-visible .rocket-search-result {
+	display: none;
+}
+
+.rc-directory #rocket-search-suggestions {
+	position: initial;
+	background-color: white;
+	z-index: 1000;
+	box-shadow: 0 1px 10px #aaa;
+	border-radius: 0px;
+}

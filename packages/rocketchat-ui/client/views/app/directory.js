@@ -85,7 +85,7 @@ Template.directory.helpers({
 		if (RocketChat.settings.get('Global_search_in_directory')) {
 			tabs[0].active = false;
 			tabs.unshift({
-				label: t('Search_Messages'),
+				label: t('Global_Search'),
 				value: 'global',
 				condition() {
 					return true;

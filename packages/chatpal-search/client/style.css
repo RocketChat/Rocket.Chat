@@ -308,3 +308,13 @@
 	background-color: #125074;
 	color: white;
 }
+
+/* Chatpal in Directory */
+.rc-directory .chatpalProvider .search-form {
+	padding: 0px;
+}
+
+
+.rc-directory .chatpalProvider.searchtext-empty .rocket-search-result {
+	display: none;
+}
