@@ -85,6 +85,12 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Generate_Username',
 		});
+		RocketChat.settings.add(`SAML_Custom_${ name }_debug`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_Debug',
+		});
 		RocketChat.settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
 			type: 'select',
 			values: [
@@ -109,6 +115,7 @@ const getSamlConfigs = function(service) {
 		entryPoint: RocketChat.settings.get(`${ service.key }_entry_point`),
 		idpSLORedirectURL: RocketChat.settings.get(`${ service.key }_idp_slo_redirect_url`),
 		generateUsername: RocketChat.settings.get(`${ service.key }_generate_username`),
+		debug: RocketChat.settings.get(`${ service.key }_debug`),
 		issuer: RocketChat.settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: RocketChat.settings.get(`${ service.key }_logout_behaviour`),
 		secret: {
@@ -141,6 +148,8 @@ const configureSamlService = function(samlConfigs) {
 	}
 	// TODO: the function configureSamlService is called many times and Accounts.saml.settings.generateUsername keeps just the last value
 	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername;
+	Accounts.saml.settings.debug = samlConfigs.debug;
+
 	return {
 		provider: samlConfigs.clientConfig.provider,
 		entryPoint: samlConfigs.entryPoint,

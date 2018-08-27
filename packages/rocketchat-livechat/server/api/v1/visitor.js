@@ -30,25 +30,25 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 });
 
 /* authRequired: true needs to be removed */
-RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken', { authRequired: true }, {
+RocketChat.API.v1.addRoute('livechat/visitor/:token', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.visitorToken);
+		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
 		return RocketChat.API.v1.success(visitor);
 	},
 });
 
 /* authRequired: true needs to be removed */
-RocketChat.API.v1.addRoute('livechat/visitor/:visitorToken/room', { authRequired: true }, {
+RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.visitorToken, {
+		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,

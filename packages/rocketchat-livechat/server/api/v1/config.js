@@ -13,7 +13,7 @@ RocketChat.API.v1.addRoute('livechat/config', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/config/:visitorToken', {
+RocketChat.API.v1.addRoute('livechat/config/:token', {
 	get() {
 		const config = livechat.settings();
 		if (!config.enabled) {
@@ -21,11 +21,11 @@ RocketChat.API.v1.addRoute('livechat/config/:visitorToken', {
 		}
 
 		const online = livechat.online();
-		const visitor = livechat.visitor(this.urlParams.visitorToken);
-		const room = livechat.room(this.urlParams.visitorToken);
+		const guest = livechat.guest(this.urlParams.token);
+		const room = livechat.room(this.urlParams.token);
 		const agent = room && room.servedBy && RocketChat.models.Users.getAgentInfo(room.servedBy._id);
 
-		Object.assign(config, { online, visitor, room, agent });
+		Object.assign(config, { online, guest, room, agent });
 
 		return RocketChat.API.v1.success({ config });
 	},

@@ -1,11 +1,12 @@
 import _ from 'underscore';
+import livechat from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/page.visited', {
 	post() {
 		try {
 			check(this.bodyParams, {
 				token: String,
-				room: String,
+				rid: String,
 				pageInfo: Match.ObjectIncluding({
 					change: String,
 					title: String,
@@ -15,8 +16,19 @@ RocketChat.API.v1.addRoute('livechat/page.visited', {
 				}),
 			});
 
-			const { token, room, pageInfo } = this.bodyParams;
-			const obj = RocketChat.Livechat.savePageHistory(token, room, pageInfo);
+			const { token, rid, pageInfo } = this.bodyParams;
+
+			const guest = livechat.guest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			const room = livechat.room(token, rid);
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			const obj = RocketChat.Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {
 				const page = _.pick(obj, 'msg', 'navigation');
 				return RocketChat.API.v1.success({ page });

@@ -15,12 +15,11 @@ export default {
 		return RocketChat.models.LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
 	},
 
-	visitor(visitorToken) {
+	guest(visitorToken) {
 		return LivechatVisitors.getVisitorByToken(visitorToken, {
 			fields: {
 				name: 1,
 				username: 1,
-				department: 1,
 				token: 1,
 			},
 		});
@@ -59,6 +58,7 @@ export default {
 				fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 				language: initSettings.Language,
 				transcript: initSettings.Livechat_enable_transcript,
+				historyMonitorType: initSettings.Livechat_history_monitor_type,
 			},
 			theme: {
 				title: initSettings.Livechat_title,
