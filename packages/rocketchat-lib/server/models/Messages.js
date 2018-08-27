@@ -14,10 +14,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ msg: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ pinned: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'pinned': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'snippeted': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'location': '2dsphere' });
+		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 't': 1, 'attachments.fields.requester': 1 }, { unique: false });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -375,6 +376,28 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		};
 		delete record._id;
 		return this.insert(record);
+	}
+
+	findByMsgTypeAndRoom(msgType, rid) {
+		const query = { t: msgType, rid };
+		const options = {
+			sort: {
+				ts: -1
+			}
+		};
+		return this.find(query, options);
+	}
+
+	findByMsgTypeRoomAndUser(msgType, rid, userName) {
+		const query = { t: msgType, rid, 'attachments.fields.requester': userName };
+		const options = {
+			sort: {
+				ts: -1
+			},
+			limit: 1
+		};
+		return this.find(query, options);
+
 	}
 
 	// UPDATE

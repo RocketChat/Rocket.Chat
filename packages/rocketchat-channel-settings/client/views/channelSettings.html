@@ -9,16 +9,16 @@
 	<div class="rc-user-info__scroll">
 		{{#with settings.name}}
 			{{#if canView}}
-			<div class="rc-user-info__row">
-				<div class="rc-input">
-					<label class="rc-input__label">
-						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
-						<div class="rc-input__wrapper">
-							<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
-						</div>
-					</label>
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="text" name="name" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}" />
+							</div>
+						</label>
+					</div>
 				</div>
-			</div>
 			{{/if}}
 		{{/with}}
 
@@ -28,7 +28,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							<input type="text" name="topic" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}" />
 						</div>
 					</label>
 				</div>
@@ -41,7 +41,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							<input type="text" name="announcement" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}" />
 						</div>
 					</label>
 				</div>
@@ -54,7 +54,7 @@
 						<label class="rc-input__label">
 							<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 							<div class="rc-input__wrapper">
-								<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+								<input type="text" name="description" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}" />
 							</div>
 						</label>
 					</div>
@@ -119,47 +119,65 @@
 
 		{{#with settings.reactWhenReadOnly}}
 			{{#if canView}}
-			<div class="rc-user-info__row rc-user-info__row--separator">
-				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
-						{{_ "React_when_read_only"}}
-						<div class="rc-switch-double__description">
+				<div class="rc-user-info__row rc-user-info__row--separator">
+					<div class="rc-switch-double">
+						<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 							{{_ "React_when_read_only"}}
+							<div class="rc-switch-double__description">
+								{{_ "React_when_read_only"}}
+							</div>
+						</div>
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+						<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+							{{_ "Disallow_reacting"}}
+							<div class="rc-switch-double__description">
+								{{_ "Disallow_reacting_Description"}}
+							</div>
 						</div>
 					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.secret}}
+			{{#if settings.t.showSecretSetting settings.secret}}
+				<div class="rc-user-info__row">
 					<div class="rc-switch rc-switch--blue">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input js-input-check" name="reactWhenReadOnly" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="secret" checked="{{checked}}" disabled="{{disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+						<div class="rc-switch-double__description">{{secretDescription}}</div>
+					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.archived}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
-						{{_ "Disallow_reacting"}}
-						<div class="rc-switch-double__description">
-							{{_ "Disallow_reacting_Description"}}
-						</div>
-					</div>
 				</div>
-			</div>
-			{{/if}}
-		{{/with}}
-		{{#with settings.archived}}
-			{{#if canView}}
-			<div class="rc-user-info__row">
-				<div class="rc-switch rc-switch--blue">
-					<label class="rc-switch__label">
-						<span class="rc-switch__text">
-							{{_ label}}{{equal default value '*'}}
-						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-					</label>
-				</div>
-			</div>
 			{{/if}}
 		{{/with}}
 
@@ -201,19 +219,19 @@
 
 		{{#with settings.broadcast}}
 			{{#if canView}}
-			<div class="rc-user-info__row">
-				<div class="rc-switch rc-switch--blue">
-					<label class="rc-switch__label">
-						<span class="rc-switch__text">
-							{{_ label}}{{equal default value '*'}}
-						</span>
-						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled>
-						<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-					</label>
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled>
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
 				</div>
-			</div>
 			{{/if}}
 		{{/with}}
 		{{#with settings.joinCode}}
@@ -222,7 +240,7 @@
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
 						<div class="rc-input__wrapper">
-							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+							<input type="text" name="joinCode" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}" />
 						</div>
 					</label>
 				</div>
@@ -260,61 +278,62 @@
 						</div>
 					</div>
 				{{/with}}
-			{{/if}}
-			{{# if settings.retentionOverrideGlobal.value.get }}
-				<div class="mail-messages__instructions mail-messages__instructions--warning" style="margin-bottom: 0;">
-					<div class="mail-messages__instructions-wrapper">
-						<div class="mail-messages__instructions-text">
-							<span>
-								{{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
-							</span>
-						</div>
+		{{/if}}
+		{{# if settings.retentionOverrideGlobal.value.get }}
+			<div class="mail-messages__instructions mail-messages__instructions--warning" style="margin-bottom: 0;">
+				<div class="mail-messages__instructions-wrapper">
+					<div class="mail-messages__instructions-text">
+						<span>
+							{{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
+						</span>
 					</div>
 				</div>
-				{{#with settings.retentionMaxAge}}
-					<div class="rc-user-info__row">
-						<div class="rc-input">
-							<label class="rc-input__label">
-								<div class="rc-input__title">{{retentionMaxAgeLabel label}}{{equal default value '*'}}</div>
-								<div class="rc-input__wrapper">
-									<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
-								</div>
-							</label>
-						</div>
+			</div>
+			{{#with settings.retentionMaxAge}}
+				<div class="rc-user-info__row">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{retentionMaxAgeLabel label}}{{equal default value '*'}}</div>
+							<div class="rc-input__wrapper">
+								<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"
+								/>
+							</div>
+						</label>
 					</div>
-				{{/with}}
-				{{#with settings.retentionExcludePinned}}
-					<div class="rc-user-info__row">
-						<div class="rc-switch rc-switch--blue">
-							<label class="rc-switch__label">
-								<span class="rc-switch__text">
-									{{_ label}}{{equal default value '*'}}
-								</span>
-								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
-								<span class="rc-switch__button">
-									<span class="rc-switch__button-inside"></span>
-								</span>
-							</label>
-						</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionExcludePinned}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
 					</div>
-				{{/with}}
-				{{#with settings.retentionFilesOnly}}
-					<div class="rc-user-info__row">
-						<div class="rc-switch rc-switch--blue">
-							<label class="rc-switch__label">
-								<span class="rc-switch__text">
-									{{_ label}}{{equal default value '*'}}
-								</span>
-								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
-								<span class="rc-switch__button">
-									<span class="rc-switch__button-inside"></span>
-								</span>
-							</label>
-						</div>
+				</div>
+			{{/with}}
+			{{#with settings.retentionFilesOnly}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
 					</div>
-				{{/with}}
+				</div>
+			{{/with}}
 			{{/if}}
-		{{/if}}
+			{{/if}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
@@ -324,7 +343,7 @@
 		</div>
 		<div class="rc-user-info__flex">
 			{{#if canDeleteRoom}}
-			<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+				<button class="rc-button rc-button--outline rc-button--cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
 			{{/if}}
 		</div>
 	</div>
@@ -336,9 +355,9 @@
 				<div class="rc-user-info">
 					<div class="rc-user-info__avatar">
 						{{#if archived}}
-						<div class="rc-user-info__banner">
-							{{_ "Room_archived"}}
-						</div>
+							<div class="rc-user-info__banner">
+								{{_ "Room_archived"}}
+							</div>
 						{{/if}}
 						{{> avatar username=channelName}}
 					</div>
@@ -381,38 +400,38 @@
 							{{#unless filesOnly}}
 								{{#unless excludePinned}}
 									{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
-								{{else}}
-									{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
+			{{else}}
+				{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
 								{{/unless}}
-							{{else}}
-								{{#unless excludePinned}}
-									{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
-								{{else}}
-									{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
-								{{/unless}}
+			{{else}}
+				{{#unless excludePinned}}
+					{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
+			{{else}}
+				{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
+				{{/unless}}
 							{{/unless}}
 						</div>
 					</div>
 				</div>
 			{{/if}}
-		{{/with}}
-		{{#each channelSettings}}
-			<div class="rc-user-info__row">
-				{{> Template.dynamic template=template data=data}}
-			</div>
-		{{/each}}
+			{{/with}}
+			{{#each channelSettings}}
+				<div class="rc-user-info__row">
+					{{> Template.dynamic template=template data=data}}
+				</div>
+			{{/each}}
 	</main>
 
 	<div class="rc-user-info__flex rc-user-info__row">
 		{{#if canEditRoom}}
-		<button class="rc-button rc-button--icon rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
+			<button class="rc-button rc-button--icon rc-button--outline js-edit" type="submit">{{> icon icon='edit'}}{{_ "Edit"}}</button>
 		{{/if}}
 		<button class="rc-button rc-button--icon rc-button--outline js-hide" type="submit">{{> icon icon='eye-off'}}{{_ "Hide"}}</button>
 		{{#if canLeaveRoom}}
-		<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
+			<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
 		{{/if}}
 	</div>
 	{{#if canDeleteRoom}}
-	<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+		<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
 	{{/if}}
 </template>

@@ -314,6 +314,15 @@ Template.channelSettingsEditing.onCreated(function() {
 			canEdit() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room.default) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
+			showSecretSetting(secret) {
+				//The state of secret channel setting must be changed with respect to the private <-> public setting.
+				if (this.canView()) {
+					if (this.value.get() === false) {
+						secret.value.set(false);
+					}
+					return this.value.get();
+				}
+			},
 			save(value) {
 				const saveRoomSettings = () => {
 					value = value ? 'p' : 'c';
@@ -345,6 +354,28 @@ Template.channelSettingsEditing.onCreated(function() {
 				}
 				return saveRoomSettings();
 			},
+		},
+		secret: {
+			type: 'boolean',
+			label: 'Secret',
+			isToggle: true,
+			getValue() {
+				return room.secret;
+			},
+			canView() {
+				return room.t === 'p';
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('set-secret', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
+					toastr.success(TAPi18n.__('Room_secrecy_changed_successfully'));
+				});
+			},
+			secretDescription() {
+				return this.value.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search-short');
+			}
 		},
 		ro: {
 			type: 'boolean',

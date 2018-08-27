@@ -3,8 +3,14 @@ import { timeAgo } from './helpers';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
-		cb(result && result.results && result.results.length && result.results.map((result) => {
-			if (config.type === 'channels') {
+		cb(result && result.results && result.results.length && result.results.map(result => {
+			if (config.type === 'users') {
+				return {
+					name: result.name,
+					username: result.username,
+					createdAt: timeAgo(result.createdAt)
+				};
+			} else {
 				return {
 					name: result.name,
 					users: result.usersCount || 0,
@@ -16,14 +22,6 @@ function directorySearch(config, cb) {
 				};
 			}
 
-			if (config.type === 'users') {
-				return {
-					name: result.name,
-					username: result.username,
-					createdAt: timeAgo(result.createdAt, t),
-				};
-			}
-			return null;
 		}));
 	});
 }
@@ -77,13 +75,20 @@ Template.directory.helpers({
 				return true;
 			},
 		};
+		const privateChannels = {
+			label: t('Private_Groups'),
+			value: 'p',
+			condition() {
+				return true;
+			}
+		};
 		if (searchType.get() === 'channels') {
 			channelsTab.active = true;
 		} else {
 			usersTab.active = true;
 		}
 		return {
-			tabs: [channelsTab, usersTab],
+			tabs: [channelsTab, privateChannels, usersTab],
 			onChange(value) {
 				results.set([]);
 				end.set(false);
@@ -101,15 +106,15 @@ Template.directory.helpers({
 	},
 	onTableItemClick() {
 		const { searchType } = Template.instance();
-		let type;
 		let routeConfig;
+		let type;
 		return function(item) {
-			if (searchType.get() === 'channels') {
-				type = 'c';
-				routeConfig = { name: item.name };
-			} else {
+			if (searchType.get() === 'users') {
 				type = 'd';
 				routeConfig = { name: item.username };
+			} else {
+				type = searchType.get();
+				routeConfig = { name: item.name };
 			}
 			RocketChat.roomTypes.openRouteLink(type, routeConfig);
 		};
@@ -200,7 +205,7 @@ Template.directory.onRendered(function() {
 Template.directory.onCreated(function() {
 	const viewType = RocketChat.settings.get('Accounts_Directory_DefaultView') || 'channels';
 	this.searchType = new ReactiveVar(viewType);
-	if (viewType === 'channels') {
+	if (viewType === 'c') {
 		this.searchSortBy = new ReactiveVar('usersCount');
 		this.sortDirection = new ReactiveVar('desc');
 	} else {
