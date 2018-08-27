@@ -1,9 +1,11 @@
 .rc-apps-marketplace {
 	font-size: 14px;
 
-	a {
-		color: #1D74F5 !important;
-		font-weight: 500;
+	&.page-settings .rc-apps-container {
+		a {
+			color: var(--rc-color-button-primary);
+			font-weight: 500;
+		}
 	}
 
 	h1 {
@@ -12,30 +14,30 @@
 		font-weight: normal;
 		letter-spacing: 0;
 		line-height: 28px;
-		margin-bottom: 0 !important;
-		text-transform: initial !important;
+		margin-bottom: 0;
+		text-transform: initial;
 	}
 
 	h2 {
-		color: #2F343D;
+		color: var(--color-dark);
 		font-size: 16px;
 		font-weight: 500;
 		letter-spacing: 0;
 		line-height: 24px;
 		margin-top: 10px;
-		margin-bottom: 0 !important;
-		text-transform: initial !important;
+		margin-bottom: 0;
+		text-transform: initial;
 	}
 
 	h3 {
-		color: #9EA2A8;
+		color: var(--color-gray);
 		font-size: 14px;
 		font-weight: 500;
 		text-align: left;
 		letter-spacing: 0;
 		line-height: 20px;
-		margin-bottom: 0 !important;
-		text-transform: initial !important;
+		margin-bottom: 0;
+		text-transform: initial;
 	}
 
 
