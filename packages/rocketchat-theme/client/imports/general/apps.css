@@ -80,6 +80,10 @@
 			color: var(--rc-color-primary-light);
 		}
 
+		&__author {
+			font-weight: 500;
+		}
+
 		&__item {
 			white-space: nowrap;
 			flex: 1 1 1px;

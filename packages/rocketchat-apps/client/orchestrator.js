@@ -95,7 +95,7 @@ Meteor.startup(function _rlClientOrch() {
 const appsRouteAction = function _theRealAction(whichCenter) {
 	Meteor.defer(() => window.Apps.getLoadingPromise().then((isEnabled) => {
 		if (isEnabled) {
-			BlazeLayout.render('main', { center: whichCenter });
+			BlazeLayout.render('main', { center: whichCenter, old: false }); // TODO remove old
 		} else {
 			FlowRouter.go('app-what-is-it');
 		}

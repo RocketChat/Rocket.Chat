@@ -3,7 +3,7 @@ import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
 
-const HOST = 'https://marketplace.rocket.chat';
+const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
 
 function getApps(instance) {
 	const id = instance.id.get();
@@ -194,25 +194,25 @@ Template.appManage.helpers({
 	},
 });
 
-function setActivate(actiavate, e, t) {
+async function setActivate(actiavate, e, t) {
 	t.processingEnabled.set(true);
 
 	const el = $(e.currentTarget);
 	el.prop('disabled', true);
 
 	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
-	RocketChat.API.post(`apps/${ t.id.get() }/status`, { status }).then((result) => {
+
+	try {
+		const result = await RocketChat.API.post(`apps/${ t.id.get() }/status`, { status });
 		const info = t.app.get();
 		info.status = result.status;
 		t.app.set(info);
-	}).catch(() => {
-		t.processingEnabled.set(false);
+	} catch (e) {
 		// el.prop('checked', !el.prop('checked'));
 		// TODO alert
-	}).then(() => {
-		t.processingEnabled.set(false);
-		el.prop('disabled', false);
-	});
+	}
+	t.processingEnabled.set(false);
+	el.prop('disabled', false);
 }
 
 Template.appManage.events({

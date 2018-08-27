@@ -1,21 +1,14 @@
 .rc-apps-marketplace {
-	* {
-		line-height: 20px;
-		font-family: SFProText-Regular;
-		font-size: 14px;
-		letter-spacing: 0;
-	}
+	font-size: 14px;
 
 	a {
 		color: #1D74F5 !important;
-		font-family: SFProText-Medium;
 		font-weight: 500;
 	}
 
 	h1 {
 		color: #54585E;
 		font-size: 22px;
-		font-family: SFProText-Regular;
 		font-weight: normal;
 		letter-spacing: 0;
 		line-height: 28px;
@@ -26,7 +19,6 @@
 	h2 {
 		color: #2F343D;
 		font-size: 16px;
-		font-family: SFProText-Medium;
 		font-weight: 500;
 		letter-spacing: 0;
 		line-height: 24px;
@@ -38,7 +30,6 @@
 	h3 {
 		color: #9EA2A8;
 		font-size: 14px;
-		font-family: SFProText-Medium;
 		font-weight: 500;
 		text-align: left;
 		letter-spacing: 0;
@@ -47,25 +38,33 @@
 		text-transform: initial !important;
 	}
 
-	.rc-apps-details__description {
-		padding-bottom: 50px;
-		border-bottom: 1.5px solid #EFEFEF;
-	}
-
-	.rc-apps-details__photo {
-		background-color: #f7f7f7;
-		height: 96px;
-		width: 96px;
-		margin-right: 21px;
-	}
-
-	.rc-apps-details__content {
-		padding: 0px;
-	}
 
 	.rc-apps-details {
 		padding: 0px;
 		margin-bottom: 0 !important;
+
+		&__description {
+			padding-bottom: 50px;
+			border-bottom: 1.5px solid #EFEFEF;
+		}
+
+		&__photo {
+			background-color: #f7f7f7;
+			height: 96px;
+			width: 96px;
+			margin-right: 21px;
+		}
+
+		&__content {
+			padding: 0px;
+		}
+
+
+		&__col {
+			display: inline-block;
+			margin-right: 8px;
+		}
+
 	}
 
 	.rc-apps-container {
@@ -76,19 +75,14 @@
 		border-bottom: 1.5px solid #EFEFEF;
 		padding-top: 10px;
 	}
-
+/*
 	.js-install {
 		margin-top: 6px;
-	}
+	} */
 
 	.app-author-name {
 		width: auto !important;
 		display: inline-block !important;
-	}
-
-	.rc-apps-details__col {
-		display: inline-block;
-		margin-right: 8px;
 	}
 
 	.rc-header .rc-button {
@@ -103,7 +97,6 @@
 		border-radius: 2px 2px 2px 2px;
 		color: #9DA2A9;
 		font-size: 12px;
-		font-family: SFProText-Medium;
 		font-weight: 500;
 		text-align: left;
 		text-transform: uppercase;
@@ -136,24 +129,22 @@
 		margin: 0 7px;
 	}
 
-	.rc-table-content {
-		padding: 0;
-	}
 	.installer {
 		width: 20px;
 		height: 20px;
 		overflow: hidden;
 		position: relative;
 
-		.--marketplace-installer {
+		&--marketplace-installer {
 			position: absolute;
 			top: 0;
 			width: 818px;
 			height: 20px;
-		}
-		.--marketplace-installer.play {
-			animation: play90 steps(20) 4s forwards;
 
+			&.play {
+				animation: play90 steps(40) 4s forwards;
+
+			}
 		}
 	}
 }
