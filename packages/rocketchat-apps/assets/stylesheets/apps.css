@@ -43,7 +43,7 @@
 
 	.rc-apps-details {
 		padding: 0px;
-		margin-bottom: 0 !important;
+		margin-bottom: 0;
 
 		&__description {
 			padding-bottom: 50px;
@@ -81,11 +81,6 @@
 	.js-install {
 		margin-top: 6px;
 	} */
-
-	.app-author-name {
-		width: auto !important;
-		display: inline-block !important;
-	}
 
 	.rc-header .rc-button {
 		margin: 0;
