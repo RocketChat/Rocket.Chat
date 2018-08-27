@@ -7,23 +7,23 @@ RocketChat.Migrations.add({
 
 		if (room && room._id !== 'GENERAL') {
 			RocketChat.models.Subscriptions.update({
-				rid: room._id
+				rid: room._id,
 			}, {
 				$set: {
-					rid: 'GENERAL'
-				}
+					rid: 'GENERAL',
+				},
 			}, {
-				multi: 1
+				multi: 1,
 			});
 
 			RocketChat.models.Messages.update({
-				rid: room._id
+				rid: room._id,
 			}, {
 				$set: {
-					rid: 'GENERAL'
-				}
+					rid: 'GENERAL',
+				},
 			}, {
-				multi: 1
+				multi: 1,
 			});
 
 			RocketChat.models.Rooms.removeById(room._id);
@@ -31,12 +31,12 @@ RocketChat.Migrations.add({
 			delete room._id;
 
 			RocketChat.models.Rooms.upsert({
-				_id: 'GENERAL'
+				_id: 'GENERAL',
 			}, {
-				$set: room
+				$set: room,
 			});
 		}
 
 		return console.log('End');
-	}
+	},
 });

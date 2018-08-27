@@ -13,7 +13,7 @@ RocketChat.settings.get('Email_Footer', (key, value) => {
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
 function getEmailContent({ message, user, room }) {
-	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -21,7 +21,7 @@ function getEmailContent({ message, user, room }) {
 	const header = TAPi18n.__(room.t === 'd' ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
 		username: userName,
 		channel: roomName,
-		lng
+		lng,
 	});
 
 	if (message.msg !== '') {
@@ -40,7 +40,7 @@ function getEmailContent({ message, user, room }) {
 		const fileHeader = TAPi18n.__(room.t === 'd' ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
 			username: userName,
 			channel: roomName,
-			lng
+			lng,
 		});
 
 		let content = `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ s.escapeHTML(message.file.name) }`;
@@ -53,7 +53,7 @@ function getEmailContent({ message, user, room }) {
 	}
 
 	if (message.attachments.length > 0) {
-		const [ attachment ] = message.attachments;
+		const [attachment] = message.attachments;
 
 		let content = '';
 
@@ -71,17 +71,16 @@ function getEmailContent({ message, user, room }) {
 }
 
 function getMessageLink(room, sub) {
-	const roomPath = RocketChat.roomTypes.getRouteLink(room.t, sub);
-	const path = Meteor.absoluteUrl(roomPath ? roomPath.replace(/^\//, '') : '');
+	const roomPath = RocketChat.roomTypes.getURL(room.t, sub);
 	const style = [
 		'color: #fff;',
 		'padding: 9px 12px;',
 		'border-radius: 4px;',
 		'background-color: #04436a;',
-		'text-decoration: none;'
+		'text-decoration: none;',
 	].join(' ');
 	const message = TAPi18n.__('Offline_Link_Message');
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }">${ message }</a>`;
+	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ roomPath }">${ message }</a>`;
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
@@ -91,23 +90,23 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	if (room.t === 'd') {
 		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
 			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room)
+			room: RocketChat.roomTypes.getRoomName(room.t, room),
 		});
 	} else if (hasMentionToUser) {
 		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
 			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room)
+			room: RocketChat.roomTypes.getRoomName(room.t, room),
 		});
 	} else {
 		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
 			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room)
+			room: RocketChat.roomTypes.getRoomName(room.t, room),
 		});
 	}
 	const content = getEmailContent({
 		message,
 		user,
-		room
+		room,
 	});
 
 	const link = getMessageLink(room, subscription);
@@ -119,7 +118,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: contentHeader + content + divisorMessage + link + contentFooter
+		html: contentHeader + content + divisorMessage + link + contentFooter,
 	};
 
 	// using user full-name/channel name in from address
@@ -133,7 +132,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') ? RocketChat.settings.get('Direct_Reply_ReplyTo') : RocketChat.settings.get('Direct_Reply_Username');
 		email.headers = {
 			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`
+			'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
 		};
 	}
 
@@ -150,7 +149,7 @@ export function shouldNotifyEmail({
 	isHighlighted,
 	hasMentionToUser,
 	hasMentionToAll,
-	roomType
+	roomType,
 }) {
 
 	// use connected (don't need to send him an email)

@@ -205,6 +205,7 @@
 	--sidebar-item-active-background: var(--rc-color-primary-dark);
 	--sidebar-item-active-color: var(--sidebar-item-text-color);
 	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-unread-font-weight: 600;
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;

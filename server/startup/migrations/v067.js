@@ -4,9 +4,9 @@ RocketChat.Migrations.add({
 		if (RocketChat && RocketChat.models && RocketChat.models.LivechatDepartment) {
 			RocketChat.models.LivechatDepartment.model.update({}, {
 				$set: {
-					showOnRegistration: true
-				}
+					showOnRegistration: true,
+				},
 			}, { multi: true });
 		}
-	}
+	},
 });

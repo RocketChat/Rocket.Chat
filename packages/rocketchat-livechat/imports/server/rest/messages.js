@@ -46,19 +46,19 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					_id: Random.id(),
 					rid,
 					token: visitorToken,
-					msg: message.msg
-				}
+					msg: message.msg,
+				},
 			};
 			const sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
 			return {
 				username: sentMessage.u.username,
 				msg: sentMessage.msg,
-				ts: sentMessage.ts
+				ts: sentMessage.ts,
 			};
 		});
 
 		return RocketChat.API.v1.success({
-			messages: sentMessages
+			messages: sentMessages,
 		});
-	}
+	},
 });

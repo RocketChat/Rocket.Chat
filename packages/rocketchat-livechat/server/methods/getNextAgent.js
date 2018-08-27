@@ -21,5 +21,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Users.getAgentInfo(agent.agentId);
-	}
+	},
 });
