@@ -1,5 +1,6 @@
 .rc-apps-marketplace {
 	font-size: 14px;
+	overflow: auto;
 
 	&.page-settings .rc-apps-container {
 		a {
