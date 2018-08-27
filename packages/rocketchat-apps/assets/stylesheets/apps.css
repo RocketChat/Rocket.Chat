@@ -38,4 +38,30 @@
 	.rc-table-content {
 		padding: 0;
 	}
+	.installer {
+		width: 20px;
+		height: 20px;
+		overflow: hidden;
+		position: relative;
+
+		.--marketplace-installer {
+			position: absolute;
+			top: 0;
+			width: 818px;
+			height: 20px;
+		}
+		.--marketplace-installer.play {
+			animation: play90 steps(20) 4s forwards;
+
+		}
+	}
+}
+
+@keyframes play90 {
+  0% {
+    right: -798px;
+  }
+  100% {
+    right: 2px;
+  }
 }

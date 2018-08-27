@@ -15,16 +15,19 @@
     width: 100%;
 		display: flex;
 		padding-bottom: 25px;
+
+		&__header {
+			border-bottom: 1px solid #E1E1E1;
+		}
 	}
 
 	&-details {
 		display: flex;
 		padding: 25px;
-		border-bottom: 1px solid #E1E1E1;
 
 		&__photo {
-			width: 141px;
-			height: 141px;
+			width: 95px;
+			height: 95px;
 			flex: 0 0 auto;
 			background-size: contain;
 	    background-repeat: no-repeat;
@@ -35,7 +38,7 @@
 		&__content {
 			flex: 1 1 auto;
 	    justify-content: space-between;
-	    padding: 0 28px;
+	    padding: 0 15px;
 	    display: flex;
 	    flex-direction: column;
 	    overflow: hidden;
@@ -44,20 +47,33 @@
 		&__row {
 			display: flex;
 			align-items: flex-end;
+
+			& button svg {
+				margin: 0 5px 0 -5px;
+				font-size: 18px;
+			}
+
+			h2 {
+				font-size: 18px;
+				padding: 5px 0;
+			}
 		}
 
 		&__row + &__row {
-			padding-top: 15px
+			padding-top: 5px
+		}
+
+		&__block {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
 		&__name {
 			font-size: 24px;
-			font-weight: bold;
 		}
 
 		&__version {
-			font-size: 17px;
-			padding: 0 14px;
+			color: var(--rc-color-primary-light);
 		}
 
 		&__item {

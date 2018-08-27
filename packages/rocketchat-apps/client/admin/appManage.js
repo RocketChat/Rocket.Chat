@@ -3,6 +3,11 @@ import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
 
+const isAppInstalled = (app, apps = []) => {
+	const installedIds = apps.map((app) => app.id);
+
+	return installedIds.includes(app.id);
+};
 
 Template.appManage.onCreated(function() {
 	const instance = this;
@@ -12,6 +17,7 @@ Template.appManage.onCreated(function() {
 	this.theError = new ReactiveVar('');
 	this.processingEnabled = new ReactiveVar(false);
 	this.app = new ReactiveVar({});
+	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
 	this.loading = new ReactiveVar(false);
 
@@ -29,12 +35,16 @@ Template.appManage.onCreated(function() {
 	}
 
 	Promise.all([
-		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/settings`),
+		fetch(`https://marketplace.rocket.chat/v1/apps/${ id }`).then((data) => data.json()),
+		RocketChat.API.get('apps/'),
 	]).then((results) => {
-		instance.app.set(results[0].app);
-		console.log(instance.app.get());
-		_morphSettings(results[1].settings);
+		const appVersions = (results[0] || []);
+		const appsList = results[1].apps;
+
+		instance.app.set(appVersions[0]);
+		instance.appsList.set(appsList);
+
+		// _morphSettings(results[1].settings);
 
 		this.ready.set(true);
 	}).catch((e) => {
@@ -143,8 +153,16 @@ Template.appManage.helpers({
 
 		return info.status === 'auto_enabled' || info.status === 'manually_enabled';
 	},
+	isInstalled() {
+		const instance = Template.instance();
+
+		return isAppInstalled(instance.app.get(), instance.appsList.get());
+	},
 	app() {
 		return Template.instance().app.get();
+	},
+	categories() {
+		return ['Communication', 'Productivity']; // Template.instance().app.get('category').split(',');
 	},
 	settings() {
 		return Object.values(Template.instance().settings.get());
