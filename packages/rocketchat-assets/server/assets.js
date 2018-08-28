@@ -128,16 +128,6 @@ const assets = {
 			height: 144,
 		},
 	},
-	tile_70: {
-		label: 'mstile 70x70 (png)',
-		defaultUrl: 'images/logo/mstile-70x70.png',
-		constraints: {
-			type: 'image',
-			extensions: ['png'],
-			width: 144,
-			height: 144
-		}
-	},
 	tile_144: {
 		label: 'mstile 144x144 (png)',
 		defaultUrl: 'images/logo/mstile-144x144.png',
