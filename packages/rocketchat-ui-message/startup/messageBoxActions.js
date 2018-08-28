@@ -58,8 +58,7 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 	condition: () => RocketChat.Geolocation.get() !== false,
 	action({ rid }) {
 		const position = RocketChat.Geolocation.get();
-		const latitude = position.coords.latitude;
-		const longitude = position.coords.longitude;
+		const { latitude, longitude } = position.coords;
 		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
 
 		modal.open({

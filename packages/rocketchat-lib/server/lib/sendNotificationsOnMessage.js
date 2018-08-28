@@ -46,11 +46,16 @@ const sendNotification = ({
 		return;
 	}
 
+	const roomType = room.t;
+	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
+	if (roomType === 'd' && !RocketChat.authz.hasPermission(subscription.u._id, 'view-d-room')) {
+		return;
+	}
+
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
-	const roomType = room.t;
 
 	const {
 		audioNotifications,
@@ -134,6 +139,7 @@ const sendNotification = ({
 
 				return true;
 			}
+			return false;
 		});
 	}
 
@@ -184,7 +190,7 @@ function sendAllNotifications(message, room) {
 		}],
 	};
 
-	['audio', 'desktop', 'mobile', 'email'].map((kind) => {
+	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
 		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
 
 		const filter = { [notificationField]: 'all' };

@@ -6,6 +6,9 @@ Template.sidebarItem.helpers({
 		args.pop();
 		return args.some((arg) => arg);
 	},
+	streaming() {
+		return Object.keys(this.streamingOptions).length;
+	},
 	isRoom() {
 		return this.rid || this._id;
 	},
@@ -31,8 +34,8 @@ function timeAgo(time) {
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
 		moment(time).format('L')
 	);
 }

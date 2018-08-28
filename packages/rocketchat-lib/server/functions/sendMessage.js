@@ -24,12 +24,27 @@ const validateAttachmentsFields = (attachmentFields) => {
 	}));
 };
 
+const validateAttachmentsActions = (attachmentActions) => {
+	check(attachmentActions, objectMaybeIncluding({
+		type: String,
+		text: String,
+		url: String,
+		image_url: String,
+		is_webview: Boolean,
+		webview_height_ratio: String,
+		msg: String,
+		msg_in_chat_window: Boolean,
+	}));
+};
+
 const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
 		thumb_url: String,
+		button_alignment: String,
+		actions: [Match.Any],
 		message_link: String,
 		collapsed: Boolean,
 		author_name: String,
@@ -46,6 +61,10 @@ const validateAttachment = (attachment) => {
 
 	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
+	}
+
+	if (attachment.actions && attachment.actions.length) {
+		attachment.actions.map(validateAttachmentsActions);
 	}
 };
 
@@ -134,7 +153,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (message._id && upsert) {
-			const _id = message._id;
+			const { _id } = message;
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,

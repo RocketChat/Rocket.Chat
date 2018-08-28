@@ -22,9 +22,9 @@ export class AppSettingBridge {
 	async getAll(appId) {
 		console.log(`The App ${ appId } is getting all the settings.`);
 
-		return RocketChat.models.Settings.find({ _id: { $nin: this.disallowedSettings } }).fetch().map((s) => {
-			this.orch.getConverters().get('settings').convertToApp(s);
-		});
+		return RocketChat.models.Settings.find({ _id: { $nin: this.disallowedSettings } })
+			.fetch()
+			.map((s) => this.orch.getConverters().get('settings').convertToApp(s));
 	}
 
 	async getOneById(id, appId) {
