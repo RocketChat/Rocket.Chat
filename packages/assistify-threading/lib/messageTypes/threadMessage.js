@@ -1,4 +1,4 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({
@@ -9,9 +9,9 @@ Meteor.startup(function() {
 			return {
 				channelLink: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">${ TAPi18n.__('thread') }</a>`,
 				message: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">&quot;${ message.channels[0].initialMessage.text }&quot;</a>`,
-				username: `<a class="mention-link" data-username= ${ message.mentions[0].name } title="">@${ message.mentions[0].name }</a>`
+				username: `<a class="mention-link" data-username= ${ message.mentions[0].name } title="">@${ message.mentions[0].name }</a>`,
 			};
-		}
+		},
 	});
 });
 

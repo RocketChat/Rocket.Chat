@@ -1,14 +1,12 @@
 function getParentChannels() {
 	const result = Meteor.call('getParentChannelList', { sort: 'name', default: -1 });
 
-	return result.channels.map((channel) => {
-		if (channel.name !== null) {
-			return {
-				key: channel.name, // has to be "key" in order to be able to select it in the settings as dropdown
-				i18nLabel: channel.name
-			};
-		}
-	});
+	return result.channels
+		.filter((channel) => channel.name)
+		.map((channel) => ({
+			key: channel.name, // has to be "key" in order to be able to select it in the settings as dropdown
+			i18nLabel: channel.name,
+		}));
 }
 
 Meteor.startup(() => {
@@ -29,7 +27,7 @@ Meteor.startup(() => {
 		group: 'Threading',
 		i18nLabel: 'Thread_default_parent_Channel',
 		type: 'string',
-		public: true
+		public: true,
 	});
 
 	// Set the default channel on each restart if unset
@@ -42,18 +40,18 @@ Meteor.startup(() => {
 		i18nLabel: 'Thread_from_context_menu',
 		type: 'select',
 		values: [
-			{key: 'button', i18nLabel: 'Threading_context_menu_button'},
-			{key: 'none', i18nLabel: 'Threading_context_menu_none'}
+			{ key: 'button', i18nLabel: 'Threading_context_menu_button' },
+			{ key: 'none', i18nLabel: 'Threading_context_menu_none' },
 		],
-		public: true
+		public: true,
 	});
 
 	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
 		group: 'Accounts',
 		section: 'Accounts_Default_User_Preferences',
 		type: 'boolean',
-		'public': true,
-		i18nLabel: 'Threads_in_sidebar'
+		public: true,
+		i18nLabel: 'Threads_in_sidebar',
 	});
 
 	// this is a technical counter which allows for generation of unique room names
@@ -62,6 +60,6 @@ Meteor.startup(() => {
 		i18nLabel: 'Thread_count',
 		type: 'int',
 		public: false,
-		hidden: true
+		hidden: true,
 	});
 });

@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 Template.ThreadList.events({
 	'click .js-create-thread'() {
 		return FlowRouter.go('create-thread');
-	}
+	},
 });
 
 Template.ThreadList.onCreated(function() {
@@ -13,7 +13,7 @@ Template.ThreadList.onCreated(function() {
 Template.ThreadList.helpers({
 	rooms() {
 		return Template.instance().threadSubscriptions.get();
-	}
+	},
 });
 
 Template.ThreadList.onRendered(function() {
@@ -21,7 +21,7 @@ Template.ThreadList.onRendered(function() {
 		const user = Meteor.userId();
 		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
-			open: true
+			open: true,
 		};
 
 		const sort = {};
@@ -32,7 +32,7 @@ Template.ThreadList.onRendered(function() {
 			sort[this.identifier === 'd' && RocketChat.settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
-		query.parentRoomId = {$exists: true};
-		this.threadSubscriptions.set(ChatSubscription.find(query, {sort}).fetch());
+		query.parentRoomId = { $exists: true };
+		this.threadSubscriptions.set(ChatSubscription.find(query, { sort }).fetch());
 	});
 });

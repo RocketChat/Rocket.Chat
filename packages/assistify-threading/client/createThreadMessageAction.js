@@ -1,6 +1,6 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {ReactiveVar} from 'meteor/reactive-var';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Meteor.startup(function() {
 	const instance = this;
@@ -17,7 +17,7 @@ Meteor.startup(function() {
 					// remove the hidden message from the UI - the message list is not reactive
 					Tracker.nonreactive(function() {
 						ChatMessage.remove({
-							_id: message._id
+							_id: message._id,
 						});
 					});
 
@@ -27,7 +27,7 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
 			if (RocketChat.settings.get('Thread_from_context_menu') !== 'button') {
@@ -40,6 +40,6 @@ Meteor.startup(function() {
 			}
 		},
 		order: 0,
-		group: 'menu'
+		group: 'menu',
 	});
 });

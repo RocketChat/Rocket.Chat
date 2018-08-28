@@ -22,12 +22,12 @@ export class ThreadBuilder {
 		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
 
 		const query = {
-			_id: 'Thread_Count'
+			_id: 'Thread_Count',
 		};
 		const update = {
 			$inc: {
-				value: 1
-			}
+				value: 1,
+			},
 		};
 		const findAndModifyResult = findAndModify(query, null, update);
 		return findAndModifyResult.value.value;
@@ -40,8 +40,8 @@ export class ThreadBuilder {
 	_postMessage(room, user, repostedMessage, attachments, channels, mentions) {
 		attachments = attachments || [];
 
-		//sendMessage expects the attachments timestamp to be a string, => serialize it
-		attachments.forEach(attachment =>
+		// sendMessage expects the attachments timestamp to be a string, => serialize it
+		attachments.forEach((attachment) =>
 			attachment.ts = attachment.ts ? attachment.ts.toISOString() : ''
 		);
 		const newMessage = { _id: Random.id(), rid: room.rid, msg: repostedMessage, attachments, channels, mentions };
@@ -65,27 +65,27 @@ export class ThreadBuilder {
 			linkMessage.u = {
 				_id: repostingUser._id,
 				username: repostingUser.username,
-				name: repostingUser.name
+				name: repostingUser.name,
 			};
 
 			linkMessage.mentions = [{
 				_id: repostingUser._id, // Thread Initiator
-				name: repostingUser.username // Use @Name field for navigation
-			}].concat(this._openingQuestion.mentions||[]);
+				name: repostingUser.username, // Use @Name field for navigation
+			}].concat(this._openingQuestion.mentions || []);
 
 			linkMessage.channels = [{
 				_id: roomCreated._id, // Parent Room ID
 				name: roomCreated.name,
 				initialMessage: {
 					_id: repostedMessage._id,
-					text: repostedMessage.msg
-				}
+					text: repostedMessage.msg,
+				},
 			}];
 
 			const messageQuoteAttachment = { // @see pinMessage.js
 				message_link: FlowRouter.path('message', { id: repostedMessage._id }),
 				text: this._openingQuestion.msg,
-				ts: this._openingQuestion.ts
+				ts: this._openingQuestion.ts,
 			};
 
 			if (repostingUser._id !== this._openingQuestion.u._id) {
@@ -93,11 +93,11 @@ export class ThreadBuilder {
 				messageQuoteAttachment.author_icon = getAvatarUrlFromUsername(this._openingQuestion.u.username);
 			}
 
-			linkMessage.attachments = [messageQuoteAttachment].concat(this._openingQuestion.attachments||[]);
+			linkMessage.attachments = [messageQuoteAttachment].concat(this._openingQuestion.attachments || []);
 
-			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
+			linkMessage.urls = [{ url: this._getMessageUrl(repostedMessage._id) }];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), rocketCatUser, linkMessage, { ts: this._openingQuestion.ts });
 		}
 	}
 
@@ -107,14 +107,12 @@ export class ThreadBuilder {
 		const users = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._parentRoomId, {
 			fields: {
 				'u._id': 1,
-				'u.username': 1
-			}
-		}).fetch().map(s => {
-			return {
-				id: s.u._id,
-				username: s.u.username
-			};
-		});
+				'u.username': 1,
+			},
+		}).fetch().map((s) => ({
+			id: s.u._id,
+			username: s.u.username,
+		}));
 		// filter on owner, moderators and those online (see @here-implementation)
 		for (const user of users) {
 			if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
@@ -122,8 +120,8 @@ export class ThreadBuilder {
 				RocketChat.models.Users.findOne({
 					_id: user.id,
 					status: {
-						$in: ['online', 'away', 'busy']
-					}
+						$in: ['online', 'away', 'busy'],
+					},
 				});
 				if (!user) {
 					continue;
@@ -144,7 +142,7 @@ export class ThreadBuilder {
 			{
 				announcement: this._openingQuestion.msg,
 				topic: parentRoom.name ? parentRoom.name : '',
-				parentRoomId: this._parentRoomId
+				parentRoomId: this._parentRoomId,
 			});
 
 		// Create messages in the newly created thread and it's parent which link the two rooms
@@ -155,7 +153,7 @@ export class ThreadBuilder {
 				room,
 				this._openingQuestion.u,
 				this._openingQuestion.msg,
-				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
+				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter((attachment) => attachment.type && attachment.type === 'file') : []
 			);
 			// Link messages
 			this._linkMessages(room, parentRoom, repostedMessage);
@@ -177,9 +175,9 @@ Meteor.methods({
 	createThreadFromMessage(openingQuestion) {
 		const thread = Meteor.call('createThread', openingQuestion.rid, openingQuestion);
 		if (thread) {
-			//remove the original repostedMessage from the display
+			// remove the original repostedMessage from the display
 			RocketChat.models.Messages.setHiddenById(openingQuestion._id);
 			return thread;
 		}
-	}
+	},
 });

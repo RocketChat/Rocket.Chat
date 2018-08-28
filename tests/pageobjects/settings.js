@@ -7,7 +7,7 @@ const prefix = '/api/v1/';
 
 const login = {
 	user: adminUsername,
-	password: adminPassword
+	password: adminPassword,
 };
 
 function api(path) {
@@ -18,10 +18,10 @@ function api(path) {
 export async function getSettingValue(name) {
 	let credentials = {
 		['X-Auth-Token']: undefined,
-		['X-User-Id']: undefined
+		['X-User-Id']: undefined,
 	};
 
-	//login
+	// login
 	const reponseLogin = await request.post(api('login'))
 		.send(login)
 		.expect('Content-Type', 'application/json')
@@ -29,7 +29,7 @@ export async function getSettingValue(name) {
 
 	credentials = {
 		['X-Auth-Token']: reponseLogin.body.data.authToken,
-		['X-User-Id']: reponseLogin.body.data.userId
+		['X-User-Id']: reponseLogin.body.data.userId,
 	};
 
 	const responseGetSetting = await request.get(api(`settings/${ name }`))
@@ -37,13 +37,11 @@ export async function getSettingValue(name) {
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 
-	const value = responseGetSetting.body.value;
-
 	await request.post(api('logout'))
 		.set(credentials)
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 
-	return value;
+	return responseGetSetting.body.value;
 }
 

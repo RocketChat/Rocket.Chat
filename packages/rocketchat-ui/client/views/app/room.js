@@ -715,7 +715,7 @@ Template.room.events({
 		const roomNameOrId = $(e.currentTarget).data('channel');
 
 		if (roomNameOrId) {
-			const room = ChatRoom.findOne({name: roomNameOrId}) || ChatRoom.findOne({_id: roomNameOrId});
+			const room = ChatRoom.findOne({ name: roomNameOrId }) || ChatRoom.findOne({ _id: roomNameOrId });
 			if (room) {
 				if (RocketChat.Layout.isEmbedded()) {
 					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: room.name }), roomNameOrId });

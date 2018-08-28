@@ -1,11 +1,11 @@
-import {RocketChat, RoomTypeConfig} from 'meteor/rocketchat:lib';
+import { RocketChat, RoomTypeConfig } from 'meteor/rocketchat:lib';
 
 export class ThreadRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'thread',
 			order: 25,
-			label: 'Threads'
+			label: 'Threads',
 		});
 
 		this.customTemplate = 'ThreadList';
