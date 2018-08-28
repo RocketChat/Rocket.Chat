@@ -247,7 +247,7 @@ Template.apps.events({
 	'click .js-install'(e, template) {
 		e.stopPropagation();
 
-		const url = `${ HOST }/v1/apps/${ this.latest.id }/download`;
+		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
 
 		RocketChat.API.post('apps/', { url }).then(() => {
 			getInstalledApps(template);

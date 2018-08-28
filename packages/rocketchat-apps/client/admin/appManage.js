@@ -285,7 +285,7 @@ Template.appManage.events({
 
 		const app = t.app.get();
 
-		const url = `${ HOST }/v1/apps/${ t.id.get() }/download`;
+		const url = `${ HOST }/v1/apps/${ t.id.get() }/download/${ app.version }`;
 
 		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
