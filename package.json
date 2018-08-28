@@ -184,6 +184,7 @@
 		"xml-crypto": "^0.10.1",
 		"xmlbuilder": "^10.0.0",
 		"xmldom": "^0.1.27",
-		"yaqrcode": "^0.2.1"
+		"yaqrcode": "^0.2.1",
+		"@rocket.chat/apps-engine": "^1.0.0"
 	}
 }
