@@ -18554,6 +18554,75 @@
           ]
         }
       ]
+    },
+    "0.68.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11852",
+          "title": "Release 0.68.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11830",
+          "title": "[FIX] Livechat open room method",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "0.69.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11835",
+          "title": "App engine merge",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11864",
+          "title": "[NEW] Internal marketplace for apps",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "gdelavald",
+            "rssilva",
+            "rodrigok",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11878",
+          "title": "[FIX] Translations were not unique per app allowing conflicts among apps",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11861",
+          "title": "Regression: role tag background, unread item font and message box autogrow",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
