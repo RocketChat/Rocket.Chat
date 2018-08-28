@@ -4,9 +4,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 
 /*
- * When a message is eligible to be answered as a independent question then it can be threaded into a new channel.
+ * When a repostedMessage is eligible to be answered as a independent question then it can be threaded into a new channel.
  * When threading, the question is re-posted into a new room. To leave origin traces between the messages we update
- * the original message with system message to allow user to navigate to the message created in the new Room and vice verse.
+ * the original repostedMessage with system repostedMessage to allow user to navigate to the repostedMessage created in the new Room and vice verse.
  */
 export class ThreadBuilder {
 	constructor(parentRoomId, openingQuestion) {
@@ -37,46 +37,72 @@ export class ThreadBuilder {
 		return RocketChat.models.Rooms.findOne(roomId);
 	}
 
-	_postMessage(room, user, message, attachments, channels, mentions) {
+	_postMessage(room, user, repostedMessage, attachments, channels, mentions) {
 		attachments = attachments || [];
 
 		//sendMessage expects the attachments timestamp to be a string, => serialize it
 		attachments.forEach(attachment =>
 			attachment.ts = attachment.ts ? attachment.ts.toISOString() : ''
 		);
-		const newMessage = { _id: Random.id(), rid: room.rid, msg: message, attachments, channels, mentions };
+		const newMessage = { _id: Random.id(), rid: room.rid, msg: repostedMessage, attachments, channels, mentions };
 		return RocketChat.sendMessage(user, newMessage, room);
 	}
 
 	_getMessageUrl(msgId) {
-		return FlowRouter.path('message', { id: msgId });
+		const siteUrl = RocketChat.settings.get('Site_Url');
+		return `${ siteUrl }${ siteUrl.endsWith('/') ? '' : '/' }?msg=${ msgId }`;
 	}
 
-	_linkMessages(roomCreated, parentRoom, message) {
+	_linkMessages(roomCreated, parentRoom, repostedMessage) {
 		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 		if (rocketCatUser && Meteor.userId()) {
-			/* Add link in parent Room
-			 */
-			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(message._id), rocketCatUser,
-				{
-					mentions: [{
-						_id: Meteor.user()._id, // Thread Initiator
-						name: Meteor.user().username // Use @Name field for navigation
-					}],
-					channels: [{
-						_id: roomCreated._id, // Parent Room ID
-						name: roomCreated.name,
-						initialMessage: {
-							_id: message._id,
-							text: message.msg
-						}
-					}]
-				});
+			/* Add link in parent Room */
+
+			const linkMessage = Object.assign({}, this._openingQuestion); // shallow copy of the original message
+			delete linkMessage._id;
+
+			const repostingUser = Meteor.user();
+			linkMessage.u = {
+				_id: repostingUser._id,
+				username: repostingUser.username,
+				name: repostingUser.name
+			};
+
+			linkMessage.mentions = [{
+				_id: repostingUser._id, // Thread Initiator
+				name: repostingUser.username // Use @Name field for navigation
+			}].concat(this._openingQuestion.mentions||[]);
+
+			linkMessage.channels = [{
+				_id: roomCreated._id, // Parent Room ID
+				name: roomCreated.name,
+				initialMessage: {
+					_id: repostedMessage._id,
+					text: repostedMessage.msg
+				}
+			}];
+
+			const messageQuoteAttachment = { // @see pinMessage.js
+				message_link: FlowRouter.path('message', { id: repostedMessage._id }),
+				text: this._openingQuestion.msg,
+				ts: this._openingQuestion.ts
+			};
+
+			if (repostingUser._id !== this._openingQuestion.u._id) {
+				messageQuoteAttachment.author_name = this._openingQuestion.u.username;
+				messageQuoteAttachment.author_icon = getAvatarUrlFromUsername(this._openingQuestion.u.username);
+			}
+
+			linkMessage.attachments = [messageQuoteAttachment].concat(this._openingQuestion.attachments||[]);
+
+			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
+
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
 		}
 	}
 
 	_getMembers() {
-		const checkRoles = ['owner', 'moderator'];
+		const checkRoles = ['owner', 'moderator', 'leader'];
 		const members = [];
 		const users = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._parentRoomId, {
 			fields: {
@@ -111,7 +137,7 @@ export class ThreadBuilder {
 
 	create() {
 		const parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
-		// Generate RoomName for xthe new room to be created.
+		// Generate RoomName for the new room to be created.
 		this.name = `${ parentRoom.name || parentRoom.usernames.join('-') }-${ ThreadBuilder.getNextId() }`;
 		const threadRoomType = parentRoom.t === 'd' ? 'p' : parentRoom.t;
 		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
@@ -125,14 +151,14 @@ export class ThreadBuilder {
 		const room = RocketChat.models.Rooms.findOneById(threadRoom.rid);
 		if (room && parentRoom) {
 			// Post message
-			const message = this._postMessage(
+			const repostedMessage = this._postMessage(
 				room,
 				this._openingQuestion.u,
 				this._openingQuestion.msg,
 				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
 			);
 			// Link messages
-			this._linkMessages(room, parentRoom, message);
+			this._linkMessages(room, parentRoom, repostedMessage);
 		}
 
 		return threadRoom;
@@ -148,11 +174,11 @@ Meteor.methods({
 
 		return new ThreadBuilder(parentRoomId, openingQuestion).create();
 	},
-	createThreadFromMessage(message) {
-		const thread = Meteor.call('createThread', message.rid, message);
+	createThreadFromMessage(openingQuestion) {
+		const thread = Meteor.call('createThread', openingQuestion.rid, openingQuestion);
 		if (thread) {
-			//remove the original message from the display
-			RocketChat.models.Messages.setHiddenById(message._id);
+			//remove the original repostedMessage from the display
+			RocketChat.models.Messages.setHiddenById(openingQuestion._id);
 			return thread;
 		}
 	}

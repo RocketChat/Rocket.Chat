@@ -57,7 +57,7 @@ class Threading extends Page {
 		this.parentChannelName.waitForVisible(1000);
 		this.parentChannelName.setValue(parentChannelName);
 		sendEnter();
-		browser.pause(2000); //wait for the autocompete to vanish
+		browser.pause(4000); //wait for the autocompete to vanish - for sure
 
 		browser.waitUntil(function() {
 			return browser.isEnabled('.create-channel .js-save-thread');

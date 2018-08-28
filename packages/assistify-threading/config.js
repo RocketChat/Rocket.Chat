@@ -4,7 +4,7 @@ function getParentChannels() {
 	return result.channels.map((channel) => {
 		if (channel.name !== null) {
 			return {
-				key: channel.name,
+				key: channel.name, // has to be "key" in order to be able to select it in the settings as dropdown
 				i18nLabel: channel.name
 			};
 		}
@@ -15,8 +15,16 @@ Meteor.startup(() => {
 	RocketChat.settings.addGroup('Threading');
 
 	// the channel for which threads are created if none is explicitly chosen
-	const potentialParentChannels = getParentChannels();
-	const defaultChannel = potentialParentChannels[0] ? potentialParentChannels[0].key : '';
+	let defaultChannel = '';
+
+	const generalChannel = RocketChat.models.Rooms.findOneById('GENERAL');
+
+	if (generalChannel) {
+		defaultChannel = generalChannel.name;
+	} else {
+		const potentialParentChannels = getParentChannels();
+		defaultChannel = potentialParentChannels[0] ? potentialParentChannels[0].key : '';
+	}
 	RocketChat.settings.add('Thread_default_parent_Channel', defaultChannel, {
 		group: 'Threading',
 		i18nLabel: 'Thread_default_parent_Channel',
