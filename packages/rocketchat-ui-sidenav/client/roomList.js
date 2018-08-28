@@ -47,7 +47,7 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'thread') {
 				types = ['c', 'p', 'd'];
-				query.parentRoomId = {$exists: true};
+				query.parentRoomId = { $exists: true };
 			}
 
 			if (this.identifier === 'unread' || this.identifier === 'tokens') {
@@ -62,7 +62,7 @@ Template.roomList.helpers({
 
 			// if we display threads as a separate group, we should hide them from the other lists
 			if (RocketChat.getUserPreference(user, 'sidebarShowThreads')) {
-				query.parentRoomId = {$exists: false};
+				query.parentRoomId = { $exists: false };
 			}
 
 			if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
