@@ -11,17 +11,35 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 					department: Match.Maybe(String),
 					phone: Match.Maybe(String),
 					username: Match.Maybe(String),
-					/* customFields: Match.Maybe(Array) // think about receiving visitor custom fields here..*/
+					customFields: Match.Maybe([
+						Match.ObjectIncluding({
+							key: String,
+							value: String,
+							overwrite: Boolean,
+						}),
+					]),
 				}),
 			});
 
-			const visitorToken = this.bodyParams.visitor.token;
+			const { token, customFields } = this.bodyParams.visitor;
 
-			let visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-			if (!visitor) {
-				const visitorId = RocketChat.Livechat.registerGuest(this.bodyParams.visitor);
-				visitor = LivechatVisitors.findOneById(visitorId);
+			let visitor = LivechatVisitors.getVisitorByToken(token);
+			const visitorId = (visitor) ? visitor._id : RocketChat.Livechat.registerGuest(this.bodyParams.visitor);
+
+			if (customFields && customFields instanceof Array) {
+				customFields.forEach((field) => {
+					const customField = RocketChat.models.LivechatCustomField.findOneById(field.key);
+					if (!customField) {
+						throw new Meteor.Error('invalid-custom-field');
+					}
+					const { key, value, overwrite } = field;
+					if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
+						return RocketChat.API.v1.failure();
+					}
+				});
 			}
+
+			visitor = LivechatVisitors.findOneById(visitorId);
 			return RocketChat.API.v1.success({ visitor });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
@@ -29,7 +47,6 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 	},
 });
 
-/* authRequired: true needs to be removed */
 RocketChat.API.v1.addRoute('livechat/visitor/:token', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
@@ -41,7 +58,6 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', { authRequired: true }, {
 	},
 });
 
-/* authRequired: true needs to be removed */
 RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {

@@ -5,3 +5,4 @@ import './v1/offlineMessage.js';
 import './v1/pageVisited.js';
 import './v1/agent.js';
 import './v1/message.js';
+import './v1/customField.js';

@@ -144,6 +144,51 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 	},
 });
 
+RocketChat.API.v1.addRoute('livechat/messages/:rid', {
+	post() {
+		try {
+			check(this.urlParams, {
+				rid: String,
+			});
+			console.log('1');
+			check(this.bodyParams, {
+				token: String,
+				end: Match.Maybe(Date),
+				limit: Match.Maybe(Number),
+				ls: Match.Maybe(Date),
+			});
+			console.log('2');
+			const defaultLimit = 20;
+			const { token } = this.bodyParams;
+			const { rid } = this.urlParams;
+			console.log('3');
+			const guest = livechat.guest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+			console.log('4');
+			const room = livechat.room(token, rid);
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+			console.log('5');
+			let { limit } = this.bodyParams;
+			if (!limit || limit > defaultLimit) {
+				limit = defaultLimit;
+			}
+			console.log('6');
+			const ls = this.bodyParams.ls && new Date(this.bodyParams.ls);
+			const end = this.bodyParams.end && new Date(this.bodyParams.end);
+			console.log('7');
+			const messages = RocketChat.loadMessageHistory({ userId: guest._id, rid, end, limit, ls });
+			return RocketChat.API.v1.success(messages);
+
+		} catch (e) {
+			return RocketChat.API.v1.failure(e.error);
+		}
+	},
+});
+
 RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {

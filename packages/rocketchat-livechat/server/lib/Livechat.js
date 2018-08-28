@@ -113,6 +113,7 @@ RocketChat.Livechat = {
 
 		return { room, newRoom };
 	},
+
 	sendMessage({ guest, message, roomInfo, agent }) {
 		const { room, newRoom } = this.getRoom(guest, message, roomInfo, agent);
 		if (guest.name) {
@@ -122,6 +123,7 @@ RocketChat.Livechat = {
 		// return messages;
 		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
+
 	updateMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -141,6 +143,7 @@ RocketChat.Livechat = {
 
 		return true;
 	},
+
 	deleteMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -160,6 +163,7 @@ RocketChat.Livechat = {
 
 		return true;
 	},
+
 	registerGuest({ token, name, email, department, phone, username } = {}) {
 		check(token, String);
 
@@ -222,6 +226,7 @@ RocketChat.Livechat = {
 
 		return userId;
 	},
+
 	setDepartmentForGuest({ token, department } = {}) {
 		check(token, String);
 
@@ -237,6 +242,7 @@ RocketChat.Livechat = {
 		}
 		return false;
 	},
+
 	saveGuest({ _id, name, email, phone }) {
 		const updateData = {};
 
@@ -301,6 +307,24 @@ RocketChat.Livechat = {
 		});
 
 		return true;
+	},
+
+	setCustomFields({ token, key, value, overwrite } = {}) {
+		check(token, String);
+		check(key, String);
+		check(value, String);
+		check(overwrite, Boolean);
+
+		const customField = RocketChat.models.LivechatCustomField.findOneById(key);
+		if (!customField) {
+			throw new Meteor.Error('invalid-custom-field');
+		}
+
+		if (customField.scope === 'room') {
+			return RocketChat.models.Rooms.updateLivechatDataByToken(token, key, value, overwrite);
+		} else {
+			return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+		}
 	},
 
 	getInitSettings() {
