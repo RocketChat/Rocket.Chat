@@ -274,6 +274,7 @@ Template.CreateThread.onRendered(function() {
 	const parentChannelElement = this.find('#parentChannel-search');
 	const questionElement = this.find('#first_question');
 
+	questionElement.focus();
 	instance.ac.element = parentChannelElement;
 	instance.ac.$element = $(instance.ac.element);
 	instance.ac.$element.on('autocompleteselect', function(e, { item }) {
