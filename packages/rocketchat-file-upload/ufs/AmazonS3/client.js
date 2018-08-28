@@ -1,4 +1,4 @@
-import {UploadFS} from 'meteor/jalik:ufs';
+import { UploadFS } from 'meteor/jalik:ufs';
 
 export class AmazonS3Store extends UploadFS.Store {}
 

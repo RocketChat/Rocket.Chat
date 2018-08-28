@@ -69,12 +69,13 @@ Meteor.startup(function() {
 		{ _id: 'view-user-administration',      roles : ['admin'] },
 		{ _id: 'preview-c-room',                roles : ['admin', 'user', 'anonymous'] },
 		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] },
-		{ _id: 'view-broadcast-member-list',    roles : ['admin', 'owner', 'moderator'] }
+		{ _id: 'view-broadcast-member-list',    roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'call-management',               roles : ['admin', 'owner', 'moderator'] },
 	];
 
 	for (const permission of permissions) {
 		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, {$set: permission });
+			RocketChat.models.Permissions.upsert(permission._id, { $set: permission });
 		}
 	}
 
@@ -86,7 +87,7 @@ Meteor.startup(function() {
 		{ name: 'user',      scope: 'Users',         description: '' },
 		{ name: 'bot',       scope: 'Users',         description: '' },
 		{ name: 'guest',     scope: 'Users',         description: '' },
-		{ name: 'anonymous', scope: 'Users',         description: '' }
+		{ name: 'anonymous', scope: 'Users',         description: '' },
 	];
 
 	for (const role of defaultRoles) {

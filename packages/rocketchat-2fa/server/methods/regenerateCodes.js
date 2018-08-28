@@ -14,7 +14,7 @@ Meteor.methods({
 			secret: user.services.totp.secret,
 			token: userToken,
 			userId: Meteor.userId(),
-			backupTokens: user.services.totp.hashedBackup
+			backupTokens: user.services.totp.hashedBackup,
 		});
 
 		if (verified) {
@@ -23,5 +23,5 @@ Meteor.methods({
 			RocketChat.models.Users.update2FABackupCodesByUserId(Meteor.userId(), hashedCodes);
 			return { codes };
 		}
-	}
+	},
 });

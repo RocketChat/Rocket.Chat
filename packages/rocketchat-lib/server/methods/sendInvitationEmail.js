@@ -1,16 +1,17 @@
 import _ from 'underscore';
+import s from 'underscore.string';
 
 Meteor.methods({
 	sendInvitationEmail(emails) {
 		check(emails, [String]);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sendInvitationEmail'
+				method: 'sendInvitationEmail',
 			});
 		}
 		if (!RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'sendInvitationEmail'
+				method: 'sendInvitationEmail',
 			});
 		}
 		const rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -30,32 +31,32 @@ Meteor.methods({
 			html = RocketChat.settings.get('Invitation_HTML');
 		} else {
 			subject = TAPi18n.__('Invitation_Subject_Default', {
-				lng
+				lng,
 			});
 			html = TAPi18n.__('Invitation_HTML_Default', {
-				lng
+				lng,
 			});
 		}
 		subject = RocketChat.placeholders.replace(subject);
-		validEmails.forEach(email => {
+		validEmails.forEach((email) => {
 			this.unblock();
 			html = RocketChat.placeholders.replace(html, {
-				email
+				email: s.escapeHTML(email),
 			});
 			try {
 				Email.send({
 					to: email,
 					from: RocketChat.settings.get('From_Email'),
 					subject,
-					html: header + html + footer
+					html: header + html + footer,
 				});
-			} catch ({message}) {
+			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {
 					method: 'sendInvitationEmail',
-					message
+					message,
 				});
 			}
 		});
 		return validEmails;
-	}
+	},
 });

@@ -74,14 +74,14 @@ if (Meteor.isCordova) {
 					android: {
 						senderID: window.ANDROID_SENDER_ID,
 						sound: true,
-						vibrate: true
+						vibrate: true,
 					},
 					ios: {
 						badge: true,
 						clearBadge: true,
 						sound: true,
-						alert: true
-					}
+						alert: true,
+					},
 				});
 			}
 		})
