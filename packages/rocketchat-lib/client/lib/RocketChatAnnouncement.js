@@ -1,5 +1,5 @@
 export class RocketChatAnnouncement {
-	constructor(args={}) {
+	constructor(args = {}) {
 		this.room = new ReactiveVar(args.room);
 		this.message = new ReactiveVar(args.message);
 		this.callback = new ReactiveVar(args.callback);

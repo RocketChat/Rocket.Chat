@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:migrations',
 	version: '0.0.1',
 	summary: '',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

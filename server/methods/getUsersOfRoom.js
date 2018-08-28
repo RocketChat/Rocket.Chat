@@ -15,7 +15,7 @@ Meteor.methods({
 		}
 
 		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } }).fetch();
-		const userIds = subscriptions.map(s => s.u._id); // TODO: CACHE: expensive
+		const userIds = subscriptions.map((s) => s.u._id); // TODO: CACHE: expensive
 		const options = { fields: { username: 1, name: 1 } };
 
 		const users = showAll === true
@@ -24,7 +24,7 @@ Meteor.methods({
 
 		return {
 			total: userIds.length,
-			records: users
+			records: users,
 		};
-	}
+	},
 });
