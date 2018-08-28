@@ -17,8 +17,7 @@ Meteor.startup(function() {
 					// remove the hidden message from the UI - the message list is not reactive
 					Tracker.nonreactive(function() {
 						ChatMessage.remove({
-							_id: message._id,
-							'u._id': Meteor.userId()
+							_id: message._id
 						});
 					});
 
