@@ -11,7 +11,7 @@ Meteor.methods({
 		}
 
 		return {
-			remaining: user.services.totp.hashedBackup.length
+			remaining: user.services.totp.hashedBackup.length,
 		};
-	}
+	},
 });

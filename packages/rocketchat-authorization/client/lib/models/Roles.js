@@ -16,5 +16,5 @@ Object.assign(RocketChat.models.Roles, {
 			const model = RocketChat.models[roleScope];
 			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 		});
-	}
+	},
 });

@@ -6,20 +6,20 @@ import { Random } from 'meteor/random';
 import s from 'underscore.string';
 import hljs from 'highlight.js';
 
-const inlinecode = (message) => {
+const inlinecode = (message) =>
 	// Support `text`
-	return message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
+	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) => {
 		const token = ` =!=${ Random.id() }=!=`;
 
 		message.tokens.push({
 			token,
 			text: `<span class=\"copyonly\">\`</span><span><code class=\"code-colors inline\">${ p1 }</code></span><span class=\"copyonly\">\`</span>${ p2 }`,
-			noHtml: match
+			noHtml: match,
 		});
 
 		return token;
-	});
-};
+	})
+;
 
 const codeblocks = (message) => {
 	// Count occurencies of ```
@@ -45,12 +45,8 @@ const codeblocks = (message) => {
 				// Process highlight if this part is code
 				const singleLine = codeMatch[0].indexOf('\n') === -1;
 				const lang = !singleLine && Array.from(hljs.listLanguages()).includes(s.trim(codeMatch[1])) ? s.trim(codeMatch[1]) : '';
-				const code =
-					singleLine ?
-						s.unescapeHTML(codeMatch[1]) :
-						lang === '' ?
-							s.unescapeHTML(codeMatch[1] + codeMatch[2]) :
-							s.unescapeHTML(codeMatch[2]);
+				const emptyLanguage = lang === '' ? s.unescapeHTML(codeMatch[1] + codeMatch[2]) : s.unescapeHTML(codeMatch[2]);
+				const code = singleLine ? s.unescapeHTML(codeMatch[1]) : emptyLanguage;
 
 				const result = lang === '' ? hljs.highlightAuto((lang + code)) : hljs.highlight(lang, code);
 				const token = `=!=${ Random.id() }=!=`;
@@ -59,7 +55,7 @@ const codeblocks = (message) => {
 					highlight: true,
 					token,
 					text: `<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`,
-					noHtml: codeMatch[0]
+					noHtml: codeMatch[0],
 				});
 
 				msgParts[index] = token;

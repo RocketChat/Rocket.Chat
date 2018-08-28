@@ -13,7 +13,7 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 		ts,
 		fromUsers,
 		{ fields: { 'file._id': 1, pinned: 1 }, limit }
-	).forEach(document => {
+	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
@@ -32,7 +32,7 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 			rid,
 			excludePinned,
 			ts,
-			users: fromUsers
+			users: fromUsers,
 		});
 	}
 	return count;

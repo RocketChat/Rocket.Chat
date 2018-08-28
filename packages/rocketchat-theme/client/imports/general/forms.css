@@ -252,16 +252,30 @@
 
 	height: 100%;
 
+	&--new {
+		padding: 0 1.5rem;
+	}
+
 	&__content {
 		overflow-y: auto;
+
+		display: flex;
+
 		flex: 1;
+		flex-direction: column;
 
 		width: 100%;
-		padding: 25px;
+		padding: 25px 0;
 	}
 
 	&--apps .preferences-page__header {
 		justify-content: space-between;
+	}
+
+	& .container {
+		flex: 1;
+
+		width: 100%;
 	}
 }
 

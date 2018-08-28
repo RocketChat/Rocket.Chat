@@ -1,5 +1,5 @@
 /* globals VideoRecorder, fileUpload */
-import {VRecDialog} from './VRecDialog';
+import { VRecDialog } from './VRecDialog';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -20,7 +20,7 @@ Template.vrecDialog.helpers({
 
 	recordDisabled() {
 		return VideoRecorder.cameraStarted.get() ? '' : 'disabled';
-	}
+	},
 });
 
 
@@ -39,10 +39,10 @@ Template.vrecDialog.events({
 	},
 
 	'click .vrec-dialog .ok'() {
-		const cb = blob => {
+		const cb = (blob) => {
 			fileUpload([{ file: blob, type: 'video', name: `${ TAPi18n.__('Video record') }.webm` }]);
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);
-	}
+	},
 });

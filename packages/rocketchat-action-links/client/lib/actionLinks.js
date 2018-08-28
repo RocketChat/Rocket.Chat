@@ -1,4 +1,4 @@
-//Action Links Handler. This method will be called off the client.
+// Action Links Handler. This method will be called off the client.
 
 RocketChat.actionLinks.run = (name, messageId, instance) => {
 	const message = RocketChat.actionLinks.getMessage(name, messageId);

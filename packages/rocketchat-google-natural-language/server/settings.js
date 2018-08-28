@@ -4,7 +4,7 @@ Meteor.startup(function() {
 		group: 'Message',
 		section: 'Google Natural Language',
 		public: true,
-		i18nLabel: 'Enabled'
+		i18nLabel: 'Enabled',
 	});
 	RocketChat.settings.add('GoogleNaturalLanguage_ServiceAccount', '', {
 		type: 'string',
@@ -13,8 +13,8 @@ Meteor.startup(function() {
 		multiline: true,
 		enableQuery: {
 			_id: 'GoogleNaturalLanguage_Enabled',
-			value: true
+			value: true,
 		},
-		i18nLabel: 'Service_account_key'
+		i18nLabel: 'Service_account_key',
 	});
 });

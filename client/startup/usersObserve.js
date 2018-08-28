@@ -11,6 +11,6 @@ Meteor.startup(function() {
 		removed(user) {
 			Session.set(`user_${ user.username }_status`, null);
 			RoomManager.updateUserStatus(user, 'offline', null);
-		}
+		},
 	});
 });

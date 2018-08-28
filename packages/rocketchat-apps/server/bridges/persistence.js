@@ -42,7 +42,7 @@ export class AppPersistenceBridge {
 
 		const records = this.orch.getPersistenceModel().find({
 			appId,
-			associations: { $all: associations }
+			associations: { $all: associations },
 		}).fetch();
 
 		return Array.isArray(records) ? records.map((r) => r.data) : [];
@@ -68,8 +68,8 @@ export class AppPersistenceBridge {
 		const query = {
 			appId,
 			associations: {
-				$all: associations
-			}
+				$all: associations,
+			},
 		};
 
 		const records = this.orch.getPersistenceModel().find(query).fetch();

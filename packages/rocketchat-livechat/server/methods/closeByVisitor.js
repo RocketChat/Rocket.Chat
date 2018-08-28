@@ -15,7 +15,7 @@ Meteor.methods({
 		return RocketChat.Livechat.closeRoom({
 			visitor,
 			room,
-			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
+			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
-	}
+	},
 });
