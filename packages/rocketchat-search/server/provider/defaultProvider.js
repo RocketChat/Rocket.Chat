@@ -19,7 +19,7 @@ class DefaultProvider extends SearchProvider {
 			i18nLabel: 'Search_Page_Size',
 		});
 
-		RocketChat.settings.get('Global_search_in_directory', (key, value)=>{
+		RocketChat.settings.get('Global_search_in_directory', (key, value) => {
 			if (value) {
 				RocketChat.models.Settings.updateValueById('Search.defaultProvider.GlobalSearchEnabled', true);
 			}

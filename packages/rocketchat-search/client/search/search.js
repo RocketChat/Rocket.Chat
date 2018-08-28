@@ -48,7 +48,7 @@ Template.RocketSearch.onCreated(function() {
 		parentPayload: {},
 		payload: {},
 		search: _search,
-		context: this.data.context
+		context: this.data.context,
 	};
 
 	this.search = (value) => {
@@ -94,7 +94,6 @@ Template.RocketSearch.events = {
 				t.search(evt.target.value.trim());
 			}
 			t.suggestions.set();
-
 
 
 			return evt.preventDefault();
