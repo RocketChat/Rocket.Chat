@@ -30,7 +30,7 @@ export class RoomTypesCommon {
 
 		this.roomTypesOrder.push({
 			identifier: roomConfig.identifier,
-			order: roomConfig.order
+			order: roomConfig.order,
 		});
 
 		this.roomTypes[roomConfig.identifier] = roomConfig;
@@ -38,7 +38,7 @@ export class RoomTypesCommon {
 		if (roomConfig.route && roomConfig.route.path && roomConfig.route.name && roomConfig.route.action) {
 			const routeConfig = {
 				name: roomConfig.route.name,
-				action: roomConfig.route.action
+				action: roomConfig.route.action,
 			};
 
 			if (Meteor.isClient) {
@@ -67,28 +67,11 @@ export class RoomTypesCommon {
 			routeData = this.roomTypes[roomType].route.link(subData);
 		} else if (subData && subData.name) {
 			routeData = {
-				name: subData.name
+				name: subData.name,
 			};
 		}
 
 		return FlowRouter.path(this.roomTypes[roomType].route.name, routeData);
-	}
-
-	openRouteLink(roomType, subData, queryParams) {
-		if (!this.roomTypes[roomType]) {
-			return false;
-		}
-
-		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
-			routeData = this.roomTypes[roomType].route.link(subData);
-		} else if (subData && subData.name) {
-			routeData = {
-				name: subData.name
-			};
-		}
-
-		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
 
 	/**
@@ -97,5 +80,13 @@ export class RoomTypesCommon {
 	 */
 	getConfig(roomType) {
 		return this.roomTypes[roomType];
+	}
+
+	getURL(...args) {
+		const path = this.getRouteLink(...args);
+		if (!path) {
+			return false;
+		}
+		return Meteor.absoluteUrl(path.replace(/^\//, ''));
 	}
 }

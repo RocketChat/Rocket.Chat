@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 Meteor.methods({
-	getChannelHistory({rid, latest, oldest, inclusive, count = 20, unreads}) {
+	getChannelHistory({ rid, latest, oldest, inclusive, count = 20, unreads }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -14,30 +14,30 @@ Meteor.methods({
 			return false;
 		}
 
-		//Make sure they can access the room
+		// Make sure they can access the room
 		if (room.t === 'c' && !RocketChat.authz.hasPermission(fromUserId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
-		//Ensure latest is always defined.
+		// Ensure latest is always defined.
 		if (_.isUndefined(latest)) {
 			latest = new Date();
 		}
 
-		//Verify oldest is a date if it exists
+		// Verify oldest is a date if it exists
 		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
 		const options = {
 			sort: {
-				ts: -1
+				ts: -1,
 			},
-			limit: count
+			limit: count,
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
-			options.fields = { 'editedAt': 0 };
+			options.fields = { editedAt: 0 };
 		}
 
 		let records = [];
@@ -84,12 +84,12 @@ Meteor.methods({
 			return {
 				messages: messages || [],
 				firstUnread,
-				unreadNotLoaded
+				unreadNotLoaded,
 			};
 		}
 
 		return {
-			messages: messages || []
+			messages: messages || [],
 		};
-	}
+	},
 });

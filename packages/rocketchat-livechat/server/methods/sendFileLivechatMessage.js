@@ -19,7 +19,7 @@ Meteor.methods({
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
 			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String)
+			msg: Match.Optional(String),
 		});
 
 		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
@@ -29,7 +29,7 @@ Meteor.methods({
 			type: 'file',
 			description: file.description,
 			title_link: fileUrl,
-			title_link_download: true
+			title_link_download: true,
 		};
 
 		if (/^image\/.+/.test(file.type)) {
@@ -58,13 +58,13 @@ Meteor.methods({
 			file: {
 				_id: file._id,
 				name: file.name,
-				type: file.type
+				type: file.type,
 			},
 			groupable: false,
 			attachments: [attachment],
-			token: visitorToken
+			token: visitorToken,
 		}, msgData);
 
 		return Meteor.call('sendMessageLivechat', msg);
-	}
+	},
 });

@@ -8,14 +8,14 @@ export const RoomSettingsEnum = {
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
-	SYSTEM_MESSAGES: 'systemMessages'
+	SYSTEM_MESSAGES: 'systemMessages',
 };
 
 export const UiTextContext = {
 	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed'
+	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
 };
 
 export class RoomTypeRouteConfig {
@@ -48,7 +48,7 @@ export class RoomTypeConfig {
 		icon,
 		header,
 		label,
-		route
+		route,
 	}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');

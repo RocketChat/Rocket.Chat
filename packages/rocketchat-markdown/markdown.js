@@ -14,20 +14,20 @@ import { code } from './parser/original/code.js';
 
 const parsers = {
 	original,
-	marked
+	marked,
 };
 
 class MarkdownClass {
 	parse(text) {
 		const message = {
-			html: s.escapeHTML(text)
+			html: s.escapeHTML(text),
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
 	parseNotEscaped(text) {
 		const message = {
-			html: text
+			html: text,
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
@@ -42,13 +42,13 @@ class MarkdownClass {
 		if (typeof parsers[parser] === 'function') {
 			return parsers[parser](message);
 		}
-		return parsers['original'](message);
+		return parsers.original(message);
 	}
 
 	mountTokensBack(message, useHtml = true) {
 		if (message.tokens && message.tokens.length > 0) {
-			for (const {token, text, noHtml} of message.tokens) {
-				message.html = message.html.replace(token, () => useHtml ? text : noHtml); // Uses lambda so doesn't need to escape $
+			for (const { token, text, noHtml } of message.tokens) {
+				message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
 			}
 		}
 
@@ -75,8 +75,8 @@ const MarkdownMessage = (message) => {
 RocketChat.callbacks.add('renderMessage', MarkdownMessage, RocketChat.callbacks.priority.HIGH, 'markdown');
 
 if (Meteor.isClient) {
-	Blaze.registerHelper('RocketChatMarkdown', text => Markdown.parse(text));
-	Blaze.registerHelper('RocketChatMarkdownUnescape', text => Markdown.parseNotEscaped(text));
+	Blaze.registerHelper('RocketChatMarkdown', (text) => Markdown.parse(text));
+	Blaze.registerHelper('RocketChatMarkdownUnescape', (text) => Markdown.parseNotEscaped(text));
 	Blaze.registerHelper('RocketChatMarkdownInline', (text) => {
 		const output = Markdown.parse(text);
 		return output.replace(/^<p>/, '').replace(/<\/p>$/, '');
