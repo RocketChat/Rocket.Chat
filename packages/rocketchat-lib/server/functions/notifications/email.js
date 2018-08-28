@@ -71,8 +71,7 @@ function getEmailContent({ message, user, room }) {
 }
 
 function getMessageLink(room, sub) {
-	const roomPath = RocketChat.roomTypes.getRouteLink(room.t, sub);
-	const path = Meteor.absoluteUrl(roomPath ? roomPath.replace(/^\//, '') : '');
+	const roomPath = RocketChat.roomTypes.getURL(room.t, sub);
 	const style = [
 		'color: #fff;',
 		'padding: 9px 12px;',
@@ -81,7 +80,7 @@ function getMessageLink(room, sub) {
 		'text-decoration: none;',
 	].join(' ');
 	const message = TAPi18n.__('Offline_Link_Message');
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }">${ message }</a>`;
+	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ roomPath }">${ message }</a>`;
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
