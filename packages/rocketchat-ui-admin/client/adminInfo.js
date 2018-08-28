@@ -49,8 +49,8 @@ Template.adminInfo.helpers({
 		return RocketChat.Info;
 	},
 	build() {
-		return RocketChat.Info && RocketChat.Info.compile || RocketChat.Info && RocketChat.Info.build;
-	}
+		return RocketChat.Info && (RocketChat.Info.compile || RocketChat.Info.build);
+	},
 });
 
 Template.adminInfo.events({
@@ -64,7 +64,7 @@ Template.adminInfo.events({
 				return instance.statistics.set(statistics);
 			}
 		});
-	}
+	},
 });
 
 Template.adminInfo.onRendered(function() {

@@ -2,7 +2,7 @@ import toastr from 'toastr';
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();
-	}
+	},
 });
 
 Template.livechatCustomFieldForm.events({
@@ -31,7 +31,7 @@ Template.livechatCustomFieldForm.events({
 			field,
 			label,
 			scope: scope.trim(),
-			visibility: visibility.trim()
+			visibility: visibility.trim(),
 		};
 
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
@@ -45,10 +45,10 @@ Template.livechatCustomFieldForm.events({
 		});
 	},
 
-	'click button.back'(e/*, instance*/) {
+	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-customfields');
-	}
+	},
 });
 
 Template.livechatCustomFieldForm.onCreated(function() {

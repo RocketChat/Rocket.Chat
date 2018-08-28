@@ -2,10 +2,10 @@
 
 import _ from 'underscore';
 
-const _unstoreLoginToken = Accounts._unstoreLoginToken;
-Accounts._unstoreLoginToken = function() {
+const { _unstoreLoginToken } = Accounts;
+Accounts._unstoreLoginToken = function(...args) {
 	RocketChat.iframeLogin.tryLogin();
-	_unstoreLoginToken.apply(Accounts, arguments);
+	_unstoreLoginToken.apply(Accounts, args);
 };
 
 class IframeLogin {
@@ -51,10 +51,10 @@ class IframeLogin {
 		const options = {
 			beforeSend: (xhr) => {
 				xhr.withCredentials = true;
-			}
+			},
 		};
 
-		let iframeUrl = this.iframeUrl;
+		let { iframeUrl } = this;
 		let separator = '?';
 		if (iframeUrl.indexOf('?') > -1) {
 			separator = '&';
@@ -91,7 +91,7 @@ class IframeLogin {
 
 		if (Match.test(tokenData, String)) {
 			tokenData = {
-				token: tokenData
+				token: tokenData,
 			};
 		}
 
@@ -104,9 +104,9 @@ class IframeLogin {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				iframe: true,
-				token: tokenData.token
+				token: tokenData.token,
 			}],
-			userCallback: callback
+			userCallback: callback,
 		});
 	}
 }
@@ -146,7 +146,7 @@ window.addEventListener('message', (e) => {
 				if (error) {
 					e.source.postMessage({
 						event: 'login-error',
-						response: error.message
+						response: error.message,
 					}, e.origin);
 				}
 			});
@@ -157,7 +157,7 @@ window.addEventListener('message', (e) => {
 				if (error) {
 					e.source.postMessage({
 						event: 'login-error',
-						response: error.message
+						response: error.message,
 					}, e.origin);
 				}
 			});
@@ -168,7 +168,7 @@ window.addEventListener('message', (e) => {
 				console.log('facebook-login-success', response);
 				e.source.postMessage({
 					event: 'facebook-login-success',
-					response
+					response,
 					// authResponse: Object
 					// 	accessToken: "a7s6d8a76s8d7..."
 					// 	expiresIn: "5172793"
@@ -185,7 +185,7 @@ window.addEventListener('message', (e) => {
 				e.source.postMessage({
 					event: 'facebook-login-error',
 					error,
-					response
+					response,
 				}, e.origin);
 			};
 
@@ -198,9 +198,9 @@ window.addEventListener('message', (e) => {
 							authResponse: {
 								accessToken: serviceData.accessToken,
 								expiresIn: serviceData.expiresAt,
-								secret
+								secret,
 							},
-							userID: serviceData.id
+							userID: serviceData.id,
 						});
 					}
 				});
@@ -212,12 +212,8 @@ window.addEventListener('message', (e) => {
 					return fbLoginSuccess(response);
 				}
 
-				facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => {
-					return fbLoginError('login-error', error);
-				});
-			}, (error) => {
-				return fbLoginError('get-status-error', error);
-			});
+				facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => fbLoginError('login-error', error));
+			}, (error) => fbLoginError('get-status-error', error));
 			break;
 
 		case 'call-twitter-login':
@@ -225,7 +221,7 @@ window.addEventListener('message', (e) => {
 				console.log('twitter-login-success', response);
 				e.source.postMessage({
 					event: 'twitter-login-success',
-					response
+					response,
 					// {
 					// 	"userName": "orodrigok",
 					// 	"userId": 293123,
@@ -239,7 +235,7 @@ window.addEventListener('message', (e) => {
 				console.log('twitter-login-error', error);
 				e.source.postMessage({
 					event: 'twitter-login-error',
-					error
+					error,
 				}, e.origin);
 			};
 
@@ -252,7 +248,7 @@ window.addEventListener('message', (e) => {
 							userName: serviceData.screenName,
 							userId: serviceData.id,
 							secret: serviceData.accessTokenSecret,
-							token: serviceData.accessToken
+							token: serviceData.accessToken,
 						});
 					}
 				});
@@ -271,7 +267,7 @@ window.addEventListener('message', (e) => {
 				console.log('google-login-success', response);
 				e.source.postMessage({
 					event: 'google-login-success',
-					response
+					response,
 					// {
 					// 	"email": "rodrigoknascimento@gmail.com",
 					// 	"userId": "1082039180239",
@@ -290,7 +286,7 @@ window.addEventListener('message', (e) => {
 				console.log('google-login-error', error);
 				e.source.postMessage({
 					event: 'google-login-error',
-					error
+					error,
 				}, e.origin);
 			};
 
@@ -307,7 +303,7 @@ window.addEventListener('message', (e) => {
 							imageUrl: serviceData.picture,
 							givenName: serviceData.given_name,
 							familyName: serviceData.family_name,
-							accessToken: serviceData.accessToken
+							accessToken: serviceData.accessToken,
 						});
 					}
 				});
@@ -317,7 +313,7 @@ window.addEventListener('message', (e) => {
 			const options = {
 				scopes: e.data.scopes,
 				webClientId: e.data.webClientId,
-				offline: true
+				offline: true,
 			};
 
 			window.plugins.googleplus.login(options, googleLoginSuccess, googleLoginFailure);

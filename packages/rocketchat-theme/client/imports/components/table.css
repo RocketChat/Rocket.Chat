@@ -12,7 +12,7 @@
 	}
 
 	& tbody {
-		& tr:not(.table-loading) {
+		& tr:not(.table-no-click):not(.table-no-pointer) {
 			cursor: pointer;
 
 			&:hover {
@@ -204,7 +204,7 @@
 	text-transform: capitalize;
 }
 
-.table-loading {
+.table-no-click {
 	height: 10px;
 }
 

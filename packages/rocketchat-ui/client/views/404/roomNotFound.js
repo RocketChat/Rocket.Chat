@@ -8,5 +8,11 @@ Template.roomNotFound.helpers({
 	sameUser() {
 		const user = Meteor.user();
 		return user && user.username === this.name;
-	}
+	},
+	hasCustomErrorData() {
+		return this.error && this.error.error && this.error.reason && this.error.error !== 'error-invalid-user';
+	},
+	customErrorMessage() {
+		return this.error.reason;
+	},
 });
