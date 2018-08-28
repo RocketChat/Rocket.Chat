@@ -5,7 +5,7 @@ Template.videoCall.helpers({
 		if (Template.instance().showToolbar.get()) {
 			return 'visible';
 		}
-	}
+	},
 });
 
 Template.videoCall.events({
@@ -23,7 +23,7 @@ Template.videoCall.events({
 				instance.showToolbar.set(false);
 			}, 3000);
 		}
-	}
+	},
 });
 
 Template.videoCall.onCreated(function() {

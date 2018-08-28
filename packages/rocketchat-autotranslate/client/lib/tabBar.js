@@ -7,7 +7,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Auto_Translate',
 				icon: 'language',
 				template: 'autoTranslateFlexTab',
-				order: 20
+				order: 20,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('autotranslate');

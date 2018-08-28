@@ -2,9 +2,9 @@ FlowRouter.route('/mailer', {
 	name: 'mailer',
 	action() {
 		return BlazeLayout.render('main', {
-			center: 'mailer'
+			center: 'mailer',
 		});
-	}
+	},
 });
 
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
@@ -12,5 +12,5 @@ FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	action(params) {
 		Meteor.call('Mailer:unsubscribe', params._id, params.createdAt);
 		return BlazeLayout.render('mailerUnsubscribe');
-	}
+	},
 });

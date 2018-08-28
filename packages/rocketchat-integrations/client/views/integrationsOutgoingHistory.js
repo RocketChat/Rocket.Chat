@@ -106,7 +106,7 @@ Template.integrationsOutgoingHistory.helpers({
 
 	integrationId() {
 		return this.params && this.params() && this.params().id;
-	}
+	},
 });
 
 Template.integrationsOutgoingHistory.events({
@@ -155,5 +155,5 @@ Template.integrationsOutgoingHistory.events({
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			instance.limit.set(instance.limit.get() + 25);
 		}
-	}, 200)
+	}, 200),
 });
