@@ -67,7 +67,7 @@ Template.apps.onCreated(function() {
 	getApps(instance);
 	getInstalledApps(instance);
 
-	fetch('https://marketplace.rocket.chat/v1/categories')
+	fetch(`${ HOST }/v1/categories`)
 		.then((response) => response.json())
 		.then((data) => {
 			instance.categories.set(data);
@@ -76,7 +76,7 @@ Template.apps.onCreated(function() {
 	instance.onAppAdded = function _appOnAppAdded() {
 		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
 
-		// fetch(`https://marketplace.rocket.chat/v1/apps/${ appId }`).then((result) => {
+		// fetch(`${ HOST }/v1/apps/${ appId }`).then((result) => {
 		// 	const installedApps = instance.installedApps.get();
 
 		// 	installedApps.push({

@@ -12,10 +12,10 @@ function getApps(instance) {
 	const id = instance.id.get();
 
 	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }`).then((data) => data.json()),
+		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
 		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
 	]).then(([remoteApps, [localApp]]) => {
-		remoteApps = remoteApps.sort((a, b) => {
+		remoteApps = remoteApps.filter((app) => semver.satisfies(RocketChat.Info.marketplaceApiVersion, app.requiredApiVersion)).sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
 				return -1;
 			}
