@@ -1,8 +1,38 @@
 
 # 0.69.0 (Under Release Candidate Process)
 
+## 0.69.0-rc.1
+`2018-08-27  ·  1 🎉  ·  1 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Internal marketplace for apps ([#11864](https://github.com/RocketChat/Rocket.Chat/pull/11864) by [@gdelavald](https://github.com/gdelavald))
+
+### 🐛 Bug fixes
+
+- Translations were not unique per app allowing conflicts among apps ([#11878](https://github.com/RocketChat/Rocket.Chat/pull/11878))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- App engine merge ([#11835](https://github.com/RocketChat/Rocket.Chat/pull/11835))
+- Regression: role tag background, unread item font and message box autogrow ([#11861](https://github.com/RocketChat/Rocket.Chat/pull/11861))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@gdelavald](https://github.com/gdelavald)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@rssilva](https://github.com/rssilva)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.69.0-rc.0
-`2018-08-20  ·  9 🎉  ·  8 🚀  ·  35 🐛  ·  9 🔍  ·  24 👩‍💻👨‍💻`
+`2018-08-20  ·  9 🎉  ·  8 🚀  ·  34 🐛  ·  9 🔍  ·  24 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -42,7 +72,6 @@
 - Searching by `undefined` via REST when using `query` param ([#11657](https://github.com/RocketChat/Rocket.Chat/pull/11657))
 - Fix permalink of message when running system with subdir ([#11781](https://github.com/RocketChat/Rocket.Chat/pull/11781) by [@ura14h](https://github.com/ura14h))
 - Fix links in `onTableItemClick` of the directroy page ([#11543](https://github.com/RocketChat/Rocket.Chat/pull/11543) by [@ura14h](https://github.com/ura14h))
-- Livechat open room method ([#11830](https://github.com/RocketChat/Rocket.Chat/pull/11830))
 - App's i18nAlert is only being displayed as "i18nAlert" ([#11802](https://github.com/RocketChat/Rocket.Chat/pull/11802))
 - Removed hardcoded values. ([#11627](https://github.com/RocketChat/Rocket.Chat/pull/11627))
 - SAML is flooding logfile ([#11643](https://github.com/RocketChat/Rocket.Chat/pull/11643))
@@ -109,6 +138,29 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@timkinnane](https://github.com/timkinnane)
+
+# 0.68.5
+`2018-08-23  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Livechat open room method ([#11830](https://github.com/RocketChat/Rocket.Chat/pull/11830))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.68.5 ([#11852](https://github.com/RocketChat/Rocket.Chat/pull/11852))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.68.4
 `2018-08-10  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
