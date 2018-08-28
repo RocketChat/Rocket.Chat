@@ -1,38 +1,10 @@
 
-# 0.69.0 (Under Release Candidate Process)
+# 0.69.0
+`2018-08-28  ·  10 🎉  ·  8 🚀  ·  35 🐛  ·  13 🔍  ·  25 👩‍💻👨‍💻`
 
-## 0.69.0-rc.1
-`2018-08-27  ·  1 🎉  ·  1 🐛  ·  2 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Internal marketplace for apps ([#11864](https://github.com/RocketChat/Rocket.Chat/pull/11864) by [@gdelavald](https://github.com/gdelavald))
-
-### 🐛 Bug fixes
-
-- Translations were not unique per app allowing conflicts among apps ([#11878](https://github.com/RocketChat/Rocket.Chat/pull/11878))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- App engine merge ([#11835](https://github.com/RocketChat/Rocket.Chat/pull/11835))
-- Regression: role tag background, unread item font and message box autogrow ([#11861](https://github.com/RocketChat/Rocket.Chat/pull/11861))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@gdelavald](https://github.com/gdelavald)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-- [@rssilva](https://github.com/rssilva)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.69.0-rc.0
-`2018-08-20  ·  9 🎉  ·  8 🚀  ·  34 🐛  ·  9 🔍  ·  24 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### 🎉 New features
 
@@ -45,6 +17,7 @@
 - Setting to block unauthenticated access to avatars ([#9749](https://github.com/RocketChat/Rocket.Chat/pull/9749))
 - Setting to set a JS/CSS CDN ([#11779](https://github.com/RocketChat/Rocket.Chat/pull/11779))
 - Make font of unread items bolder for better contrast ([#8602](https://github.com/RocketChat/Rocket.Chat/pull/8602) by [@ausminternet](https://github.com/ausminternet))
+- Internal marketplace for apps ([#11864](https://github.com/RocketChat/Rocket.Chat/pull/11864) by [@gdelavald](https://github.com/gdelavald))
 
 ### 🚀 Improvements
 
@@ -93,10 +66,13 @@
 - Closed connections being storing on db ([#11709](https://github.com/RocketChat/Rocket.Chat/pull/11709))
 - Login logo now centered on small screens ([#11626](https://github.com/RocketChat/Rocket.Chat/pull/11626) by [@wreiske](https://github.com/wreiske))
 - Push notifications stuck after db failure ([#11667](https://github.com/RocketChat/Rocket.Chat/pull/11667))
+- Translations were not unique per app allowing conflicts among apps ([#11878](https://github.com/RocketChat/Rocket.Chat/pull/11878))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 0.68.5 ([#11852](https://github.com/RocketChat/Rocket.Chat/pull/11852))
+- Release 0.68.5 ([#11852](https://github.com/RocketChat/Rocket.Chat/pull/11852))
 - Fixed deutsch message pruning translations ([#11691](https://github.com/RocketChat/Rocket.Chat/pull/11691) by [@TheReal1604](https://github.com/TheReal1604))
 - Fixed the Finnish translation and removed some profanities ([#11794](https://github.com/RocketChat/Rocket.Chat/pull/11794) by [@jukper](https://github.com/jukper))
 - LingoHub based on develop ([#11838](https://github.com/RocketChat/Rocket.Chat/pull/11838))
@@ -106,6 +82,8 @@
 - Additional eslint rules  ([#11804](https://github.com/RocketChat/Rocket.Chat/pull/11804))
 - Add new eslint rules (automatically fixed) ([#11800](https://github.com/RocketChat/Rocket.Chat/pull/11800))
 - Merge master into develop & Set version to 0.69.0-develop ([#11606](https://github.com/RocketChat/Rocket.Chat/pull/11606))
+- App engine merge ([#11835](https://github.com/RocketChat/Rocket.Chat/pull/11835))
+- Regression: role tag background, unread item font and message box autogrow ([#11861](https://github.com/RocketChat/Rocket.Chat/pull/11861))
 
 </details>
 
@@ -115,6 +93,7 @@
 - [@TheReal1604](https://github.com/TheReal1604)
 - [@ausminternet](https://github.com/ausminternet)
 - [@crazy-max](https://github.com/crazy-max)
+- [@gdelavald](https://github.com/gdelavald)
 - [@glstewart17](https://github.com/glstewart17)
 - [@gsperezb](https://github.com/gsperezb)
 - [@jukper](https://github.com/jukper)
@@ -140,7 +119,7 @@
 - [@timkinnane](https://github.com/timkinnane)
 
 # 0.68.5
-`2018-08-23  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+`2018-08-23  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -150,20 +129,12 @@
 
 - Livechat open room method ([#11830](https://github.com/RocketChat/Rocket.Chat/pull/11830))
 
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Release 0.68.5 ([#11852](https://github.com/RocketChat/Rocket.Chat/pull/11852))
-
-</details>
-
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.68.4
-`2018-08-10  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+`2018-08-10  ·  3 🐛  ·  3 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -175,13 +146,6 @@
 - Broken logo on setup wizard ([#11708](https://github.com/RocketChat/Rocket.Chat/pull/11708))
 - Regression in prune by user, and update lastMessage ([#11646](https://github.com/RocketChat/Rocket.Chat/pull/11646) by [@vynmera](https://github.com/vynmera))
 
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Release 0.68.4 ([#11743](https://github.com/RocketChat/Rocket.Chat/pull/11743) by [@vynmera](https://github.com/vynmera))
-
-</details>
-
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@vynmera](https://github.com/vynmera)
@@ -190,7 +154,6 @@
 
 - [@ggazzo](https://github.com/ggazzo)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
 
 # 0.68.3
 `2018-08-01  ·  5 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
