@@ -294,6 +294,11 @@ Template.appManage.events({
 				el.prop('disabled', false);
 				el.removeClass('loading');
 			});
+		}).catch((e) => {
+			el.prop('disabled', false);
+			el.removeClass('loading');
+			t.hasError.set(true);
+			t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 		});
 
 		// play animation

@@ -9,7 +9,12 @@
 			{{/header}}
 			<div class="content">
 				{{#requiresPermission 'manage-apps'}}
-					{{#if isReady}}
+					{{#if hasError}}
+						<div class="apps-error error-color">
+							<i class="icon-attention"></i>
+							<p>{{theError}}</p>
+						</div>
+					{{else if isReady}}
 						<div class="rc-apps-details">
 							<div class="rc-apps-container rc-apps-container__header">
 								{{#if iconFileData}}
@@ -430,11 +435,6 @@
 									</div>
 								{{/if}}
 							</div>
-						</div>
-					{{else if hasError}}
-						<div class="apps-error error-color">
-							<i class="icon-attention"></i>
-							<p>Sadly, an error has occured while loading this page.</p>
 						</div>
 					{{else}}
 						{{> loading}}

@@ -1,3 +1,5 @@
+import toastr from 'toastr';
+
 import { AppEvents } from '../communication';
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const HOST = 'https://marketplace.rocket.chat';
@@ -249,6 +251,8 @@ Template.apps.events({
 
 		RocketChat.API.post('apps/', { url }).then(() => {
 			getInstalledApps(template);
+		}).catch((e) => {
+			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 		});
 
 		// play animation
