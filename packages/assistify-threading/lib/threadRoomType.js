@@ -4,7 +4,7 @@ export class ThreadRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'thread',
-			order: 5,
+			order: 25,
 			label: 'Threads'
 		});
 
