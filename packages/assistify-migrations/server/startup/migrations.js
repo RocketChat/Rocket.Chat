@@ -7,7 +7,9 @@ on startup which migrate data - ignoring the actual version
 Meteor.startup(() => {
 	const topics = RocketChat.models.Rooms.findByType('e').fetch();
 	let counterRequests = 0;
-	//Update room type and parent room id for request
+	// Update room type and parent room id for request
+
+	const mapRoomParentRoom = new Map();
 	RocketChat.models.Rooms.findByType('r').forEach((request) => {
 		const update = {};
 		update.$set = {};
@@ -21,6 +23,7 @@ Meteor.startup(() => {
 				console.log('couldn\'t find topic', request.expertise, '- ignoring');
 			} else {
 				update.$set.parentRoomId = parentTopic._id;
+				mapRoomParentRoom.set(request._id, parentTopic._id); // buffer the mapping for the subscriptions update lateron
 			}
 		}
 		update.$set.oldType = request.t;
@@ -53,6 +56,19 @@ Meteor.startup(() => {
 		}
 	}, {
 		multi: true
+	});
+
+	// provide parent Room links in the subscriptions as well
+	mapRoomParentRoom.forEach((value, key)=>{
+		RocketChat.models.Subscriptions.update({
+			rid: key
+		}, {
+			$set: {
+				parentRoomId: value
+			}
+		}, {
+			multi: true
+		});
 	});
 
 	//update subscriptions for expertises
