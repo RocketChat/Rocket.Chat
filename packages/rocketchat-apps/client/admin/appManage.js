@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import toastr from 'toastr';
 
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
@@ -235,8 +236,7 @@ async function setActivate(actiavate, e, t) {
 		info.status = result.status;
 		t.app.set(info);
 	} catch (e) {
-		// el.prop('checked', !el.prop('checked'));
-		// TODO alert
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}
 	t.processingEnabled.set(false);
 	el.prop('disabled', false);
