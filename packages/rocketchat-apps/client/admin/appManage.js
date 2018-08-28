@@ -4,6 +4,8 @@ import s from 'underscore.string';
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 
+import semver from 'semver';
+
 const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
 
 function getApps(instance) {
@@ -12,12 +14,23 @@ function getApps(instance) {
 	return Promise.all([
 		fetch(`${ HOST }/v1/apps/${ id }`).then((data) => data.json()),
 		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
-	]).then(([[remoteApp], [localApp]]) => {
+	]).then(([remoteApps, [localApp]]) => {
+		remoteApps = remoteApps.sort((a, b) => {
+			if (semver.gt(a.version, b.version)) {
+				return -1;
+			}
+			if (semver.lt(a.version, b.version)) {
+				return 1;
+			}
+			return 0;
+		});
+
+		const remoteApp = remoteApps[0];
 		if (localApp) {
 			localApp.installed = true;
 			if (remoteApp) {
 				localApp.categories = remoteApp.categories;
-				if (localApp.version !== remoteApp.version) {
+				if (semver.gt(remoteApp.version, localApp.version)) {
 					localApp.newVersion = remoteApp.version;
 				}
 			}
@@ -53,9 +66,9 @@ Template.appManage.onCreated(function() {
 
 	const id = this.id.get();
 
-	this.__ = (key) => {
+	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
-		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey) : TAPi18n.__(key);
+		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
 	};
 
 	function _morphSettings(settings) {
@@ -100,8 +113,13 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
-	_(key) {
-		return Template.instance().__(key);
+	_(key, ...args) {
+		const options = (args.pop()).hash;
+		if (!_.isEmpty(args)) {
+			options.sprintf = args;
+		}
+
+		return Template.instance().__(key, options);
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
