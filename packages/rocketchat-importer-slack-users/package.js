@@ -2,14 +2,14 @@ Package.describe({
 	name: 'rocketchat:importer-slack-users',
 	version: '1.0.0',
 	summary: 'Importer for Slack\'s CSV User Export',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'rocketchat:importer'
+		'rocketchat:importer',
 	]);
 
 	api.use('rocketchat:logger', 'server');

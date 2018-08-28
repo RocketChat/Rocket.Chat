@@ -97,6 +97,7 @@ rocketchat:mapview
 rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
+rocketchat:message-action
 rocketchat:message-attachments
 rocketchat:message-mark-as-unread
 rocketchat:message-pin
@@ -183,7 +184,7 @@ ostrio:cookies
 pauli:accounts-linkedin
 percolate:synced-cron
 raix:handlebar-helpers
-raix:push
+rocketchat:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
 todda00:friendly-slugs
@@ -196,3 +197,4 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 underscore
+rocketchat:bigbluebutton

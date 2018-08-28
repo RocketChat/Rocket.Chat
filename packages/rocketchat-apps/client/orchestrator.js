@@ -1,4 +1,5 @@
 import { AppWebsocketReceiver } from './communication';
+import { Utilities } from '../lib/misc/Utilities';
 
 class AppClientOrchestrator {
 	constructor() {
@@ -61,20 +62,25 @@ class AppClientOrchestrator {
 			i18nLabel: 'Apps',
 			permissionGranted() {
 				return RocketChat.authz.hasAtLeastOnePermission(['manage-apps']);
-			}
+			},
 		});
 	}
 
 	_loadLanguages() {
 		return RocketChat.API.get('apps/languages').then((info) => {
-			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages));
+			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
 		});
 	}
 
-	parseAndLoadLanguages(languages) {
-		Object.keys(languages).forEach((key) => {
+	parseAndLoadLanguages(languages, id) {
+		Object.entries(languages).forEach(([language, translations]) => {
 			try {
-				TAPi18next.addResourceBundle(key, 'project', languages[key]);
+				translations = Object.entries(translations).reduce((newTranslations, [key, value]) => {
+					newTranslations[Utilities.getI18nKeyForApp(key, id)] = value;
+					return newTranslations;
+				}, {});
+
+				TAPi18next.addResourceBundle(language, 'project', translations);
 			} catch (e) {
 				// Failed to parse the json
 			}
@@ -95,7 +101,7 @@ Meteor.startup(function _rlClientOrch() {
 const appsRouteAction = function _theRealAction(whichCenter) {
 	Meteor.defer(() => window.Apps.getLoadingPromise().then((isEnabled) => {
 		if (isEnabled) {
-			BlazeLayout.render('main', { center: whichCenter });
+			BlazeLayout.render('main', { center: whichCenter, old: true }); // TODO remove old
 		} else {
 			FlowRouter.go('app-what-is-it');
 		}
@@ -107,28 +113,28 @@ FlowRouter.route('/admin/apps', {
 	name: 'apps',
 	action() {
 		appsRouteAction('apps');
-	}
+	},
 });
 
 FlowRouter.route('/admin/app/install', {
 	name: 'app-install',
 	action() {
 		appsRouteAction('appInstall');
-	}
+	},
 });
 
 FlowRouter.route('/admin/apps/:appId', {
 	name: 'app-manage',
 	action() {
 		appsRouteAction('appManage');
-	}
+	},
 });
 
 FlowRouter.route('/admin/apps/:appId/logs', {
 	name: 'app-logs',
 	action() {
 		appsRouteAction('appLogs');
-	}
+	},
 });
 
 FlowRouter.route('/admin/app/what-is-it', {
@@ -141,5 +147,5 @@ FlowRouter.route('/admin/app/what-is-it', {
 				BlazeLayout.render('main', { center: 'appWhatIsIt' });
 			}
 		}));
-	}
+	},
 });
