@@ -5,7 +5,7 @@ Template.livechat.helpers({
 			t: 'l',
 			f: { $ne: true },
 			open: true,
-			rid: Session.get('openedRoom')
+			rid: Session.get('openedRoom'),
 		};
 
 		const options = { fields: { _id: 1 } };
@@ -18,11 +18,11 @@ Template.livechat.helpers({
 	rooms() {
 		const query = {
 			t: 'l',
-			open: true
+			open: true,
 		};
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.sidebarShowUnread': 1 }
+			fields: { 'settings.preferences.sidebarShowUnread': 1 },
 		});
 
 		if (RocketChat.getUserPreference(user, 'sidebarShowUnread')) {
@@ -30,9 +30,9 @@ Template.livechat.helpers({
 		}
 
 		return ChatSubscription.find(query, { sort: {
-			't': 1,
-			'fname': 1
-		}});
+			t: 1,
+			fname: 1,
+		} });
 	},
 
 	inquiries() {
@@ -56,11 +56,11 @@ Template.livechat.helpers({
 			department: {
 				$in: departmentIds
 			},
-			status: 'open'
+			status: 'open',
 		}, {
 			sort: {
-				'ts' : 1
-			}
+				ts : 1,
+			},
 		});
 
 		// for notification sound
@@ -81,7 +81,7 @@ Template.livechat.helpers({
 		return {
 			status: statusLivechat === 'available' ? 'status-online' : '',
 			icon: statusLivechat === 'available' ? 'icon-toggle-on' : 'icon-toggle-off',
-			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
+			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available'),
 		};
 	},
 
@@ -101,12 +101,12 @@ Template.livechat.helpers({
 		if (FlowRouter.current().route.name === 'livechat-queue') {
 			return 'active';
 		}
-	}
+	},
 });
 
 Template.livechat.events({
 	'click .livechat-status'() {
-		Meteor.call('livechat:changeLivechatStatus', (err /*, results*/) => {
+		Meteor.call('livechat:changeLivechatStatus', (err /* , results*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -122,8 +122,8 @@ Template.livechat.events({
 			text: `${ t('Message') }: ${ this.message }`,
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#e8e8e8',
-			confirmButtonText: t('Take_it')
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('Take_it'),
 		}, (isConfirm) => {
 			if (isConfirm) {
 				Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
@@ -133,7 +133,7 @@ Template.livechat.events({
 				});
 			}
 		});
-	}
+	},
 });
 
 Template.livechat.onCreated(function() {

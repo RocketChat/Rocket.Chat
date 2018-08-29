@@ -13,5 +13,5 @@ Template.room.helpers({
 		} else if (room.sentiment < -0.3) {
 			return ':(';
 		}
-	}
+	},
 });

@@ -128,7 +128,6 @@
 
 .copyonly {
 	display: inline-block;
-	float: left;
 
 	width: 0;
 	height: 0;
@@ -138,6 +137,10 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
+
+	code & {
+		float: left;
+	}
 }
 
 .rc-old .text-center {
@@ -3112,8 +3115,9 @@
 		& .is-bot,
 		& .role-tag {
 			padding: 1px 4px;
-
-			border-radius: 2px;
+			border-radius: 4px;
+			border-width: 1px;
+			background: #FFFFFF;
 		}
 	}
 
@@ -3144,7 +3148,8 @@
 			text-align: right;
 
 			& .time,
-			& .role-tag {
+			& .role-tag,
+			& .is-bot {
 				display: none;
 			}
 
@@ -3864,12 +3869,6 @@ body:not(.is-cordova) {
 			font-size: 12px;
 			font-weight: 300;
 			line-height: 18px;
-		}
-
-		& .role-tag {
-			padding: 1px 4px;
-
-			border-radius: 2px;
 		}
 	}
 
@@ -4672,7 +4671,7 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
-		width: 520px;
+		max-width: 520px;
 		padding: 0 20px;
 		margin: auto;
 

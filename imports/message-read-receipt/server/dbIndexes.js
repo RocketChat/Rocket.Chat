@@ -1,5 +1,5 @@
 RocketChat.models.Messages.tryEnsureIndex({
-	unread: 1
+	unread: 1,
 }, {
-	sparse: true
+	sparse: true,
 });

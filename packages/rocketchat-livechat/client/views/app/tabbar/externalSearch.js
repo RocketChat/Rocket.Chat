@@ -1,7 +1,7 @@
 Template.externalSearch.helpers({
 	messages() {
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(this.rid, { ts: 1 });
-	}
+	},
 });
 
 Template.externalSearch.events({
@@ -9,7 +9,7 @@ Template.externalSearch.events({
 		event.preventDefault();
 
 		$(`#chat-window-${ instance.roomId } .input-message`).val(this.msg).focus();
-	}
+	},
 });
 
 Template.externalSearch.onCreated(function() {

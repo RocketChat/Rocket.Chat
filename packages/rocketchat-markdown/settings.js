@@ -6,26 +6,26 @@ Meteor.startup(() => {
 		type: 'select',
 		values: [{
 			key: 'disabled',
-			i18nLabel: 'Disabled'
+			i18nLabel: 'Disabled',
 		}, {
 			key: 'original',
-			i18nLabel: 'Original'
+			i18nLabel: 'Original',
 		}, {
 			key: 'marked',
-			i18nLabel: 'Marked'
+			i18nLabel: 'Marked',
 		}],
 		group: 'Message',
 		section: 'Markdown',
-		public: true
+		public: true,
 	});
 
-	const enableQueryOriginal = {_id: 'Markdown_Parser', value: 'original'};
+	const enableQueryOriginal = { _id: 'Markdown_Parser', value: 'original' };
 	RocketChat.settings.add('Markdown_Headers', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryOriginal
+		enableQuery: enableQueryOriginal,
 	});
 	RocketChat.settings.add('Markdown_SupportSchemesForLink', 'http,https', {
 		type: 'string',
@@ -33,30 +33,30 @@ Meteor.startup(() => {
 		section: 'Markdown',
 		public: true,
 		i18nDescription: 'Markdown_SupportSchemesForLink_Description',
-		enableQuery: enableQueryOriginal
+		enableQuery: enableQueryOriginal,
 	});
 
-	const enableQueryMarked = {_id: 'Markdown_Parser', value: 'marked'};
+	const enableQueryMarked = { _id: 'Markdown_Parser', value: 'marked' };
 	RocketChat.settings.add('Markdown_Marked_GFM', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryMarked
+		enableQuery: enableQueryMarked,
 	});
 	RocketChat.settings.add('Markdown_Marked_Tables', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryMarked
+		enableQuery: enableQueryMarked,
 	});
 	RocketChat.settings.add('Markdown_Marked_Breaks', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryMarked
+		enableQuery: enableQueryMarked,
 	});
 	RocketChat.settings.add('Markdown_Marked_Pedantic', false, {
 		type: 'boolean',
@@ -65,24 +65,24 @@ Meteor.startup(() => {
 		public: true,
 		enableQuery: [{
 			_id: 'Markdown_Parser',
-			value: 'marked'
+			value: 'marked',
 		}, {
 			_id: 'Markdown_Marked_GFM',
-			value: false
-		}]
+			value: false,
+		}],
 	});
 	RocketChat.settings.add('Markdown_Marked_SmartLists', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryMarked
+		enableQuery: enableQueryMarked,
 	});
 	RocketChat.settings.add('Markdown_Marked_Smartypants', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
-		enableQuery: enableQueryMarked
+		enableQuery: enableQueryMarked,
 	});
 });

@@ -64,7 +64,6 @@
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "eslint .",
-		"lint-fix": "eslint . --fix",
 		"stylelint": "stylelint packages/**/*.css",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
@@ -76,7 +75,8 @@
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
-		"release": "npm run set-version --silent"
+		"release": "npm run set-version --silent",
+		"prepush": "npm run lint && npm run testunit"
 	},
 	"license": "MIT",
 	"repository": {
@@ -95,6 +95,7 @@
 		"chimp": "^0.51.1",
 		"conventional-changelog-cli": "^2.0.0",
 		"eslint": "^4.19.1",
+		"husky": "^0.14.3",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
 		"postcss-custom-properties": "^7.0.0",
@@ -183,6 +184,7 @@
 		"xml-crypto": "^0.10.1",
 		"xmlbuilder": "^10.0.0",
 		"xmldom": "^0.1.27",
-		"yaqrcode": "^0.2.1"
+		"yaqrcode": "^0.2.1",
+		"@rocket.chat/apps-engine": "^1.0.0"
 	}
 }

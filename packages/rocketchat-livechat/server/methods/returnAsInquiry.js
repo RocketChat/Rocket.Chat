@@ -5,5 +5,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.Livechat.returnRoomAsInquiry(rid, departmentId);
-	}
+	},
 });

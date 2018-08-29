@@ -13,14 +13,14 @@ RocketChat.getUserNotificationPreference = function _getUserNotificationPreferen
 	if (user && user.settings && user.settings.preferences && user.settings.preferences[preferenceKey] !== 'default') {
 		return {
 			value: user.settings.preferences[preferenceKey],
-			origin: 'user'
+			origin: 'user',
 		};
 	}
 	const serverValue = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ preferenceKey }`);
 	if (serverValue) {
 		return {
 			value: serverValue,
-			origin: 'server'
+			origin: 'server',
 		};
 	}
 
