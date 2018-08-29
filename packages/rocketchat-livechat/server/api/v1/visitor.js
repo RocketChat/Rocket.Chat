@@ -47,14 +47,18 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/visitor/:token', { authRequired: true }, {
+RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
-		}
+		try {
+			check(this.urlParams, {
+				token: String,
+			});
 
-		const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
-		return RocketChat.API.v1.success(visitor);
+			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
+			return RocketChat.API.v1.success(visitor);
+		} catch (e) {
+			return RocketChat.API.v1.failure(e.error);
+		}
 	},
 });
 

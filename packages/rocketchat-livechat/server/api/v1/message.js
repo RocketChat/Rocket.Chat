@@ -1,5 +1,5 @@
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
-import livechat from '../lib/livechat';
+import { findGuest, findRoom } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/message', {
 	post() {
@@ -17,12 +17,12 @@ RocketChat.API.v1.addRoute('livechat/message', {
 
 			const { token, rid, agent, msg } = this.bodyParams;
 
-			const guest = livechat.guest(token);
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			const room = livechat.room(token, rid);
+			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
@@ -69,12 +69,12 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 			const { token, rid } = this.bodyParams;
 			const { _id } = this.urlParams;
 
-			const guest = livechat.guest(token);
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			const room = livechat.room(token, rid);
+			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
@@ -112,12 +112,12 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 			const { token, rid } = this.bodyParams;
 			const { _id } = this.urlParams;
 
-			const guest = livechat.guest(token);
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			const room = livechat.room(token, rid);
+			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
@@ -144,45 +144,47 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/messages/:rid', {
-	post() {
+RocketChat.API.v1.addRoute('livechat/messages.history/:rid', {
+	get() {
 		try {
 			check(this.urlParams, {
 				rid: String,
 			});
-			console.log('1');
-			check(this.bodyParams, {
-				token: String,
-				end: Match.Maybe(Date),
-				limit: Match.Maybe(Number),
-				ls: Match.Maybe(Date),
-			});
-			console.log('2');
-			const defaultLimit = 20;
-			const { token } = this.bodyParams;
+
 			const { rid } = this.urlParams;
-			console.log('3');
-			const guest = livechat.guest(token);
+			const { token } = this.queryParams;
+
+			if (!token) {
+				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
+			}
+
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
-			console.log('4');
-			const room = livechat.room(token, rid);
+
+			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
-			console.log('5');
-			let { limit } = this.bodyParams;
-			if (!limit || limit > defaultLimit) {
-				limit = defaultLimit;
+
+			let ls = undefined;
+			if (this.queryParams.ls) {
+				ls = new Date(this.queryParams.ls);
 			}
-			console.log('6');
-			const ls = this.bodyParams.ls && new Date(this.bodyParams.ls);
-			const end = this.bodyParams.end && new Date(this.bodyParams.end);
-			console.log('7');
+
+			let end = undefined;
+			if (this.queryParams.end) {
+				end = new Date(this.queryParams.end);
+			}
+
+			let limit = 20;
+			if (this.queryParams.limit) {
+				limit = parseInt(this.queryParams.limit);
+			}
+
 			const messages = RocketChat.loadMessageHistory({ userId: guest._id, rid, end, limit, ls });
 			return RocketChat.API.v1.success(messages);
-
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
 		}

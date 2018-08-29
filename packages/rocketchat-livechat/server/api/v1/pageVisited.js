@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import livechat from '../lib/livechat';
+import { findGuest, findRoom } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/page.visited', {
 	post() {
@@ -18,12 +18,12 @@ RocketChat.API.v1.addRoute('livechat/page.visited', {
 
 			const { token, rid, pageInfo } = this.bodyParams;
 
-			const guest = livechat.guest(token);
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			const room = livechat.room(token, rid);
+			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}

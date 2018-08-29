@@ -1,4 +1,4 @@
-import livechat from '../lib/livechat';
+import { findGuest } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/custom.field', {
 	post() {
@@ -12,7 +12,7 @@ RocketChat.API.v1.addRoute('livechat/custom.field', {
 
 			const { token, key, value, overwrite } = this.bodyParams;
 
-			const guest = livechat.guest(token);
+			const guest = findGuest(token);
 			if (!guest) {
 				throw new Meteor.Error('invalid-token');
 			}
@@ -42,7 +42,7 @@ RocketChat.API.v1.addRoute('livechat/custom.fields', {
 		});
 
 		const { token } = this.bodyParams;
-		const guest = livechat.guest(token);
+		const guest = findGuest(token);
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
