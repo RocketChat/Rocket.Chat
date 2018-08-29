@@ -76,11 +76,20 @@ Meteor.methods({
 	searchConversations(queryParams) {
 
 		const _getAclQuery = function() {
-			const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}).fetch().map(room => room.rid);
-			const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}).fetch().map(room => room._id) : [];
-			const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}).fetch().map(room => room._id) : [];
 
-			const filterCriteria = `${ subscribedRooms.concat(publicChannels).concat(livechats).join(' OR ') }`;
+			function unique(value, index, array) {
+				return array.indexOf(value) === index;
+			}
+
+			const solrFilterBooleanLimit = 900; // there is a limit for boolean expressinos in a filter query of default 1024 => limit it
+			const findOptions = { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { _id: 1 } };
+			const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map(subscription => subscription.rid);
+			const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}, findOptions).fetch().map(room => room._id) : [];
+			const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}, findOptions).fetch().map(room => room._id) : [];
+
+			const accessibleRooms = subscribedRooms.concat(publicChannels).concat(livechats);
+
+			const filterCriteria = `${ accessibleRooms.filter(unique).slice(0, solrFilterBooleanLimit).join(' OR ') }`;
 			return filterCriteria
 				? `&fq=meta_channel_id:(${ filterCriteria })`
 				: '&fq=meta_channel_id:""'; //fallback: if the user's not authorized to view any room, filter for "nothing"
