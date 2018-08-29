@@ -3,7 +3,7 @@ import Page from './Page';
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
-import {sendEnter} from './keyboard';
+import {sendEscape} from './keyboard';
 
 class Threading extends Page {
 	// Sidebar - this should actually be part of the sidebar-file - leaving it here for mergability
@@ -56,7 +56,7 @@ class Threading extends Page {
 		this.selectChannelAction.click();
 		this.parentChannelName.waitForVisible(1000);
 		this.parentChannelName.setValue(parentChannelName);
-		sendEnter();
+		sendEscape();
 		browser.pause(4000); //wait for the autocompete to vanish - for sure
 
 		browser.waitUntil(function() {
