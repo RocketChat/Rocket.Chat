@@ -5,7 +5,7 @@ export class ConversationRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'merged',
 			order: 30,
-			label: 'Conversations'
+			label: 'Conversations',
 		});
 	}
 

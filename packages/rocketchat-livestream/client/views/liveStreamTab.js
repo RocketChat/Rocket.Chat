@@ -14,16 +14,14 @@ export const call = (...args) => new Promise(function(resolve, reject) {
 	});
 });
 
-export const close = (popup) => {
-	return new Promise(function(resolve) {
-		const checkInterval = setInterval(() => {
-			if (popup.closed) {
-				clearInterval(checkInterval);
-				resolve();
-			}
-		}, 300);
-	});
-};
+export const close = (popup) => new Promise(function(resolve) {
+	const checkInterval = setInterval(() => {
+		if (popup.closed) {
+			clearInterval(checkInterval);
+			resolve();
+		}
+	}, 300);
+});
 
 function optionsFromUrl(url) {
 	const options = {};
@@ -87,7 +85,7 @@ Template.liveStreamTab.helpers({
 	},
 	isAudioOnly() {
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().isAudioOnly : false;
-	}
+	},
 });
 
 Template.liveStreamTab.onCreated(function() {
@@ -118,7 +116,7 @@ Template.liveStreamTab.events({
 
 		const clearedObject = {
 			message: i.streamingOptions.get().message || '',
-			isAudioOnly:  i.streamingOptions.get().isAudioOnly || false
+			isAudioOnly:  i.streamingOptions.get().isAudioOnly || false,
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function(err) {
@@ -138,7 +136,8 @@ Template.liveStreamTab.events({
 		const streamingOptions = {
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
-			message: i.find('[name=streaming-message]').value
+			message: i.find('[name=streaming-message]').value,
+			type: 'livestream',
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
@@ -151,7 +150,7 @@ Template.liveStreamTab.events({
 				new RocketChatAnnouncement({
 					room: i.data.rid,
 					message: 'Broadcast is now live. Click here to watch!',
-					callback: 'openBroadcast'
+					callback: 'openBroadcast',
 				}).save();
 			} else {
 				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
@@ -185,9 +184,9 @@ Template.liveStreamTab.events({
 					streamingSource: i.streamingOptions.get().url,
 					isAudioOnly: i.streamingOptions.get().isAudioOnly,
 					showVideoControls: true,
-					streamingOptions:  i.streamingOptions.get()
+					streamingOptions:  i.streamingOptions.get(),
 				},
-				onCloseCallback: () => i.popoutOpen.set(false)
+				onCloseCallback: () => i.popoutOpen.set(false),
 			});
 		}
 	},
@@ -198,7 +197,8 @@ Template.liveStreamTab.events({
 		const streamingOptions = {
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
-			message: i.find('[name=streaming-message]').value
+			message: i.find('[name=streaming-message]').value,
+			type: 'livestream',
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
@@ -211,7 +211,7 @@ Template.liveStreamTab.events({
 				new RocketChatAnnouncement({
 					room: i.data.rid,
 					message: 'Broadcast is now live. Click here to watch!',
-					callback: 'openBroadcast'
+					callback: 'openBroadcast',
 				}).save();
 			} else {
 				const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
@@ -230,9 +230,9 @@ Template.liveStreamTab.events({
 				streamingSource: i.streamingOptions.get().url,
 				isAudioOnly: i.streamingOptions.get().isAudioOnly,
 				showVideoControls: true,
-				streamingOptions:  i.streamingOptions.get()
+				streamingOptions:  i.streamingOptions.get(),
 			},
-			onCloseCallback: () => i.popoutOpen.set(false)
+			onCloseCallback: () => i.popoutOpen.set(false),
 		});
 		i.popoutOpen.set(true);
 	},
@@ -240,19 +240,19 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		e.currentTarget.classList.add('loading');
 		try {
-			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, { fields: { 'settings.livestream': 1 }});
+			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.livestream': 1 } });
 			if (!user.settings || !user.settings.livestream) {
 				await auth();
 			}
-			const result = await call('livestreamGet', {rid: i.data.rid});
+			const result = await call('livestreamGet', { rid: i.data.rid });
 			popout.open({
 				content: 'broadcastView',
 				data: {
 					...result,
 					showVideoControls: false,
-					showStreamControls: true
+					showStreamControls: true,
 				},
-				onCloseCallback: () => i.popoutOpen.set(false)
+				onCloseCallback: () => i.popoutOpen.set(false),
 			});
 
 		} catch (e) {
@@ -260,7 +260,7 @@ Template.liveStreamTab.events({
 		} finally {
 			e.currentTarget.classList.remove('loading');
 		}
-	}
+	},
 });
 
 RocketChat.callbacks.add('openBroadcast', (rid) => {
@@ -272,7 +272,7 @@ RocketChat.callbacks.add('openBroadcast', (rid) => {
 			streamingSource: roomData.streamingOptions.url,
 			isAudioOnly: roomData.streamingOptions.isAudioOnly,
 			showVideoControls: true,
-			streamingOptions:  roomData.streamingOptions
-		}
+			streamingOptions:  roomData.streamingOptions,
+		},
 	});
 });

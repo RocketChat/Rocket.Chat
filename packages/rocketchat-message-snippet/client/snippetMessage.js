@@ -15,11 +15,11 @@ Meteor.methods({
 			return false;
 		}
 		ChatMessage.update({
-			_id: message._id
+			_id: message._id,
 		}, {
 			$set: {
-				snippeted: true
-			}
+				snippeted: true,
+			},
 		});
-	}
+	},
 });
