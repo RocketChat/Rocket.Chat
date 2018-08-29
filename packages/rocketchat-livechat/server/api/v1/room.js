@@ -1,4 +1,4 @@
-import { findGuest, getRoom } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/room', {
 	get() {
@@ -124,7 +124,7 @@ RocketChat.API.v1.addRoute('livechat/room.survey/:rid', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const config = livechat.settings();
+			const config = settings;
 			if (!config.survey || !config.survey.items || !config.survey.values) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
