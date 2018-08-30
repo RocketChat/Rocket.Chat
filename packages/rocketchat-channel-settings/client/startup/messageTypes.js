@@ -52,7 +52,7 @@ Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({
 		id: 'join-private-channel',
 		system: true,
-		message: 'Join_private_channel',
+		message: 'Room_join_request',
 		data(message) {
 			return {
 				user: `<a class="mention-link" data-username= "${ message.attachments[0].fields[0].requester }" >${ message.attachments[0].fields[0].requester } </a>`

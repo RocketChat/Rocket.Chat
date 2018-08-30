@@ -191,16 +191,18 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findListableByNameAndType(name, type, options) {
+		const subscribedRooms = RocketChat.models.Subscriptions.find({ name, t: type, 'u._id': Meteor.userId() }).map((subscription) => { return subscription.rid; });
+
 		const query = {
 			t: type,
 			name,
 			$or: [{
-				usernames: {
-					$in: [Meteor.user().username]
-				}
-			}, {
 				secret: {
 					$ne: true
+				}
+			}, {
+				_id : {
+					$in: subscribedRooms
 				}
 			}]
 		};
@@ -557,6 +559,16 @@ class ModelRooms extends RocketChat.models._Base {
 			update.$unset = { default: '' };
 		}
 
+		return this.update(query, update);
+	}
+
+	setSecretById(_id, value) {
+		const query = {_id};
+		const update = {
+			$set: {
+				'secret': value
+			}
+		};
 		return this.update(query, update);
 	}
 

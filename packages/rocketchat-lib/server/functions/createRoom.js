@@ -31,7 +31,6 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		fname: name,
 		t: type,
 		msgs: 0,
-		usernames: members,
 		usersCount: 0,
 		u: {
 			_id: owner._id,

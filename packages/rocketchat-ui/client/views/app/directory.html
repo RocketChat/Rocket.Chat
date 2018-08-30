@@ -58,6 +58,11 @@
 					</tbody>
 				{{/table}}
 				{{else }}
+				{{#if secretRoomsExists}}
+					<div class="rc-directory-banner">
+						{{_ "Secret_channel_are_not_listed"}}
+					</div>
+				 {{/if}}
 				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
 						<tr>

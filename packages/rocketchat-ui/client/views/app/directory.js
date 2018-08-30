@@ -52,6 +52,9 @@ Template.directory.helpers({
 	createChannelOrGroup() {
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
+	secretRoomsExists() {
+		return Template.instance().secretRoomsExists.get();	
+	},
 	tabsData() {
 		const {
 			sortDirection,
@@ -216,10 +219,19 @@ Template.directory.onCreated(function() {
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
+	this.secretRoomsExists = new ReactiveVar(null);
 
 	this.results = new ReactiveVar([]);
 
 	this.isLoading = new ReactiveVar(false);
+
+	//check for secret room
+	Meteor.call('checkSecretRoomExists', this.searchText.get(), 'p', (err, res) => {
+		if (err) {
+			return false;
+		}
+		this.secretRoomsExists.set(res);
+	});
 });
 
 Template.directory.onRendered(function() {

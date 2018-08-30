@@ -370,7 +370,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'secret', value).then(() => {
-					toastr.success(TAPi18n.__('Room_secrecy_changed_successfully'));
+					toastr.success(TAPi18n.__('Room_secrecy_changed'));
 				});
 			},
 			secretDescription() {

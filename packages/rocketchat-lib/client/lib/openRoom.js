@@ -47,7 +47,7 @@ function openRoom(type, name) {
 								return BlazeLayout.render('main', { center: 'roomNotFound' });
 							}
 						} else {
-							delete record.$loki; // TODO: Why loki used her
+							delete record.$loki; // TODO: Why loki used here
 							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
 							RoomManager.close(type + name);
 							return openRoom(type, name);
