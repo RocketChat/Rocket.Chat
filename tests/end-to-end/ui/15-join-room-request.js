@@ -12,7 +12,7 @@ const privateChannelName = 'privatetestchannel';
 
 describe('[Join Room Request]', function() {
 
-	describe('Prepare private channel', function() {
+	describe('Create private channel', function() {
 
 		before(()=>{
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
@@ -32,65 +32,53 @@ describe('[Join Room Request]', function() {
 
 	});
 
-	describe('Request join as user', function() {
+	describe('Request access', function() {
 
-		before(()=>{
-			checkIfUserIsValid(username, email, password);
+		before(() => {
+			try {
+				checkIfUserIsValid(username, email, password);
+			} catch (e) {
+				console.log(e);
+			}
 		});
 
-		it('find channel in private rooms list', (done)=> {
-			sideNav.showPrivateRooms();
-			done();
+		it('Search private channel from Directory', () => {
+			sideNav.searchDirectory(privateChannelName, 'p');
 		});
 
-		it('open private room without permission', (done)=> {
-			sideNav.selectPrivateRoomFromList(privateChannelName);
-			done();
-		});
-
-		it('request to join private rom', (done)=> {
-			main.requestToJoinRoom.waitForVisible(5000);
+		it('Send join request', (done)=> {
 			main.requestToJoinRoom.click();
-			global.enterModalText('I want to join this room');
+			global.enterModalText('Allow me to join this room');
 			global.confirmPopup();
 			done();
 		});
 	});
 
 	describe('Decline request as room owner', function() {
-
 		before(()=>{
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.searchChannel(privateChannelName);
 		});
 
 		it('decline join request', (done)=> {
-			main.declineJoinRequest.waitForVisible(5000);
 			main.declineJoinRequest.click();
 			done();
 		});
 	});
 
-	describe('Request join as user a second time', function() {
+	describe('Request access for the second time.', function() {
 
 		before(()=>{
-			checkIfUserIsAdmin(username, email, password);
+			checkIfUserIsValid(username, email, password);
 		});
 
-		it('find channel in private rooms list', (done)=> {
-			sideNav.showPrivateRooms();
-			done();
+		it('Search private channel from Directory', () => {
+			sideNav.searchDirectory(privateChannelName, 'p');
 		});
 
-		it('open private room without permission', (done)=> {
-			sideNav.selectPrivateRoomFromList(privateChannelName);
-			done();
-		});
-
-		it('request to join private rom', (done)=> {
-			main.requestToJoinRoom.waitForVisible(5000);
+		it('Request access to join the private room', (done)=> {
 			main.requestToJoinRoom.click();
-			global.enterModalText('I want to join this room again');
+			global.enterModalText('Will you allow me to join for the second time?');
 			global.confirmPopup();
 			done();
 		});
@@ -104,21 +92,23 @@ describe('[Join Room Request]', function() {
 		});
 
 		it('accept join request', (done)=> {
-			main.acceptJoinRequest.waitForVisible(5000);
 			main.acceptJoinRequest.click();
 			done();
 		});
 	});
 
-	describe('Request join as user a second time', function() {
+	describe('Check if Requestor is able to access the room', function() {
 
 		before(()=>{
-			checkIfUserIsAdmin(username, email, password);
+			checkIfUserIsValid(username, email, password);
+		});
+
+		it('Search for the joined channel', () => {
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('user can now access the room and write a message', (done)=> {
-			main.sendMessage('Thanks for the invitation');
+		it('Send Message', (done)=> {
+			main.sendMessage('Thanks for the adding me!!');
 			done();
 		});
 
@@ -131,11 +121,10 @@ describe('[Join Room Request]', function() {
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('delete private room', (done)=> {
+		it('Delete rooms', (done)=> {
 			flexTab.operateFlexTab('info', true);
-			flexTab.editBtn.click();
 			flexTab.deleteBtn.click();
-			global.modal.waitForVisible(5000);
+			global.modal.waitForVisible(500);
 			global.confirmPopup();
 			done();
 		});

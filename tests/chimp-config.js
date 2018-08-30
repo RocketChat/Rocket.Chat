@@ -19,7 +19,7 @@ module.exports = {
 // 	showXolvioMessages: true,
 
 // 	// - - - - CUCUMBER - - - -
-	path: 'tests/end-to-end',
+	path: 'tests/end-to-end/ui_dummy',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
 	// 	singleSnippetPerFile: true,

@@ -31,6 +31,8 @@ class SideNav extends Page {
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
 	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
+	get openDirectoryIcon() { return browser.element('.sidebar__toolbar-button-icon--globe'); }
+	get searchDirectoryField() { return browser.element('.rc-directory-search input'); }
 
 	// Rooms List
 	get general() { return this.getChannelFromList('general'); }
@@ -45,6 +47,7 @@ class SideNav extends Page {
 	get preferencesClose() { return browser.element('.sidebar-flex__close-button[data-action="close"]'); }
 
 	get burgerBtn() { return browser.element('.burger'); }
+
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
@@ -66,6 +69,7 @@ class SideNav extends Page {
 			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
+			this.spotlightSearchIcon.click();
 			this.spotlightSearch.waitForVisible(5000);
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
@@ -77,6 +81,16 @@ class SideNav extends Page {
 			}, 10000);
 
 		}
+	}
+
+	//search channel on Directory
+	searchDirectory(searchTerm, tab) { // c- public, u-user, p-private
+		this.openDirectoryIcon.click();
+		browser.click(`[data-value="${ tab }"]`);
+		this.searchDirectoryField.click();
+		this.searchDirectoryField.setValue(searchTerm);
+		browser.click(`[data-name="${ searchTerm }"]`);
+		browser.pause(1000);
 	}
 
 	// Gets a channel from the spotlight search
