@@ -23,7 +23,6 @@ Meteor.methods({
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
 		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
-
 		const attachment = {
 			title: file.name,
 			type: 'file',
@@ -32,6 +31,9 @@ Meteor.methods({
 			title_link_download: true
 		};
 
+		// the condition to check fileType image/vnd.dwg is required as for
+		// some reason dwg format is considered as an image which throws error
+		if (file.type !== 'image/vnd.dwg') {
 		if (/^image\/.+/.test(file.type)) {
 			attachment.image_url = fileUrl;
 			attachment.image_type = file.type;
@@ -40,6 +42,7 @@ Meteor.methods({
 				attachment.image_dimensions = file.identify.size;
 			}
 			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+		}
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
 			attachment.audio_type = file.type;
