@@ -196,3 +196,7 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 underscore
+
+assistify:threading
+assistify:migrations
+overture8:wordcloud2
