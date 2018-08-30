@@ -738,4 +738,52 @@ describe('[Groups]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/groups.moderators', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.roles.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('/groups.invite', async(done) => {
+			request.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('/groups.addModerator', (done) => {
+			request.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
+			request.get(api('groups.moderators'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
+				})
+				.end(done);
+		});
+	});
 });
