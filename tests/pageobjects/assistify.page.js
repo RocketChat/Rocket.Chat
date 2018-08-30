@@ -58,15 +58,18 @@ class Assistify extends Page {
 	}
 
 	get knowledgebasePickAnswer() {
-		return browser.element('#widgetBody > div.widgetContent > div > div > div > div > div.postAction');
+		return browser.element('#widgetBody .widgetContent .postAction');
 	}
 
 	get knowledgebaseContent() {
 		return browser.element('[data-link="class{merge: messagesCnt toggle=\'parent\'}"]');
 	}
 
-	get deleteBtn() {
-		return browser.element('.rc-button.rc-button-outline.rc-button-cancel.js-delete.rc-button--cancel.rc-button--stack');
+	get knowledgebaseFilter() {
+		return browser.element('#innerTabFilter .title');
+	}
+	get knowledgebaseContainer() {
+		return browser.element('#widgetContainer');
 	}
 
 	// new Topic
@@ -132,7 +135,7 @@ class Assistify extends Page {
 	}
 
 	get addKeyword() {
-		return browser.element('#tags > ul > li.add');
+		return browser.element('#tags .add');
 	}
 
 	get keywordTextBox() {
@@ -145,6 +148,10 @@ class Assistify extends Page {
 	get resync() {
 		return browser.element('[data-setting="Assistify_AI_Resync_Full"]');
 	}
+	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
+	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
+
+
 
 	// admin ui
 	get assistifyAdminUi() {
@@ -152,7 +159,7 @@ class Assistify extends Page {
 	}
 
 	get knowledgebaseUiExpand() {
-		return browser.element('.section:nth-of-type(2) .button.expand');
+		return browser.element('.button.primary.expand');
 	}
 
 	get resyncButton() {
@@ -298,6 +305,13 @@ class Assistify extends Page {
 		sideNav.accountMenu.click();
 		sideNav.logout.waitForVisible(5000);
 		sideNav.logout.click();
+	}
+
+	openAdminView() {
+		this.sidebarMenu.waitForVisible(5000);
+		this.sidebarMenu.click();
+		this.admin.waitForVisible(5000);
+		this.admin.click();
 	}
 }
 

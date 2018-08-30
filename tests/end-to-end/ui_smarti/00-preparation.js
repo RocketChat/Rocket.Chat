@@ -217,6 +217,18 @@ describe('[Smarti Connection]', () => {
 					.expect(200)
 					.end(done);
 			});
+			it('Rocket.Chat Settings: set posting type', function(done) {
+				// console.log('authToken-o', authToken);
+				// console.log('userId-o', userId);
+				rcrequest.post('/api/v1/settings/Assistify_AI_Widget_Posting_Type')
+					.set('X-Auth-Token', authToken)
+					.set('X-User-Id', userId)
+					.send({
+						value: 'postText'
+					})
+					.expect(200)
+					.end(done);
+			});
 
 			it('Logout from Rocketchat api', function(done) {
 				// console.log('authToken-o', authToken);

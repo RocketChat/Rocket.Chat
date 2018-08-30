@@ -7,6 +7,7 @@ import {checkIfUserIsAdmin} from '../../data/checks';
 import {adminEmail} from '../../data/user';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
+import mainContent from '../../pageobjects/main-content.page';
 
 
 export const clientname = 'syncclient';
@@ -268,8 +269,6 @@ describe('[Smarti Configuration]', function() {
 	});
 });
 
-const topicName = 'test-topic';
-const topicExpert = adminUsername;
 const messages = ['Nachricht im Thema wurde synchronisiert',
 	'Nachricht in der Anfrage wurde synchronisiert',
 	'1. Nachricht in der 1. Anfrage wurde nicht synchronisiert',
@@ -279,10 +278,10 @@ const messages = ['Nachricht im Thema wurde synchronisiert',
 	'2. Nachricht in der automatisch synchronisiert Anfrage wurde nicht synchronisiert',
 	'3. Nachricht in der automatisch synchronisiert Anfrage wurde synchronisiert'
 ];
-const sync_request1 = 'sync_request1';
-const unsync_request1 = 'unsync_request1';
-const unsync_request2 = 'unsync_request2';
-const autosync_request1 = 'autosync_request1';
+const sync_request1 = `sync_request1-${ Date.now() }`;
+const unsync_request1 = `unsync_request1-${ Date.now() }`;
+const unsync_request2 = `unsync_request2-${ Date.now() }`;
+const autosync_request1 = `autosync_request1-${ Date.now() }`;
 
 
 function loginRC() {
@@ -334,58 +333,17 @@ describe('[Test Sync]', function() {
 
 		describe('Test synced messaging', function() {
 			let conversationId;
-			before(() => {
-				try {
-					sideNav.openChannel(topicName);
-					assistify.deleteRoom(topicName);
-					assistify.createTopic(topicName, topicExpert);
-				} catch (e) {
-					console.log(e);
-					assistify.createTopic(topicName, topicExpert);
-				}
-			});
 
-			afterEach((done)=> {
+			after((done)=> {
 				request.del(`/conversation/${ conversationId }`)
 					.auth(credentials['username'], credentials['password'])
 					.expect(204)
 					.end(done);
 			});
 
-			it('Send synced message in Topic', (done)=> {
-				sideNav.openChannel(topicName);
-				assistify.sendTopicMessage(messages[0]);
-				browser.pause(500);
-				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId, size: 10})
-					.expect(200)
-					.expect(function(res) {
-						const msgs = res.body.content[0].messages;
-						let found = false;
-						for (let i=0; i < msgs.length; i++) {
-							if (msgs[i].content === messages[0]) {
-								found = true;
-								conversationId = res.body.content[0].id;
-								break;
-							}
-						}
-						found.should.be.equal(true);
-
-					})
-					.end(done);
-			});
-
 			it('Send synced message in Request', (done)=> {
-				try {
-					sideNav.searchChannel(sync_request1);
-					console.log('HelpRequest already Exists');
-					assistify.deleteRoom(sync_request1);
-					assistify.createHelpRequest(topicName, messages[1], sync_request1);
-				} catch (e) {
-					assistify.createHelpRequest(topicName, messages[1], sync_request1);
-					console.log('New Help Request Created');
-				}
+				sideNav.createChannel(sync_request1, false, false);
+				mainContent.sendMessage(messages[1]);
 				browser.pause(500);
 				request.get('/conversation/')
 					.auth(credentials['username'], credentials['password'])
@@ -415,17 +373,8 @@ describe('[Test Sync]', function() {
 			});
 
 			it('Send unsynced message in Request', (done)=> {
-				try {
-					sideNav.searchChannel(unsync_request1);
-					console.log('HelpRequest already Exists');
-					assistify.deleteRoom(unsync_request1);
-					console.log('deleted Room');
-					assistify.createHelpRequest(topicName, messages[2], unsync_request1);
-				} catch (e) {
-					console.log(e);
-					assistify.createHelpRequest(topicName, messages[2], unsync_request1);
-					console.log('New Help Request Created');
-				}
+				sideNav.createChannel(unsync_request1, false, false);
+				mainContent.sendMessage(messages[2]);
 				browser.pause(500);
 				request.get('/conversation/')
 					.auth(credentials['username'], credentials['password'])
@@ -439,7 +388,7 @@ describe('[Test Sync]', function() {
 			});
 
 			it('Send second unsynced message in Request', (done)=> {
-				assistify.sendTopicMessage(messages[3]);
+				mainContent.sendMessage(messages[3]);
 				browser.pause(500);
 				request.get('/conversation/')
 					.auth(credentials['username'], credentials['password'])
@@ -453,15 +402,8 @@ describe('[Test Sync]', function() {
 			});
 
 			it('Send unsynced message in second Request', (done)=> {
-				try {
-					sideNav.searchChannel(unsync_request2);
-					console.log('HelpRequest already Exists');
-					assistify.deleteRoom(unsync_request2);
-					assistify.createHelpRequest(topicName, messages[4], unsync_request2);
-				} catch (e) {
-					assistify.createHelpRequest(topicName, messages[4], unsync_request2);
-					console.log('New Help Request Created');
-				}
+				sideNav.createChannel(unsync_request2, false, false);
+				mainContent.sendMessage(messages[4]);
 				browser.pause(500);
 				request.get('/conversation/')
 					.auth(credentials['username'], credentials['password'])
@@ -479,7 +421,7 @@ describe('[Test Sync]', function() {
 			});
 
 			it('Trigger full resync', (done)=> {
-				sideNav.openAdminView();
+				assistify.openAdminView();
 				assistify.assistifyAdminUi.waitForVisible(5000);
 				assistify.assistifyAdminUi.click();
 				assistify.knowledgebaseUiExpand.waitForVisible(5000);
@@ -504,24 +446,6 @@ describe('[Test Sync]', function() {
 		});
 
 		describe('[Cleanup Full Sync Test', ()=> {
-			it('Remove sync Request', (done)=> {
-				console.log('TopicName for cleanup', sync_request1);
-				assistify.deleteRoom(sync_request1);
-				done();
-			});
-
-			it('Remove 1. unsync Request', (done)=> {
-				console.log('TopicName for cleanup', unsync_request1);
-				assistify.deleteRoom(unsync_request1);
-				done();
-			});
-
-			it('Remove 2. unsync Request', (done)=> {
-				console.log('TopicName for cleanup', unsync_request2);
-				assistify.deleteRoom(unsync_request2);
-				done();
-			});
-
 			it('Cleanup all Conversations in Smarti', (done)=> {
 				request.get('/conversation/')
 					.auth(credentials['username'], credentials['password'])
@@ -545,15 +469,8 @@ describe('[Test Sync]', function() {
 	describe('[Test auto Sync]', function() {
 		it('Send synced message in Request', (done)=> {
 			browser.pause(500);
-			try {
-				sideNav.searchChannel(autosync_request1);
-				console.log('HelpRequest already Exists');
-				assistify.deleteRoom(autosync_request1);
-				assistify.createHelpRequest(topicName, messages[5], autosync_request1);
-			} catch (e) {
-				assistify.createHelpRequest(topicName, messages[5], autosync_request1);
-				console.log('New Help Request Created');
-			}
+			sideNav.createChannel(autosync_request1, false, false);
+			mainContent.sendMessage(messages[5]);
 			browser.pause(500);
 			request.get('/conversation/')
 				.auth(credentials['username'], credentials['password'])
@@ -579,7 +496,7 @@ describe('[Test Sync]', function() {
 		});
 
 		it('Send unsynced message in Request', (done)=> {
-			assistify.sendTopicMessage(messages[6]);
+			mainContent.sendMessage(messages[6]);
 			browser.pause(500);
 			request.get('/conversation/')
 				.auth(credentials['username'], credentials['password'])
@@ -599,7 +516,7 @@ describe('[Test Sync]', function() {
 		});
 
 		it('Send last synced message in Request', (done)=> {
-			assistify.sendTopicMessage(messages[7]);
+			mainContent.sendMessage(messages[7]);
 			browser.pause(2000);
 			request.get('/conversation/')
 				.auth(credentials['username'], credentials['password'])
@@ -611,13 +528,6 @@ describe('[Test Sync]', function() {
 					conversations[0].messages.length.should.be.equal(3);
 				})
 				.end(done);
-		});
-
-		describe('[Cleanup Full Sync Test', ()=> {
-			it('Remove sync Request', ()=> {
-				console.log('TopicName for cleanup', autosync_request1);
-				assistify.deleteRoom(autosync_request1);
-			});
 		});
 	});
 });
