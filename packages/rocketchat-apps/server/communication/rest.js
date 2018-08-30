@@ -1,3 +1,5 @@
+import Busboy from 'busboy';
+
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
@@ -14,7 +16,6 @@ export class AppsRestApi {
 	}
 
 	_handleFile(request, fileField) {
-		const Busboy = Npm.require('busboy');
 		const busboy = new Busboy({ headers: request.headers });
 
 		return Meteor.wrapAsync((callback) => {
