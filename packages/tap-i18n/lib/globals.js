@@ -6,7 +6,7 @@
 
 globals = {
 	fallback_language: 'en',
-	langauges_tags_regex: '([a-z]{2})(-[A-Z]{2})?',
+	langauges_tags_regex: '([a-z]{2})(-[A-Z]{2})?(-formal|-informal)?',
 	project_translations_domain: 'project',
 	browser_path: '/tap-i18n',
 	debug: false,
