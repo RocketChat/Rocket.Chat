@@ -8,6 +8,23 @@ import {
 import { Readable } from 'stream';
 import path from 'path';
 import s from 'underscore.string';
+import TurndownService from 'turndown';
+
+const turndownService = new TurndownService({
+	strongDelimiter: '*',
+	hr: '',
+	br: '\n',
+});
+
+turndownService.addRule('strikethrough', {
+	filter: 'img',
+
+	replacement(content, node) {
+		const src = node.getAttribute('src') || '';
+		const alt = node.alt || node.title || src;
+		return src ? `[${ alt }](${ src })` : '';
+	},
+});
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info) {
@@ -108,12 +125,14 @@ export class HipChatEnterpriseImporter extends Base {
 										ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
 									});
 								} else if (m.NotificationMessage) {
+									const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
+
 									roomMsgs.push({
 										type: 'user',
 										id: `hipchatenterprise-${ id }-${ m.NotificationMessage.id }`,
 										userId: 'rocket.cat',
 										alias: m.NotificationMessage.sender,
-										text: m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`,
+										text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
 										ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
 									});
 								} else if (m.TopicRoomMessage) {
@@ -396,7 +415,7 @@ export class HipChatEnterpriseImporter extends Base {
 				// Import the Direct Messages
 				for (const [directMsgRoom, directMessagesMap] of this.directMessages.entries()) {
 					const hipUser = this.getUserFromDirectMessageIdentifier(directMsgRoom);
-					if (!hipUser.do_import) {
+					if (!hipUser || !hipUser.do_import) {
 						continue;
 					}
 
@@ -489,6 +508,10 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	getRocketUserFromUserId(userId) {
+		if (userId === 'rocket.cat') {
+			return RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
+		}
+
 		for (const u of this.users.users) {
 			if (u.id === userId) {
 				return RocketChat.models.Users.findOneById(u.rocketId, { fields: { username: 1 } });
