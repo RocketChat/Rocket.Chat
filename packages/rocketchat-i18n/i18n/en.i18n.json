@@ -1205,6 +1205,8 @@
   "Favorites": "Favorites",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "This feature depends on \"Send Visitor Navigation History as a Message\" to be enabled.",
   "Features_Enabled": "Features Enabled",
+  "FEDERATION_Enabled": "Attempt to integrate FEDERATION support. Changing this value requires restarting Rocket.Chat.",
+  "FEDERATION_Enabled_Alert": "FEDERATION Support is a work in progress. Use on a production system is not recommended at this time.",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
