@@ -3,7 +3,7 @@ import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;
-};
+}
 
 Template.livechatWindow.helpers({
 	title() {
@@ -44,7 +44,7 @@ Template.livechatWindow.helpers({
 			offlineMessage: Livechat.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
 			offlineSuccessMessage: Livechat.offlineSuccessMessage,
 			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
-			displayOfflineForm: Livechat.displayOfflineForm
+			displayOfflineForm: Livechat.displayOfflineForm,
 		};
 	},
 	videoCalling() {
@@ -55,7 +55,7 @@ Template.livechatWindow.helpers({
 	},
 	showWidget() {
 		return Livechat.online || Livechat.displayOfflineForm;
-	}
+	},
 });
 
 Template.livechatWindow.events({
@@ -68,12 +68,12 @@ Template.livechatWindow.events({
 	},
 	'click .sound'(event) {
 		event.stopPropagation();
-		Session.set({sound: !Session.get('sound')});
-	}
+		Session.set({ sound: !Session.get('sound') });
+	},
 });
 
 Template.livechatWindow.onCreated(function() {
-	Session.set({sound: true});
+	Session.set({ sound: true });
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
@@ -90,7 +90,7 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
-	const loadDepartments = departments => {
+	const loadDepartments = (departments) => {
 		Department.remove({});
 		departments.forEach((department) => {
 			Department.insert(department);
@@ -99,7 +99,7 @@ Template.livechatWindow.onCreated(function() {
 
 	this.autorun(() => {
 		// get all needed live chat info for the user
-		Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
+		Meteor.call('livechat:getInitialData', visitor.getToken(), Livechat.department, (err, result) => {
 			if (err) {
 				return console.error(err);
 			}
@@ -131,23 +131,36 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
-			if (result.room) {
-				Livechat.room = result.room._id;
 
-				visitor.setConnected();
-			}
+			loadDepartments(result.departments);
 
 			if (result.visitor) {
 				visitor.setData(result.visitor);
 
-				if (visitor.name) {
-					Livechat.guestName = visitor.name;
+				if (result.visitor.department) {
+					Livechat.department = result.visitor.department;
 				}
 
-				if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-					Livechat.guestEmail = visitor.visitorEmails[0].address;
+				if (result.visitor.name) {
+					Livechat.guestName = result.visitor.name;
+				}
+
+				if (result.visitor.visitorEmails && result.visitor.visitorEmails.length > 0) {
+					Livechat.guestEmail = result.visitor.visitorEmails[0].address;
+				}
+
+				if (!Livechat.department) {
+					Livechat.department = result.visitor.department;
 				}
 			}
+
+			let room;
+			if (result.room && (!result.room.departmentId || !Livechat.department || result.room.departmentId === Livechat.department)) {
+				room = result.room._id;
+
+				visitor.setConnected();
+			}
+			Livechat.room = room;
 
 			if (result.agentData) {
 				Livechat.agent = result.agentData;
@@ -163,8 +176,6 @@ Template.livechatWindow.onCreated(function() {
 
 			Triggers.setTriggers(result.triggers);
 			Triggers.init();
-
-			loadDepartments(result.departments);
 
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
 

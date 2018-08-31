@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:katex',
 	version: '0.0.1',
 	summary: 'KaTeX plugin for TeX math rendering',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {

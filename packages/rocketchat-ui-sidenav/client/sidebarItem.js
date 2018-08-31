@@ -4,7 +4,10 @@ import moment from 'moment';
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
-		return args.some(arg => arg);
+		return args.some((arg) => arg);
+	},
+	streaming() {
+		return Object.keys(this.streamingOptions).length;
 	},
 	isRoom() {
 		return this.rid || this._id;
@@ -23,7 +26,7 @@ Template.sidebarItem.helpers({
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
-	}
+	},
 });
 
 function timeAgo(time) {
@@ -31,8 +34,8 @@ function timeAgo(time) {
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
 		moment(time).format('L')
 	);
 }
@@ -49,7 +52,7 @@ function setLastMessageTs(instance, ts) {
 }
 
 Template.sidebarItem.onCreated(function() {
-	this.user = RocketChat.models.Users.findOne(Meteor.userId(), {fields: {username: 1}});
+	this.user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
@@ -74,7 +77,7 @@ Template.sidebarItem.onCreated(function() {
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', {user: sender}) : `${ sender }: ${ renderedMessage }`;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
 		}
 
 		setLastMessageTs(this, currentData.lastMessage.ts);
@@ -123,7 +126,7 @@ Template.sidebarItem.events({
 			icon: 'eye-off',
 			name: t('Hide_room'),
 			type: 'sidebar-item',
-			id: 'hide'
+			id: 'hide',
 		}];
 
 		if (this.alert) {
@@ -131,14 +134,14 @@ Template.sidebarItem.events({
 				icon: 'flag',
 				name: t('Mark_as_read'),
 				type: 'sidebar-item',
-				id: 'read'
+				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
 				name: t('Mark_as_unread'),
 				type: 'sidebar-item',
-				id: 'unread'
+				id: 'unread',
 			});
 		}
 
@@ -148,7 +151,7 @@ Template.sidebarItem.events({
 				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
 				modifier: isFavorite() ? 'star-filled' : 'star',
 				type: 'sidebar-item',
-				id: 'favorite'
+				id: 'favorite',
 			});
 		}
 
@@ -158,7 +161,7 @@ Template.sidebarItem.events({
 				name: t('Leave_room'),
 				type: 'sidebar-item',
 				id: 'leave',
-				modifier: 'error'
+				modifier: 'error',
 			});
 		}
 
@@ -168,22 +171,22 @@ Template.sidebarItem.events({
 				{
 					groups: [
 						{
-							items
-						}
-					]
-				}
+							items,
+						},
+					],
+				},
 			],
 			data: {
 				template: this.t,
 				rid: this.rid,
-				name: this.name
+				name: this.name,
 			},
 			currentTarget: e.currentTarget,
-			offsetHorizontal: -e.currentTarget.clientWidth
+			offsetHorizontal: -e.currentTarget.clientWidth,
 		};
 
 		popover.open(config);
-	}
+	},
 });
 
 Template.sidebarItemIcon.helpers({
@@ -200,5 +203,5 @@ Template.sidebarItemIcon.helpers({
 		}
 
 		return false;
-	}
+	},
 });

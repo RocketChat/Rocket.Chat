@@ -1,5 +1,5 @@
 /* globals popover menu */
-const setStatus = status => {
+const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
 	popover.close();
@@ -8,7 +8,7 @@ const setStatus = status => {
 const viewModeIcon = {
 	extended: 'th-list',
 	medium: 'list',
-	condensed: 'list-alt'
+	condensed: 'list-alt',
 };
 
 const extendedViewOption = (user) => {
@@ -18,12 +18,12 @@ const extendedViewOption = (user) => {
 			name: t('Extended'),
 			modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
-				Meteor.call('saveUserPreferences', {sidebarViewMode: 'extended'}, function(error) {
+				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
 					if (error) {
 						return handleError(error);
 					}
 				});
-			}
+			},
 		};
 	}
 
@@ -31,179 +31,177 @@ const extendedViewOption = (user) => {
 };
 
 
-const toolbarButtons = (user) => {
-	return [{
-		name: t('Search'),
-		icon: 'magnifier',
-		action: () => {
-			const toolbarEl = $('.toolbar');
-			toolbarEl.css('display', 'block');
-			toolbarEl.find('.rc-input__element').focus();
-		}
+const toolbarButtons = (user) => [{
+	name: t('Search'),
+	icon: 'magnifier',
+	action: () => {
+		const toolbarEl = $('.toolbar');
+		toolbarEl.css('display', 'block');
+		toolbarEl.find('.rc-input__element').focus();
 	},
-	{
-		name: t('Directory'),
-		icon: 'globe',
-		action: () => {
-			menu.close();
-			FlowRouter.go('directory');
-		}
+},
+{
+	name: t('Directory'),
+	icon: 'globe',
+	action: () => {
+		menu.close();
+		FlowRouter.go('directory');
 	},
-	{
-		name: t('View_mode'),
-		icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode') || 'condensed'],
-		action: (e) => {
-			const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
-			const config = {
-				columns: [
-					{
-						groups: [
-							{
-								items: [
-									extendedViewOption(user),
-									{
-										icon: viewModeIcon.medium,
-										name: t('Medium'),
-										modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
-										action: () => {
-											Meteor.call('saveUserPreferences', {sidebarViewMode: 'medium'}, function(error) {
-												if (error) {
-													return handleError(error);
-												}
-											});
-										}
+},
+{
+	name: t('View_mode'),
+	icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	action: (e) => {
+		const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
+		const config = {
+			columns: [
+				{
+					groups: [
+						{
+							items: [
+								extendedViewOption(user),
+								{
+									icon: viewModeIcon.medium,
+									name: t('Medium'),
+									modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
+									action: () => {
+										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
+											if (error) {
+												return handleError(error);
+											}
+										});
 									},
-									{
-										icon: viewModeIcon.condensed,
-										name: t('Condensed'),
-										modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
-										action: () => {
-											Meteor.call('saveUserPreferences', {sidebarViewMode: 'condensed'}, function(error) {
-												if (error) {
-													return handleError(error);
-												}
-											});
-										}
-									}
-								]
-							},
-							{
-								items: [
-									{
-										icon: 'user-rounded',
-										name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
-										action: () => {
-											Meteor.call('saveUserPreferences', {sidebarHideAvatar: !hideAvatarSetting}, function(error) {
-												if (error) {
-													return handleError(error);
-												}
-											});
-										}
-									}
-								]
-							}
-						]
-					}
-				],
-				currentTarget: e.currentTarget,
-				offsetVertical: e.currentTarget.clientHeight + 10
-			};
-
-			popover.open(config);
-		}
-	},
-	{
-		name: t('Sort'),
-		icon: 'sort',
-		action: (e) => {
-			const options = [];
-			const config = {
-				template: 'sortlist',
-				currentTarget: e.currentTarget,
-				data: {
-					options
+								},
+								{
+									icon: viewModeIcon.condensed,
+									name: t('Condensed'),
+									modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
+									action: () => {
+										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
+											if (error) {
+												return handleError(error);
+											}
+										});
+									},
+								},
+							],
+						},
+						{
+							items: [
+								{
+									icon: 'user-rounded',
+									name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
+									action: () => {
+										Meteor.call('saveUserPreferences', { sidebarHideAvatar: !hideAvatarSetting }, function(error) {
+											if (error) {
+												return handleError(error);
+											}
+										});
+									},
+								},
+							],
+						},
+					],
 				},
-				offsetVertical: e.currentTarget.clientHeight + 10
+			],
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+
+		popover.open(config);
+	},
+},
+{
+	name: t('Sort'),
+	icon: 'sort',
+	action: (e) => {
+		const options = [];
+		const config = {
+			template: 'sortlist',
+			currentTarget: e.currentTarget,
+			data: {
+				options,
+			},
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
+	},
+},
+{
+	name: t('Create_A_New_Channel'),
+	icon: 'edit-rounded',
+	condition: () => RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']),
+	action: () => {
+		menu.close();
+		FlowRouter.go('create-channel');
+	},
+},
+{
+	name: t('Options'),
+	icon: 'menu',
+	condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']),
+	action: (e) => {
+		let adminOption;
+		if (RocketChat.authz.hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration'])) {
+			adminOption = {
+				icon: 'customize',
+				name: t('Administration'),
+				type: 'open',
+				id: 'administration',
+				action: () => {
+					SideNav.setFlex('adminFlex');
+					SideNav.openFlex();
+					FlowRouter.go('admin-info');
+					popover.close();
+				},
 			};
-			popover.open(config);
 		}
-	},
-	{
-		name: t('Create_A_New_Channel'),
-		icon: 'edit-rounded',
-		condition: () => RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']),
-		action: () => {
-			menu.close();
-			FlowRouter.go('create-channel');
-		}
-	},
-	{
-		name: t('Options'),
-		icon: 'menu',
-		condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ]),
-		action: (e) => {
-			let adminOption;
-			if (RocketChat.authz.hasAtLeastOnePermission([ 'manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration' ])) {
-				adminOption = {
-					icon: 'customize',
-					name: t('Administration'),
-					type: 'open',
-					id: 'administration',
-					action: () => {
-						SideNav.setFlex('adminFlex');
-						SideNav.openFlex();
-						FlowRouter.go('admin-info');
-						popover.close();
-					}
-				};
-			}
 
-			const config = {
-				popoverClass: 'sidebar-header',
-				columns: [
-					{
-						groups: [
-							{
-								items: AccountBox.getItems().map(item => {
-									let action;
+		const config = {
+			popoverClass: 'sidebar-header',
+			columns: [
+				{
+					groups: [
+						{
+							items: AccountBox.getItems().map((item) => {
+								let action;
 
-									if (item.href) {
-										action = () => {
-											FlowRouter.go(item.href);
-											popover.close();
-										};
-									}
-
-									if (item.sideNav) {
-										action = () => {
-											SideNav.setFlex(item.sideNav);
-											SideNav.openFlex();
-											popover.close();
-										};
-									}
-
-									return {
-										icon: item.icon,
-										name: t(item.name),
-										type: 'open',
-										id: item.name,
-										href: item.href,
-										sideNav: item.sideNav,
-										action
+								if (item.href) {
+									action = () => {
+										FlowRouter.go(item.href);
+										popover.close();
 									};
-								}).concat([adminOption])
-							}
-						]
-					}
-				],
-				currentTarget: e.currentTarget,
-				offsetVertical: e.currentTarget.clientHeight + 10
-			};
+								}
 
-			popover.open(config);
-		}
-	}];
-};
+								if (item.sideNav) {
+									action = () => {
+										SideNav.setFlex(item.sideNav);
+										SideNav.openFlex();
+										popover.close();
+									};
+								}
+
+								return {
+									icon: item.icon,
+									name: t(item.name),
+									type: 'open',
+									id: item.name,
+									href: item.href,
+									sideNav: item.sideNav,
+									action,
+								};
+							}).concat([adminOption]),
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+
+		popover.open(config);
+	},
+}];
 Template.sidebarHeader.helpers({
 	myUserInfo() {
 		const id = Meteor.userId();
@@ -211,16 +209,16 @@ Template.sidebarHeader.helpers({
 		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				username: 'anonymous',
-				status: 'online'
+				status: 'online',
 			};
 		}
-		return id && Meteor.users.findOne(id, {fields: {
-			username: 1, status: 1
-		}});
+		return id && Meteor.users.findOne(id, { fields: {
+			username: 1, status: 1,
+		} });
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter(button => !button.condition || button.condition());
-	}
+		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+	},
 });
 
 Template.sidebarHeader.events({
@@ -245,27 +243,27 @@ Template.sidebarHeader.events({
 										icon: 'circle',
 										name: t('online'),
 										modifier: 'online',
-										action: () => setStatus('online')
+										action: () => setStatus('online'),
 									},
 									{
 										icon: 'circle',
 										name: t('away'),
 										modifier: 'away',
-										action: () => setStatus('away')
+										action: () => setStatus('away'),
 									},
 									{
 										icon: 'circle',
 										name: t('busy'),
 										modifier: 'busy',
-										action: () => setStatus('busy')
+										action: () => setStatus('busy'),
 									},
 									{
 										icon: 'circle',
 										name: t('invisible'),
 										modifier: 'offline',
-										action: () => setStatus('offline')
-									}
-								]
+										action: () => setStatus('offline'),
+									},
+								],
 							},
 							{
 								items: [
@@ -279,7 +277,7 @@ Template.sidebarHeader.events({
 											SideNav.openFlex();
 											FlowRouter.go('account');
 											popover.close();
-										}
+										},
 									},
 									{
 										icon: 'sign-out',
@@ -293,18 +291,18 @@ Template.sidebarHeader.events({
 												FlowRouter.go('home');
 												popover.close();
 											});
-										}
-									}
-								]
-							}
-						]
-					}
+										},
+									},
+								],
+							},
+						],
+					},
 				],
 				currentTarget: e.currentTarget,
-				offsetVertical: e.currentTarget.clientHeight + 10
+				offsetVertical: e.currentTarget.clientHeight + 10,
 			};
 
 			popover.open(config);
 		}
-	}
+	},
 });

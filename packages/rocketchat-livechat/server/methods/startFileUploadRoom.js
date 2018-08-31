@@ -9,9 +9,9 @@ Meteor.methods({
 			rid: roomId || Random.id(),
 			msg: '',
 			ts: new Date(),
-			token: guest.token
+			token: guest.token,
 		};
 
 		return RocketChat.Livechat.getRoom(guest, message);
-	}
+	},
 });

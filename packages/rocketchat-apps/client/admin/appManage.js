@@ -2,7 +2,42 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { AppEvents } from '../communication';
+import { Utilities } from '../../lib/misc/Utilities';
 
+const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
+
+function getApps(instance) {
+	const id = instance.id.get();
+
+	return Promise.all([
+		fetch(`${ HOST }/v1/apps/${ id }`).then((data) => data.json()),
+		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
+	]).then(([[remoteApp], [localApp]]) => {
+		if (localApp) {
+			localApp.installed = true;
+			if (remoteApp) {
+				localApp.categories = remoteApp.categories;
+				if (localApp.version !== remoteApp.version) {
+					localApp.newVersion = remoteApp.version;
+				}
+			}
+
+			instance.onSettingUpdated({ appId: id });
+
+			window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+			window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+		}
+
+		instance.app.set(localApp || remoteApp);
+
+		instance.ready.set(true);
+	}).catch((e) => {
+		instance.hasError.set(true);
+		instance.theError.set(e.message);
+	});
+}
 
 Template.appManage.onCreated(function() {
 	const instance = this;
@@ -12,10 +47,16 @@ Template.appManage.onCreated(function() {
 	this.theError = new ReactiveVar('');
 	this.processingEnabled = new ReactiveVar(false);
 	this.app = new ReactiveVar({});
+	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
+
+	this.__ = (key) => {
+		const appKey = Utilities.getI18nKeyForApp(key, id);
+		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey) : TAPi18n.__(key);
+	};
 
 	function _morphSettings(settings) {
 		Object.keys(settings).forEach((k) => {
@@ -28,19 +69,7 @@ Template.appManage.onCreated(function() {
 		instance.settings.set(settings);
 	}
 
-	Promise.all([
-		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/settings`)
-	]).then((results) => {
-		instance.app.set(results[0].app);
-		console.log(instance.app.get());
-		_morphSettings(results[1].settings);
-
-		this.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+	getApps(instance);
 
 	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
 		if (appId !== id) {
@@ -61,9 +90,6 @@ Template.appManage.onCreated(function() {
 			_morphSettings(result.settings);
 		});
 	};
-
-	window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-	window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
 
 Template.apps.onDestroyed(function() {
@@ -74,19 +100,22 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	_(key) {
+		return Template.instance().__(key);
+	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
+		let result = Object.keys(languages).map((key) => {
 			const language = languages[key];
 			return _.extend(language, { key });
 		});
 
 		result = _.sortBy(result, 'key');
 		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
+			name: 'Default',
+			en: 'Default',
+			key: '',
 		});
 		return result;
 	},
@@ -100,6 +129,11 @@ Template.appManage.helpers({
 	},
 	getColorVariable(color) {
 		return color.replace(/theme-color-/, '@');
+	},
+	dirty() {
+		const t = Template.instance();
+		const settings = t.settings.get();
+		return Object.keys(settings).some((k) => settings[k].hasChanged);
 	},
 	disabled() {
 		const t = Template.instance();
@@ -143,14 +177,22 @@ Template.appManage.helpers({
 
 		return info.status === 'auto_enabled' || info.status === 'manually_enabled';
 	},
+	isInstalled() {
+		const instance = Template.instance();
+
+		return instance.app.get().installed === true;
+	},
 	app() {
 		return Template.instance().app.get();
+	},
+	categories() {
+		return Template.instance().app.get().categories;
 	},
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
 	parseDescription(i18nDescription) {
-		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: t(i18nDescription) });
+		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
 		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
 
@@ -158,8 +200,29 @@ Template.appManage.helpers({
 	},
 	saving() {
 		return Template.instance().loading.get();
-	}
+	},
 });
+
+async function setActivate(actiavate, e, t) {
+	t.processingEnabled.set(true);
+
+	const el = $(e.currentTarget);
+	el.prop('disabled', true);
+
+	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
+
+	try {
+		const result = await RocketChat.API.post(`apps/${ t.id.get() }/status`, { status });
+		const info = t.app.get();
+		info.status = result.status;
+		t.app.set(info);
+	} catch (e) {
+		// el.prop('checked', !el.prop('checked'));
+		// TODO alert
+	}
+	t.processingEnabled.set(false);
+	el.prop('disabled', false);
+}
 
 Template.appManage.events({
 	'click .expand': (e) => {
@@ -172,28 +235,17 @@ Template.appManage.events({
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
+
 	'click .js-cancel'() {
 		FlowRouter.go('/admin/apps');
 	},
-	'change #enabled': (e, t) => {
-		t.processingEnabled.set(true);
-		$('#enabled').prop('disabled', true);
 
-		const status = $('#enabled').prop('checked') ? 'manually_enabled' : 'manually_disabled';
-		RocketChat.API.post(`apps/${ t.id.get() }/status`, { status }).then((result) => {
-			const info = t.app.get();
-			info.status = result.status;
-			t.app.set(info);
+	'click .js-activate'(e, t) {
+		setActivate(true, e, t);
+	},
 
-			if (info.status.indexOf('disabled') !== -1) {
-				$('#enabled').prop('checked', false);
-			}
-		}).catch(() => {
-			$('#enabled').prop('checked', !$('#enabled').prop('checked'));
-		}).then(() => {
-			t.processingEnabled.set(false);
-			$('#enabled').prop('disabled', false);
-		});
+	'click .js-deactivate'(e, t) {
+		setActivate(false, e, t);
 	},
 
 	'click .js-uninstall': async(e, t) => {
@@ -208,12 +260,39 @@ Template.appManage.events({
 		}
 	},
 
+	'click .js-install': async(e, t) => {
+		const el = $(e.currentTarget);
+		el.prop('disabled', true);
+		el.addClass('loading');
+
+		const app = t.app.get();
+
+		const url = `${ HOST }/v1/apps/${ t.id.get() }/download`;
+
+		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
+
+		RocketChat.API.post(api, { url }).then(() => {
+			getApps(t).then(() => {
+				el.prop('disabled', false);
+				el.removeClass('loading');
+			});
+		});
+
+		// play animation
+		// TODO this icon and animation are not working
+		$(e.currentTarget).find('.rc-icon').addClass('play');
+	},
+
 	'click .js-update': (e, t) => {
 		FlowRouter.go(`/admin/app/install?isUpdatingId=${ t.id.get() }`);
 	},
 
 	'click .js-view-logs': (e, t) => {
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
+	},
+
+	'click .js-cancel-editing': async(e, t) => {
+		t.onSettingUpdated({ appId: t.id.get() });
 	},
 
 	'click .js-save': async(e, t) => {
@@ -226,7 +305,7 @@ Template.appManage.events({
 
 		try {
 			const toSave = [];
-			Object.keys(settings).forEach(k => {
+			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				if (setting.hasChanged) {
 					toSave.push(setting);
@@ -239,10 +318,10 @@ Template.appManage.events({
 			}
 			const result = await RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
-			result.updated.forEach(setting => {
+			result.updated.forEach((setting) => {
 				settings[setting.id].value = settings[setting.id].oldValue = setting.value;
 			});
-			Object.keys(settings).forEach(k => {
+			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				setting.hasChanged = false;
 			});
@@ -304,5 +383,5 @@ Template.appManage.events({
 				t.settings.set(t.settings.get());
 			}
 		}
-	}, 500)
+	}, 500),
 });

@@ -12,10 +12,10 @@ const accountsGraphQL = createJSAccountsGraphQL(AccountsServer);
 export const schema = mergeTypes([
 	accountsGraphQL.schema,
 	oauthProviders.schema,
-	OauthProviderType.schema
+	OauthProviderType.schema,
 ]);
 
 export const resolvers = mergeResolvers([
 	accountsGraphQL.extendWithResolvers({}),
-	oauthProviders.resolver
+	oauthProviders.resolver,
 ]);

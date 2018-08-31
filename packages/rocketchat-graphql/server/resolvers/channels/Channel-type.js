@@ -8,7 +8,7 @@ const resolver = {
 		id: property('_id'),
 		name: (root, args, { user }) => {
 			if (root.t === 'd') {
-				return root.usernames.find(u => u !== user.username);
+				return root.usernames.find((u) => u !== user.username);
 			}
 
 			return root.name;
@@ -16,7 +16,7 @@ const resolver = {
 		members: (root) => {
 			const ids = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(root._id, { fields: { 'u._id': 1 } })
 				.fetch()
-				.map(sub => sub.u._id);
+				.map((sub) => sub.u._id);
 			return RocketChat.models.Users.findByIds(ids).fetch();
 		},
 		owners: (root) => {
@@ -27,9 +27,7 @@ const resolver = {
 
 			return [RocketChat.models.Users.findOneByUsername(root.u.username)];
 		},
-		numberOfMembers: (root) => {
-			return RocketChat.models.Subscriptions.findByRoomId(root._id).count();
-		},
+		numberOfMembers: (root) => RocketChat.models.Subscriptions.findByRoomId(root._id).count(),
 		numberOfMessages: property('msgs'),
 		readOnly: (root) => root.ro === true,
 		direct: (root) => root.t === 'd',
@@ -43,11 +41,11 @@ const resolver = {
 			const room = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id);
 
 			return (room || {}).unread;
-		}
-	}
+		},
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

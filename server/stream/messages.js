@@ -17,7 +17,7 @@ msgStream.allowRead(function(eventName, args) {
 
 		return true;
 	} catch (error) {
-		/*error*/
+		/* error*/
 		return false;
 	}
 });
@@ -37,7 +37,7 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 
 		return true;
 	} catch (error) {
-		/*error*/
+		/* error*/
 		return false;
 	}
 });
@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		}
 	}
 
-	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/*, oplog*/ }) {
+	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':

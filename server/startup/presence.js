@@ -3,7 +3,7 @@
 Meteor.startup(function() {
 	const instance = {
 		host: 'localhost',
-		port: String(process.env.PORT).trim()
+		port: String(process.env.PORT).trim(),
 	};
 
 	if (process.env.INSTANCE_IP) {

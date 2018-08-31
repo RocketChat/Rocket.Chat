@@ -30,7 +30,7 @@ const onlineAgents = {
 
 	exists(userId) {
 		return !!this.users[userId];
-	}
+	},
 };
 
 function runAgentLeaveAction(userId) {
@@ -67,7 +67,7 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 					onlineAgents.remove(id, () => {
 						runAgentLeaveAction(id);
 					});
-				}
+				},
 			});
 		}
 	} else if (agentsHandler) {
@@ -76,7 +76,7 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 	}
 });
 
-UserPresenceMonitor.onSetUserStatus((user, status/*, statusConnection*/) => {
+UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
 	if (!monitorAgents) {
 		return;
 	}
