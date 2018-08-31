@@ -285,27 +285,27 @@ jobs:
 
               echo "Build official Docker image"
               cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat:$CIRCLE_TAG
+              docker build -t assistify/chat:$CIRCLE_TAG .
+              docker push assistify/chat:$CIRCLE_TAG
 
               echo "Build preview Docker image"
               cp ~/repo/.docker-mongo/Dockerfile .
               cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:$CIRCLE_TAG .
-              docker push rocketchat/rocket.chat.preview:$CIRCLE_TAG
+              docker build -t assistify/chat.preview:$CIRCLE_TAG .
+              docker push assistify/chat.preview:$CIRCLE_TAG
 
               if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:latest
-                docker push rocketchat/rocket.chat:latest
+                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:latest
+                docker push assistify/chat:latest
 
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:latest
-                docker push rocketchat/rocket.chat.preview:latest
+                docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:latest
+                docker push assistify/chat.preview:latest
               elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-                docker tag rocketchat/rocket.chat:$CIRCLE_TAG rocketchat/rocket.chat:release-candidate
-                docker push rocketchat/rocket.chat:release-candidate
+                docker tag assistify/chat:$CIRCLE_TAG assistify/chat:release-candidate
+                docker push assistify/chat:release-candidate
 
-                docker tag rocketchat/rocket.chat.preview:$CIRCLE_TAG rocketchat/rocket.chat.preview:release-candidate
-                docker push rocketchat/rocket.chat.preview:release-candidate
+                docker tag assistify/chat.preview:$CIRCLE_TAG assistify/chat.preview:release-candidate
+                docker push assistify/chat.preview:release-candidate
               fi
 
               exit 0
@@ -316,14 +316,14 @@ jobs:
 
               echo "Build official Docker image"
               cp ~/repo/.docker/Dockerfile .
-              docker build -t rocketchat/rocket.chat:develop .
-              docker push rocketchat/rocket.chat:develop
+              docker build -t assistify/chat:develop .
+              docker push assistify/chat:develop
 
               echo "Build preview Docker image"
               cp ~/repo/.docker-mongo/Dockerfile .
               cp ~/repo/.docker-mongo/entrypoint.sh .
-              docker build -t rocketchat/rocket.chat.preview:develop .
-              docker push rocketchat/rocket.chat.preview:develop
+              docker build -t assistify/chat.preview:develop .
+              docker push assistify/chat.preview:develop
 
               exit 0
             fi;
