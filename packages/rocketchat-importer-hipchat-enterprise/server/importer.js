@@ -51,9 +51,9 @@ export class HipChatEnterpriseImporter extends Base {
 					if (info.base === 'users.json') {
 						super.updateProgress(ProgressStep.PREPARING_USERS);
 						for (const u of file) {
-							if (!u.User.email) {
-								continue;
-							}
+							// if (!u.User.email) {
+							// 	// continue;
+							// }
 							tempUsers.push({
 								id: u.User.id,
 								email: u.User.email,
@@ -91,6 +91,8 @@ export class HipChatEnterpriseImporter extends Base {
 										receiverId: m.PrivateUserMessage.receiver.id,
 										text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
 										ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
+										attachment: m.PrivateUserMessage.attachment,
+										attachment_path: m.PrivateUserMessage.attachment_path,
 									});
 								}
 							}
@@ -272,7 +274,11 @@ export class HipChatEnterpriseImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						let existantUser = RocketChat.models.Users.findOneByEmailAddress(u.email);
+						let existantUser;
+
+						if (u.email) {
+							RocketChat.models.Users.findOneByEmailAddress(u.email);
+						}
 
 						// If we couldn't find one by their email address, try to find an existing user by their username
 						if (!existantUser) {
@@ -284,7 +290,13 @@ export class HipChatEnterpriseImporter extends Base {
 							u.rocketId = existantUser._id;
 							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
 						} else {
-							const userId = Accounts.createUser({ email: u.email, password: Random.id() });
+							const user = { email: u.email, password: Random.id() };
+							if (!user.email) {
+								delete user.email;
+								user.username = u.username;
+							}
+
+							const userId = Accounts.createUser(user);
 							Meteor.runAsUser(userId, () => {
 								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
 								// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
@@ -435,16 +447,27 @@ export class HipChatEnterpriseImporter extends Base {
 							}
 
 							Meteor.runAsUser(sender._id, () => {
-								RocketChat.sendMessage(sender, {
-									_id: msg.id,
-									ts: msg.ts,
-									msg: msg.text,
-									rid: room._id,
-									u: {
-										_id: sender._id,
-										username: sender.username,
-									},
-								}, room, true);
+								if (msg.attachment_path) {
+									const details = {
+										message_id: msg.id,
+										name: msg.attachment.name,
+										size: msg.attachment.size,
+										userId: sender._id,
+										rid: room._id,
+									};
+									this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
+								} else {
+									RocketChat.sendMessage(sender, {
+										_id: msg.id,
+										ts: msg.ts,
+										msg: msg.text,
+										rid: room._id,
+										u: {
+											_id: sender._id,
+											username: sender.username,
+										},
+									}, room, true);
+								}
 							});
 						}
 					}
