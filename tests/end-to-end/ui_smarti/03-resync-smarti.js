@@ -271,8 +271,8 @@ describe('[Smarti Configuration]', function() {
 
 const messages = ['Nachricht im Thema wurde synchronisiert',
 	'Nachricht in der Anfrage wurde synchronisiert',
-	'1. Nachricht in der 1. Anfrage wurde nicht synchronisiert',
-	'2. Nachricht in der 1. Anfrage wurde nicht synchronisiert',
+	`1. Nachricht in der 1. Anfrage wurde nicht synchronisiert ${ Date.now() }`,
+	`2. Nachricht in der 1. Anfrage wurde nicht synchronisiert ${ Date.now() }`,
 	'Nachricht in der 2. Anfrage wurde nicht synchronisiert',
 	'1. Nachricht in der automatisch synchronisiert Anfrage wurde synchronisiert',
 	'2. Nachricht in der automatisch synchronisiert Anfrage wurde nicht synchronisiert',
@@ -331,7 +331,7 @@ describe('[Test Sync]', function() {
 
 	describe('[Test full Sync]', function() {
 
-		describe('Test synced messaging', function() {
+		describe.skip('Test synced messaging', function() {
 			let conversationId;
 
 			after((done)=> {
@@ -401,7 +401,7 @@ describe('[Test Sync]', function() {
 					.end(done);
 			});
 
-			it('Send unsynced message in second Request', (done)=> {
+			it.skip('Send unsynced message in second Request', (done)=> {
 				sideNav.createChannel(unsync_request2, false, false);
 				mainContent.sendMessage(messages[4]);
 				browser.pause(500);
@@ -426,22 +426,39 @@ describe('[Test Sync]', function() {
 				assistify.assistifyAdminUi.click();
 				assistify.knowledgebaseUiExpand.waitForVisible(5000);
 				assistify.knowledgebaseUiExpand.click();
-				assistify.resyncButton.waitForVisible(5000);
-				assistify.resyncButton.click();
+
+				assistify.resyncFullButton.waitForVisible(5000);
+				assistify.resyncFullButton.click();
 				sideNav.preferencesClose.waitForVisible(5000);
 				sideNav.preferencesClose.click();
-				browser.pause(500);
-				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
-					.expect(200)
-					.expect(function(res) {
-						const conversations = res.body.content;
-						console.log(conversations);
-						conversations.length.should.be.equal(2);
+				browser.pause(10000);
+				done();
+			});
+
+			it('shall find the conversation in Smarti', (done) => {
+				const roomId = assistify.roomId;
+				roomId.should.not.be.empty;
+				request.get('/conversation')
+					.set('X-Auth-Token', auto_token)
+					.set('Accept', 'application/json')
+					.expect((res) => {
+						res.body.content.should.not.be.empty;
+
+						const currentConversation = res.body.content.filter((conversation) => {
+							return conversation.meta.channel_id[0] === roomId;
+						})[0];
+						currentConversation.should.not.be.empty;
+						const msgs = currentConversation.messages;
+						let found = false;
+						for (let i=0; i < msgs.length; i++) {
+							if (msgs[i].content === messages[2]) {
+								found = true;
+								break;
+							}
+						}
+						found.should.be.equal(true);
 					})
 					.end(done);
-				// done();
 			});
 		});
 
@@ -466,7 +483,7 @@ describe('[Test Sync]', function() {
 		});
 	});
 
-	describe('[Test auto Sync]', function() {
+	describe.skip('[Test auto Sync]', function() {
 		it('Send synced message in Request', (done)=> {
 			browser.pause(500);
 			sideNav.createChannel(autosync_request1, false, false);

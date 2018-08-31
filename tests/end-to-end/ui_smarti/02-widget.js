@@ -11,7 +11,7 @@ const question = 'Wie komme ich von Frankfurt nach Berlin?';
 const question2 = 'Dortmund soll auch gefunden werden!';
 const tag = 'Frankfurt';
 
-describe.skip('[Smarti Widget]', () => {
+describe('[Smarti Widget]', () => {
 
 	before(() => {
 		browser.pause(5000); // wait some time to make sure that all settings on both sides are actually persisted
@@ -63,6 +63,7 @@ describe.skip('[Smarti Widget]', () => {
 						assistify.knowledgebaseTab.click();
 						assistify.knowledgebaseTab.click();
 						assistify.knowledgebaseFilter.waitForVisible(5000);
+						assistify.knowledgebaseFilter.click();
 						assistify.knowledgebaseFilter.click();
 					}
 				}

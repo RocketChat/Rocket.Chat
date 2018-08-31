@@ -29,7 +29,7 @@ describe('[Smarti Integration]', () => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword); // is broken -- if not admin it will log in as user or create a user
 	});
 
-	describe.skip('Message lifecycle', () => {
+	describe('Message lifecycle', () => {
 		let clientid;
 		let token;
 		let conversationId;
@@ -144,7 +144,7 @@ describe('[Smarti Integration]', () => {
 		});
 	});
 
-	describe.skip('[Request]', () => {
+	describe('[Request]', () => {
 
 		describe('First request', () => {
 
@@ -165,7 +165,7 @@ describe('[Smarti Integration]', () => {
 				assistify.knowledgebaseContainer.waitForVisible(3000);
 				assistify.knowledgebaseFilter.waitForVisible(5000);
 				assistify.knowledgebaseFilter.click();
-				//browser.pause(30000);
+				browser.pause(5000);
 				let tries = 0;
 				while (tries < 5) {
 					try {
@@ -180,6 +180,7 @@ describe('[Smarti Integration]', () => {
 						assistify.knowledgebaseTab.click();
 						assistify.knowledgebaseTab.click();
 						assistify.knowledgebaseFilter.waitForVisible(5000);
+						assistify.knowledgebaseFilter.click();
 						assistify.knowledgebaseFilter.click();
 					}
 				}

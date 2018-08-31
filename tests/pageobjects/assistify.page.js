@@ -162,8 +162,8 @@ class Assistify extends Page {
 		return browser.element('.button.primary.expand');
 	}
 
-	get resyncButton() {
-		return browser.element('[data-action="triggerResync"]');
+	get resyncFullButton() {
+		return browser.element('[data-action=triggerFullResync]');
 	}
 
 	escape() {
