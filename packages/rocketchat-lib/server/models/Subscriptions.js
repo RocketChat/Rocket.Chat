@@ -21,6 +21,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		this.tryEnsureIndex({ 'autoTranslate': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'autoTranslateLanguage': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'parentRoomId': 1 });
 	}
 
 
@@ -789,6 +790,10 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			...RocketChat.getDefaultSubscriptionPref(user),
 			...extraData
 		};
+
+		if (room.parentRoomId) {
+			subscription.parentRoomId = room.parentRoomId;
+		}
 
 		const result = this.insert(subscription);
 

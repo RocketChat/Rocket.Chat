@@ -1,6 +1,5 @@
-/* globals UserPresence, fireGlobalEvent, isRtl */
+/* globals UserPresence, fireGlobalEvent */
 
-import moment from 'moment';
 import toastr from 'toastr';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
@@ -21,57 +20,6 @@ Meteor.startup(function() {
 
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
-
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
-
-	const defaultAppLanguage = () => {
-		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		const re = /([a-z]{2}-)([a-z]{2})/;
-		if (re.test(lng)) {
-			lng = lng.replace(re, (match, ...parts) => {
-				return parts[0] + parts[1].toUpperCase();
-			});
-		}
-		return lng;
-	};
-
-	window.defaultUserLanguage = () => RocketChat.settings.get('Language') || defaultAppLanguage();
-
-	const availableLanguages = TAPi18n.getLanguages();
-	const loadedLanguages = [];
-
-	window.setLanguage = function(language) {
-		if (!language) {
-			return;
-		}
-
-		if (loadedLanguages.indexOf(language) > -1) {
-			return;
-		}
-
-		loadedLanguages.push(language);
-
-		if (isRtl(language)) {
-			$('html').addClass('rtl');
-		} else {
-			$('html').removeClass('rtl');
-		}
-
-		if (!availableLanguages[language]) {
-			language = language.split('-').shift();
-		}
-
-		TAPi18n.setLanguage(language);
-
-		language = language.toLowerCase();
-		if (language !== 'en') {
-			Meteor.call('loadLocale', language, (err, localeFn) => {
-				Function(localeFn).call({moment});
-				moment.locale(language);
-			});
-		}
-	};
 
 	Tracker.autorun(function(computation) {
 		if (!Meteor.userId() && !RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
@@ -112,15 +60,6 @@ Meteor.startup(function() {
 		if (user.status !== status) {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
-		}
-	});
-
-	Tracker.autorun(() => {
-		const userLanguage = Meteor.user() && Meteor.user().language || RocketChat.settings.get('Language') || 'en';
-
-		if (loadedLanguages.length === 0 || localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
-			window.setLanguage(userLanguage);
 		}
 	});
 });

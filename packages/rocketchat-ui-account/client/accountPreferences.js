@@ -41,11 +41,8 @@ Template.accountPreferences.helpers({
 			.map(([ key, language ]) => ({ ...language, key: key.toLowerCase() }))
 			.sort((a, b) => a.key - b.key);
 
-		const appLanguageKey = RocketChat.settings.get('Language') || 'en';
-		const appLanguage = result.filter(({ key }) => key === appLanguageKey.toLowerCase())[0];
-
 		result.unshift({
-			'name': appLanguage ? `Default (${ appLanguage.name })` : 'Default',
+			'name': 'Default',
 			'en': 'Default',
 			'key': ''
 		});
@@ -160,6 +157,7 @@ Template.accountPreferences.onCreated(function() {
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
+		data.sidebarShowThreads = JSON.parse($('#sidebarShowThreads').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {

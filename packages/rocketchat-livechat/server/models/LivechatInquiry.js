@@ -46,10 +46,24 @@ class LivechatInquiry extends RocketChat.models._Base {
 	 * mark inquiry as open
 	 */
 	openInquiry(inquiryId) {
-		this.update({
+		return this.update({
 			'_id': inquiryId
 		}, {
 			$set: { status: 'open' }
+		});
+	}
+
+	/*
+	 * mark inquiry as open and set agents
+	 */
+	openInquiryWithAgents(inquiryId, agentIds) {
+		return this.update({
+			'_id': inquiryId
+		}, {
+			$set: {
+				status: 'open',
+				agents: agentIds
+			}
 		});
 	}
 

@@ -17,7 +17,7 @@ Meteor.methods({
 			});
 		}
 
-		if (room.t !== 'c' || RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') !== true) {
+		if (RocketChat.authz.hasPermission(Meteor.userId(), `view-${ room.t }-room`) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId'
 			});

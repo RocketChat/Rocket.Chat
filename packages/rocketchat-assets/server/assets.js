@@ -90,7 +90,7 @@ const assets = {
 	},
 	favicon_512: {
 		label: 'android-chrome 512x512 (png)',
-		defaultUrl: 'images/logo/512x512.png',
+		defaultUrl: 'images/logo/android-chrome-512x512.png',
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
@@ -116,6 +116,16 @@ const assets = {
 			extensions: ['png'],
 			width: 180,
 			height: 180
+		}
+	},
+	tile_70: {
+		label: 'mstile 70x70 (png)',
+		defaultUrl: 'images/logo/mstile-70x70.png',
+		constraints: {
+			type: 'image',
+			extensions: ['png'],
+			width: 144,
+			height: 144
 		}
 	},
 	tile_144: {

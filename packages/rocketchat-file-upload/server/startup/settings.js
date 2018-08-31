@@ -4,9 +4,10 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		public: true
 	});
 
-	this.add('FileUpload_MaxFileSize', 2097152, {
+	this.add('FileUpload_MaxFileSize', 104857600, {
 		type: 'int',
-		public: true
+		public: true,
+		i18nDescription: 'FileUpload_MaxFileSizeDescription'
 	});
 
 	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,application/zip,application/x-rar-compressed,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', {

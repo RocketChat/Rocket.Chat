@@ -42,6 +42,31 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findFilesByUserId(userId, options = {}) {
+		const query = {
+			'u._id': userId,
+			'file._id': { $exists: true }
+		};
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
+
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+		const query = {
+			rid,
+			ts,
+			'file._id': { $exists: true }
+		};
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -695,10 +720,68 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.remove(query);
 	}
 
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ts, users = []) {
+		const query = {
+			rid,
+			ts
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.remove(query);
+	}
+
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ts, limit, users = []) {
+		const query = {
+			rid,
+			ts
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		const messagesToDelete = RocketChat.models.Messages.find(query, {
+			fields: {
+				_id: 1
+			},
+			limit
+		}).map(({ _id }) => _id);
+
+		return this.remove({
+			_id: {
+				$in: messagesToDelete
+			}
+		});
+	}
+
 	removeByUserId(userId) {
 		const query =	{'u._id': userId};
 
 		return this.remove(query);
+	}
+
+	removeFilesByRoomId(roomId) {
+		this.find({
+			rid: roomId,
+			'file._id': {
+				$exists: true
+			}
+		}, {
+			fields: {
+				'file._id': 1
+			}
+		}).fetch().forEach(document => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

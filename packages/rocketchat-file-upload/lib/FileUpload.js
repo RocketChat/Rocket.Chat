@@ -30,20 +30,11 @@ FileUpload = {
 		}
 
 		// -1 maxFileSize means there is no limit
-		if (maxFileSize >= -1 && file.size > maxFileSize) {
+		if (maxFileSize > -1 && file.size > maxFileSize) {
 			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
 				size: filesize(maxFileSize)
 			}, language);
 			throw new Meteor.Error('error-file-too-large', reason);
-		}
-
-		if (maxFileSize > 0) {
-			if (file.size > maxFileSize) {
-				const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
-					size: filesize(maxFileSize)
-				}, language);
-				throw new Meteor.Error('error-file-too-large', reason);
-			}
 		}
 
 		if (!RocketChat.fileUploadIsValidContentType(file.type)) {
