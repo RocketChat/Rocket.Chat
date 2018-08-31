@@ -26,6 +26,11 @@ Template.readReceipts.onCreated(function readReceiptsOnCreated() {
 
 Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 	this.loading.set(true);
+
+	const maxHeight = `${ window.innerHeight * 0.8 }px`;
+
+	$('.rc-modal__content')[0].style.maxHeight = maxHeight;
+
 	Meteor.call('getReadReceipts', { messageId: this.data.messageId }, (error, result) => {
 		if (!error) {
 			this.readReceipts.set(result);
