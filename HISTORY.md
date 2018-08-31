@@ -1,4 +1,26 @@
 
+# 0.69.1
+`2018-08-31  ·  4 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Hipchat import was failing when importing messages from a non existent user ([#11892](https://github.com/RocketChat/Rocket.Chat/pull/11892))
+- Hipchat importer was not importing users without emails and uploaded files ([#11910](https://github.com/RocketChat/Rocket.Chat/pull/11910))
+- App updates were not being shown correctly ([#11893](https://github.com/RocketChat/Rocket.Chat/pull/11893))
+- Duplicated message buttons ([#11853](https://github.com/RocketChat/Rocket.Chat/pull/11853) by [@ubarsaiyan](https://github.com/ubarsaiyan))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@ubarsaiyan](https://github.com/ubarsaiyan)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+
 # 0.69.0
 `2018-08-28  ·  10 🎉  ·  8 🚀  ·  35 🐛  ·  13 🔍  ·  25 👩‍💻👨‍💻`
 

@@ -1,8 +1,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import toastr from 'toastr';
 
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
+
+import semver from 'semver';
 
 const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
 
@@ -10,14 +13,25 @@ function getApps(instance) {
 	const id = instance.id.get();
 
 	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }`).then((data) => data.json()),
+		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
 		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
-	]).then(([[remoteApp], [localApp]]) => {
+	]).then(([remoteApps, [localApp]]) => {
+		remoteApps = remoteApps.filter((app) => semver.satisfies(RocketChat.Info.marketplaceApiVersion, app.requiredApiVersion)).sort((a, b) => {
+			if (semver.gt(a.version, b.version)) {
+				return -1;
+			}
+			if (semver.lt(a.version, b.version)) {
+				return 1;
+			}
+			return 0;
+		});
+
+		const remoteApp = remoteApps[0];
 		if (localApp) {
 			localApp.installed = true;
 			if (remoteApp) {
 				localApp.categories = remoteApp.categories;
-				if (localApp.version !== remoteApp.version) {
+				if (semver.gt(remoteApp.version, localApp.version)) {
 					localApp.newVersion = remoteApp.version;
 				}
 			}
@@ -53,9 +67,9 @@ Template.appManage.onCreated(function() {
 
 	const id = this.id.get();
 
-	this.__ = (key) => {
+	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
-		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey) : TAPi18n.__(key);
+		return TAPi18next.exists(`project:${ appKey }`) ? TAPi18n.__(appKey, options, lang_tag) : TAPi18n.__(key, options, lang_tag);
 	};
 
 	function _morphSettings(settings) {
@@ -100,8 +114,13 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
-	_(key) {
-		return Template.instance().__(key);
+	_(key, ...args) {
+		const options = (args.pop()).hash;
+		if (!_.isEmpty(args)) {
+			options.sprintf = args;
+		}
+
+		return Template.instance().__(key, options);
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -217,8 +236,7 @@ async function setActivate(actiavate, e, t) {
 		info.status = result.status;
 		t.app.set(info);
 	} catch (e) {
-		// el.prop('checked', !el.prop('checked'));
-		// TODO alert
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}
 	t.processingEnabled.set(false);
 	el.prop('disabled', false);
@@ -267,7 +285,7 @@ Template.appManage.events({
 
 		const app = t.app.get();
 
-		const url = `${ HOST }/v1/apps/${ t.id.get() }/download`;
+		const url = `${ HOST }/v1/apps/${ t.id.get() }/download/${ app.version }`;
 
 		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
@@ -276,6 +294,11 @@ Template.appManage.events({
 				el.prop('disabled', false);
 				el.removeClass('loading');
 			});
+		}).catch((e) => {
+			el.prop('disabled', false);
+			el.removeClass('loading');
+			t.hasError.set(true);
+			t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 		});
 
 		// play animation

@@ -18636,6 +18636,49 @@
           ]
         }
       ]
+    },
+    "0.69.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11892",
+          "title": "[FIX] Hipchat import was failing when importing messages from a non existent user",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11910",
+          "title": "[FIX] Hipchat importer was not importing users without emails and uploaded files",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11893",
+          "title": " [FIX] App updates were not being shown correctly",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11853",
+          "title": "[FIX] Duplicated message buttons",
+          "userLogin": "ubarsaiyan",
+          "milestone": "0.69.1",
+          "contributors": [
+            "ubarsaiyan",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
