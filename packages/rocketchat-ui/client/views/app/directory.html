@@ -8,7 +8,7 @@
 					<div class="rc-input__wrapper">
 						{{> icon icon="magnifier" block="rc-input__icon" }}
 						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search"
-						 placeholder= {{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
+						 placeholder= {{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{else}}{{_ "Search_Channels"}}{{/if}} autocomplete="off">
 					</div>
 				</label>
 			</div>
@@ -43,12 +43,12 @@
 								<td>{{username}}</td>
 								<td>{{createdAt}}</td>
 							</tr>
-						{{else}}
-							{{# with searchText}}
-								<tr class="table-no-click">
-									<td>{{_ "No_results_found_for"}} {{.}}</td>
-								</tr>
-							{{/with}}
+			{{else}}
+				{{# with searchText}}
+					<tr>
+						<td>{{_ "No_results_found_for"}} {{.}}</td>
+					</tr>
+					{{/with}}
 						{{/each}}
 						{{#if isLoading}}
 							<tr class="table-no-click">
@@ -58,11 +58,13 @@
 					</tbody>
 				{{/table}}
 				{{else }}
-				{{#if secretRoomsExists}}
+				{{#if $eq searchType 'p'}}
+					{{#if secretRoomsExists}}
 					<div class="rc-directory-banner">
 						{{_ "Secret_channel_are_not_listed"}}
 					</div>
-				 {{/if}}
+					{{/if}}
+				{{/if}}
 				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
 						<tr>
@@ -105,12 +107,12 @@
 								<td class="table-column-date">{{createdAt}}</td>
 								<td>{{topic}}</td>
 							</tr>
-						{{else}}
-							{{# with searchText}}
-								<tr class="table-no-click">
-									<td>{{_ "No_results_found_for"}} {{.}}</td>
-								</tr>
-							{{/with}}
+			{{else}}
+				{{# with searchText}}
+					<tr>
+						<td>{{_ "No_results_found_for"}} {{.}}</td>
+					</tr>
+					{{/with}}
 						{{/each}}
 						{{#if isLoading}}
 							<tr class="table-no-click">
