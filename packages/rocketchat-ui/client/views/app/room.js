@@ -726,7 +726,7 @@ Template.room.events({
 
 		openProfileTabOrOpenDM(e, instance, username);
 	},
-	
+
 	'click .image-to-download'(event) {
 		ChatMessage.update({ _id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
