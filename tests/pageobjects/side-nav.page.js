@@ -69,8 +69,6 @@ class SideNav extends Page {
 			currentRoom = browser.element('.rc-header__name').getText();
 		}
 		if (currentRoom !== channelName) {
-			this.spotlightSearchIcon.click();
-			this.spotlightSearch.waitForVisible(5000);
 			this.spotlightSearch.click();
 			this.spotlightSearch.setValue(channelName);
 			browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
@@ -89,6 +87,7 @@ class SideNav extends Page {
 		browser.click(`[data-value="${ tab }"]`);
 		this.searchDirectoryField.click();
 		this.searchDirectoryField.setValue(searchTerm);
+		browser.pause(500);
 		browser.click(`[data-name="${ searchTerm }"]`);
 		browser.pause(1000);
 	}

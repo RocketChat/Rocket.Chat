@@ -20,6 +20,8 @@ describe('[Join Room Request]', function() {
 
 		it('create private channel', (done)=> {
 			try {
+				sideNav.spotlightSearchIcon.click();
+				sideNav.spotlightSearch.waitForVisible(10000);
 				sideNav.searchChannel(privateChannelName);
 				console.log('Expertise already Exists');
 			} catch (e) {
@@ -42,7 +44,7 @@ describe('[Join Room Request]', function() {
 			}
 		});
 
-		it('Search private channel from Directory', () => {
+		it('Search private channel on Directory', () => {
 			sideNav.searchDirectory(privateChannelName, 'p');
 		});
 
@@ -57,6 +59,8 @@ describe('[Join Room Request]', function() {
 	describe('Decline request as room owner', function() {
 		before(()=>{
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			sideNav.spotlightSearchIcon.click();
+			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
@@ -88,6 +92,8 @@ describe('[Join Room Request]', function() {
 
 		before(()=>{
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			sideNav.spotlightSearchIcon.click();
+			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
@@ -104,6 +110,8 @@ describe('[Join Room Request]', function() {
 		});
 
 		it('Search for the joined channel', () => {
+			sideNav.spotlightSearchIcon.click();
+			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
@@ -118,6 +126,8 @@ describe('[Join Room Request]', function() {
 
 		before(()=>{
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			sideNav.spotlightSearchIcon.click();
+			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
