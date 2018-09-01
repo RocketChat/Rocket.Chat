@@ -59,23 +59,4 @@ Meteor.startup(function() {
 			};
 		}
 	});
-
-	RocketChat.MessageTypes.registerType({
-		id: 'join-request-accepted',
-		system: true,
-		message: 'Room_join_request_accepted',
-		data(message) {
-			const room = message.room;
-			Template.room.events({
-				'click .mention-group'(event) {
-					//Get the request path for router navigation
-					FlowRouter.go('group', {name: $(event.currentTarget).data('group')});
-				}
-			});
-			return {
-				user: ` <a class="mention-link" data-username= "${ message.name }" >${ message.name } </a> `,
-				roomName: ` <a class="mention-group" data-group="${ room.name }">${ room.fname || room.name } </a>`
-			};
-		}
-	});
 });

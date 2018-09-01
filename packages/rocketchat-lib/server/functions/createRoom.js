@@ -42,9 +42,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		sysMes: readOnly !== true,
 	});
 
-	/* 	if (type === 'd') {
+	if (type === 'd') {
 		room.usernames = members;
-	} */
+	}
 
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreatePrevent', room));

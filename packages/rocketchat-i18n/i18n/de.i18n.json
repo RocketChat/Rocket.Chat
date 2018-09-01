@@ -2209,7 +2209,6 @@
   "room_is_read_only": "Der Raum ist schreibgeschützt",
   "Room_join_request": "__user__ möchtet diesem Raum als Mitglied beitreten. Besitzer oder Moderator sollten darauf antworten",
   "Room_join_request_send": "Du bist bisher kein Mitglied des Kanals #<strong>__roomName__</strong>. Möchtest Du fragen, ob du beitreten darfst?",
-  "Room_join_request_accepted":"__user__ hat dich zum kanale __roomName__ hinzugefügt",
   "Room_join_request_status": "Die Anfrage, dem Kanal #<strong>__roomName__</strong> beizutreten, ist <strong>__status__</strong>",
   "Room_join_request_response": "__responder__ hat die Anfrage von __requester__ <strong>__status__</strong> .",
   "Room_join_request_comment": "Aus welchem Grund möchtest du dem Raum beitreten?",

@@ -2263,7 +2263,6 @@
   "room_is_read_only": "This room is read only",
   "Room_join_request": "__user__ sent a request to join the room as a member. Owner or Moderator shall respond to the request ",
   "Room_join_request_send": "You are not a member of this <strong>#__roomName__</strong>. Would you like to send a request to join the room?", 
-  "Room_join_request_accepted": "__user__ added you to the channel__roomName__", 
   "Room_join_request_status": "Your request to join this <strong>#__roomName__</strong> is <strong>__status__</strong>.", 
   "Room_join_request_response": "__responder__ has <strong>__status__</strong> the join request from __requester__.", 
   "Room_join_request_comment": "Why would you like to join this room?", 
