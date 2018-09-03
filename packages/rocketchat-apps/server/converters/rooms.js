@@ -1,4 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-ts-definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -27,7 +27,7 @@ export class AppRoomsConverter {
 			const creator = RocketChat.models.Users.findOneById(room.creator.id);
 			u = {
 				_id: creator._id,
-				username: creator.username
+				username: creator.username,
 			};
 		}
 
@@ -44,7 +44,7 @@ export class AppRoomsConverter {
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
-			lm: room.lastModifiedAt
+			lm: room.lastModifiedAt,
 		};
 	}
 
@@ -72,7 +72,7 @@ export class AppRoomsConverter {
 			createdAt: room.ts,
 			updatedAt: room._updatedAt,
 			lastModifiedAt: room.lm,
-			customFields: {}
+			customFields: {},
 		};
 	}
 

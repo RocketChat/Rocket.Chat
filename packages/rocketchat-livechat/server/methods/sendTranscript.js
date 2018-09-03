@@ -19,12 +19,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { 'ts' : 1 }});
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts : 1 } });
 		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 		let html = '<div> <hr>';
-		messages.forEach(message => {
+		messages.forEach((message) => {
 			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
 				return;
 			}
@@ -59,7 +59,7 @@ Meteor.methods({
 			from: fromEmail,
 			replyTo: fromEmail,
 			subject: TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage }),
-			html: header + html + footer
+			html: header + html + footer,
 		};
 
 		Meteor.defer(() => {
@@ -71,7 +71,7 @@ Meteor.methods({
 		});
 
 		return true;
-	}
+	},
 });
 
 DDPRateLimiter.addRule({
@@ -79,5 +79,5 @@ DDPRateLimiter.addRule({
 	name: 'livechat:sendTranscript',
 	connectionId() {
 		return true;
-	}
+	},
 }, 1, 5000);

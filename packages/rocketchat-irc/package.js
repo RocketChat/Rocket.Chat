@@ -2,14 +2,14 @@ Package.describe({
 	name: 'rocketchat:irc',
 	version: '0.0.1',
 	summary: 'RocketChat support for federating with IRC servers as a leaf node',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.addFiles('server/irc.js', 'server');
@@ -18,5 +18,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	'queue-fifo': '0.2.4'
+	'queue-fifo': '0.2.4',
 });

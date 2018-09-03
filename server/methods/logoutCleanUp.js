@@ -5,5 +5,5 @@ Meteor.methods({
 		Meteor.defer(function() {
 			RocketChat.callbacks.run('afterLogoutCleanUp', user);
 		});
-	}
+	},
 });
