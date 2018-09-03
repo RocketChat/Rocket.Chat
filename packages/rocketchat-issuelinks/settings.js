@@ -22,5 +22,5 @@ RocketChat.settings.add('IssueLinks_Format', '[0-9]+', {
 	i18nDescription: 'IssueLinks_Format_Description',
 	group: 'Message',
 	section: 'Issue_Links',
-	public: true
+	public: true,
 });
