@@ -1,4 +1,4 @@
-/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
@@ -53,11 +53,15 @@ Template.body.onRendered(function() {
 	$(document.body).on('keydown', function(e) {
 		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
+			popover.close();
 			return;
 		}
 		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
 			return;
 		}
+
+		popover.close();
+
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
