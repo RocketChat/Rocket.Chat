@@ -2,7 +2,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Tokenpass',
-			value: true
+			value: true,
 		};
 
 		this.add('Accounts_OAuth_Tokenpass', false, { type: 'boolean' });

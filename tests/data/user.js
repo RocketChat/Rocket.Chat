@@ -29,6 +29,6 @@ export const preferences = {
 		hideAvatars: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
-		roomCounterSidebar: false
-	}
+		roomCounterSidebar: false,
+	},
 };

@@ -23,10 +23,10 @@ if (Meteor.isServer) {
 RocketChat.callbacks.priority = {
 	HIGH: -1000,
 	MEDIUM: 0,
-	LOW: 1000
+	LOW: 1000,
 };
 
-const getHooks = hookName => RocketChat.callbacks[hookName] || [];
+const getHooks = (hookName) => RocketChat.callbacks[hookName] || [];
 
 /*
 * Add a callback function to a hook
@@ -64,7 +64,7 @@ RocketChat.callbacks.add = function(hook, callback, priority, id = Random.id()) 
 */
 
 RocketChat.callbacks.remove = function(hook, id) {
-	RocketChat.callbacks[hook] = getHooks(hook).filter(callback => callback.id !== id);
+	RocketChat.callbacks[hook] = getHooks(hook).filter((callback) => callback.id !== id);
 };
 
 
@@ -84,14 +84,14 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 
 	let rocketchatHooksEnd;
 	if (Meteor.isServer) {
-		rocketchatHooksEnd = RocketChat.metrics.rocketchatHooks.startTimer({hook, callbacks_length: callbacks.length});
+		rocketchatHooksEnd = RocketChat.metrics.rocketchatHooks.startTimer({ hook, callbacks_length: callbacks.length });
 	}
 
 	let totalTime = 0;
 	const result = callbacks.reduce(function(result, callback) {
 		let rocketchatCallbacksEnd;
 		if (Meteor.isServer) {
-			rocketchatCallbacksEnd = RocketChat.metrics.rocketchatCallbacks.startTimer({hook, callback: callback.id});
+			rocketchatCallbacksEnd = RocketChat.metrics.rocketchatCallbacks.startTimer({ hook, callback: callback.id });
 		}
 		const time = RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true ? Date.now() : 0;
 
@@ -106,7 +106,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 					RocketChat.statsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
 				} else {
 					let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
-					stack = stack && stack[2] && (stack[2].match(/\(.+\)/)||[])[0];
+					stack = stack && stack[2] && (stack[2].match(/\(.+\)/) || [])[0];
 					console.log(String(currentTime), hook, callback.id, stack);
 				}
 			}
@@ -142,7 +142,7 @@ RocketChat.callbacks.runAsync = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
 	if (Meteor.isServer && callbacks && callbacks.length) {
 		Meteor.defer(function() {
-			callbacks.forEach(callback => callback(item, constant));
+			callbacks.forEach((callback) => callback(item, constant));
 		});
 	}
 	return item;

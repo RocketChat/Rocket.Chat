@@ -6,14 +6,14 @@ Accounts.registerLoginHandler('login-token', function(result) {
 	}
 
 	const user = Meteor.users.findOne({
-		'services.loginToken.token': result.loginToken
+		'services.loginToken.token': result.loginToken,
 	});
 
 	if (user) {
-		Meteor.users.update({_id: user._id}, {$unset: {'services.loginToken': 1}});
+		Meteor.users.update({ _id: user._id }, { $unset: { 'services.loginToken': 1 } });
 
 		return {
-			userId: user._id
+			userId: user._id,
 		};
 	}
 });

@@ -16,7 +16,7 @@ Template.readReceipts.helpers({
 	},
 	isLoading() {
 		return Template.instance().loading.get();
-	}
+	},
 });
 
 Template.readReceipts.onCreated(function readReceiptsOnCreated() {

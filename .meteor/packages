@@ -97,6 +97,7 @@ rocketchat:mapview
 rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
+rocketchat:message-action
 rocketchat:message-attachments
 rocketchat:message-mark-as-unread
 rocketchat:message-pin
@@ -196,3 +197,4 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 underscore
+rocketchat:bigbluebutton

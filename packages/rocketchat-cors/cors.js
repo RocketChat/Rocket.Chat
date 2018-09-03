@@ -12,7 +12,7 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 // Revert change from Meteor 1.6.1 who set ignoreUndefined: true
 // more information https://github.com/meteor/meteor/pull/9444
 let mongoOptions = {
-	ignoreUndefined: false
+	ignoreUndefined: false,
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
@@ -65,12 +65,12 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 	}
 
-	const setHeader = res.setHeader;
-	res.setHeader = function(key, val) {
+	const { setHeader } = res;
+	res.setHeader = function(key, val, ...args) {
 		if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
 			return;
 		}
-		return setHeader.apply(this, arguments);
+		return setHeader.apply(this, [key, val, ...args]);
 	};
 	return next();
 });
@@ -86,10 +86,10 @@ const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
 
-WebApp.httpServer.addListener('request', function(req, res) {
+WebApp.httpServer.addListener('request', function(req, res, ...args) {
 	const next = () => {
 		for (const oldListener of oldHttpServerListeners) {
-			oldListener.apply(WebApp.httpServer, arguments);
+			oldListener.apply(WebApp.httpServer, [req, res, ...args]);
 		}
 	};
 
@@ -116,10 +116,10 @@ WebApp.httpServer.addListener('request', function(req, res) {
 	}
 
 	if (!isLocal && !isSsl) {
-		let host = req.headers['host'] || url.parse(Meteor.absoluteUrl()).hostname;
+		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname;
 		host = host.replace(/:\d+$/, '');
 		res.writeHead(302, {
-			'Location': `https://${ host }${ req.url }`
+			Location: `https://${ host }${ req.url }`,
 		});
 		res.end();
 		return;

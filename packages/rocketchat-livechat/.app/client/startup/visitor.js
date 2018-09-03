@@ -4,7 +4,7 @@ Meteor.startup(() => {
 	if (!localStorage.getItem('rocketChatLivechat')) {
 		localStorage.setItem('rocketChatLivechat', Random.id());
 	} else {
-		Tracker.autorun(c => {
+		Tracker.autorun((c) => {
 			if (!visitor.getId() && visitor.getToken()) {
 				Meteor.call('livechat:loginByToken', visitor.getToken(), (err, result) => {
 					if (result && result._id) {
@@ -20,12 +20,12 @@ Meteor.startup(() => {
 Meteor.startup(() => {
 	let connected = false;
 	Tracker.autorun(function() {
-		var connectionStatus = Meteor.status();
+		const connectionStatus = Meteor.status();
 		if (visitor.getRoom() && visitor.getToken() && connectionStatus.connected && !connected) {
 			connected = connectionStatus.connected;
 			document.cookie = `rc_rid=${ visitor.getRoom() }; path=/`;
 			document.cookie = `rc_token=${ visitor.getToken() }; path=/`;
-			document.cookie = `rc_room_type=l; path=/`;
+			document.cookie = 'rc_room_type=l; path=/';
 			visitor.setConnected();
 		}
 	});
