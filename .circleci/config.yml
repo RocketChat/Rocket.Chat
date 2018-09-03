@@ -210,6 +210,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
+            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
             for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
