@@ -779,7 +779,7 @@ export default class SlackAdapter {
 	}
 
 	processBotMessage(rocketChannel, slackMessage) {
-		const excludeBotNames = RocketChat.settings.get('SlackBridge_Botnames');
+		const excludeBotNames = RocketChat.settings.get('SlackBridge_ExcludeBotnames');
 		if (slackMessage.username !== undefined && excludeBotNames && slackMessage.username.match(excludeBotNames)) {
 			return;
 		}

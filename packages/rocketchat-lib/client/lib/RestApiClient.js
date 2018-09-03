@@ -55,7 +55,9 @@ RocketChat.API = {
 					resolve(result);
 				},
 				error: function _rlGetFailure(xhr, status, errorThrown) {
-					reject(new Error(errorThrown));
+					const error = new Error(errorThrown);
+					error.xhr = xhr;
+					reject(error);
 				},
 			});
 		});
