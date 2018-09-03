@@ -10,6 +10,8 @@ export const AppEvents = Object.freeze({
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
 	COMMAND_REMOVED: 'command/removed',
+	WEBHOOK_ADDED: 'webhook/added',
+	WEBHOOK_REMOVED: 'webhook/removed',
 });
 
 export class AppServerListener {
@@ -152,6 +154,11 @@ export class AppServerNotifier {
 		this.clientStreamer.emit(AppEvents.COMMAND_ADDED, command);
 	}
 
+	async webhookAdded(webhook) {
+		this.engineStreamer.emit(AppEvents.WEBHOOK_ADDED, webhook);
+		this.clientStreamer.emit(AppEvents.WEBHOOK_ADDED, webhook);
+	}
+
 	async commandDisabled(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_DISABLED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_DISABLED, command);
@@ -165,5 +172,10 @@ export class AppServerNotifier {
 	async commandRemoved(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_REMOVED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_REMOVED, command);
+	}
+
+	async webhookRemoved(webhook) {
+		this.engineStreamer.emit(AppEvents.WEBHOOK_REMOVED, webhook);
+		this.clientStreamer.emit(AppEvents.WEBHOOK_REMOVED, webhook);
 	}
 }

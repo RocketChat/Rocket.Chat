@@ -3,6 +3,7 @@ import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 import { AppActivationBridge } from './activation';
 import { AppDetailChangesBridge } from './details';
 import { AppCommandsBridge } from './commands';
+import { AppWebhooksBridge } from './webhooks';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
 import { AppListenerBridge } from './listeners';
@@ -18,6 +19,7 @@ export class RealAppBridges extends AppBridges {
 
 		this._actBridge = new AppActivationBridge(orch);
 		this._cmdBridge = new AppCommandsBridge(orch);
+		this._webhookBridge = new AppWebhooksBridge(orch);
 		this._detBridge = new AppDetailChangesBridge(orch);
 		this._envBridge = new AppEnvironmentalVariableBridge(orch);
 		this._httpBridge = new AppHttpBridge();
@@ -31,6 +33,10 @@ export class RealAppBridges extends AppBridges {
 
 	getCommandBridge() {
 		return this._cmdBridge;
+	}
+
+	getWebhookBridge() {
+		return this._webhookBridge;
 	}
 
 	getEnvironmentalVariableBridge() {

@@ -137,6 +137,7 @@
 		"core-js": "^2.5.7",
 		"csv-parse": "^2.4.0",
 		"emailreplyparser": "^0.0.5",
+		"express": "^4.16.3",
 		"file-type": "^8.0.0",
 		"filesize": "^3.6.1",
 		"grapheme-splitter": "^1.0.2",
