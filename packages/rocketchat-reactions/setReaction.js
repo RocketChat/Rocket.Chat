@@ -40,14 +40,19 @@ Meteor.methods({
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date(),
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 			});
 			return false;
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
 
-		const userAlreadyReacted = Boolean(message.reactions) && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		// When shouldReact was not informed, toggle the reaction.
+		if (shouldReact === undefined) {
+			shouldReact = !userAlreadyReacted;
+		}
+
 		if (userAlreadyReacted === shouldReact) {
 			return;
 		}
@@ -68,7 +73,7 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: []
+					usernames: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
@@ -80,5 +85,5 @@ Meteor.methods({
 		msgStream.emit(message.rid, message);
 
 		return;
-	}
+	},
 });

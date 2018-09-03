@@ -15,7 +15,7 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 			token: Match.Maybe(String),
 			scriptEnabled: Boolean,
 			script: Match.Maybe(String),
-			targetChannel: Match.Maybe(String)
+			targetChannel: Match.Maybe(String),
 		}));
 
 		let integration;
@@ -36,7 +36,7 @@ RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({ integration });
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
@@ -49,7 +49,7 @@ RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Invalid integration id.');
 		}
 
-		const id = this.queryParams.id;
+		const { id } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
@@ -58,16 +58,16 @@ RocketChat.API.v1.addRoute('integrations.history', { authRequired: true }, {
 			sort: sort ? sort : { _updatedAt: -1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			history,
 			offset,
 			items: history.length,
-			total: RocketChat.models.IntegrationHistory.find(ourQuery).count()
+			total: RocketChat.models.IntegrationHistory.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
@@ -84,16 +84,16 @@ RocketChat.API.v1.addRoute('integrations.list', { authRequired: true }, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			integrations,
 			offset,
 			items: integrations.length,
-			total: RocketChat.models.Integrations.find(ourQuery).count()
+			total: RocketChat.models.Integrations.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
@@ -101,7 +101,7 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 		check(this.bodyParams, Match.ObjectIncluding({
 			type: String,
 			target_url: Match.Maybe(String),
-			integrationId: Match.Maybe(String)
+			integrationId: Match.Maybe(String),
 		}));
 
 		if (!this.bodyParams.target_url && !this.bodyParams.integrationId) {
@@ -126,7 +126,7 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 				});
 
 				return RocketChat.API.v1.success({
-					integration
+					integration,
 				});
 			case 'webhook-incoming':
 				integration = RocketChat.models.Integrations.findOne({ _id: this.bodyParams.integrationId });
@@ -140,10 +140,10 @@ RocketChat.API.v1.addRoute('integrations.remove', { authRequired: true }, {
 				});
 
 				return RocketChat.API.v1.success({
-					integration
+					integration,
 				});
 			default:
 				return RocketChat.API.v1.failure('Invalid integration type.');
 		}
-	}
+	},
 });

@@ -4,5 +4,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'volume',
 	permissionGranted() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-sounds']);
-	}
+	},
 });

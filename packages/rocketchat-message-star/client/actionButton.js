@@ -21,10 +21,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return !_.findWhere(message.starred, {_id: Meteor.userId()});
+			return !_.findWhere(message.starred, { _id: Meteor.userId() });
 		},
 		order: 10,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -46,10 +46,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return Boolean(_.findWhere(message.starred, {_id: Meteor.userId()}));
+			return Boolean(_.findWhere(message.starred, { _id: Meteor.userId() }));
 		},
 		order: 10,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -71,7 +71,7 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -92,6 +92,6 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 101,
-		group: 'menu'
+		group: 'menu',
 	});
 });

@@ -24,5 +24,5 @@ export {
 	RoomTypeRouteConfig,
 	UiTextContext,
 	RocketChatAnnouncement,
-	LoginPresence
+	LoginPresence,
 };

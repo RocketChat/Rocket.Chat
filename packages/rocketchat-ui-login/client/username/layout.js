@@ -5,5 +5,5 @@ Template.usernameLayout.helpers({
 		if (asset && (asset.url || asset.defaultUrl)) {
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
-	}
+	},
 });

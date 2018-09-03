@@ -2,14 +2,14 @@ Package.describe({
 	name: 'rocketchat:autotranslate',
 	version: '0.0.1',
 	summary: 'Rocket.Chat automatic translations',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'ddp-rate-limiter',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('templating', 'client');
@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 		'client/lib/actionButton.js',
 		'client/lib/tabBar.js',
 		'client/views/autoTranslateFlexTab.html',
-		'client/views/autoTranslateFlexTab.js'
+		'client/views/autoTranslateFlexTab.js',
 	], 'client');
 
 	api.addFiles([
@@ -31,6 +31,6 @@ Package.onUse(function(api) {
 		'server/models/Subscriptions.js',
 		'server/methods/saveSettings.js',
 		'server/methods/translateMessage.js',
-		'server/methods/getSupportedLanguages.js'
+		'server/methods/getSupportedLanguages.js',
 	], 'server');
 });
