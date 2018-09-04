@@ -222,6 +222,13 @@ export class SmartiAdapter {
 	static resync(ignoreSyncFlag) {
 		SystemLogger.info('Smarti resync triggered');
 
+		const batchsize = RocketChat.settings.get('Assistify_AI_Resync_Batchsize');
+		const batchTimeout = RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout');
+
+		function _calcTimeout(i) {
+			return Math.floor(i / batchsize) * batchTimeout;
+		}
+
 		if (!SmartiAdapter._smartiAvailable()) {
 			return false;
 		}
@@ -240,21 +247,21 @@ export class SmartiAdapter {
 		const requests = RocketChat.models.Rooms.model.find(query).fetch();
 		SystemLogger.info('Number of public channels to sync: ', requests.length);
 		for (let i = 0; i < requests.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(requests[i]._id, ignoreSyncFlag));
+			Meteor.setTimeout(() => SmartiAdapter._tryResync(requests[i]._id, ignoreSyncFlag), _calcTimeout);
 		}
 
 		query.t = 'p';
 		const topics = RocketChat.models.Rooms.model.find(query).fetch();
 		SystemLogger.info('Number of private groups to sync: ', topics.length);
 		for (let i = 0; i < topics.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(topics[i]._id, ignoreSyncFlag));
+			Meteor.setTimeout(() => SmartiAdapter._tryResync(topics[i]._id, ignoreSyncFlag), _calcTimeout);
 		}
 
 		query.t = 'l';
 		const livechat = RocketChat.models.Rooms.model.find(query).fetch();
 		SystemLogger.info('Number of livechats to sync: ', livechat.length);
 		for (let i = 0; i < livechat.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(livechat[i]._id, ignoreSyncFlag));
+			Meteor.setTimeout(() => SmartiAdapter._tryResync(livechat[i]._id, ignoreSyncFlag), _calcTimeout);
 		}
 
 		return {
