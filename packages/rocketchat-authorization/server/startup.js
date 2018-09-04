@@ -1,4 +1,7 @@
 /* eslint no-multi-spaces: 0 */
+/*  globals SystemLogger */
+
+import {permissionLevel} from '../lib/rocketchat';
 
 Meteor.startup(function() {
 	// Note:
@@ -7,6 +10,7 @@ Meteor.startup(function() {
 	// 2. admin, moderator, and user roles should not be deleted as they are referened in the code.
 	const permissions = [
 		{ _id: 'access-permissions',            roles : ['admin'] },
+		{ _id: 'access-setting-permissions', 	roles: 	['admin'] },
 		{ _id: 'add-oauth-service',             roles : ['admin'] },
 		{ _id: 'add-user-to-joined-room',       roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles : ['admin'] },
@@ -42,6 +46,7 @@ Meteor.startup(function() {
 		{ _id: 'manage-integrations',           roles : ['admin'] },
 		{ _id: 'manage-own-integrations',       roles : ['admin', 'bot'] },
 		{ _id: 'manage-oauth-apps',             roles : ['admin'] },
+		{ _id: 'manage-selected-settings', 		roles: 	['admin']},
 		{ _id: 'mention-all',                   roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
@@ -74,22 +79,109 @@ Meteor.startup(function() {
 
 	for (const permission of permissions) {
 		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, {$set: permission });
+			RocketChat.models.Permissions.upsert(permission._id, {$set: permission});
 		}
 	}
 
 	const defaultRoles = [
-		{ name: 'admin',     scope: 'Users',         description: 'Admin' },
-		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' },
-		{ name: 'leader',    scope: 'Subscriptions', description: 'Leader' },
-		{ name: 'owner',     scope: 'Subscriptions', description: 'Owner' },
-		{ name: 'user',      scope: 'Users',         description: '' },
-		{ name: 'bot',       scope: 'Users',         description: '' },
-		{ name: 'guest',     scope: 'Users',         description: '' },
-		{ name: 'anonymous', scope: 'Users',         description: '' }
+		{name: 'admin', scope: 'Users', description: 'Admin'},
+		{name: 'moderator', scope: 'Subscriptions', description: 'Moderator'},
+		{name: 'leader', scope: 'Subscriptions', description: 'Leader'},
+		{name: 'owner', scope: 'Subscriptions', description: 'Owner'},
+		{name: 'user', scope: 'Users', description: ''},
+		{name: 'bot', scope: 'Users', description: ''},
+		{name: 'guest', scope: 'Users', description: ''},
+		{name: 'anonymous', scope: 'Users', description: ''}
 	];
 
 	for (const role of defaultRoles) {
-		RocketChat.models.Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } });
+		RocketChat.models.Roles.upsert({_id: role.name}, {
+			$setOnInsert: {
+				scope: role.scope,
+				description: role.description || '',
+				protected: true
+			}
+		});
 	}
+
+
+	// setting-based permissions
+	const getSettingPermissionId = function(settingId) {
+		return `change-setting-${ settingId }`;
+	};
+
+	const getPreviousPermissions = function(settingId) {
+		const previousSettingPermissions = {};
+
+		const selector = {level: permissionLevel.SETTING};
+		if (settingId) {
+			selector.settingId = settingId;
+		}
+
+		RocketChat.models.Permissions.find(selector).fetch().forEach(
+			function(permission) {
+				previousSettingPermissions[permission._id] = permission;
+			});
+		return previousSettingPermissions;
+	};
+	const createSettingPermission = function(setting, previousSettingPermissions) {
+		const permissionId = getSettingPermissionId(setting._id);
+		const permission = {
+			_id: permissionId,
+			level: permissionLevel.SETTING,
+			//copy those setting-properties which are needed to properly publish the setting-based permissions
+			settingId: setting._id,
+			group: setting.group,
+			section: setting.section,
+			sorter: setting.sorter
+		};
+		// copy previously assigned roles if available
+		if (previousSettingPermissions[permissionId] && previousSettingPermissions[permissionId].roles) {
+			permission.roles = previousSettingPermissions[permissionId].roles;
+		} else {
+			permission.roles = [];
+		}
+		if (setting.group) {
+			permission.groupPermissionId = getSettingPermissionId(setting.group);
+		}
+		if (setting.section) {
+			permission.sectionPermissionId = getSettingPermissionId(setting.section);
+		}
+		RocketChat.models.Permissions.upsert(permission._id, {$set: permission});
+		delete previousSettingPermissions[permissionId];
+	};
+
+	const createPermissionsForExistingSettings = function() {
+		const previousSettingPermissions = getPreviousPermissions();
+
+		RocketChat.models.Settings.findNotHidden().fetch().forEach((setting) => {
+			createSettingPermission(setting, previousSettingPermissions);
+		});
+
+		// remove permissions for non-existent settings
+		for (const obsoletePermission in previousSettingPermissions) {
+			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+				RocketChat.models.Permissions.remove({_id: obsoletePermission});
+				SystemLogger.info('Removed permission', obsoletePermission);
+			}
+		}
+	};
+
+	// for each setting which already exists, create a permission to allow changing just this one setting
+	createPermissionsForExistingSettings();
+
+	// register a callback for settings for be create in higher-level-packages
+	const createPermissionForAddedSetting = function(settingId) {
+		const previousSettingPermissions = getPreviousPermissions(settingId);
+		const setting = RocketChat.models.Settings.findOneById(settingId);
+		if (setting) {
+			if (!setting.hidden) {
+				createSettingPermission(setting, previousSettingPermissions);
+			}
+		} else {
+			SystemLogger.error('Could not create permission for setting', settingId);
+		}
+	};
+
+	RocketChat.settings.onload('*', createPermissionForAddedSetting);
 });

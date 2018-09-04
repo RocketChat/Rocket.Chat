@@ -44,6 +44,7 @@ class Administration extends Page {
 	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
 	get rolesAddBtn() { return browser.element('button.add'); }
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
+	get rolesSettingPermissionsButton() { return browser.element('.button.primary.js-toggle-setting-permissions'); }
 
 	//permissions grids checkboxes
 
@@ -58,7 +59,8 @@ class Administration extends Page {
 	get rolesUserHistory() { return browser.element('[name="perm[user][view-history]"]'); }
 	get rolesOwnerDeleteMessage() { return browser.element('[name="perm[owner][delete-message]"]'); }
 	get rolesOwnerEditMessage() { return browser.element('[name="perm[owner][edit-message]"]'); }
-
+	get rolesManageSettingsPermissions() { return browser.element('[name="perm[user][manage-selected-settings]"]'); }
+	get rolesSettingLayoutTitle() {	return browser.element('[name="perm[user][change-setting-Layout_Home_Title]"');	}
 
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
@@ -121,7 +123,7 @@ class Administration extends Page {
 	get generalUTF8NamesSlugTrue() { return browser.element('label:nth-of-type(1) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
-
+	get generalLayoutTitle() { return browser.element('[name="Layout_Home_Title"]'); }
 	//accounts
 	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.expand'); }
 	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.collapse'); }
@@ -220,6 +222,9 @@ class Administration extends Page {
 
 	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
+
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .button.expand'); }
+	get buttonFirstSectionExpand() { return browser.element('.section:nth-of-type(1) .button.expand'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);

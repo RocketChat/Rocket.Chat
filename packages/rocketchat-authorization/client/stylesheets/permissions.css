@@ -9,6 +9,10 @@
 		font-weight: bold !important;
 	}
 
+	& .section:not(.section-collapsed) {
+		inline-size: fit-content;
+  	}
+
 	& .permission-grid {
 		& th {
 			position: relative;
