@@ -1,20 +1,36 @@
-export function upsertLocalUser(user) {
+//
+// upsertLocalPeerUser
+//
+export function upsertLocalPeerUser(user) {
 	const { _id, name, username, peer } = user;
 
-	const userQuery = {
-		_id,
-		'peer._id': peer._id,
-	};
-
-	user.name = `${ name }@${ peer.identifier }`;
-	user.username = `${ username }@${ peer.identifier }`;
+	user.name = `${ name }@${ peer._id }`;
+	user.username = `${ username }@${ peer._id }`;
 	user.roles = ['user'];
 
-	RocketChat.models.Users.upsert(userQuery, user);
+	RocketChat.models.Users.upsert({ _id }, user);
 }
 
-export function upsertLocalUsers(users) {
+//
+// upsertLocalPeerUsers
+//
+export function upsertLocalPeerUsers(users) {
 	for (const user of users) {
-		upsertLocalUser(user);
+		upsertLocalPeerUser(user);
 	}
+}
+
+//
+// getRoomUsers
+//
+export function getRoomUsers(roomInfo) {
+	const { _id: rid } = roomInfo;
+
+	const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } }).fetch();
+	const userIds = subscriptions.map((s) => s.u._id); // TODO: CACHE: expensive
+	const options = { fields: { _id: 1, username: 1, name: 1, peer: 1 } };
+
+	const users = RocketChat.models.Users.findUsersWithUsernameByIds(userIds, options).fetch();
+
+	return users;
 }

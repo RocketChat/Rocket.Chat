@@ -1,27 +1,29 @@
-import startPeer from './peer';
-import HUB from './hub';
+import PeerClient from './peerClient';
+import PeerServer from './peerServer';
 
 if (!!RocketChat.settings.get('FEDERATION_Enabled') === true) {
 	// Normalize the config values
 	const config = {
-		hub: {
-			host: RocketChat.settings.get('FEDERATION_Hub_Host'),
-			port: RocketChat.settings.get('FEDERATION_Hub_Port'),
+		identifier: RocketChat.settings.get('FEDERATION_Peer_Identifier'),
+		client: {
+			hub: {
+				host: RocketChat.settings.get('FEDERATION_Hub_Host'),
+				port: RocketChat.settings.get('FEDERATION_Hub_Port'),
+			},
 		},
-		peer: {
-			name: RocketChat.settings.get('FEDERATION_Peer_Name'),
-			host: RocketChat.settings.get('FEDERATION_Peer_Host'),
-			port: RocketChat.settings.get('FEDERATION_Peer_Port'),
+		server: {
+			host: RocketChat.settings.get('FEDERATION_Peer_Server_Host'),
+			port: RocketChat.settings.get('FEDERATION_Peer_Server_Port'),
 		},
 	};
 
-	Meteor.federationHUB = new HUB(config);
+	const peerClient = new PeerClient(config);
+	const peerServer = new PeerServer(config);
 
 	Meteor.startup(() => {
-		console.log('Federation is running...');
+		console.log('[federation] Starting!');
 
-		Meteor.federationHUB.register();
-
-		startPeer(config);
+		peerServer.start();
+		peerClient.register();
 	});
 }
