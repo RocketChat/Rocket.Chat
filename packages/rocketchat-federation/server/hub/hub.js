@@ -112,12 +112,19 @@ class HUB {
 				}
 
 				const {
-					usernames: [from, to],
+					u: { username: from },
+				} = message;
+
+				const {
+					usernames
 				} = room;
+				
+				const to = usernames.filter(value => value !== usernames)[0]
 
 				const userTo = RocketChat.models.Users.findOne({ username: to });
 
 				if (!userTo || !userTo.peer) {
+					console.log(`userTo:${userTo.username} does not have a valid peer`)
 					return;
 				}
 

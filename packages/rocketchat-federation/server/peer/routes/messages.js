@@ -15,12 +15,9 @@ function messagesRoutes(router) {
 			return;
 		}
 
-		const roomIds = [
-			`${ userFrom._id }${ userTo._id }`,
-			`${ userTo._id }${ userFrom._id }`,
-		];
+		const roomId = [userFrom._id, userTo._id].sort().join('');
 
-		let room = RocketChat.models.Rooms.findOne({ _id: { $in: roomIds } });
+		let room = RocketChat.models.Rooms.findOne({ _id: roomId });
 
 		if (!room) {
 			room = createRoom(userFrom, userTo);

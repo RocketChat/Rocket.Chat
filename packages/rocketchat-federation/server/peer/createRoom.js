@@ -21,7 +21,7 @@ export const createRoom = (source, target) => {
 			$setOnInsert: {
 				name: source.username,
 				t: 'd',
-				open: false,
+				open: true,
 				alert: false,
 				unread: 0,
 				u: {
@@ -38,7 +38,7 @@ export const createRoom = (source, target) => {
 			$setOnInsert: {
 				name: target.username,
 				t: 'd',
-				open: false,
+				open: true,
 				alert: false,
 				unread: 0,
 				u: {
@@ -49,5 +49,8 @@ export const createRoom = (source, target) => {
 		}
 	);
 
-	return room;
+	return {
+    _id: rid,
+    t: 'd'
+  };
 };
