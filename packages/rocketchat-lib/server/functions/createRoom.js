@@ -80,6 +80,9 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		}
 
 		const extra = { open: true };
+		if (room.parentRoomId) {
+			extra.parentRoomId = room.parentRoomId;
+		}
 
 		if (username === owner.username) {
 			extra.ls = now;
