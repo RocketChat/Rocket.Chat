@@ -1,7 +1,7 @@
 RocketChat.TabBar.removeButton('external-search');
 
 RocketChat.TabBar.addButton({
-	groups: ['channel', 'group', 'direct', 'live'],
+	groups: ['channel', 'group', 'live'],
 	id: 'assistify-ai',
 	i18nTitle: 'Knowledge_Base',
 	icon: 'lightbulb',

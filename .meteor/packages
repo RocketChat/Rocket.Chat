@@ -198,7 +198,6 @@ tap:i18n
 underscore
 
 assistify:ai
-assistify:defaults
 assistify:threading
 assistify:migrations
 overture8:wordcloud2
