@@ -1,13 +1,14 @@
-
-
+/**
+ * This function adds anonymized statistics about how users interact (read and write) with the system
+ */
 export function getUsages() {
 	const lastStatistics = RocketChat.models.Statistics.findLast();
 	const lastStatisticsCreatedAt = lastStatistics ? lastStatistics.createdAt : new Date();
-	const userDB = RocketChat.models.Users;
-	const subDB = RocketChat.models.Subscriptions;
-	const messageDB = RocketChat.models.Messages;
+	const userDB = RocketChat.models.Users.model.rawCollection();
+	const subDB = RocketChat.models.Subscriptions.model.rawCollection();
+	const messageDB = RocketChat.models.Messages.model.rawCollection();
 	const usages = [];
-	const users = userDB.model.aggregate([
+	const usersAggregationCursor = userDB.aggregate([
 		{
 			$unwind: '$emails'
 		},
@@ -16,7 +17,9 @@ export function getUsages() {
 		}
 	]);
 
-	const readsArr = subDB.model.aggregate([
+	const users = Promise.await(usersAggregationCursor.toArray());
+
+	const readsAggregationCursor = subDB.aggregate([
 		{
 			$match:
 				{
@@ -44,9 +47,11 @@ export function getUsages() {
 				}
 		}
 	]);
+
+	const readsArr = Promise.await(readsAggregationCursor.toArray());
 	const reads = new Map(readsArr.map((i) => [i._id, i.roomTypes]));
 
-	const writesArr = messageDB.model.aggregate([
+	const writesAggregationCursor = messageDB.aggregate([
 		{
 			$match:
 				{
@@ -86,6 +91,8 @@ export function getUsages() {
 				}
 		}
 	]);
+
+	const writesArr = Promise.await(writesAggregationCursor.toArray());
 	const writes = new Map(writesArr.map((i) => [i._id, i.roomTypes]));
 
 	for (let i = 0; i < users.length; i++) {
