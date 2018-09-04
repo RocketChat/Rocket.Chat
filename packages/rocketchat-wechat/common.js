@@ -2,9 +2,14 @@
 import _ from 'underscore';
 
 const config = {
-	serverURL: '',
-	identityPath: '/',
-	scope: '',
+	serverURL: 'https://open.weixin.qq.com',
+	tokenPath: 'https://api.weixin.qq.com/sns/oauth2/access_token',
+	tokenSentVia: 'payload',
+	identityTokenSentVia: 'default',
+	identityPath: 'https://api.weixin.qq.com/sns/userinfo',
+	scope: 'snsapi_login',
+	usernameField: 'nickname',
+	mergeUsers: false,
 	buttonColor: '#4fc134',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wechat'],
@@ -24,47 +29,13 @@ class WeChatOAuth extends CustomOAuth {
 const WeChat = new WeChatOAuth('wechat', config);
 
 const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
-	config.serverURL = RocketChat.settings.get('Accounts_OAuth_WeChat_URL').trim().replace(/\/*$/, '');
+	config.serverURL = config.serverURL.trim().replace(/\/*$/, '');
 
-	delete config.identityPath;
-	delete config.identityTokenSentVia;
-	delete config.tokenPath;
-	delete config.tokenSentVia;
-	delete config.authorizePath;
-	delete config.scope;
-	delete config.usernameField;
-	delete config.mergeUsers;
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_identity_path')) {
-		config.identityPath = RocketChat.settings.get('Accounts_OAuth_WeChat_identity_path');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_identity_token_sent_via')) {
-		config.identityTokenSentVia = RocketChat.settings.get('Accounts_OAuth_WeChat_identity_token_sent_via');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_token_path')) {
-		config.tokenPath = RocketChat.settings.get('Accounts_OAuth_WeChat_token_path');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_authorize_path')) {
-		config.authorizePath = RocketChat.settings.get('Accounts_OAuth_WeChat_authorize_path');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_scope')) {
-		config.scope = RocketChat.settings.get('Accounts_OAuth_WeChat_scope');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_token_sent_via')) {
-		config.tokenSentVia = RocketChat.settings.get('Accounts_OAuth_WeChat_token_sent_via');
-	}
+	config.clientId = RocketChat.settings.get('Accounts_OAuth_WeChat_appid');
+	config.secret = RocketChat.settings.get('Accounts_OAuth_WeChat_appsecret');
 
 	if (RocketChat.settings.get('Accounts_OAuth_WeChat_username_field')) {
 		config.usernameField = RocketChat.settings.get('Accounts_OAuth_WeChat_username_field');
-	}
-
-	if (RocketChat.settings.get('Accounts_OAuth_WeChat_merge_users')) {
-		config.mergeUsers = RocketChat.settings.get('Accounts_OAuth_WeChat_merge_users');
 	}
 
 	const result = WeChat.configure(config);
