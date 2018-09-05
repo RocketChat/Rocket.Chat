@@ -137,7 +137,7 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
-	
+
 	code & {
 		float: left;
 	}
@@ -3117,6 +3117,7 @@
 			padding: 1px 4px;
 			border-radius: 4px;
 			border-width: 1px;
+			background: #FFFFFF;
 		}
 	}
 

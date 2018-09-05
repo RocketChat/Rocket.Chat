@@ -5,6 +5,9 @@ Template.tabs.onCreated(function() {
 Template.tabs.events({
 	'click .tab'(e) {
 		const { value } = e.currentTarget.dataset;
+		if (value === Template.instance().activeTab.get()) {
+			return;
+		}
 		Template.instance().activeTab.set(value);
 		Template.instance().data.tabs.onChange(value);
 	},
