@@ -234,6 +234,17 @@ describe('[Users]', function() {
 				})
 				.end(resolve);
 		});
+		const updatePermission = (permission, roles) => new Promise((resolve) => {
+			request.post(api('permissions.update'))
+				.set(credentials)
+				.send({ permissions: [{ _id: permission, roles: [roles] }] })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		before((done) => {
 			updateSetting('Accounts_AllowUserProfileChange', true)
 				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
@@ -314,19 +325,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
-		it('remove "edit-other-user-info" permission from user', (done) => {
-			request.post(api('permissions.update'))
-				.set(credentials)
-				.send({ permissions: [{ _id: 'manage-assets', roles: [] }] })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-
 		it('should return an error when trying update username and it is not allowed', (done) => {
+			updatePermission('edit-other-user-info', '');
 			updateSetting('Accounts_AllowUsernameChange', false)
 				.then(() => {
 					request.post(api('users.update'))
