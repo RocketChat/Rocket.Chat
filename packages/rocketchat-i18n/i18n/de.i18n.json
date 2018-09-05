@@ -2509,6 +2509,7 @@
   "Threading_title": "Einen neuen Thread anlegen",
   "Thread_start": "Thread starten",
   "thread-created" : "Ich habe einen neuen __channelLink__ angelegt",
+  "thread-welcome" : "Danke __username__, dass Du einen neuen Thread angelegt hast! Ich habe Mitglieder eingeladen, die Dir helfen können. Tipp: mit \"@all\" kannst Du sie anstupsen, wenn sich länger niemand melden sollte ;)",
   "Threading_description": "Erstelle einen Thread, um wichtigen Dingen mehr Raum zu geben. Dort kannst Du mit allen verfügbaren Mitgliedern schreiben, ohne andere zu stören. So sorgst Du für etwas mehr Ordnung in Eurem Chat.",
   "Thread_from_context_menu": "Threads im Kontext-Menü",
   "Threading_context_menu_button": "Separater Button",

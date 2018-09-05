@@ -15,6 +15,7 @@ export class ThreadBuilder {
 			this._openingQuestion.u = Meteor.user();
 		}
 		this._parentRoomId = parentRoomId;
+		this.rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 	}
 
 	static getNextId() {
@@ -54,8 +55,7 @@ export class ThreadBuilder {
 	}
 
 	_linkMessages(roomCreated, parentRoom, repostedMessage) {
-		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
-		if (rocketCatUser && Meteor.userId()) {
+		if (this.rocketCatUser && Meteor.userId()) {
 			/* Add link in parent Room */
 
 			const linkMessage = Object.assign({}, this._openingQuestion); // shallow copy of the original message
@@ -97,8 +97,17 @@ export class ThreadBuilder {
 
 			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
 		}
+	}
+
+	_threadWelcomeMessage(threadRoom) {
+		const user = Meteor.user();
+		const welcomeMessage = { _id: Random.id(), rid: threadRoom._id, msg: '', mentions: [{
+			_id: user._id, // Thread Initiator
+			name: user.username // Use @Name field for navigation
+		}] };
+		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('thread-welcome', threadRoom._id, '', this.rocketCatUser, welcomeMessage);
 	}
 
 	_getMembers() {
@@ -157,8 +166,11 @@ export class ThreadBuilder {
 				this._openingQuestion.msg,
 				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
 			);
-			// Link messages
+
+			// Create messages linking the parent room and the thread
 			this._linkMessages(room, parentRoom, repostedMessage);
+
+			this._threadWelcomeMessage(room);
 		}
 
 		return threadRoom;
