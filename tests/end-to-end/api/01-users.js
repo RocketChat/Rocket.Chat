@@ -329,20 +329,20 @@ describe('[Users]', function() {
 			updatePermission('edit-other-user-info', ['user']).then(() => {
 				updateSetting('Accounts_AllowUsernameChange', false)
 					.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								username: 'fake.name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									username: 'fake.name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
 				});
 			});
 		});
@@ -351,20 +351,20 @@ describe('[Users]', function() {
 			updatePermission('edit-other-user-info', ['admin']).then(() => {
 				updateSetting('Accounts_AllowUsernameChange', false)
 					.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								username: 'fake.name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									username: 'fake.name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
 				});
 			});
 		});
