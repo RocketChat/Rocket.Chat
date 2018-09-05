@@ -243,7 +243,7 @@ Template.visitorInfo.events({
 	'click .archive-room'(event) {
 		event.preventDefault();
 
-		Meteor.call('archiveRoom', this.rid, function(error/*, result*/) {
+		Meteor.call('archiveRoom', this.rid, function(error) {
 			if (error) {
 				console.log(error);
 			} else {
@@ -289,13 +289,13 @@ Template.visitorInfo.onCreated(function() {
 	}
 
 	this.autorun(() => {
-		this.user.set(LivechatVisitor.findOne({ '_id': this.visitorId.get() }));
+		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
 
-		//load guest department
+		// load guest department
 		if (this.user.get() && this.user.get().department) {
 			const sub = this.subscribe('livechat:departments', this.user.get().department);
 			if (sub.ready()) {
-				const department = LivechatDepartment.findOne({_id: this.user.get().department});
+				const department = LivechatDepartment.findOne({ _id: this.user.get().department });
 				if (department) {
 					this.department.set(department);
 				}

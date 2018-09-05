@@ -5,5 +5,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.LivechatInquiry.find(filter || {}).fetch();
-	}
+	},
 });

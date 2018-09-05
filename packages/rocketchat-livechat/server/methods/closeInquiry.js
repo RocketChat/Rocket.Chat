@@ -5,9 +5,9 @@ Meteor.methods({
 		}
 
 		// find inquiry corresponding to room
-		const inquiry = RocketChat.models.LivechatInquiry.findOne({rid});
+		const inquiry = RocketChat.models.LivechatInquiry.findOne({ rid });
 
 		// mark inquiry as open
 		return RocketChat.models.LivechatInquiry.closeInquiry(inquiry._id);
-	}
+	},
 });

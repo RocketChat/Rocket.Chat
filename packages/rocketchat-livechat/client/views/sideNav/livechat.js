@@ -36,16 +36,16 @@ Template.livechat.helpers({
 	},
 
 	inquiries() {
-		//load all livechatDepartmentAgents fpr current agent
+		// load all livechatDepartmentAgents fpr current agent
 		const departmentAgents = LivechatDepartmentAgents.find({
-			agentId : Meteor.userId()
+			agentId : Meteor.userId(),
 		});
 
 		const departmentIds = [];
 		departmentAgents.forEach((agent) => {
 			departmentIds.push(agent.departmentId);
 		});
-		//also include inquiries without a department
+		// also include inquiries without a department
 		if (departmentIds.length) {
 			departmentIds.push(null);
 			departmentIds.push('');
@@ -54,7 +54,7 @@ Template.livechat.helpers({
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
 			department: {
-				$in: departmentIds
+				$in: departmentIds,
 			},
 			status: 'open',
 		}, {
@@ -148,6 +148,6 @@ Template.livechat.onCreated(function() {
 		}
 	});
 
-	this.subscribe('livechat:inquiry', {status: 'open'});
+	this.subscribe('livechat:inquiry', { status: 'open' });
 	this.subscribe('livechat:departmentAgents', null);
 });

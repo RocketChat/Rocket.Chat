@@ -58,7 +58,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 	 */
 	closeInquiry(inquiryId) {
 		this.update({
-			'_id': inquiryId
+			_id: inquiryId,
 		}, {
 			$set: { status: 'closed' },
 		});
