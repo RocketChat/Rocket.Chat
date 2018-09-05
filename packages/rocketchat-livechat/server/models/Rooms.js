@@ -75,7 +75,7 @@ RocketChat.models.Rooms.findLivechatByIdAndVisitorToken = function(_id, visitorT
 		_id,
 		'v.token': visitorToken,
 	};
-	console.log(query);
+
 	return this.findOne(query, options);
 };
 

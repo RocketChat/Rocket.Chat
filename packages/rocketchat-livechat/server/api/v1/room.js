@@ -8,7 +8,6 @@ RocketChat.API.v1.addRoute('livechat/room', {
 				rid: Match.Maybe(String),
 			});
 
-
 			const { token } = this.queryParams;
 			const guest = findGuest(token);
 			if (!guest) {
@@ -55,7 +54,7 @@ RocketChat.API.v1.addRoute('livechat/room.close/:rid', {
 				return RocketChat.API.v1.failure();
 			}
 
-			return RocketChat.API.v1.success({ comment });
+			return RocketChat.API.v1.success({ rid, comment });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
@@ -79,7 +78,7 @@ RocketChat.API.v1.addRoute('livechat/room.transfer/:rid', {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			let room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
@@ -87,12 +86,12 @@ RocketChat.API.v1.addRoute('livechat/room.transfer/:rid', {
 			// update visited page history to not expire
 			RocketChat.models.Messages.keepHistoryForToken(token);
 
-			const agent = RocketChat.Livechat.transfer(room, guest, { roomId: rid, departmentId: department });
-			if (!agent) {
+			if (!RocketChat.Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
 				return RocketChat.API.v1.failure();
 			}
 
-			return RocketChat.API.v1.success({ agent });
+			room = findRoom(token, rid);
+			return RocketChat.API.v1.success({ room });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
@@ -144,7 +143,7 @@ RocketChat.API.v1.addRoute('livechat/room.survey/:rid', {
 				return RocketChat.API.v1.failure();
 			}
 
-			return RocketChat.API.v1.success();
+			return RocketChat.API.v1.success({ rid, data: updateData });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}

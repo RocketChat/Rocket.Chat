@@ -866,7 +866,6 @@ RocketChat.Livechat = {
 
 		return true;
 	},
-
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');

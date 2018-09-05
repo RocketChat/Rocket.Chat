@@ -55,7 +55,7 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 			});
 
 			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
-			return RocketChat.API.v1.success(visitor);
+			return RocketChat.API.v1.success({ visitor });
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
 		}
