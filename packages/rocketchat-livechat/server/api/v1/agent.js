@@ -1,4 +1,4 @@
-import { findRoom, findAgent } from '../lib/livechat';
+import { findRoom, findGuest, findAgent } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	get() {
@@ -7,6 +7,11 @@ RocketChat.API.v1.addRoute('livechat/agent.info/:rid/:token', {
 				rid: String,
 				token: String,
 			});
+
+			const visitor = findGuest(this.urlParams.token);
+			if (!visitor) {
+				throw new Meteor.Error('invalid-token');
+			}
 
 			const room = findRoom(this.urlParams.token, this.urlParams.rid);
 			if (!room) {
@@ -36,9 +41,9 @@ RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
 				department: Match.Maybe(String),
 			});
 
-			const room = findRoom(this.urlParams.token);
-			if (!room) {
-				throw new Meteor.Error('invalid-room');
+			const visitor = findGuest(this.urlParams.token);
+			if (!visitor) {
+				throw new Meteor.Error('invalid-token');
 			}
 
 			let { department } = this.queryParams;
