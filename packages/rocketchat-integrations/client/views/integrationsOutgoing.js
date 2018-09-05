@@ -132,7 +132,7 @@ Template.integrationsOutgoing.helpers({
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
+				image_url: '/images/integration-attachment-example.png',
 				color: '#764FA5',
 			}],
 			ts: new Date(),
@@ -154,7 +154,7 @@ Template.integrationsOutgoing.helpers({
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
+				image_url: '/images/integration-attachment-example.png',
 				color: '#764FA5',
 			}],
 		};
