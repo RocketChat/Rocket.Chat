@@ -314,6 +314,18 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
+		it('remove "edit-other-user-info" permission from user', (done) => {
+			request.post(api('permissions.update'))
+				.set(credentials)
+				.send({ permissions: [{ _id: 'manage-assets', roles: [] }] })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
 		it('should return an error when trying update username and it is not allowed', (done) => {
 			updateSetting('Accounts_AllowUsernameChange', false)
 				.then(() => {
