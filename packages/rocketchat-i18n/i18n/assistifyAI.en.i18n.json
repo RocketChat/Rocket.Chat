@@ -18,6 +18,8 @@
     "Assistify_AI_Widget_Posting_Type_PostRichText": "post rich text",
     "Assistify_AI_Widget_Posting_Type_PostText": "post text",
     "Assistify_AI_Widget_Posting_Type_SuggestText": "suggest text",
+    "Assistify_AI_RocketChat_Callback_URL": "Dedicated URL for Smarti-Callback",
+    "Assistify_AI_RocketChat_Callback_URL_Description": "An optional URL to which Smarti shall send the callback when processing asynchronous analysis",
     "Assistify_AI_RocketChat_Webhook_Token": "Rocket.Chat Token",
     "Assistify_AI_RocketChat_Webhook_Token_Description": "Appoint a token for incoming Smarti messages (z.B. key123).",
     "Assistify_AI_Resync": "Resync Smarti",
