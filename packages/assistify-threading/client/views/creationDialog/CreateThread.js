@@ -260,7 +260,7 @@ Template.CreateThread.events({
 							return handleError(err);
 					}
 				}
-				FlowRouter.goToRoomById(result.rid);
+				FlowRouter.goToRoomById(result._id);
 			});
 		}
 	},

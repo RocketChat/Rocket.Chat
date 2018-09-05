@@ -101,12 +101,20 @@ export class ThreadBuilder {
 		}
 	}
 
-	_threadWelcomeMessage(threadRoom) {
+	_threadWelcomeMessage(threadRoom, parentRoom) {
 		const user = Meteor.user();
-		const welcomeMessage = { _id: Random.id(), rid: threadRoom._id, msg: '', mentions: [{
-			_id: user._id, // Thread Initiator
-			name: user.username // Use @Name field for navigation
-		}] };
+		const welcomeMessage = {
+			_id: Random.id(),
+			rid: threadRoom._id,
+			mentions: [{
+				_id: user._id, // Thread Initiator
+				name: user.username // Use @Name field for navigation
+			}],
+			channels: [{
+				_id: parentRoom._id,
+				name: parentRoom.name
+			}]
+		};
 		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('thread-welcome', threadRoom._id, '', this.rocketCatUser, welcomeMessage);
 	}
 
@@ -149,7 +157,7 @@ export class ThreadBuilder {
 		// Generate RoomName for the new room to be created.
 		this.name = `${ parentRoom.name || parentRoom.usernames.join('-') }-${ ThreadBuilder.getNextId() }`;
 		const threadRoomType = parentRoom.t === 'd' ? 'p' : parentRoom.t;
-		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
+		const threadRoomCreationResult = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
 			{
 				announcement: this._openingQuestion.msg,
 				topic: parentRoom.name ? parentRoom.name : '',
@@ -157,20 +165,20 @@ export class ThreadBuilder {
 			});
 
 		// Create messages in the newly created thread and it's parent which link the two rooms
-		const room = RocketChat.models.Rooms.findOneById(threadRoom.rid);
-		if (room && parentRoom) {
+		const threadRoom = RocketChat.models.Rooms.findOneById(threadRoomCreationResult.rid);
+		if (threadRoom && parentRoom) {
+			this._threadWelcomeMessage(threadRoom, parentRoom);
+
 			// Post message
 			const repostedMessage = this._postMessage(
-				room,
+				threadRoom,
 				this._openingQuestion.u,
 				this._openingQuestion.msg,
 				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
 			);
 
 			// Create messages linking the parent room and the thread
-			this._linkMessages(room, parentRoom, repostedMessage);
-
-			this._threadWelcomeMessage(room);
+			this._linkMessages(threadRoom, parentRoom, repostedMessage);
 		}
 
 		return threadRoom;
