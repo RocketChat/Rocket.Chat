@@ -343,7 +343,7 @@ describe('[Users]', function() {
 								expect(res.body).to.have.property('success', false);
 							})
 							.end(done);
-				});
+					});
 			});
 		});
 
@@ -365,7 +365,7 @@ describe('[Users]', function() {
 								expect(res.body).to.have.property('success', true);
 							})
 							.end(done);
-				});
+					});
 			});
 		});
 
@@ -409,7 +409,7 @@ describe('[Users]', function() {
 								expect(res.body).to.have.property('success', true);
 							})
 							.end(done);
-				});
+					});
 			});
 		});
 
@@ -432,7 +432,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 
 		it('should update user email when the required permission is applied', (done) => {
@@ -454,7 +454,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 
 		it('should return an error when trying update user password and it is not allowed', (done) => {
@@ -476,7 +476,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 
 		it('should update user password when the required permission is applied', (done) => {
@@ -498,7 +498,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 
 		it('should return an error when trying update profile and it is not allowed', (done) => {
@@ -520,7 +520,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 
 		it('should update profile when the required permission is applied', (done) => {
@@ -542,7 +542,7 @@ describe('[Users]', function() {
 							})
 							.end(done);
 					});
-				});
+			});
 		});
 	});
 
