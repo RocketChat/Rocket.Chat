@@ -34,7 +34,7 @@ const extendedViewOption = (user) => {
 const toolbarButtons = (user) => {
 	return [{
 		name: t('Search'),
-		icon: 'magnifier',
+		icon: 'inbox',
 		action: () => {
 			const toolbarEl = $('.toolbar');
 			toolbarEl.css('display', 'block');
