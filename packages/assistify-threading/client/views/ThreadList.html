@@ -3,6 +3,11 @@
 		{{_ "Threads"}}
 	</h3>
 	<ul class="rooms-list__list">
-		{{#each room in rooms}} {{> chatRoomItem room }} {{/each}}
+		{{#each room in rooms}} {{> chatRoomItem room }}
+		{{else}}
+		<p class="rooms-list__empty-room">
+			{{_ "No_threads_yet"}}
+		</p>
+		{{/each}}
 	</ul>
 </template>
