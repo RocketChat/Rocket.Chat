@@ -2518,7 +2518,7 @@
   "Thread_default_parent_Channel": "Standard-Kanal für neue Threads",
   "Threading_first_message_title": "Deine Nachricht",
   "Thread_slash_command_description": "Erstelle einen Thread zum aktuellen Kanal",
-  "Thread_slash_command_params": "Deine Nachricht (optional)",
+  "Thread_slash_command_params": "Deine Nachricht",
   "Thread_target_channel": "Übergeordneter Kanal oder Gruppe",
   "Thread_target_channel_description": "Wähle einen Kanal oder eine Gruppe aus, die zu Deinem Anliegen passt",
   "Thread_target_channel_prefix": "Du erstellst einen Thread in",
