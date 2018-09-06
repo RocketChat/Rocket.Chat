@@ -3,16 +3,15 @@
 
 	height: 45px;
 	min-height: 80px;
+	max-height: 250px;
 
 	padding: 0.75rem 1rem;
+
+	resize: vertical;
 
 	font: inherit;
 
 	line-height: 20px;
-
-	resize: vertical;
-
-	max-height: 250px;
 }
 
 .content .threading-wrapper {
@@ -20,7 +19,7 @@
 	margin-top: 50px;
 }
 
-.create-thread .action-link {
+.create-thread .action-link {
 	cursor: pointer;
 }
 
@@ -29,11 +28,7 @@
 }
 
 .create-thread .full-modal__back-text {
-	font-size: 11px; /*no clue, why we have to specify this explicitly. Dirty hack.*/
-}
-
-.create-thread-sidebar {
-	margin-bottom: 22px;
+	font-size: 11px; /* no clue, why we have to specify this explicitly. Dirty hack. */
 }
 
 .create-thread-sidebar-button {
@@ -42,12 +37,4 @@
 	margin: -8px auto 20px;
 
 	font-size: 100%;
-}
-
-.create-thread-sidebar .rooms-list__list {
-	margin-bottom: 0;
-}
-
-.create-thread-sidebar .rooms-list__empty-room {
-	margin-bottom: 6px;
 }
