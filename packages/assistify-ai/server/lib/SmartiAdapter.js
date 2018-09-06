@@ -2,6 +2,16 @@ import {RocketChat} from 'meteor/rocketchat:lib';
 import {SystemLogger} from 'meteor/rocketchat:logger';
 import { SmartiProxy, verbs } from '../SmartiProxy';
 
+let syncTimer = 0;
+
+function terminateCurrentSync() {
+	if (syncTimer) {
+		Meteor.clearInterval(syncTimer);
+	}
+
+	syncTimer = 0;
+}
+
 /**
  * The SmartiAdpater can be understood as an interface for all interaction with Smarti triggered by Rocket.Chat server.
  * The SmartiAdapter sould not expose any methods that can directly be called by the client.
@@ -220,14 +230,12 @@ export class SmartiAdapter {
 	 * @param {boolean} ignoreSyncFlag - if 'true' the dirty flag for outdated rooms and messages will be ignored. If 'false' only rooms and messages are synchronized that are marked as outdated.
 	 */
 	static resync(ignoreSyncFlag) {
+		terminateCurrentSync();
+
 		SystemLogger.info('Smarti resync triggered');
 
 		const batchsize = RocketChat.settings.get('Assistify_AI_Resync_Batchsize');
 		const batchTimeout = RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout');
-
-		function _calcTimeout(i) {
-			return Math.floor(i / batchsize) * batchTimeout;
-		}
 
 		if (!SmartiAdapter._smartiAvailable()) {
 			return false;
@@ -238,31 +246,50 @@ export class SmartiAdapter {
 			SmartiAdapter._clearMapping();
 		}
 
-		let query = {};
+		let syncModeQuery = {};
 		if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-			query = { $or: [{ outOfSync: true }, { outOfSync: { $exists: false } }] };
+			syncModeQuery = { $or: [{ outOfSync: true }, { outOfSync: { $exists: false } }] };
 		}
 
-		query.t = 'c';
-		const requests = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of public channels to sync: ', requests.length);
-		for (let i = 0; i < requests.length; i++) {
-			Meteor.setTimeout(() => SmartiAdapter._tryResync(requests[i]._id, ignoreSyncFlag), _calcTimeout);
+		const roomTypesQuery = {
+			$or: [
+				{t: 'c'},
+				{t: 'p'},
+				{t: 'l'}
+			]
+		};
+
+		const query = {$and: [roomTypesQuery, syncModeQuery]};
+		const options = {fields: {_id: 1, name: 1}};
+
+		// Meteor cursors are not Mongo-cursors: No native paging is possible => do it manually
+		let batchNumber = 0;
+
+		function syncBatch() {
+
+			const batchOptions = options;
+			batchOptions.skip = batchNumber * batchsize;
+			batchOptions.limit = batchsize;
+
+			const roomsCursor = RocketChat.models.Rooms.model.find(query, batchOptions);
+			const roomsBatch = roomsCursor.fetch();
+			// trigger the syncronisation for the whole batch
+			roomsBatch.forEach((room)=>{
+				console.log('syncing', room.name);
+				SmartiAdapter._tryResync(room._id, ignoreSyncFlag);
+			});
+
+			if (roomsBatch.length < batchsize)	{
+				SystemLogger.success('Sync with Smarti completed');
+
+				// delete the scheduled sync operation
+				terminateCurrentSync();
+			}
+
+			batchNumber++;
 		}
 
-		query.t = 'p';
-		const topics = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of private groups to sync: ', topics.length);
-		for (let i = 0; i < topics.length; i++) {
-			Meteor.setTimeout(() => SmartiAdapter._tryResync(topics[i]._id, ignoreSyncFlag), _calcTimeout);
-		}
-
-		query.t = 'l';
-		const livechat = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of livechats to sync: ', livechat.length);
-		for (let i = 0; i < livechat.length; i++) {
-			Meteor.setTimeout(() => SmartiAdapter._tryResync(livechat[i]._id, ignoreSyncFlag), _calcTimeout);
-		}
+		syncTimer = Meteor.setInterval(syncBatch, batchTimeout);
 
 		return {
 			message: 'sync-triggered-successfully'
