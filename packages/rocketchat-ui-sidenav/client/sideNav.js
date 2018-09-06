@@ -15,6 +15,10 @@ Template.sideNav.helpers({
 		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
+	threadingFromSidebar() {
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads');
+	},
+
 	roomType() {
 		return RocketChat.roomTypes.getTypes().map((roomType) => {
 			return {
@@ -59,6 +63,10 @@ Template.sideNav.events({
 
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
+	},
+
+	'click .js-create-thread'() {
+		return FlowRouter.go('create-thread');
 	}
 });
 

@@ -7,12 +7,10 @@ export class ThreadRoomType extends RoomTypeConfig {
 			order: 25,
 			label: 'Threads'
 		});
-
-		this.customTemplate = 'ThreadList';
 	}
 
 	condition() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads');
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }
 
