@@ -214,6 +214,7 @@ rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
 rocketchat:slashcommands-create@0.0.1
+rocketchat:slashcommands-create-thread@0.0.1
 rocketchat:slashcommands-help@0.0.1
 rocketchat:slashcommands-hide@0.0.1
 rocketchat:slashcommands-invite@0.0.1
