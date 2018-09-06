@@ -297,7 +297,7 @@ export class SmartiAdapter {
 			const roomsBatch = roomsCursor.fetch();
 			// trigger the syncronisation for the whole batch
 			roomsBatch.forEach((room)=>{
-				console.log('syncing', room.name);
+				SystemLogger.debug('Smarti syncing', room.name);
 				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room._id, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
 			});
 
