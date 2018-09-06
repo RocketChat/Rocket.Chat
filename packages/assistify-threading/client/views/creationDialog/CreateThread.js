@@ -260,7 +260,7 @@ Template.CreateThread.events({
 							return handleError(err);
 					}
 				}
-				FlowRouter.goToRoomById(result.rid);
+				FlowRouter.goToRoomById(result._id);
 			});
 		}
 	},
@@ -364,19 +364,19 @@ Template.CreateThread.onCreated(function() {
 	});
 	this.ac.tmplInst = this;
 
-	//pre-fill form based on query parameters if passed - TODO: There has to be another dedicated route to execute this template (except /home)
-	// if (FlowRouter.current().queryParams) {
-	// 	const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
-	// 	if (parentChannel) {
-	// 		instance.parentChannel.set(parentChannel);
-	// 		instance.debounceValidateParentChannel(parentChannel);
-	// 	}
+	//pre-fill form based on query parameters if passed
+	if (FlowRouter.current().queryParams) {
+		const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
+		if (parentChannel) {
+			instance.parentChannel.set(parentChannel);
+			instance.debounceValidateParentChannel(parentChannel);
+		}
 
-	// 	const question = FlowRouter.getQueryParam('question');
-	// 	if (question) {
-	// 		instance.openingQuestion.set(question);
-	// 	}
-	// }
+		const question = FlowRouter.getQueryParam('question') || FlowRouter.getQueryParam('message');
+		if (question) {
+			instance.openingQuestion.set(question);
+		}
+	}
 
 	Meteor.call('getParentChannelList', {
 		sort: 'name'

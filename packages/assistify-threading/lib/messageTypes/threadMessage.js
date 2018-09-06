@@ -13,5 +13,17 @@ Meteor.startup(function() {
 			};
 		}
 	});
+
+	RocketChat.MessageTypes.registerType({
+		id: 'thread-welcome',
+		system: true,
+		message: 'thread-welcome',
+		data(message) {
+			return {
+				parentChannel: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">${ message.channels[0].name }</a>`,
+				username: `<a class="mention-link" data-username= ${ message.mentions[0].name } title="">@${ message.mentions[0].name }</a>`
+			};
+		}
+	});
 });
 

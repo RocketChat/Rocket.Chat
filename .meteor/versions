@@ -9,6 +9,7 @@ accounts-twitter@1.4.1
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 assistify:ai@0.2.0
+assistify:configuration@0.0.2
 assistify:migrations@0.0.1
 assistify:threading@0.1.0
 autoupdate@1.4.0

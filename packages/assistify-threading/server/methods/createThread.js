@@ -15,6 +15,8 @@ export class ThreadBuilder {
 			this._openingQuestion.u = Meteor.user();
 		}
 		this._parentRoomId = parentRoomId;
+		this._parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
+		this.rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
 	}
 
 	static getNextId() {
@@ -54,8 +56,7 @@ export class ThreadBuilder {
 	}
 
 	_linkMessages(roomCreated, parentRoom, repostedMessage) {
-		const rocketCatUser = RocketChat.models.Users.findOneByUsername('rocket.cat');
-		if (rocketCatUser && Meteor.userId()) {
+		if (this.rocketCatUser && Meteor.userId()) {
 			/* Add link in parent Room */
 
 			const linkMessage = Object.assign({}, this._openingQuestion); // shallow copy of the original message
@@ -97,13 +98,30 @@ export class ThreadBuilder {
 
 			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
 		}
+	}
+
+	_threadWelcomeMessage(threadRoom, parentRoom) {
+		const user = Meteor.user();
+		const welcomeMessage = {
+			_id: Random.id(),
+			rid: threadRoom._id,
+			mentions: [{
+				_id: user._id, // Thread Initiator
+				name: user.username // Use @Name field for navigation
+			}],
+			channels: [{
+				_id: parentRoom._id,
+				name: parentRoom.name
+			}]
+		};
+		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('thread-welcome', threadRoom._id, '', this.rocketCatUser, welcomeMessage);
 	}
 
 	_getMembers() {
 		const checkRoles = ['owner', 'moderator', 'leader'];
-		const members = [];
+		let members = [];
 		const users = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._parentRoomId, {
 			fields: {
 				'u._id': 1,
@@ -115,50 +133,59 @@ export class ThreadBuilder {
 				username: s.u.username
 			};
 		});
+		if (this._parentRoom.t === 'c') {
 		// filter on owner, moderators and those online (see @here-implementation)
-		for (const user of users) {
-			if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
+			for (const user of users) {
+				if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
 				// TODO: Use a mass-read-access: Filter the non-owner/moderators and use them in an $in-query. Afterwards, add them all
-				RocketChat.models.Users.findOne({
-					_id: user.id,
-					status: {
-						$in: ['online', 'away', 'busy']
-					}
-				});
-				if (!user) {
-					continue;
+					RocketChat.models.Users.findOne({
+						_id: user.id,
+						status: {
+							$in: ['online', 'away', 'busy']
+						}
+					});
+					if (!user) {
+						continue;
 					// user.splice(users.indexOf(user), 1); //remove offline user
+					}
+				} else {
+					// has a special role in the parent room
+					members.push(user.username);
 				}
 			}
-			members.push(user.username);
+		} else {
+			// in direct messages and groups, add all users as members of the thread
+			members = users.map(user=>user.username);
 		}
 		return members;
 	}
 
 	create() {
-		const parentRoom = ThreadBuilder.getRoom(this._parentRoomId);
 		// Generate RoomName for the new room to be created.
-		this.name = `${ parentRoom.name || parentRoom.usernames.join('-') }-${ ThreadBuilder.getNextId() }`;
-		const threadRoomType = parentRoom.t === 'd' ? 'p' : parentRoom.t;
-		const threadRoom = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
+		this.name = `${ this._parentRoom.name || this._parentRoom.usernames.join('-') }-${ ThreadBuilder.getNextId() }`;
+		const threadRoomType = this._parentRoom.t === 'd' ? 'p' : this._parentRoom.t;
+		const threadRoomCreationResult = RocketChat.createRoom(threadRoomType, this.name, Meteor.user() && Meteor.user().username, this._getMembers(), false,
 			{
 				announcement: this._openingQuestion.msg,
-				topic: parentRoom.name ? parentRoom.name : '',
+				topic: this._parentRoom.name ? this._parentRoom.name : '',
 				parentRoomId: this._parentRoomId
 			});
 
 		// Create messages in the newly created thread and it's parent which link the two rooms
-		const room = RocketChat.models.Rooms.findOneById(threadRoom.rid);
-		if (room && parentRoom) {
+		const threadRoom = RocketChat.models.Rooms.findOneById(threadRoomCreationResult.rid);
+		if (threadRoom && this._parentRoom) {
+			this._threadWelcomeMessage(threadRoom, this._parentRoom);
+
 			// Post message
 			const repostedMessage = this._postMessage(
-				room,
+				threadRoom,
 				this._openingQuestion.u,
 				this._openingQuestion.msg,
 				this._openingQuestion.attachments ? this._openingQuestion.attachments.filter(attachment => attachment.type && attachment.type === 'file') : []
 			);
-			// Link messages
-			this._linkMessages(room, parentRoom, repostedMessage);
+
+			// Create messages linking the parent room and the thread
+			this._linkMessages(threadRoom, this._parentRoom, repostedMessage);
 		}
 
 		return threadRoom;

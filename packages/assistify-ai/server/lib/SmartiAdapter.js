@@ -23,7 +23,7 @@ export class SmartiAdapter {
 	 * Returns the webhook URL that reveives the analysis callback from Smarti.
 	 */
 	static get rocketWebhookUrl() {
-		let rocketUrl = RocketChat.settings.get('Site_Url');
+		let rocketUrl = RocketChat.settings.get('Assistify_AI_RocketChat_Callback_URL') || RocketChat.settings.get('Site_Url');
 		rocketUrl = rocketUrl ? rocketUrl.replace(/\/?$/, '/') : rocketUrl;
 		return `${ rocketUrl }api/v1/smarti.result/${ RocketChat.settings.get('Assistify_AI_RocketChat_Webhook_Token') }`;
 	}

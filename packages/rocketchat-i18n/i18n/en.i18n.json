@@ -2509,6 +2509,7 @@
   "Threading_title": "Create a new thread",
   "Thread_start": "Start a thread",
   "thread-created" : "I started a new __channelLink__",
+  "thread-welcome" : "Thanks __username__ for creating a thread! I invited some members from __parentChannel__ who shall be able to help you. Hint: You can poke them with \"@all\", in case there's nothing happening for a longer time ;)",
   "Thread_from_context_menu": "Threads in context-menu",
   "Threading_context_menu_button": "Dedicated button",
   "Threading_context_menu_none": "Invisible",

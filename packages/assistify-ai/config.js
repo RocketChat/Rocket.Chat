@@ -29,7 +29,8 @@ Meteor.startup(() => {
 			this.add('Assistify_AI_Smarti_Base_URL', '', {
 				type: 'string',
 				public: true,
-				i18nLabel: 'Assistify_AI_Smarti_Base_URL'
+				i18nLabel: 'Assistify_AI_Smarti_Base_URL',
+				i18nDescription: 'Assistify_AI_Smarti_Base_URL_Description'
 			});
 
 			let domain = RocketChat.settings.get('Site_Url');
@@ -44,13 +45,15 @@ Meteor.startup(() => {
 			this.add('Assistify_AI_Smarti_Domain', domain, {
 				type: 'string',
 				public: true,
-				i18nLabel: 'Assistify_AI_Smarti_Domain'
+				i18nLabel: 'Assistify_AI_Smarti_Domain',
+				i18nDescription: 'Assistify_AI_Smarti_Domain_Description'
 			});
 
 			this.add('Assistify_AI_Smarti_Auth_Token', '', {
 				type: 'string',
 				public: true,
-				i18nLabel: 'Assistify_AI_Smarti_Auth_Token'
+				i18nLabel: 'Assistify_AI_Smarti_Auth_Token',
+				i18nDescription: 'Assistify_AI_Smarti_Auth_Token_Description'
 			});
 
 			this.add('Assistify_AI_Widget_Posting_Type', '', {
@@ -61,16 +64,28 @@ Meteor.startup(() => {
 					{key: 'postRichText', i18nLabel: 'Assistify_AI_Widget_Posting_Type_PostRichText'}
 				],
 				public: true,
-				i18nLabel: 'Assistify_AI_Widget_Posting_Type'
+				i18nLabel: 'Assistify_AI_Widget_Posting_Type',
+				i18nDescription: 'Assistify_AI_Widget_Posting_Type_Description'
 			});
 
 			this.add('Assistify_AI_RocketChat_Webhook_Token', '', {
 				type: 'string',
 				public: true,
-				i18nLabel: 'Assistify_AI_RocketChat_Webhook_Token'
+				i18nLabel: 'Assistify_AI_RocketChat_Webhook_Token',
+				i18nDescription: 'Assistify_AI_RocketChat_Webhook_Token_Description'
 			});
+
+			this.add('Assistify_AI_RocketChat_Callback_URL', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_RocketChat_Callback_URL',
+				i18nDescription: 'Assistify_AI_RocketChat_Callback_URL_Description'
+			});
+
 			this.add('Assistify_AI_Resync_Full', 'triggerFullResync', {
 				type: 'action',
+				i18nLabel: 'Assistify_AI_Resync_Full',
+				i18nDescription: 'Assistify_AI_Resync_Full_Description',
 				actionText: 'Assistify_AI_Resync_Full_Text'
 			});
 
