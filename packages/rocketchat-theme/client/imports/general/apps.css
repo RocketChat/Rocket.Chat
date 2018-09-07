@@ -91,6 +91,33 @@
 			text-overflow: ellipsis;
 		}
 
+		&__webhook {
+			font-size: 18px;
+			font-weight: bold;
+			padding-bottom: 10px;
+
+			&__description {
+				font-size: 14px;
+				overflow-x: scroll;
+				white-space: nowrap;
+				overflow-y: hidden;
+				background-color: #fafafa;
+
+				&__item {
+					padding: 10px;
+					user-select: all !important;
+					white-space: pre;
+					line-height: 20px;
+					border-top: 1px dashed #ccc;
+					display: table;
+
+					&:first-child {
+						border-top: none;
+					}
+				}
+			}
+
+		}
 	}
 }
 

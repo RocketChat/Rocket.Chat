@@ -63,9 +63,16 @@ Template.appManage.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
+	this.webhooks = new ReactiveVar([]);
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
+
+	this.getWebhooks = async() => {
+		this.webhooks.set(await window.Apps.getAppWebhooks(id));
+	};
+
+	this.getWebhooks();
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
@@ -210,6 +217,9 @@ Template.appManage.helpers({
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
+	webhooks() {
+		return Template.instance().webhooks.get();
+	},
 	parseDescription(i18nDescription) {
 		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
@@ -219,6 +229,20 @@ Template.appManage.helpers({
 	},
 	saving() {
 		return Template.instance().loading.get();
+	},
+	curl(method, webhook) {
+		const example = webhook.examples[method] || {};
+		return Utilities.curl({
+			url: Meteor.absoluteUrl.defaultOptions.rootUrl + webhook.computedPath,
+			method,
+			params: example.params,
+			query: example.query,
+			content: example.content,
+			headers: example.headers,
+		}).split('\n');
+	},
+	renderMethods(methods) {
+		return methods.join('|').toUpperCase();
 	},
 });
 
