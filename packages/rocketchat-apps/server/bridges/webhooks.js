@@ -1,6 +1,5 @@
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
-import { join } from 'path';
 
 const webhookServer = express();
 WebApp.connectHandlers.use(webhookServer);
@@ -10,24 +9,34 @@ export class AppWebhooksBridge {
 		this.orch = orch;
 		this.appRouters = new Map();
 
-		webhookServer.use('/apps/:appId', (req, res, next) => {
+		webhookServer.use('/apps/private/:appId/:hash', (req, res) => {
+			const notFound = () => res.send(404);
+
 			const router = this.appRouters.get(req.params.appId);
-			next = () => {
-				res.send(404);
-			};
 
 			if (router) {
-				return router(req, res, next);
+				req._privateHash = req.params.hash;
+				return router(req, res, notFound);
 			}
 
-			next();
+			notFound();
+		});
+
+		webhookServer.use('/apps/public/:appId', (req, res) => {
+			const notFound = () => res.send(404);
+
+			const router = this.appRouters.get(req.params.appId);
+
+			if (router) {
+				return router(req, res, notFound);
+			}
+
+			notFound();
 		});
 	}
 
-	registerWebhook(webhook, appId) {
-		const path = join('/apps', appId, webhook.path);
-
-		console.log(`The App ${ appId } is registerin the webhook: "${ webhook.path }" (${ path })`);
+	registerWebhook({ webhook, computedPath }, appId) {
+		console.log(`The App ${ appId } is registerin the webhook: "${ webhook.path }" (${ computedPath })`);
 
 		this._verifyWebhook(webhook);
 
@@ -45,8 +54,6 @@ export class AppWebhooksBridge {
 		}
 
 		router[method](routePath, Meteor.bindEnvironment(this._appWebhookExecutor(webhook, appId)));
-
-		this.orch.getNotifier().webhookAdded(path);
 	}
 
 	unregisterWebhooks(appId) {
@@ -55,8 +62,6 @@ export class AppWebhooksBridge {
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
 		}
-
-		this.orch.getNotifier().webhookRemoved(appId);
 	}
 
 	_verifyWebhook(webhook) {
@@ -77,6 +82,7 @@ export class AppWebhooksBridge {
 				query: req.query || {},
 				params: req.params || {},
 				content: req.body,
+				privateHash: req._privateHash,
 			};
 
 			this.orch.getManager().getWebhookManager().executeWebhook(appId, webhook.path, request).then(({ status, headers = {}, content }) => {
