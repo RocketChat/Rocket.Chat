@@ -97,19 +97,19 @@ Meteor.startup(() => {
 				sorter: 100
 			});
 
-			this.add('Assistify_AI_Resync_Batchsize', '10', {
+			this.add('Assistify_AI_Resync_Batchsize', 10, {
 				type: 'int',
 				public: true,
 				i18nLabel: 'Assistify_AI_Resync_Batchsize'
 			});
 
-			this.add('Assistify_AI_Resync_Batch_Timeout', '1000', {
+			this.add('Assistify_AI_Resync_Batch_Timeout', 1000, {
 				type: 'int',
 				public: true,
 				i18nLabel: 'Assistify_AI_Resync_Batch_Timeout'
 			});
 
-			this.add('Assistify_AI_Resync_Message_Limit', '1000', {
+			this.add('Assistify_AI_Resync_Message_Limit', 1000, {
 				type: 'int',
 				public: true,
 				i18nLabel: 'Assistify_AI_Resync_Message_Limit'
