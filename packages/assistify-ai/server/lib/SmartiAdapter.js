@@ -63,6 +63,11 @@ export class SmartiAdapter {
 				// create conversation
 				SystemLogger.debug(`Conversation not found for room ${ message.rid }, create a new conversation.`);
 				const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+				if (room.t === 'd') {
+					return; // we'll not sync direct messages to Smarti for the time being
+				}
+
 				conversationId = SmartiAdapter._createAndPostConversation(room).id;
 			}
 
