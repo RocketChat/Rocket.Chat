@@ -34,7 +34,7 @@
 .create-thread-sidebar-button {
 	width: 82.5%;
 	min-height: 24px;
-	margin: -8px auto 20px;
+	margin: 0 auto 20px;
 
 	font-size: 100%;
 }
