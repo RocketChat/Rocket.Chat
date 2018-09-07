@@ -28,8 +28,8 @@ export function getUsages() {
 		},
 		{
 			$group:
-				{
-					_id: { uid: '$u._id', subType: '$t'},
+				{ // if the room contains a parentRoomId it is actually a thread, therefor marked as roomtype 'thread'
+					_id: { uid: '$u._id', subType: {$cond: [{$not: ['$parentRoomId']}, '$t', 'thread']}},
 					subs: { $sum: 1 }
 				}
 		},
@@ -72,8 +72,8 @@ export function getUsages() {
 		},
 		{
 			$group:
-				{
-					_id: { uid: '$u._id', msgRoom: '$msgRooms.t'},
+				{ // if the room contains a parentRoomId it is actually a thread, therefor marked as roomtype 'thread'
+					_id: { uid: '$u._id', msgRoom: {$cond: [{$not: ['$msgRooms.parentRoomId']}, '$msgRooms.t', 'thread']} },
 					messages: { $sum: 1 }
 				}
 		},
