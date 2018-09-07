@@ -1,6 +1,16 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {SystemLogger} from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 import { SmartiProxy, verbs } from '../SmartiProxy';
+
+let syncTimer = 0;
+
+function terminateCurrentSync() {
+	if (syncTimer) {
+		Meteor.clearInterval(syncTimer);
+	}
+
+	syncTimer = 0;
+}
 
 /**
  * The SmartiAdpater can be understood as an interface for all interaction with Smarti triggered by Rocket.Chat server.
@@ -47,51 +57,67 @@ export class SmartiAdapter {
 	 * }
 	 */
 	static onMessage(message) {
+		try {
+			let conversationId = SmartiAdapter.getConversationId(message.rid);
+			if (!conversationId) {
+				// create conversation
+				SystemLogger.debug(`Conversation not found for room ${ message.rid }, create a new conversation.`);
+				const room = RocketChat.models.Rooms.findOneById(message.rid);
 
-		let conversationId = SmartiAdapter.getConversationId(message.rid);
-		if (!conversationId) {
-			// create conversation
-			SystemLogger.debug(`Conversation not found for room ${ message.rid }, create a new conversation.`);
-			const room = RocketChat.models.Rooms.findOneById(message.rid);
-			conversationId = SmartiAdapter._createAndPostConversation(room).id;
-		}
-
-		const requestBodyMessage = {
-			'id': message._id,
-			'time': message.ts,
-			'origin': 'User', //user.type,
-			'content': message.msg,
-			'user': {
-				'id': message.u._id
-			},
-			'metadata': {}
-			//,"private" : false
-		};
-
-		if (message.origin === 'smartiWidget') {
-			requestBodyMessage.metadata.skipAnalysis = true;
-		}
-
-		SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }, perform conversation update.`);
-		let request_result;
-		if (message.editedAt) {
-			SystemLogger.debug('Trying to update existing message...');
-			// update existing message
-			request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
-				// 404 is expected if message doesn't exist
-				if (!error.response || error.response.statusCode === 404) {
-					SystemLogger.debug('Message not found!');
-					SystemLogger.debug('Adding new message to conversation...');
-					request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+				if (room.t === 'd') {
+					return; // we'll not sync direct messages to Smarti for the time being
 				}
-			});
-		} else {
-			SystemLogger.debug('Adding new message to conversation...');
-			request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
-		}
 
-		if (request_result) {
-			SmartiAdapter._getAnalysisResult(message.rid, conversationId);
+				conversationId = SmartiAdapter._createAndPostConversation(room).id;
+			}
+
+			const requestBodyMessage = {
+				'id': message._id,
+				'time': message.ts,
+				'origin': 'User', //user.type,
+				'content': message.msg,
+				'user': {
+					'id': message.u._id
+				},
+				'metadata': {}
+				//,"private" : false
+			};
+
+			if (message.origin === 'smartiWidget') {
+				requestBodyMessage.metadata.skipAnalysis = true;
+			}
+
+			SystemLogger.debug(`Conversation ${ conversationId } found for channel ${ message.rid }, perform conversation update.`);
+			let request_result;
+			if (message.editedAt) {
+				SystemLogger.debug('Trying to update existing message...');
+				// update existing message
+				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
+					// 404 is expected if message doesn't exist
+					if (!error.response || error.response.statusCode === 404) {
+						SystemLogger.debug('Message not found!');
+						SystemLogger.debug('Adding new message to conversation...');
+						request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+					}
+				});
+			} else {
+				SystemLogger.debug('Adding new message to conversation...');
+				request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+			}
+
+			if (request_result) {
+				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
+				SmartiAdapter._getAnalysisResult(message.rid, conversationId);
+				//autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
+				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
+			} else {
+				// if the message could not be synced this time, re-synch the complete room next time
+				Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
+			}
+		} catch (e) {
+			// Something unexpected happened - maybe Smarti is not available at all.
+			// we at least cannot consider the sync successful
+			Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 		}
 	}
 
@@ -220,6 +246,8 @@ export class SmartiAdapter {
 	 * @param {boolean} ignoreSyncFlag - if 'true' the dirty flag for outdated rooms and messages will be ignored. If 'false' only rooms and messages are synchronized that are marked as outdated.
 	 */
 	static resync(ignoreSyncFlag) {
+		terminateCurrentSync();
+
 		SystemLogger.info('Smarti resync triggered');
 
 		if (!SmartiAdapter._smartiAvailable()) {
@@ -231,31 +259,78 @@ export class SmartiAdapter {
 			SmartiAdapter._clearMapping();
 		}
 
-		let query = {};
+		let syncModeQuery = {};
 		if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-			query = { $or: [{ outOfSync: true }, { outOfSync: { $exists: false } }] };
+			syncModeQuery = { $or: [{ outOfSync: true }, { outOfSync: { $exists: false } }] };
 		}
 
-		query.t = 'c';
-		const requests = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of public channels to sync: ', requests.length);
-		for (let i = 0; i < requests.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(requests[i]._id, ignoreSyncFlag));
+		const roomTypesQuery = {
+			$or: [
+				{ t: 'c' },
+				{ t: 'p' },
+				{ t: 'l' }
+			]
+		};
+
+		const query = { $and: [roomTypesQuery, syncModeQuery] };
+		const roomProperties = {
+			_id: 1,
+			name: 1,
+			closedAt: 1,
+			outOfSync: 1,
+			u: 1,
+			v: 1
+		};
+
+		const options = { fields: roomProperties, sort: { _id: 1 } };
+
+		const batchSize = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Batchsize')) || 10;
+		const batchTimeout = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout')) || 1000;
+
+		// determine the count once in order to have a maximum limit of batches - some healthy paranoia
+		const totalCount = RocketChat.models.Rooms.model.find(query, options).count();
+		const maxBatches = totalCount / batchSize + 1;
+		let batchCount = 0;
+		let resyncFailed = false;
+
+		// Meteor cursors are not Mongo-cursors: No native paging is possible => do it manually
+		const roomsCursor = RocketChat.models.Rooms.model.find(query, options);
+
+		// unfortunately, there were memory garbage collection issues when using the intended
+		// paging with skip and limit inside the syncBatch function (see previous revision)
+		// => Fetch all the rooms upfront and page in the fetched array of rooms.
+		const rooms = roomsCursor.fetch();
+
+		function getNextBatch() {
+			const begin = batchCount * batchSize;
+			const end = begin + batchSize;
+			batchCount++;
+
+			return rooms.slice(begin, end);
 		}
 
-		query.t = 'p';
-		const topics = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of private groups to sync: ', topics.length);
-		for (let i = 0; i < topics.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(topics[i]._id, ignoreSyncFlag));
+		function syncBatch() {
+			const roomsBatch = getNextBatch();
+			// trigger the syncronisation for the whole batch
+			roomsBatch.forEach((room) => {
+				SystemLogger.debug('Smarti syncing', room.name);
+				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
+			});
+
+			if (roomsBatch.length === 0) {
+				SystemLogger.success('Sync with Smarti completed');
+				terminateCurrentSync();
+				return;
+			}
+
+			if ((batchCount > maxBatches) || resyncFailed) {
+				SystemLogger.error('Sync with Smarti was not successful - try a delta-sync');
+				terminateCurrentSync();
+				return;
+			}
 		}
 
-		query.t = 'l';
-		const livechat = RocketChat.models.Rooms.model.find(query).fetch();
-		SystemLogger.info('Number of livechats to sync: ', livechat.length);
-		for (let i = 0; i < livechat.length; i++) {
-			Meteor.defer(() => SmartiAdapter._tryResync(livechat[i]._id, ignoreSyncFlag));
-		}
+		syncTimer = Meteor.setInterval(syncBatch, batchTimeout);
 
 		return {
 			message: 'sync-triggered-successfully'
@@ -278,53 +353,51 @@ export class SmartiAdapter {
 	 * @param {String} rid - the id of the room to sync
 	 * @param {boolean} ignoreSyncFlag @see resync(ignoreSyncFlag)
 	 */
-	static _tryResync(rid, ignoreSyncFlag) {
+	static _tryResync(room, ignoreSyncFlag) {
+		try {
+			SystemLogger.debug('Sync messages for room: ', room._id);
 
-		SystemLogger.debug('Sync messages for room: ', rid);
+			const limit = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Message_Limit')) || 1000;
+			const messageFindOptions = { sort: { ts: 1 }, limit };
 
-		// only resync rooms containing outdated messages, if a delta sync is requested
-		const room = RocketChat.models.Rooms.findOneById(rid);
-		if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-			const unsync = RocketChat.models.Messages.find({ lastSync: { $exists: false }, rid, t: { $exists: false } }).fetch();
-			if (unsync.length === 0 && !room.outOfSync) {
-				SystemLogger.debug('Room is already in sync');
-				return true;
-			} else {
-				SystemLogger.debug('Messages out of sync: ', unsync.length);
-				// HACK: as we won't use the dirty flag for now, make sure the delta sync is not executed
-				return true;
+			// only resync rooms containing outdated messages, if a delta sync is requested
+			if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
+				const unsync = RocketChat.models.Messages.find({ lastSync: { $exists: false }, rid: room._id, t: { $exists: false } }, messageFindOptions).count();
+				if (unsync === 0) {
+					SystemLogger.debug('Room is already in sync');
+					SmartiAdapter._markRoomAsSynced(room._id); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
+					return true;
+				} else {
+					SystemLogger.debug('Messages out of sync: ', unsync.length);
+				}
 			}
+
+			// delete convervation from Smarti, if already exists
+			const conversationId = SmartiAdapter.getConversationId(room._id);
+			if (conversationId) {
+				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
+				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`, null);
+			}
+
+			// get the messages of the room and create a conversation from it
+			const messages = RocketChat.models.Messages.find({ rid: room._id, t: { $exists: false } }, messageFindOptions).fetch();
+			const newSmartiConversation = SmartiAdapter._createAndPostConversation(room, messages);
+
+			// get the analysis result (synchronously), update the cache and notify rooms
+			// const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ newSmartiConversation.id }/analysis`);
+			// SmartiAdapter.analysisCompleted(room._id, newSmartiConversation.id, analysisResult);
+			SystemLogger.debug(`Smarti analysis completed for conversation ${ newSmartiConversation.id }`);
+
+			for (let i = 0; i < messages.length; i++) {
+				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(messages[i]._id));
+			}
+			SmartiAdapter._markRoomAsSynced(room._id);
+
+			// finally it's done
+			return true;
+		} catch (e) {
+			return false;
 		}
-
-		// delete convervation from Smarti, if already exists
-		const conversationId = SmartiAdapter.getConversationId(rid);
-		if (conversationId) {
-			SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
-			SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`, null);
-		}
-
-		// get the messages of the room and create a conversation from it
-		let messages;
-		if (room.closedAt) {
-			messages = RocketChat.models.Messages.find({ rid, ts: { $lt: room.closedAt }, t: { $exists: false } }, { sort: { ts: 1 } }).fetch();
-		} else {
-			messages = RocketChat.models.Messages.find({ rid, t: { $exists: false } }, { sort: { ts: 1 } }).fetch();
-		}
-		const newSmartiConversation = SmartiAdapter._createAndPostConversation(room, messages);
-
-		// get the analysis result (synchronously), update the cache and notify rooms
-		// const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ newSmartiConversation.id }/analysis`);
-		// SmartiAdapter.analysisCompleted(rid, newSmartiConversation.id, analysisResult);
-		SystemLogger.debug(`Smarti analysis completed for conversation ${ newSmartiConversation.id }`);
-
-		for (let i = 0; i < messages.length; i++) {
-			Meteor.defer(() => SmartiAdapter._markMessageAsSynced(messages[i]._id));
-		}
-		SmartiAdapter._markRoomAsSynced(rid);
-
-		// finally it's done
-		SystemLogger.debug('Room Id: ', rid, ' is in sync now');
-		return true;
 	}
 
 	/**
@@ -416,16 +489,8 @@ export class SmartiAdapter {
 		return supportArea;
 	}
 
-	/*
-		Commented the resync sstatus cache since this lead to issues
-		in the cache-sync of the base model:
-		It seems as if the updates performed interfere with updates to the same collection
-		triggered in Rooms.js(incMsgCountAndSetLastMessageById())
-		Todo: Find a non-concurrent way of caching the sync status
-	*/
 	static _markMessageAsSynced(messageId) {
 		SystemLogger.debug('_markMessageAsSynced', messageId);
-		/* Todo: Find a non-concurrent way of caching the sync status
 
 		const messageDB = RocketChat.models.Messages;
 		const message = messageDB.findOneById(messageId);
@@ -442,12 +507,10 @@ export class SmartiAdapter {
 		} else {
 			SystemLogger.debug('Message Id: ', messageId, ' can not be synced');
 		}
-		*/
 	}
 
 	static _markRoomAsSynced(rid) {
 		SystemLogger.debug('_markRoomAsSynced', rid);
-		/* Todo: Find a non-concurrent way of caching the sync status
 		RocketChat.models.Rooms.model.update(
 			{ _id: rid },
 			{
@@ -455,13 +518,11 @@ export class SmartiAdapter {
 					outOfSync: false
 				}
 			});
-		SystemLogger.debug('Room Id: ', rid, ' is in sync');
-		*/
+		SystemLogger.debug('Room Id: ', rid, ' is in sync now');
 	}
 
 	static _markRoomAsUnsynced(rid) {
 		SystemLogger.debug('_markRoomAsUnsynced', rid);
-		/* Todo: Find a non-concurrent way of caching the sync status
 		RocketChat.models.Rooms.model.update(
 			{ _id: rid },
 			{
@@ -470,7 +531,6 @@ export class SmartiAdapter {
 				}
 			});
 		SystemLogger.debug('Room Id: ', rid, ' is out of sync');
-		*/
 	}
 
 	static _updateMapping(roomId, conversationId) {
@@ -507,7 +567,6 @@ export class SmartiAdapter {
 			if (error.statusCode !== 200) {
 				const e = new Meteor.Error('Smarti not reachable!');
 				SystemLogger.error('Stop synchronizing with Smarti immediately:', e);
-				return false;
 			}
 		});
 		if ('UP' !== JSON.parse(resp).status) {

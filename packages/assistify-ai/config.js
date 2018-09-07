@@ -82,18 +82,45 @@ Meteor.startup(() => {
 				i18nDescription: 'Assistify_AI_RocketChat_Callback_URL_Description'
 			});
 
+			this.add('Assistify_AI_Resync', 'triggerResync', {
+				type: 'action',
+				i18nDescription: 'Assistify_AI_Resync_Full_Description',
+				actionText: 'Assistify_AI_Resync_Text',
+				sorter: 99
+			});
+
 			this.add('Assistify_AI_Resync_Full', 'triggerFullResync', {
 				type: 'action',
 				i18nLabel: 'Assistify_AI_Resync_Full',
 				i18nDescription: 'Assistify_AI_Resync_Full_Description',
-				actionText: 'Assistify_AI_Resync_Full_Text'
+				actionText: 'Assistify_AI_Resync_Full_Text',
+				sorter: 100
+			});
+
+			this.add('Assistify_AI_Resync_Batchsize', 10, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Assistify_AI_Resync_Batchsize'
+			});
+
+			this.add('Assistify_AI_Resync_Batch_Timeout', 1000, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Assistify_AI_Resync_Batch_Timeout'
+			});
+
+			this.add('Assistify_AI_Resync_Message_Limit', 1000, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Assistify_AI_Resync_Message_Limit'
 			});
 
 			this.add('Assistify_AI_Smarti_Widget_i18n', '', {
 				type: 'code',
 				public: true,
 				i18nLabel: 'Assistify_AI_Smarti_Widget_i18n',
-				i18nDescription: 'Assistify_AI_Smarti_Widget_i18n_Description'
+				i18nDescription: 'Assistify_AI_Smarti_Widget_i18n_Description',
+				sorter: 200
 			});
 		});
 	};
