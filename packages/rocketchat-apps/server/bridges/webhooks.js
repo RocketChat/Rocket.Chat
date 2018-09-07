@@ -85,11 +85,16 @@ export class AppWebhooksBridge {
 				privateHash: req._privateHash,
 			};
 
-			this.orch.getManager().getWebhookManager().executeWebhook(appId, webhook.path, request).then(({ status, headers = {}, content }) => {
-				res.set(headers);
-				res.status(status);
-				res.send(content);
-			});
+			this.orch.getManager().getWebhookManager().executeWebhook(appId, webhook.path, request)
+				.then(({ status, headers = {}, content }) => {
+					res.set(headers);
+					res.status(status);
+					res.send(content);
+				})
+				.catch((reason) => {
+					// Should we handle this as an error?
+					res.status(500).send(reason.message);
+				});
 		};
 	}
 }
