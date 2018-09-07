@@ -279,8 +279,8 @@ export class SmartiAdapter {
 
 		const options = { fields: roomProperties, sort: { _id: 1 } };
 
-		const batchSize = RocketChat.settings.get('Assistify_AI_Resync_Batchsize') || 10;
-		const batchTimeout = RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout') || 1000;
+		const batchSize = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Batchsize')) || 10;
+		const batchTimeout = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout')) || 1000;
 
 		// determine the count once in order to have a maximum limit of batches - some healthy paranoia
 		const totalCount = RocketChat.models.Rooms.model.find(query, options).count();
