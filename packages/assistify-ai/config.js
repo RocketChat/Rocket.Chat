@@ -101,6 +101,12 @@ Meteor.startup(() => {
 				i18nLabel: 'Assistify_AI_Resync_Batch_Timeout'
 			});
 
+			this.add('Assistify_AI_Resync_Message_Limit', '1000', {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Assistify_AI_Resync_Message_Limit'
+			});
+
 			this.add('Assistify_AI_Smarti_Widget_i18n', '', {
 				type: 'code',
 				public: true,

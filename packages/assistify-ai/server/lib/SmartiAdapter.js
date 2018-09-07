@@ -1,5 +1,5 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {SystemLogger} from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 import { SmartiProxy, verbs } from '../SmartiProxy';
 
 let syncTimer = 0;
@@ -60,7 +60,7 @@ export class SmartiAdapter {
 		try {
 			let conversationId = SmartiAdapter.getConversationId(message.rid);
 			if (!conversationId) {
-			// create conversation
+				// create conversation
 				SystemLogger.debug(`Conversation not found for room ${ message.rid }, create a new conversation.`);
 				const room = RocketChat.models.Rooms.findOneById(message.rid);
 				conversationId = SmartiAdapter._createAndPostConversation(room).id;
@@ -75,7 +75,7 @@ export class SmartiAdapter {
 					'id': message.u._id
 				},
 				'metadata': {}
-			//,"private" : false
+				//,"private" : false
 			};
 
 			if (message.origin === 'smartiWidget') {
@@ -88,7 +88,7 @@ export class SmartiAdapter {
 				SystemLogger.debug('Trying to update existing message...');
 				// update existing message
 				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
-				// 404 is expected if message doesn't exist
+					// 404 is expected if message doesn't exist
 					if (!error.response || error.response.statusCode === 404) {
 						SystemLogger.debug('Message not found!');
 						SystemLogger.debug('Adding new message to conversation...');
@@ -106,12 +106,12 @@ export class SmartiAdapter {
 				//autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
 			} else {
-			// if the message could not be synced this time, re-synch the complete room next time
+				// if the message could not be synced this time, re-synch the complete room next time
 				Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 			}
 		} catch (e) {
-		// Something unexpected happened - maybe Smarti is not available at all.
-		// we at least cannot consider the sync successful
+			// Something unexpected happened - maybe Smarti is not available at all.
+			// we at least cannot consider the sync successful
 			Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 		}
 	}
@@ -261,47 +261,58 @@ export class SmartiAdapter {
 
 		const roomTypesQuery = {
 			$or: [
-				{t: 'c'},
-				{t: 'p'},
-				{t: 'l'}
+				{ t: 'c' },
+				{ t: 'p' },
+				{ t: 'l' }
 			]
 		};
 
-		const query = {$and: [roomTypesQuery, syncModeQuery]};
-		const options = {fields: {_id: 1, name: 1}, sort: {_id: 1}};
+		const query = { $and: [roomTypesQuery, syncModeQuery] };
+		const roomProperties = {
+			_id: 1,
+			name: 1,
+			closedAt: 1,
+			outOfSync: 1,
+			u: 1,
+			v: 1
+		};
 
-		// Meteor cursors are not Mongo-cursors: No native paging is possible => do it manually
+		const options = { fields: roomProperties, sort: { _id: 1 } };
 
 		const batchSize = RocketChat.settings.get('Assistify_AI_Resync_Batchsize') || 10;
 		const batchTimeout = RocketChat.settings.get('Assistify_AI_Resync_Batch_Timeout') || 1000;
 
 		// determine the count once in order to have a maximum limit of batches - some healthy paranoia
 		const totalCount = RocketChat.models.Rooms.model.find(query, options).count();
-		const maxBatches = totalCount / batchSize;
+		const maxBatches = totalCount / batchSize + 1;
 		let batchCount = 0;
 		let resyncFailed = false;
 
+		// Meteor cursors are not Mongo-cursors: No native paging is possible => do it manually
+		const roomsCursor = RocketChat.models.Rooms.model.find(query, options);
+
+		// unfortunately, there were memory garbage collection issues when using the intended
+		// paging with skip and limit inside the syncBatch function (see previous revision)
+		// => Fetch all the rooms upfront and page in the fetched array of rooms.
+		const rooms = roomsCursor.fetch();
+
+		function getNextBatch() {
+			const begin = batchCount * batchSize;
+			const end = begin + batchSize;
+			batchCount++;
+
+			return rooms.slice(begin, end);
+		}
+
 		function syncBatch() {
-			const batchOptions = JSON.parse(JSON.stringify(options)); // deep copy
-			batchOptions.limit = batchSize;
-
-			// Since the data is always fetched within the below function, we don't need to skip anything...
-			// if we are in the delta-sync-mode: We'll mark those rooms synced during the next lines and thus
-			// exclude them with the next fetch().
-			// If we perform a full sync, we need to skip the items already synced in this process
-			if (ignoreSyncFlag) {
-				batchOptions.skip = batchCount * batchSize;
-			}
-
-			const roomsCursor = RocketChat.models.Rooms.model.find(query, batchOptions);
-			const roomsBatch = roomsCursor.fetch();
+			const roomsBatch = getNextBatch();
 			// trigger the syncronisation for the whole batch
-			roomsBatch.forEach((room)=>{
+			roomsBatch.forEach((room) => {
 				SystemLogger.debug('Smarti syncing', room.name);
-				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room._id, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
+				resyncFailed = resyncFailed || !SmartiAdapter._tryResync(room, ignoreSyncFlag); // we're in a loop. We should not process the next item if an earlier one failed
 			});
 
-			if (roomsBatch.length < batchSize)	{
+			if (roomsBatch.length === 0) {
 				SystemLogger.success('Sync with Smarti completed');
 				terminateCurrentSync();
 				return;
@@ -312,8 +323,6 @@ export class SmartiAdapter {
 				terminateCurrentSync();
 				return;
 			}
-
-			batchCount++;
 		}
 
 		syncTimer = Meteor.setInterval(syncBatch, batchTimeout);
@@ -339,24 +348,19 @@ export class SmartiAdapter {
 	 * @param {String} rid - the id of the room to sync
 	 * @param {boolean} ignoreSyncFlag @see resync(ignoreSyncFlag)
 	 */
-	static _tryResync(rid, ignoreSyncFlag) {
+	static _tryResync(room, ignoreSyncFlag) {
 		try {
-			SystemLogger.debug('Sync messages for room: ', rid);
+			SystemLogger.debug('Sync messages for room: ', room._id);
+
+			const limit = parseInt(RocketChat.settings.get('Assistify_AI_Resync_Message_Limit')) || 1000;
+			const messageFindOptions = { sort: { ts: 1 }, limit };
 
 			// only resync rooms containing outdated messages, if a delta sync is requested
-			const roomProperties = {
-				_id: 1,
-				closedAt:1,
-				outOfSync: 1,
-				u: 1,
-				v: 1
-			};
-			const room = RocketChat.models.Rooms.findOneById(rid, {fields: roomProperties});
 			if (!ignoreSyncFlag || ignoreSyncFlag !== true) {
-				const unsync = RocketChat.models.Messages.find({ lastSync: { $exists: false }, rid, t: { $exists: false } }).count();
+				const unsync = RocketChat.models.Messages.find({ lastSync: { $exists: false }, rid: room._id, t: { $exists: false } }, messageFindOptions).count();
 				if (unsync === 0) {
 					SystemLogger.debug('Room is already in sync');
-					SmartiAdapter._markRoomAsSynced(rid); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
+					SmartiAdapter._markRoomAsSynced(room._id); // this method was asked to resync, but there's nothing to be done => update the sync-metadata
 					return true;
 				} else {
 					SystemLogger.debug('Messages out of sync: ', unsync.length);
@@ -364,28 +368,27 @@ export class SmartiAdapter {
 			}
 
 			// delete convervation from Smarti, if already exists
-			const conversationId = SmartiAdapter.getConversationId(rid);
+			const conversationId = SmartiAdapter.getConversationId(room._id);
 			if (conversationId) {
 				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
 				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`, null);
 			}
 
 			// get the messages of the room and create a conversation from it
-			const messages = RocketChat.models.Messages.find({ rid, t: { $exists: false } }, { sort: { ts: 1 } }).fetch();
+			const messages = RocketChat.models.Messages.find({ rid: room._id, t: { $exists: false } }, messageFindOptions).fetch();
 			const newSmartiConversation = SmartiAdapter._createAndPostConversation(room, messages);
 
 			// get the analysis result (synchronously), update the cache and notify rooms
 			// const analysisResult = SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ newSmartiConversation.id }/analysis`);
-			// SmartiAdapter.analysisCompleted(rid, newSmartiConversation.id, analysisResult);
+			// SmartiAdapter.analysisCompleted(room._id, newSmartiConversation.id, analysisResult);
 			SystemLogger.debug(`Smarti analysis completed for conversation ${ newSmartiConversation.id }`);
 
 			for (let i = 0; i < messages.length; i++) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(messages[i]._id));
 			}
-			SmartiAdapter._markRoomAsSynced(rid);
+			SmartiAdapter._markRoomAsSynced(room._id);
 
 			// finally it's done
-			SystemLogger.debug('Room Id: ', rid, ' is in sync now');
 			return true;
 		} catch (e) {
 			return false;
@@ -510,7 +513,7 @@ export class SmartiAdapter {
 					outOfSync: false
 				}
 			});
-		SystemLogger.debug('Room Id: ', rid, ' is in sync');
+		SystemLogger.debug('Room Id: ', rid, ' is in sync now');
 	}
 
 	static _markRoomAsUnsynced(rid) {
