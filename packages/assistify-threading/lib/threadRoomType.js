@@ -8,11 +8,12 @@ export class ThreadRoomType extends RoomTypeConfig {
 			label: 'Threads'
 		});
 
+		// we need a custom template in order to have a custom query showing the subscriptions to threads
 		this.customTemplate = 'ThreadList';
 	}
 
 	condition() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads');
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }
 

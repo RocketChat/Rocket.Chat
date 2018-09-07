@@ -1,4 +1,5 @@
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 /* globals menu*/
 
@@ -13,6 +14,10 @@ Template.sideNav.helpers({
 
 	footer() {
 		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
+	},
+
+	threadingFromSidebar() {
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
 	},
 
 	roomType() {
@@ -59,6 +64,10 @@ Template.sideNav.events({
 
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
+	},
+
+	'click .js-create-thread'() {
+		return FlowRouter.go('create-thread');
 	}
 });
 

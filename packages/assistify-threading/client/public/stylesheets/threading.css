@@ -1,26 +1,25 @@
 .create-thread textarea {
-		width: 100%;
+	width: 100%;
 
-		height: 45px;
-		min-height: 80px;
+	height: 45px;
+	min-height: 80px;
+	max-height: 250px;
 
-	    padding: 0.75rem 1rem;
+	padding: 0.75rem 1rem;
 
-		font: inherit;
+	resize: vertical;
 
-		line-height: 20px;
+	font: inherit;
 
-		resize: vertical;
-
-		max-height: 250px;
+	line-height: 20px;
 }
 
 .content .threading-wrapper {
 	max-width: 650px;
-    margin-top: 50px;
+	margin-top: 50px;
 }
 
-.create-thread .action-link {
+.create-thread .action-link {
 	cursor: pointer;
 }
 
@@ -29,26 +28,13 @@
 }
 
 .create-thread .full-modal__back-text {
-	font-size: 11px; /*no clue, why we have to specify this explicitly. Dirty hack.*/
+	font-size: 11px; /* no clue, why we have to specify this explicitly. Dirty hack. */
 }
 
-.create-thread-sidebar {
-	margin-bottom: 22px;
-}
+.create-thread-sidebar-button {
+	width: 82.5%;
+	min-height: 24px;
+	margin: 0 auto 20px;
 
-.create-thread-sidebar button {
 	font-size: 100%;
-	margin-top: -8px;
-	margin-right: auto;
-	margin-left: auto;
-	width: 100%;
-    min-height: 24px;
-}
-
-.create-thread-sidebar .rooms-list__list {
-	margin-bottom: 0px;
-}
-
-.create-thread-sidebar .rooms-list__empty-room {
-	margin-bottom: 6px;
 }

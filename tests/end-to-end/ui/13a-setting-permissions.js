@@ -35,6 +35,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			openAdminView();
 			admin.permissionsLink.waitForVisible(5000);
 			admin.permissionsLink.click();
+			admin.rolesSettingPermissionsButton.waitForVisible(5000);
 			admin.rolesSettingPermissionsButton.click();
 		});
 

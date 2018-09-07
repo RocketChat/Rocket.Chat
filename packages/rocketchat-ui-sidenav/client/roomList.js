@@ -61,7 +61,7 @@ Template.roomList.helpers({
 			}
 
 			// if we display threads as a separate group, we should hide them from the other lists
-			if (RocketChat.getUserPreference(user, 'sidebarShowThreads')) {
+			if (RocketChat.getUserPreference(user, 'sidebarGroupByType')) {
 				query.parentRoomId = {$exists: false};
 			}
 
@@ -92,7 +92,6 @@ Template.roomList.helpers({
 
 		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
 	},
-
 	roomType(room) {
 		if (room.header || room.identifier) {
 			return `type-${ room.header || room.identifier }`;

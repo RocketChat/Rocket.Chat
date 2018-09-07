@@ -1,11 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-
-Template.ThreadList.events({
-	'click .js-create-thread'() {
-		return FlowRouter.go('create-thread');
-	}
-});
-
 Template.ThreadList.onCreated(function() {
 	this.threadSubscriptions = new ReactiveVar([]);
 });
