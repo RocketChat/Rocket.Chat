@@ -3,8 +3,8 @@ RocketChat.API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() 
 
 	if (this.request.headers['x-auth-token'] && this.request.headers['x-user-id']) {
 		user = RocketChat.models.Users.findOne({
-			'_id': this.request.headers['x-user-id'],
-			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(this.request.headers['x-auth-token'])
+			_id: this.request.headers['x-user-id'],
+			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(this.request.headers['x-auth-token']),
 		});
 	}
 

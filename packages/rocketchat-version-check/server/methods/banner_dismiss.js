@@ -5,7 +5,7 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.removeBannerById(this.userId, {
-			id
+			id,
 		});
-	}
+	},
 });

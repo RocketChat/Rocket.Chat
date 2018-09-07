@@ -24,4 +24,4 @@ function MapView(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', MapView, RocketChat.callbacks.priority.HIGH);
+RocketChat.callbacks.add('renderMessage', MapView, RocketChat.callbacks.priority.HIGH, 'mapview');

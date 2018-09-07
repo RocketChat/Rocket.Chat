@@ -6,8 +6,8 @@
 RocketChat.models.Users.setOperator = function(_id, operator) {
 	const update = {
 		$set: {
-			operator
-		}
+			operator,
+		},
 	};
 
 	return this.update(_id, update);
@@ -21,10 +21,10 @@ RocketChat.models.Users.findOnlineAgents = function() {
 	const query = {
 		status: {
 			$exists: true,
-			$ne: 'offline'
+			$ne: 'offline',
 		},
 		statusLivechat: 'available',
-		roles: 'livechat-agent'
+		roles: 'livechat-agent',
 	};
 
 	return this.find(query);
@@ -39,10 +39,10 @@ RocketChat.models.Users.findOneOnlineAgentByUsername = function(username) {
 		username,
 		status: {
 			$exists: true,
-			$ne: 'offline'
+			$ne: 'offline',
 		},
 		statusLivechat: 'available',
-		roles: 'livechat-agent'
+		roles: 'livechat-agent',
 	};
 
 	return this.findOne(query);
@@ -54,7 +54,7 @@ RocketChat.models.Users.findOneOnlineAgentByUsername = function(username) {
  */
 RocketChat.models.Users.findAgents = function() {
 	const query = {
-		roles: 'livechat-agent'
+		roles: 'livechat-agent',
 	};
 
 	return this.find(query);
@@ -69,13 +69,13 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
 	const query = {
 		status: {
 			$exists: true,
-			$ne: 'offline'
+			$ne: 'offline',
 		},
 		statusLivechat: 'available',
 		roles: 'livechat-agent',
 		username: {
-			$in: [].concat(userList)
-		}
+			$in: [].concat(userList),
+		},
 	};
 
 	return this.find(query);
@@ -89,10 +89,10 @@ RocketChat.models.Users.getNextAgent = function() {
 	const query = {
 		status: {
 			$exists: true,
-			$ne: 'offline'
+			$ne: 'offline',
 		},
 		statusLivechat: 'available',
-		roles: 'livechat-agent'
+		roles: 'livechat-agent',
 	};
 
 	const collectionObj = this.model.rawCollection();
@@ -100,20 +100,20 @@ RocketChat.models.Users.getNextAgent = function() {
 
 	const sort = {
 		livechatCount: 1,
-		username: 1
+		username: 1,
 	};
 
 	const update = {
 		$inc: {
-			livechatCount: 1
-		}
+			livechatCount: 1,
+		},
 	};
 
 	const user = findAndModify(query, sort, update);
 	if (user && user.value) {
 		return {
 			agentId: user.value._id,
-			username: user.value.username
+			username: user.value.username,
 		};
 	} else {
 		return null;
@@ -126,13 +126,13 @@ RocketChat.models.Users.getNextAgent = function() {
  */
 RocketChat.models.Users.setLivechatStatus = function(userId, status) {
 	const query = {
-		'_id': userId
+		_id: userId,
 	};
 
 	const update = {
 		$set: {
-			'statusLivechat': status
-		}
+			statusLivechat: status,
+		},
 	};
 
 	return this.update(query, update);
@@ -160,7 +160,7 @@ RocketChat.models.Users.openOffice = function() {
 
 RocketChat.models.Users.getAgentInfo = function(agentId) {
 	const query = {
-		_id: agentId
+		_id: agentId,
 	};
 
 	const options = {
@@ -168,8 +168,8 @@ RocketChat.models.Users.getAgentInfo = function(agentId) {
 			name: 1,
 			username: 1,
 			phone: 1,
-			customFields: 1
-		}
+			customFields: 1,
+		},
 	};
 
 	if (RocketChat.settings.get('Livechat_show_agent_email')) {

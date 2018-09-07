@@ -37,7 +37,7 @@ Template.livechatOfficeHours.helpers({
 		if (!Template.instance().enableOfficeHours.get()) {
 			return 'checked';
 		}
-	}
+	},
 });
 
 Template.livechatOfficeHours.events({
@@ -66,7 +66,7 @@ Template.livechatOfficeHours.events({
 		instance.dayVars[temp[0]][temp[1]].set(e.target.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
-		let value = e.currentTarget.value;
+		let { value } = e.currentTarget;
 		if (e.currentTarget.type === 'radio') {
 			value = value === 'true';
 			instance[e.currentTarget.name].set(value);
@@ -82,7 +82,7 @@ Template.livechatOfficeHours.events({
 				const start_utc = moment(day.start.get(), 'HH:mm').utc().format('HH:mm');
 				const finish_utc = moment(day.finish.get(), 'HH:mm').utc().format('HH:mm');
 
-				Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err /*,result*/) {
+				Meteor.call('livechat:saveOfficeHours', d, start_utc, finish_utc, day.open.get(), function(err /* ,result*/) {
 					if (err) {
 						return handleError(err);
 					}
@@ -90,13 +90,13 @@ Template.livechatOfficeHours.events({
 			}
 		}
 
-		RocketChat.settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/*, success*/) => {
+		RocketChat.settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
 			}
 			toastr.success(t('Office_hours_updated'));
 		});
-	}
+	},
 });
 
 Template.livechatOfficeHours.onCreated(function() {
@@ -104,38 +104,38 @@ Template.livechatOfficeHours.onCreated(function() {
 		Monday: {
 			start: new ReactiveVar('08:00'),
 			finish: new ReactiveVar('20:00'),
-			open: new ReactiveVar(true)
+			open: new ReactiveVar(true),
 		},
 		Tuesday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(true)
+			open: new ReactiveVar(true),
 		},
 		Wednesday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(true)
+			open: new ReactiveVar(true),
 		},
 		Thursday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(true)
+			open: new ReactiveVar(true),
 		},
 		Friday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(true)
+			open: new ReactiveVar(true),
 		},
 		Saturday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(false)
+			open: new ReactiveVar(false),
 		},
 		Sunday: {
 			start: new ReactiveVar('00:00'),
 			finish: new ReactiveVar('00:00'),
-			open: new ReactiveVar(false)
-		}
+			open: new ReactiveVar(false),
+		},
 	};
 
 	this.autorun(() => {

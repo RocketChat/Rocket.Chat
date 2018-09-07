@@ -23,7 +23,7 @@ export function messageContainsHighlight(message, highlights) {
 function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
-		//TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
+		// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 		RocketChat.models.Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	} else if (message.editedAt) {
@@ -45,7 +45,7 @@ function notifyUsersOnMessage(message, room) {
 		let toHere = false;
 		const mentionIds = [];
 		const highlightsIds = [];
-		const highlights = RocketChat.models.Subscriptions.findByRoomWithUserHighlights(room._id, { fields: {'userHighlights': 1, 'u._id': 1 }}).fetch();
+		const highlights = RocketChat.models.Subscriptions.findByRoomWithUserHighlights(room._id, { fields: { userHighlights: 1, 'u._id': 1 } }).fetch();
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {
 				if (!toAll && mention._id === 'all') {

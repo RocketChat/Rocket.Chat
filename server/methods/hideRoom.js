@@ -4,10 +4,10 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'hideRoom'
+				method: 'hideRoom',
 			});
 		}
 
 		return RocketChat.models.Subscriptions.hideByRoomIdAndUserId(rid, Meteor.userId());
-	}
+	},
 });

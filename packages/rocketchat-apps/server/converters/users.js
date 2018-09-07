@@ -1,4 +1,4 @@
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-ts-definition/users';
+import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -38,7 +38,7 @@ export class AppUsersConverter {
 			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
-			lastLoginAt: user.lastLogin
+			lastLoginAt: user.lastLogin,
 		};
 	}
 

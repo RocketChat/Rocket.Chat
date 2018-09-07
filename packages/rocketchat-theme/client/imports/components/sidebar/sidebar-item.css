@@ -100,6 +100,7 @@
 	&--unread,
 	&--mention {
 		color: var(--sidebar-item-unread-color);
+		font-weight: var(--sidebar-item-unread-font-weight);
 	}
 
 	&__popup-active {
@@ -111,7 +112,7 @@
 		overflow: hidden;
 		flex: 1;
 
-		margin: 0 -4px;
+		margin: 0 -2px;
 
 		color: inherit;
 
@@ -125,11 +126,25 @@
 		font-size: 1rem;
 		align-items: center;
 		fill: currentColor;
+
+		&-status {
+			&--online {
+				color: var(--status-online);
+			}
+
+			&--away {
+				color: var(--status-away);
+			}
+
+			&--busy {
+				color: var(--status-busy);
+			}
+		}
 	}
 
 	&__room-type {
 		display: flex;
-		color: currentColor;
+		fill: currentColor;
 
 		font-size: 0.6rem;
 	}
@@ -172,7 +187,7 @@
 
 		height: 20px;
 
-		margin: 0 4px;
+		margin: 0 2px;
 
 		color: var(--sidebar-item-unread-color);
 		border-radius: var(--sidebar-item-radius);
@@ -212,6 +227,7 @@
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		margin: 0 2px;
 	}
 
 	&__name {

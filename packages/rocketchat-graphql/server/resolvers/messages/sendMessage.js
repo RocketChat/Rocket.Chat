@@ -8,7 +8,7 @@ const resolver = {
 		sendMessage: authenticated((root, { channelId, directTo, content }, { user }) => {
 			const options = {
 				text: content,
-				channel: channelId || directTo
+				channel: channelId || directTo,
 			};
 
 			const messageReturn = processWebhookMessage(options, user)[0];
@@ -18,11 +18,11 @@ const resolver = {
 			}
 
 			return messageReturn.message;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };
