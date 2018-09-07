@@ -119,7 +119,7 @@ Meteor.startup(() => {
 				type: 'code',
 				public: true,
 				i18nLabel: 'Assistify_AI_Smarti_Widget_i18n',
-				i18nDescription: 'Assistify_AI_Smarti_Widget_i18n_Description',,
+				i18nDescription: 'Assistify_AI_Smarti_Widget_i18n_Description',
 				sorter: 200
 			});
 		});
