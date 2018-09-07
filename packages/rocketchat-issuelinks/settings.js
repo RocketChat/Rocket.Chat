@@ -13,7 +13,7 @@ RocketChat.settings.add('IssueLinks_RegExp', '/(?:^|\s|\n)(#[0-9]+)\b/g', {
 	i18nDescription: 'IssueLinks_RegExp_Description',
 	group: 'Message',
 	section: 'Issue_Links',
-	public: true
+	public: true,
 });
 
 RocketChat.settings.add('IssueLinks_Template', '', {
