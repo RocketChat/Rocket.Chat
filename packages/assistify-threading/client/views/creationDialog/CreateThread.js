@@ -260,6 +260,12 @@ Template.CreateThread.events({
 							return handleError(err);
 					}
 				}
+
+				// callback to enable tracking
+				Meteor.defer(() => {
+					RocketChat.callbacks.run('afterCreateThread');
+				});
+
 				FlowRouter.goToRoomById(result._id);
 			});
 		}
@@ -322,6 +328,17 @@ Template.CreateThread.onCreated(function() {
 	instance.debounceDropDown = _.debounce(() => {
 		instance.showDropDown.set('');
 	}, 200);
+
+	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
+	const callbackDefaults = RocketChat.callbacks.run('openThreadCreationScreen');
+	if (callbackDefaults) {
+		if (callbackDefaults.parentChannel) {
+			instance.parentChannel.set(callbackDefaults.parentChannel);
+		}
+		if (callbackDefaults.openingQuestion) {
+			instance.openingQuestion.set(callbackDefaults.openingQuestion);
+		}
+	}
 
 	instance.debounceValidateParentChannel = _.debounce((parentChannel) => {
 		if (!parentChannel) {

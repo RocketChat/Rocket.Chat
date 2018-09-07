@@ -78,6 +78,18 @@ if (!window._paq || window.ga) {
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-unarchive-room');
 
+	RocketChat.callbacks.add('openThreadCreationScreen', () => {
+		if (RocketChat.settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Thread creation dialog opened');
+		}
+	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-open-thread-creation-dialog');
+
+	RocketChat.callbacks.add('afterCreateThread', (owner, room) => {
+		if (RocketChat.settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Create thread', `${ room.name } (${ room._id })`);
+		}
+	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-after-create-thread');
+
 	//Users
 	//Track logins and associate user ids with piwik
 	(() => {
