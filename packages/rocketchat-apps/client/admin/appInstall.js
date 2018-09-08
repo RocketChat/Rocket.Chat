@@ -26,7 +26,7 @@ Template.appInstall.helpers({
 		const instance = Template.instance();
 
 		return !!instance.isUpdatingId.get();
-	}
+	},
 });
 
 Template.appInstall.onCreated(function() {
@@ -88,7 +88,7 @@ Template.appInstall.events({
 			return;
 		}
 
-		const files = $('#upload-app')[0].files;
+		const { files } = $('#upload-app')[0];
 		if (!(files instanceof FileList)) {
 			return;
 		}
@@ -129,5 +129,5 @@ Template.appInstall.events({
 		}
 
 		t.isInstalling.set(false);
-	}
+	},
 });

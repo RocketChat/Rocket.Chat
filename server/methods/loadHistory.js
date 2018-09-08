@@ -24,7 +24,7 @@ Meteor.methods({
 
 		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadHistory'
+				method: 'loadHistory',
 			});
 		}
 
@@ -37,10 +37,11 @@ Meteor.methods({
 
 		const canAnonymous = RocketChat.settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = RocketChat.authz.hasPermission(fromId, 'preview-c-room');
-		if (room.t === 'c' && !canAnonymous && !canPreview && room.usernames.indexOf(room.username) === -1) {
+
+		if (room.t === 'c' && !canAnonymous && !canPreview && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
 		return RocketChat.loadMessageHistory({ userId: fromId, rid, end, limit, ls });
-	}
+	},
 });

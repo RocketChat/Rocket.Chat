@@ -4,7 +4,7 @@ import {
 	FavoriteRoomType,
 	PrivateRoomType,
 	PublicRoomType,
-	UnreadRoomType
+	UnreadRoomType,
 } from '../lib/roomTypes';
 
 RocketChat.roomTypes.add(new UnreadRoomType());

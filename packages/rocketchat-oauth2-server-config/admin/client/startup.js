@@ -4,5 +4,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'discover',
 	permissionGranted() {
 		return RocketChat.authz.hasAllPermission('manage-oauth-apps');
-	}
+	},
 });

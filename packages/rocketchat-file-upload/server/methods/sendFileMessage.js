@@ -17,7 +17,7 @@ Meteor.methods({
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
 			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String)
+			msg: Match.Optional(String),
 		});
 
 		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
@@ -29,7 +29,7 @@ Meteor.methods({
 			type: 'file',
 			description: file.description,
 			title_link: fileUrl,
-			title_link_download: true
+			title_link_download: true,
 		};
 
 		if (/^image\/.+/.test(file.type)) {
@@ -59,10 +59,10 @@ Meteor.methods({
 			file: {
 				_id: file._id,
 				name: file.name,
-				type: file.type
+				type: file.type,
 			},
 			groupable: false,
-			attachments: [attachment]
+			attachments: [attachment],
 		}, msgData);
 
 		msg = Meteor.call('sendMessage', msg);
@@ -70,5 +70,5 @@ Meteor.methods({
 		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
 
 		return msg;
-	}
+	},
 });

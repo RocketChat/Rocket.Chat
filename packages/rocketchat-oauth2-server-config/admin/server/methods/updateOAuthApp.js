@@ -26,11 +26,11 @@ Meteor.methods({
 				_updatedAt: new Date,
 				_updatedBy: RocketChat.models.Users.findOne(this.userId, {
 					fields: {
-						username: 1
-					}
-				})
-			}
+						username: 1,
+					},
+				}),
+			},
 		});
 		return RocketChat.models.OAuthApps.findOne(applicationId);
-	}
+	},
 });
