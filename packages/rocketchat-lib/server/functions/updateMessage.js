@@ -1,4 +1,20 @@
 RocketChat.updateMessage = function(message, user) {
+	// For the Rocket.Chat Apps :)
+	if (message && Apps && Apps.isLoaded()) {
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedPrevent', message));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
+		}
+
+		let result;
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedExtend', message));
+		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
+
+		if (typeof result === 'object') {
+			message = Object.assign(message, result);
+		}
+	}
+
 	// If we keep history of edits, insert a new message to store history information
 	if (RocketChat.settings.get('Message_KeepHistory')) {
 		RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
