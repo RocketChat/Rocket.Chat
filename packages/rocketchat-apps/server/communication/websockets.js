@@ -1,4 +1,4 @@
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-ts-definition/AppStatus';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
