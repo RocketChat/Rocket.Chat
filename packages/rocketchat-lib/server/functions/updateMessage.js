@@ -38,6 +38,12 @@ RocketChat.updateMessage = function(message, user) {
 
 	const room = RocketChat.models.Rooms.findOneById(message.rid);
 
+	if (Apps && Apps.isLoaded()) {
+		// This returns a promise, but it won't mutate anything about the message
+		// so, we don't really care if it is successful or fails
+		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageUpdated', message);
+	}
+
 	Meteor.defer(function() {
 		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room, user._id);
 	});
