@@ -47,7 +47,7 @@ language_names = {
 	ka: ['Georgian', 'ქართული'],
 	de: ['German', 'Deutsch'],
 	'de-AT': ['German (Austria)', 'Östereichisches Deutsch'],
-	'de-informal': ['German (informal)', 'Deutsch (informell)'],
+	'de-IN': ['German (informal)', 'Deutsch (informell)'],
 	el: ['Greek', 'Ελληνικά'],
 	gn: ['Guaraní', 'Avañe\'ẽ'],
 	haw: ['Hawaiian', 'Ōlelo Hawaiʻi'],
