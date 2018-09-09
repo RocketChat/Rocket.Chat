@@ -8,12 +8,12 @@ Meteor.startup(function() {
 		async action() {
 			const message = this._arguments[1];
 			const attachment = message.attachments[0];
-			const file = message.file;
+			const { file } = message;
 			const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
 
 			const metaData = {
-				'name': `${ attachment.title }`,
-				'mimeType': `${ file.type }`
+				name: `${ attachment.title }`,
+				mimeType: `${ file.type }`,
 			};
 
 			const fileRequest = new XMLHttpRequest();
@@ -29,12 +29,12 @@ Meteor.startup(function() {
 							return toastr.error(t(error.error));
 						} else if (error) {
 							Meteor.loginWithGoogle({
-								requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+								requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 							}, function(error) {
 								if (error) {
 									return;
 								}
-								Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
+								Meteor.call('uploadFileToDrive', { fileData, metaData }, (error, status) => {
 									if (error) {
 										return toastr.error(t(error.error));
 									} else if (status === false) {
@@ -45,7 +45,7 @@ Meteor.startup(function() {
 								});
 							});
 						} else {
-							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error) => {
+							Meteor.call('uploadFileToDrive', { fileData, metaData }, (error) => {
 								if (error) {
 									return toastr.error(t(error.error));
 								} else if (status === false) {
@@ -63,7 +63,7 @@ Meteor.startup(function() {
 		},
 
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
 			if (!message.file) {
@@ -75,6 +75,6 @@ Meteor.startup(function() {
 			return RocketChat.settings.get('Google_Drive_Access');
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 });

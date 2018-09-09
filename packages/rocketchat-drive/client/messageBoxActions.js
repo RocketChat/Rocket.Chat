@@ -30,7 +30,7 @@ Meteor.startup(function() {
 							return toastr.error(t('Failed_to_fetch_file_from_google_drive'));
 						} else {
 
-							const blob = new Blob([response.data], {type: (!file.mimeType.match(/application\/vnd\.google-apps\./i) ? file.mimeType : 'application/pdf')});
+							const blob = new Blob([response.data], { type: (!file.mimeType.match(/application\/vnd\.google-apps\./i) ? file.mimeType : 'application/pdf') });
 							// converting to file object
 							blob.lastModified = file.lastEditedUtc;
 							blob.lastModifiedDate = new Date(file.lastEditedUtc * 1000);
@@ -55,14 +55,14 @@ Meteor.startup(function() {
 								confirmButtonText: t('Send'),
 								cancelButtonText: t('Cancel'),
 								html: true,
-								onRendered: () => $('#file-name').focus()
+								onRendered: () => $('#file-name').focus(),
 							}, function(isConfirm) {
 								const record = {
 									name: document.getElementById('file-name').value || blob.name,
 									size: blob.size,
 									type: blob.type,
 									rid: roomId,
-									description: document.getElementById('file-description').value
+									description: document.getElementById('file-description').value,
 								};
 
 								modal.close();
@@ -76,7 +76,7 @@ Meteor.startup(function() {
 								uploading.push({
 									id: upload.id,
 									name: upload.getFileName(),
-									percentage: 0
+									percentage: 0,
 								});
 
 								Session.set('uploading', uploading);
@@ -84,7 +84,7 @@ Meteor.startup(function() {
 								upload.onProgress = function(progress) {
 									uploading = Session.get('uploading');
 
-									const item = _.findWhere(uploading, {id: upload.id});
+									const item = _.findWhere(uploading, { id: upload.id });
 									if (item != null) {
 										item.percentage = Math.round(progress * 100) || 0;
 										return Session.set('uploading', uploading);
@@ -106,7 +106,7 @@ Meteor.startup(function() {
 										} else {
 											uploading.push({
 												error: error.error,
-												percentage: 0
+												percentage: 0,
 											});
 										}
 
@@ -120,7 +120,7 @@ Meteor.startup(function() {
 												const uploading = Session.get('uploading');
 												if (uploading !== null) {
 													const item = _.findWhere(uploading, {
-														id: upload.id
+														id: upload.id,
 													});
 													return Session.set('uploading', _.without(uploading, item));
 												}
@@ -135,7 +135,7 @@ Meteor.startup(function() {
 			}
 
 			function createPicker() {
-				const user = RocketChat.models.Users.findOne({_id: Meteor.userId()});
+				const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() });
 				const picker = new google.picker.PickerBuilder().
 					addView(google.picker.ViewId.DOCS).
 					setOAuthToken(user.services.google.accessToken).
@@ -154,7 +154,7 @@ Meteor.startup(function() {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
-						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 					}, function(error) {
 						if (error) {
 							return;
@@ -165,7 +165,7 @@ Meteor.startup(function() {
 					browse();
 				}
 			});
-		}
+		},
 	});
 
 	RocketChat.messageBox.actions.add('Create_and_share', 'Google_doc', {
@@ -186,18 +186,18 @@ Meteor.startup(function() {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
-						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 					}, function(error) {
 						if (error) {
 							return;
 						}
-						Meteor.call('createGoogleFile', {type, name}, roomId);
+						Meteor.call('createGoogleFile', { type, name }, roomId);
 					});
 				} else {
-					Meteor.call('createGoogleFile', {type, name}, roomId);
+					Meteor.call('createGoogleFile', { type, name }, roomId);
 				}
 			});
-		}
+		},
 	});
 
 	RocketChat.messageBox.actions.add('Create_and_share', 'Google_slide', {
@@ -218,18 +218,18 @@ Meteor.startup(function() {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
-						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 					}, function(error) {
 						if (error) {
 							return;
 						}
-						Meteor.call('createGoogleFile', {type, name}, roomId);
+						Meteor.call('createGoogleFile', { type, name }, roomId);
 					});
 				} else {
-					Meteor.call('createGoogleFile', {type, name}, roomId);
+					Meteor.call('createGoogleFile', { type, name }, roomId);
 				}
 			});
-		}
+		},
 	});
 
 	RocketChat.messageBox.actions.add('Create_and_share', 'Google_sheet', {
@@ -250,17 +250,17 @@ Meteor.startup(function() {
 					return toastr.error(t(error.error));
 				} else if (error) {
 					Meteor.loginWithGoogle({
-						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+						requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 					}, function(error) {
 						if (error) {
 							return;
 						}
-						Meteor.call('createGoogleFile', {type, name}, roomId);
+						Meteor.call('createGoogleFile', { type, name }, roomId);
 					});
 				} else {
-					Meteor.call('createGoogleFile', {type, name}, roomId);
+					Meteor.call('createGoogleFile', { type, name }, roomId);
 				}
 			});
-		}
+		},
 	});
 });

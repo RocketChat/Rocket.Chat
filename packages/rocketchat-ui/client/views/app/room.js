@@ -774,8 +774,8 @@ Template.room.events({
 		disable();
 
 		const metaData = {
-			'name': `${ title }`,
-			'mimeType': `${ type }`
+			name: `${ title }`,
+			mimeType: `${ type }`,
 		};
 
 		const fileRequest = new XMLHttpRequest();
@@ -792,13 +792,13 @@ Template.room.events({
 						return toastr.error(t(error.error));
 					} else if (error) {
 						Meteor.loginWithGoogle({
-							requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive']
+							requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
 						}, function(error) {
 							if (error) {
 								enable();
 								return;
 							}
-							Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
+							Meteor.call('uploadFileToDrive', { fileData, metaData }, (error, status) => {
 								enable();
 								if (error) {
 									return toastr.error(t(error.error));
@@ -810,7 +810,7 @@ Template.room.events({
 							});
 						});
 					} else {
-						Meteor.call('uploadFileToDrive', {fileData, metaData}, (error, status) => {
+						Meteor.call('uploadFileToDrive', { fileData, metaData }, (error, status) => {
 							enable();
 							if (error) {
 								return toastr.error(t(error.error));

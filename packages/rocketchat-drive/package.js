@@ -6,7 +6,7 @@ Package.describe({
 
 	git: '',
 
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {

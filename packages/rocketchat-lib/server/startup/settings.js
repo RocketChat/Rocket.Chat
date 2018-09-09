@@ -1,3 +1,4 @@
+
 // Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
@@ -562,13 +563,13 @@ RocketChat.settings.addGroup('OAuth', function() {
 		});
 		this.add('Google_Drive_Access', false, {
 			type: 'boolean',
-			'public': true,
-			enableQuery
+			public: true,
+			enableQuery,
 		});
 		return this.add('Google_Picker_key', '', {
 			type: 'string',
 			enableQuery,
-			'public': true
+			public: true,
 		});
 	});
 	this.section('GitHub', function() {

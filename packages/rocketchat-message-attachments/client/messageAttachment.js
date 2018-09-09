@@ -86,6 +86,5 @@ Template.messageAttachment.helpers({
 			return 'image/*';
 		}
 		return 'application/octet-stream';
-	}
-
+	},
 });

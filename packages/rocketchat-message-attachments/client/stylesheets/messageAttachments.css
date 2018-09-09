@@ -23,6 +23,8 @@ html.rtl .attachment {
 }
 
 .attachment {
+	direction: rtl;
+
 	& .attachment-block {
 		position: relative;
 
