@@ -86,9 +86,3 @@ Package.onUse(function(api) {
 	// Add what this package actually does export (needs updated to the module import style)
 	api.export('Apps');
 });
-
-Npm.depends({
-	busboy: '0.2.13',
-	'@rocket.chat/apps-engine': '0.6.10',
-	'@rocket.chat/apps-ts-definition': '0.9.13',
-});
