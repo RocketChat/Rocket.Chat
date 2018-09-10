@@ -1,5 +1,6 @@
 /* globals DDPRateLimiter */
 import dns from 'dns';
+import { send as sendEmail } from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {
@@ -12,9 +13,6 @@ Meteor.methods({
 		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
 			return false;
 		}
-
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 		const message = (`${ data.message }`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
@@ -42,14 +40,13 @@ Meteor.methods({
 			}
 		}
 
-		Meteor.defer(() => {
-			Email.send({
-				to: RocketChat.settings.get('Livechat_offline_email'),
-				from: `${ data.name } - ${ data.email } <${ fromEmail }>`,
-				replyTo: `${ data.name } <${ data.email }>`,
-				subject: `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`,
-				html: header + html + footer,
-			});
+
+		sendEmail({
+			to: RocketChat.settings.get('Livechat_offline_email'),
+			from: `${ data.name } - ${ data.email } <${ fromEmail }>`,
+			replyTo: `${ data.name } <${ data.email }>`,
+			subject: `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`,
+			html,
 		});
 
 		Meteor.defer(() => {

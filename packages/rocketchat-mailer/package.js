@@ -8,32 +8,10 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'ddp-rate-limiter',
-		'kadira:flow-router',
-		'rocketchat:lib',
-		'rocketchat:authorization',
 	]);
+	Npm.depends({
+		juice: '4.3.2',
+	});
 
-	api.use('templating', 'client');
-
-	api.addFiles('lib/Mailer.js');
-
-	api.addFiles([
-		'client/startup.js',
-		'client/router.js',
-		'client/views/mailer.html',
-		'client/views/mailer.js',
-		'client/views/mailerUnsubscribe.html',
-		'client/views/mailerUnsubscribe.js',
-	], 'client');
-
-	api.addFiles([
-		'server/startup.js',
-		'server/models/Users.js',
-		'server/functions/sendMail.js',
-		'server/functions/unsubscribe.js',
-		'server/methods/sendMail.js',
-		'server/methods/unsubscribe.js',
-	], 'server');
-
-	api.export('Mailer');
+	api.mainModule('server/api.js', 'server');
 });

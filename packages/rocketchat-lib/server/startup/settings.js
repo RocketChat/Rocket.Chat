@@ -1,3 +1,5 @@
+import './email';
+
 // Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
@@ -658,7 +660,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 		});
 	});
 	return this.section('Proxy', function() {
-		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
+		this.add('Accounts_OAuth_Proxy_host', 'https: //oauth-proxy.rocket.chat', {
 			type: 'string',
 			public: true,
 		});
@@ -670,7 +672,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
-	this.add('Show_Setup_Wizard', 'pending', {
+	this.add('Show_Setup_Wizard', 'completed', {
 		type: 'select',
 		public: true,
 		values: [
@@ -866,418 +868,6 @@ RocketChat.settings.addGroup('General', function() {
 	return this.section('Stream_Cast', function() {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string',
-		});
-	});
-});
-
-RocketChat.settings.addGroup('Email', function() {
-	this.section('Subject', function() {
-		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
-			type: 'code',
-			code: 'text',
-			multiline: true,
-			i18nLabel: 'Offline_DM_Email',
-			i18nDescription: 'Offline_Email_Subject_Description',
-		});
-		this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
-			type: 'code',
-			code: 'text',
-			multiline: true,
-			i18nLabel: 'Offline_Mention_Email',
-			i18nDescription: 'Offline_Email_Subject_Description',
-		});
-		return this.add('Offline_Mention_All_Email', '[User] has posted a message in #[Room]', {
-			type: 'code',
-			code: 'text',
-			multiline: true,
-			i18nLabel: 'Offline_Mention_All_Email',
-			i18nDescription: 'Offline_Email_Subject_Description',
-		});
-	});
-	this.section('Header_and_Footer', function() {
-		this.add('Email_Header', '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:collapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Header',
-		});
-		this.add('Email_Footer', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Footer',
-		});
-		return this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Footer_Direct_Reply',
-		});
-	});
-	this.section('Direct_Reply', function() {
-		this.add('Direct_Reply_Enable', false, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'Direct_Reply_Enable',
-		});
-		this.add('Direct_Reply_Debug', false, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'Direct_Reply_Debug',
-			i18nDescription: 'Direct_Reply_Debug_Description',
-		});
-		this.add('Direct_Reply_Protocol', 'IMAP', {
-			type: 'select',
-			values: [
-				{
-					key: 'IMAP',
-					i18nLabel: 'IMAP',
-				}, {
-					key: 'POP',
-					i18nLabel: 'POP',
-				},
-			],
-			env: true,
-			i18nLabel: 'Protocol',
-		});
-		this.add('Direct_Reply_Host', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Host',
-		});
-		this.add('Direct_Reply_Port', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Port',
-		});
-		this.add('Direct_Reply_IgnoreTLS', false, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'IgnoreTLS',
-		});
-		this.add('Direct_Reply_Frequency', 5, {
-			type: 'int',
-			env: true,
-			i18nLabel: 'Direct_Reply_Frequency',
-			enableQuery: {
-				_id: 'Direct_Reply_Protocol',
-				value: 'POP',
-			},
-		});
-		this.add('Direct_Reply_Delete', true, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'Direct_Reply_Delete',
-			enableQuery: {
-				_id: 'Direct_Reply_Protocol',
-				value: 'IMAP',
-			},
-		});
-		this.add('Direct_Reply_Separator', '+', {
-			type: 'select',
-			values: [
-				{
-					key: '!',
-					i18nLabel: '!',
-				}, {
-					key: '#',
-					i18nLabel: '#',
-				}, {
-					key: '$',
-					i18nLabel: '$',
-				}, {
-					key: '%',
-					i18nLabel: '%',
-				}, {
-					key: '&',
-					i18nLabel: '&',
-				}, {
-					key: '\'',
-					i18nLabel: '\'',
-				}, {
-					key: '*',
-					i18nLabel: '*',
-				}, {
-					key: '+',
-					i18nLabel: '+',
-				}, {
-					key: '-',
-					i18nLabel: '-',
-				}, {
-					key: '/',
-					i18nLabel: '/',
-				}, {
-					key: '=',
-					i18nLabel: '=',
-				}, {
-					key: '?',
-					i18nLabel: '?',
-				}, {
-					key: '^',
-					i18nLabel: '^',
-				}, {
-					key: '_',
-					i18nLabel: '_',
-				}, {
-					key: '`',
-					i18nLabel: '`',
-				}, {
-					key: '{',
-					i18nLabel: '{',
-				}, {
-					key: '|',
-					i18nLabel: '|',
-				}, {
-					key: '}',
-					i18nLabel: '}',
-				}, {
-					key: '~',
-					i18nLabel: '~',
-				},
-			],
-			env: true,
-			i18nLabel: 'Direct_Reply_Separator',
-		});
-		this.add('Direct_Reply_Username', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Username',
-			placeholder: 'email@domain',
-		});
-		this.add('Direct_Reply_ReplyTo', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'ReplyTo',
-			placeholder: 'email@domain',
-		});
-		return this.add('Direct_Reply_Password', '', {
-			type: 'password',
-			env: true,
-			i18nLabel: 'Password',
-		});
-	});
-	this.section('SMTP', function() {
-		this.add('SMTP_Protocol', 'smtp', {
-			type: 'select',
-			values: [
-				{
-					key: 'smtp',
-					i18nLabel: 'smtp',
-				}, {
-					key: 'smtps',
-					i18nLabel: 'smtps',
-				},
-			],
-			env: true,
-			i18nLabel: 'Protocol',
-		});
-		this.add('SMTP_Host', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Host',
-		});
-		this.add('SMTP_Port', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Port',
-		});
-		this.add('SMTP_IgnoreTLS', false, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'IgnoreTLS',
-			enableQuery: {
-				_id: 'SMTP_Protocol',
-				value: 'smtp',
-			},
-		});
-		this.add('SMTP_Pool', true, {
-			type: 'boolean',
-			env: true,
-			i18nLabel: 'Pool',
-		});
-		this.add('SMTP_Username', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Username',
-			autocomplete: false,
-		});
-		this.add('SMTP_Password', '', {
-			type: 'password',
-			env: true,
-			i18nLabel: 'Password',
-			autocomplete: false,
-		});
-		this.add('From_Email', '', {
-			type: 'string',
-			placeholder: 'email@domain',
-		});
-		return this.add('SMTP_Test_Button', 'sendSMTPTestEmail', {
-			type: 'action',
-			actionText: 'Send_a_test_mail_to_my_user',
-		});
-	});
-	this.section('Invitation', function() {
-		this.add('Invitation_Customized', false, {
-			type: 'boolean',
-			i18nLabel: 'Custom',
-		});
-		this.add('Invitation_Subject', '', {
-			type: 'string',
-			i18nLabel: 'Subject',
-			enableQuery: {
-				_id: 'Invitation_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Invitation_Customized',
-				value: false,
-			},
-		});
-		return this.add('Invitation_HTML', '', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Invitation_HTML_Description',
-			enableQuery: {
-				_id: 'Invitation_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Invitation_Customized',
-				value: false,
-			},
-		});
-	});
-	this.section('Registration', function() {
-		this.add('Accounts_Enrollment_Customized', false, {
-			type: 'boolean',
-			i18nLabel: 'Custom',
-		});
-		this.add('Accounts_Enrollment_Email_Subject', '', {
-			type: 'string',
-			i18nLabel: 'Subject',
-			enableQuery: {
-				_id: 'Accounts_Enrollment_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Accounts_Enrollment_Customized',
-				value: false,
-			},
-		});
-		return this.add('Accounts_Enrollment_Email', '', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			enableQuery: {
-				_id: 'Accounts_Enrollment_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Accounts_Enrollment_Customized',
-				value: false,
-			},
-		});
-	});
-	this.section('Registration_via_Admin', function() {
-		this.add('Accounts_UserAddedEmail_Customized', false, {
-			type: 'boolean',
-			i18nLabel: 'Custom',
-		});
-		this.add('Accounts_UserAddedEmailSubject', '', {
-			type: 'string',
-			i18nLabel: 'Subject',
-			enableQuery: {
-				_id: 'Accounts_UserAddedEmail_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Accounts_UserAddedEmail_Customized',
-				value: false,
-			},
-		});
-		return this.add('Accounts_UserAddedEmail', '', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Accounts_UserAddedEmail_Description',
-			enableQuery: {
-				_id: 'Accounts_UserAddedEmail_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Accounts_UserAddedEmail_Customized',
-				value: false,
-			},
-		});
-	});
-	this.section('Forgot_password_section', function() {
-		this.add('Forgot_Password_Customized', false, {
-			type: 'boolean',
-			i18nLabel: 'Custom',
-		});
-		this.add('Forgot_Password_Email_Subject', '', {
-			type: 'string',
-			i18nLabel: 'Subject',
-			enableQuery: {
-				_id: 'Forgot_Password_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Forgot_Password_Customized',
-				value: false,
-			},
-		});
-		return this.add('Forgot_Password_Email', '', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Forgot_Password_Description',
-			enableQuery: {
-				_id: 'Forgot_Password_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Forgot_Password_Customized',
-				value: false,
-			},
-		});
-	});
-	return this.section('Verification', function() {
-		this.add('Verification_Customized', false, {
-			type: 'boolean',
-			i18nLabel: 'Custom',
-		});
-		this.add('Verification_Email_Subject', '', {
-			type: 'string',
-			i18nLabel: 'Subject',
-			enableQuery: {
-				_id: 'Verification_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Verification_Customized',
-				value: false,
-			},
-		});
-		return this.add('Verification_Email', '', {
-			type: 'code',
-			code: 'text/html',
-			multiline: true,
-			i18nLabel: 'Body',
-			i18nDescription: 'Verification_Description',
-			enableQuery: {
-				_id: 'Verification_Customized',
-				value: true,
-			},
-			i18nDefaultQuery: {
-				_id: 'Verification_Customized',
-				value: false,
-			},
 		});
 	});
 });
@@ -1506,7 +1096,7 @@ RocketChat.settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_gateway', 'https://gateway.rocket.chat', {
+	this.add('Push_gateway', 'https: //gateway.rocket.chat', {
 		type: 'string',
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: [
@@ -1590,7 +1180,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'string',
 			public: true,
 		});
-		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat+,\n  for Android and iOS is available from <a title="Rocket.Chat+ on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat+ on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> -> <strong>Layout</strong> -> <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
+		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https: //rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat+,\n  for Android and iOS is available from <a title="Rocket.Chat+ on Google Play" href="https: //play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat+ on the App Store" href="https: //itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https: //rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> -> <strong>Layout</strong> -> <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1731,7 +1321,7 @@ RocketChat.settings.addGroup('Logs', function() {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 		});
-		// See the default port allocation at https://github.com/prometheus/prometheus/wiki/Default-port-allocations
+		// See the default port allocation at https: //github.com/prometheus/prometheus/wiki/Default-port-allocations
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
@@ -2923,4 +2513,3 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 });
 
 RocketChat.settings.init();
-

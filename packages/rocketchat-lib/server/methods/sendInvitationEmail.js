@@ -1,5 +1,14 @@
-import _ from 'underscore';
 import s from 'underscore.string';
+import { send as sendEmail, checkEmail, replace, inlinecss } from 'meteor/rocketchat:mailer';
+let body = '';
+Meteor.startup(() => {
+	setTimeout(() => {
+
+		RocketChat.settings.get('Invitation_HTML', (key, value) => {
+			body = inlinecss(value);
+		});
+	}, 1000);
+});
 
 Meteor.methods({
 	sendInvitationEmail(emails) {
@@ -14,41 +23,20 @@ Meteor.methods({
 				method: 'sendInvitationEmail',
 			});
 		}
-		const rfcMailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-		const validEmails = _.compact(_.map(emails, function(email) {
-			if (rfcMailPattern.test(email)) {
-				return email;
-			}
-		}));
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-		let html;
-		let subject;
-		const user = Meteor.user();
-		const lng = user.language || RocketChat.settings.get('language') || 'en';
-		if (RocketChat.settings.get('Invitation_Customized')) {
-			subject = RocketChat.settings.get('Invitation_Subject');
-			html = RocketChat.settings.get('Invitation_HTML');
-		} else {
-			subject = TAPi18n.__('Invitation_Subject_Default', {
-				lng,
-			});
-			html = TAPi18n.__('Invitation_HTML_Default', {
-				lng,
-			});
-		}
-		subject = RocketChat.placeholders.replace(subject);
+		const validEmails = emails.filter(checkEmail);
+
+		const subject = replace(RocketChat.settings.get('Invitation_Subject'));
+
 		validEmails.forEach((email) => {
-			this.unblock();
-			html = RocketChat.placeholders.replace(html, {
+			const html = replace(body, {
 				email: s.escapeHTML(email),
 			});
 			try {
-				Email.send({
+				sendEmail({
 					to: email,
 					from: RocketChat.settings.get('From_Email'),
 					subject,
-					html: header + html + footer,
+					html,
 				});
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {

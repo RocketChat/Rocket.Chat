@@ -1,14 +1,5 @@
 import s from 'underscore.string';
-
-let contentHeader;
-RocketChat.settings.get('Email_Header', (key, value) => {
-	contentHeader = RocketChat.placeholders.replace(value || '');
-});
-
-let contentFooter;
-RocketChat.settings.get('Email_Footer', (key, value) => {
-	contentFooter = RocketChat.placeholders.replace(value || '');
-});
+import { send } from 'meteor/rocketchat:mailer';
 
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
@@ -111,14 +102,12 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 	const link = getMessageLink(room, subscription);
 
-	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		contentFooter = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
-	}
+	const directReply = RocketChat.settings.get('Direct_Reply_Enable') ? '' : ''; // TODO templatemail
 
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: contentHeader + content + divisorMessage + link + contentFooter,
+		html: content + divisorMessage + link + directReply,
 	};
 
 	// using user full-name/channel name in from address
@@ -136,10 +125,8 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		};
 	}
 
-	Meteor.defer(() => {
-		RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
-		Email.send(email);
-	});
+	RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
+	return send(email);
 }
 
 export function shouldNotifyEmail({

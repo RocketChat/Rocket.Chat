@@ -1,6 +1,7 @@
 /* globals emailSettings, DDPRateLimiter */
 /* Send a transcript of the room converstation to the given email */
 import moment from 'moment';
+import { send as sendEmail } from 'meteor/rocketchat:mailer';
 
 import LivechatVisitors from '../models/LivechatVisitors';
 
@@ -20,8 +21,6 @@ Meteor.methods({
 		}
 
 		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts : 1 } });
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {
@@ -59,12 +58,10 @@ Meteor.methods({
 			from: fromEmail,
 			replyTo: fromEmail,
 			subject: TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage }),
-			html: header + html + footer,
+			html,
 		};
 
-		Meteor.defer(() => {
-			Email.send(emailSettings);
-		});
+		sendEmail(emailSettings);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.sendTranscript', messages, email);

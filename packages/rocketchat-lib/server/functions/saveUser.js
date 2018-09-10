@@ -1,6 +1,7 @@
 /* globals Gravatar */
 import _ from 'underscore';
 import s from 'underscore.string';
+import { send as sendEmail, inlinecss, replace } from 'meteor/rocketchat:mailer';
 
 function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
@@ -87,9 +88,18 @@ function validateUserData(userId, userData) {
 	}
 }
 
+let body = '';
+Meteor.startup(() => {
+	setTimeout(() => {
+		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
+			body = inlinecss(value);
+			console.log(body);
+		});
+	}, 1000);
+});
+
 RocketChat.saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
-	const user = RocketChat.models.Users.findOneById(userId);
 
 	if (!userData._id) {
 		RocketChat.validateEmailDomain(userData.email);
@@ -100,6 +110,7 @@ RocketChat.saveUser = function(userId, userData) {
 			password: userData.password,
 			joinDefaultChannels: userData.joinDefaultChannels,
 		};
+
 		if (userData.email) {
 			createUser.email = userData.email;
 		}
@@ -125,22 +136,9 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+			const subject = replace(RocketChat.settings.get('Accounts_UserAddedEmailSubject'));
 
-			let subject;
-			let html;
-
-			if (RocketChat.settings.get('Accounts_UserAddedEmail_Customized')) {
-				subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
-				html = RocketChat.settings.get('Accounts_UserAddedEmail');
-			} else {
-				subject = TAPi18n.__('Accounts_UserAddedEmailSubject_Default', { lng: user.language || RocketChat.settings.get('language') || 'en' });
-				html = TAPi18n.__('Accounts_UserAddedEmail_Default', { lng: user.language || RocketChat.settings.get('language') || 'en' });
-			}
-
-			subject = RocketChat.placeholders.replace(subject);
-			html = RocketChat.placeholders.replace(html, {
+			const html = replace(body, {
 				name: s.escapeHTML(userData.name),
 				email: s.escapeHTML(userData.email),
 				password: s.escapeHTML(userData.password),
@@ -150,19 +148,19 @@ RocketChat.saveUser = function(userId, userData) {
 				to: userData.email,
 				from: RocketChat.settings.get('From_Email'),
 				subject,
-				html: header + html + footer,
+				html,
 			};
 
-			Meteor.defer(function() {
-				try {
-					Email.send(email);
-				} catch (error) {
-					throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-						function: 'RocketChat.saveUser',
-						message: error.message,
-					});
-				}
-			});
+
+			try {
+				sendEmail(email);
+			} catch (error) {
+				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+					function: 'RocketChat.saveUser',
+					message: error.message,
+				});
+			}
+
 		}
 
 		userData._id = _id;
@@ -178,82 +176,81 @@ RocketChat.saveUser = function(userId, userData) {
 		}
 
 		return _id;
-	} else {
-		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
-				method: 'insertOrUpdateUser',
-				action: 'Update_user',
-			});
-		}
-
-		if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
-				method: 'insertOrUpdateUser',
-				action: 'Update_user',
-			});
-		}
-
-		if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
-				method: 'insertOrUpdateUser',
-				action: 'Update_user',
-			});
-		}
-
-		if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
-				method: 'insertOrUpdateUser',
-				action: 'Update_user',
-			});
-		}
-
-		if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
-				method: 'insertOrUpdateUser',
-				action: 'Update_user',
-			});
-		}
-
-		// update user
-		if (userData.username) {
-			RocketChat.setUsername(userData._id, userData.username);
-		}
-
-		if (userData.name) {
-			RocketChat.setRealName(userData._id, userData.name);
-		}
-
-		if (userData.email) {
-			const shouldSendVerificationEmailToUser = userData.verified !== true;
-			RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
-		}
-
-		if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password') && RocketChat.passwordPolicy.validate(userData.password)) {
-			Accounts.setPassword(userData._id, userData.password.trim());
-		}
-
-		const updateUser = {
-			$set: {},
-		};
-
-		if (userData.roles) {
-			updateUser.$set.roles = userData.roles;
-		}
-
-		if (userData.settings) {
-			updateUser.$set.settings = { preferences: userData.settings.preferences };
-		}
-
-		if (typeof userData.requirePasswordChange !== 'undefined') {
-			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
-		}
-
-		if (typeof userData.verified === 'boolean') {
-			updateUser.$set['emails.0.verified'] = userData.verified;
-		}
-
-		Meteor.users.update({ _id: userData._id }, updateUser);
-
-		return true;
 	}
+	if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
+	// update user
+	if (userData.username) {
+		RocketChat.setUsername(userData._id, userData.username);
+	}
+
+	if (userData.name) {
+		RocketChat.setRealName(userData._id, userData.name);
+	}
+
+	if (userData.email) {
+		const shouldSendVerificationEmailToUser = userData.verified !== true;
+		RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
+	}
+
+	if (userData.password && userData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password') && RocketChat.passwordPolicy.validate(userData.password)) {
+		Accounts.setPassword(userData._id, userData.password.trim());
+	}
+
+	const updateUser = {
+		$set: {},
+	};
+
+	if (userData.roles) {
+		updateUser.$set.roles = userData.roles;
+	}
+
+	if (userData.settings) {
+		updateUser.$set.settings = { preferences: userData.settings.preferences };
+	}
+
+	if (typeof userData.requirePasswordChange !== 'undefined') {
+		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+	}
+
+	if (typeof userData.verified === 'boolean') {
+		updateUser.$set['emails.0.verified'] = userData.verified;
+	}
+
+	Meteor.users.update({ _id: userData._id }, updateUser);
+
+	return true;
 };
