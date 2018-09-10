@@ -19,8 +19,10 @@ Meteor.startup(function() {
 		system: true,
 		message: 'thread-welcome',
 		data(message) {
+			const threadChannelName = message.channels[0].name || TAPi18n.__('a_direct_message');
+
 			return {
-				parentChannel: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">${ message.channels[0].name }</a>`,
+				parentChannel: `<a class="mention-link" data-channel= ${ message.channels[0]._id }  title="">${ threadChannelName }</a>`,
 				username: `<a class="mention-link" data-username= ${ message.mentions[0].name } title="">@${ message.mentions[0].name }</a>`
 			};
 		}
