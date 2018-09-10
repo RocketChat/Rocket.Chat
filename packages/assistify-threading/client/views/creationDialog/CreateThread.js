@@ -259,14 +259,13 @@ Template.CreateThread.events({
 						default:
 							return handleError(err);
 					}
+				} else {
+					// callback to enable tracking
+					Meteor.defer(() => {
+						RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result);
+					});
+					FlowRouter.goToRoomById(result._id);
 				}
-
-				// callback to enable tracking
-				Meteor.defer(() => {
-					RocketChat.callbacks.run('afterCreateThread');
-				});
-
-				FlowRouter.goToRoomById(result._id);
 			});
 		}
 	},
