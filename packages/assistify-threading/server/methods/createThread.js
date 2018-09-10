@@ -138,15 +138,14 @@ export class ThreadBuilder {
 			for (const user of users) {
 				if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
 				// TODO: Use a mass-read-access: Filter the non-owner/moderators and use them in an $in-query. Afterwards, add them all
-					RocketChat.models.Users.findOne({
+					const isAvailable = !!RocketChat.models.Users.find({
 						_id: user.id,
 						status: {
 							$in: ['online', 'away', 'busy']
 						}
-					});
-					if (!user) {
-						continue;
-					// user.splice(users.indexOf(user), 1); //remove offline user
+					}).count();
+					if (isAvailable) {
+						members.push(user.username);
 					}
 				} else {
 					// has a special role in the parent room
