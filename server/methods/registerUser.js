@@ -64,7 +64,7 @@ Meteor.methods({
 		try {
 			if (RocketChat.settings.get('Verification_Customized')) {
 				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
-				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');
+				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '', userData);
 				Accounts.emailTemplates.verifyEmail.subject = () => subject;
 				Accounts.emailTemplates.verifyEmail.html = (userModel, url) => html.replace(/\[Verification_Url]/g, url);
 			}

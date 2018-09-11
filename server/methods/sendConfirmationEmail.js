@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 Meteor.methods({
 	sendConfirmationEmail(email) {
 		check(email, String);
@@ -8,7 +10,10 @@ Meteor.methods({
 		if (user) {
 			if (RocketChat.settings.get('Verification_Customized')) {
 				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
-				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');
+				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '', {
+					email: s.escapeHTML(email),
+					name: s.escapeHTML(user.name),
+				});
 
 				Accounts.emailTemplates.verifyEmail.subject = function(/* userModel*/) {
 					return subject;
