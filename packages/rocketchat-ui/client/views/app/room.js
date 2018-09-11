@@ -721,7 +721,6 @@ Template.room.events({
 			return;
 		}
 		const roomNameOrId = $(e.currentTarget).data('channel');
-
 		if (roomNameOrId) {
 			const room = ChatRoom.findOne({name: roomNameOrId}) || ChatRoom.findOne({_id: roomNameOrId});
 			if (room) {
@@ -730,6 +729,17 @@ Template.room.events({
 				}
 
 				FlowRouter.goToRoomById(room._id);
+			} else {
+				// the above find on ChatRoom will only find subscribed rooms (public or private).
+				// public channels however might not be subscribed to, so hack a workaround
+				Meteor.call('getRoomNameById', roomNameOrId, function(err, roomName) {
+					if (!err) {
+						FlowRouter.go('channel', { name: roomName }, FlowRouter.current().queryParams);
+					} else {
+						// Assume it was a name and not an id
+						FlowRouter.go('channel', { name: roomNameOrId }, FlowRouter.current().queryParams);
+					}
+				});
 			}
 			return;
 		} else {
