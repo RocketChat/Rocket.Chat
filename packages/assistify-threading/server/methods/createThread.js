@@ -141,8 +141,8 @@ export class ThreadBuilder {
 		if (this._parentRoom.t === 'c') {
 			// only add online users
 			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.map(user=>user.id)).fetch().map(user=>user.username);
-			// add admins to the member list
-			members = members.concat(admins.map(user=>user.username));
+			// add admins to the member list and avoid duplicates
+			members = Array.from(new Set(members.concat(admins.map(user=>user.username))));
 		} else {
 			// in direct messages and groups, add all users as members of the thread
 			members = users.map(user=>user.username);
