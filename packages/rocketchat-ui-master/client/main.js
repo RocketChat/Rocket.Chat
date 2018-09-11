@@ -123,7 +123,7 @@ RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
 	removeSidenav() {
 		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal) || RocketChat.Layout.isEmbedded();
+		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
 	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
