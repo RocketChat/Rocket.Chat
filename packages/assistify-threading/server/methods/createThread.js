@@ -122,6 +122,11 @@ export class ThreadBuilder {
 	_getMembers() {
 		const checkRoles = ['owner', 'moderator', 'leader'];
 		let members = [];
+		const admins = RocketChat.models.Subscriptions.findByRoomIdAndRoles(this._parentRoomId, checkRoles).fetch().map(s => {
+			return {
+				username: s.u.username
+			};
+		});
 		const users = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(this._parentRoomId, {
 			fields: {
 				'u._id': 1,
@@ -134,24 +139,10 @@ export class ThreadBuilder {
 			};
 		});
 		if (this._parentRoom.t === 'c') {
-		// filter on owner, moderators and those online (see @here-implementation)
-			for (const user of users) {
-				if (!RocketChat.authz.hasRole(user.id, checkRoles, this._parentRoomId)) {
-				// TODO: Use a mass-read-access: Filter the non-owner/moderators and use them in an $in-query. Afterwards, add them all
-					const isAvailable = !!RocketChat.models.Users.find({
-						_id: user.id,
-						status: {
-							$in: ['online', 'away', 'busy']
-						}
-					}).count();
-					if (isAvailable) {
-						members.push(user.username);
-					}
-				} else {
-					// has a special role in the parent room
-					members.push(user.username);
-				}
-			}
+			// only add online users
+			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.map(user=>user.id)).fetch().map(user=>user.username);
+			// add admins to the member list
+			members = members.concat(admins.map(user=>user.username));
 		} else {
 			// in direct messages and groups, add all users as members of the thread
 			members = users.map(user=>user.username);
