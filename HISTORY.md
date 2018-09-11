@@ -1,4 +1,34 @@
 
+# 0.69.2
+`2018-09-11  ·  1 🎉  ·  4 🐛  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🎉 New features
+
+- Include room name in stream for bots ([#11812](https://github.com/RocketChat/Rocket.Chat/pull/11812))
+
+### 🐛 Bug fixes
+
+- Reset password link error if already logged in ([#12022](https://github.com/RocketChat/Rocket.Chat/pull/12022))
+- Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992))
+- Update user information not possible by admin if disabled to users ([#11955](https://github.com/RocketChat/Rocket.Chat/pull/11955) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Hidden admin sidenav on embedded layout ([#12025](https://github.com/RocketChat/Rocket.Chat/pull/12025))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@cardoso](https://github.com/cardoso)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@timkinnane](https://github.com/timkinnane)
+
 # 0.69.1
 `2018-08-31  ·  4 🐛  ·  2 👩‍💻👨‍💻`
 

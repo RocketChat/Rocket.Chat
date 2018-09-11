@@ -388,12 +388,16 @@ Template.appManage.events({
 
 	'input input, input textarea, change input[type="color"]': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
+
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
 				break;
 			case 'boolean':
 				value = value === '1';
+				break;
+			case 'code':
+				value = $(`.code-mirror-box[data-editor-id="${ this.id }"] .CodeMirror`)[0].CodeMirror.getValue();
 		}
 
 		const setting = t.settings.get()[this.id];
