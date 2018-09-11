@@ -8,7 +8,7 @@ RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 function isMessageRelevant(message, room) {
 
 	const user = RocketChat.models.Users.findOneById(message.u._id);
-	if (user.roles['bot']) {
+	if (user && user.roles['bot']) {
 		return; 	//do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
 	}
 
