@@ -42,7 +42,7 @@ RocketChat.API.v1.addRoute('livechat/message', {
 
 			const result = RocketChat.Livechat.sendMessage(sendMessage);
 			if (result) {
-				const message = { msg: result.msg, u: result.u, ts: result.ts };
+				const message = { _id: result._id, msg: result.msg, u: result.u, ts: result.ts };
 				return RocketChat.API.v1.success({ message });
 			}
 
@@ -88,8 +88,9 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 
 			const result = RocketChat.Livechat.updateMessage({ guest, message });
 			if (result) {
+				const data = RocketChat.models.Messages.findOneById(_id);
 				return RocketChat.API.v1.success({
-					message: RocketChat.models.Messages.findOneById(_id),
+					message: { _id: data._id, msg: data.msg, u: data.u, ts: data.ts },
 				});
 			}
 
@@ -132,7 +133,7 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 				return RocketChat.API.v1.success({
 					message: {
 						_id,
-						ts: Date.now(),
+						ts: new Date().toISOString(),
 					},
 				});
 			}
