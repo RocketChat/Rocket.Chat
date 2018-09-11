@@ -33,14 +33,14 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			}
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			openAdminView();
-			admin.permissionsLink.waitForVisible(5000);
+			admin.permissionsLink.waitForVisible(10000);
 			admin.permissionsLink.click();
-			admin.rolesSettingPermissionsButton.waitForVisible(5000);
+			admin.rolesSettingPermissionsButton.waitForVisible(10000);
 			admin.rolesSettingPermissionsButton.click();
 		});
 
 		it('Set permission for user to manage settings', function(done) {
-			admin.rolesPermissionGrid.waitForVisible(5000);
+			admin.rolesPermissionGrid.waitForVisible(10000);
 
 			if (!admin.rolesManageSettingsPermissions.isSelected()) {
 				admin.rolesManageSettingsPermissions.click();
@@ -112,9 +112,9 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		});
 
 		it('Cleanup permissions', function(done) {
-			admin.permissionsLink.waitForVisible(5000);
+			admin.permissionsLink.waitForVisible(10000);
 			admin.permissionsLink.click();
-			admin.rolesPermissionGrid.waitForVisible(5000);
+			admin.rolesPermissionGrid.waitForVisible(10000);
 
 			admin.rolesManageSettingsPermissions.click();
 			admin.rolesManageSettingsPermissions.isSelected().should.equal(false);
