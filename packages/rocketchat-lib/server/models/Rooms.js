@@ -107,43 +107,6 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
-
-	findBySubscriptionOrPublicUserId(userId, options) {
-		const data = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
-			.map(item => item.rid);
-
-		let query = {
-			_id: {
-				$in: data
-			}
-		};
-
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room')) {
-			query = {$or: [query, {t:'c'}]};
-		}
-
-		return this.find(query, options);
-	}
-
-	findBySubscriptionOrPublicUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
-			.map(item => item.rid);
-
-		let query = {
-			_id: {
-				$in: ids
-			},
-			_updatedAt: {
-				$gt: _updatedAt
-			}
-		};
-
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room')) {
-			query = {$or: [query, {t:'c'}]};
-		}
-		return this.find(query, options);
-	}
-
 	findBySubscriptionUserId(userId, options) {
 		const data = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
 			.map(item => item.rid);
