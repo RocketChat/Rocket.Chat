@@ -18679,6 +18679,59 @@
           ]
         }
       ]
+    },
+    "0.69.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
