@@ -350,6 +350,10 @@
 	}
 }
 
+.embedded-view .room-container .rc-header--burger {
+	display: none;
+}
+
 .burger {
 
 	cursor: pointer;
