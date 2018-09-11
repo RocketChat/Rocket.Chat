@@ -2310,7 +2310,7 @@
   "Show_room_counter_on_sidebar": "Pokaż licznik pokoju na pasku bocznym",
   "Show_the_keyboard_shortcut_list": "Pokaż listę skrótów klawiaturowych",
   "Showing_archived_results": "<p>Pokazuje <b>%s</b> zarchiwizowanych wyników </p>",
-  "Showing_online_users": "Widocznych <b>__total_showing__</b> z __total__users",
+  "Showing_online_users": "Widocznych <b>__total_showing__</b> z __total__ użytkownicy",
   "Showing_results": "<p>Wyświetlono <b>%s</b> wyników</p>",
   "Sidebar": "Pasek boczny",
   "Sidebar_list_mode": "Tryb listy kanałów na pasku bocznym",
