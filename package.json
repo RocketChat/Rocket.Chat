@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.69.0-develop",
+	"version": "0.70.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -115,6 +115,7 @@
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^1.7.0",
 		"@google-cloud/vision": "^0.19.0",
+		"@rocket.chat/apps-engine": "^1.0.0",
 		"@slack/client": "^4.2.2",
 		"adm-zip": "^0.4.11",
 		"archiver": "^2.1.1",
@@ -174,6 +175,7 @@
 		"speakeasy": "^2.0.0",
 		"tar-stream": "^1.6.1",
 		"toastr": "^2.1.4",
+		"turndown": "^5.0.1",
 		"twilio": "^3.17.1",
 		"twit": "^2.2.10",
 		"ua-parser-js": "^0.7.18",
@@ -184,7 +186,6 @@
 		"xml-crypto": "^0.10.1",
 		"xmlbuilder": "^10.0.0",
 		"xmldom": "^0.1.27",
-		"yaqrcode": "^0.2.1",
-		"@rocket.chat/apps-engine": "^1.0.0"
+		"yaqrcode": "^0.2.1"
 	}
 }
