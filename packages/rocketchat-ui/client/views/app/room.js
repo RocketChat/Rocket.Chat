@@ -718,7 +718,9 @@ Template.room.events({
 	},
 	'click .mention-link'(e, instance) {
 		const roomNameOrId = $(e.currentTarget).data('channel');
-
+		if (!Meteor.userId()) {	
+			return;	
+		}
 		if (roomNameOrId) {
 			const room = ChatRoom.findOne({name: roomNameOrId}) || ChatRoom.findOne({_id: roomNameOrId});
 			if (room) {
