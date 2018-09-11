@@ -84,7 +84,7 @@ Meteor.startup(() => {
 
 			this.add('Assistify_AI_Resync', 'triggerResync', {
 				type: 'action',
-				i18nDescription: 'Assistify_AI_Resync_Full_Description',
+				i18nDescription: 'Assistify_AI_Resync_Description',
 				actionText: 'Assistify_AI_Resync_Text',
 				sorter: 99
 			});
