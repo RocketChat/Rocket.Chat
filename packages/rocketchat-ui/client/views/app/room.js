@@ -717,8 +717,8 @@ Template.room.events({
 		FlowRouter.go(FlowRouter.current().context.pathname, null, {msg: repliedMessageId, hash: Random.id()});
 	},
 	'click .mention-link'(e, instance) {
-		if (!Meteor.userId()) {	
-			return;	
+		if (!Meteor.userId()) {
+			return;
 		}
 		const roomNameOrId = $(e.currentTarget).data('channel');
 		if (roomNameOrId) {
