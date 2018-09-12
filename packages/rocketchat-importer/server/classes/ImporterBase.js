@@ -271,6 +271,11 @@ export class Base {
 		const fileStore = FileUpload.getStore('Uploads');
 
 		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
+			const contentType = res.headers['content-type'];
+			if (!details.type && contentType) {
+				details.type = contentType;
+			}
+
 			const rawData = [];
 			res.on('data', (chunk) => rawData.push(chunk));
 			res.on('end', Meteor.bindEnvironment(() => {

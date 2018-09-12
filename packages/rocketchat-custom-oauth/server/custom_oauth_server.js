@@ -173,68 +173,84 @@ export class CustomOAuth {
 	}
 
 	fixThirdPartyIdentityRules(identity) {
-		if (!identity.id) {
-			// Fix WordPress-like identities having 'ID' instead of 'id'
-			if (identity.ID) {
-				identity.id = identity.ID;
-			}
-
-			// Fix Auth0-like identities having 'user_id' instead of 'id'
-			if (identity.user_id) {
-				identity.id = identity.user_id;
-			}
-
-			if (identity.CharacterID) {
-				identity.id = identity.CharacterID;
-			}
-
-			// Fix Dataporten having 'user.userid' instead of 'id'
-			if (identity.user && identity.user.userid) {
-				if (identity.user.userid_sec && identity.user.userid_sec[0]) {
-					identity.id = identity.user.userid_sec[0];
-				} else {
-					identity.id = identity.user.userid;
-				}
-				identity.email = identity.user.email;
-			}
-
-			// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-			if (identity.user && identity.user.user_id) {
-				identity.id = identity.user.user_id;
-				identity.email = identity.user.user_email;
-			}
-
-			// Fix general 'phid' instead of 'id' from phabricator
-			if (identity.phid) {
-				identity.id = identity.phid;
-			}
-
-			// Fix Keycloak-like identities having 'sub' instead of 'id'
-			if (identity.sub) {
-				identity.id = identity.sub;
-			}
-
-			// Fix general 'userid' instead of 'id' from provider
-			if (identity.userid) {
-				identity.id = identity.userid;
-			}
-
-			// Fix Nextcloud provider
-			if (identity.ocs && identity.ocs.data && identity.ocs.data.id) {
-				identity.id = identity.ocs.data.id;
-				identity.name = identity.ocs.data.displayname;
-				identity.email = identity.ocs.data.email;
-			}
-
-			// Fix for WeChat
-			if (identity.openid) {
+		if (identity) {
+			if (identity.openid && !identity.id) {
 				identity.id = identity.openid;
 			}
-		}
 
-		// Fix when authenticating from a meteor app with 'emails' field
-		if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-			identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+			// Set 'id' to '_id' for any sources that provide it
+			if (identity._id && !identity.id) {
+				identity.id = identity._id;
+			}
+
+			// Fix for Reddit
+			if (identity.result) {
+				identity = identity.result;
+			}
+
+			if (!identity.id) {
+				// Fix WordPress-like identities having 'ID' instead of 'id'
+				if (identity.ID) {
+					identity.id = identity.ID;
+				}
+
+				// Fix Auth0-like identities having 'user_id' instead of 'id'
+				if (identity.user_id) {
+					identity.id = identity.user_id;
+				}
+
+				if (identity.CharacterID) {
+					identity.id = identity.CharacterID;
+				}
+
+				// Fix Dataporten having 'user.userid' instead of 'id'
+				if (identity.user && identity.user.userid) {
+					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+						identity.id = identity.user.userid_sec[0];
+					} else {
+						identity.id = identity.user.userid;
+					}
+					identity.email = identity.user.email;
+				}
+
+				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
+				if (identity.user && identity.user.user_id) {
+					identity.id = identity.user.user_id;
+					identity.email = identity.user.user_email;
+				}
+
+				// Fix general 'phid' instead of 'id' from phabricator
+				if (identity.phid) {
+					identity.id = identity.phid;
+				}
+
+				// Fix Keycloak-like identities having 'sub' instead of 'id'
+				if (identity.sub) {
+					identity.id = identity.sub;
+				}
+
+				// Fix general 'userid' instead of 'id' from provider
+				if (identity.userid) {
+					identity.id = identity.userid;
+				}
+
+				// Fix Nextcloud provider
+				if (identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+					identity.id = identity.ocs.data.id;
+					identity.name = identity.ocs.data.displayname;
+					identity.email = identity.ocs.data.email;
+				}
+
+				// Fix for WeChat
+				if (identity.openid) {
+					identity.id = identity.openid;
+				}
+			}
+
+			// Fix when authenticating from a meteor app with 'emails' field
+			if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+				identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+			}
 		}
 	}
 
@@ -249,25 +265,9 @@ export class CustomOAuth {
 				identityParams.openid = accessTokenPack.openid;
 			}
 
-			let identity = self.getIdentity(accessToken, identityParams);
-
-			if (identity) {
-				if (identity.openid && !identity.id) {
-					identity.id = identity.openid;
-				}
-
-				// Set 'id' to '_id' for any sources that provide it
-				if (identity._id && !identity.id) {
-					identity.id = identity._id;
-				}
-
-				// Fix for Reddit
-				if (identity.result) {
-					identity = identity.result;
-				}
-
-				self.fixThirdPartyIdentityRules(identity);
-			}
+			const identity = self.fixThirdPartyIdentityRules(
+				self.getIdentity(accessToken, identityParams)
+			);
 
 			const serviceData = {
 				_OAuthCustom: true,

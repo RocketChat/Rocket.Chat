@@ -1,4 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-ts-definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {
 	constructor(orch) {
