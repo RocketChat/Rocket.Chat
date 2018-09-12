@@ -34,6 +34,12 @@ body {
 	background-color: var(--rc-color-primary)
 }
 
+@media (width <= 500px) {
+	body {
+		position: fixed;
+	}
+}
+
 :focus {
 	outline: 0 !important;
 	outline-style: none;
