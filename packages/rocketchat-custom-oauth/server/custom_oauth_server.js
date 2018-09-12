@@ -252,6 +252,8 @@ export class CustomOAuth {
 				identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 			}
 		}
+
+		return identity;
 	}
 
 	registerService() {

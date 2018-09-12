@@ -19,10 +19,12 @@ const config = {
 
 class WeChatOAuth extends CustomOAuth {
 	fixThirdPartyIdentityRules(identity) {
-		super.fixThirdPartyIdentityRules(identity);
+		const newIdentity = super.fixThirdPartyIdentityRules(identity);
 
 		// quick & dirty for wechat email
-		identity.email = `${ identity.openid }@wechat.app`;
+		newIdentity.email = `${ newIdentity.openid }@wechat.app`;
+
+		return newIdentity;
 	}
 }
 
