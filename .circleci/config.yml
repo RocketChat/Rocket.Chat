@@ -404,7 +404,7 @@ workflows:
           requires:
             - hold
           filters:
-            branches:
-              ignore: develop
+#            branches:
+#              ignore: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
