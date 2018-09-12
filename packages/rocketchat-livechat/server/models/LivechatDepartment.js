@@ -9,7 +9,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 
 		this.tryEnsureIndex({
 			numAgents: 1,
-			enabled: 1
+			enabled: 1,
 		});
 	}
 
@@ -34,7 +34,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 			name,
 			description,
 			numAgents: agents.length,
-			showOnRegistration
+			showOnRegistration,
 		};
 
 		if (_id) {
@@ -57,7 +57,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 				departmentId: _id,
 				username: agent.username,
 				count: agent.count ? parseInt(agent.count) : 0,
-				order: agent.order ? parseInt(agent.order) : 0
+				order: agent.order ? parseInt(agent.order) : 0,
 			});
 		});
 
@@ -74,7 +74,7 @@ class LivechatDepartment extends RocketChat.models._Base {
 	findEnabledWithAgents() {
 		const query = {
 			numAgents: { $gt: 0 },
-			enabled: true
+			enabled: true,
 		};
 		return this.find(query);
 	}

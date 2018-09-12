@@ -164,7 +164,7 @@
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
 	--sidebar-extra-small-default-padding: 12px;
-	--sidebar-footer-height: 70px;
+	--sidebar-footer-height: 48px;
 	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 	/*
@@ -205,6 +205,7 @@
 	--sidebar-item-active-background: var(--rc-color-primary-dark);
 	--sidebar-item-active-color: var(--sidebar-item-text-color);
 	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-unread-font-weight: 600;
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;

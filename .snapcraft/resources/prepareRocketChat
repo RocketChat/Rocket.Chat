@@ -19,6 +19,7 @@ npm i
 if [[ $(uname -m) == "x86_64" ]]
 then
   cp -r npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-unknown
+  rm npm/node_modules/grpc/node_modules/tar/lib/.unpack.js.swp
 fi
 
 # sharp needs execution stack removed - https://forum.snapcraft.io/t/snap-and-executable-stacks/1812

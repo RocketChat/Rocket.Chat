@@ -9,5 +9,5 @@ Template.burger.helpers({
 	},
 	embeddedVersion() {
 		return RocketChat.Layout.isEmbedded();
-	}
+	},
 });

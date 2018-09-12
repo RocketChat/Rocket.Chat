@@ -180,7 +180,7 @@
 
 		&.rc-popout__content {
 			height: 0px;
-			visibility: hidden;
+			overflow: hidden;
 
 			& .streaming-object {
 				visibility: 'hidden';

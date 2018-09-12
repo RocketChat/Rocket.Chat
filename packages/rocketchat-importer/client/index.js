@@ -7,5 +7,5 @@ export {
 	Importers,
 	ImporterInfo,
 	ImporterWebsocketReceiver,
-	ProgressStep
+	ProgressStep,
 };
