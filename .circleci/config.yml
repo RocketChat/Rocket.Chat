@@ -396,15 +396,15 @@ workflows:
           requires:
             - build
           filters:
-            branches:
-              ignore: develop
+#            branches:
+#              ignore: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - pr-image-build:
           requires:
             - hold
           filters:
-#            branches:
-#              ignore: develop
+            branches:
+              ignore: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
