@@ -255,13 +255,14 @@ this.ChatMessages = class ChatMessages {
 
 			// Check if message starts with /command
 			if (msg[0] === '/') {
-				const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+				const match = msg.match(/^\/([^\s]+)/m);
 				if (match) {
-					let command;
-					if (RocketChat.slashCommands.commands[match[1]]) {
-						const commandOptions = RocketChat.slashCommands.commands[match[1]];
-						command = match[1];
-						const param = match[2] || '';
+					const command = match[1];
+
+					if (RocketChat.slashCommands.commands[command]) {
+						const commandOptions = RocketChat.slashCommands.commands[command];
+
+						const param = msg.replace(/^\/([^\s]+)/m, '');
 
 						if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
 							if (commandOptions.clientOnly) {
@@ -279,7 +280,7 @@ this.ChatMessages = class ChatMessages {
 							_id: Random.id(),
 							rid,
 							ts: new Date,
-							msg: TAPi18n.__('No_such_command', { command: match[1] }),
+							msg: TAPi18n.__('No_such_command', { command }),
 							u: {
 								username: RocketChat.settings.get('InternalHubot_Username'),
 							},
