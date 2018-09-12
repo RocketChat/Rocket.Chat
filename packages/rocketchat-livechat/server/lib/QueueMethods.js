@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import {sendNotification} from 'meteor/rocketchat:lib';
+import { sendNotification } from 'meteor/rocketchat:lib';
 
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
@@ -153,21 +153,21 @@ RocketChat.QueueMethods = {
 		// Alert the agents of the queued request
 		agentIds.forEach((agentId) => {
 			sendNotification({
-				//fake a subscription in order to make use of the function defined above
+				// fake a subscription in order to make use of the function defined above
 				subscription: {
 					rid: room._id,
 					t : room.t,
 					u: {
-						_id : agentId
-					}
+						_id : agentId,
+					},
 				},
 				sender: room.v,
-				hasMentionToAll: true, //consider all agents to be in the room
+				hasMentionToAll: true, // consider all agents to be in the room
 				hasMentionToHere: false,
-				message: Object.assign(message, {u: room.v}),
+				message: Object.assign(message, { u: room.v }),
 				notificationMessage: message.msg,
-				room: Object.assign(room, {name: TAPi18n.__('New_livechat_in_queue')}),
-				mentionIds: []
+				room: Object.assign(room, { name: TAPi18n.__('New_livechat_in_queue') }),
+				mentionIds: [],
 			});
 		});
 		return room;
