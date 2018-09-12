@@ -62,7 +62,6 @@ Meteor.methods({
 		});
 
 		const myNotificationPref = RocketChat.getDefaultSubscriptionPref(me);
-
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
@@ -71,7 +70,7 @@ Meteor.methods({
 				open: true,
 			},
 			$setOnInsert: {
-				fname: to.name,
+				fname: to.username,
 				name: to.username,
 				t: 'd',
 				alert: false,
