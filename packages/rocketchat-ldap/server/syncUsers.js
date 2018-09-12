@@ -1,4 +1,4 @@
-import { importNewUsers } from './sync';
+import { sync } from './sync';
 
 Meteor.methods({
 	ldap_sync_now() {
@@ -17,7 +17,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		importNewUsers();
+		sync();
 
 		return {
 			message: 'Sync_in_progress',

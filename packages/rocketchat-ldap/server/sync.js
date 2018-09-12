@@ -326,7 +326,7 @@ export function importNewUsers(ldap) {
 	}));
 }
 
-function sync() {
+export function sync() {
 	if (RocketChat.settings.get('LDAP_Enable') !== true) {
 		return;
 	}
