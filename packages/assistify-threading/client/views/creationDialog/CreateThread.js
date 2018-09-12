@@ -264,7 +264,7 @@ Template.CreateThread.events({
 					Meteor.defer(() => {
 						RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result);
 					});
-					FlowRouter.goToRoomById(result._id);
+					RocketChat.roomTypes.openRouteLink(result.t, result);
 				}
 			});
 		}
