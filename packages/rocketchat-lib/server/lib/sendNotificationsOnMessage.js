@@ -260,3 +260,5 @@ function sendAllNotifications(message, room) {
 }
 
 RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+
+export {sendNotification};
