@@ -215,7 +215,7 @@ class API extends Restivus {
 							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 							const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
 							this.response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
-							this.response.setHeader('X-RateLimit-Remaining', timeToResetAttempsInSeconds);
+							this.response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 							this.response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 							if (!attemptResult.allowed) {
 								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
