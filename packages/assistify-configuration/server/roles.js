@@ -1,5 +1,3 @@
-import { TAPi18n } from 'meteor/tap:i18n';
-
 const CONFIGURATION_ROLE_NAME = 'config-expert';
 const MANAGER_ROLE_NAME = 'manager';
 const USER_ROLE_NAME = 'user';
@@ -14,7 +12,7 @@ const revokePermissions = function(role, permissions) {
 };
 
 const createConfigurationRole = function() {
-	RocketChat.models.Roles.createOrUpdate(CONFIGURATION_ROLE_NAME, 'Users', TAPi18n.__('Configuration_expert_description'));
+	RocketChat.models.Roles.createOrUpdate(CONFIGURATION_ROLE_NAME, 'Users', CONFIGURATION_ROLE_NAME);
 	const settingPermissions = [
 		'change-setting-Message_AllowSnippeting',
 		'change-setting-Message_AllowStarring',
@@ -207,7 +205,7 @@ const createConfigurationRole = function() {
 };
 
 const createManagerRole = function() {
-	RocketChat.models.Roles.createOrUpdate(MANAGER_ROLE_NAME, 'Users', TAPi18n.__('Manager_description'));
+	RocketChat.models.Roles.createOrUpdate(MANAGER_ROLE_NAME, 'Users', MANAGER_ROLE_NAME);
 
 	const permissions = [
 		'add-user-to-any-c-room',
