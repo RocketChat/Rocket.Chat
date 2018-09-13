@@ -31,7 +31,7 @@ Template.listCombinedFlex.helpers({
 	},
 	url() {
 		return this.t === 'p' ? 'group' : 'channel';
-	}
+	},
 });
 
 Template.listCombinedFlex.events({
@@ -41,14 +41,6 @@ Template.listCombinedFlex.events({
 
 	'click .channel-link'() {
 		return SideNav.closeFlex();
-	},
-
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
 	},
 
 	'scroll .content': _.throttle(function(e, t) {
@@ -85,7 +77,7 @@ Template.listCombinedFlex.events({
 			instance.$('#sort-subscriptions').hide();
 		}
 		return instance.show.set(show);
-	}
+	},
 });
 
 Template.listCombinedFlex.onCreated(function() {
@@ -116,7 +108,7 @@ Template.listCombinedFlex.onCreated(function() {
 						break;
 				}
 			}
-			let type = {$in: ['c', 'p']};
+			let type = { $in: ['c', 'p'] };
 			if (s.trim(this.channelType.get())) {
 				switch (this.channelType.get()) {
 					case 'public':
@@ -129,7 +121,7 @@ Template.listCombinedFlex.onCreated(function() {
 			}
 			this.channelsList.set(RocketChat.models.Subscriptions.find({
 				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
-				t: type
+				t: type,
 			}, options).fetch()
 			);
 			if (this.channelsList.get().length < this.limit.get()) {

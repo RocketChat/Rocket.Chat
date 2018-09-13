@@ -6,11 +6,11 @@ const blockstackLogin = (authResponse, userData = {}) => {
 		methodArguments: [{
 			blockstack: true,
 			authResponse,
-			userData
+			userData,
 		}],
 		userCallback() {
 			FlowRouter.go('home');
-		}
+		},
 	});
 };
 
@@ -33,5 +33,5 @@ FlowRouter.route('/_blockstack/validate', {
 		} else if (queryParams.authResponse === undefined) {
 			throw new Meteor.Error('Blockstack: Auth request without response param.');
 		}
-	}
+	},
 });

@@ -3,26 +3,10 @@ this.SideNav = new class {
 		this.initiated = false;
 		this.sideNav = {};
 		this.flexNav = {};
-		this.arrow = {};
 		this.animating = false;
 		this.openQueue = [];
 	}
 
-	toggleArrow(status = null) {
-		if (status === 0) {
-			this.arrow.addClass('close');
-			this.arrow.removeClass('top');
-			return this.arrow.removeClass('bottom');
-		} else if (status === -1 || (status !== 1 && this.arrow.hasClass('top'))) {
-			this.arrow.removeClass('close');
-			this.arrow.removeClass('top');
-			return this.arrow.addClass('bottom');
-		} else {
-			this.arrow.removeClass('close');
-			this.arrow.addClass('top');
-			return this.arrow.removeClass('bottom');
-		}
-	}
 	toggleFlex(status, callback) {
 		if (this.animating === true) {
 			return;
@@ -33,9 +17,7 @@ this.SideNav = new class {
 			this.flexNav.addClass('animated-hidden');
 		} else {
 			this.flexNav.opened = true;
-			setTimeout(() => {
-				return this.flexNav.removeClass('animated-hidden');
-			}, 50);
+			setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
 		}
 		return setTimeout(() => {
 			this.animating = false;
@@ -50,7 +32,7 @@ this.SideNav = new class {
 			return i.route.name;
 		}).includes(FlowRouter.current().route.name)) {
 			subscription = RocketChat.models.Subscriptions.findOne({
-				rid: Session.get('openedRoom')
+				rid: Session.get('openedRoom'),
 			});
 			if (subscription != null) {
 				RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
@@ -61,7 +43,6 @@ this.SideNav = new class {
 		if (this.animating === true) {
 			return;
 		}
-		this.toggleArrow(-1);
 		return this.toggleFlex(-1, callback);
 	}
 	flexStatus() {
@@ -77,7 +58,7 @@ this.SideNav = new class {
 	getFlex() {
 		return {
 			template: Session.get('flex-nav-template'),
-			data: Session.get('flex-nav-data')
+			data: Session.get('flex-nav-data'),
 		};
 	}
 
@@ -88,27 +69,11 @@ this.SideNav = new class {
 			return AccountBox.toggle();
 		}
 	}
-	overArrow() {
-		return this.arrow.addClass('hover');
-	}
-	leaveArrow() {
-		return this.arrow.removeClass('hover');
-	}
-	arrowBindHover() {
-		this.arrow.on('mouseenter', () => {
-			return this.sideNav.find('header').addClass('hover');
-		});
-		return this.arrow.on('mouseout', () => {
-			return this.sideNav.find('header').removeClass('hover');
-		});
-	}
 	focusInput() {
-		const sideNavDivs = [...this.sideNav[0].children].filter(el => {
-			return el.tagName === 'DIV' && !el.classList.contains('hidden');
-		});
+		const sideNavDivs = [...this.sideNav[0].children].filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
 		let highestZidx = 0;
 		let highestZidxElem;
-		sideNavDivs.forEach(el => {
+		sideNavDivs.forEach((el) => {
 			const zIndex = Number(window.getComputedStyle(el).zIndex);
 			if (zIndex > highestZidx) {
 				highestZidx = zIndex;
@@ -137,14 +102,13 @@ this.SideNav = new class {
 		if (!this.initiated) {
 			return this.openQueue.push({
 				config: this.getFlex(),
-				callback
+				callback,
 			});
 		}
 		if (this.animating === true) {
 			return;
 		}
 		AccountBox.close();
-		this.toggleArrow(0);
 		this.toggleFlex(1, callback);
 		return this.focusInput();
 	}
@@ -152,9 +116,7 @@ this.SideNav = new class {
 	init() {
 		this.sideNav = $('.sidebar');
 		this.flexNav = this.sideNav.find('.flex-nav');
-		this.arrow = this.sideNav.children('.arrow');
 		this.setFlex('');
-		this.arrowBindHover();
 		this.initiated = true;
 		if (this.openQueue.length > 0) {
 			this.openQueue.forEach((item) => {

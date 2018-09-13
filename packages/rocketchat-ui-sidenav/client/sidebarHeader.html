@@ -1,0 +1,18 @@
+<template name="sidebarHeader">
+	<header class="sidebar__header">
+		{{#with myUserInfo}}
+			<div class="sidebar__header-thumb">
+				{{> avatar username=username}}
+				<div class="sidebar__header-status-bullet sidebar__header-status-bullet--{{status}}"></div>
+			</div>
+			<div class="sidebar__toolbar">
+				{{#each toolbarButtons}}
+					<button class="sidebar__toolbar-button rc-tooltip rc-tooltip--down js-button" aria-label="{{name}}">
+						{{> icon block="sidebar__toolbar-button-icon" icon=icon }}
+					</button>
+				{{/each}}
+			</div>
+			{{> toolbar}}
+		{{/with}}
+	</header>
+</template>

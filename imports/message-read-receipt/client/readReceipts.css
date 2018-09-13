@@ -1,0 +1,51 @@
+.read-receipt {
+	position: absolute;
+	top: 2px;
+	right: 0.5rem;
+}
+
+.read-receipt .rc-icon {
+	height: 0.8em;
+	width: 0.8em;
+}
+
+.message:hover .read-receipt, .message.active .read-receipt {
+	display: none;
+}
+
+.read-receipts-enabled .read-receipt {
+	cursor: pointer;
+}
+
+.read-receipt.read {
+	color: #1d74f5;
+	color: var(--rc-color-button-primary);
+	font-style: normal;
+}
+
+.message.temp .read-receipt {
+	opacity: 0.4;
+}
+
+.read-receipts__user {
+	display: flex;
+	padding: 8px 8px;
+	align-items: center;
+}
+
+.read-receipts__name {
+	flex: 1 1 auto;
+	margin: 0 10px;
+	font-size: 16px;
+}
+
+.read-receipts__time {
+	font-size: 80%;
+}
+
+.read-receipts__user > .avatar {
+	width: 36px;
+	width: var(--sidebar-account-thumb-size);
+	height: 36px;
+	height: var(--sidebar-account-thumb-size);
+}

@@ -1,12 +1,12 @@
 class ModelPermissions extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 	}
 
 	// FIND
 	findByRole(role, options) {
 		const query = {
-			roles: role
+			roles: role,
 		};
 
 		return this.find(query, options);
@@ -29,5 +29,4 @@ class ModelPermissions extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Permissions = new ModelPermissions('permissions', true);
-RocketChat.models.Permissions.cache.load();
+RocketChat.models.Permissions = new ModelPermissions('permissions');

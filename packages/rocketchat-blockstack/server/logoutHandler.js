@@ -10,15 +10,15 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'blockstackLogout' });
 		}
-		const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
+		// const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
 		const user = Meteor.users.findOne({
-			_id: Meteor.userId()
+			_id: Meteor.userId(),
 		}, {
-			'services.blockstack': 1
+			'services.blockstack': 1,
 		});
 		const blockstackID = user.services.blockstack.id;
 		logger.info(`User loggout for Blockstack ID ${ blockstackID }`);
 		logger.debug('Logging out user', user);
 		return true;
-	}
+	},
 });

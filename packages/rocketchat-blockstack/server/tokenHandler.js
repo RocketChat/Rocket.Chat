@@ -13,7 +13,7 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 
 	check(loginRequest, Match.ObjectIncluding({
 		authResponse: String,
-		userData: Object
+		userData: Object,
 	}));
 
 	// Decode auth response for user attributes
@@ -25,7 +25,7 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 	if (!iss) {
 		return {
 			type: 'blockstack',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token')
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'Insufficient data in auth response token'),
 		};
 	}
 
@@ -33,8 +33,8 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 	const serviceData = {
 		id: iss,
 		did: `${ iss.split(':').pop() }`,
-		issuedAt: new Date(iat*1000),
-		expiresAt: new Date(exp*1000)
+		issuedAt: new Date(iat * 1000),
+		expiresAt: new Date(exp * 1000),
 	};
 
 	// Add Avatar image source to use for auth service suggestions
@@ -48,6 +48,6 @@ Accounts.blockstack.handleAccessToken = (loginRequest) => {
 	logger.debug('Login data', serviceData, profile);
 	return {
 		serviceData,
-		options: { profile }
+		options: { profile },
 	};
 };

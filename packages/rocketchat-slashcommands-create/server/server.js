@@ -32,8 +32,8 @@ function Create(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_already_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -45,4 +45,7 @@ function Create(command, params, item) {
 	Meteor.call('createChannel', channel, []);
 }
 
-RocketChat.slashCommands.add('create', Create);
+RocketChat.slashCommands.add('create', Create, {
+	description: 'Create_A_New_Channel',
+	params: '#channel',
+});

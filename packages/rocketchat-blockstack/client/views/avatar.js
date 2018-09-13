@@ -33,5 +33,5 @@ Template.avatar.helpers({
 			url = getAvatarUrlFromUsername(this.username);
 		}
 		return `background-image:url(${ url });`;
-	}
+	},
 });

@@ -1,7 +1,9 @@
+/* globals Picker */
+
 Picker.route('/_blockstack/manifest', (params, req, res) => {
 	res.writeHead(200, {
 		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': '*'
+		'Access-Control-Allow-Origin': '*',
 	});
 	const name = RocketChat.settings.get('Site_Name');
 	const startUrl = Meteor.absoluteUrl();

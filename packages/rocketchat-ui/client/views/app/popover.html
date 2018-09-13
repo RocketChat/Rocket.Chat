@@ -1,5 +1,5 @@
 <template name="popover">
-	<div class="rc-popover rc-popover--{{popoverClass}}" data-popover="popover" style="display:block;">
+	<div class="rc-popover rc-popover--{{popoverClass}}" data-popover="popover" style="display: block; visibility: hidden;">
 		<div class="rc-popover__content {{#if isSafariIos}}rc-popover__content--safariIos{{/if}}">
 			{{#if template}}
 				{{> Template.dynamic template=template data=data}}
@@ -19,7 +19,7 @@
 												{{> icon block="rc-popover__icon-element" icon=item.icon }}
 											</span>
 										{{/if}}
-										<span class="rc-popover__item-text">{{item.name}}</span>
+										<span class="rc-popover__item-text">{{_ item.name}}</span>
 									</li>
 									{{/with}}
 								{{/each}}

@@ -3,6 +3,7 @@
 // it is just to improve readability in this file
 
 import _ from 'underscore';
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
 const keys = {
 	TAB: 9,
@@ -11,7 +12,7 @@ const keys = {
 	ARROW_LEFT: 37,
 	ARROW_UP: 38,
 	ARROW_RIGHT: 39,
-	ARROW_DOWN: 40
+	ARROW_DOWN: 40,
 };
 
 function getCursorPosition(input) {
@@ -65,7 +66,7 @@ Template.messagePopup.onCreated(function() {
 	template.prefix = val(template.data.prefix, template.trigger);
 	template.suffix = val(template.data.suffix, '');
 	if (template.triggerAnywhere === true) {
-		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| )${ template.trigger }[^\\s]*$`));
+		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^| |\n)${ template.trigger }[^\\s]*$`));
 	} else {
 		template.matchSelectorRegex = val(template.data.matchSelectorRegex, new RegExp(`(?:^)${ template.trigger }[^\\s]*$`));
 	}
@@ -80,6 +81,7 @@ Template.messagePopup.onCreated(function() {
 		if (previous != null) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			previous.className += ' selected sidebar-item__popup-active';
+			previous.scrollIntoView(false);
 			return template.value.set(previous.getAttribute('data-id'));
 		}
 	};
@@ -89,6 +91,7 @@ Template.messagePopup.onCreated(function() {
 		if (next && next.classList.contains('popup-item')) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			next.className += ' selected sidebar-item__popup-active';
+			next.scrollIntoView(false);
 			return template.value.set(next.getAttribute('data-id'));
 		}
 	};
@@ -142,6 +145,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
+			$('.toolbar').css('display', 'none');
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -194,7 +198,7 @@ Template.messagePopup.onCreated(function() {
 		if (template.value.curValue == null) {
 			return;
 		}
-		const value = template.input.value;
+		const { value } = template.input;
 		const caret = getCursorPosition(template.input);
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
@@ -237,6 +241,23 @@ Template.messagePopup.onRendered(function() {
 	if (this.input == null) {
 		console.error('Input not found for popup');
 	}
+	const self = this;
+	self.autorun(() => {
+		lazyloadtick();
+		const open = self.open.get();
+		if ($('.reply-preview').length) {
+			if (open === true) {
+				$('.reply-preview').addClass('reply-preview-with-popup');
+				setTimeout(() => {
+					$('#popup').addClass('popup-with-reply-preview');
+				}, 50);
+			}
+		}
+		if (open === false) {
+			$('.reply-preview').removeClass('reply-preview-with-popup');
+			$('#popup').removeClass('popup-with-reply-preview');
+		}
+	});
 	$(this.input).on('keyup', this.onInputKeyup.bind(this));
 	$(this.input).on('keydown', this.onInputKeydown.bind(this));
 	$(this.input).on('focus', this.onFocus.bind(this));
@@ -251,6 +272,9 @@ Template.messagePopup.onDestroyed(function() {
 });
 
 Template.messagePopup.events({
+	'scroll .rooms-list__list'() {
+		lazyloadtick();
+	},
 	'mouseenter .popup-item'(e) {
 		if (e.currentTarget.className.indexOf('selected') > -1) {
 			return;
@@ -274,7 +298,7 @@ Template.messagePopup.events({
 		template.enterValue();
 		template.open.set(false);
 		return toolbarSearch.clear();
-	}
+	},
 });
 
 Template.messagePopup.helpers({
@@ -283,12 +307,15 @@ Template.messagePopup.helpers({
 	},
 	data() {
 		const template = Template.instance();
-		return Object.assign(template.records.get(), {toolbar: true});
+		return Object.assign(template.records.get(), { toolbar: true });
 	},
 	toolbarData() {
-		return {...Template.currentData(), toolbar: true};
+		return { ...Template.currentData(), toolbar: true };
 	},
 	sidebarHeaderHeight() {
 		return `${ document.querySelector('.sidebar__header').offsetHeight }px`;
-	}
+	},
+	sidebarWidth() {
+		return `${ document.querySelector('.sidebar').offsetWidth }px`;
+	},
 });

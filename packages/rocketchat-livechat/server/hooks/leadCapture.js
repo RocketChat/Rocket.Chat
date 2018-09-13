@@ -6,11 +6,7 @@ function validateMessage(message, room) {
 		return false;
 	}
 
-	if (!RocketChat.settings.get('Livechat_Facebook_Enabled')) {
-		return false;
-	}
-
-	// only send the sms by SMS if it is a livechat room with SMS set to true
+	// message valid only if it is a livechat room
 	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 		return false;
 	}
@@ -29,10 +25,6 @@ function validateMessage(message, room) {
 }
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
-	if (!RocketChat.settings.get('Livechat_webhook_on_capture')) {
-		return message;
-	}
-
 	if (!validateMessage(message, room)) {
 		return message;
 	}

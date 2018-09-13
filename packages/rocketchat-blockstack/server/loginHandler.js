@@ -19,7 +19,7 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 	if (result === undefined || result.userId === undefined) {
 		return {
 			type: 'blockstack',
-			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Blockstack response token')
+			error: new Meteor.Error(Accounts.LoginCancelledError.numericError, 'User creation failed from Blockstack response token'),
 		};
 	}
 

@@ -30,16 +30,14 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 			emails.push({ address: `${ did }@blockstack.email`, verified: false });
 		} else {
 			// Reformat array of emails into expected format if they exist
-			emails = profile.emails.map((address) => {
-				return { address, verified: true };
-			});
+			emails = profile.emails.map((address) => ({ address, verified: true }));
 		}
 
 		const newUser = {
 			name: profile.name,
 			active: true,
 			emails,
-			services: { blockstack: serviceData }
+			services: { blockstack: serviceData },
 		};
 
 		// Set username same as in blockstack, or suggest if none
@@ -71,6 +69,6 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 		type: 'blockstack',
 		userId,
 		token,
-		tokenExpires
+		tokenExpires,
 	};
 };

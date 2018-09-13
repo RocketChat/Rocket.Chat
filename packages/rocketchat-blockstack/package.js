@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:blockstack',
 	version: '0.0.0',
 	summary: 'Auth handler and utilities for Blockstack',
-	git: ''
+	git: '',
 });
 
 Package.onUse((api) => {
@@ -15,7 +15,7 @@ Package.onUse((api) => {
 		'url',
 		'http',
 		'accounts-base',
-		'service-configuration'
+		'service-configuration',
 	]);
 
 	api.use([
@@ -23,7 +23,7 @@ Package.onUse((api) => {
 		'rocketchat:logger',
 		'meteorhacks:picker',
 		'routepolicy',
-		'webapp'
+		'webapp',
 	], 'server');
 
 	api.use([
@@ -32,11 +32,11 @@ Package.onUse((api) => {
 		'mystor:device-detection',
 		'templating',
 		'less',
-		'reload'
+		'reload',
 	], 'client');
 
 	api.addAssets([
-		'assets/blockstack_mark.png'
+		'assets/blockstack_mark.png',
 	], 'client');
 
 	api.addFiles([
@@ -46,7 +46,7 @@ Package.onUse((api) => {
 		'server/tokenHandler.js',
 		'server/userHandler.js',
 		'server/loginHandler.js',
-		'server/logoutHandler.js'
+		'server/logoutHandler.js',
 	], 'server');
 
 	api.addFiles([
@@ -56,7 +56,7 @@ Package.onUse((api) => {
 		'client/views/login.html',
 		'client/views/login.js',
 		'client/views/noServices.html',
-		'client/views/noServices.js'
+		'client/views/noServices.js',
 	], 'client');
 
 });

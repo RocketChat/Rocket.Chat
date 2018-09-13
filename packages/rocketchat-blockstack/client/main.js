@@ -11,38 +11,38 @@ const mergeParams = (defaults, overrides) => {
 };
 
 // Do signin redirect, with location of manifest
-const redirectToSignIn = (config={}) => {
+const redirectToSignIn = (config = {}) => {
 	const defaults = {
 		redirectURI: `${ window.location.origin }/`, // location to redirect user to after sign in approval
 		manifestURI: `${ window.location.origin }/manifest.json`, // location of this app's manifest file
-		scopes: ['store_write'] // the permissions this app is requesting
+		scopes: ['store_write'], // the permissions this app is requesting
 	};
 	const params = mergeParams(defaults, config);
 	return blockstack.redirectToSignIn(...params);
 };
 
 // Do a custom blockstack redirect through auth services
-const makeAuthRequest = (config={}) => {
-	const defaults = {
-		transitPrivateKey: blockstack.generateAndStoreTransitKey(), // hex encoded transit private key
-		redirectURI: `${ window.location.origin }/`, // location to redirect user to after sign in approval
-		manifestURI: `${ window.location.origin }/manifest.json`, // location of this app's manifest file
-		scopes: ['store_write'], // the permissions this app is requesting
-		appDomain: `${ window.location.origin }` // the origin of this app
-	};
-	// NB: omitted expiresAt: nextHour().getTime() // the time at which this request is no longer valid
-	const params = mergeParams(defaults, config);
-	return blockstack.makeAuthRequest(...params);
-};
+// const makeAuthRequest = (config = {}) => {
+// 	const defaults = {
+// 		transitPrivateKey: blockstack.generateAndStoreTransitKey(), // hex encoded transit private key
+// 		redirectURI: `${ window.location.origin }/`, // location to redirect user to after sign in approval
+// 		manifestURI: `${ window.location.origin }/manifest.json`, // location of this app's manifest file
+// 		scopes: ['store_write'], // the permissions this app is requesting
+// 		appDomain: `${ window.location.origin }`, // the origin of this app
+// 	};
+// 	// NB: omitted expiresAt: nextHour().getTime() // the time at which this request is no longer valid
+// 	const params = mergeParams(defaults, config);
+// 	return blockstack.makeAuthRequest(...params);
+// };
 
 // Send user to Blockstack with auth request
 // TODO: allow serviceConfig.loginStyle == popup
-Meteor.loginWithBlockstack = (options={}, callback) => {
+Meteor.loginWithBlockstack = (options = {}, callback) => {
 	try {
 		check(options, Match.ObjectIncluding({
 			blockstackIDHost: String,
 			redirectURI: String,
-			manifestURI: String
+			manifestURI: String,
 		}));
 		redirectToSignIn(options); // let blockstack handle redirect
 		// const privateKey = blockstack.generateAndStoreTransitKey();

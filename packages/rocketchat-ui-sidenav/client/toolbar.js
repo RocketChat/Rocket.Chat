@@ -1,3 +1,4 @@
+
 /* global menu */
 import _ from 'underscore';
 
@@ -29,9 +30,10 @@ const toolbarSearch = {
 	},
 	focus(fromShortcut) {
 		menu.open();
+		$('.toolbar').css('display', 'block');
 		$(selectorSearch).focus();
 		this.shortcut = fromShortcut;
-	}
+	},
 };
 
 this.toolbarSearch = toolbarSearch;
@@ -62,14 +64,14 @@ const getFromServer = (cb, type) => {
 					_id: results.users[i]._id,
 					t: 'd',
 					name: results.users[i].username,
-					fname: results.users[i].name
+					fname: results.users[i].name,
 				});
 			}
 		}
 
 		if (roomsLength) {
 			for (let i = 0; i < roomsLength; i++) {
-				const alreadyOnClient = resultsFromClient.find(item => item._id === results.rooms[i]._id);
+				const alreadyOnClient = resultsFromClient.find((item) => item._id === results.rooms[i]._id);
 				if (alreadyOnClient) {
 					continue;
 				}
@@ -78,7 +80,7 @@ const getFromServer = (cb, type) => {
 					_id: results.rooms[i]._id,
 					t: results.rooms[i].t,
 					name: results.rooms[i].name,
-					lastMessage: results.rooms[i].lastMessage
+					lastMessage: results.rooms[i].lastMessage,
 				});
 			}
 		}
@@ -92,9 +94,6 @@ const getFromServer = (cb, type) => {
 const getFromServerDebounced = _.debounce(getFromServer, 500);
 
 Template.toolbar.helpers({
-	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
-	},
 	results() {
 		return Template.instance().resultsList.get();
 	},
@@ -126,7 +125,7 @@ Template.toolbar.helpers({
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
-			input: '[role="search"] input',
+			input: '.toolbar__search .rc-input__element',
 			cleanOnEnter: true,
 			closeOnEsc: true,
 			blurOnSelectItem: true,
@@ -137,27 +136,28 @@ Template.toolbar.helpers({
 
 				const type = {
 					users: true,
-					rooms: true
+					rooms: true,
 				};
 
 				const query = {
 					rid: {
-						$ne: Session.get('openedRoom')
-					}
+						$ne: Session.get('openedRoom'),
+					},
 				};
 
 				if (!Meteor.userId()) {
 					query._id = query.rid;
 					delete query.rid;
 				}
-
-				if (filterText[0] === '#') {
+				const searchForChannels = filterText[0] === '#';
+				const searchForDMs = filterText[0] === '@';
+				if (searchForChannels) {
 					filterText = filterText.slice(1);
 					type.users = false;
 					query.t = 'c';
 				}
 
-				if (filterText[0] === '@') {
+				if (searchForDMs) {
 					filterText = filterText.slice(1);
 					type.rooms = false;
 					query.t = 'd';
@@ -166,13 +166,13 @@ Template.toolbar.helpers({
 				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
 				query.$or = [
 					{ name: searchQuery },
-					{ fname: searchQuery }
+					{ fname: searchQuery },
 				];
 
-				resultsFromClient = collection.find(query, {limit: 20, sort: {unread: -1, ls: -1}}).fetch();
+				resultsFromClient = collection.find(query, { limit: 20, sort: { unread: -1, ls: -1 } }).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.user();
+				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username:1 } });
 				if (user) {
 					usernamesFromClient = [user];
 				}
@@ -192,15 +192,15 @@ Template.toolbar.helpers({
 			},
 
 			getValue(_id, collection, records) {
-				const doc = _.findWhere(records, {_id});
+				const doc = _.findWhere(records, { _id });
 
 				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
-			}
+			},
 		};
 
 		return config;
-	}
+	},
 });
 
 Template.toolbar.events({
@@ -215,6 +215,7 @@ Template.toolbar.events({
 			e.stopPropagation();
 
 			toolbarSearch.clear();
+			$('.toolbar').css('display', 'none');
 		}
 	},
 
@@ -224,10 +225,12 @@ Template.toolbar.events({
 
 	'click .toolbar__icon-search--right'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'blur [role="search"] input'() {
 		toolbarSearch.clear();
+		$('.toolbar').css('display', 'none');
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
@@ -238,5 +241,5 @@ Template.toolbar.events({
 		} else {
 			e.preventDefault();
 		}
-	}
+	},
 });

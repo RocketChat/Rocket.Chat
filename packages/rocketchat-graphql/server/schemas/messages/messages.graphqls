@@ -1,0 +1,11 @@
+type Query {
+	messages(
+		channelId: String,
+		channelName: String,
+		directTo: String,
+		cursor: String,
+		count: Int,
+		searchRegex: String,
+		excludeServer: Boolean
+	): MessagesWithCursor
+}

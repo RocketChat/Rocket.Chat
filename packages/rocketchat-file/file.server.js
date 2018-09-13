@@ -3,76 +3,13 @@ import stream from 'stream';
 import fs from 'fs';
 import path from 'path';
 import mkdirp from 'mkdirp';
-import gm from 'gm';
-import {exec} from 'child_process';
 
 // Fix problem with usernames being converted to object id
 Grid.prototype.tryParseObjectId = function() {
 	return false;
 };
-//TODO: REMOVE RocketChatFile from globals
-RocketChatFile = {
-	gm,
-	enabled: undefined,
-	enable() {
-		RocketChatFile.enabled = true;
-		return RocketChat.settings.updateOptionsById('Accounts_AvatarResize', {
-			alert: undefined
-		});
-	},
-	disable() {
-		RocketChatFile.enabled = false;
-		return RocketChat.settings.updateOptionsById('Accounts_AvatarResize', {
-			alert: 'The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server'
-		});
-	}
-};
-
-const detectGM = function() {
-	return exec('gm version', Meteor.bindEnvironment(function(error, stdout) {
-		if ((error == null) && stdout.indexOf('GraphicsMagick') > -1) {
-			RocketChatFile.enable();
-			RocketChat.Info.GraphicsMagick = {
-				enabled: true,
-				version: stdout
-			};
-		} else {
-			RocketChat.Info.GraphicsMagick = {
-				enabled: false
-			};
-		}
-		return exec('convert -version', Meteor.bindEnvironment(function(error, stdout) {
-			if ((error == null) && stdout.indexOf('ImageMagick') > -1) {
-				if (RocketChatFile.enabled !== true) {
-					// Enable GM to work with ImageMagick if no GraphicsMagick
-					RocketChatFile.gm = RocketChatFile.gm.subClass({
-						imageMagick: true
-					});
-					RocketChatFile.enable();
-				}
-				return RocketChat.Info.ImageMagick = {
-					enabled: true,
-					version: stdout
-				};
-			} else {
-				if (RocketChatFile.enabled !== true) {
-					RocketChatFile.disable();
-				}
-				return RocketChat.Info.ImageMagick = {
-					enabled: false
-				};
-			}
-		}));
-	}));
-};
-
-detectGM();
-
-Meteor.methods({
-	'detectGM'() {
-		detectGM();
-	}
-});
+// TODO: REMOVE RocketChatFile from globals
+RocketChatFile = {};
 
 RocketChatFile.bufferToStream = function(buffer) {
 	const bufferStream = new stream.PassThrough();
@@ -84,7 +21,7 @@ RocketChatFile.dataURIParse = function(dataURI) {
 	const imageData = dataURI.split(';base64,');
 	return {
 		image: imageData[1],
-		contentType: imageData[0].replace('data:', '')
+		contentType: imageData[0].replace('data:', ''),
 	};
 };
 
@@ -96,12 +33,12 @@ RocketChatFile.addPassThrough = function(st, fn) {
 
 RocketChatFile.GridFS = class {
 	constructor(config = {}) {
-		const {name = 'file', transformWrite} = config;
+		const { name = 'file', transformWrite } = config;
 
 		this.name = name;
 		this.transformWrite = transformWrite;
 		const mongo = Package.mongo.MongoInternals.NpmModule;
-		const db = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo.db;
+		const { db } = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo;
 		this.store = new Grid(db, mongo);
 		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
@@ -111,14 +48,14 @@ RocketChatFile.GridFS = class {
 
 	findOne(fileName) {
 		return this.findOneSync({
-			_id: fileName
+			_id: fileName,
 		});
 	}
 
 	remove(fileName) {
 		return this.removeSync({
 			_id: fileName,
-			root: this.name
+			root: this.name,
 		});
 	}
 
@@ -129,14 +66,14 @@ RocketChatFile.GridFS = class {
 			filename: fileName,
 			mode: 'w',
 			root: this.name,
-			content_type: contentType
+			content_type: contentType,
 		});
 		if (self.transformWrite != null) {
 			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
 				const file = {
 					name: self.name,
 					fileName,
-					contentType
+					contentType,
 				};
 				return self.transformWrite(file, rs, ws);
 			});
@@ -150,7 +87,7 @@ RocketChatFile.GridFS = class {
 	createReadStream(fileName) {
 		return this.store.createReadStream({
 			_id: fileName,
-			root: this.name
+			root: this.name,
 		});
 	}
 
@@ -164,7 +101,7 @@ RocketChatFile.GridFS = class {
 			readStream: rs,
 			contentType: file.contentType,
 			length: file.length,
-			uploadDate: file.uploadDate
+			uploadDate: file.uploadDate,
 		};
 	}
 
@@ -182,7 +119,7 @@ RocketChatFile.GridFS = class {
 				buffer: Buffer.concat(data),
 				contentType: file.contentType,
 				length: file.length,
-				uploadDate: file.uploadDate
+				uploadDate: file.uploadDate,
 			});
 		}));
 	}
@@ -200,8 +137,8 @@ RocketChatFile.GridFS = class {
 
 RocketChatFile.FileSystem = class {
 	constructor(config = {}) {
-		let {absolutePath = '~/uploads'} = config;
-		const {transformWrite} = config;
+		let { absolutePath = '~/uploads' } = config;
+		const { transformWrite } = config;
 
 		this.transformWrite = transformWrite;
 		if (absolutePath.split(path.sep)[0] === '~') {
@@ -226,7 +163,7 @@ RocketChatFile.FileSystem = class {
 			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
 				const file = {
 					fileName,
-					contentType
+					contentType,
 				};
 				return self.transformWrite(file, rs, ws);
 			});
@@ -256,7 +193,7 @@ RocketChatFile.FileSystem = class {
 			return {
 				readStream: rs,
 				// contentType: file.contentType
-				length: stat.size
+				length: stat.size,
 			};
 		} catch (error1) {
 			return null;
@@ -277,8 +214,8 @@ RocketChatFile.FileSystem = class {
 				buffer: Buffer.concat(data)({
 					contentType: file.contentType,
 					length: file.length,
-					uploadDate: file.uploadDate
-				})
+					uploadDate: file.uploadDate,
+				}),
 			};
 		}));
 	}

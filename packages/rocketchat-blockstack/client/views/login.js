@@ -11,7 +11,7 @@ Template.loginForm.helpers({
 	configurationLoaded() {
 		if (Accounts.loginServicesConfigured()) {
 			const config = ServiceConfiguration.configurations.findOne({
-				service: 'blockstack'
+				service: 'blockstack',
 			});
 			Template.currentData().blockstack = config;
 			Template.currentData().blockstack.blockstackIDHost = (Meteor.Device.isDesktop())
@@ -35,7 +35,7 @@ Template.loginForm.helpers({
 	},
 	poweredByRocketChat() {
 		return '<p>Powered by <a href="https://rocket.chat">Rocket.Chat</a> and <a href="https://blockstack.org">Blockstack</a></p>';
-	}
+	},
 });
 
 // Trigger login (redirect or popup) on click
@@ -59,5 +59,5 @@ Template.loginForm.events({
 	'click #blockstackLogin'(e) {
 		e.preventDefault();
 		FlowRouter.setQueryParams({ login: null });
-	}
+	},
 });

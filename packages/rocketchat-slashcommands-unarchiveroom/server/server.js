@@ -23,8 +23,8 @@ function Unarchive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 	}
 
@@ -40,8 +40,8 @@ function Unarchive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_already_Unarchived', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -55,11 +55,14 @@ function Unarchive(command, params, item) {
 		ts: new Date(),
 		msg: TAPi18n.__('Channel_Unarchived', {
 			postProcess: 'sprintf',
-			sprintf: [channel]
-		}, user.language)
+			sprintf: [channel],
+		}, user.language),
 	});
 
 	return Unarchive;
 }
 
-RocketChat.slashCommands.add('unarchive', Unarchive);
+RocketChat.slashCommands.add('unarchive', Unarchive, {
+	description: 'Unarchive',
+	params: '#channel',
+});
