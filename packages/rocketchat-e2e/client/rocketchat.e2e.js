@@ -85,7 +85,7 @@ class E2E {
 
 				const RSAKeys = new Promise((resolve) => {
 					Meteor.call('fetchMyKeys', function(error, result) {
-						if (result !== null && result !== undefined && EJSON.parse(result)['RSA-EPrivKey']!=='') {
+						if (result !== null && result !== undefined && EJSON.parse(result)['RSA-EPrivKey']) {
 							console.log('Key found');
 							console.log(EJSON.parse(result));
 							const pubkey = EJSON.parse(result)['RSA-PubKey'];
