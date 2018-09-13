@@ -267,7 +267,8 @@ RocketChat.E2E.Room = class {
 	// Decrypt messages
 	decrypt(message) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			let cipherText = EJSON.parse(message);
+			// let cipherText = EJSON.parse(message);
+			let cipherText = message;
 			const vector = cipherText.slice(0, 16);
 			cipherText = cipherText.slice(16);
 			return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
