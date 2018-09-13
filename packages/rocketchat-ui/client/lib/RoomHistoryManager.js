@@ -13,7 +13,7 @@ export const upsertMessage = ({ msg, subscription }) => {
 	].map((e) => e.roles);
 	msg.roles = _.union.apply(_.union, roles);
 	if (msg.t === 'e2e' && !msg.file) {
-		return self.decryptE2EMessage(msg);
+		return this.RoomHistoryManager.decryptE2EMessage(msg);
 	} else {
 		return ChatMessage.upsert({ _id: msg._id }, msg);
 	}
