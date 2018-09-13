@@ -106,17 +106,18 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 	if (loginResult && loginResult.profile && loginResult.profile.email) {
 		const emailList = Array.isArray(loginResult.profile.email) ? loginResult.profile.email : [loginResult.profile.email];
-		const emailRegex = new RegExp(emailList.map(email => `^${RegExp.escape(email)}$`).join('|'), 'i');
+		const emailRegex = new RegExp(emailList.map((email) => `^${ RegExp.escape(email) }$`).join('|'), 'i');
 
-		const eppn = loginResult.profile.eppn;
-		const name = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
+		const eduPersonPrincipalName = loginResult.profile.eppn;
+		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
 
-		eppnMatch = false;
-		emailMatch = false;
+		let eppnMatch = false;
+		// not used
+		// let emailMatch = false;
 
 		// Check eppn
 		let user = Meteor.users.findOne({
-			'eppn': eppn
+			eppn: eduPersonPrincipalName,
 		});
 
 		if (user) {
@@ -127,18 +128,18 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		// If eppn is not exist
 		if (!user) {
 			user = Meteor.users.findOne({
-				'emails.address': emailRegex
-			});;
+				'emails.address': emailRegex,
+			});
 
 			console.log('email match');
-			emailMatch = true;
+			// emailMatch = true;
 		}
 
 		if (!user) {
 			const newUser = {
-				name: name,
+				name: fullName,
 				active: true,
-				eppn: eppn,
+				eppn: eduPersonPrincipalName,
 				globalRoles: ['user'],
 				emails: emailList.map((email) => ({
 					address: email,
@@ -160,13 +161,13 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		}
 
 		// If eppn is not exist then update
-		if (eppnMatch == false) {
+		if (eppnMatch === false) {
 			Meteor.users.update({
-				_id: user._id
+				_id: user._id,
 			}, {
 				$set: {
-				'eppn': eppn
-				}
+					eppn: eduPersonPrincipalName,
+				},
 			});
 		}
 
@@ -197,25 +198,25 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		// Overwrite fullname if needed
 		if (Accounts.saml.settings.nameOverwrite === true) {
 			Meteor.users.update({
-				_id: user._id
+				_id: user._id,
 			}, {
 				$set: {
-				'name': name
-				}
+					name: fullName,
+				},
 			});
 		}
 
 		// Overwrite mail if needed
-		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch == true) {
+		if (Accounts.saml.settings.mailOverwrite === true && eppnMatch === true) {
 			Meteor.users.update({
-				_id: user._id
+				_id: user._id,
 			}, {
 				$set: {
-				emails: emailList.map(email => ({
-					address: email,
-					verified: true
-				}))
-				}
+					emails: emailList.map((email) => ({
+						address: email,
+						verified: true,
+					})),
+				},
 			});
 		}
 
