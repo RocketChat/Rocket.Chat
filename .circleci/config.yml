@@ -380,7 +380,9 @@ workflows:
             - image-build
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - image-build:
@@ -388,7 +390,9 @@ workflows:
             - hold
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - master
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
       - hold:
@@ -405,4 +409,6 @@ workflows:
             - hold
           filters:
             branches:
-              ignore: develop
+              ignore:
+                - develop
+                - master
