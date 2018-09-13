@@ -187,53 +187,49 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		user.type = 'user';
 	}
 
-	try {
-		const _id = insertUserDoc.call(Accounts, options, user);
-		user = Meteor.users.findOne({
-			_id,
+	const _id = insertUserDoc.call(Accounts, options, user);
+
+	user = Meteor.users.findOne({
+		_id,
+	});
+
+	if (user.username) {
+		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
+			Meteor.runAsUser(_id, function() {
+				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+			});
+		}
+
+		if (user.type !== 'visitor') {
+			Meteor.defer(function() {
+				return RocketChat.callbacks.run('afterCreateUser', user);
+			});
+		}
+	}
+
+	if (roles.length === 0) {
+		const hasAdmin = RocketChat.models.Users.findOne({
+			roles: 'admin',
+			type: 'user',
+		}, {
+			fields: {
+				_id: 1,
+			},
 		});
 
-		if (user.username) {
-			if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
-				Meteor.runAsUser(_id, function() {
-					return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
-				});
-			}
-
-			if (user.type !== 'visitor') {
-				Meteor.defer(function() {
-					return RocketChat.callbacks.run('afterCreateUser', user);
-				});
+		if (hasAdmin) {
+			roles.push('user');
+		} else {
+			roles.push('admin');
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
-
-		if (roles.length === 0) {
-			const hasAdmin = RocketChat.models.Users.findOne({
-				roles: 'admin',
-				type: 'user',
-			}, {
-				fields: {
-					_id: 1,
-				},
-			});
-
-			if (hasAdmin) {
-				roles.push('user');
-			} else {
-				roles.push('admin');
-				if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
-					RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-				}
-			}
-		}
-
-		RocketChat.authz.addUserRoles(_id, roles);
-
-		return _id;
-	} catch (err) {
-		console.log('Failed user insertion', err);
-		return;
 	}
+
+	RocketChat.authz.addUserRoles(_id, roles);
+
+	return _id;
 });
 
 Accounts.validateLoginAttempt(function(login) {
