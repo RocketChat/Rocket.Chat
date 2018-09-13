@@ -16,7 +16,7 @@ const parseNotEscaped = function(msg, message) {
 		const token = `=!=${ Random.id() }=!=`;
 		message.tokens.push({
 			token,
-			text: html
+			text: html,
 		});
 
 		return token;

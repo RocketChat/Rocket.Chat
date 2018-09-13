@@ -23,22 +23,22 @@ this.alerts = {
 
 		Blaze.remove(this.renderedAlert);
 
-		const activeElement = this.renderedAlert.dataVar.curValue.activeElement;
+		const { activeElement } = this.renderedAlert.dataVar.curValue;
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
 
 		dismiss && this.renderedAlert.dataVar.curValue.onClose && this.renderedAlert.dataVar.curValue.onClose();
-	}
+	},
 };
 
 Template.alerts.helpers({
 	hasAction() {
-		return Template.instance().data.action? 'rc-alerts--has-action': '';
+		return Template.instance().data.action ? 'rc-alerts--has-action' : '';
 	},
 	modifiers() {
-		return (Template.instance().data.modifiers || []).map(mod => `rc-alerts--${ mod }`).join(' ');
-	}
+		return (Template.instance().data.modifiers || []).map((mod) => `rc-alerts--${ mod }`).join(' ');
+	},
 });
 
 Template.alerts.onRendered(function() {
@@ -62,9 +62,9 @@ Template.alerts.events({
 	},
 	'click .js-close'() {
 		alerts.close();
-	}
+	},
 });
 
 Template.alerts.helpers({
-	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent),
 });

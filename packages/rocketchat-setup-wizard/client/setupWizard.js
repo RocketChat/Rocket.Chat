@@ -1,90 +1,135 @@
-import s from 'underscore.string';
+const cannotSetup = () => {
+	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
+	if (!showSetupWizard) {
+		// Setup Wizard state is not defined yet
+		return;
+	}
 
-const setSettingsAndGo = (settings, registerServer = true) => {
-	const settingsFilter = Object.entries(settings)
-		.filter(([key]) => !/registration-|registerServer|currentStep/.test(key))
-		.map(([_id, value]) => ({_id, value}));
+	const userId = Meteor.userId();
+	const user = userId && RocketChat.models.Users.findOne(userId, { fields: { status: true } });
+	if (userId && (!user || !user.status)) {
+		// User and its status are not defined yet
+		return;
+	}
 
-	settingsFilter.push({
-		_id: 'Statistics_reporting',
-		value: registerServer
-	});
+	const isComplete = showSetupWizard === 'completed';
+	const noUserLoggedInAndIsNotPending = !userId && showSetupWizard !== 'pending';
+	const userIsLoggedButIsNotAdmin = userId && !RocketChat.authz.hasRole(userId, 'admin');
 
-	RocketChat.settings.batchSet(settingsFilter, function(err) {
-		if (err) {
-			return handleError(err);
-		}
-
-		localStorage.setItem('wizardFinal', true);
-		FlowRouter.go('setup-wizard-final');
-	});
+	return isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin;
 };
 
-Template.setupWizard.onCreated(function() {
-	const userId = Meteor.userId();
+const registerAdminUser = (state, callback) => {
+	const registrationData = Object.entries(state)
+		.filter(([key]) => /registration-/.test(key))
+		.map(([key, value]) => ([key.replace('registration-', ''), value]))
+		.reduce((o, [key, value]) => ({ ...o, [key]: value }), {});
 
-	this.autorun((c) => {
-		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
-		const user = Meteor.user();
-
-		// Wait for roles and setup wizard setting
-		if ((userId && (!user || !user.status)) || !Show_Setup_Wizard) {
-			return;
+	Meteor.call('registerUser', registrationData, (error) => {
+		if (error) {
+			return handleError(error);
 		}
 
-		c.stop();
-
-		if ((!userId && Show_Setup_Wizard !== 'pending') || Show_Setup_Wizard === 'completed' || (userId && !RocketChat.authz.hasRole(userId, 'admin'))) {
-			FlowRouter.go('home');
-		}
-	});
-
-	if (localStorage.getItem('wizardFinal')) {
-		FlowRouter.go('setup-wizard-final');
-	}
-
-	this.hasAdmin = new ReactiveVar(false);
-	this.state = new ReactiveDict();
-	this.wizardSettings = new ReactiveVar([]);
-	this.invalidEmail = new ReactiveVar(false);
-
-	const storage = JSON.parse(localStorage.getItem('wizard'));
-	if (storage) {
-		Object.entries(storage).forEach(([key, value]) => {
-			this.state.set(key, value);
-		});
-	}
-
-	this.autorun(() => {
-		const user = Meteor.user();
-		if (user) {
-			if (!this.hasAdmin.get()) {
-				if (user.roles && user.roles.includes('admin')) {
-					this.state.set('currentStep', 2);
-					this.hasAdmin.set(true);
+		RocketChat.callbacks.run('userRegistered');
+		Meteor.loginWithPassword(registrationData.email, registrationData.pass, (error) => {
+			if (error) {
+				if (error.error === 'error-invalid-email') {
+					toastr.success(t('We_have_sent_registration_email'));
+					return false;
 				} else {
-					this.hasAdmin.set(false);
+					return handleError(error);
 				}
 			}
 
-			Meteor.call('getWizardSettings', (error, result) => {
+			Session.set('forceLogin', false);
+			Meteor.call('setUsername', registrationData.username, (error) => {
 				if (error) {
 					return handleError(error);
 				}
 
-				this.wizardSettings.set(result);
+				RocketChat.callbacks.run('usernameSet');
+				callback && callback();
 			});
-		} else {
+		});
+	});
+};
+
+const persistSettings = (state, callback) => {
+	const settings = Object.entries(state)
+		.filter(([key]) => !/registration-|registerServer|optIn|currentStep|invalidUsername|invalidEmail/.test(key))
+		.map(([_id, value]) => ({ _id, value }))
+		.concat([
+			{
+				_id: 'Statistics_reporting',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Allow_Marketing_Emails',
+				value: state.optIn,
+			},
+		]);
+
+	RocketChat.settings.batchSet(settings, (error) => {
+		if (error) {
+			return handleError(error);
+		}
+
+		callback && callback();
+	});
+};
+
+Template.setupWizard.onCreated(function() {
+	this.state = new ReactiveDict();
+	this.state.set('currentStep', 1);
+	this.state.set('registerServer', true);
+	this.state.set('optIn', true);
+
+	this.wizardSettings = new ReactiveVar([]);
+	this.allowStandaloneServer = new ReactiveVar(false);
+
+	if (localStorage.getItem('wizardFinal')) {
+		FlowRouter.go('setup-wizard-final');
+		return;
+	}
+
+	const jsonString = localStorage.getItem('wizard');
+	const state = (jsonString && JSON.parse(jsonString)) || {};
+	Object.entries(state).forEach((entry) => this.state.set(...entry));
+
+	this.autorun((c) => {
+		const cantSetup = cannotSetup();
+		if (typeof cantSetup === 'undefined') {
+			return;
+		}
+
+		if (cantSetup) {
+			c.stop();
+			FlowRouter.go('home');
+			return;
+		}
+
+		const state = this.state.all();
+		state['registration-pass'] = '';
+		localStorage.setItem('wizard', JSON.stringify(state));
+
+		if (Meteor.userId()) {
+			Meteor.call('getSetupWizardParameters', (error, { settings, allowStandaloneServer }) => {
+				if (error) {
+					return handleError(error);
+				}
+
+				this.wizardSettings.set(settings);
+				this.allowStandaloneServer.set(allowStandaloneServer);
+			});
+
+			if (this.state.get('currentStep') === 1) {
+				this.state.set('currentStep', 2);
+			} else {
+				this.state.set('registration-pass', '');
+			}
+		} else if (this.state.get('currentStep') !== 1) {
 			this.state.set('currentStep', 1);
 		}
-
-		if (RocketChat.settings.get('Show_Setup_Wizard') === 'completed') {
-			FlowRouter.go('home');
-		}
-
-		const states = this.state.all();
-		states['registration-pass'] = '';
-		localStorage.setItem('wizard', JSON.stringify(states));
 	});
 });
 
@@ -93,212 +138,222 @@ Template.setupWizard.onRendered(function() {
 });
 
 Template.setupWizard.events({
+	'submit .setup-wizard-forms__box'() {
+		return false;
+	},
 	'click .setup-wizard-forms__footer-next'(e, t) {
-		const currentStep = t.state.get('currentStep');
-		const hasAdmin = t.hasAdmin.get();
+		switch (t.state.get('currentStep')) {
+			case 1: {
+				const usernameValue = t.state.get('registration-username');
+				const usernameRegex = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+				t.state.set('invalidUsername', !usernameRegex.test(usernameValue));
 
-		if (!hasAdmin && currentStep === 1) {
-			const emailValue = t.state.get('registration-email');
-			const invalidEmail = !/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(emailValue);
-			t.invalidEmail.set(invalidEmail);
+				const emailValue = t.state.get('registration-email');
+				const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i;
+				t.state.set('invalidEmail', !emailRegex.test(emailValue));
 
-			if (invalidEmail) {
-				return false;
-			}
-
-			const state = t.state.all();
-			const registration = Object.entries(state).filter(([key]) => /registration-/.test(key));
-			const registrationData = Object.assign(...registration.map(d => ({[d[0].replace('registration-', '')]: d[1]})));
-
-			Meteor.call('registerUser', registrationData, error => {
-				if (error) {
-					return handleError(error);
+				if (t.state.get('invalidUsername') || t.state.get('invalidEmail')) {
+					return false;
 				}
 
-				RocketChat.callbacks.run('userRegistered');
-
-				Meteor.loginWithPassword(s.trim(registrationData.email), registrationData.pass, error => {
-					if (error && error.error === 'error-invalid-email') {
-						toastr.success(t('We_have_sent_registration_email'));
-						return false;
-					}
-
-					Session.set('forceLogin', false);
-
-					Meteor.call('setUsername', registrationData.username, error => {
-						if (error) {
-							return handleError(error);
-						}
-
-						RocketChat.callbacks.run('usernameSet');
-					});
+				registerAdminUser(t.state.all(), () => t.state.set('currentStep', 2));
+				return false;
+			}
+			case 2: {
+				t.state.set('currentStep', 3);
+				return false;
+			}
+			case 3: {
+				t.state.set('currentStep', 4);
+				return false;
+			}
+			case 4: {
+				persistSettings(t.state.all(), () => {
+					localStorage.removeItem('wizard');
+					localStorage.setItem('wizardFinal', true);
+					FlowRouter.go('setup-wizard-final');
 				});
-			});
+				return false;
+			}
 		}
 
-		if (hasAdmin && currentStep === 3) {
-			setSettingsAndGo(t.state.all());
-			return false;
-		}
-
-		if (currentStep === 4) {
-			setSettingsAndGo(t.state.all(), JSON.parse(t.state.get('registerServer') || true));
-
-			return false;
-		}
-
-		t.state.set('currentStep', currentStep + 1);
+		return false;
 	},
 	'click .setup-wizard-forms__footer-back'(e, t) {
-		t.state.set('currentStep', t.state.get('currentStep') - 1);
+		switch (t.state.get('currentStep')) {
+			case 2:
+				t.state.set('currentStep', 1);
+				break;
+			case 3:
+				t.state.set('currentStep', 2);
+				break;
+			case 4:
+				t.state.set('currentStep', 3);
+				break;
+		}
+
+		return false;
 	},
-	'input .js-setting-data'(e, t) {
-		t.state.set(e.currentTarget.name, e.currentTarget.value);
-	}
+	'input .js-setting-data'({ currentTarget: { name, value } }, t) {
+		t.state.set(name, value);
+	},
+	'click input[name="registerServer"]'({ currentTarget: { value } }, t) {
+		const oldValue = t.state.get('registerServer');
+		const newValue = value === 'true';
+		t.state.set('registerServer', newValue);
+
+		if (!oldValue && newValue) {
+			t.state.set('optIn', true);
+		}
+
+		if (!newValue) {
+			t.state.set('optIn', false);
+		}
+
+		return false;
+	},
+	'click input[name="optIn"]'({ currentTarget: { checked } }, t) {
+		t.state.set('optIn', checked);
+		return false;
+	},
 });
 
 Template.setupWizard.helpers({
 	currentStep() {
 		return Template.instance().state.get('currentStep');
 	},
-	itemModifier(step) {
-		const current = Template.instance().state.get('currentStep');
+	currentStepTitle() {
+		switch (Template.instance().state.get('currentStep')) {
+			case 1:
+				return 'Admin_Info';
+			case 2:
+				return 'Organization_Info';
+			case 3:
+				return 'Server_Info';
+			case 4:
+				return 'Register_Server';
+		}
+	},
+	formLoadStateClass() {
+		switch (Template.instance().state.get('currentStep')) {
+			case 1:
+				return RocketChat.settings.get('Show_Setup_Wizard') === 'pending' && 'setup-wizard-forms__box--loaded';
+			case 2:
+			case 3:
+				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
+			case 4:
+				return 'setup-wizard-forms__box--loaded';
+		}
+	},
+	showBackButton() {
+		switch (Template.instance().state.get('currentStep')) {
+			case 3:
+				return true;
+			case 4:
+				return true;
+		}
 
-		if (current === step) {
+		return false;
+	},
+	isContinueDisabled() {
+		switch (Template.instance().state.get('currentStep')) {
+			case 1:
+				return Object.entries(Template.instance().state.all())
+					.filter(([key, value]) => /registration-/.test(key) && !value)
+					.length !== 0;
+		}
+
+		return false;
+	},
+	infoArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+		};
+	},
+	adminInfoArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+			name: t.state.get('registration-name'),
+			username: t.state.get('registration-username'),
+			email: t.state.get('registration-email'),
+			password: t.state.get('registration-pass'),
+			invalidUsername: t.state.get('invalidUsername'),
+			invalidEmail: t.state.get('invalidEmail'),
+		};
+	},
+	registerServerArgs() {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+			allowStandaloneServer: t.allowStandaloneServer.get(),
+			registerServer: t.allowStandaloneServer.get() ? t.state.get('registerServer') : true,
+			optIn: t.state.get('optIn'),
+		};
+	},
+	customStepArgs(step) {
+		const t = Template.instance();
+
+		return {
+			currentStep: t.state.get('currentStep'),
+			step,
+			settings: t.wizardSettings.get()
+				.filter((setting) => setting.wizard.step === step)
+				.sort((a, b) => a.wizard.order - b.wizard.order)
+				.map(({ type, _id, i18nLabel, values }) => ({
+					type,
+					id: _id,
+					label: i18nLabel,
+					value: t.state.get(_id),
+					options: (
+						type === 'select' &&
+						values &&
+						values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
+					) || (
+						type === 'language' &&
+						([{
+							optionLabel: 'Default',
+							optionValue: '',
+						}].concat(
+							Object.entries(TAPi18n.getLanguages())
+								.map(([key, { name }]) => ({ optionLabel: name, optionValue: key }))
+								.sort((a, b) => a.key - b.key)
+						))
+					),
+					isValueSelected: (value) => value === t.state.get(_id),
+				})),
+		};
+	},
+});
+
+Template.setupWizardInfo.helpers({
+	stepItemModifier(step) {
+		const { currentStep } = Template.currentData();
+
+		if (currentStep === step) {
 			return 'setup-wizard-info__steps-item--active';
 		}
 
-		if (current > step) {
+		if (currentStep > step) {
 			return 'setup-wizard-info__steps-item--past';
 		}
 
 		return '';
 	},
-	getValue(name) {
-		return Template.instance().state.get(name);
-	},
-	selectedValue(setting, optionValue) {
-		return Template.instance().state.get(setting) === optionValue;
-	},
-	isDisabled() {
-		const user = Meteor.user();
-		if (user && user.roles && !user.roles.includes('admin')) {
-			return 'disabled';
-		}
-
-		if (Template.instance().state.get('currentStep') === 1) {
-			const state = Template.instance().state.all();
-
-			if (Object.entries(state).filter(([key, value]) => /registration-/.test(key) && !value).length) {
-				return 'disabled';
-			}
-		}
-
-		return '';
-	},
-	headerTitle(step) {
-		if (!step) {
-			step = Template.instance().state.get('currentStep');
-		}
-
+	stepTitle(step) {
 		switch (step) {
-			case 1: return t('Admin_Info');
-			case 2: return t('Organization_Info');
-			case 3: return t('Server_Info');
-			case 4: return t('Register_Server');
+			case 1:
+				return 'Admin_Info';
+			case 2:
+				return 'Organization_Info';
+			case 3:
+				return 'Server_Info';
+			case 4:
+				return 'Register_Server';
 		}
 	},
-	showStep() {
-		const currentStep = Template.instance().state.get('currentStep');
-		if (currentStep === 2 || currentStep === 3) {
-			return 'setup-wizard-forms__content-step--active';
-		}
-
-		return '';
-	},
-	getSettings(step) {
-		return Template.instance().wizardSettings.get()
-			.filter(setting => setting.wizard.step === step)
-			.sort((a, b) => a.wizard.order - b.wizard.order);
-	},
-	languages() {
-		const languages = TAPi18n.getLanguages();
-
-		const result = Object.entries(languages).map(language => {
-			const obj = language[1];
-			obj.key = language[0];
-			return obj;
-		}).sort((a, b) => a.key - b.key);
-
-		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
-		});
-
-		return result;
-	},
-	hasAdmin() {
-		return Template.instance().hasAdmin.get();
-	},
-	invalidEmail() {
-		return Template.instance().invalidEmail.get();
-	},
-	showBackButton() {
-		if (Template.instance().hasAdmin.get()) {
-			if (Template.instance().state.get('currentStep') > 2) {
-				return true;
-			}
-
-			return false;
-		}
-
-		if (Template.instance().state.get('currentStep') > 1) {
-			return true;
-		}
-
-		return false;
-	}
-});
-
-Template.setupWizardFinal.onCreated(function() {
-	this.autorun(() => {
-		const userId = Meteor.userId();
-
-		this.autorun((c) => {
-			const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
-			const user = Meteor.user();
-
-			// Wait for roles and setup wizard setting
-			if ((userId && (!user || !user.status)) || !Show_Setup_Wizard) {
-				return;
-			}
-
-			c.stop();
-
-			if ((!userId && Show_Setup_Wizard !== 'pending') || Show_Setup_Wizard === 'completed' || (userId && !RocketChat.authz.hasRole(userId, 'admin'))) {
-				FlowRouter.go('home');
-			}
-		});
-	});
-});
-
-Template.setupWizardFinal.onRendered(function() {
-	$('#initial-page-loading').remove();
-});
-
-Template.setupWizardFinal.events({
-	'click .js-finish'() {
-		RocketChat.settings.set('Show_Setup_Wizard', 'completed', function() {
-			localStorage.removeItem('wizard');
-			localStorage.removeItem('wizardFinal');
-			FlowRouter.go('home');
-		});
-	}
-});
-
-Template.setupWizardFinal.helpers({
-	siteUrl() {
-		return RocketChat.settings.get('Site_Url');
-	}
 });

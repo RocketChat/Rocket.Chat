@@ -9,7 +9,7 @@ const keys = {
 	ARROW_LEFT: 37,
 	ARROW_UP: 38,
 	ARROW_RIGHT: 39,
-	ARROW_DOWN: 40
+	ARROW_DOWN: 40,
 };
 
 function getCursorPosition(input) {
@@ -54,7 +54,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 			if (!preview || !Array.isArray(preview.items)) {
 				template.preview.set({
 					i18nTitle: 'No_results_found_for',
-					items: []
+					items: [],
 				});
 			} else {
 				template.preview.set(preview);
@@ -294,7 +294,7 @@ Template.messagePopupSlashCommandPreview.events({
 		template.clickingItem = false;
 		template.enterKeyAction();
 		toolbarSearch.clear();
-	}
+	},
 });
 
 Template.messagePopupSlashCommandPreview.helpers({
@@ -312,5 +312,5 @@ Template.messagePopupSlashCommandPreview.helpers({
 	},
 	preview() {
 		return Template.instance().preview.get();
-	}
+	},
 });
