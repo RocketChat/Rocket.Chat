@@ -91,6 +91,18 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Debug',
 		});
+		RocketChat.settings.add(`SAML_Custom_${name}_name_overwrite`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_name_overwrite'
+		});
+		RocketChat.settings.add(`SAML_Custom_${name}_mail_overwrite`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: name,
+			i18nLabel: 'SAML_Custom_mail_overwrite'
+		});
 		RocketChat.settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
 			type: 'select',
 			values: [
@@ -116,6 +128,8 @@ const getSamlConfigs = function(service) {
 		idpSLORedirectURL: RocketChat.settings.get(`${ service.key }_idp_slo_redirect_url`),
 		generateUsername: RocketChat.settings.get(`${ service.key }_generate_username`),
 		debug: RocketChat.settings.get(`${ service.key }_debug`),
+		nameOverwrite: RocketChat.settings.get(`${service.key}_name_overwrite`),
+		mailOverwrite: RocketChat.settings.get(`${service.key}_mail_overwrite`),
 		issuer: RocketChat.settings.get(`${ service.key }_issuer`),
 		logoutBehaviour: RocketChat.settings.get(`${ service.key }_logout_behaviour`),
 		secret: {
@@ -148,6 +162,8 @@ const configureSamlService = function(samlConfigs) {
 	}
 	// TODO: the function configureSamlService is called many times and Accounts.saml.settings.generateUsername keeps just the last value
 	Accounts.saml.settings.generateUsername = samlConfigs.generateUsername;
+	Accounts.saml.settings.nameOverwrite = samlConfigs.nameOverwrite;
+	Accounts.saml.settings.mailOverwrite = samlConfigs.mailOverwrite;
 	Accounts.saml.settings.debug = samlConfigs.debug;
 
 	return {
