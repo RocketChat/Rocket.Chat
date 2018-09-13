@@ -26,7 +26,6 @@ Template.readReceipts.onCreated(function readReceiptsOnCreated() {
 
 Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 	this.loading.set(true);
-
 	Meteor.call('getReadReceipts', { messageId: this.data.messageId }, (error, result) => {
 		if (!error) {
 			this.readReceipts.set(result);
