@@ -24,5 +24,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
-	}
+	},
 });

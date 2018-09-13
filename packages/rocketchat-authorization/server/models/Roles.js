@@ -1,8 +1,8 @@
 class ModelRoles extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
-		this.tryEnsureIndex({ 'name': 1 });
-		this.tryEnsureIndex({ 'scope': 1 });
+	constructor(...args) {
+		super(...args);
+		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ scope: 1 });
 	}
 
 	findUsersInRole(name, scope, options) {
@@ -62,6 +62,18 @@ class ModelRoles extends RocketChat.models._Base {
 			model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
 		}
 		return true;
+	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOne(query, options);
 	}
 }
 

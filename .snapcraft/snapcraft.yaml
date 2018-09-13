@@ -32,10 +32,10 @@ apps:
         command: env LC_ALL=C restoredb
         plugs: [network]
     backupdb:
-        command: env LC_ALL=c rcbackup
+        command: env LC_ALL=C backupdb
         plugs: [network]
     initcaddy:
-        command: env LC_ALL=c initcaddy
+        command: env LC_ALL=C initcaddy
 parts:
     node:
         plugin: dump 
@@ -77,7 +77,7 @@ parts:
         plugin: dump
         source: resources/
         organize:
-            rcbackup: bin/rcbackup
+            backupdb: bin/backupdb
             restoredb: bin/restoredb
             startmongo: bin/startmongo
             startRocketChat: bin/startRocketChat

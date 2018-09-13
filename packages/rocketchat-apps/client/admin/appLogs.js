@@ -14,7 +14,7 @@ Template.appLogs.onCreated(function() {
 
 	Promise.all([
 		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/logs`)
+		RocketChat.API.get(`apps/${ id }/logs`),
 	]).then((results) => {
 
 		instance.app.set(results[0].app);
@@ -70,7 +70,7 @@ Template.appLogs.helpers({
 		}
 
 		return value.replace(/\\\\n/g, '<br>');
-	}
+	},
 });
 
 Template.appLogs.events({
@@ -82,5 +82,5 @@ Template.appLogs.events({
 	'click .collapse': (e) => {
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
-	}
+	},
 });

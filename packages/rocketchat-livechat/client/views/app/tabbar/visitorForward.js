@@ -14,7 +14,7 @@ Template.visitorForward.helpers({
 	},
 	agentName() {
 		return this.name || this.username;
-	}
+	},
 });
 
 Template.visitorForward.onCreated(function() {
@@ -39,7 +39,7 @@ Template.visitorForward.events({
 		event.preventDefault();
 
 		const transferData = {
-			roomId: instance.room.get()._id
+			roomId: instance.room.get()._id,
 		};
 
 		if (instance.find('#forwardUser').value) {
@@ -77,5 +77,5 @@ Template.visitorForward.events({
 		event.preventDefault();
 
 		this.cancel();
-	}
+	},
 });
