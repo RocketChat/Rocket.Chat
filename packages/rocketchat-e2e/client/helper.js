@@ -43,6 +43,6 @@ RocketChat.signalUtils = (function() {
 				throw new Error('a/b compare too short');
 			}
 			return a.substring(0, Math.min(maxLength, a.length)) === b.substring(0, Math.min(maxLength, b.length));
-		}
+		},
 	};
 }());

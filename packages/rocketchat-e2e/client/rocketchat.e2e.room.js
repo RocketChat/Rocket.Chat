@@ -53,13 +53,13 @@ RocketChat.E2E.Room = class {
 						console.log('encrypted key obtained');
 
 						// Decrypt obtained encrypted session key
-						decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+						decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 						decrypt_promise.then(function(result) {
 
 							self.exportedSessionKey = ab2str(result);
 
 							// Import session key for use.
-							crypto.subtle.importKey('jwk', EJSON.parse(self.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+							crypto.subtle.importKey('jwk', EJSON.parse(self.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
 								console.log('key imported');
 								// Key has been obtained. E2E is now in session.
 								self.groupSessionKey = key;
@@ -82,7 +82,7 @@ RocketChat.E2E.Room = class {
 				if (val === false) {
 					// Session key does not exist on the server. Generating new.
 					console.log('generate new key');
-					RocketChat.E2E.crypto.generateKey({name: 'AES-CBC', length: 128}, true, ['encrypt', 'decrypt']).then((key) => {
+					RocketChat.E2E.crypto.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']).then((key) => {
 						self.groupSessionKey = key;
 						crypto.subtle.exportKey('jwk', key).then(function(result) {
 							self.exportedSessionKey = JSON.stringify(result);
@@ -99,11 +99,11 @@ RocketChat.E2E.Room = class {
 								Meteor.call('fetchKeychain', user._id, function(error, keychain) {
 									const key = JSON.parse(keychain);
 									if (key['RSA-PubKey']) {
-										crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(user_key) {
+										crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']).then(function(user_key) {
 											const vector = crypto.getRandomValues(new Uint8Array(16));
 
 											// Encrypt session key for this user with his/her public key
-											encrypt_promise = crypto.subtle.encrypt({name: 'RSA-OAEP', iv: vector}, user_key, str2ab(self.exportedSessionKey));
+											encrypt_promise = crypto.subtle.encrypt({ name: 'RSA-OAEP', iv: vector }, user_key, str2ab(self.exportedSessionKey));
 											encrypt_promise.then(function(result) {
 												cipherText = new Uint8Array(result);
 												const output = new Uint8Array(vector.length + cipherText.length);
@@ -184,7 +184,7 @@ RocketChat.E2E.Room = class {
 	encryptFile(fileArrayBuffer) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
-			return crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, fileArrayBuffer).then((result) => {
+			return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, fileArrayBuffer).then((result) => {
 				cipherText = new Uint8Array(result);
 				const output = new Uint8Array(vector.length + cipherText.length);
 				output.set(vector, 0);
@@ -200,16 +200,14 @@ RocketChat.E2E.Room = class {
 		let cipherText = EJSON.parse(message);
 		const vector = cipherText.slice(0, 16);
 		cipherText = cipherText.slice(16);
-		return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
-			return result;
-		})
+		return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText).then((result) => result)
 			.catch((e) => {
 				console.log(e);
 				// Session key was reset. Cannot decrypt this file anymore.
 				modal.open({
 					title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 					text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
-					html: true
+					html: true,
 				});
 
 				return false;
@@ -220,11 +218,11 @@ RocketChat.E2E.Room = class {
 	// Encrypts messages
 	encryptText(data) {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
+			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
-			return crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, data).then((result) => {
+			return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, data).then((result) => {
 				cipherText = new Uint8Array(result);
 				const output = new Uint8Array(vector.length + cipherText.length);
 				output.set(vector, 0);
@@ -236,9 +234,7 @@ RocketChat.E2E.Room = class {
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
 
-			return this.cipher.encrypt(data).then((ciphertext) => {
-				return ab2str(ciphertext.body);
-			});
+			return this.cipher.encrypt(data).then((ciphertext) => ab2str(ciphertext.body));
 		}
 	}
 
@@ -256,8 +252,8 @@ RocketChat.E2E.Room = class {
 			_id: message._id,
 			text: message.msg,
 			userId: this.userId,
-			ack: Random.id((Random.fraction()+1)*20),
-			ts
+			ack: Random.id((Random.fraction() + 1) * 20),
+			ts,
 		}));
 		const enc = this.encryptText(data);
 		return enc;
@@ -271,9 +267,7 @@ RocketChat.E2E.Room = class {
 			let cipherText = message;
 			const vector = cipherText.slice(0, 16);
 			cipherText = cipherText.slice(16);
-			return crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, this.groupSessionKey, cipherText).then((result) => {
-				return EJSON.parse(ab2str(result));
-			})
+			return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText).then((result) => EJSON.parse(ab2str(result)))
 				.catch((e) => {
 					console.log(e);
 
@@ -308,7 +302,7 @@ RocketChat.E2E.Room = class {
 			Meteor.call('fetchKeychain', this.peerId, function(error, result) {
 				const key = JSON.parse(result);
 				self.peerIdentityKey = key.lastUsedIdentityKey;
-				for (let i=0; i<key.publicKeychain.length; i++) {
+				for (let i = 0; i < key.publicKeychain.length; i++) {
 					if (key.publicKeychain[i][0] === self.peerIdentityKey) {
 						self.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
 						self.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
@@ -345,7 +339,7 @@ RocketChat.E2E.Room = class {
 				// GET THE OTHER'S KEY
 				Meteor.call('fetchKeychain', data.userId, function(error, key) {
 					this.peerIdentityKey = key.lastUsedIdentityKey;
-					for (let i=0; i<key.publicKeychain.length; i++) {
+					for (let i = 0; i < key.publicKeychain.length; i++) {
 						if (key.publicKeychain[i][0] === this.peerIdentityKey) {
 							this.peerSignedPreKey = key.publicKeychain[i][1];
 							this.peerSignedSignature = key.publicKeychain[i][2];
@@ -362,7 +356,7 @@ RocketChat.E2E.Room = class {
 					modal.open({
 						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('The E2E session was ended'),
-						html: true
+						html: true,
 					});
 				}
 				break;
@@ -373,7 +367,7 @@ RocketChat.E2E.Room = class {
 					modal.open({
 						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
-						html: true
+						html: true,
 					});
 				}
 		}

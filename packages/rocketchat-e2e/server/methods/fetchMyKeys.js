@@ -4,5 +4,5 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'fetchMyKeys' });
 		}
 		return RocketChat.models.Users.fetchMyKeys();
-	}
+	},
 });

@@ -7,5 +7,5 @@ Meteor.methods({
 				return RocketChat.models.Subscriptions.updateGroupE2EKey(userSub._id, key);
 			}
 		}
-	}
+	},
 });

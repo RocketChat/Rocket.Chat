@@ -18,7 +18,7 @@ Template.e2eFlexTab.helpers({
 	isGroup() {
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		return e2e && (e2e.typeOfRoom === 'p');
-	}
+	},
 });
 
 Template.e2eFlexTab.events({
@@ -63,7 +63,7 @@ Template.e2eFlexTab.events({
 			modal.open({
 				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 				text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
-				html: true
+				html: true,
 			});
 		}
 	},
@@ -73,7 +73,7 @@ Template.e2eFlexTab.events({
 		if (e2e) {
 			e2e.end();
 		}
-	}
+	},
 });
 
 Template.e2eFlexTab.onCreated(function() {

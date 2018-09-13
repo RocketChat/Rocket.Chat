@@ -9,7 +9,7 @@ Meteor.startup(function() {
 				i18nTitle: 'E2E',
 				icon: 'icon-key',
 				template: 'e2eFlexTab',
-				order: 12
+				order: 12,
 			});
 		} else {
 			RocketChat.E2E.enabled.set(false);

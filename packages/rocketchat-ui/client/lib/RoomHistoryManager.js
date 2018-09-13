@@ -50,7 +50,7 @@ export const RoomHistoryManager = new class {
 				if (data.ts) {
 					item.ts = data.ts;
 				}
-				ChatMessage.upsert({_id: item._id}, item);
+				ChatMessage.upsert({ _id: item._id }, item);
 			});
 		}		else {
 			// Session key for this room does not exist in browser. Download key first.
@@ -60,12 +60,12 @@ export const RoomHistoryManager = new class {
 				cipherText = cipherText.slice(16);
 
 				// Decrypt downloaded key.
-				const decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+				const decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 				decrypt_promise.then(function(result) {
 
 					// Import decrypted session key for use.
 					e2eRoom.exportedSessionKey = RocketChat.signalUtils.toString(result);
-					crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+					crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
 						e2eRoom.groupSessionKey = key;
 
 						// Decrypt message.
@@ -75,7 +75,7 @@ export const RoomHistoryManager = new class {
 							if (data.ts) {
 								item.ts = data.ts;
 							}
-							ChatMessage.upsert({_id: item._id}, item);
+							ChatMessage.upsert({ _id: item._id }, item);
 						});
 
 					});
@@ -121,7 +121,6 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
-		const self = this;
 		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
 			if (err) {
 				return;
@@ -185,7 +184,6 @@ export const RoomHistoryManager = new class {
 		const { ts } = lastMessage;
 
 		if (ts) {
-			const self = this;
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
 
 				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
@@ -249,7 +247,6 @@ export const RoomHistoryManager = new class {
 				typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 			}
 
-			const self = this;
 			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
 
 				if (!result || !result.messages) {

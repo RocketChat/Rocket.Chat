@@ -74,7 +74,7 @@ FileUploadBase = class FileUploadBase {
 								file.encryption = true;
 								file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 								return callback(null, file, self.store.options.name);
-							}
+							},
 						});
 						self.handler.onProgress = (file, progress) => {
 							self.onProgress(progress);

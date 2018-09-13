@@ -1,23 +1,23 @@
 RocketChat.API.v1.addRoute('e2e.fetchGroupE2EKey', { authRequired: true }, {
 	get() {
-		const rid = this.queryParams.rid;
+		const { rid } = this.queryParams;
 
 		let result;
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchGroupE2EKey', rid));
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('e2e.fetchKeychain', { authRequired: true }, {
 	get() {
-		const uid = this.queryParams.uid;
+		const { uid } = this.queryParams;
 
 		let result;
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchKeychain', uid));
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
@@ -26,20 +26,19 @@ RocketChat.API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchMyKeys'));
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('e2e.addKeyToChain', { authRequired: true }, {
 	post() {
-		const RSAPubKey = this.bodyParams.RSAPubKey;
-		const RSAEPrivKey = this.bodyParams.RSAEPrivKey;
+		const { RSAPubKey, RSAEPrivKey } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
-			RocketChat.API.v1.success(Meteor.call('addKeyToChain', {'RSA-PubKey': RSAPubKey, 'RSA-EPrivKey': RSAEPrivKey}));
+			RocketChat.API.v1.success(Meteor.call('addKeyToChain', { 'RSA-PubKey': RSAPubKey, 'RSA-EPrivKey': RSAEPrivKey }));
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('e2e.emptyKeychain', { authRequired: true }, {
@@ -49,19 +48,17 @@ RocketChat.API.v1.addRoute('e2e.emptyKeychain', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('e2e.updateGroupE2EKey', { authRequired: true }, {
 	post() {
-		const uid = this.bodyParams.uid;
-		const rid = this.bodyParams.rid;
-		const key = this.bodyParams.key;
+		const { uid, rid, key } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
 			RocketChat.API.v1.success(Meteor.call('updateGroupE2EKey', rid, uid, key));
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });

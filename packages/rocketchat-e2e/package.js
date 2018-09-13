@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:e2e',
 	version: '0.0.1',
 	summary: 'End-to-End encrypted conversations for Rocket.Chat',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'less',
 		'rocketchat:lib',
 		'tracker',
-		'reactive-var'
+		'reactive-var',
 	]);
 
 	api.use('templating', 'client');
@@ -25,7 +25,7 @@ Package.onUse(function(api) {
 		'client/views/e2eFlexTab.js',
 		'client/tabBar.js',
 		'client/helper.js',
-		'client/store.js'
+		'client/store.js',
 	], 'client');
 
 	api.addFiles([
@@ -37,6 +37,6 @@ Package.onUse(function(api) {
 		'server/methods/emptyKeychain.js',
 		'server/methods/updateGroupE2EKey.js',
 		'server/methods/fetchGroupE2EKey.js',
-		'server/methods/fetchMyKeys.js'
+		'server/methods/fetchMyKeys.js',
 	], 'server');
 });

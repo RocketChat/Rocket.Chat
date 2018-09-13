@@ -33,7 +33,7 @@ class E2E {
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOne({
-			rid: roomId
+			rid: roomId,
 		});
 
 		if (!subscription || (subscription.t !== 'd' && subscription.t !== 'p')) {
@@ -58,19 +58,19 @@ class E2E {
 		const hash = 'SHA-256';
 
 		// First, create a PBKDF2 "key" containing the password
-		window.crypto.subtle.importKey('raw', str2ab(userpass), {'name': 'PBKDF2'}, false, ['deriveKey']).
+		window.crypto.subtle.importKey('raw', str2ab(userpass), { name: 'PBKDF2' }, false, ['deriveKey']).
 
 		// Derive a key from the password
 			then(function(baseKey) {
 				return window.crypto.subtle.deriveKey(
 					{
-						'name': 'PBKDF2',
-						'salt': str2ab(Meteor.userId()),
+						name: 'PBKDF2',
+						salt: str2ab(Meteor.userId()),
 						iterations,
-						hash
+						hash,
 					},
 					baseKey,
-					{'name': 'AES-CBC', 'length': 256}, // Key we want
+					{ name: 'AES-CBC', length: 256 }, // Key we want
 					true, // Extractable
 					['encrypt', 'decrypt'] // For new key
 				);
@@ -90,22 +90,22 @@ class E2E {
 							console.log(EJSON.parse(result));
 							const pubkey = EJSON.parse(result)['RSA-PubKey'];
 							const eprivkey = EJSON.parse(result)['RSA-EPrivKey'];
-							crypto.subtle.importKey('jwk', EJSON.parse(pubkey), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt']).then(function(public_key) {
+							crypto.subtle.importKey('jwk', EJSON.parse(pubkey), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']).then(function(public_key) {
 								localStorage.setItem('RSA-PubKey', pubkey);
 								RocketChat.E2EStorage.put('RSA-PubKey', public_key);
 
 								let cipherText = EJSON.parse(eprivkey);
 								const vector = cipherText.slice(0, 16);
 								cipherText = cipherText.slice(16);
-								crypto.subtle.decrypt({name: 'AES-CBC', iv: vector}, masterKey, cipherText).then((result) => {
+								crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey, cipherText).then((result) => {
 									console.log('Decrypted private key.');
 									console.log(ab2str(result));
 									localStorage.setItem('RSA-PrivKey', ab2str(result));
-									crypto.subtle.importKey('jwk', EJSON.parse(ab2str(result)), {name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['decrypt']).then(function(private_key) {
+									crypto.subtle.importKey('jwk', EJSON.parse(ab2str(result)), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['decrypt']).then(function(private_key) {
 										RocketChat.E2EStorage.put('RSA-PrivKey', private_key);
 										resolve(true);
 									});
-									//EJSON.parse(ab2str(result));
+									// EJSON.parse(ab2str(result));
 								});
 							});
 						}					else {
@@ -117,7 +117,7 @@ class E2E {
 				}).then(function(val) {
 					if (val === false) {
 						console.log('generate new key');
-						promise_key = crypto.subtle.generateKey({name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: 'SHA-256'}}, true, ['encrypt', 'decrypt']);
+						promise_key = crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
 						promise_key.then(function(key) {
 							crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
 								localStorage.setItem('RSA-PubKey', JSON.stringify(result));
@@ -125,7 +125,7 @@ class E2E {
 								crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
 									localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
 									const vector = crypto.getRandomValues(new Uint8Array(16));
-									crypto.subtle.encrypt({name: 'AES-CBC', iv: vector}, masterKey, str2ab(localStorage.getItem('RSA-PrivKey'))).then((result) => {
+									crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, str2ab(localStorage.getItem('RSA-PrivKey'))).then((result) => {
 										cipherText = new Uint8Array(result);
 										const output = new Uint8Array(vector.length + cipherText.length);
 										output.set(vector, 0);
@@ -133,7 +133,7 @@ class E2E {
 										console.log(EJSON.stringify(output));
 										Meteor.call('addKeyToChain', {
 											'RSA-PubKey': localStorage.getItem('RSA-PubKey'),
-											'RSA-EPrivKey': EJSON.stringify(output)
+											'RSA-EPrivKey': EJSON.stringify(output),
 										});
 									});
 								});
@@ -220,12 +220,12 @@ Meteor.startup(function() {
 							cipherText = cipherText.slice(16);
 
 							// Decrypt downloaded session key
-							decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+							decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 							decrypt_promise.then(function(result) {
 								e2eRoom.exportedSessionKey = ab2str(result);
 
 								// Import key to make it ready for use
-								crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+								crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
 									e2eRoom.groupSessionKey = key;
 									e2eRoom.established.set(true);
 									e2eRoom.establishing.set(false);

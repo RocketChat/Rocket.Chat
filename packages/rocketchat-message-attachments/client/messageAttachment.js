@@ -98,12 +98,12 @@ Template.messageAttachment.helpers({
 						cipherText = cipherText.slice(16);
 
 						// Decrypt downloaded key.
-						const decrypt_promise = crypto.subtle.decrypt({name: 'RSA-OAEP', iv: vector}, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+						const decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
 						decrypt_promise.then(function(result) {
 
 							// Import decrypted session key for use.
 							e2eRoom.exportedSessionKey = RocketChat.signalUtils.toString(result);
-							crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), {name: 'AES-CBC', iv: vector}, true, ['encrypt', 'decrypt']).then(function(key) {
+							crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
 								e2eRoom.groupSessionKey = key;
 
 								// Decrypt message.

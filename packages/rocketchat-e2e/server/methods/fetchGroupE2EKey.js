@@ -4,5 +4,5 @@ Meteor.methods({
 		if (mySub) { // I have a subscription to this room
 			return RocketChat.models.Subscriptions.fetchGroupE2EKey(mySub._id);
 		}
-	}
+	},
 });
