@@ -3,13 +3,37 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
-	messageEvent(inte, message) {
+	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
-		return this.orch.getManager().getListenerManager().executeListener(inte, msg);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
+
+		if (typeof result === 'boolean') {
+			return result;
+		} else {
+			return this.orch.getConverters().get('messages').convertAppMessage(result);
+		}
+		// try {
+
+		// } catch (e) {
+		// 	console.log(`${ e.name }: ${ e.message }`);
+		// 	console.log(e.stack);
+		// }
 	}
 
-	roomEvent(inte, room) {
+	async roomEvent(inte, room) {
 		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
-		return this.orch.getManager().getListenerManager().executeListener(inte, rm);
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
+
+		if (typeof result === 'boolean') {
+			return result;
+		} else {
+			return this.orch.getConverters().get('rooms').convertAppRoom(result);
+		}
+		// try {
+
+		// } catch (e) {
+		// 	console.log(`${ e.name }: ${ e.message }`);
+		// 	console.log(e.stack);
+		// }
 	}
 }

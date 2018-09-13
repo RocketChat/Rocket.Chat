@@ -18,7 +18,7 @@ Meteor.publish('livechat:agents', function() {
 		},
 		removed(id) {
 			self.removed('agentUsers', id);
-		}
+		},
 	});
 
 	self.ready();

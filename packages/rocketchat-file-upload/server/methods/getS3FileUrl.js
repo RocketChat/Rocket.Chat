@@ -14,5 +14,5 @@ Meteor.methods({
 		const file = RocketChat.models.Uploads.findOneById(fileId);
 
 		return UploadFS.getStore('AmazonS3:Uploads').getRedirectURL(file);
-	}
+	},
 });

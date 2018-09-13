@@ -15,8 +15,7 @@ export const preferences = {
 		saveMobileBandwidth: true,
 		collapseMediaByDefault: false,
 		autoImageLoad: true,
-		emailNotificationMode: 'all',
-		roomsListExhibitionMode: 'category',
+		emailNotificationMode: 'mentions',
 		unreadAlert: true,
 		notificationsSoundVolume: 100,
 		desktopNotifications: 'default',
@@ -24,11 +23,12 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationDuration: 0,
+		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,
 		hideAvatars: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
-		roomCounterSidebar: false
-	}
+		roomCounterSidebar: false,
+	},
 };

@@ -17,21 +17,21 @@ function getAgent(triggerAction) {
 
 			Meteor.call('livechat:getNextAgent', {
 				token: visitor.getToken(),
-				department: Livechat.department
+				department: Livechat.department,
 			}, (error, result) => {
 				if (error) {
 					return reject(error);
 				}
 				localStorage.setItem('triggerAgent', JSON.stringify({
 					agent: result,
-					ts: Date.now()
+					ts: Date.now(),
 				}));
 
 				resolve(result);
 			});
 		} else if (params.sender === 'custom') {
 			resolve({
-				username: params.name
+				username: params.name,
 			});
 		} else {
 			reject('Unknown sender');
@@ -66,7 +66,7 @@ this.Triggers = (function() {
 					ChatMessage.insert({
 						msg: action.params.msg,
 						rid: roomId,
-						u: agent
+						u: agent,
 					});
 
 					if (agent._id) {
@@ -137,6 +137,6 @@ this.Triggers = (function() {
 		processRequest,
 		setTriggers,
 		setDisabled,
-		setEnabled
+		setEnabled,
 	};
 }());

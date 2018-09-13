@@ -15,13 +15,13 @@ RocketChat.settings = {
 				return;
 			}
 			if (_id === '*') {
-				return Object.keys(Meteor.settings).forEach(key => {
+				return Object.keys(Meteor.settings).forEach((key) => {
 					const value = Meteor.settings[key];
 					callback(key, value);
 				});
 			}
 			if (_.isRegExp(_id) && Meteor.settings) {
-				return Object.keys(Meteor.settings).forEach(key => {
+				return Object.keys(Meteor.settings).forEach((key) => {
 					if (!_id.test(key)) {
 						return;
 					}
@@ -40,7 +40,7 @@ RocketChat.settings = {
 					if (_id.test(key)) {
 						items.push({
 							key,
-							value
+							value,
 						});
 					}
 					return items;
@@ -64,17 +64,17 @@ RocketChat.settings = {
 		return _(actions).reduceRight(_.wrap, (err, success) => callback(err, success))();
 	},
 	load(key, value, initialLoad) {
-		['*', key].forEach(item => {
+		['*', key].forEach((item) => {
 			if (RocketChat.settings.callbacks[item]) {
-				RocketChat.settings.callbacks[item].forEach(callback => callback(key, value, initialLoad));
+				RocketChat.settings.callbacks[item].forEach((callback) => callback(key, value, initialLoad));
 			}
 		});
-		Object.keys(RocketChat.settings.regexCallbacks).forEach(cbKey => {
+		Object.keys(RocketChat.settings.regexCallbacks).forEach((cbKey) => {
 			const cbValue = RocketChat.settings.regexCallbacks[cbKey];
 			if (!cbValue.regex.test(key)) {
 				return;
 			}
-			cbValue.callbacks.forEach(callback => callback(key, value, initialLoad));
+			cbValue.callbacks.forEach((callback) => callback(key, value, initialLoad));
 		});
 	},
 	onload(key, callback) {
@@ -84,11 +84,11 @@ RocketChat.settings = {
 		// else if Meteor.settings?[_id]?
 		// 	callback key, Meteor.settings[_id], false
 		const keys = [].concat(key);
-		keys.forEach(k => {
+		keys.forEach((k) => {
 			if (_.isRegExp(k)) {
 				RocketChat.settings.regexCallbacks[name = k.source] = RocketChat.settings.regexCallbacks[name = k.source] || {
 					regex: k,
-					callbacks: []
+					callbacks: [],
 				};
 				RocketChat.settings.regexCallbacks[k.source].callbacks.push(callback);
 			} else {
@@ -96,5 +96,5 @@ RocketChat.settings = {
 				RocketChat.settings.callbacks[k].push(callback);
 			}
 		});
-	}
+	},
 };

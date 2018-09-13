@@ -1,5 +1,5 @@
 export class AppHttpBridge {
-	call(info) {
+	async call(info) {
 		if (!info.request.content && typeof info.request.data === 'object') {
 			info.request.content = JSON.stringify(info.request.data);
 		}

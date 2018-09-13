@@ -3,19 +3,19 @@ export class AppActivationBridge {
 		this.orch = orch;
 	}
 
-	appAdded(app) {
-		this.orch.getNotifier().appAdded(app.getID());
+	async appAdded(app) {
+		await this.orch.getNotifier().appAdded(app.getID());
 	}
 
-	appUpdated(app) {
-		this.orch.getNotifier().appUpdated(app.getID());
+	async appUpdated(app) {
+		await this.orch.getNotifier().appUpdated(app.getID());
 	}
 
-	appRemoved(app) {
-		this.orch.getNotifier().appRemoved(app.getID());
+	async appRemoved(app) {
+		await this.orch.getNotifier().appRemoved(app.getID());
 	}
 
-	appStatusChanged(app, status) {
-		this.orch.getNotifier().appStatusUpdated(app.getID(), status);
+	async appStatusChanged(app, status) {
+		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
 	}
 }

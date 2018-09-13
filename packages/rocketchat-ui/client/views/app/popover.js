@@ -5,8 +5,13 @@ import { hide, leave } from 'meteor/rocketchat:lib';
 
 this.popover = {
 	renderedPopover: null,
-	open(config) {
-		this.renderedPopover = Blaze.renderWithData(Template.popover, config, document.body);
+	open({ currentTarget, ...config }) {
+		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
+		const data = {
+			targetRect: currentTarget && currentTarget.getBoundingClientRect && currentTarget.getBoundingClientRect(),
+			...config,
+		};
+		this.renderedPopover = Blaze.renderWithData(Template.popover, data, document.body);
 	},
 	close() {
 		if (!this.renderedPopover) {
@@ -15,17 +20,17 @@ this.popover = {
 
 		Blaze.remove(this.renderedPopover);
 
-		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
+		const { activeElement } = this.renderedPopover.dataVar.curValue;
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
-	}
+	},
 };
 
 Template.popover.helpers({
 	hasAction() {
 		return !!this.action;
-	}
+	},
 });
 
 Template.popover.onRendered(function() {
@@ -38,40 +43,64 @@ Template.popover.onRendered(function() {
 			popover.close();
 		}
 	});
-	const activeElement = this.data.activeElement;
+	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
+	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
+
+		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
+
+		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
+		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
+		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
+
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
-		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition;
+
+		const mousePosition = typeof this.data.mousePosition === 'function' ? this.data.mousePosition() : this.data.mousePosition || {
+			x: this.data.targetRect[horizontalDirection === 'left' ? 'right' : 'left'],
+			y: this.data.targetRect[verticalDirection],
+		};
+		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
+		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
+
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
 			popoverContent.style.left = `${ position.left }px`;
 		} else {
+			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
 			const popoverHeight = popoverContent.offsetHeight;
-			const popoverHeightHalf = popoverHeight / 2;
 			const windowWidth = window.innerWidth;
 			const windowHeight = window.innerHeight;
 
-			let top;
-			if (mousePosition.y <= popoverHeightHalf) {
-				top = 10;
-			} else if (mousePosition.y + popoverHeightHalf > windowHeight) {
-				top = windowHeight - popoverHeight - 10;
-			} else {
-				top = mousePosition.y - popoverHeightHalf;
+			let top = mousePosition.y - clientHeight + offsetHeight;
+
+			if (verticalDirection === 'top') {
+				top = mousePosition.y - popoverHeight + offsetHeight;
+
+				if (top < 0) {
+					top = 10 + offsetHeight;
+				}
 			}
 
-			let left;
-			if (mousePosition.x + popoverWidth >= windowWidth) {
-				left = mousePosition.x - popoverWidth;
-			} else if (mousePosition.x <= popoverWidth) {
-				left = isRtl() ? mousePosition.x + 10 : 10;
-			} else if (mousePosition.x <= windowWidth / 2) {
-				left = mousePosition.x;
-			} else {
-				left = mousePosition.x - popoverWidth;
+			if (top + popoverHeight > windowHeight) {
+				top = windowHeight - 10 - popoverHeight - offsetHeight;
+			}
+
+			let left = mousePosition.x - popoverWidth + offsetWidth;
+
+			if (horizontalDirection === 'right') {
+				left = mousePosition.x + offsetWidth;
+			}
+
+			if (left + popoverWidth >= windowWidth) {
+				left = mousePosition.x - popoverWidth + offsetWidth;
+			}
+
+			if (left <= 0) {
+				left = mousePosition.x + offsetWidth;
 			}
 
 			popoverContent.style.top = `${ top }px`;
@@ -100,6 +129,8 @@ Template.popover.onRendered(function() {
 	$(window).on('resize', position);
 	position();
 	this.position = position;
+
+	this.firstNode.style.visibility = 'visible';
 });
 
 Template.popover.onDestroyed(function() {
@@ -118,7 +149,7 @@ Template.popover.events({
 		popover.close();
 	},
 	'click [data-type="messagebox-action"]'(event, t) {
-		const id = event.currentTarget.dataset.id;
+		const { id } = event.currentTarget.dataset;
 		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
 			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
@@ -147,7 +178,7 @@ Template.popover.events({
 				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
 				cancelButtonText: TAPi18n.__('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, (inputValue) => {
 				if (inputValue === false) {
 					return false;
@@ -165,7 +196,7 @@ Template.popover.events({
 					text: TAPi18n.__('Thank_you_exclamation_mark '),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 			popover.close();
@@ -217,9 +248,9 @@ Template.popover.events({
 
 			return false;
 		}
-	}
+	},
 });
 
 Template.popover.helpers({
-	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent)
+	isSafariIos: /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent),
 });

@@ -1,89 +1,120 @@
 <template name="directory">
 	<section class="rc-directory">
-		{{# header sectionName="Directory" hideHelp=true}}
-		<div class="rc-directory-header">
-		<select class="rc-input__element rc-directory-selector js-typeSelector" name="type">
-				<option value="channels">Channels</option>
-				<option value="users">Users</option>
-			</select>
+		{{> header sectionName="Directory" hideHelp=true fullpage=true}}
+		<div class="rc-table-content">
+			{{>tabs tabs=tabsData}}
 			<div class="rc-input rc-input--small rc-directory-search">
 				<label class="rc-input__label">
 					<div class="rc-input__wrapper">
 						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder="Search Messages" autocomplete="off">
+						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
 					</div>
 				</label>
 			</div>
-			<button class="rc-button rc-button--small rc-button--primary rc-directory-plus">{{> icon icon="plus" }}</button>
-		</div>
-		{{/header}}
-		<div class="rc-directory-content">
 			{{#if $eq searchType 'channels'}}
-				<table class="rc-table">
-					<thead class="rc-table-head">
-						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="usernames">Users {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
+				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+					<thead>
+						<tr>
+							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name')}}</div>
+							</th>
+							<th class="rc-directory-td--users js-sort {{#if searchSortBy 'usersCount'}}is-sorting{{/if}}" data-sort="usersCount">
+								<div class="table-fake-th"><span>{{_ "Users"}}</span> {{> icon icon=(sortIcon 'usersCount')}}</div>
+							</th>
+							{{#if showLastMessage}}
+							<th class="table-column-date">
+								<div class="table-fake-th">{{_ "Last_Message"}}</div>
+							</th>
+							{{/if}}
+							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
+							</th>
+							<th>
+								<div class="table-fake-th"><span>{{_ "Topic"}}</span></div>
+							</th>
 						</tr>
 					</thead>
-					<tbody class="rc-table-body">
+					<tbody>
 						{{#each searchResults}}
-							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=name roomIcon="true"}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">
-												{{>icon icon="hashtag"}}
+							<tr data-name="{{name}}">
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{>icon icon="hashtag" block="rc-directory-icon"}}
 												{{name}}
 											</span>
-											{{#if description}}
-												<span class="rc-directory-channel-description">{{description}}</span>
-											{{/if}}
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--users">{{users}}</td>
-								<td class="rc-table-td rc-table-td--createdAt">
-									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-								</td>
+								<td>{{users}}</td>
+								{{#if showLastMessage}}
+									<td class="table-column-date">{{lastMessage}}</td>
+								{{/if}}
+								<td class="table-column-date">{{createdAt}}</td>
+								<td>{{topic}}</td>
 							</tr>
+						{{else}}
+							{{# with searchText}}
+								<tr class="table-no-click">
+									<td>{{_ "No_results_found_for"}} {{.}}</td>
+								</tr>
+							{{/with}}
 						{{/each}}
+						{{#if isLoading}}
+							<tr class="table-no-click">
+								<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
-				</table>
+				{{/table}}
 			{{/if}}
 			{{#if $eq searchType 'users'}}
-				<table class="rc-table">
-					<thead class="rc-table-head">
-						<tr class="rc-table-tr">
-							<td class="rc-table-td js-sort" data-sort="name">Name {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="username">Username {{> icon icon="sort" }}</td>
-							<td class="rc-table-td js-sort" data-sort="createdAt">Created At {{> icon icon="sort" }}</td>
+				{{#table onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+					<thead>
+						<tr>
+							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
+							</th>
+							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
+								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
+							</th>
+							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
+								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
+							</th>
 						</tr>
 					</thead>
-					<tbody class="rc-table-body">
+					<tbody>
 						{{#each searchResults}}
-							<tr class="rc-table-tr" data-name="{{name}}">
-								<td class="rc-table-td rc-table-td--name">
-									<div class="rc-directory-channel-wrapper">
-										<div class="rc-directory-channel-avatar">{{> avatar username=name}}</div>
-										<div class="rc-directory-channel-info">
-											<span class="rc-directory-channel-name">
-												{{>icon icon="at"}}
+							<tr data-name="{{name}}">
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=username}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
 												{{name}}
 											</span>
 										</div>
 									</div>
 								</td>
-								<td class="rc-table-td rc-table-td--username">{{username}}</td>
-								<td class="rc-table-td rc-table-td--createdAt">
-									<span class="rc-directory-channel-createdAt">{{createdAt}}</span>
-								</td>
+								<td>{{username}}</td>
+								<td>{{createdAt}}</td>
 							</tr>
+						{{else}}
+							{{# with searchText}}
+								<tr class="table-no-click">
+									<td>{{_ "No_results_found_for"}} {{.}}</td>
+								</tr>
+							{{/with}}
 						{{/each}}
+						{{#if isLoading}}
+							<tr class="table-no-click">
+								<td class="table-loading-td" colspan="3">{{> loading}}</td>
+							</tr>
+						{{/if}}
 					</tbody>
-				</table>
+				{{/table}}
 			{{/if}}
 		</div>
 	</section>

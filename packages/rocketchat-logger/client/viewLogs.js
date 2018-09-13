@@ -8,7 +8,7 @@ Meteor.startup(function() {
 		icon: 'post',
 		permissionGranted() {
 			return RocketChat.authz.hasAllPermission('view-logs');
-		}
+		},
 	});
 });
 
@@ -19,7 +19,7 @@ FlowRouter.route('/admin/view-logs', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('View_Logs'),
 			pageTemplate: 'viewLogs',
-			noScroll: true
+			noScroll: true,
 		});
-	}
+	},
 });

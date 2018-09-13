@@ -32,7 +32,7 @@ Meteor.methods({
 
 		return {
 			message: 'Connection_success',
-			params: []
+			params: [],
 		};
-	}
+	},
 });

@@ -1,23 +1,23 @@
 Package.describe({
 	name: 'rocketchat:livechat',
 	version: '0.0.1',
-	summary: 'Livechat plugin for Rocket.Chat'
+	summary: 'Livechat plugin for Rocket.Chat',
 });
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
 	use: [],
 	sources: [
-		'plugin/build-livechat.js'
+		'plugin/build-livechat.js',
 	],
 	npmDependencies: {
-		'shelljs': '0.8.1',
-		'uglify-js': '2.8.29'
-	}
+		shelljs: '0.8.1',
+		'uglify-js': '2.8.29',
+	},
 });
 
 Npm.depends({
-	'ua-parser-js': '0.7.17'
+	'ua-parser-js': '0.7.17',
 });
 
 Package.onUse(function(api) {
@@ -46,10 +46,10 @@ Package.onUse(function(api) {
 	api.addFiles('server/visitorStatus.js', 'server');
 	api.addFiles('permissions.js', 'server');
 	api.addFiles('messageTypes.js');
-	api.addFiles('roomType.js');
 
 	api.addFiles('config.js', 'server');
 
+	api.addFiles('client/roomType.js', 'client');
 	api.addFiles('client/ui.js', 'client');
 	api.addFiles('client/route.js', 'client');
 
@@ -69,6 +69,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatVisitor.js', 'client');
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
+
+	// client startup
+	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
 
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
@@ -128,6 +131,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.html', 'client');
 	api.addFiles('client/views/app/triggers/livechatTriggerCondition.js', 'client');
 
+	// startup
+	api.addFiles('server/roomType.js', 'server');
+
 	// hooks
 	api.addFiles('server/hooks/externalMessage.js', 'server');
 	api.addFiles('server/hooks/leadCapture.js', 'server');
@@ -157,6 +163,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/removeDepartment.js', 'server');
 	api.addFiles('server/methods/removeManager.js', 'server');
 	api.addFiles('server/methods/removeTrigger.js', 'server');
+	api.addFiles('server/methods/removeRoom.js', 'server');
 	api.addFiles('server/methods/saveAppearance.js', 'server');
 	api.addFiles('server/methods/saveCustomField.js', 'server');
 	api.addFiles('server/methods/saveDepartment.js', 'server');
@@ -166,10 +173,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/saveTrigger.js', 'server');
 	api.addFiles('server/methods/searchAgent.js', 'server');
 	api.addFiles('server/methods/sendMessageLivechat.js', 'server');
+	api.addFiles('server/methods/sendFileLivechatMessage.js', 'server');
 	api.addFiles('server/methods/sendOfflineMessage.js', 'server');
 	api.addFiles('server/methods/setCustomField.js', 'server');
 	api.addFiles('server/methods/setDepartmentForVisitor.js', 'server');
 	api.addFiles('server/methods/startVideoCall.js', 'server');
+	api.addFiles('server/methods/startFileUploadRoom.js', 'server');
 	api.addFiles('server/methods/transfer.js', 'server');
 	api.addFiles('server/methods/webhookTest.js', 'server');
 	api.addFiles('server/methods/takeInquiry.js', 'server');
@@ -180,6 +189,7 @@ Package.onUse(function(api) {
 	// models
 	api.addFiles('server/models/Users.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
+	api.addFiles('server/models/Messages.js', 'server');
 	api.addFiles('server/models/LivechatExternalMessage.js', ['client', 'server']);
 	api.addFiles('server/models/LivechatCustomField.js', 'server');
 	api.addFiles('server/models/LivechatDepartment.js', 'server');

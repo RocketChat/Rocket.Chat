@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Integrations with services and WebHooks',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -37,6 +37,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/integrationsOutgoing.js', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.html', 'client');
 	api.addFiles('client/views/integrationsOutgoingHistory.js', 'client');
+	api.addFiles('client/views/additional/zapier.html', 'client');
 
 	// stylesheets
 	api.addFiles('client/stylesheets/integrations.css', 'client');

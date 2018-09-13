@@ -1,6 +1,6 @@
 #! /bin/bash
 
-caddy_version="v0.10.12"
+caddy_version="v0.11.0"
 
 caddy_bin="caddy"
 caddy_dl_ext=".tar.gz"

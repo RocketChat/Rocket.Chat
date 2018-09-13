@@ -27,5 +27,5 @@ RocketChat.Message = {
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
 		return msg.html;
-	}
+	},
 };

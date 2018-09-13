@@ -123,6 +123,7 @@
 
 	&__icon {
 		display: flex;
+		flex: auto 0 0;
 
 		width: 50px;
 		height: 21px;

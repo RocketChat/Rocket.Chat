@@ -25,6 +25,8 @@
 
 		display: flex;
 
+		margin: 0 30px;
+
 		color: var(--modal-back-button-color);
 		align-items: center;
 	}

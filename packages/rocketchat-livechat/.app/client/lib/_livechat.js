@@ -21,7 +21,11 @@ this.Livechat = new (class Livechat {
 		this._displayOfflineForm = new ReactiveVar(true);
 		this._offlineSuccessMessage = new ReactiveVar(TAPi18n.__('Thanks_We_ll_get_back_to_you_soon'));
 		this._videoCall = new ReactiveVar(false);
+		this._fileUpload = new ReactiveVar(false);
 		this._transcriptMessage = new ReactiveVar('');
+		this._conversationFinishedMessage = new ReactiveVar('');
+		this._nameFieldRegistrationForm = new ReactiveVar(false);
+		this._emailFieldRegistrationForm = new ReactiveVar(false);
 		this._connecting = new ReactiveVar(false);
 		this._room = new ReactiveVar(null);
 		this._department = new ReactiveVar(null);
@@ -30,6 +34,9 @@ this.Livechat = new (class Livechat {
 		this._agent = new ReactiveVar();
 
 		this.stream = new Meteor.Streamer('livechat-room');
+
+		this._guestName = new ReactiveVar();
+		this._guestEmail = new ReactiveVar();
 
 		Tracker.autorun(() => {
 			if (this._room.get() && visitor.getId()) {
@@ -42,7 +49,7 @@ this.Livechat = new (class Livechat {
 						this._agent.set(result);
 					}
 				});
-				this.stream.on(this._room.get(), { token: visitor.getToken() }, (eventData) => {
+				this.stream.on(this._room.get(), { visitorToken: visitor.getToken() }, (eventData) => {
 					if (!eventData || !eventData.type) {
 						return;
 					}
@@ -97,8 +104,20 @@ this.Livechat = new (class Livechat {
 	get videoCall() {
 		return this._videoCall.get();
 	}
+	get fileUpload() {
+		return this._fileUpload.get();
+	}
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
+	}
+	get conversationFinishedMessage() {
+		return this._conversationFinishedMessage.get();
+	}
+	get nameFieldRegistrationForm() {
+		return this._nameFieldRegistrationForm.get();
+	}
+	get emailFieldRegistrationForm() {
+		return this._emailFieldRegistrationForm.get();
 	}
 	get department() {
 		return this._department.get();
@@ -108,6 +127,15 @@ this.Livechat = new (class Livechat {
 	}
 	get agent() {
 		return this._agent.get();
+	}
+	get guestName() {
+		return this._guestName.get();
+	}
+	get guestEmail() {
+		return this._guestEmail.get();
+	}
+	get room() {
+		return this._room.get();
 	}
 
 	set online(value) {
@@ -158,8 +186,20 @@ this.Livechat = new (class Livechat {
 	set videoCall(value) {
 		this._videoCall.set(value);
 	}
+	set fileUpload(value) {
+		this._fileUpload.set(value);
+	}
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
+	}
+	set conversationFinishedMessage(value) {
+		this._conversationFinishedMessage.set(value);
+	}
+	set nameFieldRegistrationForm(value) {
+		this._nameFieldRegistrationForm.set(value);
+	}
+	set emailFieldRegistrationForm(value) {
+		this._emailFieldRegistrationForm.set(value);
 	}
 	set connecting(value) {
 		this._connecting.set(value);
@@ -176,6 +216,12 @@ this.Livechat = new (class Livechat {
 	}
 	set agent(agentData) {
 		this._agent.set(agentData);
+	}
+	set guestName(name) {
+		return this._guestName.set(name);
+	}
+	set guestEmail(email) {
+		return this._guestEmail.set(email);
 	}
 
 	ready() {
