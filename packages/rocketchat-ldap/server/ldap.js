@@ -207,7 +207,7 @@ export default class LDAP {
 				value: new Buffer(user.services.ldap.id, 'hex'),
 			});
 			if (filter.length === 1) {
-				idFilter = new this.ldapjs.AndFilter({ filters: [ idFilter, this.ldapjs.parseFilter(filter[0]) ] });
+				idFilter = new this.ldapjs.AndFilter({filters: [idFilter, this.ldapjs.parseFilter(filter[0])]});
 			}
 			return idFilter;
 		}
