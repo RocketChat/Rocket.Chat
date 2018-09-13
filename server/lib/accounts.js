@@ -186,9 +186,9 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	if (!user.type) {
 		user.type = 'user';
 	}
-	let _id;
+
 	try {
-		_id = insertUserDoc.call(Accounts, options, user);
+		const _id = insertUserDoc.call(Accounts, options, user);
 		user = Meteor.users.findOne({
 			_id,
 		});
