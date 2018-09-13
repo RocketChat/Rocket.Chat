@@ -52,11 +52,6 @@ Package.onUse((api) => {
 	api.addFiles([
 		'client/main.js',
 		'client/routes.js',
-		'client/stylesheets/blockstackLogin.less',
-		'client/views/login.html',
-		'client/views/login.js',
-		'client/views/noServices.html',
-		'client/views/noServices.js',
 	], 'client');
 
 });

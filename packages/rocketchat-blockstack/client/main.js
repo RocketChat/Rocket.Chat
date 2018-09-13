@@ -1,4 +1,4 @@
-import blockstack from 'blockstack';
+import { redirectToSignIn } from 'blockstack';
 
 // Let service config set values, but not order of params
 const mergeParams = (defaults, overrides) => {
@@ -11,14 +11,14 @@ const mergeParams = (defaults, overrides) => {
 };
 
 // Do signin redirect, with location of manifest
-const redirectToSignIn = (config = {}) => {
+const _redirectToSignIn = (config = {}) => {
 	const defaults = {
 		redirectURI: `${ window.location.origin }/`, // location to redirect user to after sign in approval
 		manifestURI: `${ window.location.origin }/manifest.json`, // location of this app's manifest file
 		scopes: ['store_write'], // the permissions this app is requesting
 	};
 	const params = mergeParams(defaults, config);
-	return blockstack.redirectToSignIn(...params);
+	return redirectToSignIn(...params);
 };
 
 // Do a custom blockstack redirect through auth services
@@ -37,14 +37,32 @@ const redirectToSignIn = (config = {}) => {
 
 // Send user to Blockstack with auth request
 // TODO: allow serviceConfig.loginStyle == popup
-Meteor.loginWithBlockstack = (options = {}, callback) => {
+Meteor.loginWithBlockstack = (options, callback) => {
+	if (!options || !options.redirectURI) {
+		options = ServiceConfiguration.configurations.findOne({
+			service: 'blockstack',
+		});
+
+		options.blockstackIDHost = (Meteor.Device.isDesktop())
+			? 'http://localhost:8888/auth'
+			: 'https://blockstack.org/auth';
+	}
+
+	if (!callback) {
+		callback = (error) => {
+			if (error) {
+				Session.set('errorMessage', error.reason || 'Unknown error');
+			}
+		};
+	}
+
 	try {
 		check(options, Match.ObjectIncluding({
 			blockstackIDHost: String,
 			redirectURI: String,
 			manifestURI: String,
 		}));
-		redirectToSignIn(options); // let blockstack handle redirect
+		_redirectToSignIn(options); // let blockstack handle redirect
 		// const privateKey = blockstack.generateAndStoreTransitKey();
 		// const requestParams = Object.assign({ transitPrivateKey: privateKey }, options);
 		// const authRequest = makeAuthRequest(requestParams);

@@ -10,6 +10,7 @@ Accounts.blockstack.defaults = {
 	manifestURI: Meteor.absoluteUrl(Accounts.blockstack.manifestPath),
 	redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
 	authDescription: 'Rocket.Chat login',
+	buttonLabelText: 'Blockstack',
 };
 
 // Add required settings (not all used in current version)
@@ -35,6 +36,11 @@ Meteor.startup(() => {
 		group: 'Blockstack',
 		i18nLabel: 'Blockstack_Auth_Description',
 	});
+	RocketChat.settings.add('Blockstack_ButtonLabelText', defaults.buttonLabelText, {
+		type: 'string',
+		group: 'Blockstack',
+		i18nLabel: 'Blockstack_ButtonLabelText',
+	});
 	RocketChat.settings.add('Blockstack_Generate_Username', defaults.generateUsername, {
 		type: 'boolean',
 		group: 'Blockstack',
@@ -47,6 +53,7 @@ Accounts.blockstack.getSettings = () => Object.assign({}, Accounts.blockstack.de
 	enable: RocketChat.settings.get('Blockstack_Enable'),
 	generateUsername: RocketChat.settings.get('Blockstack_Generate_Username'),
 	loginStyle: RocketChat.settings.get('Blockstack_Login_Style'),
+	buttonLabelText: RocketChat.settings.get('Blockstack_ButtonLabelText'),
 });
 
 // Add settings to auth provider configs on startup
