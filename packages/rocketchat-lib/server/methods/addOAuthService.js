@@ -17,7 +17,6 @@ Meteor.methods({
 
 		name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
 		name = s.capitalize(name);
-
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }`                        , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Enable', persistent: true });
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-url`                    , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'URL', persistent: true });
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-token_path`             , '/oauth/token'    , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Token_Path', persistent: true });
