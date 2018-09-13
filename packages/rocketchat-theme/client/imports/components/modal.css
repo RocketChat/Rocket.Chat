@@ -2,6 +2,7 @@
 	min-width: 400px;
 	max-width: 500px;
 	max-height: 100%;
+	height: 100%;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -64,6 +65,7 @@
 
 		min-height: 72px;
 		overflow: auto;
+		max-height: 90%;
 	}
 
 	&__content-icon {
