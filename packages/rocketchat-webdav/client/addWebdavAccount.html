@@ -4,9 +4,17 @@
 			<div class="rc-input">
 				<label class="rc-input__label" for="serverURL">
 					<div class="rc-input__wrapper">
-						<input name="serverURL" id="serverURL" type="text" class="rc-input__element"
-							   autocapitalize="off" autocorrect="off"
-							   placeholder="{{_ "serverURL"}}" autofocus>
+						<input name="name" id="serverName" type="text" class="rc-input__element" autocapitalize="off" autocorrect="off" placeholder="{{_ 'Name_optional' }}"
+						 autofocus>
+						<div class="input-error"></div>
+					</div>
+				</label>
+			</div>
+			<div class="rc-input">
+				<label class="rc-input__label" for="serverURL">
+					<div class="rc-input__wrapper">
+						<input name="serverURL" id="serverURL" type="text" class="rc-input__element" autocapitalize="off" autocorrect="off" placeholder="{{_ 'Webdav_Server_URL' }}"
+						 autofocus>
 						<div class="input-error"></div>
 					</div>
 				</label>
@@ -14,9 +22,7 @@
 			<div class="rc-input">
 				<label class="rc-input__label" for="username">
 					<div class="rc-input__wrapper">
-						<input name="username" id="username" type="text" class="rc-input__element"
-							   autocapitalize="off" autocorrect="off"
-							   placeholder="{{_ "Username"}}" autofocus>
+						<input name="username" id="username" type="text" class="rc-input__element" autocapitalize="off" autocorrect="off" placeholder="{{_ 'Username' }}" autofocus>
 						<div class="input-error"></div>
 					</div>
 				</label>
@@ -24,16 +30,14 @@
 			<div class="rc-input">
 				<label class="rc-input__label" for="pass">
 					<div class="rc-input__wrapper">
-						<input name="pass" id="pass" type="password" class="rc-input__element"
-							   autocapitalize="off" autocorrect="off"
-							   placeholder="{{_ "Password"}}" autofocus>
+						<input name="pass" id="pass" type="password" class="rc-input__element" autocapitalize="off" autocorrect="off" placeholder="{{_ 'Password' }}" autofocus>
 						<div class="input-error"></div>
 					</div>
 				</label>
 			</div>
 		</div>
 		<div class="submit">
-			<button class='rc-button rc-button--primary'><span>{{btnAddNewServer}}</span></button>
+			<button class="rc-button rc-button--primary"><span>{{btnAddNewServer}}</span></button>
 		</div>
 	</form>
 </template>

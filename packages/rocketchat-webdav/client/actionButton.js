@@ -5,9 +5,9 @@ Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',
-		label: t('Upload_To_Webdav'),
+		label: t('Save_To_Webdav'),
 		condition: (message) => {
-			if (RocketChat.models.Subscriptions.findOne({rid: message.rid}) == null) {
+			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
 			if (WebdavAccounts.findOne() == null) {
@@ -17,29 +17,29 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return RocketChat.settings.get('Webdav_Integration_Allowed');
+			return RocketChat.settings.get('Webdav_Integration_Enabled');
 		},
 		action() {
-			const message = this._arguments[1];
-			const attachment = message.attachments[0];
-			const file = message.file;
+			const [, message] = this._arguments;
+			const [attachment] = message.attachments;
+			const { file } = message;
 			const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
 			modal.open({
 				data: {
 					message,
 					attachment,
 					file,
-					url
+					url,
 				},
 				title: t('Save_To_Webdav'),
 				content: 'selectWebdavAccount',
 				showCancelButton: true,
 				showConfirmButton: false,
 				closeOnCancel: true,
-				html: true
+				html: true,
 			});
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 });

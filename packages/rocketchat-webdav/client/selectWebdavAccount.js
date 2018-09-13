@@ -7,13 +7,13 @@ Template.selectWebdavAccount.helpers({
 	},
 	usernamePlusServer(account) {
 		return `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
-	}
+	},
 });
 Template.selectWebdavAccount.events({
 	'click .webdav-account'() {
 		modal.close();
 		const accountId = this._id;
-		const url = Template.instance().data.url;
+		const { url } = Template.instance().data;
 		const name = Template.instance().data.attachment.title;
 
 		const fileRequest = new XMLHttpRequest();
@@ -35,5 +35,5 @@ Template.selectWebdavAccount.events({
 			}
 		};
 		fileRequest.send(null);
-	}
+	},
 });

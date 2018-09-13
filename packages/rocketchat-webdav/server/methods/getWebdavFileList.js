@@ -1,19 +1,18 @@
 import Webdav from 'webdav';
-import Future from 'fibers/future';
 
 Meteor.methods({
-	getWebdavFileList(accountId, path) {
+	async getWebdavFileList(accountId, path) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', {method: 'addNewWebdavAccount'});
+			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addNewWebdavAccount' });
 		}
 
-		if (!RocketChat.settings.get('Webdav_Integration_Allowed')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {method: 'addNewWebdavAccount'});
+		if (!RocketChat.settings.get('Webdav_Integration_Enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addNewWebdavAccount' });
 		}
 
-		const account = RocketChat.models.WebdavAccounts.findOne({ _id: accountId });
+		const account = RocketChat.models.WebdavAccounts.findOne({ _id: accountId, user_id: Meteor.userId() });
 		if (!account) {
-			throw new Meteor.Error('error-invalid-webdav-account', 'Invalid WebDAV Account', {method: 'addNewWebdavAccount'});
+			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'addNewWebdavAccount' });
 		}
 
 		const client = new Webdav(
@@ -21,12 +20,11 @@ Meteor.methods({
 			account.username,
 			account.password
 		);
-		const future = new Future();
-		client.getDirectoryContents(path).then((data) => {
-			future['return']({success: true, data});
-		}, (err) => {
-			future['return']({success: false, message: 'could-not-access-webdav', error:err});
-		});
-		return future.wait();
-	}
+		try {
+			const data = await client.getDirectoryContents(path);
+			return { success: true, data };
+		} catch (error) {
+			return { success: false, message: 'could-not-access-webdav', error };
+		}
+	},
 });

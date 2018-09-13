@@ -9,16 +9,16 @@ Template.accountIntegrations.helpers({
 	},
 	getOptionValue(account) {
 		return `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
-	}
+	},
 });
 
 Template.accountIntegrations.events({
 	'click .webdav-account-remove'(e) {
 		e.preventDefault();
 		const selectEl = document.getElementById('webdav-accounts');
-		const options = selectEl.options;
+		const { options } = selectEl;
 		const selectedOption = selectEl.value;
-		const optionIndex = Array.from(options).findIndex(option => option.value === selectedOption);
+		const optionIndex = Array.from(options).findIndex((option) => option.value === selectedOption);
 
 		Meteor.call('removeWebdavAccount', selectedOption, function(error) {
 			if (error) {
@@ -30,5 +30,5 @@ Template.accountIntegrations.events({
 		});
 
 		selectEl.remove(optionIndex);
-	}
+	},
 });

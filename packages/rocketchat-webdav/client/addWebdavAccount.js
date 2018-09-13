@@ -6,8 +6,8 @@ Template.addWebdavAccount.helpers({
 		if (Template.instance().loading.get()) {
 			return `${ t('Please_wait') }...`;
 		}
-		return t('Add_new_webdav_account');
-	}
+		return t('Webdav_add_new_account');
+	},
 });
 
 Template.addWebdavAccount.events({
@@ -28,41 +28,43 @@ Template.addWebdavAccount.events({
 			});
 		}
 		instance.loading.set(false);
-	}
+	},
 });
 
-Template.addWebdavAccount.onCreated(function() {
-	const instance = this;
-	this.loading = new ReactiveVar(false);
-	this.validate = function() {
-		const formData = $('#add-webdav').serializeArray();
-		const formObj = {};
-		const validationObj = {};
-		formData.forEach((field) => {
-			formObj[field.name] = field.value;
-		});
-		if (!formObj['serverURL']) {
-			validationObj['serverURL'] = t('Field_required');
-		}
-		if (!formObj['username']) {
-			validationObj['username'] = t('Field_required');
-		}
-		if (!formObj['pass']) {
-			validationObj['pass'] = t('Field_required');
-		}
+const validate = function() {
+	const form = $(this.firstNode);
+	const formData = form.serializeArray();
+	const validationObj = {};
 
-		$('#add-webdav input.error, #add-webdav  select.error').removeClass('error');
-		$('#add-webdav .input-error').text('');
-		if (!_.isEmpty(validationObj)) {
-			Object.keys(validationObj).forEach((key) => {
-				const value = validationObj[key];
-				$(`#add-webdav input[name=${ key }], #add-webdav  select[name=${ key }]`).addClass('error');
-				$(`#add-webdav  input[name=${ key }]~.input-error, #add-webdav  select[name=${ key }]~.input-error`).text(value);
-			});
-			instance.loading.set(false);
-			return false;
-		}
+	const formObj = formData.reduce((ret, { value, name }) => {
+		ret[name] = value;
+		return ret;
+	}, {});
+
+	if (!formObj.serverURL) {
+		validationObj.serverURL = t('Field_required');
+	}
+	if (!formObj.username) {
+		validationObj.username = t('Field_required');
+	}
+	if (!formObj.pass) {
+		validationObj.pass = t('Field_required');
+	}
+
+	form.find('input.error, select.error').removeClass('error');
+	form.find('.input-error').text('');
+	if (_.isEmpty(validationObj)) {
 		return formObj;
-	};
+	}
+	Object.entries(validationObj).forEach(([key, value]) => {
+		form.find(`input[name=${ key }], select[name=${ key }]`).addClass('error');
+		form.find(` input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
+	});
+	this.loading.set(false);
+	return false;
+};
 
+Template.addWebdavAccount.onCreated(function() {
+	this.loading = new ReactiveVar(false);
+	this.validate = validate.bind(this);
 });

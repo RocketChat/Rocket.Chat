@@ -6,7 +6,7 @@ Package.describe({
 
 	git: '',
 
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -25,8 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/webdavFilePicker.js', 'client');
 	api.addFiles('client/selectWebdavAccount.html', 'client');
 	api.addFiles('client/selectWebdavAccount.js', 'client');
-	api.addFiles('client/stylesheets/addWebdavAccount.less', 'client');
-	api.addFiles('client/stylesheets/webdavFilePicker.less', 'client');
+
 	api.addFiles('client/collections/WebdavAccounts.js', 'client');
 
 	api.addFiles('server/methods/addWebdavAccount.js', 'server');
