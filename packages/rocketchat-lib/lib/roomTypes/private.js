@@ -25,13 +25,20 @@ export class PrivateRoomType extends RoomTypeConfig {
 		});
 	}
 
-	findRoom(identifier) {
+	findRoom(identifier, user) {
 		const query = {
 			t: 'p',
 			name: identifier,
+			'u.username': user.username
 		};
-
-		return ChatRoom.findOne(query);
+		/**
+		 * ChatRoom findOne is not synced after the subscribed user removed from the room.
+		 * Therefore, it will always return value of the room. So validate the user subscription to the room.
+		 */
+		const subscription = RocketChat.models.Subscriptions.findOne(query);
+		if (subscription && subscription.rid) {
+			return ChatRoom.findOne(subscription.rid);
+		}
 	}
 
 	roomName(roomData) {
