@@ -35,7 +35,7 @@ Template.e2eFlexTab.events({
 		if (e2e) {
 			e2e.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open('Timeout', '', 'error');
 				e2e.establishing.set(false);
 			}, 10000);
 		}
@@ -49,7 +49,7 @@ Template.e2eFlexTab.events({
 			// Notify all users of the refresh. Similar to clearGroupKey notification.
 			e2e.handshake(true, true);
 			t.timeout = Meteor.setTimeout(() => {
-				swal('Timeout', '', 'error');
+				modal.open('Timeout', '', 'error');
 				e2e.establishing.set(false);
 			}, 10000);
 		}
@@ -60,7 +60,7 @@ Template.e2eFlexTab.events({
 		if (e2e) {
 			e2e.end();
 			e2e.clearGroupKey();
-			swal({
+			modal.open({
 				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 				text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
 				html: true

@@ -206,11 +206,12 @@ RocketChat.E2E.Room = class {
 			.catch((e) => {
 				console.log(e);
 				// Session key was reset. Cannot decrypt this file anymore.
-				swal({
+				modal.open({
 					title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 					text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
 					html: true
 				});
+
 				return false;
 			});
 	}
@@ -357,7 +358,7 @@ RocketChat.E2E.Room = class {
 			case 'end':
 				if (this.established.get()) {
 					this.reset();
-					swal({
+					modal.open({
 						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('The E2E session was ended'),
 						html: true
@@ -368,7 +369,7 @@ RocketChat.E2E.Room = class {
 			case 'clearGroupKey':
 				if (this.established.get()) {
 					this.reset();
-					swal({
+					modal.open({
 						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
 						text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
 						html: true
