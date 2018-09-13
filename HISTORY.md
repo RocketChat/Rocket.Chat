@@ -1,3 +1,16 @@
+# Assistify 0.9.0
+
+This release of the Assistify-Chat is way more disruptive than the version number might suggest: In contrast to earlier releases, we did not build upon the previous version, but re-started on plain Rocket.Chat.
+Reason for this quite unusual behavior is that we wanted to return closer to the Rocket.Chat-standard. For almost everything we added on top of Rocket.Chat or what we have modified in it, we created a pull request.
+
+*Nice, but what does that mean for me as a user?*
+
+- You will find Assistify.Chat more convenient to use if you're used to plain Rocket.Chat.
+- You can expect Assistify.Chat to be much more frequently updated and thus be more compatible to the most recent mobile apps.
+- We cut off stuff which we considered not to be of high benefit: requests and topics are gone now - but replaced with a more generic *threading* ([#418](https://github.com/assistify/Rocket.Chat/issues/418)). This will allow you to spin-off a discussion from any message and have all relevant persons joined automagically - without disturbing the complete channel from where you started. Sounds interesting? Observe [our PR towards Rocket.Chat](https://github.com/RocketChat/Rocket.Chat/pull/11803) for more details and follow-up.
+- Finally, we added our AI component Smarti to be available in all public channels and private groups now ([#419](https://github.com/assistify/Rocket.Chat/issues/419)) - and we'll continue developing Smarti to be even smarter. For the time being, if you remember that you have been asked a similar question earlier: Click on the lightbulb in the top-right and check whether Smarti can help you with previous conversations. Same if you know that the current chat is about something you noted down in a wiki. Check whether Smarti could find it for you and reduce your effort to reply - and let us know!
+
+Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
 # 0.68.5
 `2018-08-23  ·  1 🐛  ·  1 👩‍💻👨‍💻`
