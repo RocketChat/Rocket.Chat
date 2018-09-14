@@ -5,7 +5,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { logger } from './logger';
 
 const defaults = {
-	enable: true,
+	enable: false,
 	loginStyle: 'redirect',
 	generateUsername: false,
 	manifestURI: Meteor.absoluteUrl('_blockstack/manifest'),
