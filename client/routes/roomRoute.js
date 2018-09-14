@@ -4,7 +4,9 @@ FlowRouter.goToRoomById = (roomId) => {
 		RocketChat.roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 	} else {
 		Meteor.call('getRoomNameAndTypeByNameOrId', roomId, (err, room)=>{
-			RocketChat.roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+			if (!err) {
+				RocketChat.roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+			}
 		});
 	}
 };
