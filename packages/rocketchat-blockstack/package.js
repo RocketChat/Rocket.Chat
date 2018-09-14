@@ -33,10 +33,6 @@ Package.onUse((api) => {
 		'reload',
 	], 'client');
 
-	api.addAssets([
-		'assets/blockstack_mark.png',
-	], 'client');
-
 	api.addFiles([
 		'server/main.js',
 		'server/routes.js',
