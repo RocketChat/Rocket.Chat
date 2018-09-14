@@ -23,6 +23,21 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 		};
 	}
 
+	if (result.isNew) {
+		try {
+			const user = RocketChat.models.Users.findOneById(result.userId, { fields: { 'services.blockstack.image': 1, username: 1 } });
+			if (user && user.services && user.services.blockstack && user.services.blockstack.image) {
+				Meteor.runAsUser(user._id, () => {
+					RocketChat.setUserAvatar(user, user.services.blockstack.image, undefined, 'url');
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	delete result.isNew;
+
 	// Send success and token back to account handlers
 	return result;
 });

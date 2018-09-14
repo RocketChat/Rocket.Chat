@@ -7,7 +7,7 @@ const validateUsername = (username) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
-const validateName = (name) => name.length;
+const validateName = (name) => name && name.length;
 const validatePassword = (password, confirmationPassword) => {
 	if (!confirmationPassword) {
 		return true;

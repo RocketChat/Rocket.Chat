@@ -13,6 +13,7 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 	// Look for existing Blockstack user
 	let user = Meteor.users.findOne({ 'services.blockstack.id': id });
 	let userId;
+	let isNew = false;
 
 	// Use found or create a user
 	if (user) {
@@ -21,6 +22,7 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 		// Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
 		// ^ threw errors from an app name in key having '.'
 	} else {
+		isNew = true;
 		let emails = [];
 		if (!Array.isArray(profile.emails)) {
 			// Fix absense of emails by adding placeholder address using decentralised
@@ -70,5 +72,6 @@ Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
 		userId,
 		token,
 		tokenExpires,
+		isNew,
 	};
 };
