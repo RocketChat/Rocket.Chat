@@ -1,4 +1,5 @@
-/* eslint-disable no-undef, new-cap */
+/* eslint-disable new-cap, no-proto */
+/* globals dcodeIO, util */
 
 /*
  * vim: ts=4:sw=4
