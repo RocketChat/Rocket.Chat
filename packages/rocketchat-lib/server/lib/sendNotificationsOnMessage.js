@@ -1,3 +1,4 @@
+/* globals Apps, Promise */
 import moment from 'moment';
 
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
@@ -65,6 +66,25 @@ const sendNotification = ({
 	} = subscription;
 
 	let notificationSent = false;
+
+	const isAppsLoaded = (Apps && Apps.isLoaded());
+
+	if (isAppsLoaded) {
+		const notificationEventPayload = {
+			notificationMessage,
+			message,
+			receiver,
+			sender,
+		};
+
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPreNotificationSentPrevent', notificationEventPayload));
+
+		if (prevent) {
+			console.log('A Rocket.Chat App prevented notifications from being sent');
+
+			return;
+		}
+	}
 
 	// busy users don't receive audio notification
 	if (shouldNotifyAudio({
