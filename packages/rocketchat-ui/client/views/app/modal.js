@@ -61,7 +61,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && !/input|textarea|button/i.test(e.currentTarget.activeElement.tagName)) {
 			e.preventDefault();
 			e.stopPropagation();
 

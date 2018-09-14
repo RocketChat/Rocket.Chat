@@ -19,16 +19,19 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	},
 });
 Tracker.autorun(() => {
-	const title = t('Upload_From_Webdav');
 	WebdavAccounts.find().forEach((account) => {
-		const label = `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
-		RocketChat.messageBox.actions.add('WebDAV', account.name || label, {
+		const name = account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+		const title = t('Upload_From', {
+			name,
+		});
+		RocketChat.messageBox.actions.add('WebDAV', name, {
 			id: `webdav-upload-${ account._id.toLowerCase() }`,
 			icon: 'cloud-plus',
 			condition: () => RocketChat.settings.get('Webdav_Integration_Enabled'),
 			action() {
 				modal.open({
 					data: {
+						name,
 						accountId: account._id,
 					},
 					title,

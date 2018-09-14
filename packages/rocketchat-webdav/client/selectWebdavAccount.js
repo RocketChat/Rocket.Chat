@@ -6,7 +6,7 @@ Template.selectWebdavAccount.helpers({
 		return WebdavAccounts.find().fetch();
 	},
 	usernamePlusServer(account) {
-		return `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
 	},
 });
 Template.selectWebdavAccount.events({

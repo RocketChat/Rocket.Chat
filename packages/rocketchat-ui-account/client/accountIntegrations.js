@@ -8,7 +8,7 @@ Template.accountIntegrations.helpers({
 		return WebdavAccounts.find().fetch();
 	},
 	getOptionValue(account) {
-		return `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
+		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
 	},
 });
 
