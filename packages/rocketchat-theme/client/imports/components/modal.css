@@ -56,12 +56,12 @@
 
 		flex-direction: column;
 
+		min-height: 72px;
+
 		padding: 16px;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		align-items: stretch;
-
-		min-height: 72px;
 	}
 
 	&__content-icon {
@@ -123,6 +123,7 @@
 
 		&--empty {
 			padding: 0;
+
 			background: transparent;
 		}
 	}
