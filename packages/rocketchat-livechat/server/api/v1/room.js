@@ -24,13 +24,15 @@ RocketChat.API.v1.addRoute('livechat/room', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/room.close/:rid', {
+RocketChat.API.v1.addRoute('livechat/room.close', {
 	post() {
 		try {
-			check(this.urlParams, { rid: String });
-			check(this.bodyParams, { token: String });
+			check(this.bodyParams, {
+				rid: String,
+				token: String,
+			});
 
-			const { rid } = this.urlParams;
+			const { rid } = this.bodyParams;
 			const { token } = this.bodyParams;
 
 			const visitor = findGuest(token);
@@ -61,16 +63,16 @@ RocketChat.API.v1.addRoute('livechat/room.close/:rid', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/room.transfer/:rid', {
+RocketChat.API.v1.addRoute('livechat/room.transfer', {
 	post() {
 		try {
-			check(this.urlParams, { rid: String });
 			check(this.bodyParams, {
+				rid: String,
 				token: String,
 				department: String,
 			});
 
-			const { rid } = this.urlParams;
+			const { rid } = this.bodyParams;
 			const { token, department } = this.bodyParams;
 
 			const guest = findGuest(token);
@@ -98,11 +100,11 @@ RocketChat.API.v1.addRoute('livechat/room.transfer/:rid', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/room.survey/:rid', {
+RocketChat.API.v1.addRoute('livechat/room.survey', {
 	post() {
 		try {
-			check(this.urlParams, { rid: String });
 			check(this.bodyParams, {
+				rid: String,
 				token: String,
 				data: [Match.ObjectIncluding({
 					name: String,
@@ -110,7 +112,7 @@ RocketChat.API.v1.addRoute('livechat/room.survey/:rid', {
 				})],
 			});
 
-			const { rid } = this.urlParams;
+			const { rid } = this.bodyParams;
 			const { token, data } = this.bodyParams;
 
 			const visitor = findGuest(token);
