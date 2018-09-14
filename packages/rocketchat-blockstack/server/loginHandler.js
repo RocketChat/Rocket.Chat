@@ -12,6 +12,10 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 		return;
 	}
 
+	if (!RocketChat.settings.get('Blockstack_Enable')) {
+		return;
+	}
+
 	logger.debug('Processing login request', loginRequest);
 
 	const auth = handleAccessToken(loginRequest);
