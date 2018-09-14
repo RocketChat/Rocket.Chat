@@ -467,28 +467,59 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.addAll', (done) => {
-		request.post(api('channels.addAll'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-			})
-			.end(done);
+	describe('/channels.addAll:', () => {
+		let testChannel;
+		beforeEach((done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.test.${ Date.now() }`,
+					readOnly: true,
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('should add all users of the server to the channel', (done) => {
+			request.post(api('channels.addAll'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+				})
+				.end(done);
+		});
+		it('should add and mute all users of the server to the channel when channel is read-only', (done) => {
+			request.post(api('channels.addAll'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.muted').and.to.be.an('array');
+				})
+				.end(done);
+		});
 	});
-
 
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
 		it('create channel with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -515,7 +546,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('change customFields', async(done) => {
-			const customFields = { field9:'value9' };
+			const customFields = { field9: 'value9' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -573,7 +604,7 @@ describe('[Channels]', function() {
 				});
 		});
 		it('set customFields with one nested field', async(done) => {
-			const customFields = { field1:'value1' };
+			const customFields = { field1: 'value1' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -592,7 +623,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
