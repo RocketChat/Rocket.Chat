@@ -192,8 +192,6 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 
 rocketchat:blockstack
-aldeed:template-extension
-meteorhacks:picker
 rocketchat:version-check
 
 rocketchat:search

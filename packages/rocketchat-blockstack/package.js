@@ -21,13 +21,11 @@ Package.onUse((api) => {
 	api.use([
 		'rocketchat:lib',
 		'rocketchat:logger',
-		'meteorhacks:picker',
 		'routepolicy',
 		'webapp',
 	], 'server');
 
 	api.use([
-		'aldeed:template-extension@4.1.0',
 		'kadira:flow-router',
 		'mystor:device-detection',
 		'templating',

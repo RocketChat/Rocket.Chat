@@ -11,6 +11,8 @@ Accounts.blockstack.defaults = {
 	redirectURI: Meteor.absoluteUrl(Accounts.blockstack.redirectPath),
 	authDescription: 'Rocket.Chat login',
 	buttonLabelText: 'Blockstack',
+	buttonColor: '#271132',
+	buttonLabelColor: '#ffffff',
 };
 
 // Add required settings (not all used in current version)
