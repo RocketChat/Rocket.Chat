@@ -41,7 +41,6 @@ function _OAuthServicesUpdate() {
 				data.tokenSentVia = RocketChat.settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = RocketChat.settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = RocketChat.settings.get(`${ service.key }-username_field`);
-				data.avatarField = RocketChat.settings.get(`${ service.key }-avatar_field`);
 				data.mergeUsers = RocketChat.settings.get(`${ service.key }-merge_users`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
@@ -53,7 +52,6 @@ function _OAuthServicesUpdate() {
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
-					avatarField: data.avatarField,
 					mergeUsers: data.mergeUsers,
 				});
 			}

@@ -1,5 +1,4 @@
 /* global Gravatar */
-/* eslint complexity:0 */
 
 function getAvatarSuggestionForUser(user) {
 	check(user, Object);
@@ -60,27 +59,6 @@ function getAvatarSuggestionForUser(user) {
 			service: 'blockstack',
 			url: user.services.blockstack.image,
 		});
-	}
-
-	const { ServiceConfiguration } = Package['service-configuration'];
-
-	for (const service in user.services) {
-		if (user.services[service]._OAuthCustom) {
-			const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
-
-			if (services.length > 0) {
-				if (services[0].avatarField) {
-					const avatarUrl = services[0].avatarField.split('.').reduce(function(prev, curr) {
-						return prev ? prev[curr] : undefined;
-					}, user.services[service]);
-
-					avatars.push({
-						service,
-						url: avatarUrl,
-					});
-				}
-			}
-		}
 	}
 
 	if (user.emails && user.emails.length > 0) {

@@ -54,7 +54,5 @@ RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 		preferences: getUserPreferences(),
 	};
 
-	me.avatarUrl = RocketChat.getURL(`/avatar/${ me.username }`, { cdn: false, full: true });
-
 	return me;
 });
