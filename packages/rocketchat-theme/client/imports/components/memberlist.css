@@ -53,6 +53,7 @@
 
 	&__status {
 		display: inline-block;
+
 		width: var(--sidebar-item-user-status-size);
 		height: var(--sidebar-item-user-status-size);
 		margin: 0 7px 0 3px;

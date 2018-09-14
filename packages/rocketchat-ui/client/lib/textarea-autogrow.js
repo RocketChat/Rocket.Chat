@@ -1,4 +1,5 @@
-import _ from 'underscore'
+import _ from 'underscore';
+
 (function($) {
 	/**
 	 * Auto-growing textareas; technique ripped from Facebook
@@ -7,9 +8,9 @@ import _ from 'underscore'
 	 * http://github.com/jaz303/jquery-grab-bag/tree/master/javascripts/jquery.autogrow-textarea.js
 	 */
 	$.fn.autogrow = function(options) {
-		let shadow = $("body > #autogrow-shadow");
+		let shadow = $('body > #autogrow-shadow');
 		if (!shadow.length) {
-			shadow = $('<div id="autogrow-shadow"></div>').addClass("autogrow-shadow").appendTo(document.body);
+			shadow = $('<div id="autogrow-shadow"></div>').addClass('autogrow-shadow').appendTo(document.body);
 		}
 		return this.filter('textarea').each(function() {
 			const self = this;
@@ -18,7 +19,7 @@ import _ from 'underscore'
 
 			const settings = {
 				postGrowCallback: null,
-				...options
+				...options,
 			};
 
 			const maxHeight = window.getComputedStyle(self)['max-height'].replace('px', '');
@@ -35,29 +36,26 @@ import _ from 'underscore'
 				fontWeight: $self.css('fontWeight'),
 				lineHeight: $self.css('lineHeight'),
 				resize: 'none',
-				wordWrap: 'break-word'
+				wordWrap: 'break-word',
 			});
 
-			const trigger = _.debounce(() => $self.trigger('autogrow', []), 500)
+			const trigger = _.debounce(() => $self.trigger('autogrow', []), 500);
 
 			const times = function(string, number) {
 				let r = '';
-				for (let i = 0; i < number; i++) r += string;
+				for (let i = 0; i < number; i++) { r += string; }
 				return r;
 			};
 
-			const runTimes = (space) => times('&nbsp;', space.length - 1) + ' ';
+			const runTimes = (space) => `${ times('&nbsp;', space.length - 1) } `;
 
 			let lastWidth = width;
 			let lastHeight = minHeight;
-			let lastVal = self.value;
 
 			let length = 0;
 
-
-			const update = function update (event) {
+			const update = function update(event) {
 				if (lastHeight >= maxHeight && length && length < self.value.length) {
-					lastVal = self.value;
 					return true;
 				}
 
@@ -73,12 +71,15 @@ import _ from 'underscore'
 					val += '<br/>';
 				}
 
+				if (width < 10) {
+					width = $self.width();
+				}
+
 				if (width !== lastWidth) {
 					shadow.css('width', width);
 					lastWidth = width;
 				}
 
-				lastVal = self.value;
 				shadow[0].innerHTML = val;
 
 				let newHeight = Math.max(shadow[0].clientHeight + 1, minHeight) + 1;
@@ -87,17 +88,16 @@ import _ from 'underscore'
 
 				if (newHeight >= maxHeight) {
 					newHeight = maxHeight;
-					overflow = ''
+					overflow = '';
 				} else {
 					length = self.value.length;
 				}
 
-				if (newHeight == lastHeight) {
+				if (newHeight === lastHeight) {
 					return true;
 				}
 
 				lastHeight = newHeight;
-
 
 				$self.css({ overflow, height: newHeight });
 
@@ -106,13 +106,15 @@ import _ from 'underscore'
 				if (settings.postGrowCallback !== null) {
 					settings.postGrowCallback($self);
 				}
-			}
+			};
 
-			const updateWidthDebounce = _.debounce(() => {
+			const updateWidth = () => {
 				length = 0;
 				width = $self.width();
 				update();
-			}, 300);
+			};
+
+			const updateWidthDebounce = _.debounce(updateWidth, 300);
 
 			const updateThrottle = _.throttle(update, 300);
 
@@ -124,4 +126,4 @@ import _ from 'underscore'
 			self.updateAutogrow = updateThrottle;
 		});
 	};
-})(jQuery);
+}(jQuery));

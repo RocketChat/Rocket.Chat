@@ -1731,7 +1731,8 @@ RocketChat.settings.addGroup('Logs', function() {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 		});
-		this.add('Prometheus_Port', 9100, {
+		// See the default port allocation at https://github.com/prometheus/prometheus/wiki/Default-port-allocations
+		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',
 		});

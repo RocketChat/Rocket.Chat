@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.69.0-develop",
+	"version": "0.70.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -64,7 +64,7 @@
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "eslint .",
-		"stylelint": "stylelint packages/**/*.css",
+		"stylelint": "stylelint \"packages/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
@@ -89,6 +89,7 @@
 	},
 	"devDependencies": {
 		"@octokit/rest": "^15.8.1",
+		"@rocket.chat/eslint-config": "^0.1.2",
 		"autoprefixer": "^8.6.0",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -115,6 +116,7 @@
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^1.7.0",
 		"@google-cloud/vision": "^0.19.0",
+		"@rocket.chat/apps-engine": "^1.0.0",
 		"@slack/client": "^4.2.2",
 		"adm-zip": "^0.4.11",
 		"archiver": "^2.1.1",
@@ -174,6 +176,7 @@
 		"speakeasy": "^2.0.0",
 		"tar-stream": "^1.6.1",
 		"toastr": "^2.1.4",
+		"turndown": "^5.0.1",
 		"twilio": "^3.17.1",
 		"twit": "^2.2.10",
 		"ua-parser-js": "^0.7.18",
