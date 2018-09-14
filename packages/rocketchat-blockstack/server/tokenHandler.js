@@ -1,4 +1,10 @@
 import { decodeToken } from 'blockstack';
+
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Logger } from 'meteor/rocketchat:logger';
+import { Match, check } from 'meteor/check';
+
 const logger = new Logger('Blockstack');
 
 // Handler extracts data from JSON and tokenised reponse.
@@ -8,7 +14,7 @@ const logger = new Logger('Blockstack');
 // The 'did' final portion of the blockstack decentralised ID, is displayed as
 // your profile ID in the service. This isn't used yet, but could be useful
 // to link accounts if identity providers other than btc address are added.
-Accounts.blockstack.handleAccessToken = (loginRequest) => {
+export const handleAccessToken = (loginRequest) => {
 	logger.debug('Login request received', loginRequest);
 
 	check(loginRequest, Match.ObjectIncluding({

@@ -1,8 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+
 const logger = new Logger('Blockstack');
 
 // Updates or creates a user after we authenticate with Blockstack
 // Clones Accounts.updateOrCreateUserFromExternalService with some modifications
-Accounts.blockstack.updateOrCreateUser = (serviceData, options) => {
+export const updateOrCreateUser = (serviceData, options) => {
 	const serviceConfig = ServiceConfiguration.configurations.findOne({ service: 'blockstack' });
 	logger.debug('Auth config', serviceConfig);
 

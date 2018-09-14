@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(function(req, res) {
 	const name = RocketChat.settings.get('Site_Name');
 	const startUrl = Meteor.absoluteUrl();

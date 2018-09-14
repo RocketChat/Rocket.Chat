@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Logger } from 'meteor/rocketchat:logger';
+
 const logger = new Logger('Blockstack');
 
 // Logout user from a Blockstack auth session

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { check, Match } from 'meteor/check';
+import { Session } from 'meteor/session';
+
+import './routes';
 import { redirectToSignIn } from 'blockstack';
 
 // Let service config set values, but not order of params

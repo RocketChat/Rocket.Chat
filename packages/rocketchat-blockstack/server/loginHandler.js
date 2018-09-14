@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+
+
+import { updateOrCreateUser } from './userHandler';
+import { handleAccessToken } from './tokenHandler';
+
 const logger = new Logger('Blockstack');
 
 // Blockstack login handler, triggered by a blockstack authResponse in route
@@ -8,11 +17,11 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 		return;
 	}
 
-	const auth = Accounts.blockstack.handleAccessToken(loginRequest);
+	const auth = handleAccessToken(loginRequest);
 
 	// TODO: Fix #9484 and re-instate usage of accounts helper
 	// const result = Accounts.updateOrCreateUserFromExternalService('blockstack', auth.serviceData, auth.options)
-	const result = Accounts.blockstack.updateOrCreateUser(auth.serviceData, auth.options);
+	const result = updateOrCreateUser(auth.serviceData, auth.options);
 	logger.debug('User create/update result', result);
 
 	// Ensure processing succeeded
