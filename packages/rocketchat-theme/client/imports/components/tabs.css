@@ -25,9 +25,9 @@
 	border-bottom: 1px solid transparent;
 
 	font-size: 1rem;
-	line-height: 1.25rem;
 
 	font-weight: 500;
+	line-height: 1.25rem;
 
 	&.active {
 		color: var(--rc-color-button-primary);
