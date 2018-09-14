@@ -1,21 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { Logger } from 'meteor/rocketchat:logger';
-
 
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
-
-const logger = new Logger('Blockstack');
+import { logger } from './logger';
 
 // Blockstack login handler, triggered by a blockstack authResponse in route
 Accounts.registerLoginHandler('blockstack', (loginRequest) => {
-	logger.debug('Processing login request', loginRequest);
-
 	if (!loginRequest.blockstack || !loginRequest.authResponse) {
 		return;
 	}
+
+	logger.debug('Processing login request', loginRequest);
 
 	const auth = handleAccessToken(loginRequest);
 
@@ -47,6 +44,5 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 
 	delete result.isNew;
 
-	// Send success and token back to account handlers
 	return result;
 });

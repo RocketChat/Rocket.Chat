@@ -2,10 +2,8 @@ import { decodeToken } from 'blockstack';
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from 'meteor/rocketchat:logger';
 import { Match, check } from 'meteor/check';
-
-const logger = new Logger('Blockstack');
+import { logger } from './logger';
 
 // Handler extracts data from JSON and tokenised reponse.
 // Reflects OAuth token service, with some slight modifications for Blockstack.
@@ -24,10 +22,15 @@ export const handleAccessToken = (loginRequest) => {
 
 	// Decode auth response for user attributes
 	const { username, profile } = loginRequest.userData;
+	const decodedToken = decodeToken(loginRequest.authResponse).payload;
+
 	profile.username = username;
+
 	logger.debug('User data', loginRequest.userData);
-	logger.debug('Login decoded', decodeToken(loginRequest.authResponse).payload);
-	const { iss, iat, exp } = decodeToken(loginRequest.authResponse).payload;
+	logger.debug('Login decoded', decodedToken);
+
+	const { iss, iat, exp } = decodedToken;
+
 	if (!iss) {
 		return {
 			type: 'blockstack',
@@ -38,7 +41,7 @@ export const handleAccessToken = (loginRequest) => {
 	// Collect basic auth provider details
 	const serviceData = {
 		id: iss,
-		did: `${ iss.split(':').pop() }`,
+		did: iss.split(':').pop(),
 		issuedAt: new Date(iat * 1000),
 		expiresAt: new Date(exp * 1000),
 	};
@@ -48,10 +51,8 @@ export const handleAccessToken = (loginRequest) => {
 		serviceData.image = profile.image[0].contentUrl;
 	}
 
-	// Store the full Blcokstack profile object in service data
-	// profile: profile // disabled because it contained invalid keys for mongo
-
 	logger.debug('Login data', serviceData, profile);
+
 	return {
 		serviceData,
 		options: { profile },

@@ -2,9 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { Logger } from 'meteor/rocketchat:logger';
-
-const logger = new Logger('Blockstack');
+import { logger } from './logger';
 
 // Updates or creates a user after we authenticate with Blockstack
 // Clones Accounts.updateOrCreateUserFromExternalService with some modifications
@@ -25,8 +23,6 @@ export const updateOrCreateUser = (serviceData, options) => {
 	if (user) {
 		logger.info(`User login with Blockstack ID ${ id }`);
 		userId = user._id;
-		// Meteor.users.update(userId, { $set: { 'services.blockstack.profile': profile } })
-		// ^ threw errors from an app name in key having '.'
 	} else {
 		isNew = true;
 		let emails = [];
