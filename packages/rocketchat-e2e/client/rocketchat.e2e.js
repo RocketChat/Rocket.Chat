@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+import { call } from 'meteor/rocketchat:lib';
+
 function ab2str(buf) {
 	return RocketChat.signalUtils.toString(buf);
 }
@@ -44,114 +46,141 @@ class E2E {
 		return this.instancesByRoomId[roomId];
 	}
 
-	startClient() {
+	async startClient() {
 		// To reset all keys (local and on server):
-		// Meteor.call("emptyKeychain");
+		// await call("emptyKeychain");
 		// RocketChat.E2EStorage.store = {}
 		// localStorage.clear();
 
 		// This is a new device for signal encryption
-		const userpass = window.prompt('Enter E2E Password');
-		console.log(userpass);
+		const userPassword = window.prompt('Enter E2E Password');
 
-		const iterations = 1000;
-		const hash = 'SHA-256';
+		if (userPassword !== null) {
+			const iterations = 1000;
+			const hash = 'SHA-256';
 
-		// First, create a PBKDF2 "key" containing the password
-		window.crypto.subtle.importKey('raw', str2ab(userpass), { name: 'PBKDF2' }, false, ['deriveKey']).
+			// First, create a PBKDF2 "key" containing the password
+			let baseKey;
+			try {
+				baseKey = await window.crypto.subtle.importKey('raw', str2ab(userPassword), { name: 'PBKDF2' }, false, ['deriveKey']);
+			} catch (error) {
+				console.log('E2E -> Error creating a key based on user password: ', error);
+				return;
+			}
 
-		// Derive a key from the password
-			then(function(baseKey) {
-				return window.crypto.subtle.deriveKey(
-					{
-						name: 'PBKDF2',
-						salt: str2ab(Meteor.userId()),
-						iterations,
-						hash,
-					},
-					baseKey,
-					{ name: 'AES-CBC', length: 256 }, // Key we want
-					true, // Extractable
-					['encrypt', 'decrypt'] // For new key
-				);
-			}).
+			// Derive a key from the password
+			let masterKey;
+			try {
+				masterKey = await window.crypto.subtle.deriveKey({ name: 'PBKDF2', salt: str2ab(Meteor.userId()), iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, ['encrypt', 'decrypt']);
+			} catch (error) {
+				console.log('E2E -> Error deriving baseKey: ', error);
+				return;
+			}
+
 			// Export it so we can display it
-			then(function(masterKey) {
-				RocketChat.E2EStorage.put('E2E-MasterKey', masterKey);
-				window.crypto.subtle.exportKey('jwk', masterKey).then(function(result) {
-					localStorage.setItem('E2E-MasterKey', JSON.stringify(result));
-					console.log(JSON.stringify(result));
+			RocketChat.E2EStorage.put('E2E-MasterKey', masterKey);
+			let exportKey;
+			try {
+				exportKey = await window.crypto.subtle.exportKey('jwk', masterKey);
+			} catch (error) {
+				console.log('E2E -> Error exporting key: ', error);
+				return;
+			}
+			localStorage.setItem('E2E-MasterKey', JSON.stringify(exportKey));
+			let rsaKeys;
+			try {
+				rsaKeys = await call('fetchMyKeys');
+			} catch (error) {
+				console.log('E2E -> Error fetching RSA keys: ', error);
+				return;
+			}
+			if (rsaKeys && EJSON.parse(rsaKeys)['RSA-EPrivKey']) {
+				const pubkey = EJSON.parse(rsaKeys)['RSA-PubKey'];
+				const eprivkey = EJSON.parse(rsaKeys)['RSA-EPrivKey'];
+				let publicKey;
+				try {
+					publicKey = await crypto.subtle.importKey('jwk', EJSON.parse(pubkey), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
+				} catch (error) {
+					console.log('E2E -> Error importing public key: ', error);
+					return;
+				}
+
+				localStorage.setItem('RSA-PubKey', pubkey);
+				RocketChat.E2EStorage.put('RSA-PubKey', publicKey);
+
+				let cipherText = EJSON.parse(eprivkey);
+				const vector = cipherText.slice(0, 16);
+				cipherText = cipherText.slice(16);
+
+				let privKey;
+				try {
+					privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey, cipherText);
+				} catch (error) {
+					console.log('E2E -> Error decrypting private key: ', error);
+					return;
+				}
+				localStorage.setItem('RSA-PrivKey', ab2str(privKey));
+				let privateKey;
+				try {
+					privateKey = await crypto.subtle.importKey('jwk', EJSON.parse(ab2str(privKey)), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['decrypt']);
+				} catch (error) {
+					console.log('E2E -> Error importing private key: ', error);
+					return;
+				}
+
+				RocketChat.E2EStorage.put('RSA-PrivKey', privateKey);
+			} else {
+				// Could not obtain public-private keypair from server.
+				let key;
+				try {
+					key = await crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
+				} catch (error) {
+					console.log('E2E -> Error generating key: ', error);
+					return;
+				}
+
+				let publicKey;
+				try {
+					publicKey = await crypto.subtle.exportKey('jwk', key.publicKey);
+				} catch (error) {
+					console.log('E2E -> Error exporting public key: ', error);
+					return;
+				}
+				localStorage.setItem('RSA-PubKey', JSON.stringify(publicKey));
+
+				let privateKey;
+				try {
+					privateKey = await crypto.subtle.exportKey('jwk', key.privateKey);
+				} catch (error) {
+					console.log('E2E -> Error exporting private key: ', error);
+					return;
+				}
+
+				localStorage.setItem('RSA-PrivKey', JSON.stringify(privateKey));
+				const vector = crypto.getRandomValues(new Uint8Array(16));
+				let rsaKeys;
+				try {
+					rsaKeys = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, str2ab(localStorage.getItem('RSA-PrivKey')));
+				} catch (error) {
+					console.log('E2E -> Error encrypting rsaKeys: ', error);
+					return;
+				}
+
+				cipherText = new Uint8Array(rsaKeys);
+				const output = new Uint8Array(vector.length + cipherText.length);
+				output.set(vector, 0);
+				output.set(cipherText, vector.length);
+				await call('addKeyToChain', {
+					'RSA-PubKey': localStorage.getItem('RSA-PubKey'),
+					'RSA-EPrivKey': EJSON.stringify(output),
 				});
 
-				const RSAKeys = new Promise((resolve) => {
-					Meteor.call('fetchMyKeys', function(error, result) {
-						if (result !== null && result !== undefined && EJSON.parse(result)['RSA-EPrivKey']) {
-							console.log('Key found');
-							console.log(EJSON.parse(result));
-							const pubkey = EJSON.parse(result)['RSA-PubKey'];
-							const eprivkey = EJSON.parse(result)['RSA-EPrivKey'];
-							crypto.subtle.importKey('jwk', EJSON.parse(pubkey), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']).then(function(public_key) {
-								localStorage.setItem('RSA-PubKey', pubkey);
-								RocketChat.E2EStorage.put('RSA-PubKey', public_key);
+				RocketChat.E2EStorage.put('RSA-PrivKey', key.privateKey);
+				RocketChat.E2EStorage.put('RSA-PubKey', key.publicKey);
+			}
 
-								let cipherText = EJSON.parse(eprivkey);
-								const vector = cipherText.slice(0, 16);
-								cipherText = cipherText.slice(16);
-								crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey, cipherText).then((result) => {
-									console.log('Decrypted private key.');
-									console.log(ab2str(result));
-									localStorage.setItem('RSA-PrivKey', ab2str(result));
-									crypto.subtle.importKey('jwk', EJSON.parse(ab2str(result)), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['decrypt']).then(function(private_key) {
-										RocketChat.E2EStorage.put('RSA-PrivKey', private_key);
-										resolve(true);
-									});
-									// EJSON.parse(ab2str(result));
-								});
-							});
-						}					else {
-							// Could not obtain public-private keypair from server.
-							resolve(false);
-						}
-					});
-
-				}).then(function(val) {
-					if (val === false) {
-						console.log('generate new key');
-						promise_key = crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
-						promise_key.then(function(key) {
-							crypto.subtle.exportKey('jwk', key.publicKey).then(function(result) {
-								localStorage.setItem('RSA-PubKey', JSON.stringify(result));
-
-								crypto.subtle.exportKey('jwk', key.privateKey).then(function(result) {
-									localStorage.setItem('RSA-PrivKey', JSON.stringify(result));
-									const vector = crypto.getRandomValues(new Uint8Array(16));
-									crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, str2ab(localStorage.getItem('RSA-PrivKey'))).then((result) => {
-										cipherText = new Uint8Array(result);
-										const output = new Uint8Array(vector.length + cipherText.length);
-										output.set(vector, 0);
-										output.set(cipherText, vector.length);
-										console.log(EJSON.stringify(output));
-										Meteor.call('addKeyToChain', {
-											'RSA-PubKey': localStorage.getItem('RSA-PubKey'),
-											'RSA-EPrivKey': EJSON.stringify(output),
-										});
-									});
-								});
-							});
-
-							RocketChat.E2EStorage.put('RSA-PrivKey', key.privateKey);
-							RocketChat.E2EStorage.put('RSA-PubKey', key.publicKey);
-						});
-					}
-				});
-
-				RSAKeys.catch((err) => {
-					console.log(err);
-				});
-
-			});
-		this.ready.set(true);
-
+			this.ready.set(true);
+		}
 	}
 }
 
@@ -192,7 +221,7 @@ Meteor.startup(function() {
 	}, RocketChat.promises.priority.HIGH);
 
 	// Decrypt messages before displaying
-	RocketChat.promises.add('onClientMessageReceived', function(message) {
+	RocketChat.promises.add('onClientMessageReceived', async function(message) {
 		if (message.rid && RocketChat.E2E.getInstanceByRoomId(message.rid) && message.t === 'e2e' && !message.file) {
 			const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
 			if (e2eRoom.typeOfRoom === 'p' || e2eRoom.typeOfRoom === 'd') {
@@ -211,55 +240,62 @@ Meteor.startup(function() {
 						return message;
 					});
 
-				}				else {
+				} else {
 					// User does not have session key. Need to download and decrypt from subscription model.
-					const decryptedMsg = new Promise((resolve) => {
-						Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
-							let cipherText = EJSON.parse(result);
-							const vector = cipherText.slice(0, 16);
-							cipherText = cipherText.slice(16);
+					let groupKey;
+					try {
+						groupKey = await call('fetchGroupE2EKey', e2eRoom.roomId);
+					} catch (error) {
+						console.log('E2E -> Error fetching group key: ', error);
+						return;
+					}
+					let cipherText = EJSON.parse(groupKey);
+					const vector = cipherText.slice(0, 16);
+					cipherText = cipherText.slice(16);
 
-							// Decrypt downloaded session key
-							decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
-							decrypt_promise.then(function(result) {
-								e2eRoom.exportedSessionKey = ab2str(result);
+					// Decrypt downloaded session key
+					let sessionKey;
+					try {
+						sessionKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
+					} catch (error) {
+						console.log('E2E -> Error decrypting sessionKey: ', error);
+						return;
+					}
 
-								// Import key to make it ready for use
-								crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
-									e2eRoom.groupSessionKey = key;
-									e2eRoom.established.set(true);
-									e2eRoom.establishing.set(false);
+					e2eRoom.exportedSessionKey = ab2str(sessionKey);
 
-									// Session has been established. Decrypt received message.
-									e2eRoom.decrypt(message.msg).then((data) => {
-										message._id = data._id;
-										message.msg = data.text;
-										message.ack = data.ack;
-										if (data.ts) {
-											message.ts = data.ts;
-										}
-										resolve(message);
-									});
-								});
-							});
+					// Import key to make it ready for use
+					let key;
+					try {
+						key = await crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']);
+					} catch (error) {
+						console.log('E2E -> Error importing key: ', error);
+						return;
+					}
 
-							decrypt_promise.catch(function(err) {
-								console.log(err);
-							});
+					e2eRoom.groupSessionKey = key;
+					e2eRoom.established.set(true);
+					e2eRoom.establishing.set(false);
 
-						});
-					});
-
-					return decryptedMsg;
+					// Session has been established. Decrypt received message.
+					let data;
+					try {
+						data = await e2eRoom.decrypt(message.msg);
+					} catch (error) {
+						console.log('E2E -> Error decrypting message: ', error);
+						return;
+					}
+					message._id = data._id;
+					message.msg = data.text;
+					message.ack = data.ack;
+					if (data.ts) {
+						message.ts = data.ts;
+					}
+					return message;
 				}
 			}
-		}		else {
-			// Message is not encrypted.
-			try {
-				return Promise.resolve(message);
-			} catch (err) {
-				console.log(err.message);
-			}
+		} else {
+			return message;
 		}
 	}, RocketChat.promises.priority.HIGH);
 });

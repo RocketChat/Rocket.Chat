@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'less',
+		'ecmascript',
 		'rocketchat:lib',
 		'tracker',
 		'reactive-var',

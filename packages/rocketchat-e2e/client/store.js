@@ -20,7 +20,7 @@ class SignalProtocolStore {
 		}
 		if (key in this.store) {
 			return this.store[key];
-		}		else {
+		} else {
 			return defaultValue;
 		}
 	}

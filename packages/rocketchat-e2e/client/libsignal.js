@@ -35,6 +35,7 @@ for (var key in Module) {
 
 // The environment setup code below is customized to use Module.
 // *** Environment setup code ***
+require = false;
 var ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof require === 'function';
 var ENVIRONMENT_IS_WEB = typeof window === 'object';
 var ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';

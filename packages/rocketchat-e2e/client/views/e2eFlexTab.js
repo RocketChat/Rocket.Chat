@@ -33,7 +33,7 @@ Template.e2eFlexTab.events({
 		e.preventDefault();
 		const e2e = RocketChat.E2E.getInstanceByRoomId(this.rid);
 		if (e2e) {
-			e2e.handshake(true);
+			e2e.handshake();
 			t.timeout = Meteor.setTimeout(() => {
 				modal.open('Timeout', '', 'error');
 				e2e.establishing.set(false);
@@ -47,7 +47,7 @@ Template.e2eFlexTab.events({
 			// e2e.reset(true);
 			// RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: self.roomId, userId: self.userId });
 			// Notify all users of the refresh. Similar to clearGroupKey notification.
-			e2e.handshake(true, true);
+			e2e.handshake(true);
 			t.timeout = Meteor.setTimeout(() => {
 				modal.open('Timeout', '', 'error');
 				e2e.establishing.set(false);
