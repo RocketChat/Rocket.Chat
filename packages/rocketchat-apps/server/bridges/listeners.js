@@ -3,6 +3,20 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
+	async notificationEvent(eventInterface, payload) {
+		const converter = this.orch.getConverters().get('notifications');
+
+		const appData = converter.convertToApp(payload);
+
+		const response = await this.orch.getManager().getListenerManager().executeListener(eventInterface, appData);
+
+		if (typeof response === 'boolean') {
+			return response;
+		}
+
+		return converter.convertFromApp(response);
+	}
+
 	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
 		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);
