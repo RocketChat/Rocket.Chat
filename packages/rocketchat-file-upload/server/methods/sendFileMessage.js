@@ -51,7 +51,6 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,

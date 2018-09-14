@@ -192,6 +192,7 @@ yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:e2e
 rocketchat:version-check
+
 rocketchat:search
 chatpal:search
 rocketchat:lazy-load
