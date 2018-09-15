@@ -1,17 +1,19 @@
 html.rtl .flex-tab {
-  direction: rtl;
+	direction: rtl;
 
-  & .channel-settings {
-	& .editing {
-	  padding-right: 8px;
-	  padding-left: 80px;
+	& .channel-settings {
+		& .editing {
+			padding-right: 8px;
+			padding-left: 80px;
+		}
+
+		& .buttons {
+			right: auto;
+			left: 1px;
+
+			border-radius: 4px 0 0 4px;
+		}
 	}
-	& .buttons {
-	  right: auto;
-	  left: 1px;
-	  border-radius: 4px 0 0 4px;
-	}
-  }
 }
 
 .flex-tab {
@@ -52,6 +54,7 @@ html.rtl .flex-tab {
 
 		& .editing {
 			padding-right: 80px;
+
 			font-size: 14px;
 		}
 
@@ -108,9 +111,9 @@ html.rtl .flex-tab {
 		& .setting-block {
 			position: relative;
 
-			font-size: 0;
-
 			display: flex;
+
+			font-size: 0;
 
 			& .loading-animation {
 				top: 30px;

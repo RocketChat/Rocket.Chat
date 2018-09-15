@@ -29,7 +29,7 @@ Template.resetPassword.events({
 		const button = instance.$('button.resetpass');
 		RocketChat.Button.loading(button);
 
-		if (Meteor.userId()) {
+		if (Meteor.userId() && !FlowRouter.getParam('token')) {
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
 					console.log(error);
