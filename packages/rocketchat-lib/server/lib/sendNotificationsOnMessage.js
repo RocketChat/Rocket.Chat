@@ -176,6 +176,13 @@ const sendNotification = ({
 
 	if (notificationSent) {
 		RocketChat.Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
+
+		if (isAppsLoaded) {
+			// Even though we have no use for the return of this event
+			// we should wait for the calls to finish before returning
+			// to the rest of the application flow
+			Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPostNotificationSent', notificationPayload));
+		}
 	}
 };
 
