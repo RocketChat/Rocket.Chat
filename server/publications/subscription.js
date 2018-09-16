@@ -74,7 +74,7 @@ RocketChat.models.Subscriptions.on('change', ({ clientAction, id, data }) => {
 			break;
 
 		case 'removed':
-			data = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1 } });
+			data = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1, rid: 1 } });
 			break;
 	}
 
