@@ -31,17 +31,29 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/startup.js', 'server');
 
+	api.addFiles('server/functions/checkTokenpassOAuthEnabled.js', 'server');
 	api.addFiles('server/functions/getProtectedTokenpassBalances.js', 'server');
 	api.addFiles('server/functions/getPublicTokenpassBalances.js', 'server');
+	api.addFiles('server/functions/getTokenpassUserAccountResume.js', 'server');
+	api.addFiles('server/functions/lendTokenpassToken.js', 'server');
+	api.addFiles('server/functions/registerTokenpassAddress.js', 'server');
+	api.addFiles('server/functions/registerTokenpassUserAccount.js', 'server');
 	api.addFiles('server/functions/saveRoomTokens.js', 'server');
 	api.addFiles('server/functions/saveRoomTokensMinimumBalance.js', 'server');
 	api.addFiles('server/functions/updateUserTokenpassBalances.js', 'server');
+	api.addFiles('server/functions/verifyTokenpassAddress.js', 'server');
+	api.addFiles('server/functions/tokenpassAddAddressCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassInventoryCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassLendCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassRegisterCommand.js', 'server');
+	api.addFiles('server/functions/tokenpassVerifyAddressCommand.js', 'server');
 
 	api.addFiles('server/models/indexes.js', 'server');
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/models/Subscriptions.js', 'server');
 	api.addFiles('server/models/Users.js', 'server');
 
+	api.addFiles('server/methods/checkTokenpassOAuthEnabled.js', 'server');
 	api.addFiles('server/methods/findTokenChannels.js', 'server');
 	api.addFiles('server/methods/getChannelTokenpass.js', 'server');
 
