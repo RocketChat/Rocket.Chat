@@ -3,12 +3,16 @@ export class AppListenerBridge {
 		this.orch = orch;
 	}
 
-	async notificationEvent(eventInterface, payload) {
-		const converter = this.orch.getConverters().get('notifications');
+	async notificationEvent(interfaceName, payload, converterName = 'notifications') {
+		const converter = this.orch.getConverters().get(converterName);
+
+		if (!converter) {
+			throw new Meteor.Error('invalid_converter', 'The converter name provided is not a valid one');
+		}
 
 		const appData = converter.convertToApp(payload);
 
-		const response = await this.orch.getManager().getListenerManager().executeListener(eventInterface, appData);
+		const response = await this.orch.getManager().getListenerManager().executeListener(interfaceName, appData);
 
 		if (typeof response === 'boolean') {
 			return response;
