@@ -69,20 +69,31 @@ const sendNotification = ({
 
 	const isAppsLoaded = (Apps && Apps.isLoaded());
 
-	if (isAppsLoaded) {
-		const notificationEventPayload = {
-			notificationMessage,
-			message,
-			receiver,
-			sender,
-		};
+	const notificationPayload = {
+		notificationMessage,
+		message,
+		receiver,
+		sender,
+		customFields: {}, // Apps can populate this field
+	};
 
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPreNotificationSentPrevent', notificationEventPayload));
+	if (isAppsLoaded) {
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPreNotificationSentPrevent', notificationPayload));
 
 		if (prevent) {
 			console.log('A Rocket.Chat App prevented notifications from being sent');
 
 			return;
+		}
+
+		let result;
+
+		result = Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPreNotificationSentExtend', notificationPayload));
+		result = Promise.await(Apps.getBridges().getListenerBridge().notificationEvent('IPreNotificationSentModify', result));
+
+		if (typeof result === 'object') {
+			Object.assign(notificationPayload, result);
+			notificationMessage = result.notificationMessage;
 		}
 	}
 

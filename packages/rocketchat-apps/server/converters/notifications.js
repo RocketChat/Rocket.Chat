@@ -17,6 +17,7 @@ export class AppNotificationsConverter {
 			triggerMessage: messagesConverter.convertMessage(notification.message),
 			sender: usersConverter.convertToApp(notification.sender),
 			receiver: usersConverter.convertToApp(notification.receiver),
+			customFields: notification.customFields || {},
 		};
 
 		return convertedNotification;
@@ -29,6 +30,7 @@ export class AppNotificationsConverter {
 
 		const convertedNotification = {
 			notificationMessage: notification.message,
+			customFields: notification.customFields,
 		};
 
 		return convertedNotification;
