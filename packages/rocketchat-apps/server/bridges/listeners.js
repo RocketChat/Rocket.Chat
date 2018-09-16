@@ -21,6 +21,10 @@ export class AppListenerBridge {
 		return converter.convertFromApp(response);
 	}
 
+	async desktopNotificationEvent(interfaceName, payload) {
+		return this.notificationEvent(interfaceName, payload, 'desktopNotifications');
+	}
+
 	async messageEvent(inte, message) {
 		const msg = this.orch.getConverters().get('messages').convertMessage(message);
 		const result = await this.orch.getManager().getListenerManager().executeListener(inte, msg);

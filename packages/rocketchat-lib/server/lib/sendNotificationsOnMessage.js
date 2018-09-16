@@ -122,12 +122,9 @@ const sendNotification = ({
 		hasMentionToUser,
 		roomType,
 	})) {
-		notificationSent = true;
-		notifyDesktopUser({
-			notificationMessage,
+		notificationSent = notifyDesktopUser({
+			notificationPayload,
 			userId: subscription.u._id,
-			user: sender,
-			message,
 			room,
 			duration: subscription.desktopNotificationDuration,
 		});

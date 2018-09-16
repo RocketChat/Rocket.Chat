@@ -36,3 +36,47 @@ export class AppNotificationsConverter {
 		return convertedNotification;
 	}
 }
+
+export class AppDesktopNotificationsConverter {
+	constructor(orch) {
+		this.orch = orch;
+	}
+
+	convertToApp(notification) {
+		if (!notification) {
+			return undefined;
+		}
+
+		const { title, text, duration } = notification;
+
+		const notificationsConverter = this.orch.getConverters().get('notifications');
+
+		const convertedNotification = {
+			title,
+			text,
+			duration,
+			...notificationsConverter.convertToApp(notification),
+		};
+
+		return convertedNotification;
+	}
+
+	convertFromApp(notification) {
+		if (!notification) {
+			return undefined;
+		}
+
+		const { title, text, duration } = notification;
+
+		const notificationsConverter = this.orch.getConverters().get('notifications');
+
+		const convertedNotification = {
+			title,
+			text,
+			duration,
+			...notificationsConverter.convertFromApp(notification),
+		};
+
+		return convertedNotification;
+	}
+}

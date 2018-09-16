@@ -2,7 +2,7 @@ import { AppMessagesConverter } from './messages';
 import { AppRoomsConverter } from './rooms';
 import { AppSettingsConverter } from './settings';
 import { AppUsersConverter } from './users';
-import { AppNotificationsConverter } from './notifications';
+import { AppDesktopNotificationsConverter, AppNotificationsConverter } from './notifications';
 
 export {
 	AppMessagesConverter,
@@ -10,4 +10,5 @@ export {
 	AppSettingsConverter,
 	AppUsersConverter,
 	AppNotificationsConverter,
+	AppDesktopNotificationsConverter,
 };
