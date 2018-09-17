@@ -2,6 +2,15 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { send as sendEmail, inlinecss, replace } from 'meteor/rocketchat:mailer';
+let body = '';
+Meteor.startup(() => {
+	setTimeout(() => {
+		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
+			body = inlinecss(value);
+			console.log(body);
+		});
+	}, 1000);
+});
 
 function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
@@ -88,18 +97,9 @@ function validateUserData(userId, userData) {
 	}
 }
 
-let body = '';
-Meteor.startup(() => {
-	setTimeout(() => {
-		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
-			body = inlinecss(value);
-			console.log(body);
-		});
-	}, 1000);
-});
-
 RocketChat.saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
+	const user = RocketChat.models.Users.findOneById(userId);
 
 	if (!userData._id) {
 		RocketChat.validateEmailDomain(userData.email);
@@ -110,7 +110,6 @@ RocketChat.saveUser = function(userId, userData) {
 			password: userData.password,
 			joinDefaultChannels: userData.joinDefaultChannels,
 		};
-
 		if (userData.email) {
 			createUser.email = userData.email;
 		}
@@ -136,9 +135,12 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const subject = replace(RocketChat.settings.get('Accounts_UserAddedEmailSubject'));
+			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
+			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-			const html = replace(body, {
+			const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Accounts_UserAddedEmailSubject'));
+
+			const html = RocketChat.placeholders.replace(body, {
 				name: s.escapeHTML(userData.name),
 				email: s.escapeHTML(userData.email),
 				password: s.escapeHTML(userData.password),
@@ -151,7 +153,6 @@ RocketChat.saveUser = function(userId, userData) {
 				html,
 			};
 
-
 			try {
 				sendEmail(email);
 			} catch (error) {
@@ -160,7 +161,6 @@ RocketChat.saveUser = function(userId, userData) {
 					message: error.message,
 				});
 			}
-
 		}
 
 		userData._id = _id;
@@ -177,35 +177,35 @@ RocketChat.saveUser = function(userId, userData) {
 
 		return _id;
 	}
-	if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+	if (!RocketChat.settings.get('Accounts_AllowUserProfileChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+	if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+	if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
+	if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+	if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

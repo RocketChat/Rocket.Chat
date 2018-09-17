@@ -197,7 +197,7 @@
 .rc-button-group {
 	display: flex;
 
-	margin: 0 calc(-var(--default-small-padding) / 2);
+	margin: 0 calc(- var(--default-small-padding) / 2);
 
 	& .rc-button {
 		margin: 0 calc(var(--default-small-padding) / 2);
@@ -257,12 +257,12 @@
 	}
 
 	&__content {
-		overflow-y: auto;
 
 		display: flex;
+		overflow-y: auto;
+		flex-direction: column;
 
 		flex: 1;
-		flex-direction: column;
 
 		width: 100%;
 		padding: 25px 0;
