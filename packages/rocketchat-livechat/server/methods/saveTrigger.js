@@ -9,6 +9,7 @@ Meteor.methods({
 			name: String,
 			description: String,
 			enabled: Boolean,
+			runOnce: Boolean,
 			conditions: Array,
 			actions: Array,
 		});
