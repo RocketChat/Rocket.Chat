@@ -89,6 +89,7 @@
 	},
 	"devDependencies": {
 		"@octokit/rest": "^15.8.1",
+		"@rocket.chat/eslint-config": "^0.1.2",
 		"autoprefixer": "^8.6.0",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
