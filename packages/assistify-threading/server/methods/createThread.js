@@ -177,6 +177,7 @@ export class ThreadBuilder {
 			// Create messages linking the parent room and the thread
 			this._linkMessages(threadRoom, this._parentRoom, repostedMessage);
 		}
+		Meteor.call('saveRoomSettings', threadRoomCreationResult.rid, 'systemMessages', false);
 
 		return threadRoom;
 	}
