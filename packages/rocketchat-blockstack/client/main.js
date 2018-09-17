@@ -35,8 +35,8 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 	}
 };
 
-const MeteorLogout = Meteor.logout;
-Meteor.logout = () => {
+const meteorLogout = Meteor.logout;
+Meteor.logout = (...args) => {
 	const serviceConfig = ServiceConfiguration.configurations.findOne({
 		service: 'blockstack',
 	});
@@ -48,5 +48,5 @@ Meteor.logout = () => {
 		signUserOut(window.location.href);
 	}
 
-	return MeteorLogout.apply(Meteor, arguments);
+	return meteorLogout(...args);
 };
