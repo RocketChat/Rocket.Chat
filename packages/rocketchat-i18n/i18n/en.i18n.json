@@ -2214,6 +2214,7 @@
   "Room_uploaded_file_list": "Files List",
   "Room_uploaded_file_list_empty": "No files available.",
   "Rooms": "Rooms",
+  "Run_only_once_for_each_visitor": "Run only once for each visitor",
   "run-import": "Run Import",
   "run-import_description": "Permission to run the importers",
   "run-migration": "Run Migration",

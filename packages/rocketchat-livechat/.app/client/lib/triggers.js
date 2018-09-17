@@ -1,6 +1,8 @@
 /* globals Livechat */
 import visitor from '../../imports/client/visitor';
 
+const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];
+
 function getAgent(triggerAction) {
 	return new Promise((resolve, reject) => {
 		const { params } = triggerAction;
@@ -77,6 +79,12 @@ this.Triggers = (function() {
 				});
 			}
 		});
+
+		if (trigger.runOnce) {
+			trigger.skip = true;
+			firedTriggers.push(trigger._id);
+			localStorage.setItem('rocketChatFiredTriggers', JSON.stringify(firedTriggers));
+		}
 	};
 
 	const processRequest = function(request) {
@@ -114,6 +122,14 @@ this.Triggers = (function() {
 
 	const init = function() {
 		initiated = true;
+
+		firedTriggers.forEach((triggerId) => {
+			triggers.forEach((trigger) => {
+				if (trigger._id === triggerId) {
+					trigger.skip = true;
+				}
+			});
+		});
 
 		if (requests.length > 0 && triggers.length > 0) {
 			requests.forEach(function(request) {
