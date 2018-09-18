@@ -60,7 +60,6 @@ export const updateOrCreateUser = (serviceData, options) => {
 		// Create and get created user to make a couple more mods before returning
 		logger.info(`Creating user for Blockstack ID ${ id }`);
 		userId = Accounts.insertUserDoc({}, newUser);
-		user = Meteor.users.findOne(userId);
 		logger.debug('New user ${ userId }', newUser);
 	}
 
