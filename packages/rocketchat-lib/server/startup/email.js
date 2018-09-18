@@ -344,7 +344,7 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_Enrollment_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login_now}</a>', {
+		this.add('Accounts_Enrollment_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -357,7 +357,7 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_UserAddedEmail', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login_now}</a>', {
+		this.add('Accounts_UserAddedEmail', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -402,7 +402,7 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Forgot_Password_Email', '<h2>{Forgot_password_ask}</h2><p>{lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset_now}</a>', {
+		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
