@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:logger',
 	version: '0.0.1',
-	summary: 'Logger for Rocket.Chat'
+	summary: 'Logger for Rocket.Chat',
 });
 
 Package.onUse(function(api) {

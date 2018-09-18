@@ -1,6 +1,6 @@
 Template.chatRoomItem.helpers({
 	roomData() {
-		let {name} = this;
+		let { name } = this;
 		if (this.fname) {
 			const realNameForDirectMessages = this.t === 'd' && RocketChat.settings.get('UI_Use_Real_Name');
 			const realNameForChannel = this.t !== 'd' && RocketChat.settings.get('UI_Allow_room_names_with_special_chars');
@@ -15,11 +15,11 @@ Template.chatRoomItem.helpers({
 		// 	unread = this.unread;
 		// }
 
-		const active = [this.rid, this._id].includes(id => id === openedRoom);
+		const active = [this.rid, this._id].includes((id) => id === openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		this.alert = !this.hideUnreadStatus && this.alert; //&& (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
+		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
 		const icon = RocketChat.roomTypes.getIcon(this.t);
 		const avatar = !icon;
@@ -34,16 +34,16 @@ Template.chatRoomItem.helpers({
 			unread,
 			active,
 			archivedClass,
-			status: this.t === 'd' || this.t === 'l'
+			status: this.t === 'd' || this.t === 'l',
 		};
 		roomData.username = roomData.username || roomData.name;
 
 		if (!this.lastMessage && RocketChat.settings.get('Store_Last_Message')) {
 			const room = RocketChat.models.Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
-			roomData.lastMessage = room && room.lastMessage || { msg: t('No_messages_yet') };
+			roomData.lastMessage = (room && room.lastMessage) || { msg: t('No_messages_yet') };
 		}
 		return roomData;
-	}
+	},
 });
 
 RocketChat.callbacks.add('enter-room', (sub) => {

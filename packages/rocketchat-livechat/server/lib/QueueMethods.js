@@ -19,7 +19,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 1,
 			lm: new Date(),
 			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
@@ -30,15 +30,15 @@ RocketChat.QueueMethods = {
 				_id: guest._id,
 				username: guest.username,
 				token: message.token,
-				status: guest.status || 'online'
+				status: guest.status || 'online',
 			},
 			servedBy: {
 				_id: agent.agentId,
-				username: agent.username
+				username: agent.username,
 			},
 			cl: false,
 			open: true,
-			waitingResponse: true
+			waitingResponse: true,
 		}, roomInfo);
 
 		const subscriptionData = {
@@ -51,13 +51,17 @@ RocketChat.QueueMethods = {
 			groupMentions: 0,
 			u: {
 				_id: agent.agentId,
-				username: agent.username
+				username: agent.username,
 			},
 			t: 'l',
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
-			emailNotifications: 'all'
+			emailNotifications: 'all',
 		};
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.Rooms.insert(room);
 
@@ -65,7 +69,7 @@ RocketChat.QueueMethods = {
 
 		RocketChat.Livechat.stream.emit(room._id, {
 			type: 'agentData',
-			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 		});
 
 		return room;
@@ -114,14 +118,14 @@ RocketChat.QueueMethods = {
 				_id: guest._id,
 				username: guest.username,
 				token: message.token,
-				status: guest.status || 'online'
+				status: guest.status || 'online',
 			},
-			t: 'l'
+			t: 'l',
 		};
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 0,
 			lm: new Date(),
 			fname: guest.name || guest.username,
@@ -132,12 +136,16 @@ RocketChat.QueueMethods = {
 				_id: guest._id,
 				username: guest.username,
 				token: message.token,
-				status: guest.status
+				status: guest.status,
 			},
 			cl: false,
 			open: true,
-			waitingResponse: true
+			waitingResponse: true,
 		}, roomInfo);
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
@@ -166,5 +174,5 @@ RocketChat.QueueMethods = {
 	},
 	'External'(guest, message, roomInfo, agent) {
 		return this['Least_Amount'](guest, message, roomInfo, agent); // eslint-disable-line
-	}
+	},
 };

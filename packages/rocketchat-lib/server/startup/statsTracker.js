@@ -1,4 +1,4 @@
-import {StatsD} from 'node-dogstatsd';
+import { StatsD } from 'node-dogstatsd';
 
 RocketChat.statsTracker = new (class StatsTracker {
 	constructor() {

@@ -105,12 +105,12 @@ class SideNav extends Page {
 		return browser.element(`.sidebar-item__name=${ channelName }`);
 	}
 
-	createChannel(channelName, isPrivate, /*isReadOnly*/) {
+	createChannel(channelName, isPrivate, /* isReadOnly*/) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
 
-		//workaround for incomplete setvalue bug
+		// workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {
