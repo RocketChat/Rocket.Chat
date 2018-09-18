@@ -100,6 +100,10 @@ Template.uploadedFilesList.helpers({
 });
 
 Template.uploadedFilesList.events({
+	'submit .search-form'(e) {
+		e.preventDefault();
+	},
+
 	'input .uploaded-files-list__search-input'(e, t) {
 		t.searchText.set(e.target.value.trim());
 		t.hasMore.set(true);

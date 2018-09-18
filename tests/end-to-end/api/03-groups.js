@@ -430,6 +430,22 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.setAnnouncement', (done) => {
+		request.post(api('groups.setAnnouncement'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				announcement: 'this is an announcement of a group for api tests',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
+			})
+			.end(done);
+	});
+
 	it('/groups.setType', (done) => {
 		request.post(api('groups.setType'))
 			.set(credentials)
