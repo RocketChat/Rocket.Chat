@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
@@ -100,17 +100,10 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	time() {
-		switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
-			case 1:
-				return moment(this.created).format('h:mm A');
-			case 2:
-				return moment(this.created).format('H:mm');
-			default:
-				return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
-		}
+		return DateFormat.formatTime(this.created);
 	},
 	date() {
-		return moment(this.created).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.created);
 	},
 });
 

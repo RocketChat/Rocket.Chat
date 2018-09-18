@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 const colors = {
 	good: '#35AC19',
@@ -58,24 +58,9 @@ Template.messageAttachment.helpers({
 		const messageDate = new Date(this.ts);
 		const today = new Date();
 		if (messageDate.toDateString() === today.toDateString()) {
-			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
-				case 1:
-					return moment(this.ts).format('h:mm A');
-				case 2:
-					return moment(this.ts).format('H:mm');
-				default:
-					return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
-			}
-		} else {
-			switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
-				case 1:
-					return moment(this.ts).format('MMMM D, Y h:mm A');
-				case 2:
-					return moment(this.ts).format('MMMM D, Y H:mm');
-				default:
-					return moment(this.ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'));
-			}
+			return DateFormat.formatTime(this.ts);
 		}
+		return DateFormat.formatDateAndTime(this.ts);
 	},
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;

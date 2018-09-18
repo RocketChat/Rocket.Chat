@@ -1,5 +1,5 @@
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -43,14 +43,7 @@ Template.uploadedFilesList.helpers({
 		}
 	},
 	format(timestamp) {
-		switch (RocketChat.getUserPreference(Meteor.user(), 'clockMode', false)) {
-			case 1:
-				return moment(timestamp).format('MMMM D, Y h:mm A');
-			case 2:
-				return moment(timestamp).format('MMMM D, Y H:mm');
-			default:
-				return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
-		}
+		return DateFormat.formatDateAndTime(timestamp);
 	},
 	fileTypeIcon() {
 		const [, extension] = this.name.match(/.*?\.(.*)$/);
@@ -96,7 +89,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	formatTimestamp(timestamp) {
-		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+		return DateFormat.formatDateAndTime(timestamp);
 	},
 
 	hasMore() {
