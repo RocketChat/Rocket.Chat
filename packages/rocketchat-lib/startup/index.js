@@ -1,6 +1,6 @@
-import { setSettings } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 
 Meteor.startup(() => {
-	setSettings(RocketChat.settings);
+	Mailer.setSettings(RocketChat.settings);
 });

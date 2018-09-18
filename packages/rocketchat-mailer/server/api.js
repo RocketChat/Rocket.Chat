@@ -8,7 +8,6 @@ let Settings = {
 	get: () => {},
 };
 
-
 export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
 
 export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key));
@@ -22,7 +21,6 @@ export const replace = function replace(str, data = {}) {
 
 	str = replacekey(str, 'Site_Name', Settings.get('Site_Name'));
 	str = replacekey(str, 'Site_URL', Settings.get('Site_Url'));
-	console.log('AQUE', data, str);
 	str = replacekey(str, 'name', data.name);
 	str = replacekey(str, 'fname', s.strLeft(data.name, ' '));
 	str = replacekey(str, 'lname', s.strRightBack(data.name, ' '));
@@ -60,10 +58,10 @@ export const setSettings = (s) => {
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
-export const checkEmail = (from) => rfcMailPatternWithName.test(from);
+export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
 export const sendNoWrap = ({ to, from, subject, html }) => {
-	if (!checkEmail(to)) {
+	if (!checkAddressFormat(to)) {
 		return;
 	}
 	Meteor.defer(() => Email.send({ to, from, subject, html }));
@@ -73,8 +71,8 @@ export const wrap = (html) => body.replace('{{body}}', html);
 
 export const send = ({ to, from, subject, html }) => sendNoWrap({ to, from, subject, html: wrap(html) });
 
-export const checkEmailandThrow = (from, func) => {
-	if (checkEmail(from)) {
+export const checkAddressFormatAndThrow = (from, func) => {
+	if (checkAddressFormat(from)) {
 		return;
 	}
 	throw new Meteor.Error('error-invalid-from-address', 'Invalid from address', {

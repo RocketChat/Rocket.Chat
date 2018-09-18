@@ -7,7 +7,7 @@
 // }
 
 import _ from 'underscore';
-import { sendNoWrap as sendEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 RocketChat.smarsh.sendEmail = (data) => {
 	const attachments = [];
@@ -24,7 +24,7 @@ RocketChat.smarsh.sendEmail = (data) => {
 	});
 
 
-	sendEmail({
+	Mailer.sendNoWrap({
 		to: RocketChat.settings.get('Smarsh_Email'),
 		from: RocketChat.settings.get('From_Email'),
 		subject: data.subject,

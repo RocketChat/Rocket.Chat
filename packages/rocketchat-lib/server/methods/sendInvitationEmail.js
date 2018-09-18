@@ -1,11 +1,11 @@
 import s from 'underscore.string';
-import { send as sendEmail, checkEmail, replace, inlinecss } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 let body = '';
 Meteor.startup(() => {
 	setTimeout(() => {
 
 		RocketChat.settings.get('Invitation_HTML', (key, value) => {
-			body = inlinecss(value);
+			body = Mailer.inlinecss(value);
 		});
 	}, 1000);
 });
@@ -23,16 +23,16 @@ Meteor.methods({
 				method: 'sendInvitationEmail',
 			});
 		}
-		const validEmails = emails.filter(checkEmail);
+		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
-		const subject = replace(RocketChat.settings.get('Invitation_Subject'));
+		const subject = Mailer.replace(RocketChat.settings.get('Invitation_Subject'));
 
 		validEmails.forEach((email) => {
-			const html = replace(body, {
+			const html = Mailer.replace(body, {
 				email: s.escapeHTML(email),
 			});
 			try {
-				sendEmail({
+				Mailer.send({
 					to: email,
 					from: RocketChat.settings.get('From_Email'),
 					subject,

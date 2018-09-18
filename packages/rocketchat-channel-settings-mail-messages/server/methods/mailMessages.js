@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import moment from 'moment';
-import { send as sendEmail, checkEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	'mailMessages'(data) {
@@ -44,7 +44,7 @@ Meteor.methods({
 			});
 		}
 		_.each(emails, (email) => {
-			if (!checkEmail(email.trim())) {
+			if (!Mailer.checkAddressFormat(email.trim())) {
 				throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, {
 					method: 'mailMessages',
 					email,
@@ -69,7 +69,7 @@ Meteor.methods({
 			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ RocketChat.Message.parse(message, data.language) }</p>`;
 		}).join('');
 
-		sendEmail({
+		Mailer.send({
 			to: emails,
 			from: RocketChat.settings.get('From_Email'),
 			replyTo: email,

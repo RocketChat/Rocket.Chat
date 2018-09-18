@@ -1,11 +1,11 @@
 import s from 'underscore.string';
-import { getHeader, getFooter, replace, inlinecss, replacekey } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 let template = '';
 
 Meteor.startup(() => {
 	RocketChat.settings.get('Forgot_Password_Email', (key, value) => {
-		template = inlinecss(getHeader() + (value || '') + getFooter());
+		template = Mailer.inlinecss(Mailer.getHeader() + (value || '') + Mailer.getFooter());
 	});
 });
 
@@ -24,12 +24,12 @@ Meteor.methods({
 		const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
 		email = (user.emails || []).map((item) => item.address).find((userEmail) => regex.test(userEmail));
 
-		const subject = replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '', {
+		const subject = Mailer.replace(RocketChat.settings.get('Forgot_Password_Email_Subject') || '', {
 			name: user.name,
 			email,
 		});
 
-		const html = replace(template, {
+		const html = Mailer.replace(template, {
 			name: s.escapeHTML(user.name),
 			email: s.escapeHTML(email),
 		});
@@ -43,7 +43,7 @@ Meteor.methods({
 			};
 
 			Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
-				return replacekey(html, 'Forgot_Password_Url', url);
+				return Mailer.replacekey(html, 'Forgot_Password_Url', url);
 			};
 			return Accounts.sendResetPasswordEmail(user._id, email);
 		} catch (error) {

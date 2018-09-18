@@ -1,7 +1,7 @@
 /* globals emailSettings, DDPRateLimiter */
 /* Send a transcript of the room converstation to the given email */
 import moment from 'moment';
-import { send as sendEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 import LivechatVisitors from '../models/LivechatVisitors';
 
@@ -61,7 +61,7 @@ Meteor.methods({
 			html,
 		};
 
-		sendEmail(emailSettings);
+		Mailer.send(emailSettings);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.sendTranscript', messages, email);

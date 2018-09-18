@@ -1,13 +1,12 @@
 /* globals Gravatar */
 import _ from 'underscore';
 import s from 'underscore.string';
-import { send as sendEmail, inlinecss, replace } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 let body = '';
 Meteor.startup(() => {
 	setTimeout(() => {
 		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
-			body = inlinecss(value);
-			console.log(body);
+			body = Mailer.inlinecss(value);
 		});
 	}, 1000);
 });
@@ -99,7 +98,6 @@ function validateUserData(userId, userData) {
 
 RocketChat.saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
-	const user = RocketChat.models.Users.findOneById(userId);
 
 	if (!userData._id) {
 		RocketChat.validateEmailDomain(userData.email);
@@ -135,12 +133,9 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
 			const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Accounts_UserAddedEmailSubject'));
 
-			const html = RocketChat.placeholders.replace(body, {
+			const html = Mailer.replace(body, {
 				name: s.escapeHTML(userData.name),
 				email: s.escapeHTML(userData.email),
 				password: s.escapeHTML(userData.password),
@@ -154,7 +149,7 @@ RocketChat.saveUser = function(userId, userData) {
 			};
 
 			try {
-				sendEmail(email);
+				Mailer.send(email);
 			} catch (error) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 					function: 'RocketChat.saveUser',

@@ -1,4 +1,4 @@
-import { send as sendEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	sendSMTPTestEmail() {
@@ -14,7 +14,7 @@ Meteor.methods({
 			});
 		}
 		try {
-			sendEmail({
+			Mailer.send({
 				to: user.emails[0].address,
 				from: RocketChat.settings.get('From_Email'),
 				subject: 'SMTP Test Email',

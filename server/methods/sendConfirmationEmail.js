@@ -1,14 +1,14 @@
-import { replace, inlinecss, replacekey, wrap } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 let subject = '';
 let html = '';
 
 Meteor.startup(() => {
 	RocketChat.settings.get('Verification_Email_Subject', function(key, value) {
-		subject = replace(value || '');
+		subject = Mailer.replace(value || '');
 	});
 	RocketChat.settings.get('Verification_Email', function(key, value) {
-		html = inlinecss(wrap(replace(value || '')));
+		html = Mailer.inlinecss(Mailer.wrap(Mailer.replace(value || '')));
 	});
 });
 
@@ -28,7 +28,7 @@ Meteor.methods({
 		};
 
 		Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-			return replacekey(html, 'Verification_Url', url);
+			return Mailer.replacekey(html, 'Verification_Url', url);
 		};
 
 		try {

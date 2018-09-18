@@ -9,9 +9,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'ddp-rate-limiter',
 	]);
-	Npm.depends({
-		juice: '4.3.2',
-	});
 
 	api.mainModule('server/api.js', 'server');
 });

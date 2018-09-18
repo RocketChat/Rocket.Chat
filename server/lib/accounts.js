@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import s from 'underscore.string';
-import { send as sendEmail, wrap, replace, replacekey, inlinecss } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 const accountsConfig = {
 	forbidClientAccountCreation: true,
@@ -24,7 +24,7 @@ Accounts.emailTemplates.userToActivate = {
 	html(options = {}) {
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		return replace(TAPi18n.__(email), {
+		return Mailer.replace(TAPi18n.__(email), {
 			name: s.escapeHTML(options.name),
 			email: s.escapeHTML(options.email),
 			reason: s.escapeHTML(options.reason),
@@ -46,7 +46,7 @@ Accounts.emailTemplates.userActivated = {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		return replace(TAPi18n.__(`Accounts_Email_${ action }`), {
+		return Mailer.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
 			name: s.escapeHTML(name),
 		});
 	},
@@ -58,15 +58,15 @@ let verifyEmailTemplate = '';
 let enrollAccountTemplate = '';
 Meteor.startup(() => {
 	RocketChat.settings.get('Verification_Email', (key, value) => {
-		verifyEmailTemplate = inlinecss(value);
+		verifyEmailTemplate = Mailer.inlinecss(value);
 	});
 	RocketChat.settings.get('Accounts_Enrollment_Email', (key, value) => {
-		enrollAccountTemplate = inlinecss(value);
+		enrollAccountTemplate = Mailer.inlinecss(value);
 	});
 });
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return wrap(replacekey(replace(verifyEmailTemplate), 'Verification_Url', url));
+	return Mailer.wrap(Mailer.replacekey(Mailer.replace(verifyEmailTemplate), 'Verification_Url', url));
 };
 
 Accounts.urls.resetPassword = function(token) {
@@ -77,12 +77,11 @@ Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPasswo
 
 Accounts.emailTemplates.enrollAccount.subject = function(user) {
 	const subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
-	return replace(subject, user);
+	return Mailer.replace(subject, user);
 };
 
 Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
-	console.log(user);
-	return wrap(replace(enrollAccountTemplate, {
+	return Mailer.wrap(Mailer.replace(enrollAccountTemplate, {
 		name: s.escapeHTML(user.name),
 		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
 	}));
@@ -141,7 +140,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			html: Accounts.emailTemplates.userToActivate.html(options),
 		};
 
-		sendEmail(email);
+		Mailer.send(email);
 	}
 
 	return user;

@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
-import { sendNoWrap, checkEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 let zipFolder = '/tmp/zipFiles';
 if (RocketChat.settings.get('UserData_FileSystemZipPath') != null) {
@@ -301,11 +301,11 @@ const sendEmail = function(userId) {
 	const download_link = lastFile.url;
 	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
 
-	if (!checkEmail(emailAddress)) {
+	if (!Mailer.checkAddressFormat(emailAddress)) {
 		return;
 	}
 
-	return sendNoWrap({
+	return Mailer.sendNoWrap({
 		to: emailAddress,
 		from: fromAddress,
 		subject,

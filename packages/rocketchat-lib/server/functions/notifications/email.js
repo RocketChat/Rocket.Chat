@@ -1,5 +1,5 @@
 import s from 'underscore.string';
-import { send } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
@@ -126,7 +126,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	}
 
 	RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
-	return send(email);
+	return Mailer.send(email);
 }
 
 export function shouldNotifyEmail({

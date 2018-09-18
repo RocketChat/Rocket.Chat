@@ -1,6 +1,6 @@
 /* globals DDPRateLimiter */
 import dns from 'dns';
-import { send as sendEmail } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {
@@ -41,7 +41,7 @@ Meteor.methods({
 		}
 
 
-		sendEmail({
+		Mailer.send({
 			to: RocketChat.settings.get('Livechat_offline_email'),
 			from: `${ data.name } - ${ data.email } <${ fromEmail }>`,
 			replyTo: `${ data.name } <${ data.email }>`,

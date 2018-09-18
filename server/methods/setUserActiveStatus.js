@@ -1,4 +1,4 @@
-import { sendNoWrap } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	setUserActiveStatus(userId, active) {
@@ -45,7 +45,7 @@ Meteor.methods({
 			html: Accounts.emailTemplates.userActivated.html({ active, name: user.name, username: user.username }),
 		};
 
-		sendNoWrap(email);
+		Mailer.sendNoWrap(email);
 
 
 		return true;

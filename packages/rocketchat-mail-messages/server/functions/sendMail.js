@@ -1,9 +1,9 @@
-/* globals Mailer */
+/* globals */
 import s from 'underscore.string';
-import { send as sendEmail, checkEmailandThrow } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Mailer.sendMail = function(from, subject, body, dryrun, query) {
-	checkEmailandThrow(from, 'Mailer.sendMail');
+	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 	if (body.indexOf('[unsubscribe]') === -1) {
 		throw new Meteor.Error('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {
 			function: 'Mailer.sendMail',
@@ -30,7 +30,7 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 			});
 
 			console.log(`Sending email to ${ email }`);
-			return sendEmail({
+			return Mailer.send({
 				to: email,
 				from,
 				subject,
@@ -51,7 +51,7 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 			email: s.escapeHTML(email),
 		});
 		console.log(`Sending email to ${ email }`);
-		return sendEmail({
+		return Mailer.send({
 			to: email,
 			from,
 			subject,

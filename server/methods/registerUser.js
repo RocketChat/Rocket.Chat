@@ -1,9 +1,9 @@
 import s from 'underscore.string';
-import { wrap, replace, replacekey, inlinecss } from 'meteor/rocketchat:mailer';
+import * as Mailer from 'meteor/rocketchat:mailer';
 let verifyEmailTemplate = '';
 Meteor.startup(() => {
 	RocketChat.settings.get('Verification_Email', (key, value) => {
-		verifyEmailTemplate = inlinecss(wrap(value));
+		verifyEmailTemplate = Mailer.inlinecss(Mailer.wrap(value));
 	});
 });
 Meteor.methods({
@@ -69,10 +69,10 @@ Meteor.methods({
 
 		try {
 
-			const subject = replace(RocketChat.settings.get('Verification_Email_Subject'));
+			const subject = Mailer.replace(RocketChat.settings.get('Verification_Email_Subject'));
 
 			Accounts.emailTemplates.verifyEmail.subject = () => subject;
-			Accounts.emailTemplates.verifyEmail.html = (userModel, url) => replace(replacekey(verifyEmailTemplate, 'Verification_Url', url), userModel);
+			Accounts.emailTemplates.verifyEmail.html = (userModel, url) => Mailer.replace(Mailer.replacekey(verifyEmailTemplate, 'Verification_Url', url), userModel);
 
 			Accounts.sendVerificationEmail(userId, userData.email);
 		} catch (error) {
