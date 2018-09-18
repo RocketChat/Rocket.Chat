@@ -1,14 +1,3 @@
-RocketChat.API.v1.addRoute('e2e.fetchGroupE2EKey', { authRequired: true }, {
-	get() {
-		const { rid } = this.queryParams;
-
-		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('fetchGroupE2EKey', rid));
-
-		return RocketChat.API.v1.success(result);
-	},
-});
-
 RocketChat.API.v1.addRoute('e2e.fetchKeychain', { authRequired: true }, {
 	get() {
 		const { uid } = this.queryParams;
@@ -34,17 +23,10 @@ RocketChat.API.v1.addRoute('e2e.addKeyToChain', { authRequired: true }, {
 		const { RSAPubKey, RSAEPrivKey } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
-			RocketChat.API.v1.success(Meteor.call('addKeyToChain', { 'RSA-PubKey': RSAPubKey, 'RSA-EPrivKey': RSAEPrivKey }));
-		});
-
-		return RocketChat.API.v1.success();
-	},
-});
-
-RocketChat.API.v1.addRoute('e2e.emptyKeychain', { authRequired: true }, {
-	post() {
-		Meteor.runAsUser(this.userId, () => {
-			RocketChat.API.v1.success(Meteor.call('emptyKeychain'));
+			RocketChat.API.v1.success(Meteor.call('addKeyToChain', {
+				public_key: RSAPubKey,
+				private_key: RSAEPrivKey,
+			}));
 		});
 
 		return RocketChat.API.v1.success();

@@ -3,6 +3,6 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'fetchKeychain' });
 		}
-		return RocketChat.models.Users.fetchKeychain(userId);
+		return JSON.stringify(RocketChat.models.Users.fetchKeychain(userId));
 	},
 });

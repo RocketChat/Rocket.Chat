@@ -1,8 +1,9 @@
 Meteor.methods({
 	fetchMyKeys() {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'fetchMyKeys' });
 		}
-		return RocketChat.models.Users.fetchMyKeys();
+		return RocketChat.models.Users.fetchKeysByUserId(userId);
 	},
 });

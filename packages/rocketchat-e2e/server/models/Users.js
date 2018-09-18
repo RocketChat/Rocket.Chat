@@ -1,29 +1,41 @@
-RocketChat.models.Users.addKeyToChain = function(key) {
-	const userId = Meteor.userId();
-	const query = { _id: userId };
-	// this.update(query, { $set: { 'lastUsedIdentityKey': key.identityKey } });
-	this.update(query, { $set: { 'RSA-PubKey': key['RSA-PubKey'] } });
-	this.update(query, { $set: { 'RSA-EPrivKey': key['RSA-EPrivKey'] } });
-	// this.update(query, { $addToSet: { 'publicKeychain' : [ key.identityKey, key.signedPreKey, key.signedPreKeySignature, key.preKey, key.registrationId ] } });
+RocketChat.models.Users.addKeyToChainByUserId = function(userId, key) {
+	this.update({ _id: userId }, {
+		$set: {
+			'e2e.public_key': key.public_key,
+			'e2e.private_key': key.private_key,
+		},
+	});
 };
 
 RocketChat.models.Users.fetchKeychain = function(userId) {
-	// const identityKey = this.findOne({ _id: userId }).lastUsedIdentityKey;
-	// const publicKeychain = this.findOne({ _id: userId }).publicKeychain;
-	const RSAPubKey = this.findOne({ _id: userId })['RSA-PubKey'];
-	return JSON.stringify({ 'RSA-PubKey': RSAPubKey });
+	const user = this.findOne({ _id: userId }, { fields: { 'e2e.public_key': 1 } });
+
+	if (!user || !user.e2e || !user.e2e.public_key) {
+		return;
+	}
+
+	return {
+		public_key: user.e2e.public_key,
+	};
 };
 
-RocketChat.models.Users.fetchMyKeys = function() {
-	const userId = Meteor.userId();
-	const RSAEPrivKey = this.findOne({ _id: userId })['RSA-EPrivKey'];
-	const RSAPubKey = this.findOne({ _id: userId })['RSA-PubKey'];
-	return JSON.stringify({ 'RSA-PubKey': RSAPubKey, 'RSA-EPrivKey': RSAEPrivKey });
+RocketChat.models.Users.fetchKeysByUserId = function(userId) {
+	const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
+
+	if (!user || !user.e2e || !user.e2e.public_key) {
+		return {};
+	}
+
+	return {
+		public_key: user.e2e.public_key,
+		private_key: user.e2e.private_key,
+	};
 };
 
-RocketChat.models.Users.emptyKeychain = function() {
-	const userId = Meteor.userId();
-	const query = { _id: userId };
-	this.update(query, { $set: { 'RSA-PubKey': '' } });
-	this.update(query, { $set: { 'RSA-EPrivKey': '' } });
+RocketChat.models.Users.emptyKeychainByUserId = function(userId) {
+	this.update({ _id: userId }, {
+		$unset: {
+			e2e: 1,
+		},
+	});
 };

@@ -4,7 +4,3 @@ RocketChat.models.Subscriptions.updateGroupE2EKey = function(_id, key) {
 	this.update(query, update);
 	return this.findOne({ _id });
 };
-
-RocketChat.models.Subscriptions.fetchGroupE2EKey = function(_id) {
-	return this.findOne({ _id }).E2EKey;
-};

@@ -1,6 +1,30 @@
 /* globals readMessage UserRoles RoomRoles*/
 import _ from 'underscore';
 
+// From the package, rocketchat:e2e
+const decryptE2EMessageDefered = _.debounce(async(rid) => {
+	const e2eRoom = RocketChat.E2E.getInstanceByRoomId(rid);
+
+	if (!e2eRoom.established.get()) {
+		return e2eRoom.handshake().then(() => {
+			decryptE2EMessageDefered(rid);
+		});
+	}
+
+	ChatMessage.find({ t: 'e2e', e2e: 'pending' }).forEach((item) => {
+		// Session key exists in browser, directly decrypt.
+		e2eRoom.decrypt(item.msg).then((data) => {
+			item.msg = data.text;
+			item.ack = data.ack;
+			if (data.ts) {
+				item.ts = data.ts;
+			}
+			item.e2e = 'done';
+			ChatMessage.upsert({ _id: item._id }, item);
+		});
+	});
+}, 100);
+
 export const upsertMessage = ({ msg, subscription }) => {
 	const userId = msg.u && msg.u._id;
 
@@ -13,10 +37,11 @@ export const upsertMessage = ({ msg, subscription }) => {
 	].map((e) => e.roles);
 	msg.roles = _.union.apply(_.union, roles);
 	if (msg.t === 'e2e' && !msg.file) {
-		return this.RoomHistoryManager.decryptE2EMessage(msg);
-	} else {
-		return ChatMessage.upsert({ _id: msg._id }, msg);
+		msg.e2e = 'pending';
+		decryptE2EMessageDefered(msg.rid);
 	}
+
+	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
 export const RoomHistoryManager = new class {
@@ -37,56 +62,6 @@ export const RoomHistoryManager = new class {
 		}
 
 		return this.histories[rid];
-	}
-
-	// From the package, rocketchat:e2e
-	decryptE2EMessage(item) {
-		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(item.rid);
-		if (e2eRoom.groupSessionKey != null) {
-			// Session key exists in browser, directly decrypt.
-			e2eRoom.decrypt(item.msg).then((data) => {
-				item.msg = data.text;
-				item.ack = data.ack;
-				if (data.ts) {
-					item.ts = data.ts;
-				}
-				ChatMessage.upsert({ _id: item._id }, item);
-			});
-		} else {
-			// Session key for this room does not exist in browser. Download key first.
-			Meteor.call('fetchGroupE2EKey', e2eRoom.roomId, function(error, result) {
-				let cipherText = EJSON.parse(result);
-				const vector = cipherText.slice(0, 16);
-				cipherText = cipherText.slice(16);
-
-				// Decrypt downloaded key.
-				const decrypt_promise = crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
-				decrypt_promise.then(function(result) {
-
-					// Import decrypted session key for use.
-					e2eRoom.exportedSessionKey = RocketChat.signalUtils.toString(result);
-					crypto.subtle.importKey('jwk', EJSON.parse(e2eRoom.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']).then(function(key) {
-						e2eRoom.groupSessionKey = key;
-
-						// Decrypt message.
-						e2eRoom.decrypt(item.msg).then((data) => {
-							item.msg = data.text;
-							item.ack = data.ack;
-							if (data.ts) {
-								item.ts = data.ts;
-							}
-							ChatMessage.upsert({ _id: item._id }, item);
-						});
-
-					});
-				});
-
-				decrypt_promise.catch(function(err) {
-					console.log(err);
-				});
-
-			});
-		}
 	}
 
 	getMore(rid, limit) {
@@ -125,6 +100,9 @@ export const RoomHistoryManager = new class {
 			if (err) {
 				return;
 			}
+
+			decryptE2EMessageDefered(rid);
+
 			let previousHeight;
 			const { messages = [] } = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);

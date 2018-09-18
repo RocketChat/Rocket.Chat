@@ -1,7 +1,4 @@
-/* eslint-disable no-undef */
-
-// import toastr from 'toastr';
-/* globals crypto */
+import _ from 'underscore';
 
 import { call } from 'meteor/rocketchat:lib';
 
@@ -18,15 +15,8 @@ RocketChat.E2E.Room = class {
 		this.userId = userId;
 		this.roomId = roomId;
 		this.typeOfRoom = t;
-		this.peerId = roomId.replace(userId, '');
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
-
-		// Keys needed by Signal Protocol
-		this.peerIdentityKey = null;
-		this.peerPreKey = null;
-		this.peerSignedPreKey = null;
-		this.peerSignedSignature = null;
 	}
 
 	// Initiates E2E Encryption
@@ -35,129 +25,132 @@ RocketChat.E2E.Room = class {
 		this.establishing.set(true);
 
 		// Cover private groups and direct messages
-		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
+		if (this.typeOfRoom !== 'p' && this.typeOfRoom !== 'd') {
+			return;
+		}
 
-			// Fetch encrypted session key from subscription model
-			let groupKey;
-			try {
-				groupKey = await call('fetchGroupE2EKey', this.roomId);
-			} catch (error) {
-				console.log('E2E -> Error fetching group key: ', error);
-				return;
-			}
+		// Fetch encrypted session key from subscription model
+		let groupKey;
+		try {
+			groupKey = RocketChat.models.Subscriptions.findOne({ rid: this.roomId }).E2EKey;
+		} catch (error) {
+			console.error('E2E -> Error fetching group key: ', error);
+			return;
+		}
 
-			if (!groupKey || refresh) {
-				// Create group key
-				let key;
-				try {
-					key = await RocketChat.E2E.crypto.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
-				} catch (error) {
-					console.log('E2E -> Error generating group key: ', error);
-					return;
-				}
-				this.groupSessionKey = key;
+		if (!groupKey || refresh) {
+			await this.createGroupKey();
+		} else {
+			await this.importGroupKey(groupKey);
+		}
 
-				let exportedSessionKey;
-				try {
-					exportedSessionKey = await crypto.subtle.exportKey('jwk', key);
-				} catch (error) {
-					console.log('E2E -> Error exporting group key: ', error);
-					return;
-				}
-				this.exportedSessionKey = JSON.stringify(exportedSessionKey);
-				this.establishing.set(false);
-				this.established.set(true);
+		this.established.set(true);
+		this.establishing.set(false);
 
-				// Encrypt generated session key for every user in room and publish to subscription model.
-				let users;
-				try {
-					users = await call('getUsersOfRoom', this.roomId, true);
-				} catch (error) {
-					console.log('E2E -> Error getting room users: ', error);
-					return;
-				}
+		return true;
+	}
 
-				users.records.forEach(async(user) => {
-					let keychain;
-					try {
-						keychain = await call('fetchKeychain', user._id);
-					} catch (error) {
-						console.log('E2E -> Error fetching user keychain: ', error);
-						return;
-					}
+	async importGroupKey(groupKey) {
+		// Get existing group key
+		let cipherText = EJSON.parse(groupKey);
+		const vector = cipherText.slice(0, 16);
+		cipherText = cipherText.slice(16);
 
-					const key = JSON.parse(keychain);
-					if (key['RSA-PubKey']) {
-						let userKey;
-						try {
-							userKey = await crypto.subtle.importKey('jwk', JSON.parse(key['RSA-PubKey']), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
-						} catch (error) {
-							console.log('E2E -> Error importing user key: ', error);
-							return;
-						}
-						const vector = crypto.getRandomValues(new Uint8Array(16));
+		// Decrypt obtained encrypted session key
+		try {
+			const decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, RocketChat.E2EStorage.get('private_key'), cipherText);
+			this.exportedSessionKey = ab2str(decryptedKey);
+		} catch (error) {
+			return console.error('E2E -> Error decrypting group key: ', error);
+		}
 
-						// Encrypt session key for this user with his/her public key
-						let encryptedUserKey;
-						try {
-							encryptedUserKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP', iv: vector }, userKey, str2ab(this.exportedSessionKey));
-						} catch (error) {
-							console.log('E2E -> Error encrypting user key: ', error);
-							return;
-						}
-						cipherText = new Uint8Array(encryptedUserKey);
-						const output = new Uint8Array(vector.length + cipherText.length);
-						output.set(vector, 0);
-						output.set(cipherText, vector.length);
-
-						// Key has been encrypted. Publish to that user's subscription model for this room.
-						await call('updateGroupE2EKey', this.roomId, user._id, EJSON.stringify(output));
-					}
-				});
-			} else {
-				// Get existing group key
-				let cipherText = EJSON.parse(groupKey);
-				const vector = cipherText.slice(0, 16);
-				cipherText = cipherText.slice(16);
-
-				// Decrypt obtained encrypted session key
-				let decryptedKey;
-				try {
-					decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP', iv: vector }, RocketChat.E2EStorage.get('RSA-PrivKey'), cipherText);
-				} catch (error) {
-					console.log('E2E -> Error decrypting group key: ', error);
-					return;
-				}
-				this.exportedSessionKey = ab2str(decryptedKey);
-
-				// Import session key for use.
-				let key;
-				try {
-					key = await crypto.subtle.importKey('jwk', EJSON.parse(this.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']);
-				} catch (error) {
-					console.log('E2E -> Error importing group key: ', error);
-					return;
-				}
-
-				// Key has been obtained. E2E is now in session.
-				this.groupSessionKey = key;
-				this.established.set(true);
-				this.establishing.set(false);
-				return true;
-			}
+		// Import session key for use.
+		try {
+			const key = await crypto.subtle.importKey('jwk', EJSON.parse(this.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']);
+			// Key has been obtained. E2E is now in session.
+			this.groupSessionKey = key;
+		} catch (error) {
+			return console.error('E2E -> Error importing group key: ', error);
 		}
 	}
 
+	async createGroupKey() {
+		// Create group key
+		let key;
+		try {
+			key = await RocketChat.E2E.crypto.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+			this.groupSessionKey = key;
+		} catch (error) {
+			return console.error('E2E -> Error generating group key: ', error);
+		}
+
+		try {
+			const exportedSessionKey = await crypto.subtle.exportKey('jwk', key);
+			this.exportedSessionKey = JSON.stringify(exportedSessionKey);
+		} catch (error) {
+			return console.error('E2E -> Error exporting group key: ', error);
+		}
+
+		await this.encryptKeyForOtherParticipants();
+	}
+
+	async encryptKeyForOtherParticipants() {
+		// Encrypt generated session key for every user in room and publish to subscription model.
+		let users;
+		try {
+			users = await call('getUsersOfRoom', this.roomId, true);
+		} catch (error) {
+			console.error('E2E -> Error getting room users: ', error);
+			return;
+		}
+
+		users.records.forEach(async(user) => {
+			let keychain;
+			try {
+				keychain = await call('fetchKeychain', user._id);
+			} catch (error) {
+				console.error('E2E -> Error fetching user keychain: ', error);
+				return;
+			}
+
+			const key = JSON.parse(keychain);
+			if (key.public_key) {
+				let userKey;
+				try {
+					userKey = await crypto.subtle.importKey('jwk', JSON.parse(key.public_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
+				} catch (error) {
+					console.error('E2E -> Error importing user key: ', error);
+					return;
+				}
+				const vector = crypto.getRandomValues(new Uint8Array(16));
+
+				// Encrypt session key for this user with his/her public key
+				let encryptedUserKey;
+				try {
+					encryptedUserKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, userKey, str2ab(this.exportedSessionKey));
+				} catch (error) {
+					console.error('E2E -> Error encrypting user key: ', error);
+					return;
+				}
+				const cipherText = new Uint8Array(encryptedUserKey);
+				const output = new Uint8Array(vector.length + cipherText.length);
+				output.set(vector, 0);
+				output.set(cipherText, vector.length);
+
+				// Key has been encrypted. Publish to that user's subscription model for this room.
+				await call('updateGroupE2EKey', this.roomId, user._id, EJSON.stringify(output));
+			}
+		});
+	}
 
 	// Clears the session key in use by room
 	async clearGroupKey() {
-
 		// For every user in room...
 		let users;
 		try {
 			users = await call('getUsersOfRoom', this.roomId, true);
 		} catch (error) {
-			console.log('E2E -> Error getting room users: ', error);
+			console.error('E2E -> Error getting room users: ', error);
 			return;
 		}
 		users.records.forEach(async(user) => {
@@ -165,39 +158,21 @@ RocketChat.E2E.Room = class {
 			try {
 				await call('updateGroupE2EKey', this.roomId, user._id, null);
 			} catch (error) {
-				console.log('E2E -> Error clearing room key: ', error);
+				console.error('E2E -> Error clearing room key: ', error);
 				return;
 			}
 			RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: this.roomId, userId: this.userId });
 		});
 	}
 
-
-	// Stop E2E session.
-	end() {
-		this.reset();
-		RocketChat.Notifications.notifyUser(this.peerId, 'e2e', 'end', { roomId: this.roomId, userId: this.userId });
-	}
-
-
 	// Reset E2E session.
 	reset(refresh) {
 		this.establishing.set(false);
 		this.established.set(false);
-		this.keyPair = null;
-		this.exportedPublicKey = null;
-		this.sessionKey = null;
 		this.cipher = null;
-		RocketChat.E2EStorage.removeSession(`${ this.peerRegistrationId }.1`);
-		this.peerIdentityKey = null;
-		this.peerRegistrationId = null;
-		this.peerSignedPreKey = null;
-		this.peerSignedSignature = null;
 		this.groupSessionKey = null;
-		this.peerPreKey = null;
-		this.clearGroupKey(refresh);		// Might enter a race condition with the handshake function.
+		this.clearGroupKey(refresh); // Might enter a race condition with the handshake function.
 	}
-
 
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(fileArrayBuffer) {
@@ -207,11 +182,11 @@ RocketChat.E2E.Room = class {
 			try {
 				result = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, fileArrayBuffer);
 			} catch (error) {
-				console.log('E2E -> Error encrypting group key: ', error);
+				console.error('E2E -> Error encrypting group key: ', error);
 				return;
 			}
 
-			cipherText = new Uint8Array(result);
+			const cipherText = new Uint8Array(result);
 			const output = new Uint8Array(vector.length + cipherText.length);
 			output.set(vector, 0);
 			output.set(cipherText, vector.length);
@@ -219,16 +194,19 @@ RocketChat.E2E.Room = class {
 		}
 	}
 
-
 	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
 	async decryptFile(message) {
+		if (message[0] !== '{') {
+			return;
+		}
+
 		let cipherText = EJSON.parse(message);
 		const vector = cipherText.slice(0, 16);
 		cipherText = cipherText.slice(16);
 		try {
 			return await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText);
 		} catch (error) {
-			console.log('E2E -> Error decrypting file: ', error);
+			console.error('E2E -> Error decrypting file: ', error);
 			// Session key was reset. Cannot decrypt this file anymore.
 			modal.open({
 				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
@@ -239,7 +217,6 @@ RocketChat.E2E.Room = class {
 			return false;
 		}
 	}
-
 
 	// Encrypts messages
 	async encryptText(data) {
@@ -252,11 +229,11 @@ RocketChat.E2E.Room = class {
 			try {
 				result = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, data);
 			} catch (error) {
-				console.log('E2E -> Error encrypting message: ', error);
+				console.error('E2E -> Error encrypting message: ', error);
 				return;
 			}
 
-			cipherText = new Uint8Array(result);
+			const cipherText = new Uint8Array(result);
 			const output = new Uint8Array(vector.length + cipherText.length);
 			output.set(vector, 0);
 			output.set(cipherText, vector.length);
@@ -268,7 +245,6 @@ RocketChat.E2E.Room = class {
 			return this.cipher.encrypt(data).then((ciphertext) => ab2str(ciphertext.body));
 		}
 	}
-
 
 	// Helper function for encryption of messages
 	encrypt(message) {
@@ -290,7 +266,6 @@ RocketChat.E2E.Room = class {
 		return enc;
 	}
 
-
 	// Decrypt messages
 	async decrypt(message) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
@@ -298,12 +273,14 @@ RocketChat.E2E.Room = class {
 			// let cipherText = message;
 			const vector = cipherText.slice(0, 16);
 			cipherText = cipherText.slice(16);
+			window.vector = vector;
+			window.cipherText = cipherText;
 			let result;
 			window.groupSessionKey = this.groupSessionKey;
 			try {
 				result = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText);
 			} catch (error) {
-				console.log('E2E -> Error decrypting message: ', error, message);
+				console.error('E2E -> Error decrypting message: ', error, message);
 				return false;
 			}
 			return EJSON.parse(ab2str(result));
@@ -317,7 +294,7 @@ RocketChat.E2E.Room = class {
 			try {
 				plaintext = await this.cipher.decryptWhisperMessage(ciphertext, 'binary');
 			} catch (error) {
-				console.log('E2E -> Error decrypting whisper message: ', error);
+				console.error('E2E -> Error decrypting whisper message: ', error);
 				return false;
 			}
 
@@ -326,82 +303,8 @@ RocketChat.E2E.Room = class {
 		}
 	}
 
-
-	// Decrypts first message after signal session establishment by peer.
-	// According to signal protocol, needs to be handled differently as this message contains session establishment information.
-	async decryptInitial(message) {
-
-		// Control should never reach here as both cases (private group and direct) have been covered above.
-		// This is for future, in case of Signal integration.
-		const ciphertext = str2ab(message);
-
-		// Get signal keys for the peer.
-		let keychain;
-		try {
-			keychain = await call('fetchKeychain', this.peerId);
-		} catch (error) {
-			console.log('E2E -> Error fetching keychain: ', error);
-			return;
-		}
-
-		const key = JSON.parse(keychain);
-		this.peerIdentityKey = key.lastUsedIdentityKey;
-		for (let i = 0; i < key.publicKeychain.length; i++) {
-			if (key.publicKeychain[i][0] === this.peerIdentityKey) {
-				this.peerSignedPreKey = str2ab(key.publicKeychain[i][1]);
-				this.peerSignedSignature = str2ab(key.publicKeychain[i][2]);
-				this.peerPreKey = str2ab(key.publicKeychain[i][3]);
-				this.peerRegistrationId = key.publicKeychain[i][4];
-				break;
-			}
-		}
-		this.peerIdentityKey = str2ab(this.peerIdentityKey);
-
-		// Establish a signal session.
-		const bAddress = new libsignal.SignalProtocolAddress(this.peerRegistrationId, 1);
-		this.cipher = new libsignal.SessionCipher(RocketChat.E2EStorage, bAddress);
-		this.establishing.set(false);
-		this.established.set(true);
-
-		// Decrypt initial signal message using `decryptPreKeyWhisperMessage`
-		let plaintext;
-		try {
-			plaintext = await this.cipher.decryptPreKeyWhisperMessage(ciphertext, 'binary');
-		} catch (error) {
-			console.log('E2E -> Error decrypting whisper message: ', error);
-			return;
-		}
-		plaintext = EJSON.parse(ab2str(plaintext));
-		return plaintext;
-	}
-
-
-	async onUserStream(type, data) {
+	async onUserStream(type) {
 		switch (type) {
-			case 'acknowledge':
-				// Control should never reach here as both cases (private group and direct) have been covered above.
-				// This is for future, in case of Signal integration.
-				this.established.set(true);
-				// Get the other's key
-				let key;
-				try {
-					key = await call('fetchKeychain', data.userId);
-				} catch (error) {
-					console.log('E2E -> Error fetching keychain: ', error);
-					return;
-				}
-
-				this.peerIdentityKey = key.lastUsedIdentityKey;
-				for (let i = 0; i < key.publicKeychain.length; i++) {
-					if (key.publicKeychain[i][0] === this.peerIdentityKey) {
-						this.peerSignedPreKey = key.publicKeychain[i][1];
-						this.peerSignedSignature = key.publicKeychain[i][2];
-						this.peerPreKey = key.publicKeychain[i][3];
-						break;
-					}
-				}
-				break;
-
 			case 'end':
 				if (this.established.get()) {
 					this.reset();
