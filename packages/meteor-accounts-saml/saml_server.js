@@ -131,6 +131,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				newUser.username = loginResult.profile.username;
 			}
 
+			newUser.name = newUser.name || newUser.username; // Make sure every user has a name as well
+
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
 		}
