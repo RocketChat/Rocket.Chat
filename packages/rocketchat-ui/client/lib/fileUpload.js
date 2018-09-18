@@ -1,6 +1,7 @@
 /* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
 /* exported fileUpload */
 import s from 'underscore.string';
+import { mountReply } from './chatMessages';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -124,10 +125,14 @@ const getUploadPreview = (file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = (files) => {
+fileUpload = async(files, input) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
+
+	let msg = '';
+
+	msg += await mountReply(msg, input);
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -214,7 +219,11 @@ fileUpload = (files) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', roomId, storage, file, () => {
+				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
+					$(input)
+						.removeData('reply')
+						.trigger('dataChange');
+
 					Meteor.setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
 						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));

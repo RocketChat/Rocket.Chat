@@ -13,6 +13,21 @@ Meteor.startup(() => {
 	});
 });
 
+export const mountReply = async(msg, input) => {
+	const reply = $(input).data('reply');
+	const mentionUser = $(input).data('mention-user') || false;
+
+	if (reply !== undefined) {
+		msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
+		const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
+		if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+			msg += `@${ reply.u.username } `;
+		}
+	}
+
+	return msg;
+};
+
 this.ChatMessages = class ChatMessages {
 	constructor() {
 
@@ -201,16 +216,9 @@ this.ChatMessages = class ChatMessages {
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
-			const reply = $(input).data('reply');
-			const mentionUser = $(input).data('mention-user') || false;
 
-			if (reply !== undefined) {
-				msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
-				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
-			}
+			msg += await mountReply(msg, input);
+
 			msg += input.value;
 			$(input)
 				.removeData('reply')

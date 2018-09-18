@@ -782,7 +782,9 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload);
+		const { input } = chatMessages[RocketChat.openedRoom];
+
+		fileUpload(filesToUpload, input);
 	},
 
 	'load img'(e, template) {
