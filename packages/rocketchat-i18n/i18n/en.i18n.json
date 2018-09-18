@@ -2514,6 +2514,8 @@
   "thread-created" : "I started a new __channelLink__",
   "thread-welcome" : "Thanks __username__ for creating a thread! I invited some members from __parentChannel__ who shall be able to help you. Hint: You can poke them with \"@all\", in case there's nothing happening for a longer time ;)",
   "Thread_from_context_menu": "Threads in context-menu",
+  "Thread_invitations_threshold": "Max. users to be automatically invited",
+  "Thread_invitations_threshold_description": "Max. count of users who are automatically being invited into a public thread",
   "Threading_context_menu_button": "Dedicated button",
   "Threading_context_menu_none": "Invisible",
   "Threading_description": "Help keeping an overview about what's going on! By creating a thread, a sub-channel of the one you selected is created and both are linked.",
