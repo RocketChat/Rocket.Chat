@@ -16,9 +16,6 @@ const objectMaybeIncluding = (types) => Match.Where((value) => {
 const validateAttachmentsFields = (attachmentField) => {
 	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
-	}));
-
-	check(attachmentField, objectMaybeIncluding({
 		title: String,
 		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
