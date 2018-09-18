@@ -6,6 +6,6 @@ RocketChat.TabBar.addButton({
 	i18nTitle: 'Knowledge_Base',
 	icon: 'lightbulb',
 	template: 'AssistifySmarti',
-	order: 0
+	order: 0,
 });
 

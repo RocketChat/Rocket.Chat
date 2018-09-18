@@ -16,9 +16,7 @@ Meteor.startup(() => {
 		let parentTopic = null;
 
 		if (request.expertise) {
-			parentTopic = topics.find(topic => {
-				return request.expertise === topic.name;
-			});
+			parentTopic = topics.find((topic) => request.expertise === topic.name);
 			if (!parentTopic) {
 				console.log('couldn\'t find topic', request.expertise, '- ignoring');
 			} else {
@@ -29,58 +27,58 @@ Meteor.startup(() => {
 		update.$set.oldType = request.t;
 		update.$set.t = 'p';
 		// update requests
-		RocketChat.models.Rooms.update({_id: request._id}, update);
+		RocketChat.models.Rooms.update({ _id: request._id }, update);
 		counterRequests++;
 	});
 	console.log('Migrated', counterRequests, 'requests to private groups');
 
-	//Update room type and parent room id for expertises
+	// Update room type and parent room id for expertises
 	RocketChat.models.Rooms.update({
-		t: 'e'
+		t: 'e',
 	}, {
 		$set: {
 			oldType: 'e', // move the room type as old room type
-			t: 'c' // set new room type to public channel
-		}
+			t: 'c', // set new room type to public channel
+		},
 	}, {
-		multi: true
+		multi: true,
 	});
 
-	//update subscriptions for requests
+	// update subscriptions for requests
 	RocketChat.models.Subscriptions.update({
-		t: 'r'
+		t: 'r',
 	}, {
 		$set: {
 			oldType: 'r',
-			t: 'p'
-		}
+			t: 'p',
+		},
 	}, {
-		multi: true
+		multi: true,
 	});
 
 	// provide parent Room links in the subscriptions as well
-	mapRoomParentRoom.forEach((value, key)=>{
+	mapRoomParentRoom.forEach((value, key) => {
 		RocketChat.models.Subscriptions.update({
-			rid: key
+			rid: key,
 		}, {
 			$set: {
-				parentRoomId: value
-			}
+				parentRoomId: value,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 	});
 
-	//update subscriptions for expertises
+	// update subscriptions for expertises
 	RocketChat.models.Subscriptions.update({
-		t: 'e'
+		t: 'e',
 	}, {
 		$set: {
 			oldType: 'e',
-			t: 'c'
-		}
+			t: 'c',
+		},
 	}, {
-		multi: true
+		multi: true,
 	});
 
 });

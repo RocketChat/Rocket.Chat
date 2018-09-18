@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Assistify migrations',
 	git: 'http://github.com/assistify/Rocket.Chat',
-	documentation: ''
+	documentation: '',
 });
 
 Package.onUse(function(api) {

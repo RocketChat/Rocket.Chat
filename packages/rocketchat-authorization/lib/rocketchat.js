@@ -1,5 +1,5 @@
 RocketChat.authz = {};
 
 export const permissionLevel = {
-	SETTING: 'setting'
+	SETTING: 'setting',
 };

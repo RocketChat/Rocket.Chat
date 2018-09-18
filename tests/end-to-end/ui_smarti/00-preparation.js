@@ -6,7 +6,7 @@ export const request = supertest.agent('http://localhost:8080');
 export const rcrequest = supertest.agent('http://localhost:3000');
 export const credentials = {
 	username: 'admin',
-	password: 'admin'
+	password: 'admin',
 };
 const clientconfig = '{"queryBuilder":[{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationmlt","displayName":"conversationmlt","type":"conversationmlt","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]},{"_class":"io.redlink.smarti.model.config.ComponentConfiguration","name":"conversationsearch","displayName":"conversationsearch","type":"conversationsearch","enabled":true,"unbound":false,"pageSize":3,"filter":["support_area"]}]}';
 
@@ -43,7 +43,7 @@ describe('[Smarti Connection]', () => {
 
 			it('check if client already exists', function(done) {
 				request.get('/client')
-					.auth(credentials['username'], credentials['password'])
+					.auth(credentials.username, credentials.password)
 					.expect(200)
 					.expect(function(res) {
 						for (const cl in res.body) {
@@ -72,7 +72,7 @@ describe('[Smarti Connection]', () => {
 					.send({
 						defaultClient: true,
 						description: '',
-						name: 'testclient'
+						name: 'testclient',
 					})
 					.set('Accept', 'application/json')
 					.end(function(err, res) {
@@ -128,7 +128,7 @@ describe('[Smarti Connection]', () => {
 					.set('Content-Type', 'application/json')
 					.send({
 						username: adminUsername,
-						password: adminPassword
+						password: adminPassword,
 					})
 					.end(function(err, res) {
 						authToken = res.body.data.authToken;
@@ -147,7 +147,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: token
+						value: token,
 					})
 					.expect(200)
 					.end(done);
@@ -160,7 +160,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: true
+						value: true,
 					})
 					.expect(200)
 					.end(done);
@@ -173,7 +173,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: '0'
+						value: '0',
 					})
 					.expect(200)
 					.end(done);
@@ -186,7 +186,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: 'testclient'
+						value: 'testclient',
 					})
 					.expect(200)
 					.end(done);
@@ -199,7 +199,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: 'key123'
+						value: 'key123',
 					})
 					.expect(200)
 					.end(done);
@@ -212,7 +212,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: 'http://localhost:8080/'
+						value: 'http://localhost:8080/',
 					})
 					.expect(200)
 					.end(done);
@@ -224,7 +224,7 @@ describe('[Smarti Connection]', () => {
 					.set('X-Auth-Token', authToken)
 					.set('X-User-Id', userId)
 					.send({
-						value: 'postText'
+						value: 'postText',
 					})
 					.expect(200)
 					.end(done);
@@ -251,7 +251,7 @@ describe('[Smarti Connection]', () => {
 				.set('Content-Type', 'application/json')
 				.send({
 					username: adminUsername,
-					password: adminPassword
+					password: adminPassword,
 				})
 				.end(function(err, res) {
 					authToken = res.body.data.authToken;

@@ -72,15 +72,15 @@ export class SmartiAdapter {
 			}
 
 			const requestBodyMessage = {
-				'id': message._id,
-				'time': message.ts,
-				'origin': 'User', //user.type,
-				'content': message.msg,
-				'user': {
-					'id': message.u._id
+				id: message._id,
+				time: message.ts,
+				origin: 'User', // user.type,
+				content: message.msg,
+				user: {
+					id: message.u._id,
 				},
-				'metadata': {}
-				//,"private" : false
+				metadata: {},
+				// ,"private" : false
 			};
 
 			if (message.origin === 'smartiWidget') {
@@ -108,7 +108,7 @@ export class SmartiAdapter {
 			if (request_result) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
 				SmartiAdapter._getAnalysisResult(message.rid, conversationId);
-				//autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
+				// autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
 			} else {
 				// if the message could not be synced this time, re-synch the complete room next time
@@ -268,8 +268,8 @@ export class SmartiAdapter {
 			$or: [
 				{ t: 'c' },
 				{ t: 'p' },
-				{ t: 'l' }
-			]
+				{ t: 'l' },
+			],
 		};
 
 		const query = { $and: [roomTypesQuery, syncModeQuery] };
@@ -279,7 +279,7 @@ export class SmartiAdapter {
 			closedAt: 1,
 			outOfSync: 1,
 			u: 1,
-			v: 1
+			v: 1,
 		};
 
 		const options = { fields: roomProperties, sort: { _id: 1 } };
@@ -333,7 +333,7 @@ export class SmartiAdapter {
 		syncTimer = Meteor.setInterval(syncBatch, batchTimeout);
 
 		return {
-			message: 'sync-triggered-successfully'
+			message: 'sync-triggered-successfully',
 		};
 	}
 
@@ -416,23 +416,23 @@ export class SmartiAdapter {
 		let userId = '';
 
 		// we need a small decision tree for the owner of a room. There even are channels without owner (GENERAL)!
-		if (room.u) { //normal rooms
+		if (room.u) { // normal rooms
 			userId = room.u._id;
 		} else if (room.v) { // livechat rooms
 			userId = room.v._id;
 		}
 		const conversationBody = {
-			'meta': {
-				'support_area': [supportArea],
-				'channel_id': [room._id]
+			meta: {
+				support_area: [supportArea],
+				channel_id: [room._id],
 			},
-			'user': {
-				'id': userId
+			user: {
+				id: userId,
 			},
-			'messages': [],
-			'context': {
-				'contextType': 'rocket.chat'
-			}
+			messages: [],
+			context: {
+				contextType: 'rocket.chat',
+			},
 		};
 		if (room.closedAt) {
 			conversationBody.meta.status = 'Complete';
@@ -443,13 +443,13 @@ export class SmartiAdapter {
 			conversationBody.messages = [];
 			for (let i = 0; i < messages.length; i++) {
 				const newMessage = {
-					'id': messages[i]._id,
-					'time': messages[i].ts,
-					'origin': 'User',
-					'content': messages[i].msg,
-					'user': {
-						'id': messages[i].u._id
-					}
+					id: messages[i]._id,
+					time: messages[i].ts,
+					origin: 'User',
+					content: messages[i].msg,
+					user: {
+						id: messages[i].u._id,
+					},
 				};
 				conversationBody.messages.push(newMessage);
 			}
@@ -500,8 +500,8 @@ export class SmartiAdapter {
 				{ _id: messageId },
 				{
 					$set: {
-						lastSync: lastUpdate
-					}
+						lastSync: lastUpdate,
+					},
 				});
 			SystemLogger.debug('Message Id: ', messageId, ' has been synced');
 		} else {
@@ -515,8 +515,8 @@ export class SmartiAdapter {
 			{ _id: rid },
 			{
 				$set: {
-					outOfSync: false
-				}
+					outOfSync: false,
+				},
 			});
 		SystemLogger.debug('Room Id: ', rid, ' is in sync now');
 	}
@@ -527,8 +527,8 @@ export class SmartiAdapter {
 			{ _id: rid },
 			{
 				$set: {
-					outOfSync: true
-				}
+					outOfSync: true,
+				},
 			});
 		SystemLogger.debug('Room Id: ', rid, ' is out of sync');
 	}
@@ -542,13 +542,13 @@ export class SmartiAdapter {
 
 		RocketChat.models.AssistifySmarti.update(
 			{
-				_id: roomId
+				_id: roomId,
 			}, {
 				rid: roomId,
 				knowledgeProvider: 'smarti',
-				conversationId
+				conversationId,
 			}, {
-				upsert: true
+				upsert: true,
 			}
 		);
 	}

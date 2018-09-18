@@ -1,7 +1,7 @@
 /* globals RocketChat */
 
-import {SmartiAdapter} from './SmartiAdapter';
-import {ApiAiAdapter} from './AiApiAdapter';
+import { SmartiAdapter } from './SmartiAdapter';
+import { ApiAiAdapter } from './AiApiAdapter';
 
 export function getKnowledgeAdapter() {
 	let knowledgeSource = '';
@@ -16,7 +16,7 @@ export function getKnowledgeAdapter() {
 	const adapterProps = {
 		url: '',
 		token: '',
-		language: ''
+		language: '',
 	};
 
 	switch (knowledgeSource) {
