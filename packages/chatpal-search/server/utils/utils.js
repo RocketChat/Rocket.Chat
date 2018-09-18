@@ -1,7 +1,7 @@
 Meteor.methods({
 	'chatpalUtilsCreateKey'(email) {
 		try {
-			const response = HTTP.call('POST', 'https://beta.chatpal.io/v1/account', {data: {email, tier: 'free'}});
+			const response = HTTP.call('POST', 'https://beta.chatpal.io/v1/account', { data: { email, tier: 'free' } });
 			if (response.statusCode === 201) {
 				return response.data.key;
 			} else {
@@ -22,5 +22,5 @@ Meteor.methods({
 		} catch (e) {
 			return false;
 		}
-	}
+	},
 });

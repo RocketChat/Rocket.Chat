@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.66.0-develop",
+	"version": "0.70.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -64,8 +64,7 @@
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "eslint .",
-		"lint-fix": "eslint . --fix",
-		"stylelint": "stylelint packages/**/*.css",
+		"stylelint": "stylelint \"packages/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
@@ -76,7 +75,8 @@
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
-		"release": "npm run set-version --silent"
+		"release": "npm run set-version --silent",
+		"prepush": "npm run lint && npm run testunit"
 	},
 	"license": "MIT",
 	"repository": {
@@ -89,12 +89,14 @@
 	},
 	"devDependencies": {
 		"@octokit/rest": "^15.8.1",
+		"@rocket.chat/eslint-config": "^0.1.2",
 		"autoprefixer": "^8.6.0",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
 		"chimp": "^0.51.1",
 		"conventional-changelog-cli": "^2.0.0",
 		"eslint": "^4.19.1",
+		"husky": "^0.14.3",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
 		"postcss-custom-properties": "^7.0.0",
@@ -114,9 +116,11 @@
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^1.7.0",
 		"@google-cloud/vision": "^0.19.0",
+		"@rocket.chat/apps-engine": "^1.0.0",
 		"@slack/client": "^4.2.2",
 		"adm-zip": "^0.4.11",
 		"archiver": "^2.1.1",
+		"arraybuffer-to-string": "^1.0.2",
 		"atlassian-crowd": "^0.5.0",
 		"autolinker": "^1.6.2",
 		"aws-sdk": "^2.250.1",
@@ -165,12 +169,14 @@
 		"poplib": "^0.1.7",
 		"prom-client": "^11.0.0",
 		"querystring": "^0.2.0",
+		"queue-fifo": "^0.2.4",
 		"redis": "^2.8.0",
 		"semver": "^5.5.0",
 		"sharp": "^0.20.3",
 		"speakeasy": "^2.0.0",
 		"tar-stream": "^1.6.1",
 		"toastr": "^2.1.4",
+		"turndown": "^5.0.1",
 		"twilio": "^3.17.1",
 		"twit": "^2.2.10",
 		"ua-parser-js": "^0.7.18",
@@ -179,7 +185,6 @@
 		"webdav": "^1.5.2",
 		"wolfy87-eventemitter": "^5.2.4",
 		"xml-crypto": "^0.10.1",
-		"xml2js": "^0.4.19",
 		"xmlbuilder": "^10.0.0",
 		"xmldom": "^0.1.27",
 		"yaqrcode": "^0.2.1"

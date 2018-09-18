@@ -7,7 +7,7 @@ Meteor.methods({
 			return false;
 		}
 
-		//We're now only passed in the `_id` property to lower the amount of data sent to the server
+		// We're now only passed in the `_id` property to lower the amount of data sent to the server
 		message = ChatMessage.findOne({ _id: message._id });
 
 		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
@@ -35,8 +35,8 @@ Meteor.methods({
 		Tracker.nonreactive(function() {
 			ChatMessage.remove({
 				_id: message._id,
-				'u._id': Meteor.userId()
+				'u._id': Meteor.userId(),
 			});
 		});
-	}
+	},
 });

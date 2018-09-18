@@ -32,7 +32,7 @@ Template.snippetPage.helpers({
 					return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
 			}
 		}
-	}
+	},
 });
 
 Template.snippetPage.onCreated(function() {

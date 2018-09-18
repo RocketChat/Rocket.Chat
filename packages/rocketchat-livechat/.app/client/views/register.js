@@ -27,7 +27,13 @@ Template.register.helpers({
 	},
 	showEmailFieldRegisterForm() {
 		return Livechat.emailFieldRegistrationForm;
-	}	
+	},
+	getName() {
+		return Livechat.guestName;
+	},
+	getEmail() {
+		return Livechat.guestEmail;
+	},
 });
 
 Template.register.events({
@@ -41,10 +47,10 @@ Template.register.events({
 			}
 		};
 		const form = e.currentTarget;
-		
+
 		const fields = [];
-		let name;
-		let email;
+		let name = Livechat.guestName;
+		let email = Livechat.guestEmail;
 
 		if (Livechat.nameFieldRegistrationForm) {
 			fields.push('name');
@@ -67,18 +73,24 @@ Template.register.events({
 				}
 			}
 
+			if (departmentId) {
+				Livechat.department = departmentId;
+			}
+
 			const guest = {
 				token: visitor.getToken(),
 				name,
 				email,
-				department: Livechat.department || departmentId
+				department: Livechat.department,
 			};
+
 			Meteor.call('livechat:registerGuest', guest, function(error, result) {
 				if (error != null) {
 					return instance.showError(error.reason);
 				}
 				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
 				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 				start();
 			});
 		}
@@ -91,7 +103,7 @@ Template.register.events({
 	},
 	'click .request-video'(e, instance) {
 		instance.request = 'video';
-	}
+	},
 });
 
 Template.register.onCreated(function() {
@@ -99,13 +111,11 @@ Template.register.onCreated(function() {
 	this.request = '';
 
 	this.validateForm = (form, fields) => {
-		const valid = fields.every((field) => {
-			return !_.isEmpty(s.trim(form.elements[field].value));
-		});
+		const valid = fields.every((field) => !_.isEmpty(s.trim(form.elements[field].value)));
 
 		return valid;
 	};
-	
+
 	this.showError = (msg) => {
 		$('.error').addClass('show');
 		this.error.set(msg);

@@ -9,9 +9,8 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
-	const user = RocketChat.models.Users.findOneById(this.userId);
-
-	if (room.usernames.indexOf(user.username) === -1) {
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } });
+	if (!subscription) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorHistory' }));
 	}
 
@@ -27,7 +26,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 			},
 			removed(id) {
 				self.removed('visitor_history', id);
-			}
+			},
 		});
 
 		self.ready();

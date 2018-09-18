@@ -13,16 +13,16 @@
 
 	&--blue {
 		& .rc-switch__button {
-			border-color: #D7D7D7;
+			border-color: #d7d7d7;
 			background-color: var(--color-gray-light);
 		}
 
 		& .rc-switch__input {
 			&:checked {
 				& + .rc-switch__button {
-				 border-color: var(--button-primary-background);
-				 background-color: var(--button-primary-background);
-			 }
+					border-color: var(--button-primary-background);
+					background-color: var(--button-primary-background);
+				}
 			}
 		}
 	}

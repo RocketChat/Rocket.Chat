@@ -14,12 +14,12 @@ async function migrateHistory(total, current) {
 	const tokens = items.filter((item) => item.token && !roomIdByToken[item.token]).map((item) => item.token);
 	const rooms = await roomCollection.find({
 		'v.token': {
-			$in: tokens
-		}
+			$in: tokens,
+		},
 	}, {
 		fields: {
-			'v.token': 1
-		}
+			'v.token': 1,
+		},
 	}).toArray();
 
 	rooms.forEach((room) => {
@@ -34,13 +34,13 @@ async function migrateHistory(total, current) {
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
 				_id : 'rocket.cat',
-				username : 'rocket.cat'
+				username : 'rocket.cat',
 			},
 			groupable : false,
 			navigation : {
 				page: item.page,
-				token: item.token
-			}
+				token: item.token,
+			},
 		};
 		if (!roomIdByToken[item.token] && item.expireAt) {
 			msg.expireAt = item.expireAt;
@@ -51,10 +51,17 @@ async function migrateHistory(total, current) {
 		return result;
 	}, { insert: [], remove: [] });
 
-	const batch = Promise.all([
-		messageCollection.insertMany(actions.insert),
-		pageVisitedCollection.removeMany({ _id: { $in: actions.remove } })
-	]);
+	const ops = [];
+
+	if (actions.insert.length > 0) {
+		ops.push(messageCollection.insertMany(actions.insert));
+	}
+
+	if (actions.remove.length > 0) {
+		ops.push(pageVisitedCollection.removeMany({ _id: { $in: actions.remove } }));
+	}
+
+	const batch = Promise.all(ops);
 	if (actions.remove.length === batchSize) {
 		await batch;
 		return migrateHistory(total, current + batchSize);
@@ -85,5 +92,5 @@ RocketChat.Migrations.add({
 
 			console.log('Livechat visitors navigation history migration finished.');
 		}, 1000);
-	}
+	},
 });

@@ -1,6 +1,8 @@
 /* globals Livechat */
 import visitor from '../../imports/client/visitor';
 
+const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];
+
 function getAgent(triggerAction) {
 	return new Promise((resolve, reject) => {
 		const { params } = triggerAction;
@@ -17,21 +19,21 @@ function getAgent(triggerAction) {
 
 			Meteor.call('livechat:getNextAgent', {
 				token: visitor.getToken(),
-				department: Livechat.department
+				department: Livechat.department,
 			}, (error, result) => {
 				if (error) {
 					return reject(error);
 				}
 				localStorage.setItem('triggerAgent', JSON.stringify({
 					agent: result,
-					ts: Date.now()
+					ts: Date.now(),
 				}));
 
 				resolve(result);
 			});
 		} else if (params.sender === 'custom') {
 			resolve({
-				username: params.name
+				username: params.name,
 			});
 		} else {
 			reject('Unknown sender');
@@ -66,7 +68,7 @@ this.Triggers = (function() {
 					ChatMessage.insert({
 						msg: action.params.msg,
 						rid: roomId,
-						u: agent
+						u: agent,
 					});
 
 					if (agent._id) {
@@ -77,6 +79,12 @@ this.Triggers = (function() {
 				});
 			}
 		});
+
+		if (trigger.runOnce) {
+			trigger.skip = true;
+			firedTriggers.push(trigger._id);
+			localStorage.setItem('rocketChatFiredTriggers', JSON.stringify(firedTriggers));
+		}
 	};
 
 	const processRequest = function(request) {
@@ -115,6 +123,14 @@ this.Triggers = (function() {
 	const init = function() {
 		initiated = true;
 
+		firedTriggers.forEach((triggerId) => {
+			triggers.forEach((trigger) => {
+				if (trigger._id === triggerId) {
+					trigger.skip = true;
+				}
+			});
+		});
+
 		if (requests.length > 0 && triggers.length > 0) {
 			requests.forEach(function(request) {
 				processRequest(request);
@@ -137,6 +153,6 @@ this.Triggers = (function() {
 		processRequest,
 		setTriggers,
 		setDisabled,
-		setEnabled
+		setEnabled,
 	};
 }());

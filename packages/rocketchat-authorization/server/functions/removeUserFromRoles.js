@@ -9,7 +9,7 @@ RocketChat.authz.removeUserFromRoles = function(userId, roleNames, scope) {
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			function: 'RocketChat.authz.removeUserFromRoles'
+			function: 'RocketChat.authz.removeUserFromRoles',
 		});
 	}
 
@@ -19,7 +19,7 @@ RocketChat.authz.removeUserFromRoles = function(userId, roleNames, scope) {
 
 	if (!_.isEmpty(invalidRoleNames)) {
 		throw new Meteor.Error('error-invalid-role', 'Invalid role', {
-			function: 'RocketChat.authz.removeUserFromRoles'
+			function: 'RocketChat.authz.removeUserFromRoles',
 		});
 	}
 

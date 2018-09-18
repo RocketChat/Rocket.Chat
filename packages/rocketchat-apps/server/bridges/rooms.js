@@ -1,4 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-ts-definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -24,7 +24,7 @@ export class AppRoomBridge {
 
 		let rid;
 		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call(method, rcRoom.usernames);
+			const info = Meteor.call(method, rcRoom.members);
 			rid = info.rid;
 		});
 

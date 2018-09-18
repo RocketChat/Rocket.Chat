@@ -2,28 +2,28 @@ RocketChat.Migrations.add({
 	version: 124,
 	up() {
 		RocketChat.models.Users.update({
-			'settings.preferences.mergeChannels': true
+			'settings.preferences.mergeChannels': true,
 		}, {
 			$unset: {
-				'settings.preferences.mergeChannels': 1
+				'settings.preferences.mergeChannels': 1,
 			},
 			$set: {
-				'settings.preferences.groupByType': false
-			}
+				'settings.preferences.groupByType': false,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 		RocketChat.models.Users.update({
-			'settings.preferences.mergeChannels': false
+			'settings.preferences.mergeChannels': false,
 		}, {
 			$unset: {
-				'settings.preferences.mergeChannels': 1
+				'settings.preferences.mergeChannels': 1,
 			},
 			$set: {
-				'settings.preferences.groupByType': true
-			}
+				'settings.preferences.groupByType': true,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });
