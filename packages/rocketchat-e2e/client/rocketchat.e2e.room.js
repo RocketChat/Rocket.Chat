@@ -151,34 +151,6 @@ export class E2ERoom {
 		});
 	}
 
-	// Clears the session key in use by room
-	async clearGroupKey() {
-		// For every user in room...
-		let users;
-		try {
-			users = await call('getUsersOfRoom', this.roomId, true);
-		} catch (error) {
-			return console.error('E2E -> Error getting room users: ', error);
-		}
-		users.records.forEach(async(user) => {
-			// ...remove session key for this room
-			try {
-				await call('updateGroupE2EKey', this.roomId, user._id, null);
-			} catch (error) {
-				return console.error('E2E -> Error clearing room key: ', error);
-			}
-			RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: this.roomId, userId: this.userId });
-		});
-	}
-
-	// Reset E2E session.
-	reset(refresh) {
-		this.establishing.set(false);
-		this.established.set(false);
-		this.groupSessionKey = null;
-		this.clearGroupKey(refresh); // Might enter a race condition with the handshake function.
-	}
-
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(fileArrayBuffer) {
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {
@@ -275,32 +247,6 @@ export class E2ERoom {
 			return EJSON.parse(toString(result));
 		} catch (error) {
 			return console.error('E2E -> Error decrypting message: ', error, message);
-		}
-	}
-
-	async onUserStream(type) {
-		switch (type) {
-			case 'end':
-				if (this.established.get()) {
-					this.reset();
-					modal.open({
-						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
-						text: TAPi18n.__('The E2E session was ended'),
-						html: true,
-					});
-				}
-				break;
-
-			case 'clearGroupKey':
-				if (this.established.get()) {
-					this.reset();
-					modal.open({
-						title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
-						text: TAPi18n.__('The E2E session key was cleared. Session has now ended.'),
-						html: true,
-					});
-				}
-				break;
 		}
 	}
 }

@@ -23,6 +23,7 @@ import {
 
 class E2E {
 	constructor() {
+		this.started = false;
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 		this.ready = new ReactiveVar(false);
@@ -66,6 +67,11 @@ class E2E {
 	}
 
 	async startClient() {
+		if (this.started) {
+			return;
+		}
+
+		this.started = true;
 		let public_key = localStorage.getItem('public_key');
 		let private_key = localStorage.getItem('private_key');
 
@@ -201,15 +207,12 @@ export const e2e = new E2E();
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			e2e.startClient();
-			// TODO: need review
-			RocketChat.Notifications.onUser('e2e', (type, data) => {
-				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
-					return;
-				} else {
-					e2e.getInstanceByRoomId(data.roomId).onUserStream(type, data);
-				}
-			});
+			if (RocketChat.settings.get('E2E_Enable') && window.crypto) {
+				e2e.startClient();
+				e2e.enabled.set(true);
+			} else {
+				e2e.enabled.set(false);
+			}
 		}
 	});
 
@@ -234,9 +237,5 @@ Meteor.startup(function() {
 				return message;
 			});
 	}, RocketChat.promises.priority.HIGH);
-
-	Tracker.autorun(function() {
-		e2e.enabled.set(RocketChat.settings.get('E2E_Enable') && window.crypto);
-	});
 });
 
