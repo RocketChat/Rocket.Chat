@@ -5,8 +5,8 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
 	setTimeout(() => {
-		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
-			html = Mailer.inlinecss(value);
+		Mailer.getTemplate('Accounts_UserAddedEmail', (template) => {
+			html = template;
 		});
 	}, 1000);
 });

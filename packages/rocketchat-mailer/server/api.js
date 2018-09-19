@@ -11,12 +11,11 @@ let Settings = {
 export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
 
 export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key));
-export const replace = function replace(text, data = {}) {
-	if (!text) {
+export const replace = function replace(str, data = {}) {
+	if (!str) {
 		return '';
 	}
-
-	return Object.entries({
+	const options = {
 		Site_Name: Settings.get('Site_Name'),
 		Site_URL: Settings.get('Site_Url'),
 		...(data.name && {
@@ -24,38 +23,47 @@ export const replace = function replace(text, data = {}) {
 			lname: s.strRightBack(data.name, ' '),
 		}),
 		...data,
-	}).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(text));
+	};
+	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
 };
 
-export const replaceEscaped = (str, data = {}) => {
-	if (!str) {
-		return '';
-	}
-	return replace(str, {
-		Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
-		Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
-		...Object.entries(data).map(([key, value]) => ({ [key]: s.escapeHTML(value) })),
-	});
-};
-
-
+export const replaceEscaped = (str, data = {}) => replace(str, {
+	Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
+	Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
+	...Object.entries(data).reduce((ret, [key, value]) => {
+		ret[key] = s.escapeHTML(value);
+		return ret;
+	}, {}),
+});
 
 export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
+export const getTemplate = (template, fn, escape = true) => {
+	let html = '';
+	Settings.get(template, (key, value) => {
+		html = value;
+		fn(escape ? inlinecss(html) : html);
+	});
+	Settings.get('email_style', () => {
+		fn(escape ? inlinecss(html) : html);
+	});
+};
 
 export const setSettings = (s) => {
 	Settings = s;
-	Settings.get('Email_Header', (key, value) => {
+
+	getTemplate('Email_Header', (value) => {
 		contentHeader = replace(value || '');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	});
+	}, false);
 
-	Settings.get('Email_Footer', (key, value) => {
+	getTemplate('Email_Footer', (value) => {
 		contentFooter = replace(value || '');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-	});
+	}, false);
 
 	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 };
+
 
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;

@@ -3,88 +3,100 @@ RocketChat.settings.addGroup('Email', function() {
 
 		this.add('email_style', `html, body{ font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Helvetica Neue','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Meiryo UI',Arial,sans-serif; }
 
-			body {
-				width: 100%;
-				height: 100%;
-			}
+	body {
+		width: 100%;
+		height: 100%;
+	}
 
-			a {
-				color: #1D74F5;
-				font-weight: bold;
-				text-decoration: none;
-				line-height: 1.8;
-				padding-left: 2px;
-				padding-right: 2px;
-			}
-			p {
-				margin: 1rem 0;
-			}
-			.btn {
-				text-decoration: none;
-				color: #FFF;
-				background-color: #1D74F5;
-				padding: 12px 18px;
-				font-weight: 500;
-				font-size: 14px;
-				margin-top: 8px;
-				text-align: center;
-				cursor: pointer;
-				display: inline-block;
-				border-radius: 2px;
-			}
+	a {
+		color: #1D74F5;
+		font-weight: bold;
+		text-decoration: none;
+		line-height: 1.8;
+		padding-left: 2px;
+		padding-right: 2px;
+	}
+	p {
+		margin: 1rem 0;
+	}
+	.btn {
+		text-decoration: none;
+		color: #FFF;
+		background-color: #1D74F5;
+		padding: 12px 18px;
+		font-weight: 500;
+		font-size: 14px;
+		margin-top: 8px;
+		text-align: center;
+		cursor: pointer;
+		display: inline-block;
+		border-radius: 2px;
+	}
 
-			ol, ul, div {
-				list-style-position: inside;
-				padding: 16px 0 ;
-			}
-			li {
-				padding: 8px 0;
-				font-weight: 600;
-			}
-			.wrap {
-				width: 100%;
-				clear: both;
-			}
+	ol, ul, div {
+		list-style-position: inside;
+		padding: 16px 0 ;
+	}
+	li {
+		padding: 8px 0;
+		font-weight: 600;
+	}
+	.wrap {
+		width: 100%;
+		clear: both;
+	}
 
-			h1,h2,h3,h4,h5,h6 {
-				line-height: 1.1; margin:0 0 16px 0; color: #000;
-			}
+	h1,h2,h3,h4,h5,h6 {
+		line-height: 1.1; margin:0 0 16px 0; color: #000;
+	}
 
-			h1 { font-weight: 100; font-size: 44px;}
-			h2 { font-weight: 600; font-size: 30px; color: #2F343D;}
-			h3 { font-weight: 100; font-size: 27px;}
-			h4 { font-weight: 500; font-size: 14px; color: #2F343D;}
-			h5 { font-weight: 500; font-size: 13px; line-height: 1.6; color: #2F343D}
-			h6 { font-weight: 500; font-size: 10px; color: #6c727A; line-height: 1.7;}
+	h1 { font-weight: 100; font-size: 44px;}
+	h2 { font-weight: 600; font-size: 30px; color: #2F343D;}
+	h3 { font-weight: 100; font-size: 27px;}
+	h4 { font-weight: 500; font-size: 14px; color: #2F343D;}
+	h5 { font-weight: 500; font-size: 13px; line-height: 1.6; color: #2F343D}
+	h6 { font-weight: 500; font-size: 10px; color: #6c727A; line-height: 1.7;}
 
-			.container {
-				display: block;
-				max-width: 640px;
-				margin: 0 auto; /* makes it centered */
-				clear: both;
-				border-radius: 2px;
-			}
+	.container {
+		display: block;
+		max-width: 640px;
+		margin: 0 auto; /* makes it centered */
+		clear: both;
+		border-radius: 2px;
+	}
 
-			.content {
-				padding: 36px;
-			}
+	.content {
+		padding: 36px;
+	}
 
-			.header-content {
-				padding-top: 36px;
-				padding-bottom: 36px;
-				padding-left: 36px;
-				padding-right: 36px;
-				max-width: 640px;
-				margin: 0 auto;
-				display: block;
-			}
+	.header-content {
+		padding-top: 36px;
+		padding-bottom: 36px;
+		padding-left: 36px;
+		padding-right: 36px;
+		max-width: 640px;
+		margin: 0 auto;
+		display: block;
+	}
 
-			.lead {
-				margin-bottom: 32px;
-				color: #2f343d;
-				line-height: 22px;
-				font-size: 14px;
-			}`, {
+	.lead {
+		margin-bottom: 32px;
+		color: #2f343d;
+		line-height: 22px;
+		font-size: 14px;
+	}
+
+	.advice {
+		height: 20px;
+		color: #9EA2A8;
+		font-size: 12px;
+		font-weight: normal;
+		margin-bottom: 0;
+	}
+	.social {
+		font-size: 12px
+	}
+			`, {
 			type: 'code',
 			code: 'css',
 			multiline: true,
@@ -117,19 +129,19 @@ RocketChat.settings.addGroup('Email', function() {
 		});
 	});
 	this.section('Header_and_Footer', function() {
-		this.add('Email_Header', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http: //www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http: //www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="https://rocket.chat/images/press/logos/120x22.png" alt="Rocket.chat-logo" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>', {
+		this.add('Email_Header', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http: //www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http: //www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url]/assets/logo" alt="Rocket.chat-logo" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			i18nLabel: 'Header',
 		});
-		this.add('Email_Footer', '</td></tr></table></div></td></tr></table><!-- /BODY --></td></tr><tr style="margin: 0; padding: 0;"><td style="margin: 0; padding: 0;"><!-- FOOTER --><table class="wrap" style="margin: 0; padding: 0; width: 100%; clear: both;" width="100%"><tr style="margin: 0; padding: 0;"><td class="container" style="padding: 0; border-radius: 2px; display: block; max-width: 640px; margin: 0 auto; clear: both;"><!-- content --><div class="content" style="margin: 0; list-style-position: inside; padding: 36px;"><table width="100%" style="margin: 0; padding: 0;"><tr style="margin: 0; padding: 0;"><td align="center" style="margin: 0; padding: 0; font-size: 12px;"><a href="https: //rocket.chat/blog" style="margin: 0; padding: 0; color: #1D74F5; font-weight: bold; text-decoration: none; line-height: 1.8; padding-left: 2px; padding-right: 2px;">Blog</a> | <a href="https: //github.com/RocketChat" style="margin: 0; padding: 0; color: #1D74F5; font-weight: bold; text-decoration: none; line-height: 1.8; padding-left: 2px; padding-right: 2px;">Github</a> | <a href="https: //www.facebook.com/RocketChatApp" style="margin: 0; padding: 0; color: #1D74F5; font-weight: bold; text-decoration: none; line-height: 1.8; padding-left: 2px; padding-right: 2px;">Facebook</a> | <a href="https: //www.instagram.com/rocket.chat" style="margin: 0; padding: 0; color: #1D74F5; font-weight: bold; text-decoration: none; line-height: 1.8; padding-left: 2px; padding-right: 2px;">Instagram</a></td></tr><tr style="margin: 0; padding: 0;"><td align="center" style="margin: 0; padding: 0;"><h6 style="margin: 0; padding: 0; margin-bottom: 16px; font-weight: 500; font-size: 10px; color: #6c727A; line-height: 1.7;">© Rocket.Chat Technologies Corp.</h6><h6 style="margin: 0; padding: 0; margin-bottom: 16px; font-weight: 500; font-size: 10px; color: #6c727A; line-height: 1.7;">Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸 </h6></td></tr></table></div><!-- /content --></td></tr></table><!-- /FOOTER --></td></tr></table></body></html>', {
+		this.add('Email_Footer', '</td></tr></table></div></td></tr></table><!-- /BODY --></td></tr><tr style="margin: 0; padding: 0;"><td style="margin: 0; padding: 0;"><!-- FOOTER --><table class="wrap"><tr><td class="container"><!-- content --><div class="content"><table width="100%"><tr><td align="center" class="social"><a href="https: //rocket.chat/blog">Blog</a> | <a href="https: //github.com/RocketChat">Github</a> | <a href="https: //www.facebook.com/RocketChatApp">Facebook</a> | <a href="https: //www.instagram.com/rocket.chat">Instagram</a></td></tr><tr><td align="center"><h6>© Rocket.Chat Technologies Corp.</h6><h6>Made with ❤️ in 🇧🇷 🇨🇦 🇩🇪 🇮🇳 🇬🇧 🇺🇸 </h6></td></tr></table></div><!-- /content --></td></tr></table><!-- /FOOTER --></td></tr></table></body></html>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			i18nLabel: 'Footer',
 		});
-		this.add('Email_Footer_Direct_Reply', '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https: //rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>', {
+		this.add('Email_Footer_Direct_Reply', '<p class="advice">{Direct_Reply_Advice}</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -293,12 +305,12 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Protocol',
 		});
-		this.add('SMTP_Host', 'localhost', {
+		this.add('SMTP_Host', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Host',
 		});
-		this.add('SMTP_Port', '1025', {
+		this.add('SMTP_Port', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port',
@@ -402,7 +414,7 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a>', {
+		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,

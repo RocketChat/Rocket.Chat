@@ -57,11 +57,11 @@ Accounts.emailTemplates.userActivated = {
 let verifyEmailTemplate = '';
 let enrollAccountTemplate = '';
 Meteor.startup(() => {
-	RocketChat.settings.get('Verification_Email', (key, value) => {
-		verifyEmailTemplate = Mailer.inlinecss(value);
+	Mailer.getTemplate('Verification_Email', (value) => {
+		verifyEmailTemplate = value;
 	});
-	RocketChat.settings.get('Accounts_Enrollment_Email', (key, value) => {
-		enrollAccountTemplate = Mailer.inlinecss(value);
+	Mailer.getTemplate('Accounts_Enrollment_Email', (value) => {
+		enrollAccountTemplate = value;
 	});
 });
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {

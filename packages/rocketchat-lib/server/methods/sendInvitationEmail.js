@@ -1,11 +1,9 @@
-import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
 	setTimeout(() => {
-
-		RocketChat.settings.get('Invitation_HTML', (key, value) => {
-			html = Mailer.inlinecss(value);
+		Mailer.getTemplate('Invitation_HTML', (value) => {
+			html = value;
 		});
 	}, 1000);
 });
@@ -27,7 +25,7 @@ Meteor.methods({
 
 		const subject = RocketChat.settings.get('Invitation_Subject');
 
-		validEmails.forEach((email) => {
+		return validEmails.filter((email) => {
 			try {
 				Mailer.send({
 					to: email,
@@ -35,7 +33,7 @@ Meteor.methods({
 					subject,
 					html,
 					data: {
-						email: s.escapeHTML(email),
+						email,
 					},
 				});
 			} catch ({ message }) {
@@ -45,6 +43,5 @@ Meteor.methods({
 				});
 			}
 		});
-		return validEmails;
 	},
 });

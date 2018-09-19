@@ -7,7 +7,8 @@ Meteor.startup(() => {
 	RocketChat.settings.get('Verification_Email_Subject', function(key, value) {
 		subject = Mailer.replace(value || '');
 	});
-	RocketChat.settings.get('Verification_Email', function(key, value) {
+
+	Mailer.getTemplate('Verification_Email', function(value) {
 		html = Mailer.inlinecss(Mailer.wrap(Mailer.replace(value || '')));
 	});
 });

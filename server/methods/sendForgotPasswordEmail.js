@@ -4,9 +4,9 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 let template = '';
 
 Meteor.startup(() => {
-	RocketChat.settings.get('Forgot_Password_Email', (key, value) => {
+	Mailer.getTemplate('Forgot_Password_Email', (value) => {
 		template = Mailer.inlinecss(Mailer.getHeader() + (value || '') + Mailer.getFooter());
-	});
+	}, false);
 });
 
 Meteor.methods({
@@ -30,8 +30,8 @@ Meteor.methods({
 		});
 
 		const html = Mailer.replace(template, {
-			name: s.escapeHTML(user.name),
-			email: s.escapeHTML(email),
+			name: user.name,
+			email,
 		});
 
 		Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;

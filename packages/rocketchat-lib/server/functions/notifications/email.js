@@ -2,6 +2,14 @@ import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
+let advice = '';
+Meteor.startup(() => {
+	setTimeout(() => {
+		Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+			advice = value;
+		});
+	}, 1000);
+});
 
 function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
@@ -96,23 +104,26 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 	const link = getMessageLink(room, subscription);
 
-	const directReply = RocketChat.settings.get('Direct_Reply_Enable') ? '' : ''; // TODO templatemail
+
+
+	// this.add('Email_Footer_Direct_Reply', '{Direct_Reply_Advice}', {
+	// 	type: 'code',
+	// 	code: 'text/html',
+	// 	multiline: true,
+	// 	i18nLabel: 'Footer_Direct_Reply',
+	// });
 
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: content + divisorMessage + link + directReply,
+		html: content + divisorMessage + link + RocketChat.settings.get('Direct_Reply_Enable') ? advice : '',
 	};
 
-	// using user full-name/channel name in from address
-	if (room.t === 'd') {
-		email.from = `${ String(message.u.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
-	} else {
-		email.from = `${ String(room.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
-	}
+	const from = room.t === 'd' ? message.u.name : room.name;	// using user full-name/channel name in from address
+	email.from = `${ String(from).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
 	// If direct reply enabled, email content with headers
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') ? RocketChat.settings.get('Direct_Reply_ReplyTo') : RocketChat.settings.get('Direct_Reply_Username');
+		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') || RocketChat.settings.get('Direct_Reply_Username');
 		email.headers = {
 			// Reply-To header with format "username+messageId@domain"
 			'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,

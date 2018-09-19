@@ -2,8 +2,8 @@ import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 let verifyEmailTemplate = '';
 Meteor.startup(() => {
-	RocketChat.settings.get('Verification_Email', (key, value) => {
-		verifyEmailTemplate = Mailer.inlinecss(Mailer.wrap(value));
+	Mailer.getTemplate('Verification_Email', (value) => {
+		verifyEmailTemplate = Mailer.wrap(value);
 	});
 });
 Meteor.methods({
