@@ -1,9 +1,7 @@
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
 
-export function online() {
-	return RocketChat.models.Users.findOnlineAgents().count() > 0;
-}
+export const online = RocketChat.models.Users.findOnlineAgents().count() > 0;
 
 export function findTriggers() {
 	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions'));
@@ -48,14 +46,14 @@ export function getRoom(guest, rid) {
 		ts: new Date(),
 	};
 
-	return RocketChat.Livechat.getRoom(guest, message);
+	return RocketChat.Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
 }
 
 export function findAgent(agentId) {
 	return RocketChat.models.Users.getAgentInfo(agentId);
 }
 
-export function settings() {
+const config = () => {
 	const initSettings = RocketChat.Livechat.getInitSettings();
 
 	return {
@@ -94,6 +92,7 @@ export function settings() {
 			values: ['1', '2', '3', '4', '5'],
 		},
 	};
-}
+};
 
+export const settings = config();
 
