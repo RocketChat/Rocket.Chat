@@ -8,7 +8,6 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { modal } from 'meteor/rocketchat:ui';
-import { E2EStorage } from './store';
 import { toString, toArrayBuffer } from './helper';
 import { e2e } from './rocketchat.e2e';
 
@@ -60,7 +59,7 @@ export class E2ERoom {
 
 		// Decrypt obtained encrypted session key
 		try {
-			const decryptedKey = await e2e.decryptRSA(E2EStorage.get('private_key'), cipherText);
+			const decryptedKey = await e2e.decryptRSA(e2e.privateKey, cipherText);
 			this.exportedSessionKey = toString(decryptedKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting group key: ', error);
@@ -134,10 +133,8 @@ export class E2ERoom {
 					console.error('E2E -> Error encrypting user key: ', error);
 					return;
 				}
-				const cipherText = new Uint8Array(encryptedUserKey);
-				const output = new Uint8Array(vector.length + cipherText.length);
-				output.set(vector, 0);
-				output.set(cipherText, vector.length);
+
+				const output = e2e.joinVectorAndEcryptedData(vector, encryptedUserKey);
 
 				// Key has been encrypted. Publish to that user's subscription model for this room.
 				await call('updateGroupE2EKey', this.roomId, user._id, EJSON.stringify(output));
@@ -188,10 +185,8 @@ export class E2ERoom {
 				return;
 			}
 
-			const cipherText = new Uint8Array(result);
-			const output = new Uint8Array(vector.length + cipherText.length);
-			output.set(vector, 0);
-			output.set(cipherText, vector.length);
+			const output = e2e.joinVectorAndEcryptedData(vector, result);
+
 			return toArrayBuffer(EJSON.stringify(output));
 		}
 	}
@@ -235,11 +230,7 @@ export class E2ERoom {
 				return;
 			}
 
-			const cipherText = new Uint8Array(result);
-			const output = new Uint8Array(vector.length + cipherText.length);
-			output.set(vector, 0);
-			output.set(cipherText, vector.length);
-			return EJSON.stringify(output);
+			return EJSON.stringify(e2e.joinVectorAndEcryptedData(vector, result));
 		} else {
 
 			// Control should never reach here as both cases (private group and direct) have been covered above.

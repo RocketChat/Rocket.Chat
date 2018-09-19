@@ -7,7 +7,6 @@ import { EJSON } from 'meteor/ejson';
 
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { E2EStorage } from './store';
 import { toString, toArrayBuffer } from './helper';
 
 class E2E {
@@ -96,20 +95,12 @@ class E2E {
 	}
 
 	async loadKeys({ public_key, private_key }) {
-		try {
-			const publicKey = await this.importRSAKey(EJSON.parse(public_key), ['encrypt']);
-
-			localStorage.setItem('public_key', public_key);
-			E2EStorage.put('public_key', publicKey);
-		} catch (error) {
-			return console.error('E2E -> Error importing public key: ', error);
-		}
+		localStorage.setItem('public_key', public_key);
 
 		try {
-			const privateKey = await this.importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			this.privateKey = await this.importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
 			localStorage.setItem('private_key', private_key);
-			E2EStorage.put('private_key', privateKey);
 		} catch (error) {
 			return console.error('E2E -> Error importing private key: ', error);
 		}
@@ -120,6 +111,7 @@ class E2E {
 		let key;
 		try {
 			key = await this.generateRSAKey();
+			this.privateKey = key.privateKey;
 		} catch (error) {
 			return console.error('E2E -> Error generating key: ', error);
 		}
@@ -128,7 +120,6 @@ class E2E {
 			const publicKey = await this.exportJWKKey(key.publicKey);
 
 			localStorage.setItem('public_key', JSON.stringify(publicKey));
-			E2EStorage.put('public_key', key.publicKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting public key: ', error);
 		}
@@ -137,7 +128,6 @@ class E2E {
 			const privateKey = await this.exportJWKKey(key.privateKey);
 
 			localStorage.setItem('private_key', JSON.stringify(privateKey));
-			E2EStorage.put('private_key', key.privateKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
@@ -149,16 +139,19 @@ class E2E {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
 			const encodedPrivateKey = await this.encryptAES(vector, masterKey, toArrayBuffer(private_key));
-			const cipherText = new Uint8Array(encodedPrivateKey);
-			const output = new Uint8Array(vector.length + cipherText.length);
 
-			output.set(vector, 0);
-			output.set(cipherText, vector.length);
-
-			return EJSON.stringify(output);
+			return EJSON.stringify(this.joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
 			return console.error('E2E -> Error encrypting encodedPrivateKey: ', error);
 		}
+	}
+
+	joinVectorAndEcryptedData(vector, encryptedData) {
+		const cipherText = new Uint8Array(encryptedData);
+		const output = new Uint8Array(vector.length + cipherText.length);
+		output.set(vector, 0);
+		output.set(cipherText, vector.length);
+		return output;
 	}
 
 	async encryptRSA(key, data) {
