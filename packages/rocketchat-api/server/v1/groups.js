@@ -729,6 +729,24 @@ RocketChat.API.v1.addRoute('groups.setType', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('groups.setAnnouncement', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.announcement || !this.bodyParams.announcement.trim()) {
+			return RocketChat.API.v1.failure('The bodyParam "announcement" is required');
+		}
+
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult.rid, 'roomAnnouncement', this.bodyParams.announcement);
+		});
+
+		return RocketChat.API.v1.success({
+			announcement: this.bodyParams.announcement,
+		});
+	},
+});
+
 RocketChat.API.v1.addRoute('groups.unarchive', { authRequired: true }, {
 	post() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
@@ -752,3 +770,16 @@ RocketChat.API.v1.addRoute('groups.roles', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('groups.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
+		});
+	},
+});
+

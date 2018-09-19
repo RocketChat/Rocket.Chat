@@ -63,6 +63,18 @@ class ModelRoles extends RocketChat.models._Base {
 		}
 		return true;
 	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOne(query, options);
+	}
 }
 
 RocketChat.models.Roles = new ModelRoles('roles');
