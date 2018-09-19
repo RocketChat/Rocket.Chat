@@ -402,7 +402,7 @@ RocketChat.settings.addGroup('Email', function() {
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a>', {
+		this.add('Forgot_Password_Email', '<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,

@@ -75,25 +75,19 @@ function getMessageLink(room, sub) {
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	let emailSubject;
 	const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (room.t === 'd') {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
+		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
-	} else {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
+		subjectKey = 'Offline_Mention_Email';
 	}
+
+	const emailSubject = Mailer.replace(RocketChat.settings.get(subjectKey), {
+		user: username,
+		room: RocketChat.roomTypes.getRoomName(room.t, room),
+	});
 	const content = getEmailContent({
 		message,
 		user,

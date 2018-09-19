@@ -2,11 +2,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
-let body = '';
+let html = '';
 Meteor.startup(() => {
 	setTimeout(() => {
 		RocketChat.settings.get('Accounts_UserAddedEmail', (key, value) => {
-			body = Mailer.inlinecss(value);
+			html = Mailer.inlinecss(value);
 		});
 	}, 1000);
 });
@@ -133,19 +133,18 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Accounts_UserAddedEmailSubject'));
-
-			const html = Mailer.replace(body, {
-				name: s.escapeHTML(userData.name),
-				email: s.escapeHTML(userData.email),
-				password: s.escapeHTML(userData.password),
-			});
+			const subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
 
 			const email = {
 				to: userData.email,
 				from: RocketChat.settings.get('From_Email'),
 				subject,
 				html,
+				data: {
+					name: s.escapeHTML(userData.name),
+					email: s.escapeHTML(userData.email),
+					password: s.escapeHTML(userData.password),
+				},
 			};
 
 			try {
