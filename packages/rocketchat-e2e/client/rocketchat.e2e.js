@@ -1,4 +1,4 @@
-import './stylesheets/e2e.less';
+import './stylesheets/e2e';
 
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';

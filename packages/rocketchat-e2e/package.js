@@ -9,6 +9,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
+	api.use('less');
 
 	api.mainModule('client/rocketchat.e2e.js', 'client');
 
