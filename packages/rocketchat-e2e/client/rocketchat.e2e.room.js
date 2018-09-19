@@ -56,7 +56,7 @@ export class E2ERoom {
 
 	async importGroupKey(groupKey) {
 		// Get existing group key
-		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(groupKey));
+		const [vector, cipherText] = e2e.splitVectorAndEcryptedData(EJSON.parse(groupKey));
 
 		// Decrypt obtained encrypted session key
 		try {
@@ -192,7 +192,7 @@ export class E2ERoom {
 			return;
 		}
 
-		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
+		const [vector, cipherText] = e2e.splitVectorAndEcryptedData(EJSON.parse(message));
 
 		try {
 			return await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
@@ -256,7 +256,7 @@ export class E2ERoom {
 			return message;
 		}
 
-		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
+		const [vector, cipherText] = e2e.splitVectorAndEcryptedData(EJSON.parse(message));
 
 		try {
 			const result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
