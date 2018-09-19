@@ -174,8 +174,9 @@
 		justify-content: center;
 
 		&__item {
-			max-width: 45%;
 			overflow: hidden;
+
+			max-width: 45%;
 
 			margin: 0 8px;
 
