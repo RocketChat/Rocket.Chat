@@ -28,6 +28,14 @@ class E2E {
 			return;
 		}
 
+		const room = RocketChat.models.Rooms.findOne({
+			_id: roomId,
+		});
+
+		if (room.encrypted !== true) {
+			return;
+		}
+
 		if (this.instancesByRoomId[roomId]) {
 			return this.instancesByRoomId[roomId];
 		}
@@ -228,7 +236,18 @@ Meteor.startup(function() {
 			.then((msg) => {
 				message.msg = msg;
 				message.t = 'e2e';
+				message.e2e = 'pending';
 				return message;
 			});
 	}, RocketChat.promises.priority.HIGH);
+
+	Tracker.autorun(function() {
+		if (RocketChat.settings.get('E2E_Enable') && window.crypto) {
+			RocketChat.E2E.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
+			RocketChat.E2E.enabled.set(true);
+		} else {
+			RocketChat.E2E.enabled.set(false);
+		}
+	});
 });
+

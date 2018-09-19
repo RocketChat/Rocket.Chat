@@ -5,6 +5,10 @@ import _ from 'underscore';
 const decryptE2EMessageDefered = _.debounce(async(rid) => {
 	const e2eRoom = RocketChat.E2E.getInstanceByRoomId(rid);
 
+	if (!e2eRoom) {
+		return;
+	}
+
 	if (!e2eRoom.established.get()) {
 		return e2eRoom.handshake().then(() => {
 			decryptE2EMessageDefered(rid);

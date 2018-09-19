@@ -16,6 +16,9 @@ Template.message.helpers({
 	ignoredClass() {
 		return this.ignored ? 'message--ignored' : '';
 	},
+	isDecrypting() {
+		return this.e2e === 'pending';
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';

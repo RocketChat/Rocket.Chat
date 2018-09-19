@@ -38,6 +38,7 @@ const fields = {
 	tokenpass: 1,
 	streamingOptions: 1,
 	broadcast: 1,
+	encrypted: 1,
 };
 
 const roomMap = (record) => {

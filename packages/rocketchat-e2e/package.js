@@ -18,13 +18,9 @@ Package.onUse(function(api) {
 	api.use('templating', 'client');
 
 	api.addFiles([
-		'client/libsignal.js',
 		'client/rocketchat.e2e.js',
 		'client/rocketchat.e2e.room.js',
 		'client/stylesheets/e2e.less',
-		'client/views/e2eFlexTab.html',
-		'client/views/e2eFlexTab.js',
-		'client/tabBar.js',
 		'client/helper.js',
 		'client/store.js',
 	], 'client');
