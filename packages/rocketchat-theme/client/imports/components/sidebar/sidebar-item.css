@@ -41,6 +41,7 @@
 		&-top,
 		&-bottom {
 			display: flex;
+
 			width: 100%;
 			align-items: center;
 		}
@@ -144,9 +145,12 @@
 	}
 
 	&__video {
-		color: var(--rc-color-success);
-		font-size: 1rem;
+
 		margin: 0 2px;
+
+		color: var(--rc-color-success);
+
+		font-size: 1rem;
 	}
 
 	&__room-type {
@@ -224,6 +228,7 @@
 
 		&-top {
 			overflow: hidden;
+
 			width: 100%;
 		}
 	}
