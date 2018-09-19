@@ -293,12 +293,12 @@ RocketChat.settings.addGroup('Email', function() {
 			env: true,
 			i18nLabel: 'Protocol',
 		});
-		this.add('SMTP_Host', 'localhost', {
+		this.add('SMTP_Host', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Host',
 		});
-		this.add('SMTP_Port', '1025', {
+		this.add('SMTP_Port', '', {
 			type: 'string',
 			env: true,
 			i18nLabel: 'Port',
