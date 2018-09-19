@@ -84,7 +84,7 @@ git.status()
 			.then((data) => writeFile(file, data.replace(pkgJson.version, version)))));
 	})
 	.then(() =>
-		// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
+	// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
 
 		inquirer.prompt([{
 			type: 'confirm',
