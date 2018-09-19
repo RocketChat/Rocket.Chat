@@ -154,6 +154,13 @@ class E2E {
 		return output;
 	}
 
+	splitVectorAndEcryptedData(cipherText) {
+		const vector = cipherText.slice(0, 16);
+		const encryptedData = cipherText.slice(16);
+
+		return [vector, encryptedData];
+	}
+
 	async encryptRSA(key, data) {
 		return await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 	}
@@ -228,9 +235,8 @@ class E2E {
 
 	async decodePrivateKey(private_key) {
 		const masterKey = await this.getMasterKey('Enter E2E password to decode your key');
-		let cipherText = EJSON.parse(private_key);
-		const vector = cipherText.slice(0, 16);
-		cipherText = cipherText.slice(16);
+
+		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(private_key));
 
 		try {
 			const privKey = await this.decryptAES(vector, masterKey, cipherText);

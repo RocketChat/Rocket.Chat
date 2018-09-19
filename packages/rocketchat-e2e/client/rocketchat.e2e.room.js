@@ -53,9 +53,7 @@ export class E2ERoom {
 
 	async importGroupKey(groupKey) {
 		// Get existing group key
-		let cipherText = EJSON.parse(groupKey);
-		const vector = cipherText.slice(0, 16);
-		cipherText = cipherText.slice(16);
+		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(groupKey));
 
 		// Decrypt obtained encrypted session key
 		try {
@@ -197,9 +195,8 @@ export class E2ERoom {
 			return;
 		}
 
-		let cipherText = EJSON.parse(message);
-		const vector = cipherText.slice(0, 16);
-		cipherText = cipherText.slice(16);
+		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
+
 		try {
 			return await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
 		} catch (error) {
@@ -262,37 +259,27 @@ export class E2ERoom {
 	// Decrypt messages
 	async decrypt(message) {
 		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			let cipherText = EJSON.parse(message);
-			// let cipherText = message;
-			const vector = cipherText.slice(0, 16);
-			cipherText = cipherText.slice(16);
-			window.vector = vector;
-			window.cipherText = cipherText;
-			let result;
-			window.groupSessionKey = this.groupSessionKey;
+			const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
+
 			try {
-				result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
+				const result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
+				return EJSON.parse(toString(result));
 			} catch (error) {
 				console.error('E2E -> Error decrypting message: ', error, message);
 				return false;
 			}
-			return EJSON.parse(toString(result));
 
 		} else {
-
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
 			const ciphertext = toArrayBuffer(message);
-			let plaintext;
 			try {
-				plaintext = await this.cipher.decryptWhisperMessage(ciphertext, 'binary');
+				const plaintext = await this.cipher.decryptWhisperMessage(ciphertext, 'binary');
+				return EJSON.parse(toString(plaintext));
 			} catch (error) {
 				console.error('E2E -> Error decrypting whisper message: ', error);
 				return false;
 			}
-
-			plaintext = EJSON.parse(toString(plaintext));
-			return plaintext;
 		}
 	}
 
