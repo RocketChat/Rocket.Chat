@@ -125,7 +125,7 @@ RocketChat.API.v1.addRoute('livechat/room.survey', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const config = settings;
+			const config = settings();
 			if (!config.survey || !config.survey.items || !config.survey.values) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}

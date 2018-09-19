@@ -20,7 +20,7 @@ RocketChat.API.v1.addRoute('livechat/video.call/:token', {
 
 			const rid = this.queryParams.rid || Random.id();
 			const { room } = getRoom(guest, rid);
-			const config = settings;
+			const config = settings();
 			if (!config.theme || !config.theme.actionLinks) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
@@ -34,6 +34,7 @@ RocketChat.API.v1.addRoute('livechat/video.call/:token', {
 				domain: RocketChat.settings.get('Jitsi_Domain'),
 				provider: 'jitsi',
 				room: RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + rid,
+				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 
 			return RocketChat.API.v1.success({ videoCall });
