@@ -125,8 +125,8 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-			const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+			const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+			const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
 			let subject;
 			let html;
@@ -140,10 +140,10 @@ RocketChat.saveUser = function(userId, userData) {
 			}
 
 			subject = RocketChat.placeholders.replace(subject);
-			html = RocketChat.placeholders.replace(html, {
-				name: s.escapeHTML(userData.name),
-				email: s.escapeHTML(userData.email),
-				password: s.escapeHTML(userData.password),
+			html = RocketChat.placeholders.replaceEscaped(html, {
+				name: userData.name,
+				email: userData.email,
+				password: userData.password,
 			});
 
 			const email = {

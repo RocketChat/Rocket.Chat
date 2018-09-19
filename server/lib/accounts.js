@@ -21,15 +21,15 @@ Accounts.emailTemplates.userToActivate = {
 	},
 
 	html(options = {}) {
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
-			name: s.escapeHTML(options.name),
-			email: s.escapeHTML(options.email),
-			reason: s.escapeHTML(options.reason),
+		const html = RocketChat.placeholders.replaceEscaped(TAPi18n.__(email), {
+			name: options.name,
+			email: options.email,
+			reason: options.reason,
 		});
 
 		return header + html + footer;
@@ -47,14 +47,14 @@ Accounts.emailTemplates.userActivated = {
 	},
 
 	html({ active, name, username }) {
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
-			name: s.escapeHTML(name),
+		const html = RocketChat.placeholders.replaceEscaped(TAPi18n.__(`Accounts_Email_${ action }`), {
+			name,
 		});
 
 		return header + html + footer;
@@ -97,12 +97,12 @@ Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 		});
 	}
 
-	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+	const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
-	html = RocketChat.placeholders.replace(html, {
-		name: s.escapeHTML(user.name),
-		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
+	html = RocketChat.placeholders.replaceEscaped(html, {
+		name: user.name,
+		email: user.emails && user.emails[0] && user.emails[0].address,
 	});
 
 	return header + html + footer;

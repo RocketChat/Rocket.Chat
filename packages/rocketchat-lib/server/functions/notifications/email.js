@@ -2,12 +2,12 @@ import s from 'underscore.string';
 
 let contentHeader;
 RocketChat.settings.get('Email_Header', (key, value) => {
-	contentHeader = RocketChat.placeholders.replace(value || '');
+	contentHeader = RocketChat.placeholders.replaceEscaped(value || '');
 });
 
 let contentFooter;
 RocketChat.settings.get('Email_Footer', (key, value) => {
-	contentFooter = RocketChat.placeholders.replace(value || '');
+	contentFooter = RocketChat.placeholders.replaceEscaped(value || '');
 });
 
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
@@ -112,7 +112,7 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 	const link = getMessageLink(room, subscription);
 
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		contentFooter = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
+		contentFooter = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
 	}
 
 	const email = {

@@ -13,8 +13,8 @@ Meteor.methods({
 			return false;
 		}
 
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
 		const message = (`${ data.message }`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 

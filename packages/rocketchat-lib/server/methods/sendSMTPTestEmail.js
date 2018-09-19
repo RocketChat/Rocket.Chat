@@ -12,8 +12,8 @@ Meteor.methods({
 			});
 		}
 		this.unblock();
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+		const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+		const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 		console.log(`Sending test email to ${ user.emails[0].address }`);
 		try {
 			Email.send({

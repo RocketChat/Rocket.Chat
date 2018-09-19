@@ -1,6 +1,4 @@
 /* globals Mailer */
-import s from 'underscore.string';
-
 Mailer.sendMail = function(from, subject, body, dryrun, query) {
 
 	const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
@@ -14,8 +12,8 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 			function: 'Mailer.sendMail',
 		});
 	}
-	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
+	const header = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Header') || '');
+	const footer = RocketChat.placeholders.replaceEscaped(RocketChat.settings.get('Email_Footer') || '');
 
 	let userQuery = { 'mailer.unsubscribed': { $exists: 0 } };
 	if (query) {
@@ -30,7 +28,7 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 			if (user.emails && user.emails[0] && user.emails[0].address) {
 				email = user.emails[0].address;
 			}
-			const html = RocketChat.placeholders.replace(body, {
+			const html = RocketChat.placeholders.replaceEscaped(body, {
 				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
 					_id: user._id,
 					createdAt: user.createdAt.getTime(),
@@ -57,13 +55,13 @@ Mailer.sendMail = function(from, subject, body, dryrun, query) {
 			if (user.emails && user.emails[0] && user.emails[0].address) {
 				email = user.emails[0].address;
 			}
-			const html = RocketChat.placeholders.replace(body, {
+			const html = RocketChat.placeholders.replaceEscaped(body, {
 				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
 					_id: user._id,
 					createdAt: user.createdAt.getTime(),
 				})),
-				name: s.escapeHTML(user.name),
-				email: s.escapeHTML(email),
+				name: user.name,
+				email,
 			});
 			email = `${ user.name } <${ email }>`;
 			if (rfcMailPatternWithName.test(email)) {
