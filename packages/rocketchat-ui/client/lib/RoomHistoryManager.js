@@ -1,9 +1,10 @@
 /* globals readMessage UserRoles RoomRoles*/
 import _ from 'underscore';
+import { e2e } from 'meteor/rocketchat:e2e';
 
 // From the package, rocketchat:e2e
 const decryptE2EMessageDefered = _.debounce(async(rid) => {
-	const e2eRoom = RocketChat.E2E.getInstanceByRoomId(rid);
+	const e2eRoom = e2e.getInstanceByRoomId(rid);
 
 	if (!e2eRoom) {
 		return;

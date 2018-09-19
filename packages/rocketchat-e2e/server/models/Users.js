@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Users.addKeyToChainByUserId = function(userId, key) {
 	this.update({ _id: userId }, {
 		$set: {

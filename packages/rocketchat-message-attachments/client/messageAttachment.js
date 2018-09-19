@@ -1,5 +1,8 @@
 import moment from 'moment';
+
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { e2e } from 'meteor/rocketchat:e2e';
+
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
@@ -75,7 +78,7 @@ Template.messageAttachment.helpers({
 		// Download file asynchronously using XHR.
 		xhttp.onreadystatechange = function() {
 			if (this.readyState === 4 && this.status === 200) {
-				const e2eRoom = RocketChat.E2E.getInstanceByRoomId(self.rid);
+				const e2eRoom = e2e.getInstanceByRoomId(self.rid);
 
 				e2eRoom.decryptFile(xhttp.response)
 					.then((msg) => {

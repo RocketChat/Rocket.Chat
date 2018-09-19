@@ -1,3 +1,5 @@
+/* globals Package: false */
+
 Package.describe({
 	name: 'rocketchat:e2e',
 	version: '0.0.1',
@@ -6,32 +8,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
+	api.use('ecmascript');
 
-	api.use([
-		'less',
-		'ecmascript',
-		'rocketchat:lib',
-		'tracker',
-		'reactive-var',
-	]);
+	api.mainModule('client/rocketchat.e2e.js', 'client');
 
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/rocketchat.e2e.js',
-		'client/rocketchat.e2e.room.js',
-		'client/stylesheets/e2e.less',
-		'client/helper.js',
-		'client/store.js',
-	], 'client');
-
-	api.addFiles([
-		'server/settings.js',
-		'server/models/Users.js',
-		'server/models/Subscriptions.js',
-		'server/methods/addKeyToChain.js',
-		'server/methods/fetchKeychain.js',
-		'server/methods/updateGroupE2EKey.js',
-		'server/methods/fetchMyKeys.js',
-	], 'server');
+	api.mainModule('server/index.js', 'server');
 });

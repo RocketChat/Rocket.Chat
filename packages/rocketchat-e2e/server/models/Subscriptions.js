@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Subscriptions.updateGroupE2EKey = function(_id, key) {
 	const query = { _id };
 	const update = { $set: { E2EKey: key } };

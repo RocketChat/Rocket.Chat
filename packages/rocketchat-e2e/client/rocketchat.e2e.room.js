@@ -1,16 +1,17 @@
 import _ from 'underscore';
 
-import { call } from 'meteor/rocketchat:lib';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { EJSON } from 'meteor/ejson';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { TimeSync } from 'meteor/mizzao:timesync';
 
-function ab2str(buf) {
-	return RocketChat.signalUtils.toString(buf);
-}
+import { RocketChat, call } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { E2EStorage } from './store';
+import { toString, toArrayBuffer } from './helper';
 
-function str2ab(str) {
-	return RocketChat.signalUtils.toArrayBuffer(str);
-}
-
-RocketChat.E2E.Room = class {
+export class E2ERoom {
 	constructor(userId, roomId, t) {
 		this.userId = userId;
 		this.roomId = roomId;
@@ -58,8 +59,8 @@ RocketChat.E2E.Room = class {
 
 		// Decrypt obtained encrypted session key
 		try {
-			const decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, RocketChat.E2EStorage.get('private_key'), cipherText);
-			this.exportedSessionKey = ab2str(decryptedKey);
+			const decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, E2EStorage.get('private_key'), cipherText);
+			this.exportedSessionKey = toString(decryptedKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting group key: ', error);
 		}
@@ -78,7 +79,7 @@ RocketChat.E2E.Room = class {
 		// Create group key
 		let key;
 		try {
-			key = await RocketChat.E2E.crypto.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+			key = await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
 			this.groupSessionKey = key;
 		} catch (error) {
 			return console.error('E2E -> Error generating group key: ', error);
@@ -127,7 +128,7 @@ RocketChat.E2E.Room = class {
 				// Encrypt session key for this user with his/her public key
 				let encryptedUserKey;
 				try {
-					encryptedUserKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, userKey, str2ab(this.exportedSessionKey));
+					encryptedUserKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, userKey, toArrayBuffer(this.exportedSessionKey));
 				} catch (error) {
 					console.error('E2E -> Error encrypting user key: ', error);
 					return;
@@ -190,7 +191,7 @@ RocketChat.E2E.Room = class {
 			const output = new Uint8Array(vector.length + cipherText.length);
 			output.set(vector, 0);
 			output.set(cipherText, vector.length);
-			return str2ab(EJSON.stringify(output));
+			return toArrayBuffer(EJSON.stringify(output));
 		}
 	}
 
@@ -242,7 +243,7 @@ RocketChat.E2E.Room = class {
 
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
-			return this.cipher.encrypt(data).then((ciphertext) => ab2str(ciphertext.body));
+			return this.cipher.encrypt(data).then((ciphertext) => toString(ciphertext.body));
 		}
 	}
 
@@ -283,13 +284,13 @@ RocketChat.E2E.Room = class {
 				console.error('E2E -> Error decrypting message: ', error, message);
 				return false;
 			}
-			return EJSON.parse(ab2str(result));
+			return EJSON.parse(toString(result));
 
 		} else {
 
 			// Control should never reach here as both cases (private group and direct) have been covered above.
 			// This is for future, in case of Signal integration.
-			const ciphertext = str2ab(message);
+			const ciphertext = toArrayBuffer(message);
 			let plaintext;
 			try {
 				plaintext = await this.cipher.decryptWhisperMessage(ciphertext, 'binary');
@@ -298,7 +299,7 @@ RocketChat.E2E.Room = class {
 				return false;
 			}
 
-			plaintext = EJSON.parse(ab2str(plaintext));
+			plaintext = EJSON.parse(toString(plaintext));
 			return plaintext;
 		}
 	}
@@ -328,4 +329,4 @@ RocketChat.E2E.Room = class {
 				break;
 		}
 	}
-};
+}

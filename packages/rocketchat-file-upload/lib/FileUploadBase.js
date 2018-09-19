@@ -1,5 +1,6 @@
 /* globals FileUploadBase:true, UploadFS */
 /* exported FileUploadBase */
+import { e2e } from 'meteor/rocketchat:e2e';
 import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
@@ -51,13 +52,15 @@ FileUploadBase = class FileUploadBase {
 
 	start(callback) {
 		const self = this;
-		if (this.meta.rid && RocketChat.E2E.getInstanceByRoomId(this.meta.rid) && RocketChat.E2E.getInstanceByRoomId(this.meta.rid).established.get()) {
+		const e2eRoom = this.meta.rid && e2e.getInstanceByRoomId(this.meta.rid);
+
+		if (this.meta.rid && e2eRoom && e2eRoom.established.get()) {
 			// Encryption is required as E2E is in session.
 
 			// Read the selected file into an arraybuffer object, encrypt it, then create new file object with that buffer, and upload that object.
 			const reader = new FileReader();
 			reader.onload = function(evt) {
-				RocketChat.E2E.getInstanceByRoomId(self.meta.rid).encryptFile(evt.target.result)
+				e2eRoom.encryptFile(evt.target.result)
 					.then((msg) => {
 						// File has been encrypted.
 						const encryptedFile = new File([msg], self.file.name);

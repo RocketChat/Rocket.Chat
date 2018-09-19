@@ -1,12 +1,14 @@
-import { call } from 'meteor/rocketchat:lib';
+import './stylesheets/e2e.less';
 
-function ab2str(buf) {
-	return RocketChat.signalUtils.toString(buf);
-}
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { EJSON } from 'meteor/ejson';
 
-function str2ab(str) {
-	return RocketChat.signalUtils.toArrayBuffer(str);
-}
+import { RocketChat, call } from 'meteor/rocketchat:lib';
+import { E2ERoom } from './rocketchat.e2e.room';
+import { E2EStorage } from './store';
+import { toString, toArrayBuffer } from './helper';
 
 class E2E {
 	constructor() {
@@ -48,7 +50,7 @@ class E2E {
 			return;
 		}
 
-		this.instancesByRoomId[roomId] = new RocketChat.E2E.Room(Meteor.userId(), roomId, subscription.t);
+		this.instancesByRoomId[roomId] = new E2ERoom(Meteor.userId(), roomId, subscription.t);
 		return this.instancesByRoomId[roomId];
 	}
 
@@ -98,7 +100,7 @@ class E2E {
 			const publicKey = await crypto.subtle.importKey('jwk', EJSON.parse(public_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
 
 			localStorage.setItem('public_key', public_key);
-			RocketChat.E2EStorage.put('public_key', publicKey);
+			E2EStorage.put('public_key', publicKey);
 		} catch (error) {
 			return console.error('E2E -> Error importing public key: ', error);
 		}
@@ -107,7 +109,7 @@ class E2E {
 			const privateKey = await crypto.subtle.importKey('jwk', EJSON.parse(private_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['decrypt']);
 
 			localStorage.setItem('private_key', private_key);
-			RocketChat.E2EStorage.put('private_key', privateKey);
+			E2EStorage.put('private_key', privateKey);
 		} catch (error) {
 			return console.error('E2E -> Error importing private key: ', error);
 		}
@@ -126,7 +128,7 @@ class E2E {
 			const publicKey = await crypto.subtle.exportKey('jwk', key.publicKey);
 
 			localStorage.setItem('public_key', JSON.stringify(publicKey));
-			RocketChat.E2EStorage.put('public_key', key.publicKey);
+			E2EStorage.put('public_key', key.publicKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting public key: ', error);
 		}
@@ -135,7 +137,7 @@ class E2E {
 			const privateKey = await crypto.subtle.exportKey('jwk', key.privateKey);
 
 			localStorage.setItem('private_key', JSON.stringify(privateKey));
-			RocketChat.E2EStorage.put('private_key', key.privateKey);
+			E2EStorage.put('private_key', key.privateKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
@@ -146,7 +148,7 @@ class E2E {
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
-			const encodedPrivateKey = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, str2ab(private_key));
+			const encodedPrivateKey = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, toArrayBuffer(private_key));
 			const cipherText = new Uint8Array(encodedPrivateKey);
 			const output = new Uint8Array(vector.length + cipherText.length);
 
@@ -173,14 +175,14 @@ class E2E {
 		// First, create a PBKDF2 "key" containing the password
 		let baseKey;
 		try {
-			baseKey = await window.crypto.subtle.importKey('raw', str2ab(userPassword), { name: 'PBKDF2' }, false, ['deriveKey']);
+			baseKey = await window.crypto.subtle.importKey('raw', toArrayBuffer(userPassword), { name: 'PBKDF2' }, false, ['deriveKey']);
 		} catch (error) {
 			return console.error('E2E -> Error creating a key based on user password: ', error);
 		}
 
 		// Derive a key from the password
 		try {
-			return await window.crypto.subtle.deriveKey({ name: 'PBKDF2', salt: str2ab(Meteor.userId()), iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, ['encrypt', 'decrypt']);
+			return await window.crypto.subtle.deriveKey({ name: 'PBKDF2', salt: toArrayBuffer(Meteor.userId()), iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, ['encrypt', 'decrypt']);
 		} catch (error) {
 			console.error('E2E -> Error deriving baseKey: ', error);
 			return;
@@ -195,25 +197,25 @@ class E2E {
 
 		try {
 			const privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey, cipherText);
-			return ab2str(privKey);
+			return toString(privKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting private key: ', error);
 		}
 	}
 }
 
-RocketChat.E2E = new E2E();
+export const e2e = new E2E();
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			RocketChat.E2E.startClient();
+			e2e.startClient();
 			// TODO: need review
 			RocketChat.Notifications.onUser('e2e', (type, data) => {
 				if (!data.roomId || !data.userId || data.userId === Meteor.userId()) {
 					return;
 				} else {
-					RocketChat.E2E.getInstanceByRoomId(data.roomId).onUserStream(type, data);
+					e2e.getInstanceByRoomId(data.roomId).onUserStream(type, data);
 				}
 			});
 		}
@@ -225,7 +227,7 @@ Meteor.startup(function() {
 			return Promise.resolve(message);
 		}
 
-		const e2eRoom = RocketChat.E2E.getInstanceByRoomId(message.rid);
+		const e2eRoom = e2e.getInstanceByRoomId(message.rid);
 		if (!e2eRoom || !e2eRoom.established.get()) {
 			return Promise.resolve(message);
 		}
@@ -242,12 +244,7 @@ Meteor.startup(function() {
 	}, RocketChat.promises.priority.HIGH);
 
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('E2E_Enable') && window.crypto) {
-			RocketChat.E2E.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
-			RocketChat.E2E.enabled.set(true);
-		} else {
-			RocketChat.E2E.enabled.set(false);
-		}
+		e2e.enabled.set(RocketChat.settings.get('E2E_Enable') && window.crypto);
 	});
 });
 
