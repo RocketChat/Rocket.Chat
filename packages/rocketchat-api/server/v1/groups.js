@@ -770,3 +770,16 @@ RocketChat.API.v1.addRoute('groups.roles', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('groups.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
+		});
+	},
+});
+
