@@ -22,9 +22,14 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 			});
 
 			const { token, customFields } = this.bodyParams.visitor;
+			const guest = this.bodyParams.visitor;
+
+			if (this.bodyParams.visitor.phone) {
+				guest.phone = { number: this.bodyParams.visitor.phone };
+			}
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
-			const visitorId = (visitor) ? visitor._id : RocketChat.Livechat.registerGuest(this.bodyParams.visitor);
+			const visitorId = RocketChat.Livechat.registerGuest(guest);
 
 			if (customFields && customFields instanceof Array) {
 				customFields.forEach((field) => {

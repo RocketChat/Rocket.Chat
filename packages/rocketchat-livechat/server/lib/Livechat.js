@@ -19,8 +19,8 @@ RocketChat.Livechat = {
 		if (RocketChat.settings.get('Livechat_Routing_Method') === 'External') {
 			for (let i = 0; i < 10; i++) {
 				try {
-					const queryString = department ? `?departmentId=${ department }` : '';
-					const result = HTTP.call('GET', `${ RocketChat.settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
+					const queryString = department ? `?departmentId=${department}` : '';
+					const result = HTTP.call('GET', `${RocketChat.settings.get('Livechat_External_Queue_URL')}${queryString}`, {
 						headers: {
 							'User-Agent': 'RocketChat Server',
 							Accept: 'application/json',
@@ -416,7 +416,7 @@ RocketChat.Livechat = {
 				extraData._hidden = true;
 			}
 
-			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
+			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 		}
 
 		return;
@@ -567,7 +567,7 @@ RocketChat.Livechat = {
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			RocketChat.Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
+			RocketChat.Livechat.logger.webhook.error(`Response error on ${trying} try ->`, e);
 			// try 10 times after 10 seconds each
 			if (trying < 10) {
 				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
@@ -603,8 +603,8 @@ RocketChat.Livechat = {
 				phone: null,
 				department: visitor.department,
 				ip: visitor.ip,
-				os: ua.getOS().name && (`${ ua.getOS().name } ${ ua.getOS().version }`),
-				browser: ua.getBrowser().name && (`${ ua.getBrowser().name } ${ ua.getBrowser().version }`),
+				os: ua.getOS().name && (`${ua.getOS().name} ${ua.getOS().version}`),
+				browser: ua.getBrowser().name && (`${ua.getBrowser().name} ${ua.getBrowser().version}`),
 				customFields: visitor.livechatData,
 			},
 		};
@@ -778,7 +778,7 @@ RocketChat.Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts : 1 } });
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {
@@ -795,13 +795,13 @@ RocketChat.Livechat = {
 
 			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
 			const singleMessage = `
-				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
-				<p>${ message.msg }</p>
+				<p><strong>${ author}</strong>  <em>${datetime}</em></p>
+				<p>${ message.msg}</p>
 			`;
 			html = html + singleMessage;
 		});
 
-		html = `${ html }</div>`;
+		html = `${html}</div>`;
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
@@ -827,13 +827,13 @@ RocketChat.Livechat = {
 			return false;
 		}
 
-		const message = (`${ data.message }`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+		const message = (`${data.message}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
 
 		const html = `
 			<h1>New livechat message</h1>
-			<p><strong>Visitor name:</strong> ${ data.name }</p>
-			<p><strong>Visitor email:</strong> ${ data.email }</p>
-			<p><strong>Message:</strong><br>${ message }</p>`;
+			<p><strong>Visitor name:</strong> ${ data.name}</p>
+			<p><strong>Visitor email:</strong> ${ data.email}</p>
+			<p><strong>Message:</strong><br>${ message}</p>`;
 
 		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
@@ -854,9 +854,9 @@ RocketChat.Livechat = {
 		}
 
 		const to = RocketChat.settings.get('Livechat_offline_email');
-		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
-		const replyTo = `${ data.name } <${ data.email }>`;
-		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
+		const from = `${data.name} - ${data.email} <${fromEmail}>`;
+		const replyTo = `${data.name} <${data.email}>`;
+		const subject = `Livechat offline message from ${data.name}: ${(`${data.message}`).substring(0, 20)}`;
 
 		this.sendEmail(from, to, replyTo, subject, html);
 
@@ -874,7 +874,7 @@ RocketChat.Livechat.stream.allowRead((roomId, extraData) => {
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
 	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
+		console.warn(`Invalid eventName: "${roomId}"`);
 		return false;
 	}
 
