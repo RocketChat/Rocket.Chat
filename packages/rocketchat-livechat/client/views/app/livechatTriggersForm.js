@@ -47,7 +47,7 @@ Template.livechatTriggersForm.onCreated(function() {
 
 			this.conditions.set(trigger.conditions);
 		} else {
-			this.conditions.set([{id:1, name:'page-url', value:''}]);
+			this.conditions.set([{ id:1, name:'page-url', value:'' }]);
 		}
 	});
 });
@@ -60,7 +60,7 @@ Template.livechatTriggersForm.events({
 		idArray.push(1);
 		const newId = Math.max.apply(Math, idArray);
 
-		const emptyCondition = {id: newId + 1, name:'page-url', value:''};
+		const emptyCondition = { id: newId + 1, name:'page-url', value:'' };
 		newConditions.push(emptyCondition);
 		instance.conditions.set(newConditions);
 	},
@@ -68,14 +68,14 @@ Template.livechatTriggersForm.events({
 		e.preventDefault();
 
 		let newConditions = instance.conditions.get();
-		newConditions = _.reject(newConditions, (condition) => { return condition.id === this.id; });
+		newConditions = _.reject(newConditions, ((condition) => condition.id === this.id));
 		instance.conditions.set(newConditions);
 	},
 	'change .trigger-condition'(e, instance) {
 		const newName = e.currentTarget.value;
 
 		const newConditions = instance.conditions.get();
-		const index = newConditions.findIndex(i => i.id === this.id);
+		const index = newConditions.findIndex((i) => i.id === this.id);
 		newConditions[index].name = newName;
 		instance.conditions.set(newConditions);
 	},
@@ -95,13 +95,6 @@ Template.livechatTriggersForm.events({
 			conditions: instance.conditions.get(),
 			actions: [],
 		};
-
-		$('.each-condition').each(function() {
-			data.conditions.push({
-				name: $('.trigger-condition', this).val(),
-				value: $(`.${ $('.trigger-condition', this).val() }-value`).val(),
-			});
-		});
 
 		$('.each-action').each(function() {
 			if ($('.trigger-action', this).val() === 'send-message') {

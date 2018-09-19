@@ -19,10 +19,10 @@ Template.livechatTriggerCondition.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		let result = Object.keys(languages).map(key => {
+		let result = Object.keys(languages).map(((key) => {
 			const language = languages[key];
-			return _.extend(language, {key});
-		});
+			return _.extend(language, { key });
+		}));
 
 		result = _.sortBy(result, 'key');
 		return result;
@@ -33,11 +33,11 @@ Template.livechatTriggerCondition.helpers({
 		} else {
 			return 'en' === key;
 		}
-	}
+	},
 });
 
 Template.livechatTriggerCondition.events({
-	'change .trigger-condition-value input, change .trigger-condition-value select, keyup .trigger-condition-value input'(e/*, instance*/) {
+	'change .trigger-condition-value input, change .trigger-condition-value select, keyup .trigger-condition-value input'(e/* , instance*/) {
 		this.value = e.currentTarget.value;
 	},
 });
