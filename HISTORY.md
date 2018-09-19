@@ -1,3 +1,10 @@
+# Assistify 0.9.1
+
+This is a bugfix release:
+
+- You'll not be bothered with "user has left channel" in threads anymore
+- Livechat with guest pool now responds immediately to an agent joining. And the agent's full name is displayed as well.
+
 # Assistify 0.9.0
 
 This release of the Assistify-Chat is way more disruptive than the version number might suggest: In contrast to earlier releases, we did not build upon the previous version, but re-started on plain Rocket.Chat.
