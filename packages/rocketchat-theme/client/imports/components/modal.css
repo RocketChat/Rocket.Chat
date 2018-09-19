@@ -55,6 +55,7 @@
 		position: relative;
 
 		display: flex;
+		overflow: auto;
 
 		overflow: auto;
 
