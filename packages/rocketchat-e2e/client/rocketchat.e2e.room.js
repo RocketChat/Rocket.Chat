@@ -26,7 +26,7 @@ export class E2ERoom {
 		this.establishing.set(true);
 
 		// Cover private groups and direct messages
-		if (this.typeOfRoom !== 'p' && this.typeOfRoom !== 'd') {
+		if (!this.isSupportedRoomType(this.typeOfRoom)) {
 			return;
 		}
 
@@ -35,8 +35,7 @@ export class E2ERoom {
 		try {
 			groupKey = RocketChat.models.Subscriptions.findOne({ rid: this.roomId }).E2EKey;
 		} catch (error) {
-			console.error('E2E -> Error fetching group key: ', error);
-			return;
+			return console.error('E2E -> Error fetching group key: ', error);
 		}
 
 		if (!groupKey || refresh) {
@@ -49,6 +48,10 @@ export class E2ERoom {
 		this.establishing.set(false);
 
 		return true;
+	}
+
+	isSupportedRoomType(type) {
+		return ['d', 'p'].includes(type);
 	}
 
 	async importGroupKey(groupKey) {
@@ -99,8 +102,7 @@ export class E2ERoom {
 		try {
 			users = await call('getUsersOfRoom', this.roomId, true);
 		} catch (error) {
-			console.error('E2E -> Error getting room users: ', error);
-			return;
+			return console.error('E2E -> Error getting room users: ', error);
 		}
 
 		users.records.forEach(async(user) => {
@@ -108,8 +110,7 @@ export class E2ERoom {
 			try {
 				keychain = await call('fetchKeychain', user._id);
 			} catch (error) {
-				console.error('E2E -> Error fetching user keychain: ', error);
-				return;
+				return console.error('E2E -> Error fetching user keychain: ', error);
 			}
 
 			const key = JSON.parse(keychain);
@@ -118,8 +119,7 @@ export class E2ERoom {
 				try {
 					userKey = await e2e.importKey(JSON.parse(key.public_key), ['encrypt']);
 				} catch (error) {
-					console.error('E2E -> Error importing user key: ', error);
-					return;
+					return console.error('E2E -> Error importing user key: ', error);
 				}
 				const vector = crypto.getRandomValues(new Uint8Array(16));
 
@@ -128,8 +128,7 @@ export class E2ERoom {
 				try {
 					encryptedUserKey = await e2e.encryptRSA(userKey, toArrayBuffer(this.exportedSessionKey));
 				} catch (error) {
-					console.error('E2E -> Error encrypting user key: ', error);
-					return;
+					return console.error('E2E -> Error encrypting user key: ', error);
 				}
 
 				const output = e2e.joinVectorAndEcryptedData(vector, encryptedUserKey);
@@ -147,16 +146,14 @@ export class E2ERoom {
 		try {
 			users = await call('getUsersOfRoom', this.roomId, true);
 		} catch (error) {
-			console.error('E2E -> Error getting room users: ', error);
-			return;
+			return console.error('E2E -> Error getting room users: ', error);
 		}
 		users.records.forEach(async(user) => {
 			// ...remove session key for this room
 			try {
 				await call('updateGroupE2EKey', this.roomId, user._id, null);
 			} catch (error) {
-				console.error('E2E -> Error clearing room key: ', error);
-				return;
+				return console.error('E2E -> Error clearing room key: ', error);
 			}
 			RocketChat.Notifications.notifyUser(user._id, 'e2e', 'clearGroupKey', { roomId: this.roomId, userId: this.userId });
 		});
@@ -166,27 +163,27 @@ export class E2ERoom {
 	reset(refresh) {
 		this.establishing.set(false);
 		this.established.set(false);
-		this.cipher = null;
 		this.groupSessionKey = null;
 		this.clearGroupKey(refresh); // Might enter a race condition with the handshake function.
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(fileArrayBuffer) {
-		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			const vector = crypto.getRandomValues(new Uint8Array(16));
-			let result;
-			try {
-				result = await e2e.encryptAES(vector, this.groupSessionKey, fileArrayBuffer);
-			} catch (error) {
-				console.error('E2E -> Error encrypting group key: ', error);
-				return;
-			}
-
-			const output = e2e.joinVectorAndEcryptedData(vector, result);
-
-			return toArrayBuffer(EJSON.stringify(output));
+		if (!this.isSupportedRoomType(this.typeOfRoom)) {
+			return;
 		}
+
+		const vector = crypto.getRandomValues(new Uint8Array(16));
+		let result;
+		try {
+			result = await e2e.encryptAES(vector, this.groupSessionKey, fileArrayBuffer);
+		} catch (error) {
+			return console.error('E2E -> Error encrypting group key: ', error);
+		}
+
+		const output = e2e.joinVectorAndEcryptedData(vector, result);
+
+		return toArrayBuffer(EJSON.stringify(output));
 	}
 
 	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
@@ -217,23 +214,20 @@ export class E2ERoom {
 		if (!_.isObject(data)) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
-		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			const vector = crypto.getRandomValues(new Uint8Array(16));
-			let result;
-			try {
-				result = await e2e.encryptAES(vector, this.groupSessionKey, data);
-			} catch (error) {
-				console.error('E2E -> Error encrypting message: ', error);
-				return;
-			}
 
-			return EJSON.stringify(e2e.joinVectorAndEcryptedData(vector, result));
-		} else {
-
-			// Control should never reach here as both cases (private group and direct) have been covered above.
-			// This is for future, in case of Signal integration.
-			return this.cipher.encrypt(data).then((ciphertext) => toString(ciphertext.body));
+		if (!this.isSupportedRoomType(this.typeOfRoom)) {
+			return data;
 		}
+
+		const vector = crypto.getRandomValues(new Uint8Array(16));
+		let result;
+		try {
+			result = await e2e.encryptAES(vector, this.groupSessionKey, data);
+		} catch (error) {
+			return console.error('E2E -> Error encrypting message: ', error);
+		}
+
+		return EJSON.stringify(e2e.joinVectorAndEcryptedData(vector, result));
 	}
 
 	// Helper function for encryption of messages
@@ -258,28 +252,17 @@ export class E2ERoom {
 
 	// Decrypt messages
 	async decrypt(message) {
-		if (this.typeOfRoom === 'p' || this.typeOfRoom === 'd') {
-			const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
+		if (!this.isSupportedRoomType(this.typeOfRoom)) {
+			return message;
+		}
 
-			try {
-				const result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
-				return EJSON.parse(toString(result));
-			} catch (error) {
-				console.error('E2E -> Error decrypting message: ', error, message);
-				return false;
-			}
+		const [vector, cipherText] = this.splitVectorAndEcryptedData(EJSON.parse(message));
 
-		} else {
-			// Control should never reach here as both cases (private group and direct) have been covered above.
-			// This is for future, in case of Signal integration.
-			const ciphertext = toArrayBuffer(message);
-			try {
-				const plaintext = await this.cipher.decryptWhisperMessage(ciphertext, 'binary');
-				return EJSON.parse(toString(plaintext));
-			} catch (error) {
-				console.error('E2E -> Error decrypting whisper message: ', error);
-				return false;
-			}
+		try {
+			const result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
+			return EJSON.parse(toString(result));
+		} catch (error) {
+			return console.error('E2E -> Error decrypting message: ', error, message);
 		}
 	}
 

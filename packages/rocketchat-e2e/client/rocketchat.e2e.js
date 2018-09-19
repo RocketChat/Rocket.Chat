@@ -228,8 +228,7 @@ class E2E {
 		try {
 			return await this.deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
 		} catch (error) {
-			console.error('E2E -> Error deriving baseKey: ', error);
-			return;
+			return console.error('E2E -> Error deriving baseKey: ', error);
 		}
 	}
 
