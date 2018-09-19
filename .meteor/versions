@@ -10,7 +10,7 @@ aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 autoupdate@1.4.0
 babel-compiler@7.1.1
-babel-runtime@1.2.5
+babel-runtime@1.2.7
 base64@1.0.11
 binary-heap@1.0.10
 blaze@2.3.3
@@ -87,7 +87,7 @@ meteorhacks:meteorx@1.4.1
 meteorspark:util@0.2.0
 minifier-css@1.3.1
 minifier-js@2.3.5
-minimongo@1.4.4
+minimongo@1.4.5
 mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.5
@@ -172,7 +172,6 @@ rocketchat:importer-hipchat-enterprise@1.0.0
 rocketchat:importer-slack@0.0.1
 rocketchat:importer-slack-users@1.0.0
 rocketchat:integrations@0.0.1
-rocketchat:internal-hubot@0.0.1
 rocketchat:irc@0.0.1
 rocketchat:issuelinks@0.0.1
 rocketchat:katex@0.0.1
