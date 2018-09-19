@@ -357,7 +357,7 @@ Template.CreateThread.onCreated(function() {
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
 			if (!result) {
 				instance.parentChannelId.set(false);
-				instance.parentChannelError.set('Parent_channel_doesnt_exist');
+				instance.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
 			} else {
 				instance.parentChannelError.set('');
 				instance.parentChannelId.set(result); //assign parent channel Id
