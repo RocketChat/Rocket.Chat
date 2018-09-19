@@ -41,7 +41,6 @@
 		&-top,
 		&-bottom {
 			display: flex;
-
 			width: 100%;
 			align-items: center;
 		}
@@ -144,6 +143,12 @@
 		}
 	}
 
+	&__video {
+		color: var(--rc-color-success);
+		font-size: 1rem;
+		margin: 0 2px;
+	}
+
 	&__room-type {
 		display: flex;
 
@@ -219,6 +224,7 @@
 
 		&-top {
 			overflow: hidden;
+			width: 100%;
 		}
 	}
 
