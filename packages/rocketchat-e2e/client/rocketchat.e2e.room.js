@@ -10,6 +10,7 @@ import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { modal } from 'meteor/rocketchat:ui';
 import { E2EStorage } from './store';
 import { toString, toArrayBuffer } from './helper';
+import { e2e } from './rocketchat.e2e';
 
 export class E2ERoom {
 	constructor(userId, roomId, t) {
@@ -59,7 +60,7 @@ export class E2ERoom {
 
 		// Decrypt obtained encrypted session key
 		try {
-			const decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, E2EStorage.get('private_key'), cipherText);
+			const decryptedKey = await e2e.decryptRSA(E2EStorage.get('private_key'), cipherText);
 			this.exportedSessionKey = toString(decryptedKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting group key: ', error);
@@ -67,7 +68,7 @@ export class E2ERoom {
 
 		// Import session key for use.
 		try {
-			const key = await crypto.subtle.importKey('jwk', EJSON.parse(this.exportedSessionKey), { name: 'AES-CBC', iv: vector }, true, ['encrypt', 'decrypt']);
+			const key = await e2e.importAESKey(EJSON.parse(this.exportedSessionKey), vector);
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
@@ -79,14 +80,14 @@ export class E2ERoom {
 		// Create group key
 		let key;
 		try {
-			key = await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+			key = await e2e.generateAESKey();
 			this.groupSessionKey = key;
 		} catch (error) {
 			return console.error('E2E -> Error generating group key: ', error);
 		}
 
 		try {
-			const exportedSessionKey = await crypto.subtle.exportKey('jwk', key);
+			const exportedSessionKey = await e2e.exportJWKKey(key);
 			this.exportedSessionKey = JSON.stringify(exportedSessionKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting group key: ', error);
@@ -118,7 +119,7 @@ export class E2ERoom {
 			if (key.public_key) {
 				let userKey;
 				try {
-					userKey = await crypto.subtle.importKey('jwk', JSON.parse(key.public_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
+					userKey = await e2e.importKey(JSON.parse(key.public_key), ['encrypt']);
 				} catch (error) {
 					console.error('E2E -> Error importing user key: ', error);
 					return;
@@ -128,7 +129,7 @@ export class E2ERoom {
 				// Encrypt session key for this user with his/her public key
 				let encryptedUserKey;
 				try {
-					encryptedUserKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, userKey, toArrayBuffer(this.exportedSessionKey));
+					encryptedUserKey = await e2e.encryptRSA(userKey, toArrayBuffer(this.exportedSessionKey));
 				} catch (error) {
 					console.error('E2E -> Error encrypting user key: ', error);
 					return;
@@ -181,7 +182,7 @@ export class E2ERoom {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
 			let result;
 			try {
-				result = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, fileArrayBuffer);
+				result = await e2e.encryptAES(vector, this.groupSessionKey, fileArrayBuffer);
 			} catch (error) {
 				console.error('E2E -> Error encrypting group key: ', error);
 				return;
@@ -205,7 +206,7 @@ export class E2ERoom {
 		const vector = cipherText.slice(0, 16);
 		cipherText = cipherText.slice(16);
 		try {
-			return await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText);
+			return await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
 		} catch (error) {
 			console.error('E2E -> Error decrypting file: ', error);
 			// Session key was reset. Cannot decrypt this file anymore.
@@ -228,7 +229,7 @@ export class E2ERoom {
 			const vector = crypto.getRandomValues(new Uint8Array(16));
 			let result;
 			try {
-				result = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, data);
+				result = await e2e.encryptAES(vector, this.groupSessionKey, data);
 			} catch (error) {
 				console.error('E2E -> Error encrypting message: ', error);
 				return;
@@ -279,7 +280,7 @@ export class E2ERoom {
 			let result;
 			window.groupSessionKey = this.groupSessionKey;
 			try {
-				result = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, this.groupSessionKey, cipherText);
+				result = await e2e.decryptAES(vector, this.groupSessionKey, cipherText);
 			} catch (error) {
 				console.error('E2E -> Error decrypting message: ', error, message);
 				return false;

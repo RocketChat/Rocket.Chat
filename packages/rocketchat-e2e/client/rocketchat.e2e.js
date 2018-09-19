@@ -97,7 +97,7 @@ class E2E {
 
 	async loadKeys({ public_key, private_key }) {
 		try {
-			const publicKey = await crypto.subtle.importKey('jwk', EJSON.parse(public_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt']);
+			const publicKey = await this.importRSAKey(EJSON.parse(public_key), ['encrypt']);
 
 			localStorage.setItem('public_key', public_key);
 			E2EStorage.put('public_key', publicKey);
@@ -106,7 +106,7 @@ class E2E {
 		}
 
 		try {
-			const privateKey = await crypto.subtle.importKey('jwk', EJSON.parse(private_key), { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['decrypt']);
+			const privateKey = await this.importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
 			localStorage.setItem('private_key', private_key);
 			E2EStorage.put('private_key', privateKey);
@@ -119,13 +119,13 @@ class E2E {
 		// Could not obtain public-private keypair from server.
 		let key;
 		try {
-			key = await crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
+			key = await this.generateRSAKey();
 		} catch (error) {
 			return console.error('E2E -> Error generating key: ', error);
 		}
 
 		try {
-			const publicKey = await crypto.subtle.exportKey('jwk', key.publicKey);
+			const publicKey = await this.exportJWKKey(key.publicKey);
 
 			localStorage.setItem('public_key', JSON.stringify(publicKey));
 			E2EStorage.put('public_key', key.publicKey);
@@ -134,7 +134,7 @@ class E2E {
 		}
 
 		try {
-			const privateKey = await crypto.subtle.exportKey('jwk', key.privateKey);
+			const privateKey = await this.exportJWKKey(key.privateKey);
 
 			localStorage.setItem('private_key', JSON.stringify(privateKey));
 			E2EStorage.put('private_key', key.privateKey);
@@ -148,7 +148,7 @@ class E2E {
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
-			const encodedPrivateKey = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey, toArrayBuffer(private_key));
+			const encodedPrivateKey = await this.encryptAES(vector, masterKey, toArrayBuffer(private_key));
 			const cipherText = new Uint8Array(encodedPrivateKey);
 			const output = new Uint8Array(vector.length + cipherText.length);
 
@@ -161,6 +161,53 @@ class E2E {
 		}
 	}
 
+	async encryptRSA(key, data) {
+		return await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
+	}
+
+	async encryptAES(vector, key, data) {
+		return await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
+	}
+
+	async decryptRSA(key, data) {
+		return await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
+	}
+
+	async decryptAES(vector, key, data) {
+		return await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
+	}
+
+	async generateAESKey() {
+		return await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+	}
+
+	async generateRSAKey() {
+		return await crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, ['encrypt', 'decrypt']);
+	}
+
+	async exportJWKKey(key) {
+		return await crypto.subtle.exportKey('jwk', key);
+	}
+
+	async importRSAKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
+		return await crypto.subtle.importKey('jwk', keyData, { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, keyUsages);
+	}
+
+	async importAESKey(keyData, vector, keyUsages = ['encrypt', 'decrypt']) {
+		return await crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC', iv: vector }, true, keyUsages);
+	}
+
+	async importRawKey(keyData, keyUsages = ['deriveKey']) {
+		return await crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
+	}
+
+	async deriveKey(salt, baseKey, keyUsages = ['encrypt', 'decrypt']) {
+		const iterations = 1000;
+		const hash = 'SHA-256';
+
+		return await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
+	}
+
 	async getMasterKey(msg) {
 		// This is a new device for signal encryption
 		const userPassword = window.prompt(msg);
@@ -169,20 +216,17 @@ class E2E {
 			alert('You should provide a password');
 		}
 
-		const iterations = 1000;
-		const hash = 'SHA-256';
-
 		// First, create a PBKDF2 "key" containing the password
 		let baseKey;
 		try {
-			baseKey = await window.crypto.subtle.importKey('raw', toArrayBuffer(userPassword), { name: 'PBKDF2' }, false, ['deriveKey']);
+			baseKey = await this.importRawKey(toArrayBuffer(userPassword));
 		} catch (error) {
 			return console.error('E2E -> Error creating a key based on user password: ', error);
 		}
 
 		// Derive a key from the password
 		try {
-			return await window.crypto.subtle.deriveKey({ name: 'PBKDF2', salt: toArrayBuffer(Meteor.userId()), iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, ['encrypt', 'decrypt']);
+			return await this.deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
 		} catch (error) {
 			console.error('E2E -> Error deriving baseKey: ', error);
 			return;
@@ -196,7 +240,7 @@ class E2E {
 		cipherText = cipherText.slice(16);
 
 		try {
-			const privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey, cipherText);
+			const privKey = await this.decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting private key: ', error);
