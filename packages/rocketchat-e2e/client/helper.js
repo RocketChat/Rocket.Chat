@@ -74,8 +74,8 @@ export async function importRSAKey(keyData, keyUsages = ['encrypt', 'decrypt']) 
 	return await crypto.subtle.importKey('jwk', keyData, { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: { name: 'SHA-256' } }, true, keyUsages);
 }
 
-export async function importAESKey(keyData, vector, keyUsages = ['encrypt', 'decrypt']) {
-	return await crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC', iv: vector }, true, keyUsages);
+export async function importAESKey(keyData, keyUsages = ['encrypt', 'decrypt']) {
+	return await crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
 }
 
 export async function importRawKey(keyData, keyUsages = ['deriveKey']) {

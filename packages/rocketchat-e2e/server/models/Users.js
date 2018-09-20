@@ -41,3 +41,16 @@ RocketChat.models.Users.emptyKeychainByUserId = function(userId) {
 		},
 	});
 };
+
+RocketChat.models.Users.findByIdsWithPublicE2EKey = function(ids, options) {
+	const query = {
+		_id: {
+			$in: ids,
+		},
+		'e2e.public_key': {
+			$exists: 1,
+		},
+	};
+
+	return this.find(query, options);
+};

@@ -179,7 +179,21 @@ class E2E {
 		}
 
 		this.readyPromise.resolve();
+
+		this.setupListener();
+
 		this.decryptPendingMessages();
+	}
+
+	setupListener() {
+		RocketChat.Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
+			const e2eRoom = await this.getInstanceByRoomId(roomId);
+			if (!e2eRoom) {
+				return;
+			}
+
+			e2eRoom.provideKeyToUser(keyId);
+		});
 	}
 
 	async loadKeysFromDB() {
@@ -313,6 +327,10 @@ class E2E {
 			}
 
 			const data = await e2eRoom.decrypt(item.msg);
+			if (!data) {
+				return;
+			}
+
 			item.msg = data.text;
 			item.ack = data.ack;
 			if (data.ts) {
@@ -360,4 +378,3 @@ Meteor.startup(function() {
 			});
 	}, RocketChat.promises.priority.HIGH);
 });
-

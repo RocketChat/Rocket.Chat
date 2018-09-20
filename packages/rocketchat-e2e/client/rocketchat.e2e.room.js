@@ -1,5 +1,6 @@
 import _ from 'underscore';
 
+import { Base64 } from 'meteor/base64';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
@@ -36,11 +37,15 @@ export class E2ERoom {
 		this.readyPromise.then(() => {
 			this._ready.set(true);
 			this.establishing.set(false);
+
+			RocketChat.Notifications.onRoom(this.roomId, 'e2ekeyRequest', async(keyId) => {
+				this.provideKeyToUser(keyId);
+			});
 		});
 	}
 
 	// Initiates E2E Encryption
-	async handshake(refresh) {
+	async handshake() {
 		if (!e2e.isReady()) {
 			return;
 		}
@@ -70,15 +75,24 @@ export class E2ERoom {
 			return console.error('E2E -> Error fetching group key: ', error);
 		}
 
-		if (!groupKey || refresh) {
-			await this.createGroupKey();
-		} else {
+		if (groupKey) {
 			await this.importGroupKey(groupKey);
+			this.readyPromise.resolve();
+			return true;
 		}
 
-		this.readyPromise.resolve();
+		const room = RocketChat.models.Rooms.findOne({ _id: this.roomId });
 
-		return true;
+		if (!room.e2eKeyId) {
+			await this.createGroupKey();
+			this.readyPromise.resolve();
+			return true;
+		}
+
+		console.log('E2E -> Requesting room key');
+		// TODO: request group key
+
+		RocketChat.Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
 	}
 
 	isSupportedRoomType(type) {
@@ -86,20 +100,25 @@ export class E2ERoom {
 	}
 
 	async importGroupKey(groupKey) {
+		console.log('E2E -> Importing room key');
 		// Get existing group key
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(groupKey));
+		// const keyID = groupKey.slice(0, 12);
+		groupKey = groupKey.slice(12);
+		groupKey = Base64.decode(groupKey);
 
 		// Decrypt obtained encrypted session key
 		try {
-			const decryptedKey = await decryptRSA(e2e.privateKey, cipherText);
-			this.exportedSessionKey = toString(decryptedKey);
+			const decryptedKey = await decryptRSA(e2e.privateKey, groupKey);
+			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
 			return console.error('E2E -> Error decrypting group key: ', error);
 		}
 
+		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+
 		// Import session key for use.
 		try {
-			const key = await importAESKey(EJSON.parse(this.exportedSessionKey), vector);
+			const key = await importAESKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
@@ -108,6 +127,7 @@ export class E2ERoom {
 	}
 
 	async createGroupKey() {
+		console.log('E2E -> Creating room key');
 		// Create group key
 		let key;
 		try {
@@ -117,12 +137,17 @@ export class E2ERoom {
 			return console.error('E2E -> Error generating group key: ', error);
 		}
 
+		let sessionKeyExported;
 		try {
-			const exportedSessionKey = await exportJWKKey(key);
-			this.exportedSessionKey = JSON.stringify(exportedSessionKey);
+			sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 		} catch (error) {
 			return console.error('E2E -> Error exporting group key: ', error);
 		}
+
+		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
+		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+
+		await call('e2e.setRoomKeyID', this.roomId, this.keyID);
 
 		await this.encryptKeyForOtherParticipants();
 	}
@@ -131,43 +156,35 @@ export class E2ERoom {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		let users;
 		try {
-			users = await call('getUsersOfRoom', this.roomId, true);
+			users = await call('e2e.getUsersOfRoomWithoutKey', this.roomId);
 		} catch (error) {
 			return console.error('E2E -> Error getting room users: ', error);
 		}
 
-		users.records.forEach(async(user) => {
-			let keychain;
+		users.users.forEach((user) => this.encryptForParticipand(user));
+	}
+
+	async encryptForParticipand(user) {
+		if (user.e2e.public_key) {
+			let userKey;
 			try {
-				keychain = await call('fetchKeychain', user._id);
+				userKey = await importRSAKey(JSON.parse(user.e2e.public_key), ['encrypt']);
 			} catch (error) {
-				return console.error('E2E -> Error fetching user keychain: ', error);
+				return console.error('E2E -> Error importing user key: ', error);
+			}
+			// const vector = crypto.getRandomValues(new Uint8Array(16));
+
+			// Encrypt session key for this user with his/her public key
+			let encryptedUserKey;
+			try {
+				encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
+			} catch (error) {
+				return console.error('E2E -> Error encrypting user key: ', error);
 			}
 
-			const key = JSON.parse(keychain);
-			if (key.public_key) {
-				let userKey;
-				try {
-					userKey = await importRSAKey(JSON.parse(key.public_key), ['encrypt']);
-				} catch (error) {
-					return console.error('E2E -> Error importing user key: ', error);
-				}
-				const vector = crypto.getRandomValues(new Uint8Array(16));
-
-				// Encrypt session key for this user with his/her public key
-				let encryptedUserKey;
-				try {
-					encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.exportedSessionKey));
-				} catch (error) {
-					return console.error('E2E -> Error encrypting user key: ', error);
-				}
-
-				const output = joinVectorAndEcryptedData(vector, encryptedUserKey);
-
-				// Key has been encrypted. Publish to that user's subscription model for this room.
-				await call('updateGroupE2EKey', this.roomId, user._id, EJSON.stringify(output));
-			}
-		});
+			// Key has been encrypted. Publish to that user's subscription model for this room.
+			await call('updateGroupE2EKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+		}
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
@@ -228,7 +245,7 @@ export class E2ERoom {
 			return console.error('E2E -> Error encrypting message: ', error);
 		}
 
-		return EJSON.stringify(joinVectorAndEcryptedData(vector, result));
+		return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
 	}
 
 	// Helper function for encryption of messages
@@ -244,7 +261,6 @@ export class E2ERoom {
 			_id: message._id,
 			text: message.msg,
 			userId: this.userId,
-			ack: Random.id((Random.fraction() + 1) * 20),
 			ts,
 		}));
 		const enc = this.encryptText(data);
@@ -257,7 +273,15 @@ export class E2ERoom {
 			return message;
 		}
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(message));
+		const keyID = message.slice(0, 12);
+
+		if (keyID !== this.keyID) {
+			return message;
+		}
+
+		message = message.slice(12);
+
+		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
 
 		try {
 			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
@@ -265,5 +289,13 @@ export class E2ERoom {
 		} catch (error) {
 			return console.error('E2E -> Error decrypting message: ', error, message);
 		}
+	}
+
+	provideKeyToUser(keyId) {
+		if (this.keyID !== keyId) {
+			return;
+		}
+
+		this.encryptKeyForOtherParticipants();
 	}
 }
