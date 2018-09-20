@@ -179,35 +179,35 @@ RocketChat.saveUser = function(userId, userData) {
 
 		return _id;
 	} else {
-		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user',
 			});
 		}
 
-		if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+		if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user',
 			});
 		}
 
-		if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+		if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user',
 			});
 		}
 
-		if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange')) {
+		if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-info')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user',
 			});
 		}
 
-		if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+		if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange') && !RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 				method: 'insertOrUpdateUser',
 				action: 'Update_user',

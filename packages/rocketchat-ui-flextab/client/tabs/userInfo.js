@@ -2,6 +2,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 
 import { getActions } from './userActions';
 
@@ -113,7 +114,7 @@ Template.userInfo.helpers({
 	userTime() {
 		const user = Template.instance().user.get();
 		if (user && user.utcOffset != null) {
-			return Template.instance().now.get().utcOffset(user.utcOffset).format(RocketChat.settings.get('Message_TimeFormat'));
+			return DateFormat.formatTime(Template.instance().now.get().utcOffset(user.utcOffset));
 		}
 	},
 
