@@ -301,18 +301,25 @@ class E2E {
 	}
 
 	async decryptPendingMessages() {
+		if (!this.isEnabled()) {
+			return;
+		}
+
 		return await ChatMessage.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
 			const e2eRoom = await this.getInstanceByRoomId(item.rid);
 
-			await e2eRoom.decrypt(item.msg).then((data) => {
-				item.msg = data.text;
-				item.ack = data.ack;
-				if (data.ts) {
-					item.ts = data.ts;
-				}
-				item.e2e = 'done';
-				ChatMessage.upsert({ _id: item._id }, item);
-			});
+			if (!e2eRoom) {
+				return;
+			}
+
+			const data = await e2eRoom.decrypt(item.msg);
+			item.msg = data.text;
+			item.ack = data.ack;
+			if (data.ts) {
+				item.ts = data.ts;
+			}
+			item.e2e = 'done';
+			ChatMessage.upsert({ _id: item._id }, item);
 		});
 	}
 }
