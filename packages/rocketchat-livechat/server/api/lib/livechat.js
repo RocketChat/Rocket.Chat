@@ -37,7 +37,7 @@ export function findRoom(token, rid) {
 	return RocketChat.models.Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
 }
 
-export function getRoom(guest, rid) {
+export function getRoom(guest, rid, roomInfo) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -48,7 +48,7 @@ export function getRoom(guest, rid) {
 		ts: new Date(),
 	};
 
-	return RocketChat.Livechat.getRoom(guest, message);
+	return RocketChat.Livechat.getRoom(guest, message, roomInfo);
 }
 
 export function findAgent(agentId) {
