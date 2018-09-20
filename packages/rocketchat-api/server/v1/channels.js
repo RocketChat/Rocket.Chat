@@ -954,3 +954,15 @@ RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('channels.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
+		});
+	},
+});
