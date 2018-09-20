@@ -108,27 +108,32 @@
 		}
 
 		&__api {
+			padding-bottom: 10px;
+
 			font-size: 18px;
 			font-weight: bold;
-			padding-bottom: 10px;
 
 			&__description {
 				overflow-x: scroll;
 				overflow-y: hidden;
-				font-size: 14px;
 
 				white-space: nowrap;
 
 				background-color: #fafafa;
 
+				font-size: 14px;
+
 				&__item {
+					display: table;
+
 					padding: 10px;
 
 					user-select: all !important;
+
 					white-space: pre;
 
-					display: table;
 					border-top: 1px dashed #cccccc;
+
 					line-height: 20px;
 
 					&:first-child {
@@ -136,7 +141,6 @@
 					}
 				}
 			}
-
 		}
 	}
 }
