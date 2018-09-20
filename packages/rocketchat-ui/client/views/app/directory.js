@@ -198,7 +198,7 @@ Template.directory.onRendered(function() {
 });
 
 Template.directory.onCreated(function() {
-	const viewType = RocketChat.settings.get('Accounts_Directory_DefaultView') || t('channels');
+	const viewType = RocketChat.settings.get('Accounts_Directory_DefaultView') || 'channels';
 	this.searchType = new ReactiveVar(viewType);
 	if (viewType === 'channels') {
 		this.searchSortBy = new ReactiveVar('usersCount');
