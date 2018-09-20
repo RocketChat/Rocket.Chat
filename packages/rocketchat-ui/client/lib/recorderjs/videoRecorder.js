@@ -43,7 +43,11 @@ this.VideoRecorder = new class {
 
 	startUserMedia(stream) {
 		this.stream = stream;
-		this.videoel.src = URL.createObjectURL(stream);
+		try {
+			this.videoel.srcObject = stream;
+		} catch (_e) {
+			this.videoel.src = URL.createObjectURL(stream);
+		}
 		this.videoel.onloadedmetadata = () => this.videoel.play();
 
 		this.started = true;

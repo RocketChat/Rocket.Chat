@@ -245,7 +245,7 @@
 															<div class="rc-input__title">{{_ i18nLabel}}</div>
 															<div class="rc-input__wrapper">
 																{{#if isDisabled.disabled}}
-																{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+																	{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
 																{{else}}
 																<div class="code-mirror-box" data-editor-id="{{id}}">
 																	<div class="title">
