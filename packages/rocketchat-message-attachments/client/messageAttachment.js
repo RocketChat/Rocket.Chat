@@ -1,7 +1,5 @@
 import moment from 'moment';
-
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
-
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
@@ -68,6 +66,7 @@ Template.messageAttachment.helpers({
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
 	},
+
 	isFile() {
 		return this.type === 'file';
 	},
