@@ -119,8 +119,10 @@
 
 .attachments {
 	&__item {
-		transition: background-color 300ms linear;
+
 		margin-bottom: 10px;
+
+		transition: background-color 300ms linear;
 
 		&:hover {
 			cursor: pointer;
@@ -129,9 +131,10 @@
 		}
 
 		&-link {
-			padding: 8px 0;
 			display: flex;
 			flex-direction: row;
+
+			padding: 8px 0;
 			align-items: center;
 		}
 	}
@@ -188,12 +191,14 @@
 	}
 
 	&__name {
-		margin: 0 8px;
 
 		overflow: hidden;
+
+		min-width: 0;
+		margin: 0 8px;
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		min-width: 0;
 
 		color: #2f343d;
 
