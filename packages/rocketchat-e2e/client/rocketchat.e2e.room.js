@@ -21,6 +21,7 @@ import {
 	exportJWKKey,
 	importAESKey,
 	importRSAKey,
+	readFileAsArrayBuffer,
 } from './helper';
 
 export class E2ERoom {
@@ -170,10 +171,12 @@ export class E2ERoom {
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
-	async encryptFile(fileArrayBuffer) {
+	async encryptFile(file) {
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {
 			return;
 		}
+
+		const fileArrayBuffer = await readFileAsArrayBuffer(file);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		let result;
@@ -185,7 +188,9 @@ export class E2ERoom {
 
 		const output = joinVectorAndEcryptedData(vector, result);
 
-		return toArrayBuffer(EJSON.stringify(output));
+		const encryptedFile = new File([toArrayBuffer(EJSON.stringify(output))], file.name);
+
+		return encryptedFile;
 	}
 
 	// Decrypt uploaded encrypted files. I/O is in arraybuffers.

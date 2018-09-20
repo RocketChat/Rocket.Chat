@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
-import { e2e } from 'meteor/rocketchat:e2e';
 
 const colors = {
 	good: '#35AC19',
@@ -68,35 +67,6 @@ Template.messageAttachment.helpers({
 	},
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
-	},
-
-	// Decrypt received encrypted file.
-	decryptFile() {
-		const xhttp = new XMLHttpRequest();
-		const self = this;
-
-		// Download file asynchronously using XHR.
-		xhttp.onreadystatechange = function() {
-			if (this.readyState === 4 && this.status === 200) {
-				const e2eRoom = e2e.getInstanceByRoomId(self.rid);
-
-				e2eRoom.decryptFile(xhttp.response)
-					.then((msg) => {
-						if (msg) {
-							const decryptedFile = new File([msg], self.title);
-							const downloadUrl = URL.createObjectURL(decryptedFile);
-							const a = document.createElement('a');
-							document.body.appendChild(a);
-							a.style = 'display: none';
-							a.href = downloadUrl;
-							a.download = self.title;
-							a.click();
-						}
-					});
-			}
-		};
-		xhttp.open('GET', this.title_link, true);
-		xhttp.send();
 	},
 	isFile() {
 		return this.type === 'file';
