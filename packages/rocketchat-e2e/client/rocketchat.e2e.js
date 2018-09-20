@@ -1,11 +1,15 @@
+/* globals alerts, modal */
+
 import './stylesheets/e2e';
 
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 
 import { RocketChat, call } from 'meteor/rocketchat:lib';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
 	toString,
@@ -99,6 +103,46 @@ class E2E {
 			});
 		}
 
+		const randomPassword = localStorage.getItem('e2e.randomPassword');
+		if (randomPassword) {
+			alerts.open({
+				title: TAPi18n.__('Save your encryption password'),
+				html: `<div><span style="font-weight: bold;">${ randomPassword }</span><br/>This password will show up only this time. Click here to know more about it.</div>`,
+				modifiers: ['large'],
+				closable: false,
+				icon: 'key',
+				action() {
+					modal.open({
+						title: TAPi18n.__('Save your encryption password'),
+						html: true,
+						text: `
+							<div>
+								Now you can create encrypted private groups or change your direct messages to be encrypted. This is a end to end encryption so the key to encode/decode your messages will not be saved in our savers, for that reason you need to save this password to be able to transfer your key from this client to your mobile phone or to another browser.
+								<br/>
+								<br/>
+								Your password is: <span style="font-weight: bold;">${ randomPassword }</span>
+								<br/>
+								<br/>
+								This is a auto generated password and you can setup a new password for your encryption key any time from any browser that already did receive your key.
+								<br/>
+								This password is stored on this browser only while you don't copy it and click to dismiss this message.
+							</div>
+						`,
+						showConfirmButton: true,
+						showCancelButton: true,
+						confirmButtonText: TAPi18n.__('I saved my password, close this message'),
+						cancelButtonText: TAPi18n.__('I\'ll do it later'),
+					}, (confirm) => {
+						if (!confirm) {
+							return;
+						}
+						localStorage.removeItem('e2e.randomPassword');
+						alerts.close();
+					});
+				},
+			});
+		}
+
 		this.ready.set(true);
 	}
 
@@ -152,7 +196,10 @@ class E2E {
 	}
 
 	async encodePrivateKey(private_key) {
-		const masterKey = await this.getMasterKey('Enter E2E password to encode your key');
+		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
+		localStorage.setItem('e2e.randomPassword', randomPassword);
+
+		const masterKey = await this.getMasterKey(randomPassword);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
@@ -164,18 +211,15 @@ class E2E {
 		}
 	}
 
-	async getMasterKey(msg) {
-		// This is a new device for signal encryption
-		const userPassword = window.prompt(msg);
-
-		if (userPassword == null) {
+	async getMasterKey(password) {
+		if (password == null) {
 			alert('You should provide a password');
 		}
 
 		// First, create a PBKDF2 "key" containing the password
 		let baseKey;
 		try {
-			baseKey = await importRawKey(toArrayBuffer(userPassword));
+			baseKey = await importRawKey(toArrayBuffer(password));
 		} catch (error) {
 			return console.error('E2E -> Error creating a key based on user password: ', error);
 		}
@@ -189,7 +233,9 @@ class E2E {
 	}
 
 	async decodePrivateKey(private_key) {
-		const masterKey = await this.getMasterKey('Enter E2E password to decode your key');
+		const password = window.prompt('Enter E2E password to decode your key');
+
+		const masterKey = await this.getMasterKey(password);
 
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(private_key));
 

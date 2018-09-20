@@ -3,11 +3,9 @@ import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { RocketChat, call } from 'meteor/rocketchat:lib';
-import { modal } from 'meteor/rocketchat:ui';
 import { e2e } from './rocketchat.e2e';
 import {
 	toString,
@@ -21,6 +19,7 @@ import {
 	generateAESKey,
 	exportJWKKey,
 	importAESKey,
+	importRSAKey,
 } from './helper';
 
 export class E2ERoom {
@@ -129,7 +128,7 @@ export class E2ERoom {
 			if (key.public_key) {
 				let userKey;
 				try {
-					userKey = await e2e.importKey(JSON.parse(key.public_key), ['encrypt']);
+					userKey = await importRSAKey(JSON.parse(key.public_key), ['encrypt']);
 				} catch (error) {
 					return console.error('E2E -> Error importing user key: ', error);
 				}
@@ -182,12 +181,6 @@ export class E2ERoom {
 			return await decryptAES(vector, this.groupSessionKey, cipherText);
 		} catch (error) {
 			console.error('E2E -> Error decrypting file: ', error);
-			// Session key was reset. Cannot decrypt this file anymore.
-			modal.open({
-				title: `<i class='icon-key alert-icon failure-color'></i>${ TAPi18n.__('E2E') }`,
-				text: TAPi18n.__('Some messages cannot be decrypted because session key was reset.'),
-				html: true,
-			});
 
 			return false;
 		}
