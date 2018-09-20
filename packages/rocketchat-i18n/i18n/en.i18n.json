@@ -1005,6 +1005,8 @@
   "Enable_Svg_Favicon": "Enable SVG favicon",
   "Enable_two-factor_authentication": "Enable two-factor authentication",
   "Enabled": "Enabled",
+  "Encrypted": "Encrypted",
+  "Encrypted_channel_Description": "End to end encrypted channel. Search will not work with encrypted channels and notifications may not show the messages content.",
   "Encrypted_message": "Encrypted message",
   "End_OTR": "End OTR",
   "Enter_a_name": "Enter a name",
