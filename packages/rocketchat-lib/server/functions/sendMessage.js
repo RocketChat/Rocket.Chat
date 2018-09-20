@@ -13,15 +13,17 @@ const objectMaybeIncluding = (types) => Match.Where((value) => {
 	return true;
 });
 
-const validateAttachmentsFields = (attachmentFields) => {
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
+		title: String,
+		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
 
-	check(attachmentFields, objectMaybeIncluding({
-		title: String,
-		value: String,
-	}));
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
 };
 
 const validateAttachmentsActions = (attachmentActions) => {
@@ -116,7 +118,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
 		}
 
 		let result;

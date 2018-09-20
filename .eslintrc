@@ -30,6 +30,7 @@
 		"LivechatDepartment"          : false,
 		"LivechatDepartmentAgents"    : false,
 		"livechatManagerRoutes"       : true,
+		"LivechatMonitoring"          : false,      
 		"LivechatPageVisited"         : false,
 		"LivechatTrigger"             : false,
 		"Logger"                      : false,

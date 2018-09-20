@@ -191,6 +191,8 @@ todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:e2e
+
+rocketchat:blockstack
 rocketchat:version-check
 
 rocketchat:search
