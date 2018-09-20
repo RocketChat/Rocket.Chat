@@ -13,15 +13,17 @@ const objectMaybeIncluding = (types) => Match.Where((value) => {
 	return true;
 });
 
-const validateAttachmentsFields = (attachmentFields) => {
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
+		title: String,
+		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
 
-	check(attachmentFields, objectMaybeIncluding({
-		title: String,
-		value: String,
-	}));
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
 };
 
 const validateAttachmentsActions = (attachmentActions) => {

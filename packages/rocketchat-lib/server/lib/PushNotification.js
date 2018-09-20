@@ -24,7 +24,6 @@ class PushNotification {
 		} else {
 			title = `${ username }`;
 		}
-		const icon = RocketChat.settings.get('Assets_favicon_192').url || RocketChat.settings.get('Assets_favicon_192').defaultUrl;
 		const config = {
 			from: 'push',
 			badge,
@@ -37,7 +36,7 @@ class PushNotification {
 			gcm: {
 				style: 'inbox',
 				summaryText: '%n% new messages',
-				image: RocketChat.getURL(icon, { full: true }),
+				image: RocketChat.Assets.getURL('Assets_favicon_192'),
 			},
 		};
 
