@@ -8,7 +8,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(visitorToken, roomId);
+		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;

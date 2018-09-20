@@ -246,6 +246,7 @@ Package.onUse(function(api) {
 
 	// REST endpoints
 	api.addFiles('server/api.js', 'server');
+	api.addFiles('server/api/rest.js', 'server');
 
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');

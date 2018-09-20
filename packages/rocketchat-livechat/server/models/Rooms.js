@@ -63,6 +63,37 @@ RocketChat.models.Rooms.findLivechatById = function(_id, fields) {
 	return this.find(query, options);
 };
 
+RocketChat.models.Rooms.findLivechatByIdAndVisitorToken = function(_id, visitorToken, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
+
+	const query = {
+		t: 'l',
+		_id,
+		'v.token': visitorToken,
+	};
+
+	return this.findOne(query, options);
+};
+
+RocketChat.models.Rooms.findLivechatByVisitorToken = function(visitorToken, fields) {
+	const options = {};
+
+	if (fields) {
+		options.fields = fields;
+	}
+
+	const query = {
+		t: 'l',
+		'v.token': visitorToken,
+	};
+
+	return this.findOne(query, options);
+};
+
 /**
  * Get the next visitor name
  * @return {string} The next visitor name
@@ -121,14 +152,14 @@ RocketChat.models.Rooms.findByVisitorId = function(visitorId) {
 	return this.find(query);
 };
 
-RocketChat.models.Rooms.findOneOpenByVisitorToken = function(token, roomId) {
+RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken = function(roomId, visitorToken, options) {
 	const query = {
 		_id: roomId,
 		open: true,
-		'v.token': token,
+		'v.token': visitorToken,
 	};
 
-	return this.findOne(query);
+	return this.findOne(query, options);
 };
 
 RocketChat.models.Rooms.setResponseByRoomId = function(roomId, response) {

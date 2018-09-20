@@ -209,7 +209,6 @@ RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		console.log(findResult);
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
 		const messages = RocketChat.models.Messages.find(ourQuery, {
