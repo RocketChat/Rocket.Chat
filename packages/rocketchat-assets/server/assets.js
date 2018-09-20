@@ -301,6 +301,13 @@ RocketChat.Assets = new (class {
 			hash,
 		};
 	}
+
+	getURL(assetName, options = { cdn: false, full: true }) {
+		const asset = RocketChat.settings.get(assetName);
+		const url = asset.url || asset.defaultUrl;
+
+		return RocketChat.getURL(url, options);
+	}
 });
 
 RocketChat.settings.addGroup('Assets');
