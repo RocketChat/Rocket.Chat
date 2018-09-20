@@ -16,12 +16,12 @@
 			{{/if}}
 			{{#if text}}
 				{{#if url}}
-					<a class="text-button" href="{{url}}" target="_blank" type="button" rel="noopener noreferrer">
+					<a class="text-button" href="{{url}}" target="_blank" type="button" rel="noopener noreferrer" style="border-width: {{border_width}};border-color: {{border_color}};color: {{text_color}}">
 						<span class="overflow-ellipsis">{{text}}</span>
 					</a>
 				{{/if}}
 				{{#if msg_in_chat_window}}
-					<button class="text-button js-actionButton-sendMessage" value="{{msg}}">
+					<button class="text-button js-actionButton-sendMessage" value="{{msg}}" style="border-width: {{border_width}};border-color: {{border_color}};color: {{text_color}}">
 						<span class="overflow-ellipsis">{{text}}</span>
 					</button>
 				{{/if}}
