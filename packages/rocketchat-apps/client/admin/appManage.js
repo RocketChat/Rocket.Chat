@@ -63,13 +63,13 @@ Template.appManage.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
-	this.webhooks = new ReactiveVar([]);
+	this.apis = new ReactiveVar([]);
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
 
 	this.getWebhooks = async() => {
-		this.webhooks.set(await window.Apps.getAppWebhooks(id));
+		this.apis.set(await window.Apps.getAppWebhooks(id));
 	};
 
 	this.getWebhooks();
@@ -217,8 +217,8 @@ Template.appManage.helpers({
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
-	webhooks() {
-		return Template.instance().webhooks.get();
+	apis() {
+		return Template.instance().apis.get();
 	},
 	parseDescription(i18nDescription) {
 		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
@@ -230,10 +230,10 @@ Template.appManage.helpers({
 	saving() {
 		return Template.instance().loading.get();
 	},
-	curl(method, webhook) {
-		const example = webhook.examples[method] || {};
+	curl(method, api) {
+		const example = api.examples[method] || {};
 		return Utilities.curl({
-			url: Meteor.absoluteUrl.defaultOptions.rootUrl + webhook.computedPath,
+			url: Meteor.absoluteUrl.defaultOptions.rootUrl + api.computedPath,
 			method,
 			params: example.params,
 			query: example.query,

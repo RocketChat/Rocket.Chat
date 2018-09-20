@@ -87,9 +87,9 @@ class AppClientOrchestrator {
 		});
 	}
 
-	async getAppWebhooks(appId) {
-		const result = await RocketChat.API.get(`apps/${ appId }/webhooks`);
-		return result.webhooks;
+	async getAppApis(appId) {
+		const result = await RocketChat.API.get(`apps/${ appId }/apis`);
+		return result.apis;
 	}
 }
 

@@ -93,20 +93,20 @@
 									</div>
 								{{/if}}
 
-								{{#if webhooks}}
+								{{#if apis}}
 									<div class="rc-apps-details__row">
-										<h2> {{_ "Webhooks"}} </h2>
+										<h2> {{_ "Apis"}} </h2>
 									</div>
 									<div class="rc-apps-settings">
-										{{#each webhooks}}
+										{{#each apis}}
 											<div class="rc-apps-settings__item">
 												<div class="rc-input">
-													<div class="rc-apps-details__webhook">
+													<div class="rc-apps-details__api">
 														{{renderMethods methods}} {{path}}
 													</div>
-													<div class="rc-input__description rc-apps-details__webhook__description">
+													<div class="rc-input__description rc-apps-details__api__description">
 														{{#each methods}}
-															<div class="rc-apps-details__webhook__description__item">{{#each curl . ..}}{{.}}<br />{{/each}}</div>
+															<div class="rc-apps-details__api__description__item">{{#each curl . ..}}{{.}}<br />{{/each}}</div>
 														{{/each}}
 													</div>
 												</div>

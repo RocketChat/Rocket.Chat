@@ -313,14 +313,14 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/webhooks', { authRequired: true }, {
+		this.api.addRoute(':id/apis', { authRequired: true }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s webhooks..`);
+				console.log(`Getting ${ this.urlParams.id }'s apis..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
 					return RocketChat.API.v1.success({
-						webhooks: manager.webhookManager.listWebhooks(this.urlParams.id),
+						apis: manager.apiManager.listApis(this.urlParams.id),
 					});
 				} else {
 					return RocketChat.API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);

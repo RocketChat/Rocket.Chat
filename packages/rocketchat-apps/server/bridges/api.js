@@ -1,15 +1,15 @@
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 
-const webhookServer = express();
-WebApp.connectHandlers.use(webhookServer);
+const apiServer = express();
+WebApp.connectHandlers.use(apiServer);
 
-export class AppWebhooksBridge {
+export class AppApisBridge {
 	constructor(orch) {
 		this.orch = orch;
 		this.appRouters = new Map();
 
-		webhookServer.use('/apps/private/:appId/:hash', (req, res) => {
+		apiServer.use('/apps/private/:appId/:hash', (req, res) => {
 			const notFound = () => res.send(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -22,7 +22,7 @@ export class AppWebhooksBridge {
 			notFound();
 		});
 
-		webhookServer.use('/apps/public/:appId', (req, res) => {
+		apiServer.use('/apps/public/:appId', (req, res) => {
 			const notFound = () => res.send(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -35,10 +35,10 @@ export class AppWebhooksBridge {
 		});
 	}
 
-	registerWebhook({ webhook, computedPath }, appId) {
-		console.log(`The App ${ appId } is registerin the webhook: "${ webhook.path }" (${ computedPath })`);
+	registerApi({ api, computedPath }, appId) {
+		console.log(`The App ${ appId } is registering the api: "${ api.path }" (${ computedPath })`);
 
-		this._verifyWebhook(webhook);
+		this._verifyApi(api);
 
 		if (!this.appRouters.get(appId)) {
 			this.appRouters.set(appId, express.Router()); // eslint-disable-line
@@ -46,35 +46,35 @@ export class AppWebhooksBridge {
 
 		const router = this.appRouters.get(appId);
 
-		const method = webhook.method || 'all';
+		const method = api.method || 'all';
 
-		let routePath = webhook.path.trim();
+		let routePath = api.path.trim();
 		if (!routePath.startsWith('/')) {
 			routePath = `/${ routePath }`;
 		}
 
-		router[method](routePath, Meteor.bindEnvironment(this._appWebhookExecutor(webhook, appId)));
+		router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, appId)));
 	}
 
-	unregisterWebhooks(appId) {
-		console.log(`The App ${ appId } is unregistering all webhooks`);
+	unregisterApis(appId) {
+		console.log(`The App ${ appId } is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
 			this.appRouters.delete(appId);
 		}
 	}
 
-	_verifyWebhook(webhook) {
-		if (typeof webhook !== 'object') {
-			throw new Error('Invalid Webhook parameter provided, it must be a valid IWebhook object.');
+	_verifyApi(api) {
+		if (typeof api !== 'object') {
+			throw new Error('Invalid Api parameter provided, it must be a valid IApi object.');
 		}
 
-		if (typeof webhook.path !== 'string') {
-			throw new Error('Invalid Webhook parameter provided, it must be a valid IWebhook object.');
+		if (typeof api.path !== 'string') {
+			throw new Error('Invalid Api parameter provided, it must be a valid IApi object.');
 		}
 	}
 
-	_appWebhookExecutor(webhook, appId) {
+	_appApiExecutor(api, appId) {
 		return (req, res) => {
 			const request = {
 				method: req.method.toLowerCase(),
@@ -85,7 +85,7 @@ export class AppWebhooksBridge {
 				privateHash: req._privateHash,
 			};
 
-			this.orch.getManager().getWebhookManager().executeWebhook(appId, webhook.path, request)
+			this.orch.getManager().getApiManager().executeApi(appId, api.path, request)
 				.then(({ status, headers = {}, content }) => {
 					res.set(headers);
 					res.status(status);
