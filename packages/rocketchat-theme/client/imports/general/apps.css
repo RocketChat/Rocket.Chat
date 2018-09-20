@@ -113,19 +113,23 @@
 			padding-bottom: 10px;
 
 			&__description {
-				font-size: 14px;
 				overflow-x: scroll;
-				white-space: nowrap;
 				overflow-y: hidden;
+				font-size: 14px;
+
+				white-space: nowrap;
+
 				background-color: #fafafa;
 
 				&__item {
 					padding: 10px;
+
 					user-select: all !important;
 					white-space: pre;
-					line-height: 20px;
-					border-top: 1px dashed #ccc;
+
 					display: table;
+					border-top: 1px dashed #cccccc;
+					line-height: 20px;
 
 					&:first-child {
 						border-top: none;
