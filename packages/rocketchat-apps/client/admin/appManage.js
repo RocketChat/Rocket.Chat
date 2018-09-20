@@ -68,11 +68,11 @@ Template.appManage.onCreated(function() {
 
 	const id = this.id.get();
 
-	this.getWebhooks = async() => {
-		this.apis.set(await window.Apps.getAppWebhooks(id));
+	this.getApis = async() => {
+		this.apis.set(await window.Apps.getAppApis(id));
 	};
 
-	this.getWebhooks();
+	this.getApis();
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
