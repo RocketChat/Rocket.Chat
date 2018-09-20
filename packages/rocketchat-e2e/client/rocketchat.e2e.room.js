@@ -8,6 +8,7 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { e2e } from './rocketchat.e2e';
 import {
+	Deferred,
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,
@@ -27,13 +28,32 @@ export class E2ERoom {
 		this.userId = userId;
 		this.roomId = roomId;
 		this.typeOfRoom = t;
-		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
+
+		this._ready = new ReactiveVar(false);
+		this.readyPromise = new Deferred();
+		this.readyPromise.then(() => {
+			this._ready.set(true);
+			this.establishing.set(false);
+		});
 	}
 
 	// Initiates E2E Encryption
 	async handshake(refresh) {
+		if (!e2e.isReady()) {
+			return;
+		}
+
+		if (this._ready.get()) {
+			return;
+		}
+
+		if (this.establishing.get()) {
+			return await this.readyPromise;
+		}
+
 		console.log('E2E -> Initiating handshake');
+
 		this.establishing.set(true);
 
 		// Cover private groups and direct messages
@@ -55,8 +75,7 @@ export class E2ERoom {
 			await this.importGroupKey(groupKey);
 		}
 
-		this.established.set(true);
-		this.establishing.set(false);
+		this.readyPromise.resolve();
 
 		return true;
 	}

@@ -2,34 +2,6 @@
 import _ from 'underscore';
 import { e2e } from 'meteor/rocketchat:e2e';
 
-// From the package, rocketchat:e2e
-const decryptE2EMessageDefered = _.debounce(async(rid) => {
-	const e2eRoom = e2e.getInstanceByRoomId(rid);
-
-	if (!e2eRoom) {
-		return;
-	}
-
-	if (!e2eRoom.established.get()) {
-		return e2eRoom.handshake().then(() => {
-			decryptE2EMessageDefered(rid);
-		});
-	}
-
-	ChatMessage.find({ t: 'e2e', e2e: 'pending' }).forEach((item) => {
-		// Session key exists in browser, directly decrypt.
-		e2eRoom.decrypt(item.msg).then((data) => {
-			item.msg = data.text;
-			item.ack = data.ack;
-			if (data.ts) {
-				item.ts = data.ts;
-			}
-			item.e2e = 'done';
-			ChatMessage.upsert({ _id: item._id }, item);
-		});
-	});
-}, 100);
-
 export const upsertMessage = ({ msg, subscription }) => {
 	const userId = msg.u && msg.u._id;
 
@@ -43,7 +15,7 @@ export const upsertMessage = ({ msg, subscription }) => {
 	msg.roles = _.union.apply(_.union, roles);
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
-		decryptE2EMessageDefered(msg.rid);
+		e2e.decryptPendingMessagesDeferred();
 	}
 
 	return ChatMessage.upsert({ _id: msg._id }, msg);
@@ -106,7 +78,7 @@ export const RoomHistoryManager = new class {
 				return;
 			}
 
-			decryptE2EMessageDefered(rid);
+			e2e.decryptPendingMessagesDeferred();
 
 			let previousHeight;
 			const { messages = [] } = result;

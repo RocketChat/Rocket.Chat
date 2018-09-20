@@ -1,4 +1,6 @@
-/* globals alerts, modal */
+/* globals alerts, modal, ChatMessage */
+
+import _ from 'underscore';
 
 import './stylesheets/e2e';
 
@@ -12,6 +14,7 @@ import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
+	Deferred,
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,
@@ -29,8 +32,14 @@ class E2E {
 	constructor() {
 		this.started = false;
 		this.enabled = new ReactiveVar(false);
+		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
-		this.ready = new ReactiveVar(false);
+		this.readyPromise = new Deferred();
+		this.readyPromise.then(() => {
+			this._ready.set(true);
+		});
+
+		this.decryptPendingMessagesDeferred = _.debounce(this.decryptPendingMessages.bind(this), 100);
 	}
 
 	isEnabled() {
@@ -38,10 +47,14 @@ class E2E {
 	}
 
 	isReady() {
-		return this.ready.get();
+		return this.enabled.get() && this._ready.get();
 	}
 
-	getInstanceByRoomId(roomId) {
+	async ready() {
+		return this.readyPromise;
+	}
+
+	async getInstanceByRoomId(roomId) {
 		if (!this.enabled.get()) {
 			return;
 		}
@@ -54,20 +67,26 @@ class E2E {
 			return;
 		}
 
-		if (this.instancesByRoomId[roomId]) {
-			return this.instancesByRoomId[roomId];
+		if (!this.instancesByRoomId[roomId]) {
+			const subscription = RocketChat.models.Subscriptions.findOne({
+				rid: roomId,
+			});
+
+			if (!subscription || (subscription.t !== 'd' && subscription.t !== 'p')) {
+				return;
+			}
+
+			this.instancesByRoomId[roomId] = new E2ERoom(Meteor.userId(), roomId, subscription.t);
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOne({
-			rid: roomId,
-		});
+		const e2eRoom = this.instancesByRoomId[roomId];
 
-		if (!subscription || (subscription.t !== 'd' && subscription.t !== 'p')) {
-			return;
+		await this.ready();
+
+		if (e2eRoom) {
+			await e2eRoom.handshake();
+			return e2eRoom;
 		}
-
-		this.instancesByRoomId[roomId] = new E2ERoom(Meteor.userId(), roomId, subscription.t);
-		return this.instancesByRoomId[roomId];
 	}
 
 	async startClient() {
@@ -86,7 +105,23 @@ class E2E {
 		}
 
 		if (!private_key && this.db_private_key) {
-			private_key = await this.decodePrivateKey(this.db_private_key);
+			try {
+				private_key = await this.decodePrivateKey(this.db_private_key);
+			} catch (error) {
+				this.started = false;
+				alerts.open({
+					title: TAPi18n.__('Wasn\'t possible to decode you encryption key to be imported.'),
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					modifiers: ['large', 'danger'],
+					closable: true,
+					icon: 'key',
+					action: () => {
+						this.startClient();
+						alerts.close();
+					},
+				});
+				return;
+			}
 		}
 
 		if (public_key && private_key) {
@@ -143,7 +178,8 @@ class E2E {
 			});
 		}
 
-		this.ready.set(true);
+		this.readyPromise.resolve();
+		this.decryptPendingMessages();
 	}
 
 	async loadKeysFromDB() {
@@ -232,8 +268,25 @@ class E2E {
 		}
 	}
 
+	async requestPassword() {
+		return new Promise((resolve) => {
+			modal.open({
+				title: TAPi18n.__('E2E password'),
+				text: TAPi18n.__('Enter E2E password to decode your key'),
+				type: 'input',
+				inputType: 'text',
+				showCancelButton: true,
+				closeOnConfirm: true,
+				confirmButtonText: TAPi18n.__('Decode'),
+				cancelButtonText: TAPi18n.__('Later'),
+			}, (password) => {
+				resolve(password);
+			});
+		});
+	}
+
 	async decodePrivateKey(private_key) {
-		const password = window.prompt('Enter E2E password to decode your key');
+		const password = await this.requestPassword();
 
 		const masterKey = await this.getMasterKey(password);
 
@@ -243,8 +296,24 @@ class E2E {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
-			return console.error('E2E -> Error decrypting private key: ', error);
+			throw new Error('E2E -> Error decrypting private key');
 		}
+	}
+
+	async decryptPendingMessages() {
+		return await ChatMessage.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
+			const e2eRoom = await this.getInstanceByRoomId(item.rid);
+
+			await e2eRoom.decrypt(item.msg).then((data) => {
+				item.msg = data.text;
+				item.ack = data.ack;
+				if (data.ts) {
+					item.ts = data.ts;
+				}
+				item.e2e = 'done';
+				ChatMessage.upsert({ _id: item._id }, item);
+			});
+		});
 	}
 }
 
@@ -263,13 +332,13 @@ Meteor.startup(function() {
 	});
 
 	// Encrypt messages before sending
-	RocketChat.promises.add('onClientBeforeSendMessage', function(message) {
+	RocketChat.promises.add('onClientBeforeSendMessage', async function(message) {
 		if (!message.rid) {
 			return Promise.resolve(message);
 		}
 
-		const e2eRoom = e2e.getInstanceByRoomId(message.rid);
-		if (!e2eRoom || !e2eRoom.established.get()) {
+		const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
+		if (!e2eRoom) {
 			return Promise.resolve(message);
 		}
 
