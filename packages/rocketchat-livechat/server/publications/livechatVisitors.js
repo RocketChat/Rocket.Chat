@@ -5,6 +5,10 @@ Meteor.publish('livechat:visitors', function(date) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitors' }));
 	}
 
+	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitors' }));
+	}
+
 	date = {
 		gte: new Date(date.gte),
 		lt: new Date(date.lt),
