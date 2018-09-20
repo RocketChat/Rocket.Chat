@@ -47,6 +47,7 @@ export class AppMessagesConverter {
 			customFields: msgObj.customFields,
 			groupable: msgObj.groupable,
 			attachments,
+			reactions: msgObj.reactions,
 		};
 	}
 
@@ -106,6 +107,7 @@ export class AppMessagesConverter {
 			customFields: message.customFields,
 			groupable: message.groupable,
 			attachments,
+			reactions: message.reactions,
 		};
 	}
 
@@ -131,6 +133,7 @@ export class AppMessagesConverter {
 			audio_url: attachment.audioUrl,
 			video_url: attachment.videoUrl,
 			fields: attachment.fields,
+			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
 		})).map((a) => {
@@ -181,6 +184,7 @@ export class AppMessagesConverter {
 				audioUrl: attachment.audio_url,
 				videoUrl: attachment.video_url,
 				fields: attachment.fields,
+				actions: attachment.actions,
 				type: attachment.type,
 				description: attachment.description,
 			};
