@@ -15,7 +15,7 @@ export const updateOrCreateUser = (serviceData, options) => {
 	const { profile } = options;
 
 	// Look for existing Blockstack user
-	let user = Meteor.users.findOne({ 'services.blockstack.id': id });
+	const user = Meteor.users.findOne({ 'services.blockstack.id': id });
 	let userId;
 	let isNew = false;
 

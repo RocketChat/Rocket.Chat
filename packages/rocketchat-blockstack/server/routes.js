@@ -6,7 +6,7 @@ WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(funct
 	const name = RocketChat.settings.get('Site_Name');
 	const startUrl = Meteor.absoluteUrl();
 	const description = RocketChat.settings.get('Blockstack_Auth_Description');
-	const iconUrl = Meteor.absoluteUrl('assets/favicon_192');
+	const iconUrl = RocketChat.Assets.getURL('Assets_favicon_192');
 
 	res.writeHead(200, {
 		'Content-Type': 'application/json',
