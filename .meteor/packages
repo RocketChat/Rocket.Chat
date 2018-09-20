@@ -190,6 +190,8 @@ steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
+
+rocketchat:blockstack
 rocketchat:version-check
 
 rocketchat:search

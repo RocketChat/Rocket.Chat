@@ -4,6 +4,7 @@ Meteor.methods({
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
 			newMessageNotification: Match.Optional(String),
+			clockMode: Match.Optional(Number),
 			useEmojis: Match.Optional(Boolean),
 			convertAsciiEmoji: Match.Optional(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),

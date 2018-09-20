@@ -12,6 +12,7 @@ import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } 
 import { hide, leave, erase } from './ChannelActions';
 import { call } from './callMethod';
 import { LoginPresence } from './LoginPresence';
+import * as DateFormat from './formatDate';
 
 export {
 	call,
@@ -25,4 +26,5 @@ export {
 	UiTextContext,
 	RocketChatAnnouncement,
 	LoginPresence,
+	DateFormat,
 };

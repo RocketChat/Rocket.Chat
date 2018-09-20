@@ -8,8 +8,8 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					users: result.usersCount || 0,
-					createdAt: timeAgo(result.ts),
-					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts),
+					createdAt: timeAgo(result.ts, t),
+					lastMessage: result.lastMessage && timeAgo(result.lastMessage.ts, t),
 					description: result.description,
 					archived: result.archived,
 					topic: result.topic,
@@ -20,7 +20,7 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
-					createdAt: timeAgo(result.createdAt),
+					createdAt: timeAgo(result.createdAt, t),
 				};
 			}
 			return null;
