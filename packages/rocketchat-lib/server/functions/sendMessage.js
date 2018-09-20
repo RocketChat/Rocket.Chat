@@ -20,7 +20,7 @@ const validateAttachmentsFields = (attachmentField) => {
 		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
 
-	if (typeof(attachmentField.value) !== undefined) {
+	if (typeof attachmentField.value !== 'undefined') {
 		attachmentField.value = String(attachmentField.value);
 	}
 
