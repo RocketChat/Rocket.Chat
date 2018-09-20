@@ -1,5 +1,7 @@
 /* globals popover */
 
+import { hideOldSubscriptions } from 'meteor/rocketchat:lib';
+
 const checked = function(prop, field) {
 	const user = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
@@ -38,6 +40,11 @@ Template.sortlist.events({
 		Meteor.call('saveUserPreferences', {
 			[name] : value,
 		});
+		popover.close();
+	},
+
+	'click .js-hide-old-subscriptions'(/* event, instance*/) {
+		hideOldSubscriptions();
 		popover.close();
 	},
 });
