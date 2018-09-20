@@ -267,6 +267,16 @@ export const Analytics = {
 			const totalMessagesInHour = new Map();		// total messages in hour 0, 1, ... 23 of weekday
 			const days = to.diff(from, 'days') + 1;		// total days
 
+			const summarize = (m) => ({ metrics, msgs }) => {
+				if (metrics && !metrics.chatDuration) {
+					openConversations++;
+				}
+				totalMessages += msgs;
+
+				const weekday = m.format('dddd'); // @string: Monday, Tuesday ...
+				totalMessagesOnWeekday.set(weekday, (totalMessagesOnWeekday.has(weekday)) ? (totalMessagesOnWeekday.get(weekday) + msgs) : msgs);
+			};
+
 			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
 				const date = {
 					gte: m,
@@ -276,18 +286,7 @@ export const Analytics = {
 				const result = RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date);
 				totalConversations += result.count();
 
-				result.forEach(({
-					metrics,
-					msgs,
-				}) => {
-					if (metrics && !metrics.chatDuration) {
-						openConversations++;
-					}
-					totalMessages += msgs;
-
-					const weekday = m.format('dddd'); // @string: Monday, Tuesday ...
-					totalMessagesOnWeekday.set(weekday, (totalMessagesOnWeekday.has(weekday)) ? (totalMessagesOnWeekday.get(weekday) + msgs) : msgs);
-				});
+				result.forEach(summarize(m));
 			}
 
 			const busiestDay = this.getKeyHavingMaxValue(totalMessagesOnWeekday, '-'); // returns key with max value
