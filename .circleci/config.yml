@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11.4
 
     steps:
       - checkout
@@ -82,9 +82,9 @@ jobs:
           name: Build Rocket.Chat
           command: |
             if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            set +e
-            meteor add rocketchat:lib
-            set -e
+            # set +e
+            # meteor add rocketchat:lib
+            # set -e
             meteor build --server-only --directory /tmp/build-test
 
       - run:
@@ -133,8 +133,8 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
-      - image: mongo:3.4
+      - image: circleci/node:8.11-browsers
+      - image: mongo:4.0
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
     environment:
@@ -180,8 +180,8 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
-      - image: circleci/mongo:3.4
+      - image: circleci/node:8.11-browsers
+      - image: circleci/mongo:4.0
 
     environment:
       TEST_MODE: "true"
@@ -217,7 +217,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11
 
     steps:
       - attach_workspace:
