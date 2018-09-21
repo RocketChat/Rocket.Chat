@@ -1,6 +1,11 @@
-/* globals modal, RocketChat, WebdavAccounts*/
+/* globals modal, RocketChat */
 import { Tracker } from 'meteor/tracker';
-Meteor.subscribe('webdavAccounts');
+Tracker.autorun(() => {
+	if (Meteor.userId()) {
+		Meteor.subscribe('webdavAccounts');
+	}
+});
+
 
 RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
@@ -19,7 +24,14 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	},
 });
 Tracker.autorun(() => {
-	WebdavAccounts.find().forEach((account) => {
+	const accounts = RocketChat.models.WebdavAccounts.find();
+
+
+	if (accounts.count() === 0) {
+		return RocketChat.messageBox.actions.remove(/webdav-upload-/ig);
+	}
+
+	accounts.forEach((account) => {
 		const name = account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;
 		const title = t('Upload_From', {
 			name,

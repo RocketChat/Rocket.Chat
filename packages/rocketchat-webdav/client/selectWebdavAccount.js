@@ -1,9 +1,9 @@
-/* global WebdavAccounts */
+/* global */
 import toastr from 'toastr';
 
 Template.selectWebdavAccount.helpers({
 	webdavAccounts() {
-		return WebdavAccounts.find().fetch();
+		return RocketChat.models.WebdavAccounts.find().fetch();
 	},
 	usernamePlusServer(account) {
 		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;

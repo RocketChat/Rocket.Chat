@@ -185,28 +185,28 @@ RocketChat.settings.addGroup('FileUpload', function() {
 	});
 
 	this.section('WebDAV', function() {
-		this.add('Upload_Folder_Path', '', {
+		this.add('FileUpload_Webdav_Upload_Folder_Path', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
 		});
-		this.add('Webdav_Server_URL', '', {
+		this.add('FileUpload_Webdav_Server_URL', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
 		});
-		this.add('Webdav_Username', '', {
+		this.add('FileUpload_Webdav_Username', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
 		});
-		this.add('Webdav_Password', '', {
+		this.add('FileUpload_Webdav_Password', '', {
 			type: 'password',
 			private: true,
 			enableQuery: {
@@ -214,14 +214,14 @@ RocketChat.settings.addGroup('FileUpload', function() {
 				value: 'Webdav',
 			},
 		});
-		this.add('Webdav_Proxy_Avatars', false, {
+		this.add('FileUpload_Webdav_Proxy_Avatars', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'Webdav',
 			},
 		});
-		this.add('Webdav_Proxy_Uploads', false, {
+		this.add('FileUpload_Webdav_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',

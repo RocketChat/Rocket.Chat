@@ -1,11 +1,14 @@
-/* global WebdavAccounts */
+/* global */
 
 import toastr from 'toastr';
-Meteor.subscribe('webdavAccounts');
+
+Template.accountIntegrations.onCreated(function() {
+	this.subscribe('webdavAccounts');
+});
 
 Template.accountIntegrations.helpers({
 	webdavAccounts() {
-		return WebdavAccounts.find().fetch();
+		return RocketChat.models.WebdavAccounts.find().fetch();
 	},
 	getOptionValue(account) {
 		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;

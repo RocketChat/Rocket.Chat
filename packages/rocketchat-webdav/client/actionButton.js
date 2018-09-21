@@ -1,4 +1,4 @@
-/* globals modal, RocketChat, WebdavAccounts*/
+/* globals modal, RocketChat*/
 
 Meteor.startup(function() {
 
@@ -10,7 +10,7 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			if (WebdavAccounts.findOne() == null) {
+			if (RocketChat.models.WebdavAccounts.findOne() == null) {
 				return false;
 			}
 			if (!message.file) {

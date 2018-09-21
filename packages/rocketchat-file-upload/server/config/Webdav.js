@@ -34,10 +34,10 @@ const WebdavUserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const uploadFolderPath = RocketChat.settings.get('Upload_Folder_Path');
-	const server = RocketChat.settings.get('Webdav_Server_URL');
-	const username = RocketChat.settings.get('Webdav_Username');
-	const password = RocketChat.settings.get('Webdav_Password');
+	const uploadFolderPath = RocketChat.settings.get('FileUpload_Webdav_Upload_Folder_Path');
+	const server = RocketChat.settings.get('FileUpload_Webdav_Server_URL');
+	const username = RocketChat.settings.get('FileUpload_Webdav_Username');
+	const password = RocketChat.settings.get('FileUpload_Webdav_Password');
 
 	if (!server || !username || !password) {
 		return;
@@ -59,4 +59,4 @@ const configure = _.debounce(function() {
 	WebdavUserDataFiles.store = FileUpload.configureUploadsStore('Webdav', WebdavUserDataFiles.name, config);
 }, 500);
 
-RocketChat.settings.get(/^Webdav_/, configure);
+RocketChat.settings.get(/^FileUpload_Webdav_/, configure);
