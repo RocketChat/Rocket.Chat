@@ -104,15 +104,6 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 	const link = getMessageLink(room, subscription);
 
-
-
-	// this.add('Email_Footer_Direct_Reply', '{Direct_Reply_Advice}', {
-	// 	type: 'code',
-	// 	code: 'text/html',
-	// 	multiline: true,
-	// 	i18nLabel: 'Footer_Direct_Reply',
-	// });
-
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,

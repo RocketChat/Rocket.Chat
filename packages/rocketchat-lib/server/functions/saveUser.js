@@ -5,7 +5,7 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
 	setTimeout(() => {
-		Mailer.getTemplate('Accounts_UserAddedEmail', (template) => {
+		Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
 			html = template;
 		});
 	}, 1000);
@@ -133,7 +133,7 @@ RocketChat.saveUser = function(userId, userData) {
 		Meteor.users.update({ _id }, updateUser);
 
 		if (userData.sendWelcomeEmail) {
-			const subject = RocketChat.settings.get('Accounts_UserAddedEmailSubject');
+			const subject = RocketChat.settings.get('Accounts_UserAddedEmail_Subject');
 
 			const email = {
 				to: userData.email,

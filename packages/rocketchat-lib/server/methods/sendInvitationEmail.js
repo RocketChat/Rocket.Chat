@@ -2,7 +2,7 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
 	setTimeout(() => {
-		Mailer.getTemplate('Invitation_HTML', (value) => {
+		Mailer.getTemplate('Invitation_Email', (value) => {
 			html = value;
 		});
 	}, 1000);
@@ -27,7 +27,7 @@ Meteor.methods({
 
 		return validEmails.filter((email) => {
 			try {
-				Mailer.send({
+				return Mailer.send({
 					to: email,
 					from: RocketChat.settings.get('From_Email'),
 					subject,

@@ -660,7 +660,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 		});
 	});
 	return this.section('Proxy', function() {
-		this.add('Accounts_OAuth_Proxy_host', 'https: //oauth-proxy.rocket.chat', {
+		this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {
 			type: 'string',
 			public: true,
 		});
@@ -1096,7 +1096,7 @@ RocketChat.settings.addGroup('Push', function() {
 			value: true,
 		},
 	});
-	this.add('Push_gateway', 'https: //gateway.rocket.chat', {
+	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
 		alert: 'Push_Setting_Requires_Restart_Alert',
 		enableQuery: [
@@ -1321,7 +1321,7 @@ RocketChat.settings.addGroup('Logs', function() {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
 		});
-		// See the default port allocation at https: //github.com/prometheus/prometheus/wiki/Default-port-allocations
+		// See the default port allocation at https://github.com/prometheus/prometheus/wiki/Default-port-allocations
 		this.add('Prometheus_Port', 9458, {
 			type: 'string',
 			i18nLabel: 'Port',

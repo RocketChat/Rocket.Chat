@@ -365,11 +365,11 @@ RocketChat.settings.addGroup('Email', function() {
 	});
 
 	this.section('Registration_via_Admin', function() {
-		this.add('Accounts_UserAddedEmailSubject', '{Welcome_to Site_Name}', {
+		this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_UserAddedEmail', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+		this.add('Accounts_UserAddedEmail_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -399,12 +399,12 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Invitation_HTML', '<h2>{Welcome_to Site_Name}</h2><p>Visit [Site_URL] and try the best open source chat solution available today!</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>', {
+		this.add('Invitation_Email', '<h2>{Welcome_to Site_Name}</h2><p>Visit [Site_URL] and try the best open source chat solution available today!</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			i18nLabel: 'Body',
-			i18nDescription: 'Invitation_HTML_Description',
+			i18nDescription: 'Invitation_Email_Description',
 		});
 	});
 
