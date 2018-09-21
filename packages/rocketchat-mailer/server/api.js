@@ -40,7 +40,7 @@ export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
 	Settings.get(template, (key, value) => {
-		html = value;
+		html = value || '';
 		fn(escape ? inlinecss(html) : html);
 	});
 	Settings.get('email_style', () => {
