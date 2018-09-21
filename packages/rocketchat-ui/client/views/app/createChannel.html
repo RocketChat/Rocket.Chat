@@ -117,6 +117,44 @@
 						{{> tokenpass extensionsConfig}}
 					{{/if}}
 				{{/if}}
+				<div class="rc-input">
+					<label class="rc-input__label">
+						<div class="rc-input__title">Field One</div>
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon="at"}}
+							</div>
+							<div class="rc-tags">
+								<select name= "dropdownlist_field1" class="rc-tags__input dropdownlist_field1">
+									<option disabled="disabled" selected="selected">Valdkond</option> 
+										<option value="1">Valdkond 1</option>
+										<option value="2">Valdkond 2</option>
+										<option value="3">Valdkond 3</option>
+										<option value="4">Valdkond 4</option>
+								</select>
+							</div>
+						</div>
+					</label>
+				</div>
+				<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">Field Two</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-svg" icon="at"}}
+								</div>
+								<div class="rc-tags">
+									<select name= "dropdownlist_field2" class="rc-tags__input dropdownlist_field2">
+										<option disabled="disabled" selected="selected">Projekt</option> 
+											<option value="1">Projekt 1</option>
+											<option value="2">Projekt 2</option>
+											<option value="3">Projekt 3</option>
+											<option value="4">Projekt 4</option>
+									</select>
+								</div>
+							</div>
+						</label>
+				</div>
 				<div class="create-channel__inputs">
 					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
 				</div>
