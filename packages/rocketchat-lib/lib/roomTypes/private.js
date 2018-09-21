@@ -66,6 +66,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
+			case RoomSettingsEnum.E2E:
+				return RocketChat.settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}
