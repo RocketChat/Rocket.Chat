@@ -686,6 +686,18 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setTopicAndTagsById(_id, topic, tags) {
 		const setData = {};
 		const unsetData = {};
