@@ -202,6 +202,12 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const isPrivate = type === 'p';
+		const valdkond = instance.field1.get();
+		const projekt = instance.field2.get();
+		const customFields = {
+			valdkond: valdkond,
+			projekt: projekt
+		}
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
@@ -213,7 +219,7 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, customFields, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -231,6 +237,12 @@ Template.createChannel.events({
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
+	},
+	'change .dropdownlist_field1'(e, t) {
+		t.field1.set(e.target.value);
+	},
+	'change .dropdownlist_field2'(e, t) {
+		t.field2.set(e.target.value);
 	},
 });
 
@@ -263,6 +275,8 @@ Template.createChannel.onCreated(function() {
 	this.broadcast = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	this.field1 = new ReactiveVar('');
+	this.field2 = new ReactiveVar('');
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
