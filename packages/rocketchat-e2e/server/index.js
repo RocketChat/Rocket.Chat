@@ -12,5 +12,5 @@ import './methods/setRoomKeyID';
 import './methods/fetchMyKeys';
 
 RocketChat.callbacks.add('afterJoinRoom', (user, room) => {
-	RocketChat.Notification.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
+	RocketChat.Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
 });
