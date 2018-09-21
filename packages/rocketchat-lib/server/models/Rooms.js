@@ -595,6 +595,18 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
+	muteUsernamesByRoomId(_id, usernames) {
+		const query = { _id };
+
+		const update = {
+			$addToSet: {
+				muted: { $each: usernames },
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	unmuteUsernameByRoomId(_id, username) {
 		const query = { _id };
 

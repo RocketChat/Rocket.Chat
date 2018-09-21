@@ -26,6 +26,9 @@ Meteor.methods({
 
 			const users = RocketChat.models.Users.find(userFilter).fetch();
 			const now = new Date();
+			if (room.ro) {
+				RocketChat.models.Rooms.muteUsernamesByRoomId(room._id, users.map((user) => user.username));
+			}
 			users.forEach(function(user) {
 				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 				if (subscription != null) {
@@ -43,12 +46,6 @@ Meteor.methods({
 				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 					ts: now,
 				});
-				if (room.ro) {
-					Meteor.call('muteUserInRoom', {
-						rid: room._id,
-						username: user.username,
-					});
-				}
 				Meteor.defer(function() {});
 				return RocketChat.callbacks.run('afterJoinRoom', user, room);
 			});
