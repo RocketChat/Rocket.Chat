@@ -35,6 +35,14 @@ Meteor.startup(() => {
 		RocketChat.models.Settings.updateValueById('Thread_default_parent_Channel', defaultChannel);
 	}
 
+	RocketChat.settings.add('Thread_invitations_threshold', 10, {
+		group: 'Threading',
+		i18nLabel: 'Thread_invitations_threshold',
+		i18nDescription: 'Thread_invitations_threshold_description',
+		type: 'int',
+		public: true
+	});
+
 	RocketChat.settings.add('Thread_from_context_menu', 'button', {
 		group: 'Threading',
 		i18nLabel: 'Thread_from_context_menu',

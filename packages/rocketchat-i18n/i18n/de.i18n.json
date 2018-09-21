@@ -2516,6 +2516,8 @@
   "thread-welcome" : "Danke __username__, dass Du einen neuen Thread angelegt hast! Ich habe für Dich Mitglieder aus __parentChannel__ eingeladen. Tipp: mit \"@all\" kannst Du sie anstupsen, wenn sich länger niemand melden sollte ;)",
   "Threading_description": "Erstelle einen Thread, um wichtigen Dingen mehr Raum zu geben. Dort kannst Du mit allen verfügbaren Mitgliedern schreiben, ohne andere zu stören. So sorgst Du für etwas mehr Ordnung in Eurem Chat.",
   "Thread_from_context_menu": "Threads im Kontext-Menü",
+  "Thread_invitations_threshold": "Max. Anzahl automatisch einzuladender Benutzer",
+  "Thread_invitations_threshold_description": "Max. Anzahl der Benutzer, die automatisch zu einem öffentlichen Thread hinzugezogen werden",
   "Threading_context_menu_button": "Separater Button",
   "Threading_context_menu_none": "Unsichtbar",
   "Thread_creation_on_home": "Threads von der Home-Seite aus anlegen",

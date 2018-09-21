@@ -121,6 +121,7 @@ export class ThreadBuilder {
 
 	_getMembers() {
 		const checkRoles = ['owner', 'moderator', 'leader'];
+		const maxInvitationCount = Math.max(RocketChat.models.Settings.findOneById('Thread_invitations_threshold').value, 0) || 0;
 		let members = [];
 		const admins = RocketChat.models.Subscriptions.findByRoomIdAndRoles(this._parentRoomId, checkRoles).fetch().map((s) => ({
 			username: s.u.username,
@@ -130,13 +131,17 @@ export class ThreadBuilder {
 				'u._id': 1,
 				'u.username': 1,
 			},
+			sort: {
+				open: -1,
+				ls: -1,
+			},
 		}).fetch().map((s) => ({
-			id: s.u._id,
-			username: s.u.username,
-		}));
+				id: s.u._id,
+				username: s.u.username
+			}));
 		if (this._parentRoom.t === 'c') {
 			// only add online users
-			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.map((user) => user.id)).fetch().map((user) => user.username);
+			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.slice(0, maxInvitationCount).map((user) => user.id)).fetch().map((user) => user.username);
 			// add admins to the member list and avoid duplicates
 			members = Array.from(new Set(members.concat(admins.map((user) => user.username))));
 		} else {
@@ -173,6 +178,7 @@ export class ThreadBuilder {
 			// Create messages linking the parent room and the thread
 			this._linkMessages(threadRoom, this._parentRoom, repostedMessage);
 		}
+		Meteor.call('saveRoomSettings', threadRoomCreationResult.rid, 'systemMessages', false);
 
 		return threadRoom;
 	}
