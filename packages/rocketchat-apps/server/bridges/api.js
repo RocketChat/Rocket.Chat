@@ -9,7 +9,17 @@ export class AppApisBridge {
 		this.orch = orch;
 		this.appRouters = new Map();
 
-		apiServer.use('/apps/private/:appId/:hash', (req, res) => {
+		// apiServer.use('/api/apps', (req, res, next) => {
+		// 	console.log({
+		// 		method: req.method.toLowerCase(),
+		// 		url: req.url,
+		// 		query: req.query,
+		// 		body: req.body,
+		// 	});
+		// 	next();
+		// });
+
+		apiServer.use('/api/apps/private/:appId/:hash', (req, res) => {
 			const notFound = () => res.send(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -22,7 +32,7 @@ export class AppApisBridge {
 			notFound();
 		});
 
-		apiServer.use('/apps/public/:appId', (req, res) => {
+		apiServer.use('/api/apps/public/:appId', (req, res) => {
 			const notFound = () => res.send(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -35,10 +45,10 @@ export class AppApisBridge {
 		});
 	}
 
-	registerApi({ api, computedPath }, appId) {
-		console.log(`The App ${ appId } is registering the api: "${ api.path }" (${ computedPath })`);
+	registerApi({ api, computedPath, endpoint }, appId) {
+		console.log(`The App ${ appId } is registering the api: "${ endpoint.path }" (${ computedPath })`);
 
-		this._verifyApi(api);
+		this._verifyApi(api, endpoint);
 
 		if (!this.appRouters.get(appId)) {
 			this.appRouters.set(appId, express.Router()); // eslint-disable-line
@@ -48,12 +58,12 @@ export class AppApisBridge {
 
 		const method = api.method || 'all';
 
-		let routePath = api.path.trim();
+		let routePath = endpoint.path.trim();
 		if (!routePath.startsWith('/')) {
 			routePath = `/${ routePath }`;
 		}
 
-		router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, appId)));
+		router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, endpoint, appId)));
 	}
 
 	unregisterApis(appId) {
@@ -64,17 +74,17 @@ export class AppApisBridge {
 		}
 	}
 
-	_verifyApi(api) {
+	_verifyApi(api, endpoint) {
 		if (typeof api !== 'object') {
 			throw new Error('Invalid Api parameter provided, it must be a valid IApi object.');
 		}
 
-		if (typeof api.path !== 'string') {
+		if (typeof endpoint.path !== 'string') {
 			throw new Error('Invalid Api parameter provided, it must be a valid IApi object.');
 		}
 	}
 
-	_appApiExecutor(api, appId) {
+	_appApiExecutor(api, endpoint, appId) {
 		return (req, res) => {
 			const request = {
 				method: req.method.toLowerCase(),
@@ -85,7 +95,7 @@ export class AppApisBridge {
 				privateHash: req._privateHash,
 			};
 
-			this.orch.getManager().getApiManager().executeApi(appId, api.path, request)
+			this.orch.getManager().getApiManager().executeApi(appId, endpoint.path, request)
 				.then(({ status, headers = {}, content }) => {
 					res.set(headers);
 					res.status(status);
