@@ -7,7 +7,7 @@ Template.sidebarItem.helpers({
 		return args.some((arg) => arg);
 	},
 	streaming() {
-		return Object.keys(this.streamingOptions).length;
+		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
 	isRoom() {
 		return this.rid || this._id;
