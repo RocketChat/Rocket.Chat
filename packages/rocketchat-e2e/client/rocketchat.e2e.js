@@ -142,7 +142,7 @@ class E2E {
 		if (randomPassword) {
 			alerts.open({
 				title: TAPi18n.__('Save your encryption password'),
-				html: `<div><span style="font-weight: bold;">${ randomPassword }</span><br/>This password will only show up this time. Click here to learn more.</div>`,
+				html: '<div>Click here to view and copy your password.</div>',
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
