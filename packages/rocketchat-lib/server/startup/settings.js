@@ -686,7 +686,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
-	this.add('Show_Setup_Wizard', 'completed', {
+	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
 		values: [
