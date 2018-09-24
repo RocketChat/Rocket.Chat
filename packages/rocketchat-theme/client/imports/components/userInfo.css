@@ -169,14 +169,13 @@
 
 	&-action {
 		display: flex;
+		overflow: hidden;
 
 		margin-bottom: var(--default-padding);
 		justify-content: center;
 
 		&__item {
 			overflow: hidden;
-
-			max-width: 45%;
 
 			margin: 0 8px;
 
