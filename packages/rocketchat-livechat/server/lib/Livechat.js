@@ -5,8 +5,10 @@ import moment from 'moment';
 import dns from 'dns';
 import UAParser from 'ua-parser-js';
 import LivechatVisitors from '../models/LivechatVisitors';
+import { Analytics } from './Analytics';
 
 RocketChat.Livechat = {
+	Analytics,
 	historyMonitorType: 'url',
 
 	logger: new Logger('Livechat', {
