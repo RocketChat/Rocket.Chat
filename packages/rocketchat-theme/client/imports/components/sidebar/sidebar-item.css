@@ -144,6 +144,15 @@
 		}
 	}
 
+	&__video {
+
+		margin: 0 2px;
+
+		color: var(--rc-color-success);
+
+		font-size: 1rem;
+	}
+
 	&__room-type {
 		display: flex;
 
@@ -219,6 +228,8 @@
 
 		&-top {
 			overflow: hidden;
+
+			width: 100%;
 		}
 	}
 

@@ -902,4 +902,52 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/channels.moderators', () => {
+		let testChannel;
+		it('/channels.create', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `channel.roles.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('/channels.invite', async(done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('/channels.addModerator', (done) => {
+			request.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
+			request.get(api('channels.moderators'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
+				})
+				.end(done);
+		});
+	});
 });
