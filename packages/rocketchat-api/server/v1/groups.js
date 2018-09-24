@@ -522,7 +522,7 @@ RocketChat.API.v1.addRoute('groups.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach((user) => {
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
@@ -770,3 +770,16 @@ RocketChat.API.v1.addRoute('groups.roles', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('groups.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
+		});
+	},
+});
+

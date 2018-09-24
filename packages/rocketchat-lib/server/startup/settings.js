@@ -76,6 +76,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true,
 		i18nLabel: 'Placeholder_for_password_login_field',
 	});
+
 	this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 		type: 'string',
 		public: true,
@@ -89,7 +90,20 @@ RocketChat.settings.addGroup('Accounts', function() {
 		type: 'string',
 		public: true,
 	});
-
+	this.add('Accounts_Directory_DefaultView', 'channels', {
+		type: 'select',
+		values: [
+			{
+				key: 'channels',
+				i18nLabel: 'Channels',
+			},
+			{
+				key: 'users',
+				i18nLabel: 'Users',
+			},
+		],
+		public: true,
+	});
 	this.section('Registration', function() {
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
@@ -672,7 +686,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 });
 
 RocketChat.settings.addGroup('General', function() {
-	this.add('Show_Setup_Wizard', 'completed', {
+	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
 		values: [

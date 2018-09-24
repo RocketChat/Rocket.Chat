@@ -171,6 +171,7 @@
 	min-height: 0;
 
 	margin-top: 2rem;
+	margin-bottom: 0.5rem;
 
 	border-top: 1px solid rgba(216, 216, 216, 0.4);
 	flex-grow: 1;

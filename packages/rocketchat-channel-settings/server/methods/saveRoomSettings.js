@@ -1,4 +1,4 @@
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal'];
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -70,6 +70,12 @@ Meteor.methods({
 				throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Type',
+				});
+			}
+			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
 				});
 			}
 
@@ -183,6 +189,9 @@ Meteor.methods({
 					break;
 				case 'retentionOverrideGlobal':
 					RocketChat.models.Rooms.saveRetentionOverrideGlobalById(rid, value);
+					break;
+				case 'encrypted':
+					RocketChat.models.Rooms.saveEncryptedById(rid, value);
 					break;
 			}
 		});
