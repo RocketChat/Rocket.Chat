@@ -72,6 +72,9 @@ const parseNotEscaped = function(msg, message) {
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
+		url = url.replace(/&amp;/g, '&');
+		title = title.replace(/&amp;/g, '&');
+
 		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
