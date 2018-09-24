@@ -57,8 +57,6 @@
 		display: flex;
 		overflow: auto;
 
-		overflow: auto;
-
 		flex-direction: column;
 
 		min-height: 72px;
