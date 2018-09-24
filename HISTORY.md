@@ -1,8 +1,26 @@
 
 # 0.70.0 (Under Release Candidate Process)
 
+## 0.70.0-rc.1
+`2018-09-24  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: fix message box autogrow ([#12138](https://github.com/RocketChat/Rocket.Chat/pull/12138))
+- Regression: Modal height ([#12122](https://github.com/RocketChat/Rocket.Chat/pull/12122))
+- Fix: Change wording on e2e to make a little more clear ([#12124](https://github.com/RocketChat/Rocket.Chat/pull/12124))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.70.0-rc.0
-`2018-09-20  ·  1 ️️️⚠️  ·  15 🎉  ·  3 🚀  ·  23 🐛  ·  5 🔍  ·  30 👩‍💻👨‍💻`
+`2018-09-20  ·  1 ️️️⚠️  ·  14 🎉  ·  3 🚀  ·  19 🐛  ·  5 🔍  ·  29 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -23,7 +41,6 @@
 - REST endpoint to set groups' announcement ([#11905](https://github.com/RocketChat/Rocket.Chat/pull/11905))
 - Livechat trigger option to run only once ([#12068](https://github.com/RocketChat/Rocket.Chat/pull/12068) by [@edzluhan](https://github.com/edzluhan))
 - REST endpoints to create roles and assign roles to users ([#11855](https://github.com/RocketChat/Rocket.Chat/pull/11855) by [@aferreira44](https://github.com/aferreira44))
-- Include room name in stream for bots ([#11812](https://github.com/RocketChat/Rocket.Chat/pull/11812))
 - Informal German translations ([#9984](https://github.com/RocketChat/Rocket.Chat/pull/9984))
 
 ### 🚀 Improvements
@@ -49,10 +66,6 @@
 - Internal error when cross-origin with CORS is disabled ([#11953](https://github.com/RocketChat/Rocket.Chat/pull/11953))
 - Message reaction in GraphQL API ([#11967](https://github.com/RocketChat/Rocket.Chat/pull/11967))
 - Direct messages leaking into logs ([#11863](https://github.com/RocketChat/Rocket.Chat/pull/11863))
-- Hidden admin sidenav on embedded layout ([#12025](https://github.com/RocketChat/Rocket.Chat/pull/12025))
-- Update user information not possible by admin if disabled to users ([#11955](https://github.com/RocketChat/Rocket.Chat/pull/11955) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
-- Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992))
-- Reset password link error if already logged in ([#12022](https://github.com/RocketChat/Rocket.Chat/pull/12022))
 - Wrong build path in install.sh ([#11879](https://github.com/RocketChat/Rocket.Chat/pull/11879))
 - Permission check on joinRoom for private room ([#11857](https://github.com/RocketChat/Rocket.Chat/pull/11857))
 - Close popover on shortcuts and writing ([#11562](https://github.com/RocketChat/Rocket.Chat/pull/11562))
@@ -79,7 +92,6 @@
 - [@crazy-max](https://github.com/crazy-max)
 - [@edzluhan](https://github.com/edzluhan)
 - [@flaviogrossi](https://github.com/flaviogrossi)
-- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
 - [@ohmonster](https://github.com/ohmonster)
 - [@pkgodara](https://github.com/pkgodara)
 - [@rndmh3ro](https://github.com/rndmh3ro)
@@ -103,6 +115,43 @@
 - [@rssilva](https://github.com/rssilva)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+- [@timkinnane](https://github.com/timkinnane)
+
+# 0.69.2
+`2018-09-11  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🎉 New features
+
+- Include room name in stream for bots ([#11812](https://github.com/RocketChat/Rocket.Chat/pull/11812))
+
+### 🐛 Bug fixes
+
+- Reset password link error if already logged in ([#12022](https://github.com/RocketChat/Rocket.Chat/pull/12022))
+- Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992))
+- Update user information not possible by admin if disabled to users ([#11955](https://github.com/RocketChat/Rocket.Chat/pull/11955) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Hidden admin sidenav on embedded layout ([#12025](https://github.com/RocketChat/Rocket.Chat/pull/12025))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@cardoso](https://github.com/cardoso)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 - [@timkinnane](https://github.com/timkinnane)
 
 # 0.69.1
