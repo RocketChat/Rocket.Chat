@@ -140,9 +140,14 @@ class E2E {
 
 		const randomPassword = localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
+			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
+				postProcess: 'sprintf',
+				sprintf: [randomPassword],
+			});
+
 			alerts.open({
 				title: TAPi18n.__('Save your encryption password'),
-				html: '<div>Click here to view and copy your password.</div>',
+				html: TAPi18n.__('Click here to view and copy your password.'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
@@ -150,22 +155,7 @@ class E2E {
 					modal.open({
 						title: TAPi18n.__('Save your encryption password'),
 						html: true,
-						text: `
-							<div>
-								You can now create encrypted private groups and direct messages. You may also change existing private groups or DMs to encrypted.
-								<br/>
-								This is end to end encryption so the key to encode/decode your messages will not be saved on the server.
-								For that reason you need to store this password somewhere safe.  You will be required to enter it on other devices you wish to use e2e encryption on.
-								<br/>
-								<br/>
-								Your password is: <span style="font-weight: bold;">${ randomPassword }</span>
-								<br/>
-								<br/>
-								This is an auto generated password, you can setup a new password for your encryption key any time from any browser you have entered the existing password.
-								<br/>
-								This password is only stored on this browser until you store the password and dismiss this message.
-							</div>
-						`,
+						text: `<div>${ passwordRevealText }</div>`,
 						showConfirmButton: true,
 						showCancelButton: true,
 						confirmButtonText: TAPi18n.__('I saved my password, close this message'),
