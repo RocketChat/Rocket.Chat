@@ -102,15 +102,15 @@ Template.webdavFilePicker.events({
 		// converting to file object
 		blob.lastModified = file.lastmod;
 		blob.name = file.basename;
-		const text = `\
-						<div class='upload-preview-title'>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
-							</div>
-							<div class="rc-input__wrapper">
-								<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
-							</div>
-						</div>`;
+		const text = `
+<div class='upload-preview-title'>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(blob.name) }' placeholder='${ t('Upload_file_name') }'>
+	</div>
+	<div class="rc-input__wrapper">
+		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+	</div>
+</div>`;
 
 		return modal.open({
 			title: t('Upload_file_question'),

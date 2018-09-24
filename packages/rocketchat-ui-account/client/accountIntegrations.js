@@ -2,10 +2,6 @@
 
 import toastr from 'toastr';
 
-Template.accountIntegrations.onCreated(function() {
-	this.subscribe('webdavAccounts');
-});
-
 Template.accountIntegrations.helpers({
 	webdavAccounts() {
 		return RocketChat.models.WebdavAccounts.find().fetch();

@@ -37,5 +37,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/webdavAccounts.js', 'server');
 
 	api.addFiles('startup/messageBoxActions.js', 'client');
+	api.addFiles('startup/subscription.js', 'client');
 	api.addFiles('startup/settings.js', 'server');
 });

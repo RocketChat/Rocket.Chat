@@ -1,12 +1,4 @@
 /* globals modal, RocketChat */
-import { Tracker } from 'meteor/tracker';
-Tracker.autorun(() => {
-	if (Meteor.userId()) {
-		Meteor.subscribe('webdavAccounts');
-	}
-});
-
-
 RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
 	icon: 'plus',
