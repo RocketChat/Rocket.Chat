@@ -103,7 +103,7 @@ Meteor.methods({
 			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
-				fname: me.username,
+				fname: me.name || me.username,
 				name: me.username,
 				t: 'd',
 				open: false,
