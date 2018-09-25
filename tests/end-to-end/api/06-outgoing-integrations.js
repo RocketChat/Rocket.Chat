@@ -7,6 +7,8 @@ import { adminEmail, password } from '../../data/user.js';
 import supertest from 'supertest';
 
 describe('Outgoing Integrations', function() {
+	before((done) => getCredentials(done));
+
 	this.retries(0);
 
 	it('/integrations.create', (done) => {
