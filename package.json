@@ -67,6 +67,7 @@
 		"jslint": "eslint .",
 		"stylelint": "stylelint \"packages/**/*.css\"",
 		"test": "node .scripts/start.js",
+		"chimp-path": "chimp tests/chimp-config.js --path=$CHIMP_PATH",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
 		"chimp-test": "chimp tests/chimp-config.js",
 		"postinstall": "cd packages/rocketchat-katex && npm i",
