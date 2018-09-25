@@ -1,5 +1,6 @@
 import _ from 'underscore';
 
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -216,7 +217,14 @@ Template.createChannel.events({
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
-
+		/// EKM FIX ///
+		const valdkond = instance.field1.get();
+		const projekt = instance.field2.get();
+		const customFields = {
+			valdkond: valdkond,
+			projekt: projekt
+		}
+		////////////////
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
@@ -227,7 +235,7 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, customFields, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -246,6 +254,14 @@ Template.createChannel.events({
 		});
 		return false;
 	},
+	/////// EKM FIX
+	'change .valdkondfield'(e, t) {
+		t.field1.set(e.target.value);
+	},
+	'change .projektfield'(e, t) {
+		t.field2.set(e.target.value);
+	},
+	////////////////////
 });
 
 Template.createChannel.onRendered(function() {
@@ -278,6 +294,10 @@ Template.createChannel.onCreated(function() {
 	this.encrypted = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	///EKM FIX
+	this.field1 = new ReactiveVar('');
+	this.field2 = new ReactiveVar('');
+	/////
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
@@ -410,3 +430,21 @@ Template.tokenpass.events({
 		i.requireAll.set(e.currentTarget.checked);
 	},
 });
+
+//EKM FIX
+let dropdown = $('#kmproj');
+
+dropdown.empty();
+
+dropdown.append('<option selected="true" disabled>Vali vestlusega seotud projekt</option>');
+dropdown.prop('selectedIndex', 0);
+
+const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
+
+$.getJSON(url, function (data) {
+  $.each(data, function (key, entry) {
+    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.nimi));
+  })
+});
+////////////////////////
+
