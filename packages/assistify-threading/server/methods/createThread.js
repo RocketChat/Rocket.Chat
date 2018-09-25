@@ -98,7 +98,18 @@ export class ThreadBuilder {
 
 			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+			// we want to create a system message for linking the thread from the parent room - so the parent room
+			// has to support system messages at least for this interaction
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, true);
+			}
+			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+
+			// reset it if necessary
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, false);
+			}
+			return true;
 		}
 	}
 
