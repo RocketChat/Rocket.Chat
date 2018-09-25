@@ -392,7 +392,18 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 			if (response) {
 				debugLog('Got response');
 
-				const assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
+				var assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
+				const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
+
+				var xmlenc = require('xml-encryption');
+				var options = { key: this.options.privateKey};
+
+				if (typeof encAssertion !== 'undefined') {
+					xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+						assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+					});
+				}
+
 				if (!assertion) {
 					return callback(new Error('Missing SAML assertion'), null, false);
 				}
@@ -408,7 +419,14 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 					profile.issuer = issuer.textContent;
 				}
 
-				const subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+				var subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+				const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
+
+				if (typeof encSubject !== 'undefined') {
+					xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+						subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+					});
+				}
 
 				if (subject) {
 					const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
