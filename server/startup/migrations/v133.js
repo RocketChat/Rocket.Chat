@@ -19,16 +19,17 @@ RocketChat.Migrations.add({
 		RocketChat.models.Settings.removeById('Invitation_HTML');
 
 		RocketChat.models.Settings.find({ _id: { $in: settings } }).forEach(function(setting) {
-			const id = setting._id.replace('Customized', 'Email');
+			const _id = setting._id.replace('Customized', 'Email');
+			const newSetting = RocketChat.models.Settings.findOne({ _id });
 
-			delete setting._id;
-			delete setting.enableQuery;
-			delete setting.i18nDefaultQuery;
+			delete newSetting._id;
+			delete newSetting.enableQuery;
+			delete newSetting.i18nDefaultQuery;
 			if (setting.value === false) {
-				setting.value = setting.packageValue;
+				newSetting.value = newSetting.packageValue;
 			}
 
-			RocketChat.models.Settings.upsert(id, setting);
+			RocketChat.models.Settings.upsert({ _id }, newSetting);
 		});
 
 		RocketChat.models.Settings.remove({ _id: { $in: settings } }, { multi: true });
