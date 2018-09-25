@@ -146,20 +146,20 @@ class E2E {
 			});
 
 			alerts.open({
-				title: TAPi18n.__('Save your encryption password'),
-				html: TAPi18n.__('Click here to view and copy your password.'),
+				title: TAPi18n.__('Save_your_encryption_password'),
+				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
 				action() {
 					modal.open({
-						title: TAPi18n.__('Save your encryption password'),
+						title: TAPi18n.__('Save_your_encryption_password'),
 						html: true,
 						text: `<div>${ passwordRevealText }</div>`,
 						showConfirmButton: true,
 						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('I saved my password, close this message'),
-						cancelButtonText: TAPi18n.__('I\'ll do it later'),
+						confirmButtonText: TAPi18n.__('I_saved_my_password_close_this_message'),
+						cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 					}, (confirm) => {
 						if (!confirm) {
 							return;
