@@ -1,20 +1,4 @@
 import _ from 'underscore';
-//EKM FIX
-let dropdown = $('#kmproj');
-
-dropdown.empty();
-
-dropdown.append('<option selected="true" disabled>Vali vestlusega seotud projekt</option>');
-dropdown.prop('selectedIndex', 0);
-
-const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
-
-$.getJSON(url, function (data) {
-  $.each(data, function (key, entry) {
-    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.nimi));
-  })
-});
-////////////////////////
 
 
 const acEvents = {
@@ -426,4 +410,20 @@ Template.tokenpass.events({
 	},
 });
 
+//EKM FIX
+let dropdown = $('#kmproj');
+
+dropdown.empty();
+
+dropdown.append('<option selected="true" disabled>Vali vestlusega seotud projekt</option>');
+dropdown.prop('selectedIndex', 0);
+
+const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
+
+$.getJSON(url, function (data) {
+  $.each(data, function (key, entry) {
+    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.nimi));
+  })
+});
+////////////////////////
 
