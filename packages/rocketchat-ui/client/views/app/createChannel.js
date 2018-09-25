@@ -251,6 +251,44 @@ Template.createChannel.events({
 });
 
 Template.createChannel.onRendered(function() {
+	////////EKM FIX
+	let dropdown = document.getElementById('kmproj');
+	dropdown.length = 0;
+
+	let defaultOption = document.createElement('option');
+	defaultOption.text = 'Vali vestlusega seotud projekt';
+
+	dropdown.add(defaultOption);
+	dropdown.selectedIndex = 0;
+
+	const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
+
+	const request = new XMLHttpRequest();
+	request.open('GET', url, true);
+
+	request.onload = function() {
+	  if (request.status === 200) {
+	    const data = JSON.parse(request.responseText);
+	    let option;
+	    for (let i = 0; i < data.length; i++) {
+	      option = document.createElement('option');
+	      option.text = data[i].nimi;
+	      option.value = data[i].id;
+	      dropdown.add(option);
+	    }
+	   } else {
+	    // Reached the server, but it returned an error
+	  }   
+	}
+
+	request.onerror = function() {
+	  console.error('An error occurred fetching the JSON from ' + url);
+	};
+
+	request.send();
+	/////////////////
+	
+	
 	const users = this.selectedUsers;
 
 	this.firstNode.querySelector('[name="users"]').focus();
@@ -410,20 +448,5 @@ Template.tokenpass.events({
 	},
 });
 
-//EKM FIX
-let dropdown = $('#kmproj');
 
-dropdown.empty();
-
-dropdown.append('<option selected="true" disabled>Vali vestlusega seotud projekt</option>');
-dropdown.prop('selectedIndex', 0);
-
-const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
-
-$.getJSON(url, function (data) {
-  $.each(data, function (key, entry) {
-    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.nimi));
-  })
-});
-////////////////////////
 
