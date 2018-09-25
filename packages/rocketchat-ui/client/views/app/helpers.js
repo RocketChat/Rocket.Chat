@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export function timeAgo(time, now = new Date()) {
+export function timeAgo(time, t, now = new Date()) {
 	if (!time) {
 		return;
 	}
@@ -12,7 +12,7 @@ export function timeAgo(time, now = new Date()) {
 	const wasYesterday = time.getFullYear() >= yesterday.getFullYear() && time.getMonth() >= yesterday.getMonth() && time.getDate() >= yesterday.getDate();
 
 	const todayFormatted = (isToday && moment(time).format('LT'));
-	const yesterdayFormatted = (wasYesterday && 'yesterday');
+	const yesterdayFormatted = (wasYesterday && t('yesterday'));
 	const beforeFormatted = moment(time).format('MMM D, YYYY');
 
 	return todayFormatted || yesterdayFormatted || beforeFormatted;

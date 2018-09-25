@@ -2,9 +2,9 @@
 	display: flex;
 	flex-direction: column;
 
-	padding: 0 1.5rem;
-
 	height: 100vh;
+
+	padding: 0 1.5rem;
 
 	&-search {
 		width: 100%;
@@ -58,14 +58,10 @@
 .rc-directory-td--users {
 	overflow: hidden;
 
-	width: 120px;
+	width: 80px;
 
 	white-space: nowrap;
 	text-overflow: ellipsis;
-}
-
-.rc-directory-td--users {
-	width: 80px;
 }
 
 @media (width <= 700px) {
