@@ -76,7 +76,7 @@ export class CustomOAuth {
 		}
 	}
 
-	getAccessToken(query) {
+	queryAccessToken(query) {
 		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
 		if (!config) {
 			throw new ServiceConfiguration.ConfigError();
@@ -97,12 +97,19 @@ export class CustomOAuth {
 			},
 		};
 
+		const { clientId } = config;
+		const secret = OAuth.openSecret(config.secret);
+
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions.auth = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+			allOptions.auth = `${ clientId }:${ secret }`;
 		} else {
-			allOptions.params.client_secret = OAuth.openSecret(config.secret);
-			allOptions.params.client_id = config.clientId;
+			allOptions.params.client_secret = secret;
+			allOptions.params.client_id = clientId;
+
+			// Fix for WeChat:
+			allOptions.params.appid = clientId;
+			allOptions.params.secret = secret;
 		}
 
 		try {
@@ -122,12 +129,15 @@ export class CustomOAuth {
 		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
-			return data.access_token;
+			return data;
 		}
 	}
 
-	getIdentity(accessToken) {
-		const params = {};
+	getAccessToken(query) {
+		return this.queryAccessToken(query).access_token;
+	}
+
+	getIdentity(accessToken, params = {}) {
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
 		};
@@ -137,6 +147,7 @@ export class CustomOAuth {
 		} else {
 			params.access_token = accessToken;
 		}
+
 
 		try {
 			const response = HTTP.get(this.identityPath, {
@@ -161,41 +172,39 @@ export class CustomOAuth {
 		}
 	}
 
-	registerService() {
-		const self = this;
-		OAuth.registerService(this.name, 2, null, (query) => {
-			const accessToken = self.getAccessToken(query);
-			// console.log 'at:', accessToken
+	fixThirdPartyIdentityRules(identity) {
+		if (identity) {
+			if (identity.openid && !identity.id) {
+				identity.id = identity.openid;
+			}
 
-			let identity = self.getIdentity(accessToken);
+			// Set 'id' to '_id' for any sources that provide it
+			if (identity._id && !identity.id) {
+				identity.id = identity._id;
+			}
 
-			if (identity) {
-				// Set 'id' to '_id' for any sources that provide it
-				if (identity._id && !identity.id) {
-					identity.id = identity._id;
-				}
+			// Fix for Reddit
+			if (identity.result) {
+				identity = identity.result;
+			}
 
-				// Fix for Reddit
-				if (identity.result) {
-					identity = identity.result;
-				}
-
+			if (!identity.id) {
 				// Fix WordPress-like identities having 'ID' instead of 'id'
-				if (identity.ID && !identity.id) {
+				if (identity.ID) {
 					identity.id = identity.ID;
 				}
 
 				// Fix Auth0-like identities having 'user_id' instead of 'id'
-				if (identity.user_id && !identity.id) {
+				if (identity.user_id) {
 					identity.id = identity.user_id;
 				}
 
-				if (identity.CharacterID && !identity.id) {
+				if (identity.CharacterID) {
 					identity.id = identity.CharacterID;
 				}
 
 				// Fix Dataporten having 'user.userid' instead of 'id'
-				if (identity.user && identity.user.userid && !identity.id) {
+				if (identity.user && identity.user.userid) {
 					if (identity.user.userid_sec && identity.user.userid_sec[0]) {
 						identity.id = identity.user.userid_sec[0];
 					} else {
@@ -203,40 +212,64 @@ export class CustomOAuth {
 					}
 					identity.email = identity.user.email;
 				}
+
 				// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
-				if (identity.user && identity.user.user_id && !identity.id) {
+				if (identity.user && identity.user.user_id) {
 					identity.id = identity.user.user_id;
 					identity.email = identity.user.user_email;
 				}
+
 				// Fix general 'phid' instead of 'id' from phabricator
-				if (identity.phid && !identity.id) {
+				if (identity.phid) {
 					identity.id = identity.phid;
 				}
 
 				// Fix Keycloak-like identities having 'sub' instead of 'id'
-				if (identity.sub && !identity.id) {
+				if (identity.sub) {
 					identity.id = identity.sub;
 				}
 
 				// Fix general 'userid' instead of 'id' from provider
-				if (identity.userid && !identity.id) {
+				if (identity.userid) {
 					identity.id = identity.userid;
 				}
 
 				// Fix Nextcloud provider
-				if (!identity.id && identity.ocs && identity.ocs.data && identity.ocs.data.id) {
+				if (identity.ocs && identity.ocs.data && identity.ocs.data.id) {
 					identity.id = identity.ocs.data.id;
 					identity.name = identity.ocs.data.displayname;
 					identity.email = identity.ocs.data.email;
 				}
 
-				// Fix when authenticating from a meteor app with 'emails' field
-				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
-					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+				// Fix for WeChat
+				if (identity.openid) {
+					identity.id = identity.openid;
 				}
 			}
 
-			// console.log 'id:', JSON.stringify identity, null, '  '
+			// Fix when authenticating from a meteor app with 'emails' field
+			if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
+				identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
+			}
+		}
+
+		return identity;
+	}
+
+	registerService() {
+		const self = this;
+		OAuth.registerService(this.name, 2, null, (query) => {
+			const accessTokenPack = self.queryAccessToken(query);
+			const accessToken = accessTokenPack.access_token;
+			const identityParams = {};
+
+			if ('openid' in accessTokenPack) {
+				identityParams.openid = accessTokenPack.openid;
+			}
+
+			const identity = self.fixThirdPartyIdentityRules(
+				self.getIdentity(accessToken, identityParams)
+			);
 
 			const serviceData = {
 				_OAuthCustom: true,
@@ -253,8 +286,6 @@ export class CustomOAuth {
 					},
 				},
 			};
-
-			// console.log data
 
 			return data;
 		});
@@ -324,7 +355,6 @@ export class CustomOAuth {
 
 	}
 }
-
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {

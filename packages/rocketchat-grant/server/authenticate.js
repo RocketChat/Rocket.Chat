@@ -55,13 +55,13 @@ function getAccessToken(req) {
 
 export async function authenticate(providerName, req) {
 	let tokens;
-	const accessToken = getAccessToken(req);
 	const provider = Providers.get(providerName);
 
 	if (!provider) {
 		throw new GrantError(`Provider '${ providerName }' not found`);
 	}
 
+	const accessToken = provider.getAccessToken ? provider.getAccessToken(req) : getAccessToken(req);
 	const userData = provider.getUser(accessToken);
 
 	let user = findUserByOAuthId(providerName, userData.id);
