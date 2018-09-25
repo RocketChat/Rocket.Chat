@@ -64,8 +64,6 @@ export const setSettings = (s) => {
 	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
 };
 
-
-
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
@@ -89,7 +87,6 @@ export const checkAddressFormatAndThrow = (from, func) => {
 		function: func,
 	});
 };
-
 
 export const getHeader = () => contentHeader;
 

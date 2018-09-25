@@ -4,11 +4,9 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 let advice = '';
 Meteor.startup(() => {
-	setTimeout(() => {
-		Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
-			advice = value;
-		});
-	}, 1000);
+	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+		advice = value;
+	});
 });
 
 function getEmailContent({ message, user, room }) {

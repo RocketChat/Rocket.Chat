@@ -9,7 +9,6 @@ Meteor.methods({
 		});
 
 		return RocketChat.Livechat.sendOfflineMessage(data);
-
 	},
 });
 

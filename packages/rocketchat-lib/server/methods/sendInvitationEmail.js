@@ -1,11 +1,9 @@
 import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
-	setTimeout(() => {
-		Mailer.getTemplate('Invitation_Email', (value) => {
-			html = value;
-		});
-	}, 1000);
+	Mailer.getTemplate('Invitation_Email', (value) => {
+		html = value;
+	});
 });
 
 Meteor.methods({

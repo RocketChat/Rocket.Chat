@@ -4,11 +4,9 @@ import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 let html = '';
 Meteor.startup(() => {
-	setTimeout(() => {
-		Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
-			html = template;
-		});
-	}, 1000);
+	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
+		html = template;
+	});
 });
 
 function validateUserData(userId, userData) {
