@@ -1,4 +1,21 @@
 import _ from 'underscore';
+//EKM FIX
+let dropdown = $('#kmproj');
+
+dropdown.empty();
+
+dropdown.append('<option selected="true" disabled>Vali vestlusega seotud projekt</option>');
+dropdown.prop('selectedIndex', 0);
+
+const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
+
+$.getJSON(url, function (data) {
+  $.each(data, function (key, entry) {
+    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.nimi));
+  })
+});
+////////////////////////
+
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -202,13 +219,14 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const isPrivate = type === 'p';
+		/// EKM FIX ///
 		const valdkond = instance.field1.get();
 		const projekt = instance.field2.get();
 		const customFields = {
 			valdkond: valdkond,
 			projekt: projekt
 		}
-
+		////////////////
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
@@ -238,12 +256,14 @@ Template.createChannel.events({
 		});
 		return false;
 	},
-	'change .dropdownlist_field1'(e, t) {
+	/////// EKM FIX
+	'change .valdkondfield'(e, t) {
 		t.field1.set(e.target.value);
 	},
-	'change .dropdownlist_field2'(e, t) {
+	'change .projektfield'(e, t) {
 		t.field2.set(e.target.value);
 	},
+	////////////////////
 });
 
 Template.createChannel.onRendered(function() {
@@ -275,8 +295,10 @@ Template.createChannel.onCreated(function() {
 	this.broadcast = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	///EKM FIX
 	this.field1 = new ReactiveVar('');
 	this.field2 = new ReactiveVar('');
+	/////
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
@@ -403,3 +425,5 @@ Template.tokenpass.events({
 		i.requireAll.set(e.currentTarget.checked);
 	},
 });
+
+
