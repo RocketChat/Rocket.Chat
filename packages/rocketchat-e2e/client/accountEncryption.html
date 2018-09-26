@@ -13,6 +13,10 @@
 					<div class="section">
 						<div class="section-content border-component-color">
 
+							<div class="alert">
+								{{{_ "E2E_Encryption_Password_Explanation" }}}
+							</div>
+
 							<div class="rc-input{{#if confirmationKeyInvalid}} rc-input--error{{/if}} rc-w50 padded">
 								{{#with canChange=allowKeyChange}}
 									<label class="rc-input__label">
