@@ -25,7 +25,7 @@ RocketChat.settings.addGroup('FileUpload', function() {
 	this.add('FileUpload_ScaleImages', true, {
 		type: 'boolean',
 		public: true,
-		i18nDescription: 'FileUpload_ScaleImagesDescription'
+		i18nDescription: 'FileUpload_ScaleImagesDescription',
 	});
 
 	this.add('FileUpload_Storage_Type', 'GridFS', {
