@@ -37,6 +37,7 @@ RocketChat.MessageAction = new class {
 
 	constructor() {
 		this.buttons = new ReactiveVar({});
+		this.messages = new ReactiveVar([]);
 	}
 
 	addButton(config) {
@@ -131,12 +132,19 @@ Meteor.startup(function() {
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
+			// const message = this._arguments[1];
+			// const { input } = chatMessages[message.rid];
+			const messages = RocketChat.MessageAction.messages.get();
 			const message = this._arguments[1];
 			const { input } = chatMessages[message.rid];
+
+			messages.push(message);
+			RocketChat.MessageAction.messages.set(messages);
+
 			$(input)
 				.focus()
 				.data('mention-user', true)
-				.data('reply', message)
+				.data('reply', messages)
 				.trigger('dataChange');
 		},
 		condition(message) {
@@ -292,12 +300,17 @@ Meteor.startup(function() {
 		label: 'Quote',
 		context: ['message', 'message-mobile'],
 		action() {
+			const messages = RocketChat.MessageAction.messages.get();
 			const message = this._arguments[1];
 			const { input } = chatMessages[message.rid];
+
+			messages.push(message);
+			RocketChat.MessageAction.messages.set(messages);
+
 			$(input)
 				.focus()
 				.data('mention-user', false)
-				.data('reply', message)
+				.data('reply', messages)
 				.trigger('dataChange');
 		},
 		condition(message) {
