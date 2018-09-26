@@ -23,6 +23,17 @@ const success = function success(fn) {
 	};
 };
 
+const addMessageToList = (messagesList, message) => {
+	const ids = messagesList.map((msg) => msg._id);
+
+	// checks if the message is not already on the list
+	if (!ids.includes(message._id)) {
+		messagesList.push(message);
+	}
+
+	return messagesList;
+};
+
 RocketChat.MessageAction = new class {
 	/*
   	config expects the following keys (only id is mandatory):
@@ -134,9 +145,10 @@ Meteor.startup(function() {
 			const message = this._arguments[1];
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
-			const messages = $input.data('reply') || [];
 
-			messages.push(message);
+			let messages = $input.data('reply') || [];
+
+			messages = addMessageToList(messages, message, input);
 
 			$(input)
 				.focus()
@@ -301,9 +313,9 @@ Meteor.startup(function() {
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
-			const messages = $input.data('reply') || [];
+			let messages = $input.data('reply') || [];
 
-			messages.push(message);
+			messages = addMessageToList(messages, message, input);
 
 			$input
 				.focus()
