@@ -198,6 +198,14 @@ Template.createChannel.events({
 			t.name.set(modified);
 		}
 	},
+	////EKM FIX
+	'change .dropdownlist_field1'(e, t) {
+		t.field1.set(e.target.value);
+	},
+	'change .dropdownlist_field2'(e, t) {
+		t.field2.set(e.target.value);
+	},
+   	 ////
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -243,14 +251,6 @@ Template.createChannel.events({
 		});
 		return false;
 	},
-	/////// EKM FIX
-	'change .valdkondfield'(e, t) {
-		t.field1.set(e.target.value);
-	},
-	'change .projektfield'(e, t) {
-		t.field2.set(e.target.value);
-	},
-	////////////////////
 });
 
 Template.createChannel.onRendered(function() {
