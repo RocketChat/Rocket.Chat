@@ -275,7 +275,7 @@ Template.createChannel.onRendered(function() {
 	    let option;
 	    for (let i = 0; i < data.length; i++) {
 	      option = document.createElement('option');
-	      option.text = data[i].kood + " " + data[i].nimi;
+	      option.text = data[i].kood + "   " + data[i].nimi;
 	      option.value = data[i].id;
 	      dropdown.add(option);
 	    }
