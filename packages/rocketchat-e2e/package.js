@@ -8,11 +8,18 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('less');
-	api.use('mizzao:timesync');
+	api.use([
+		'ecmascript',
+		'less',
+		'mizzao:timesync',
+		'rocketchat:lib',
+		'templating',
+		'sha',
+	]);
 
 	api.mainModule('client/rocketchat.e2e.js', 'client');
+	api.addFiles('client/accountEncryption.html', 'client');
+	api.addFiles('client/accountEncryption.js', 'client');
 
 	api.mainModule('server/index.js', 'server');
 });
