@@ -105,8 +105,10 @@ Template.createChannel.helpers({
 		const extensions_invalid = instance.extensions_invalid.get();
 		const inUse = instance.inUse.get();
 		const name = instance.name.get();
+		const valdkond = instance.field1.get();
+		const projekt = instance.field2.get();
 
-		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid) {
+		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid || (valdkond == '' &&  projekt == '')) {
 			return 'disabled';
 		}
 		return '';
@@ -272,17 +274,17 @@ Template.createChannel.onRendered(function() {
 	    let option;
 	    for (let i = 0; i < data.length; i++) {
 	      option = document.createElement('option');
-	      option.text = data[i].nimi;
+	      option.text = data[i].kood + " " + data[i].nimi;
 	      option.value = data[i].id;
 	      dropdown.add(option);
 	    }
 	   } else {
-	    // Reached the server, but it returned an error
+	    // VIGA
 	  }   
 	}
 
 	request.onerror = function() {
-	  console.error('An error occurred fetching the JSON from ' + url);
+	  console.error('JSONi p2rimise viga ' + url);
 	};
 
 	request.send();
