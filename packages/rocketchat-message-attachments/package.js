@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:lazy-load',
+		'rocketchat:e2e',
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
