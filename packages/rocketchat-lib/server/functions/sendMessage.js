@@ -1,37 +1,52 @@
-const objectMaybeIncluding = (types) => {
-	return Match.Where((value) => {
-		Object.keys(types).forEach(field => {
-			if (value[field] != null) {
-				try {
-					check(value[field], types[field]);
-				} catch (error) {
-					error.path = field;
-					throw error;
-				}
+const objectMaybeIncluding = (types) => Match.Where((value) => {
+	Object.keys(types).forEach((field) => {
+		if (value[field] != null) {
+			try {
+				check(value[field], types[field]);
+			} catch (error) {
+				error.path = field;
+				throw error;
 			}
-		});
-
-		return true;
+		}
 	});
-};
 
-const validateAttachmentsFields = attachmentFields => {
-	check(attachmentFields, objectMaybeIncluding({
-		short: Boolean
-	}));
+	return true;
+});
 
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
+		short: Boolean,
 		title: String,
-		value: String
+		value: Match.OneOf(String, Match.Integer, Boolean),
+	}));
+
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
+};
+
+const validateAttachmentsActions = (attachmentActions) => {
+	check(attachmentActions, objectMaybeIncluding({
+		type: String,
+		text: String,
+		url: String,
+		image_url: String,
+		is_webview: Boolean,
+		webview_height_ratio: String,
+		msg: String,
+		msg_in_chat_window: Boolean,
 	}));
 };
 
-const validateAttachment = attachment => {
+const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
 		thumb_url: String,
+		button_alignment: String,
+		actions: [Match.Any],
 		message_link: String,
 		collapsed: Boolean,
 		author_name: String,
@@ -43,15 +58,19 @@ const validateAttachment = attachment => {
 		image_url: String,
 		audio_url: String,
 		video_url: String,
-		fields: [Match.Any]
+		fields: [Match.Any],
 	}));
 
 	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
+
+	if (attachment.actions && attachment.actions.length) {
+		attachment.actions.map(validateAttachmentsActions);
+	}
 };
 
-const validateBodyAttachments = attachments => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
@@ -65,7 +84,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		alias: String,
 		emoji: String,
 		avatar: String,
-		attachments: [Match.Any]
+		attachments: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -79,7 +98,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	message.u = {
 		_id,
 		username,
-		name
+		name,
 	};
 	message.rid = room._id;
 
@@ -99,7 +118,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
 		}
 
 		let result;
@@ -136,11 +155,11 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (message._id && upsert) {
-			const _id = message._id;
+			const { _id } = message;
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,
-				'u._id': message.u._id
+				'u._id': message.u._id,
 			}, message);
 			message._id = _id;
 		} else {

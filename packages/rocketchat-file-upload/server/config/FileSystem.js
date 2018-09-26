@@ -44,7 +44,7 @@ const FileSystemUploads = new FileUploadClass({
 			out.end();
 			return;
 		}
-	}
+	},
 });
 
 const FileSystemAvatars = new FileUploadClass({
@@ -67,7 +67,7 @@ const FileSystemAvatars = new FileUploadClass({
 			res.end();
 			return;
 		}
-	}
+	},
 });
 
 const FileSystemUserDataFiles = new FileUploadClass({
@@ -93,12 +93,12 @@ const FileSystemUserDataFiles = new FileUploadClass({
 			res.end();
 			return;
 		}
-	}
+	},
 });
 
 const createFileSystemStore = _.debounce(function() {
 	const options = {
-		path: RocketChat.settings.get('FileUpload_FileSystemPath') //'/tmp/uploads/photos',
+		path: RocketChat.settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
 
 	FileSystemUploads.store = FileUpload.configureUploadsStore('Local', FileSystemUploads.name, options);
@@ -106,7 +106,7 @@ const createFileSystemStore = _.debounce(function() {
 	FileSystemUserDataFiles.store = FileUpload.configureUploadsStore('Local', FileSystemUserDataFiles.name, options);
 
 	// DEPRECATED backwards compatibililty (remove)
-	UploadFS.getStores()['fileSystem'] = UploadFS.getStores()[FileSystemUploads.name];
+	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
 }, 500);
 
 RocketChat.settings.get('FileUpload_FileSystemPath', createFileSystemStore);

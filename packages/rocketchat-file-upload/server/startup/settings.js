@@ -1,24 +1,25 @@
 RocketChat.settings.addGroup('FileUpload', function() {
 	this.add('FileUpload_Enabled', true, {
 		type: 'boolean',
-		public: true
+		public: true,
 	});
 
-	this.add('FileUpload_MaxFileSize', 2097152, {
+	this.add('FileUpload_MaxFileSize', 104857600, {
 		type: 'int',
-		public: true
+		public: true,
+		i18nDescription: 'FileUpload_MaxFileSizeDescription',
 	});
 
 	this.add('FileUpload_MediaTypeWhiteList', 'image/*,audio/*,video/*,application/zip,application/x-rar-compressed,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document', {
 		type: 'string',
 		public: true,
-		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription'
+		i18nDescription: 'FileUpload_MediaTypeWhiteListDescription',
 	});
 
 	this.add('FileUpload_ProtectFiles', true, {
 		type: 'boolean',
 		public: true,
-		i18nDescription: 'FileUpload_ProtectFilesDescription'
+		i18nDescription: 'FileUpload_ProtectFilesDescription',
 	});
 
 	this.add('FileUpload_ScaleImages', true, {
@@ -31,21 +32,21 @@ RocketChat.settings.addGroup('FileUpload', function() {
 		type: 'select',
 		values: [{
 			key: 'GridFS',
-			i18nLabel: 'GridFS'
+			i18nLabel: 'GridFS',
 		}, {
 			key: 'AmazonS3',
-			i18nLabel: 'AmazonS3'
+			i18nLabel: 'AmazonS3',
 		}, {
 			key: 'GoogleCloudStorage',
-			i18nLabel: 'GoogleCloudStorage'
+			i18nLabel: 'GoogleCloudStorage',
 		}, {
 			key: 'Webdav',
-			i18nLabel: 'WebDAV'
+			i18nLabel: 'WebDAV',
 		}, {
 			key: 'FileSystem',
-			i18nLabel: 'FileSystem'
+			i18nLabel: 'FileSystem',
 		}],
-		public: true
+		public: true,
 	});
 
 	this.section('Amazon S3', function() {
@@ -53,87 +54,87 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_Acl', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_AWSAccessKeyId', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_AWSSecretAccessKey', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_CDN', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_Region', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_BucketURL', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
+				value: 'AmazonS3',
 			},
-			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.'
+			i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.',
 		});
 		this.add('FileUpload_S3_SignatureVersion', 'v4', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_ForcePathStyle', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_URLExpiryTimeSpan', 120, {
 			type: 'int',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
+				value: 'AmazonS3',
 			},
-			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description'
+			i18nDescription: 'FileUpload_S3_URLExpiryTimeSpan_Description',
 		});
 		this.add('FileUpload_S3_Proxy_Avatars', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 		this.add('FileUpload_S3_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'AmazonS3'
-			}
+				value: 'AmazonS3',
+			},
 		});
 	});
 
@@ -143,16 +144,16 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			private: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'GoogleCloudStorage'
-			}
+				value: 'GoogleCloudStorage',
+			},
 		});
 		this.add('FileUpload_GoogleStorage_AccessId', '', {
 			type: 'string',
 			private: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'GoogleCloudStorage'
-			}
+				value: 'GoogleCloudStorage',
+			},
 		});
 		this.add('FileUpload_GoogleStorage_Secret', '', {
 			type: 'string',
@@ -160,22 +161,22 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			private: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'GoogleCloudStorage'
-			}
+				value: 'GoogleCloudStorage',
+			},
 		});
 		this.add('FileUpload_GoogleStorage_Proxy_Avatars', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'GoogleCloudStorage'
-			}
+				value: 'GoogleCloudStorage',
+			},
 		});
 		this.add('FileUpload_GoogleStorage_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'GoogleCloudStorage'
-			}
+				value: 'GoogleCloudStorage',
+			},
 		});
 	});
 
@@ -184,8 +185,8 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'FileSystem'
-			}
+				value: 'FileSystem',
+			},
 		});
 	});
 
@@ -194,49 +195,49 @@ RocketChat.settings.addGroup('FileUpload', function() {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 		this.add('FileUpload_Webdav_Server_URL', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 		this.add('FileUpload_Webdav_Username', '', {
 			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 		this.add('FileUpload_Webdav_Password', '', {
 			type: 'password',
 			private: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 		this.add('FileUpload_Webdav_Proxy_Avatars', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 		this.add('FileUpload_Webdav_Proxy_Uploads', false, {
 			type: 'boolean',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
-				value: 'Webdav'
-			}
+				value: 'Webdav',
+			},
 		});
 	});
 
 	this.add('FileUpload_Enabled_Direct', true, {
 		type: 'boolean',
-		public: true
+		public: true,
 	});
 });

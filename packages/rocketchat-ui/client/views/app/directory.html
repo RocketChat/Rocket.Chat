@@ -1,6 +1,6 @@
 <template name="directory">
 	<section class="rc-directory">
-		{{> header sectionName="Directory" hideHelp=true}}
+		{{> header sectionName="Directory" hideHelp=true fullpage=true}}
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
 			<div class="rc-input rc-input--small rc-directory-search">
@@ -57,13 +57,13 @@
 							</tr>
 						{{else}}
 							{{# with searchText}}
-								<tr>
+								<tr class="table-no-click">
 									<td>{{_ "No_results_found_for"}} {{.}}</td>
 								</tr>
 							{{/with}}
 						{{/each}}
 						{{#if isLoading}}
-							<tr class="table-loading">
+							<tr class="table-no-click">
 								<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
 							</tr>
 						{{/if}}
@@ -103,13 +103,13 @@
 							</tr>
 						{{else}}
 							{{# with searchText}}
-								<tr>
+								<tr class="table-no-click">
 									<td>{{_ "No_results_found_for"}} {{.}}</td>
 								</tr>
 							{{/with}}
 						{{/each}}
 						{{#if isLoading}}
-							<tr class="table-loading">
+							<tr class="table-no-click">
 								<td class="table-loading-td" colspan="3">{{> loading}}</td>
 							</tr>
 						{{/if}}

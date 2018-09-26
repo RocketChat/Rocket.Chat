@@ -31,9 +31,9 @@ Template.emojiInfo.helpers({
 						return instance.loadedName.set(name);
 					}
 				}
-			}
+			},
 		};
-	}
+	},
 });
 
 Template.emojiInfo.events({
@@ -46,7 +46,7 @@ Template.emojiInfo.events({
 		e.preventDefault();
 		const emoji = instance.emoji.get();
 		if (emoji != null) {
-			const _id = emoji._id;
+			const { _id } = emoji;
 			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Emoji_Delete_Warning'),
@@ -56,9 +56,9 @@ Template.emojiInfo.events({
 				confirmButtonText: t('Yes_delete_it'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, function() {
-				Meteor.call('deleteEmojiCustom', _id, (error/*, result*/) => {
+				Meteor.call('deleteEmojiCustom', _id, (error/* , result*/) => {
 					if (error) {
 						return handleError(error);
 					} else {
@@ -67,7 +67,7 @@ Template.emojiInfo.events({
 							text: t('Custom_Emoji_Has_Been_Deleted'),
 							type: 'success',
 							timer: 2000,
-							showConfirmButton: false
+							showConfirmButton: false,
 						});
 
 						instance.tabBar.close();
@@ -82,7 +82,7 @@ Template.emojiInfo.events({
 		e.preventDefault();
 
 		instance.editingEmoji.set(instance.emoji.get()._id);
-	}
+	},
 });
 
 Template.emojiInfo.onCreated(function() {

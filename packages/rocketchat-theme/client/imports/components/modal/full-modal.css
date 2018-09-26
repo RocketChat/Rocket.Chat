@@ -64,8 +64,8 @@
 
 .rtl .full-modal {
 	&__back-button {
-	  right: auto;
-	  left: 0;
+		right: auto;
+		left: 0;
 	}
 
 	&__back-text {

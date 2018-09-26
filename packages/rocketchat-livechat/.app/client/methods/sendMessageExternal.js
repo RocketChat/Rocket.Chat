@@ -14,7 +14,7 @@ Meteor.methods({
 
 			message.u = {
 				_id: visitor.getId(),
-				username: user && user.username || 'visitor'
+				username: (user && user.username) || 'visitor',
 			};
 
 			message.temp = true;
@@ -23,5 +23,5 @@ Meteor.methods({
 
 			ChatMessage.insert(message);
 		}
-	}
+	},
 });

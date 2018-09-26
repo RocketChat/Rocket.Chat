@@ -24,5 +24,5 @@ Meteor.methods({
 				return RocketChat.models.Rooms.updateSurveyFeedbackById(room._id, updateData);
 			}
 		}
-	}
+	},
 });

@@ -21,8 +21,8 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 		return;
 	}
@@ -35,16 +35,16 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 		return;
 	}
 	Meteor.call('muteUserInRoom', {
 		rid: item.rid,
-		username
+		username,
 	});
 }, {
 	description: 'Mute_someone_in_room',
-	params: '@username'
+	params: '@username',
 });

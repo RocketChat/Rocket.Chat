@@ -15,21 +15,21 @@ const copy = function(file, out) {
 const WebdavUploads = new FileUploadClass({
 	name: 'Webdav:Uploads',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
 const WebdavAvatars = new FileUploadClass({
 	name: 'Webdav:Avatars',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
 const WebdavUserDataFiles = new FileUploadClass({
 	name: 'Webdav:UserDataFiles',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
@@ -48,10 +48,10 @@ const configure = _.debounce(function() {
 			credentials: {
 				server,
 				username,
-				password
-			}
+				password,
+			},
 		},
-		uploadFolderPath
+		uploadFolderPath,
 	};
 
 	WebdavUploads.store = FileUpload.configureUploadsStore('Webdav', WebdavUploads.name, config);

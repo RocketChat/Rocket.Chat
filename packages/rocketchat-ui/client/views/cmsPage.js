@@ -11,13 +11,13 @@ Template.cmsPage.onCreated(function() {
 Template.cmsPage.helpers({
 	page() {
 		return Template.instance().page.get();
-	}
+	},
 });
 
 Template.cmsPage.events({
 	'click .cms-page-close'() {
 		return FlowRouter.go('/');
-	}
+	},
 });
 
 Template.cmsPage.onRendered(function() {
