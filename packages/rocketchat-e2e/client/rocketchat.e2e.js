@@ -28,6 +28,8 @@ import {
 	deriveKey,
 } from './helper';
 
+let failedToDecodeKey = false;
+
 class E2E {
 	constructor() {
 		this.started = false;
@@ -109,6 +111,7 @@ class E2E {
 				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
 				this.started = false;
+				failedToDecodeKey = true;
 				alerts.open({
 					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
@@ -291,18 +294,48 @@ class E2E {
 
 	async requestPassword() {
 		return new Promise((resolve) => {
-			modal.open({
-				title: TAPi18n.__('E2E password'),
-				text: TAPi18n.__('Enter E2E password to decode your key'),
-				type: 'input',
-				inputType: 'text',
-				showCancelButton: true,
-				closeOnConfirm: true,
-				confirmButtonText: TAPi18n.__('Decode'),
-				cancelButtonText: TAPi18n.__('Later'),
-			}, (password) => {
-				resolve(password);
-			});
+			let showAlert;
+
+			const showModal = () => {
+				modal.open({
+					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
+					type: 'input',
+					inputType: 'text',
+					html: true,
+					text: `<div>${ TAPi18n.__('E2E_password_request_text') }</div>`,
+					showConfirmButton: true,
+					showCancelButton: true,
+					confirmButtonText: TAPi18n.__('Decode_Key'),
+					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
+				}, (password) => {
+					if (password) {
+						alerts.close();
+						resolve(password);
+					}
+				}, () => {
+					failedToDecodeKey = false;
+					showAlert();
+				});
+			};
+
+			showAlert = () => {
+				alerts.open({
+					title: TAPi18n.__('E2E_password'),
+					html: TAPi18n.__('Click_here_to_insert_your_encryption_password'),
+					modifiers: ['large'],
+					closable: false,
+					icon: 'key',
+					action() {
+						showModal();
+					},
+				});
+			};
+
+			if (failedToDecodeKey) {
+				showModal();
+			} else {
+				showAlert();
+			}
 		});
 	}
 
