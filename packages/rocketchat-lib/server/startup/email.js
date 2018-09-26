@@ -100,8 +100,8 @@ RocketChat.settings.addGroup('Email', function() {
 			type: 'code',
 			code: 'css',
 			multiline: true,
-			i18nLabel: 'Offline_Mention_Email',
-			i18nDescription: 'Offline_Email_Subject_Description',
+			i18nLabel: 'email_style_label',
+			i18nDescription: 'email_style_description',
 		});
 	});
 

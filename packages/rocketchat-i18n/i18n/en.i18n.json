@@ -1011,6 +1011,8 @@
   "Email_Placeholder": "Please enter your email address...",
   "Email_Placeholder_any": "Please enter email addresses...",
   "Email_subject": "Subject",
+  "email_style_label": "Email Style",
+  "email_style_description": "Avoid nested selectors",
   "Email_verified": "Email verified",
   "Emoji": "Emoji",
   "EmojiCustomFilesystem": "Custom Emoji Filesystem",

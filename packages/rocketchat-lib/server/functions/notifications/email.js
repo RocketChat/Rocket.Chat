@@ -1,9 +1,12 @@
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
-const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 let advice = '';
+let goToMessage = '';
 Meteor.startup(() => {
+	RocketChat.settings.get('email_style', function() {
+		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
+	});
 	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
 		advice = value;
 	});
@@ -72,19 +75,6 @@ function getEmailContent({ message, user, room }) {
 	return header;
 }
 
-function getMessageLink(room, sub) {
-	const roomPath = RocketChat.roomTypes.getURL(room.t, sub);
-	const style = [
-		'color: #fff;',
-		'padding: 9px 12px;',
-		'border-radius: 4px;',
-		'background-color: #04436a;',
-		'text-decoration: none;',
-	].join(' ');
-	const message = TAPi18n.__('Offline_Link_Message');
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ roomPath }">${ message }</a>`;
-}
-
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
 	const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
@@ -105,12 +95,15 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		room,
 	});
 
-	const link = getMessageLink(room, subscription);
+	const room_path = RocketChat.roomTypes.getURL(room.t, subscription);
 
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: content + divisorMessage + link + RocketChat.settings.get('Direct_Reply_Enable') ? advice : '',
+		html: content + goToMessage + (RocketChat.settings.get('Direct_Reply_Enable') ? advice : ''),
+		data: {
+			room_path,
+		},
 	};
 
 	const from = room.t === 'd' ? message.u.name : room.name;	// using user full-name/channel name in from address
