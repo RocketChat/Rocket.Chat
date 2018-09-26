@@ -130,7 +130,7 @@ class E2E {
 		if (!this.db_public_key || !this.db_private_key) {
 			await call('addKeyToChain', {
 				public_key: localStorage.getItem('public_key'),
-				private_key: await this.encodePrivateKey(localStorage.getItem('private_key')),
+				private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
 		}
 
@@ -202,6 +202,17 @@ class E2E {
 		});
 	}
 
+	async changePassword(newPassword) {
+		await call('addKeyToChain', {
+			public_key: localStorage.getItem('public_key'),
+			private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), newPassword),
+		});
+
+		if (localStorage.getItem('e2e.randomPassword')) {
+			localStorage.setItem('e2e.randomPassword', newPassword);
+		}
+	}
+
 	async loadKeysFromDB() {
 		try {
 			const { public_key, private_key } = await call('fetchMyKeys');
@@ -251,11 +262,14 @@ class E2E {
 		}
 	}
 
-	async encodePrivateKey(private_key) {
+	createRandomPassword() {
 		const randomPassword = `${ Random.id(3) }-${ Random.id(3) }-${ Random.id(3) }`.toLowerCase();
 		localStorage.setItem('e2e.randomPassword', randomPassword);
+		return randomPassword;
+	}
 
-		const masterKey = await this.getMasterKey(randomPassword);
+	async encodePrivateKey(private_key, password) {
+		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
