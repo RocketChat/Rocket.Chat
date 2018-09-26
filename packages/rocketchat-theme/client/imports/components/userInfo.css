@@ -169,6 +169,7 @@
 
 	&-action {
 		display: flex;
+		overflow: hidden;
 
 		margin-bottom: var(--default-padding);
 		justify-content: center;
