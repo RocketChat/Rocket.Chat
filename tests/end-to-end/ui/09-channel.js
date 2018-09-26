@@ -25,7 +25,7 @@ describe('[Channel]', ()=> {
 		describe.skip('[SpotlightSearch]', () => {
 			describe('rocket.cat:', () => {
 				it('it should search rocket cat', () => {
-					sideNav.spotlightSearchIcon.click();
+					sideNav.searchChannel('');
 					sideNav.getChannelFromSpotlight('rocket.cat').isVisible().should.be.true;
 				});
 
@@ -70,6 +70,7 @@ describe('[Channel]', ()=> {
 			});
 			describe('rocket.cat:', () => {
 				it('it should show the rocket cat in the direct messages list', () => {
+					sideNav.searchChannel('rocket.cat');
 					sideNav.getChannelFromList('rocket.cat').isVisible().should.be.true;
 				});
 
