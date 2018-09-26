@@ -140,36 +140,26 @@ class E2E {
 
 		const randomPassword = localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
+			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
+				postProcess: 'sprintf',
+				sprintf: [randomPassword],
+			});
+
 			alerts.open({
-				title: TAPi18n.__('Save your encryption password'),
-				html: `<div><span style="font-weight: bold;">${ randomPassword }</span><br/>This password will only show up this time. Click here to learn more.</div>`,
+				title: TAPi18n.__('Save_your_encryption_password'),
+				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
 				action() {
 					modal.open({
-						title: TAPi18n.__('Save your encryption password'),
+						title: TAPi18n.__('Save_your_encryption_password'),
 						html: true,
-						text: `
-							<div>
-								You can now create encrypted private groups and direct messages. You may also change existing private groups or DMs to encrypted.
-								<br/>
-								This is end to end encryption so the key to encode/decode your messages will not be saved on the server.
-								For that reason you need to store this password somewhere safe.  You will be required to enter it on other devices you wish to use e2e encryption on.
-								<br/>
-								<br/>
-								Your password is: <span style="font-weight: bold;">${ randomPassword }</span>
-								<br/>
-								<br/>
-								This is an auto generated password, you can setup a new password for your encryption key any time from any browser you have entered the existing password.
-								<br/>
-								This password is only stored on this browser until you store the password and dismiss this message.
-							</div>
-						`,
+						text: `<div>${ passwordRevealText }</div>`,
 						showConfirmButton: true,
 						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('I saved my password, close this message'),
-						cancelButtonText: TAPi18n.__('I\'ll do it later'),
+						confirmButtonText: TAPi18n.__('I_saved_my_password_close_this_message'),
+						cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 					}, (confirm) => {
 						if (!confirm) {
 							return;
