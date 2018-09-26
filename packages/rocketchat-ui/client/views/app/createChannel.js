@@ -107,7 +107,8 @@ Template.createChannel.helpers({
 		const name = instance.name.get();
 		const valdkond = instance.field1.get();
 		const projekt = instance.field2.get();
-
+		
+		//EKM FIX - valdkond ja projekt ei tohi m6lemad olla valimata
 		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid || (valdkond == '' &&  projekt == '')) {
 			return 'disabled';
 		}
