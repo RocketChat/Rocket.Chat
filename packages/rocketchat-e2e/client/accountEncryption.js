@@ -1,5 +1,4 @@
 import toastr from 'toastr';
-import _ from 'underscore';
 import s from 'underscore.string';
 import qrcode from 'yaqrcode';
 import { RocketChat } from 'meteor/rocketchat:lib';
