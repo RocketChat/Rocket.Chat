@@ -1,37 +1,53 @@
-const settings = ['Accounts_Enrollment_Customized', 'Accounts_UserAddedEmail_Customized', 'Forgot_Password_Customized', 'Verification_Customized', 'Invitation_Customized'];
+
 RocketChat.Migrations.add({
 	version: 133,
 	up() {
+		const updateIfDefault = (customized, idEmail, idSubject) => {
+			const setting = RocketChat.models.Settings.findOne({ _id: customized });
+			const newSettingEmail = RocketChat.models.Settings.findOne({ _id: idEmail });
+			const newSettingSubject = RocketChat.models.Settings.findOne({ _id: idSubject });
+			try {
 
-		const accountsSetting = RocketChat.models.Settings.findOne('Accounts_UserAddedEmail');
-		delete accountsSetting._id;
-		delete accountsSetting.enableQuery;
-		delete accountsSetting.i18nDefaultQuery;
+				delete newSettingSubject._id;
+				delete newSettingSubject.enableQuery;
+				delete newSettingSubject.i18nDefaultQuery;
 
-		RocketChat.models.Settings.upsert({ _id: 'Accounts_UserAddedEmail_Email' }, accountsSetting);
-		RocketChat.models.Settings.removeById('Accounts_UserAddedEmail');
 
-		const invitationSetting = RocketChat.models.Settings.findOne('Invitation_HTML');
-		delete invitationSetting._id;
-		delete invitationSetting.enableQuery;
-		delete invitationSetting.i18nDefaultQuery;
-		RocketChat.models.Settings.upsert({ _id: 'Invitation_Email' }, invitationSetting);
-		RocketChat.models.Settings.removeById('Invitation_HTML');
+				delete newSettingEmail._id;
+				delete newSettingEmail.enableQuery;
+				delete newSettingEmail.i18nDefaultQuery;
+				if (setting.value === false) {
+					newSettingEmail.value = newSettingEmail.packageValue;
+					newSettingSubject.value = newSettingSubject.packageValue;
+				}
 
-		RocketChat.models.Settings.find({ _id: { $in: settings } }).forEach(function(setting) {
-			const _id = setting._id.replace('Customized', 'Email');
-			const newSetting = RocketChat.models.Settings.findOne({ _id });
+				RocketChat.models.Settings.upsert({ _id: idEmail }, newSettingEmail);
+				RocketChat.models.Settings.upsert({ _id: idSubject }, newSettingSubject);
+				RocketChat.models.Settings.remove({ _id: customized });
 
-			delete newSetting._id;
-			delete newSetting.enableQuery;
-			delete newSetting.i18nDefaultQuery;
-			if (setting.value === false) {
-				newSetting.value = newSetting.packageValue;
+			} catch (error) {
+				console.log(customized, idEmail, idSubject, setting, newSettingEmail, newSettingSubject);
+				throw error;
+			}
+		};
+
+		updateIfDefault('Accounts_Enrollment_Customized', 'Accounts_Enrollment_Email', 'Accounts_Enrollment_Email_Subject');
+		updateIfDefault('Accounts_UserAddedEmail_Customized', 'Accounts_Enrollment_Email', 'Accounts_Enrollment_Subject');
+		updateIfDefault('Forgot_Password_Customized', 'Forgot_Password_Email', 'Forgot_Password_Email_Subject');
+		updateIfDefault('Verification_Customized', 'Verification_Email', 'Verification_Email_Subject');
+		updateIfDefault('Invitation_Customized', 'Invitation_Customized_Email', 'Invitation_Subject');
+
+		Object.entries({
+			Email_Header: '<html><table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f3f3f3" style="color:#4a4a4a;font-family: Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;border-collapse:collapse;border-spacing:0;margin:0 auto"><tr><td style="padding:1em"><table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="width:100%;margin:0 auto;max-width:800px"><tr><td bgcolor="#ffffff" style="background-color:#ffffff; border: 1px solid #DDD; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td style="background-color: #04436a;"><h1 style="font-family: Helvetica,Arial,sans-serif; padding: 0 1em; margin: 0; line-height: 70px; color: #FFF;">[Site_Name]</h1></td></tr><tr><td style="padding: 1em; font-size: 10pt; font-family: Helvetica,Arial,sans-serif;">',
+			Email_Footer: '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>',
+			Email_Footer_Direct_Reply: '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>',
+		}).forEach(([_id, oldValue]) => {
+			const setting = RocketChat.models.Settings.findOne({ _id });
+			if (setting.value === oldValue) {
+				RocketChat.models.Settings.updateValueById(_id, setting.packageValue);
 			}
 
-			RocketChat.models.Settings.upsert({ _id }, newSetting);
 		});
 
-		RocketChat.models.Settings.remove({ _id: { $in: settings } }, { multi: true });
 	},
 });
