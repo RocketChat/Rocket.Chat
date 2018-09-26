@@ -128,7 +128,7 @@ class E2E {
 
 		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
-			await call('addKeyToChain', {
+			await call('e2e.addKeyToChain', {
 				public_key: localStorage.getItem('public_key'),
 				private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
@@ -203,7 +203,7 @@ class E2E {
 	}
 
 	async changePassword(newPassword) {
-		await call('addKeyToChain', {
+		await call('e2e.addKeyToChain', {
 			public_key: localStorage.getItem('public_key'),
 			private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), newPassword),
 		});
@@ -215,7 +215,7 @@ class E2E {
 
 	async loadKeysFromDB() {
 		try {
-			const { public_key, private_key } = await call('fetchMyKeys');
+			const { public_key, private_key } = await call('e2e.fetchMyKeys');
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {
