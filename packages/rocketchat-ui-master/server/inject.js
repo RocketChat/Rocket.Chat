@@ -58,8 +58,10 @@ if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 
 RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	const standardFavicons = `
+		<link rel="mask-icon" href="assets/safari_pinned.svg" color="#04436A">
 		<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
-		<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
+		<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />
+		<link rel="icon" sizes="any" type="image/png" href="assets/favicon.png" />`;
 
 	if (value) {
 		Inject.rawHead(key,
