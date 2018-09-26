@@ -260,6 +260,7 @@ Template.createChannel.onRendered(function() {
 
 	let defaultOption = document.createElement('option');
 	defaultOption.text = 'Vali vestlusega seotud projekt';
+	defaultOption.value = '';
 
 	dropdown.add(defaultOption);
 	dropdown.selectedIndex = 0;
