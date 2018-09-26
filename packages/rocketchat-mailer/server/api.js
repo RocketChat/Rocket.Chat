@@ -35,7 +35,7 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
-
+export const wrap = (html, data = {}) => replaceEscaped(body.replace('{{body}}', html), data);
 export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
@@ -47,7 +47,21 @@ export const getTemplate = (template, fn, escape = true) => {
 		fn(escape ? inlinecss(html) : html);
 	});
 };
+export const getTemplateWrapped = (template, fn) => {
+	let html = '';
+	Settings.get('Email_Header', function() {
+		return html && fn(wrap(html));
+	});
+	Settings.get('Email_Footer', function() {
+		return html && fn(wrap(html));
+	});
 
+	Settings.get(template, (key, value) => {
+		html = value || '';
+		return html && fn(wrap(html));
+	});
+	Settings.get('email_style', () => html && fn(wrap(html)));
+};
 export const setSettings = (s) => {
 	Settings = s;
 
@@ -75,7 +89,7 @@ export const sendNoWrap = ({ to, from, subject, html }) => {
 	Meteor.defer(() => Email.send({ to, from, subject, html }));
 };
 
-export const wrap = (html, data = {}) => replaceEscaped(body.replace('{{body}}', html), data);
+
 
 export const send = ({ to, from, subject, html, data }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data) });
 

@@ -8,8 +8,8 @@ Meteor.startup(() => {
 		subject = Mailer.replace(value || '');
 	});
 
-	Mailer.getTemplate('Verification_Email', function(value) {
-		html = Mailer.inlinecss(Mailer.wrap(Mailer.replace(value || '')));
+	Mailer.getTemplateWrapped('Verification_Email', function(value) {
+		html = value;
 	});
 });
 

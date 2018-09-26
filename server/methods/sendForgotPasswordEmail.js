@@ -4,9 +4,9 @@ import * as Mailer from 'meteor/rocketchat:mailer';
 let template = '';
 
 Meteor.startup(() => {
-	Mailer.getTemplate('Forgot_Password_Email', (value) => {
-		template = Mailer.inlinecss(Mailer.getHeader() + (value || '') + Mailer.getFooter());
-	}, false);
+	Mailer.getTemplateWrapped('Forgot_Password_Email', (value) => {
+		template = value;
+	});
 });
 
 Meteor.methods({
