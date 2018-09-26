@@ -1,19 +1,54 @@
-FROM node:8
+FROM ubuntu:16.04 as builder
 
-ADD . /app
+RUN apt update && apt install curl git bzip2 g++ build-essential python -y
 
-ENV RC_VERSION=0.57.0-designpreview \
-    DEPLOY_METHOD=docker \
-    NODE_ENV=production \
-    PORT=3000 \
-    ROOT_URL=http://localhost:3000
+# meteor installer doesn't work with the default tar binary
+RUN apt-get install -y bsdtar \
+    && cp $(which tar) $(which tar)~ \
+    && ln -sf $(which bsdtar) $(which tar) \
+    && curl "https://install.meteor.com/?release=1.6.0.1" \
+    | sed 's/VERBOSITY="--silent"/VERBOSITY="--progress-bar"/' \
+    | sh \
+    && mv $(which tar)~ $(which tar)
+
+COPY . /app
+
+# Add Chatpal which is a submodule
+WORKDIR /app
+RUN meteor npm i \
+    && meteor npm run postinstall \
+    && set +e \
+    && meteor add rocketchat:lib --allow-superuser \
+    && set -e \
+    && meteor build --allow-superuser --server-only --headless --directory /tmp/build
+
+FROM assistify/chat-base:latest
+
+MAINTAINER buildmaster@rocket.chat
+
+COPY --from=builder /tmp/build/bundle /app/bundle
 
 RUN set -x \
+ && ls -l /app \
  && cd /app/bundle/programs/server \
  && npm install \
- && npm cache clear --force
+ && npm cache clear --force \
+ && chown -R rocketchat:rocketchat /app
+
+USER rocketchat
+
+VOLUME /app/uploads
 
 WORKDIR /app/bundle
+
+# needs a mongoinstance - defaults to container linking with alias 'mongo'
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads
 
 EXPOSE 3000
 

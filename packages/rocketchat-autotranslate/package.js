@@ -25,12 +25,26 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'server/settings.js',
-		'server/autotranslate.js',
 		'server/permissions.js',
+		'server/autotranslate.js',
+		'server/googleTranslate.js',
+		'server/deeplTranslate.js',
+		'server/dbsTranslate.js',
 		'server/models/Messages.js',
+		'server/models/Settings.js',
 		'server/models/Subscriptions.js',
 		'server/methods/saveSettings.js',
 		'server/methods/translateMessage.js',
 		'server/methods/getSupportedLanguages.js'
 	], 'server');
+	api.mainModule('server/index.js', 'server');
 });
+
+/**
+ * Package-level dependencies
+ * cld - Text language detector
+ */
+Npm.depends({
+	cld: '2.4.8'
+});
+

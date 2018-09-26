@@ -1,3 +1,4 @@
+/* globals RocketChat */
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
