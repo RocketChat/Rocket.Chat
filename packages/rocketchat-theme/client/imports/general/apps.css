@@ -106,6 +106,42 @@
 
 			text-overflow: ellipsis;
 		}
+
+		&__api {
+			padding-bottom: 10px;
+
+			font-size: 18px;
+			font-weight: bold;
+
+			&__description {
+				overflow-x: scroll;
+				overflow-y: hidden;
+
+				white-space: nowrap;
+
+				background-color: #fafafa;
+
+				font-size: 14px;
+
+				&__item {
+					display: table;
+
+					padding: 10px;
+
+					user-select: all !important;
+
+					white-space: pre;
+
+					border-top: 1px dashed #cccccc;
+
+					line-height: 20px;
+
+					&:first-child {
+						border-top: none;
+					}
+				}
+			}
+		}
 	}
 }
 
