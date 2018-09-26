@@ -320,8 +320,8 @@ class E2E {
 
 			showAlert = () => {
 				alerts.open({
-					title: TAPi18n.__('E2E_password'),
-					html: TAPi18n.__('Click_here_to_insert_your_encryption_password'),
+					title: TAPi18n.__('Enter_your_E2E_password'),
+					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
 					closable: false,
 					icon: 'key',
