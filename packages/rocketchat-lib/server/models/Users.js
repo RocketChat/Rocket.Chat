@@ -465,7 +465,7 @@ class ModelUsers extends RocketChat.models._Base {
 		const update = {
 			$set: settings,
 		};
-		if (![1, 2].includes(parseInt(settings.preferences.clockMode))) {
+		if (parseInt(preferences.clockMode) === 0) {
 			delete update.$set['settings.preferences.clockMode'];
 			update.$unset = { 'settings.preferences.clockMode': 1 };
 		}
