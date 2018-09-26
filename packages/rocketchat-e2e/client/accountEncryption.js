@@ -1,11 +1,8 @@
 /* globals Template, t, ReactiveVar */
 import toastr from 'toastr';
 import s from 'underscore.string';
-import qrcode from 'yaqrcode';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { e2e } from 'meteor/rocketchat:e2e';
-
-window.qrcode = qrcode;
 
 Template.accountEncryption.helpers({
 	isEnabled() {

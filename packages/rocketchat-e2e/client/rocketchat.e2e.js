@@ -1,6 +1,4 @@
-/* globals alerts, modal, ChatMessage */
-
-import _ from 'underscore';
+/* globals alerts, modal */
 
 import './stylesheets/e2e';
 
@@ -40,8 +38,6 @@ class E2E {
 		this.readyPromise.then(() => {
 			this._ready.set(true);
 		});
-
-		this.decryptPendingMessagesDeferred = _.debounce(this.decryptPendingMessages.bind(this), 100);
 	}
 
 	isEnabled() {
@@ -176,12 +172,13 @@ class E2E {
 
 		this.readyPromise.resolve();
 
-		this.setupListener();
+		this.setupListeners();
 
 		this.decryptPendingMessages();
+		this.decryptPendingSubscriptions();
 	}
 
-	setupListener() {
+	setupListeners() {
 		RocketChat.Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
 			const e2eRoom = await this.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
@@ -189,6 +186,22 @@ class E2E {
 			}
 
 			e2eRoom.provideKeyToUser(keyId);
+		});
+
+		RocketChat.models.Subscriptions.after.update((userId, doc) => {
+			this.decryptSubscription(doc);
+		});
+
+		RocketChat.models.Subscriptions.after.insert((userId, doc) => {
+			this.decryptSubscription(doc);
+		});
+
+		RocketChat.models.Messages.after.update((userId, doc) => {
+			this.decryptMessage(doc);
+		});
+
+		RocketChat.models.Messages.after.insert((userId, doc) => {
+			this.decryptMessage(doc);
 		});
 	}
 
@@ -354,31 +367,81 @@ class E2E {
 		}
 	}
 
+	async decryptMessage(message) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
+		if (message.t !== 'e2e' || message.e2e === 'done') {
+			return;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+
+		if (!e2eRoom) {
+			return;
+		}
+
+		const data = await e2eRoom.decrypt(message.msg);
+		if (!data) {
+			return;
+		}
+
+		RocketChat.models.Messages.direct.update({ _id: message._id }, {
+			$set: {
+				msg: data.text,
+				e2e: 'done',
+			},
+		});
+	}
+
 	async decryptPendingMessages() {
 		if (!this.isEnabled()) {
 			return;
 		}
 
-		return await ChatMessage.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
-			const e2eRoom = await this.getInstanceByRoomId(item.rid);
-
-			if (!e2eRoom) {
-				return;
-			}
-
-			const data = await e2eRoom.decrypt(item.msg);
-			if (!data) {
-				return;
-			}
-
-			item.msg = data.text;
-			item.ack = data.ack;
-			if (data.ts) {
-				item.ts = data.ts;
-			}
-			item.e2e = 'done';
-			ChatMessage.upsert({ _id: item._id }, item);
+		return await RocketChat.models.Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
+			await this.decryptMessage(item);
 		});
+	}
+
+	async decryptSubscription(subscription) {
+		if (!this.isEnabled()) {
+			return;
+		}
+
+		if (!subscription.lastMessage || subscription.lastMessage.t !== 'e2e' || subscription.lastMessage.e2e === 'done') {
+			return;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
+
+		if (!e2eRoom) {
+			return;
+		}
+
+		const data = await e2eRoom.decrypt(subscription.lastMessage.msg);
+		if (!data) {
+			return;
+		}
+
+		RocketChat.models.Subscriptions.direct.update({
+			_id: subscription._id,
+		}, {
+			$set: {
+				'lastMessage.msg': data.text,
+				'lastMessage.e2e': 'done',
+			},
+		});
+	}
+
+	async decryptPendingSubscriptions() {
+		RocketChat.models.Subscriptions.find({
+			'lastMessage.t': 'e2e',
+			'lastMessage.e2e': {
+				$ne: 'done',
+			},
+		}).forEach(this.decryptSubscription.bind(this));
 	}
 }
 
