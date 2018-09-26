@@ -141,6 +141,7 @@ jobs:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
       MONGO_OPLOG_URL: mongodb://localhost:27017/local
+      RETRY_TESTS: 5
 
     steps:
       - attach_workspace:
@@ -172,7 +173,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            npm test
 
       - store_artifacts:
           path: .screenshots/
@@ -186,6 +187,7 @@ jobs:
     environment:
       TEST_MODE: "true"
       MONGO_URL: mongodb://localhost:27017/testwithoplog
+      RETRY_TESTS: 5
 
     steps:
       - attach_workspace:
@@ -209,7 +211,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            npm test
 
       - store_artifacts:
           path: .screenshots/
