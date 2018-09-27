@@ -9,7 +9,7 @@
 
 	width: 100%;
 
-	margin: 0 -1rem;
+	margin: 0 -1rem -1px -1rem;
 }
 
 .tab {
@@ -25,9 +25,9 @@
 	border-bottom: 1px solid transparent;
 
 	font-size: 1rem;
-	line-height: 1.25rem;
 
 	font-weight: 500;
+	line-height: 1.25rem;
 
 	&.active {
 		color: var(--rc-color-button-primary);

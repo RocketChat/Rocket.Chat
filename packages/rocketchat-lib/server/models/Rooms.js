@@ -2,8 +2,8 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 class ModelRooms extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({ name: 1 }, { unique: 1, sparse: 1 });
 		this.tryEnsureIndex({ default: 1 });
@@ -680,6 +680,18 @@ class ModelRooms extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
 			},
 		};
 

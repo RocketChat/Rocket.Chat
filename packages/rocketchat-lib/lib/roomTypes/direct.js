@@ -29,6 +29,10 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
+		if (!RocketChat.authz.hasAtLeastOnePermission('view-d-room')) {
+			return null;
+		}
+
 		const query = {
 			t: 'd',
 			name: identifier,
@@ -88,6 +92,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.E2E:
+				return RocketChat.settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}

@@ -49,7 +49,7 @@ Template.adminInfo.helpers({
 		return RocketChat.Info;
 	},
 	build() {
-		return RocketChat.Info && RocketChat.Info.compile || RocketChat.Info && RocketChat.Info.build;
+		return RocketChat.Info && (RocketChat.Info.compile || RocketChat.Info.build);
 	},
 });
 

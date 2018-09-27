@@ -20,7 +20,7 @@ this.popover = {
 
 		Blaze.remove(this.renderedPopover);
 
-		const activeElement = this.renderedPopover.dataVar.curValue.activeElement;
+		const { activeElement } = this.renderedPopover.dataVar.curValue;
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
@@ -44,14 +44,16 @@ Template.popover.onRendered(function() {
 		}
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
-	const activeElement = this.data.activeElement;
+	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
-		const horizontalDirection = /left/.test(direction) ? 'left' : /right/.test(direction) ? 'right' : isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rtlDirection = isRtl() ^ /inverted/.test(direction) ? 'left' : 'right';
+		const rightDirection = /right/.test(direction) ? 'right' : rtlDirection;
+		const horizontalDirection = /left/.test(direction) ? 'left' : rightDirection;
 
 		const position = typeof this.data.position === 'function' ? this.data.position() : this.data.position;
 		const customCSSProperties = typeof this.data.customCSSProperties === 'function' ? this.data.customCSSProperties() : this.data.customCSSProperties;
@@ -147,7 +149,7 @@ Template.popover.events({
 		popover.close();
 	},
 	'click [data-type="messagebox-action"]'(event, t) {
-		const id = event.currentTarget.dataset.id;
+		const { id } = event.currentTarget.dataset;
 		const action = RocketChat.messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
 			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });

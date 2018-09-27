@@ -17,6 +17,12 @@ class SlackBridge {
 		this.rocket.setSlack(this.slack);
 		this.slack.setRocket(this.rocket);
 
+		// Settings that we cache versus looking up at runtime
+		this.apiToken = false;
+		this.aliasFormat = '';
+		this.excludeBotnames = '';
+		this.isReactionsEnabled = true;
+
 		this.processSettings();
 	}
 
@@ -65,6 +71,12 @@ class SlackBridge {
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		RocketChat.settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
 			this.excludeBotnames = value;
+			logger.class.debug(`Setting: ${ key }`, value);
+		});
+
+		// Reactions
+		RocketChat.settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
+			this.isReactionsEnabled = value;
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 

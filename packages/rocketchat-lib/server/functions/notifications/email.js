@@ -13,7 +13,7 @@ RocketChat.settings.get('Email_Footer', (key, value) => {
 const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
 function getEmailContent({ message, user, room }) {
-	const lng = user && user.language || RocketChat.settings.get('language') || 'en';
+	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -26,6 +26,11 @@ function getEmailContent({ message, user, room }) {
 
 	if (message.msg !== '') {
 		let messageContent = s.escapeHTML(message.msg);
+
+		if (message.t === 'e2e') {
+			messageContent = TAPi18n.__('Encrypted_message', { lng });
+		}
+
 		message = RocketChat.callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
@@ -71,8 +76,7 @@ function getEmailContent({ message, user, room }) {
 }
 
 function getMessageLink(room, sub) {
-	const roomPath = RocketChat.roomTypes.getRouteLink(room.t, sub);
-	const path = Meteor.absoluteUrl(roomPath ? roomPath.replace(/^\//, '') : '');
+	const roomPath = RocketChat.roomTypes.getURL(room.t, sub);
 	const style = [
 		'color: #fff;',
 		'padding: 9px 12px;',
@@ -81,7 +85,7 @@ function getMessageLink(room, sub) {
 		'text-decoration: none;',
 	].join(' ');
 	const message = TAPi18n.__('Offline_Link_Message');
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ path }">${ message }</a>`;
+	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ roomPath }">${ message }</a>`;
 }
 
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {

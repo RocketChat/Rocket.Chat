@@ -1,4 +1,5 @@
 import { publicChannelName, privateChannelName } from '../data/channel.js';
+import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from '../data/role.js';
 import { username, email, adminUsername, adminPassword } from '../data/user.js';
 import supertest from 'supertest';
 export const request = supertest('http://localhost:3000');
@@ -8,6 +9,12 @@ export const apiUsername = `api${ username }`;
 export const apiEmail = `api${ email }`;
 export const apiPublicChannelName = `api${ publicChannelName }`;
 export const apiPrivateChannelName = `api${ privateChannelName }`;
+
+export const apiRoleNameUsers = `api${ roleNameUsers }`;
+export const apiRoleNameSubscriptions = `api${ roleNameSubscriptions }`;
+export const apiRoleScopeUsers = `${ roleScopeUsers }`;
+export const apiRoleScopeSubscriptions = `${ roleScopeSubscriptions }`;
+export const apiRoleDescription = `api${ roleDescription }`;
 
 export const targetUser = {};
 export const channel = {};

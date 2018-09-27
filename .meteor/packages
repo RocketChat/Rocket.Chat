@@ -97,6 +97,7 @@ rocketchat:mapview
 rocketchat:markdown
 rocketchat:mentions
 rocketchat:mentions-flextab
+rocketchat:message-action
 rocketchat:message-attachments
 rocketchat:message-mark-as-unread
 rocketchat:message-pin
@@ -189,6 +190,9 @@ steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
+rocketchat:e2e
+
+rocketchat:blockstack
 rocketchat:version-check
 
 rocketchat:search
@@ -196,3 +200,4 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 underscore
+rocketchat:bigbluebutton

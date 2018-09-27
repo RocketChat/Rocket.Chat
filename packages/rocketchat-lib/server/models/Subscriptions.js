@@ -1,6 +1,6 @@
 class ModelSubscriptions extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({ rid: 1, 'u._id': 1 }, { unique: 1 });
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
@@ -158,7 +158,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return subscription && subscription.ls;
 	}
 
-	findByRoomIdAndUserIds(roomId, userIds) {
+	findByRoomIdAndUserIds(roomId, userIds, options) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -166,7 +166,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			},
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {

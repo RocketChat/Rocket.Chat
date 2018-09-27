@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { sendNotification } from 'meteor/rocketchat:lib';
 
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
@@ -18,7 +19,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 1,
 			lm: new Date(),
 			fname: (roomInfo && roomInfo.fname) || guest.name || guest.username,
@@ -34,6 +35,7 @@ RocketChat.QueueMethods = {
 			servedBy: {
 				_id: agent.agentId,
 				username: agent.username,
+				ts: new Date(),
 			},
 			cl: false,
 			open: true,
@@ -57,6 +59,10 @@ RocketChat.QueueMethods = {
 			mobilePushNotifications: 'all',
 			emailNotifications: 'all',
 		};
+
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
 
 		RocketChat.models.Rooms.insert(room);
 
@@ -120,7 +126,7 @@ RocketChat.QueueMethods = {
 
 		const room = _.extend({
 			_id: message.rid,
-			msgs: 1,
+			msgs: 0,
 			usersCount: 0,
 			lm: new Date(),
 			fname: guest.name || guest.username,
@@ -138,9 +144,33 @@ RocketChat.QueueMethods = {
 			waitingResponse: true,
 		}, roomInfo);
 
+		if (guest.department) {
+			room.departmentId = guest.department;
+		}
+
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
 
+		// Alert the agents of the queued request
+		agentIds.forEach((agentId) => {
+			sendNotification({
+				// fake a subscription in order to make use of the function defined above
+				subscription: {
+					rid: room._id,
+					t : room.t,
+					u: {
+						_id : agentId,
+					},
+				},
+				sender: room.v,
+				hasMentionToAll: true, // consider all agents to be in the room
+				hasMentionToHere: false,
+				message: Object.assign(message, { u: room.v }),
+				notificationMessage: message.msg,
+				room: Object.assign(room, { name: TAPi18n.__('New_livechat_in_queue') }),
+				mentionIds: [],
+			});
+		});
 		return room;
 	},
 	'External'(guest, message, roomInfo, agent) {

@@ -137,6 +137,8 @@ Template.loginForm.events({
 					if (error != null) {
 						if (error.error === 'no-valid-email') {
 							instance.state.set('email-verification');
+						} else if (error.error === 'error-user-is-not-activated') {
+							toastr.error(t('Wait_activation_warning'));
 						} else {
 							toastr.error(t('User_not_found_or_incorrect_password'));
 						}
@@ -167,8 +169,8 @@ Template.loginForm.events({
 			$('input[name=emailOrUsername]').val(credentials.username);
 			return $('input[name=pass]').val(credentials.password);
 		};
-		const errorCallback = function() {
-			return console.log('OnePassword errorCallback', arguments);
+		const errorCallback = function(...args) {
+			return console.log('OnePassword errorCallback', ...args);
 		};
 		return OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl());
 	},

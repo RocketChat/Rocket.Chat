@@ -1,6 +1,7 @@
 /* globals renderEmoji renderMessageBody */
 import _ from 'underscore';
 import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -15,6 +16,9 @@ Template.message.helpers({
 	},
 	ignoredClass() {
 		return this.ignored ? 'message--ignored' : '';
+	},
+	isDecrypting() {
+		return this.e2e === 'pending';
 	},
 	isBot() {
 		if (this.bot != null) {
@@ -82,7 +86,7 @@ Template.message.helpers({
 		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
 	},
 	showUsername() {
-		return this.alias || RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name;
+		return this.alias || (RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name);
 	},
 	own() {
 		if (this.u && this.u._id === Meteor.userId()) {
@@ -98,10 +102,10 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.ts);
 	},
 	date() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.ts);
 	},
 	isTemp() {
 		if (this.temp === true) {
@@ -131,7 +135,7 @@ Template.message.helpers({
 				},
 			});
 			const language = RocketChat.AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language];
+			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
 		}
 	},
 	edited() {
@@ -139,7 +143,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		if (Template.instance().wasEdited) {
-			return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			return DateFormat.formatDateAndTime(this.editedAt);
 		}
 	},
 	editedBy() {
@@ -222,7 +226,10 @@ Template.message.helpers({
 		return Object.keys(this.reactions || {}).map((emoji) => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
-			let usernames = reaction.usernames.slice(0, 15).map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`)).join(', ');
+			let usernames = reaction.usernames
+				.slice(0, 15)
+				.map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`))
+				.join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
 					length: total - 15,
