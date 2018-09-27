@@ -8,12 +8,12 @@ Accounts.registerLoginHandler('iframe', function(result) {
 	console.log('[Method] registerLoginHandler');
 
 	const user = Meteor.users.findOne({
-		'services.iframe.token': result.token
+		'services.iframe.token': result.token,
 	});
 
 	if (user) {
 		return {
-			userId: user._id
+			userId: user._id,
 		};
 	}
 });
@@ -22,5 +22,5 @@ Accounts.registerLoginHandler('iframe', function(result) {
 Meteor.methods({
 	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
 		return OAuth.retrieveCredential(credentialToken, credentialSecret);
-	}
+	},
 });

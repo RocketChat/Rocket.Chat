@@ -2,7 +2,7 @@ import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
 	'livechat:closeByVisitor'({ roomId, token }) {
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(token, roomId);
+		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, token);
 
 		if (!room || !room.open) {
 			return false;
@@ -15,7 +15,7 @@ Meteor.methods({
 		return RocketChat.Livechat.closeRoom({
 			visitor,
 			room,
-			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
+			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
-	}
+	},
 });

@@ -1,22 +1,30 @@
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
-	danger: '#D30230'
+	danger: '#D30230',
 };
 
-/*globals renderMessageBody*/
+/* globals renderMessageBody*/
 Template.messageAttachment.helpers({
 	fixCordova,
 	parsedText() {
 		return renderMessageBody({
-			msg: this.text
+			msg: this.text,
+		});
+	},
+	markdownInPretext() {
+		return this.mrkdwn_in && this.mrkdwn_in.includes('pretext');
+	},
+	parsedPretext() {
+		return renderMessageBody({
+			msg: this.pretext,
 		});
 	},
 	loadImage() {
 		if (this.downloadImages !== true) {
-			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, {fields: {'settings.autoImageLoad' : 1}});
+			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
 			if (RocketChat.getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
@@ -50,10 +58,9 @@ Template.messageAttachment.helpers({
 		const messageDate = new Date(this.ts);
 		const today = new Date();
 		if (messageDate.toDateString() === today.toDateString()) {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
-		} else {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'));
+			return DateFormat.formatTime(this.ts);
 		}
+		return DateFormat.formatDateAndTime(this.ts);
 	},
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
@@ -61,5 +68,5 @@ Template.messageAttachment.helpers({
 
 	isFile() {
 		return this.type === 'file';
-	}
+	},
 });

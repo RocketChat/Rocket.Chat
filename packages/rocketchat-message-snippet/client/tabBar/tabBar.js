@@ -7,7 +7,7 @@ Meteor.startup(function() {
 				i18nTitle: 'snippet-message',
 				icon: 'code',
 				template: 'snippetedMessages',
-				order: 20
+				order: 20,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('snippeted-messages');

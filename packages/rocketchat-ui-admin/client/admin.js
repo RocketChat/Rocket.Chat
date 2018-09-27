@@ -1,4 +1,4 @@
-/*globals jscolor, i18nDefaultQuery */
+/* globals jscolor, i18nDefaultQuery */
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -9,7 +9,7 @@ RocketChat.TempSettings = TempSettings;
 
 const getDefaultSetting = function(settingId) {
 	return RocketChat.settings.collectionPrivate.findOne({
-		_id: settingId
+		_id: settingId,
 	});
 };
 
@@ -43,7 +43,7 @@ Template.admin.onCreated(function() {
 		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
 			name: 'private-settings',
 			eventType: 'onLogged',
-			useCache: false
+			useCache: false,
 		});
 		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
 		RocketChat.settings.cachedCollectionPrivate.init();
@@ -73,7 +73,7 @@ Template.admin.onCreated(function() {
 				this.selectedRooms.set(selectedRooms);
 			}
 			TempSettings.remove(data._id);
-		}
+		},
 	});
 });
 
@@ -85,37 +85,35 @@ Template.admin.helpers({
 	languages() {
 		const languages = TAPi18n.getLanguages();
 
-		const result = Object.entries(languages).map(language => {
-			const obj = language[1];
-			obj.key = language[0];
-			return obj;
-		}).sort((a, b) => a.key - b.key);
+		const result = Object.entries(languages)
+			.map(([key, language]) => ({ ...language, key: key.toLowerCase() }))
+			.sort((a, b) => a.key - b.key);
 
 		result.unshift({
-			'name': 'Default',
-			'en': 'Default',
-			'key': ''
+			name: 'Default',
+			en: 'Default',
+			key: '',
 		});
 
 		return result;
 	},
-	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
-		return setting && setting.split('-').shift().toLowerCase() === key;
+	isAppLanguage(key) {
+		const languageKey = RocketChat.settings.get('Language');
+		return typeof languageKey === 'string' && languageKey.toLowerCase() === key;
 	},
 	group() {
 		const groupId = FlowRouter.getParam('group');
 		const group = RocketChat.settings.collectionPrivate.findOne({
 			_id: groupId,
-			type: 'group'
+			type: 'group',
 		});
 		if (!group) {
 			return;
 		}
-		const settings = RocketChat.settings.collectionPrivate.find({ group: groupId }, { sort: { section: 1, sorter: 1, i18nLabel: 1 }}).fetch();
+		const settings = RocketChat.settings.collectionPrivate.find({ group: groupId }, { sort: { section: 1, sorter: 1, i18nLabel: 1 } }).fetch();
 		const sections = {};
 
-		Object.keys(settings).forEach(key => {
+		Object.keys(settings).forEach((key) => {
 			const setting = settings[key];
 			if (setting.i18nDefaultQuery != null) {
 				if (_.isString(setting.i18nDefaultQuery)) {
@@ -126,7 +124,7 @@ Template.admin.helpers({
 				if (!_.isArray(i18nDefaultQuery)) {
 					i18nDefaultQuery = [i18nDefaultQuery];
 				}
-				Object.keys(i18nDefaultQuery).forEach(key => {
+				Object.keys(i18nDefaultQuery).forEach((key) => {
 					const item = i18nDefaultQuery[key];
 					if (RocketChat.settings.collectionPrivate.findOne(item) != null) {
 						setting.value = TAPi18n.__(`${ setting._id }_Default`);
@@ -140,11 +138,11 @@ Template.admin.helpers({
 			sections[settingSection].push(setting);
 		});
 
-		group.sections = Object.keys(sections).map(key =>{
+		group.sections = Object.keys(sections).map((key) => {
 			const value = sections[key];
 			return {
 				section: key,
-				settings: value
+				settings: value,
 			};
 		});
 		return group;
@@ -156,7 +154,7 @@ Template.admin.helpers({
 		let enableQuery;
 		if (this.blocked) {
 			return {
-				disabled: 'disabled'
+				disabled: 'disabled',
 			};
 		}
 		if (this.enableQuery == null) {
@@ -172,7 +170,7 @@ Template.admin.helpers({
 		}
 		let found = 0;
 
-		Object.keys(enableQuery).forEach(key =>{
+		Object.keys(enableQuery).forEach((key) => {
 			const item = enableQuery[key];
 			if (TempSettings.findOne(item) != null) {
 				found++;
@@ -182,21 +180,21 @@ Template.admin.helpers({
 			return {};
 		} else {
 			return {
-				disabled: 'disabled'
+				disabled: 'disabled',
 			};
 		}
 	},
 	isReadonly() {
 		if (this.readonly === true) {
 			return {
-				readonly: 'readonly'
+				readonly: 'readonly',
 			};
 		}
 	},
 	canAutocomplete() {
 		if (this.autocomplete === false) {
 			return {
-				autocomplete: 'off'
+				autocomplete: 'off',
 			};
 		}
 	},
@@ -204,18 +202,18 @@ Template.admin.helpers({
 		const group = FlowRouter.getParam('group');
 		const query = {
 			group,
-			changed: true
+			changed: true,
 		};
 		if (section != null) {
 			if (section === '') {
 				query.$or = [
 					{
-						section: ''
+						section: '',
 					}, {
 						section: {
-							$exists: false
-						}
-					}
+							$exists: false,
+						},
+					},
 				];
 			} else {
 				query.section = section;
@@ -225,11 +223,11 @@ Template.admin.helpers({
 	},
 	isSettingChanged(id) {
 		return TempSettings.findOne({
-			_id: id
+			_id: id,
 		}, {
 			fields: {
-				changed: 1
-			}
+				changed: 1,
+			},
 		}).changed;
 	},
 	translateSection(section) {
@@ -281,7 +279,7 @@ Template.admin.helpers({
 			matchTags: true,
 			showTrailingSpace: true,
 			highlightSelectionMatches: true,
-			readOnly
+			readOnly,
 		};
 	},
 	setEditorOnBlur(_id) {
@@ -295,7 +293,7 @@ Template.admin.helpers({
 			}
 			const onChange = function() {
 				const value = codeMirror.getValue();
-				TempSettings.update({ _id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value }});
+				TempSettings.update({ _id }, { $set: { value, changed: RocketChat.settings.collectionPrivate.findOne(_id).value !== value } });
 			};
 			const onChangeDelayed = _.debounce(onChange, 500);
 			codeMirror.on('change', onChangeDelayed);
@@ -310,10 +308,10 @@ Template.admin.helpers({
 	autocompleteRoom() {
 		return {
 			limit: 10,
-			//inputDelay: 300
+			// inputDelay: 300
 			rules: [
 				{
-					//@TODO maybe change this 'collection' and/or template
+					// @TODO maybe change this 'collection' and/or template
 					collection: 'CachedChannelList',
 					subscription: 'channelAndPrivateAutocomplete',
 					field: 'name',
@@ -322,12 +320,12 @@ Template.admin.helpers({
 					matchAll: true,
 					selector(match) {
 						return {
-							name: match
+							name: match,
 						};
 					},
-					sort: 'name'
-				}
-			]
+					sort: 'name',
+				},
+			],
 		};
 	},
 	selectedRooms() {
@@ -337,9 +335,9 @@ Template.admin.helpers({
 		return color.replace(/theme-color-/, '@');
 	},
 	showResetButton() {
-		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 }});
+		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 } });
 		return this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
-	}
+	},
 });
 
 Template.admin.events({
@@ -356,29 +354,29 @@ Template.admin.events({
 				$(e.target).siblings('.colorpicker-swatch').css('background-color', value);
 		}
 		TempSettings.update({
-			_id: this._id
+			_id: this._id,
 		}, {
 			$set: {
 				value,
-				changed: RocketChat.settings.collectionPrivate.findOne(this._id).value !== value
-			}
+				changed: RocketChat.settings.collectionPrivate.findOne(this._id).value !== value,
+			},
 		});
 	}, 500),
 	'change select[name=color-editor]'(e) {
 		const value = s.trim($(e.target).val());
-		TempSettings.update({ _id: this._id }, { $set: { editor: value }});
-		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value }});
+		TempSettings.update({ _id: this._id }, { $set: { editor: value } });
+		RocketChat.settings.collectionPrivate.update({ _id: this._id }, { $set: { editor: value } });
 	},
 	'click .rc-header__section-button .discard'() {
 		const group = FlowRouter.getParam('group');
 		const query = {
 			group,
-			changed: true
+			changed: true,
 		};
 		const settings = TempSettings.find(query, {
-			fields: { _id: 1, value: 1, packageValue: 1 }}).fetch();
+			fields: { _id: 1, value: 1, packageValue: 1 } }).fetch();
 		settings.forEach(function(setting) {
-			const oldSetting = RocketChat.settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 }});
+			const oldSetting = RocketChat.settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 } });
 			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);
 		});
 	},
@@ -397,34 +395,45 @@ Template.admin.events({
 		const group = FlowRouter.getParam('group');
 		const section = $(e.target).data('section');
 		if (section === '') {
-			settings = TempSettings.find({ group, section: { $exists: false }}, { fields: { _id: 1 }}).fetch();
+			settings = TempSettings.find({ group, section: { $exists: false } }, { fields: { _id: 1 } }).fetch();
 		} else {
-			settings = TempSettings.find({ group, section }, { fields: { _id: 1 }}).fetch();
+			settings = TempSettings.find({ group, section }, { fields: { _id: 1 } }).fetch();
 		}
 		settings.forEach(function(setting) {
 			const defaultValue = getDefaultSetting(setting._id);
 			setFieldValue(setting._id, defaultValue.packageValue, defaultValue.type, defaultValue.editor);
-			TempSettings.update({_id: setting._id }, {
+			TempSettings.update({ _id: setting._id }, {
 				$set: {
 					value: defaultValue.packageValue,
-					changed: RocketChat.settings.collectionPrivate.findOne(setting._id).value !== defaultValue.packageValue
-				}
+					changed: RocketChat.settings.collectionPrivate.findOne(setting._id).value !== defaultValue.packageValue,
+				},
 			});
 		});
 	},
 	'click .rc-header__section-button .save'() {
 		const group = FlowRouter.getParam('group');
 		const query = { group, changed: true };
-		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 }}).fetch();
-		if (!_.isEmpty(settings)) {
-			RocketChat.settings.batchSet(settings, function(err) {
-				if (err) {
-					return handleError(err);
-				}
-				TempSettings.update({ changed: true }, { $unset: { changed: 1 }});
-				toastr.success(TAPi18n.__('Settings_updated'));
-			});
+		const settings = TempSettings.find(query, { fields: { _id: 1, value: 1, editor: 1 } }).fetch() || [];
+		if (settings.length === 0) {
+			return;
 		}
+
+		RocketChat.settings.batchSet(settings, (err) => {
+			if (err) {
+				return handleError(err);
+			}
+
+			TempSettings.update({ changed: true }, { $unset: { changed: 1 } });
+
+			if (settings.some(({ _id }) => _id === 'Language')) {
+				const lng = Meteor.user().language
+					|| settings.filter(({ _id }) => _id === 'Language').shift().value
+					|| 'en';
+				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
+			}
+			toastr.success(TAPi18n.__('Settings_updated'));
+		});
+
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
@@ -438,7 +447,7 @@ Template.admin.events({
 			type: 'input',
 			showCancelButton: true,
 			closeOnConfirm: true,
-			inputPlaceholder: TAPi18n.__('Custom_oauth_unique_name')
+			inputPlaceholder: TAPi18n.__('Custom_oauth_unique_name'),
 		};
 		modal.open(config, function(inputValue) {
 			if (inputValue === false) {
@@ -474,7 +483,7 @@ Template.admin.events({
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: TAPi18n.__('Yes_delete_it'),
 			cancelButtonText: TAPi18n.__('Cancel'),
-			closeOnConfirm: true
+			closeOnConfirm: true,
 		};
 		modal.open(config, function() {
 			Meteor.call('removeOAuthService', name);
@@ -485,7 +494,7 @@ Template.admin.events({
 	},
 	'change input[type=file]'(ev) {
 		const e = ev.originalEvent || ev;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (!files || files.length === 0) {
 			if (e.dataTransfer && e.dataTransfer.files) {
 				files = e.dataTransfer.files;
@@ -494,21 +503,19 @@ Template.admin.events({
 			}
 		}
 
-		Object.keys(files).forEach(key => {
+		Object.keys(files).forEach((key) => {
 			const blob = files[key];
 			toastr.info(TAPi18n.__('Uploading_file'));
 			const reader = new FileReader();
 			reader.readAsBinaryString(blob);
-			reader.onloadend = () => {
-				return Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
-					if (err != null) {
-						handleError(err);
-						console.log(err);
-						return;
-					}
-					return toastr.success(TAPi18n.__('File_uploaded'));
-				});
-			};
+			reader.onloadend = () => Meteor.call('setAsset', reader.result, blob.type, this.asset, function(err) {
+				if (err != null) {
+					handleError(err);
+					console.log(err);
+					return;
+				}
+				return toastr.success(TAPi18n.__('File_uploaded'));
+			});
 		});
 	},
 	'click .expand'(e) {
@@ -529,7 +536,7 @@ Template.admin.events({
 		Meteor.call(this.value, function(err, data) {
 			if (err != null) {
 				err.details = _.extend(err.details || {}, {
-					errorTitle: 'Error'
+					errorTitle: 'Error',
 				});
 				handleError(err);
 				return;
@@ -553,7 +560,7 @@ Template.admin.events({
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({ _id: this.id }, { $set: { value }});
+		TempSettings.update({ _id: this.id }, { $set: { value } });
 		event.currentTarget.value = '';
 		event.currentTarget.focus();
 	},
@@ -568,10 +575,10 @@ Template.admin.events({
 		const value = selectedRooms[settingId];
 		TempSettings.update({ _id: settingId }, {
 			$set: {
-				value
-			}
+				value,
+			},
 		});
-	}
+	},
 });
 
 Template.admin.onRendered(function() {
@@ -582,8 +589,8 @@ Template.admin.onRendered(function() {
 	Tracker.autorun(function() {
 		const hasColor = TempSettings.find({
 			group: FlowRouter.getParam('group'),
-			type: 'color'
-		}, { fields: { _id: 1, editor: 1 }}).fetch().length;
+			type: 'color',
+		}, { fields: { _id: 1, editor: 1 } }).fetch().length;
 		if (hasColor) {
 			Meteor.setTimeout(function() {
 				$('.colorpicker-input').each(function(index, el) {

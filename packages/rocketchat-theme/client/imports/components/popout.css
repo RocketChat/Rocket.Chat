@@ -1,12 +1,36 @@
+@keyframes loading {
+	0% {
+
+		transform: scale(0.7);
+
+		opacity: 0;
+	}
+
+	50% {
+
+		transform: scale(1);
+
+		opacity: 1;
+	}
+
+	100% {
+
+		transform: scale(0.7);
+
+		opacity: 0;
+	}
+}
+
 .rc-popout {
 	min-width: 380px;
 	max-width: 800px;
 
-	border: solid 4px var(--rc-color-primary-darkest);
-	background: var(--rc-color-primary-darkest);
+	transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
 	color: var(--rc-color-primary-lightest);
 
-	transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+	border: solid 4px var(--rc-color-primary-darkest);
+	background: var(--rc-color-primary-darkest);
 
 	&-wrapper {
 		position: absolute;
@@ -14,6 +38,7 @@
 
 		top: calc(var(--header-min-height) + 60px);
 		left: calc(100% - 395px);
+
 		display: flex;
 
 		animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
@@ -25,7 +50,6 @@
 
 		-webkit-user-drag: element;
 		-khtml-user-drag: element;
-
 	}
 
 	&__title {
@@ -33,9 +57,11 @@
 
 		font-size: 16px;
 	}
+
 	&--open {
 		& .rc-popout__header {
 			padding: 5px 10px 8px;
+
 			& .rc-popout__controls {
 				display: none;
 			}
@@ -48,9 +74,11 @@
 
 		font-size: 20px;
 	}
+
 	&__minimize {
 		cursor: pointer;
-		transition: transform linear .2s;
+		transition: transform linear 0.2s;
+
 		font-size: 20px;
 	}
 
@@ -58,7 +86,7 @@
 		display: flex;
 		flex-direction: row;
 
-		padding: 5px 10px 5px;
+		padding: 5px 10px;
 
 		font-size: 21px;
 		justify-content: flex-end;
@@ -77,19 +105,42 @@
 		align-items: stretch;
 
 		& .youtube-player {
-			height: inherit;
 			width: inherit;
+			height: inherit;
 		}
 	}
 
 	&__controls {
 		display: flex;
 		flex: 10 1 auto;
+
 		padding: 8px 10px 5px;
 
 		& button {
-			font-size: 16px;
 			margin: 0 5px;
+
+			font-size: 16px;
+
+			& > .rc-icon {
+				fill: currentColor;
+				stroke: currentColor;
+			}
+
+			&.preparing {
+				animation: loading 2s infinite;
+				pointer-events: none;
+			}
+
+			&.broadcasting {
+				color: red;
+			}
+		}
+
+		& span {
+			text-transform: capitalize;
+
+			font-size: 15px;
+			line-height: 18px;
 		}
 	}
 
@@ -144,12 +195,14 @@
 		}
 
 		&.rc-popout__content {
-			height: 0px;
-			visibility: hidden;
+			overflow: hidden;
+
+			height: 0;
 
 			& .streaming-object {
 				visibility: 'hidden';
-				height: 0px;
+
+				height: 0;
 			}
 		}
 	}
@@ -157,7 +210,6 @@
 	& svg {
 		fill: var(--rc-color-primary-lightest);
 	}
-
 }
 
 @media (width <= 400px) {
