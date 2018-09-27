@@ -34,5 +34,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Rooms.js', 'server');
 	api.addFiles('server/methods/jitsiSetTimeout.js', 'server');
 	api.addFiles('server/methods/bbb.js', 'server');
+	api.addFiles('server/methods/jitsiGenerateToken.js', 'server');
 	api.addFiles('server/actionLink.js', 'server');
 });
