@@ -8,6 +8,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -450,7 +451,9 @@ export const e2e = new E2E();
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			if (RocketChat.settings.get('E2E_Enable') && window.crypto) {
+			const adminEmbedded = RocketChat.Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+
+			if (!adminEmbedded && RocketChat.settings.get('E2E_Enable') && window.crypto) {
 				e2e.startClient();
 				e2e.enabled.set(true);
 			} else {

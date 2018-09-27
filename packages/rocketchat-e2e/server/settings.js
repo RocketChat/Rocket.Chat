@@ -6,5 +6,6 @@ RocketChat.settings.addGroup('E2E Encryption', function() {
 		i18nLabel: 'Enabled',
 		i18nDescription: 'E2E_Enable_description',
 		public: true,
+		alert: 'E2E_Enable_alert',
 	});
 });
