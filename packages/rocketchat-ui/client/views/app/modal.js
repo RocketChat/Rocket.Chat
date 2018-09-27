@@ -24,7 +24,7 @@ this.modal = {
 		this.config = config;
 
 		if (config.dontAskAgain) {
-			const dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			const dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
 			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
 				this.confirm(true);
@@ -66,7 +66,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && !/input|textarea|button/i.test(e.currentTarget.activeElement.tagName)) {
 			e.preventDefault();
 			e.stopPropagation();
 
