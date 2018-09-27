@@ -80,6 +80,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByRoomId(rid, options) {
+		const data = RocketChat.models.Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
+		const query = {
+			_id: {
+				$in: data,
+			},
+		};
+
+		return this.find(query, options);
+	}
 
 	findByUsername(username, options) {
 		const query = { username };
