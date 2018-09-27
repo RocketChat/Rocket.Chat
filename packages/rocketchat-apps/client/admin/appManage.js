@@ -63,9 +63,16 @@ Template.appManage.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
+	this.apis = new ReactiveVar([]);
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
+
+	this.getApis = async() => {
+		this.apis.set(await window.Apps.getAppApis(id));
+	};
+
+	this.getApis();
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
@@ -210,6 +217,9 @@ Template.appManage.helpers({
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
+	apis() {
+		return Template.instance().apis.get();
+	},
 	parseDescription(i18nDescription) {
 		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
@@ -219,6 +229,20 @@ Template.appManage.helpers({
 	},
 	saving() {
 		return Template.instance().loading.get();
+	},
+	curl(method, api) {
+		const example = api.examples[method] || {};
+		return Utilities.curl({
+			url: Meteor.absoluteUrl.defaultOptions.rootUrl + api.computedPath,
+			method,
+			params: example.params,
+			query: example.query,
+			content: example.content,
+			headers: example.headers,
+		}).split('\n');
+	},
+	renderMethods(methods) {
+		return methods.join('|').toUpperCase();
 	},
 });
 
@@ -388,12 +412,16 @@ Template.appManage.events({
 
 	'input input, input textarea, change input[type="color"]': _.throttle(function(e, t) {
 		let value = s.trim($(e.target).val());
+
 		switch (this.type) {
 			case 'int':
 				value = parseInt(value);
 				break;
 			case 'boolean':
 				value = value === '1';
+				break;
+			case 'code':
+				value = $(`.code-mirror-box[data-editor-id="${ this.id }"] .CodeMirror`)[0].CodeMirror.getValue();
 		}
 
 		const setting = t.settings.get()[this.id];
