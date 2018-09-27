@@ -2,6 +2,21 @@
 RocketChat.Migrations.add({
 	version: 133,
 	up() {
+		const rename = (oldId, newId) => {
+			const accountsSetting = RocketChat.models.Settings.findOne();
+			delete accountsSetting._id;
+			delete accountsSetting.enableQuery;
+			delete accountsSetting.i18nDefaultQuery;
+
+			RocketChat.models.Settings.upsert({ _id: newId }, accountsSetting);
+			RocketChat.models.Settings.removeById(oldId);
+
+		};
+
+		rename('Accounts_UserAddedEmail', 'Accounts_UserAddedEmail_Email');
+		rename('Accounts_UserAddedEmailSubject', 'Accounts_UserAddedEmail_Subject');
+		rename('Invitation_HTML', 'Invitation_Email');
+
 		const updateIfDefault = (customized, idEmail, idSubject) => {
 			const setting = RocketChat.models.Settings.findOne({ _id: customized });
 			const newSettingEmail = RocketChat.models.Settings.findOne({ _id: idEmail });
