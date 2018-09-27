@@ -17,6 +17,10 @@
 				{{/if}}
 
 				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
+				
+				{{#if encryptionEnabled}}
+					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
+				{{/if}}
 
 				{{> sidebarItem menuItem "Integrations" "code" "account" "integrations" }}
 
