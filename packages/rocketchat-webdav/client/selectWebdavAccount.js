@@ -30,7 +30,7 @@ Template.selectWebdavAccount.events({
 					if (!response.success) {
 						return toastr.error(t(response.message));
 					}
-					return toastr.success(t('Success_Webdav_Upload'));
+					return toastr.success(t('File_uploaded'));
 				});
 			}
 		};

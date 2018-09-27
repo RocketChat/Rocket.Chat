@@ -23,7 +23,7 @@ Meteor.startup(function() {
 			const [, message] = this._arguments;
 			const [attachment] = message.attachments;
 			const { file } = message;
-			const url = Meteor.absoluteUrl().concat(attachment.title_link.substring(1));
+			const url = RocketChat.getURL(attachment.title_link, { full: true });
 			modal.open({
 				data: {
 					message,

@@ -58,7 +58,7 @@ const validate = function() {
 	}
 	Object.entries(validationObj).forEach(([key, value]) => {
 		form.find(`input[name=${ key }], select[name=${ key }]`).addClass('error');
-		form.find(` input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
+		form.find(`input[name=${ key }]~.input-error, select[name=${ key }]~.input-error`).text(value);
 	});
 	this.loading.set(false);
 	return false;

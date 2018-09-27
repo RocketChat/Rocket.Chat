@@ -46,9 +46,6 @@ Template.webdavFilePicker.helpers({
 		}
 		return { icon, type, extension };
 	},
-	equals(a, b) {
-		return a === b;
-	},
 	webdavNodes() {
 		return Session.get('webdavNodes');
 	},

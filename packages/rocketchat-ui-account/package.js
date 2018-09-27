@@ -24,7 +24,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/accountIntegrations.html', 'client');
 	api.addFiles('client/accountPreferences.html', 'client');
 	api.addFiles('client/accountProfile.html', 'client');
-
 	api.addFiles('client/avatar/avatar.html', 'client');
 	api.addFiles('client/avatar/prompt.html', 'client');
 
