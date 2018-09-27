@@ -11,7 +11,6 @@ RocketChat.Migrations.add({
 			delete newSettingSubject.enableQuery;
 			delete newSettingSubject.i18nDefaultQuery;
 
-
 			delete newSettingEmail._id;
 			delete newSettingEmail.enableQuery;
 			delete newSettingEmail.i18nDefaultQuery;
@@ -25,7 +24,7 @@ RocketChat.Migrations.add({
 			RocketChat.models.Settings.remove({ _id: customized });
 		};
 		const rename = (oldId, newId) => {
-			const newSetting = RocketChat.models.Settings.findOne();
+			const newSetting = RocketChat.models.Settings.findOne({ _id: oldId });
 			delete newSetting._id;
 			delete newSetting.enableQuery;
 			delete newSetting.i18nDefaultQuery;
