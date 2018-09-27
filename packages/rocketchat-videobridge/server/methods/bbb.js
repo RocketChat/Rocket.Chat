@@ -12,7 +12,6 @@ const getBBBAPI = () => {
 	const url = RocketChat.settings.get('bigbluebutton_server');
 	const secret = RocketChat.settings.get('bigbluebutton_sharedSecret');
 	const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
-
 	return { api, url };
 };
 
@@ -31,7 +30,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbJoin' });
 		}
 
-		const { api, url } = getBBBAPI();
+		const { api } = getBBBAPI();
 		const meetingID = RocketChat.settings.get('uniqueID') + rid;
 		const room = RocketChat.models.Rooms.findOneById(rid);
 		const createUrl = api.urlFor('create', {
@@ -76,8 +75,9 @@ Meteor.methods({
 					meetingID,
 					fullName: user.username,
 					userID: user._id,
+					joinViaHtml5: true,
 					avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
-					clientURL: `${ url }/html5client/join`,
+					// clientURL: `${ url }/html5client/join`,
 				}),
 			};
 		}

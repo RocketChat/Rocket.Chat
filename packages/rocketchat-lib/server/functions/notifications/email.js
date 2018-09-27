@@ -26,6 +26,11 @@ function getEmailContent({ message, user, room }) {
 
 	if (message.msg !== '') {
 		let messageContent = s.escapeHTML(message.msg);
+
+		if (message.t === 'e2e') {
+			messageContent = TAPi18n.__('Encrypted_message', { lng });
+		}
+
 		message = RocketChat.callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
