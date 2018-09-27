@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
-	'e2e.updateGroupE2EKey'(rid, uid, key) {
+	'e2e.updateGroupKey'(rid, uid, key) {
 		const mySub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (mySub) { // I have a subscription to this room
 			const userSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, uid);
