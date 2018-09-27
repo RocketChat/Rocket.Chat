@@ -1,6 +1,6 @@
 
 RocketChat.Migrations.add({
-	version: 133,
+	version: 134,
 	up() {
 		const updateIfDefault = (customized, idEmail, idSubject) => {
 			const setting = RocketChat.models.Settings.findOne({ _id: customized });
