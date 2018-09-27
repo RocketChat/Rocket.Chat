@@ -1,4 +1,6 @@
-RocketChat.messageBox = {};
+import EventEmitter from 'wolfy87-eventemitter';
+
+RocketChat.messageBox = new EventEmitter;
 
 RocketChat.messageBox.actions = new class {
 	constructor() {
@@ -31,7 +33,12 @@ RocketChat.messageBox.actions = new class {
 
 		this.actions[group].push({ ...config, label });
 	}
-
+	remove(group, expression) {
+		if (!group || !this.actions[group]) {
+			return false;
+		}
+		return (this.actions[group] = this.actions[group].filter((action) => expression.test(action.id)));
+	}
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
