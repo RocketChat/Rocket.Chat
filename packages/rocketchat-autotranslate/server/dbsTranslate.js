@@ -149,10 +149,9 @@ class DBSAutoTranslate extends AutoTranslate {
 						});
 						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
 							translations[language] = this.deTokenize(Object.assign({}, message, { msg: decodeURIComponent(result.data.translation) }));
-							return 1;
 						}
 					} catch (e) {
-						throw new Meteor.Error('translation-failed', 'Auto-Translate is not allowed', e);
+						throw new Meteor.Error('translation-failed', 'Error translating message', e);
 					}
 				});
 			} else {
@@ -202,7 +201,7 @@ class DBSAutoTranslate extends AutoTranslate {
 							translations[language] = decodeURIComponent(result.data.translation);
 						}
 					} catch (e) {
-						throw new Meteor.Error('translation-failed', 'Auto-Translate is not allowed', e);
+						throw new Meteor.Error('translation-failed', 'Error translating message', e);
 					}
 				});
 			} else {
