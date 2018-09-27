@@ -621,7 +621,7 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 
 		const onlineInRoom = [];
 		online.forEach((user) => {
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
@@ -951,6 +951,18 @@ RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
 
 		return RocketChat.API.v1.success({
 			roles,
+		});
+	},
+});
+
+RocketChat.API.v1.addRoute('channels.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
 		});
 	},
 });

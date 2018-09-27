@@ -313,6 +313,21 @@ export class AppsRestApi {
 			},
 		});
 
+		this.api.addRoute(':id/apis', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s apis..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					return RocketChat.API.v1.success({
+						apis: manager.apiManager.listApis(this.urlParams.id),
+					});
+				} else {
+					return RocketChat.API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				}
+			},
+		});
+
 		this.api.addRoute(':id/status', { authRequired: true }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s status..`);

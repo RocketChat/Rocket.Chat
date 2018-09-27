@@ -6,7 +6,7 @@ export class AppSettingsConverter {
 	}
 
 	convertById(settingId) {
-		const setting = RocketChat.models.Settings.findOneById(settingId);
+		const setting = RocketChat.models.Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}

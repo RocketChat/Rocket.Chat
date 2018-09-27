@@ -9,7 +9,12 @@
 			{{/header}}
 			<div class="content">
 				{{#requiresPermission 'manage-apps'}}
-					{{#if isReady}}
+					{{#if hasError}}
+						<div class="apps-error error-color">
+							<i class="icon-attention"></i>
+							<p>{{theError}}</p>
+						</div>
+					{{else if isReady}}
 						<div class="rc-apps-details">
 							<div class="rc-apps-container rc-apps-container__header">
 								{{#if iconFileData}}
@@ -63,13 +68,13 @@
 										<div class="rc-apps-details__col">
 										{{#if author.homepage}}
 												<h3>{{_ "Author_Site"}}</h3>
-												<a href="{{author.homepage}}">{{author.homepage}}</a>
+												<a href="{{author.homepage}}" target="_blank">{{author.homepage}}</a>
 										{{/if}}
 										</div>
 										<div class="rc-apps-details__col">
 											{{#if author.support}}
 												<h3>{{_ "Support"}}</h3>
-												<a href="{{author.support}}">{{author.support}}</a>
+												<a href="{{author.support}}" target="_blank">{{author.support}}</a>
 											{{/if}}
 										</div>
 									</div>
@@ -85,6 +90,28 @@
 								{{#if description}}
 									<div class="rc-apps-details__description">
 										<p>{{ description }}</p>
+									</div>
+								{{/if}}
+
+								{{#if apis}}
+									<div class="rc-apps-details__row">
+										<h2> {{_ "Apis"}} </h2>
+									</div>
+									<div class="rc-apps-settings">
+										{{#each apis}}
+											<div class="rc-apps-settings__item">
+												<div class="rc-input">
+													<div class="rc-apps-details__api">
+														{{renderMethods methods}} {{path}}
+													</div>
+													<div class="rc-input__description rc-apps-details__api__description">
+														{{#each methods}}
+															<div class="rc-apps-details__api__description__item">{{#each curl . ..}}{{.}}<br />{{/each}}</div>
+														{{/each}}
+													</div>
+												</div>
+											</div>
+										{{/each}}
 									</div>
 								{{/if}}
 
@@ -240,7 +267,7 @@
 															<div class="rc-input__title">{{_ i18nLabel}}</div>
 															<div class="rc-input__wrapper">
 																{{#if isDisabled.disabled}}
-																{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+																	{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
 																{{else}}
 																<div class="code-mirror-box" data-editor-id="{{id}}">
 																	<div class="title">
@@ -430,11 +457,6 @@
 									</div>
 								{{/if}}
 							</div>
-						</div>
-					{{else if hasError}}
-						<div class="apps-error error-color">
-							<i class="icon-attention"></i>
-							<p>Sadly, an error has occured while loading this page.</p>
 						</div>
 					{{else}}
 						{{> loading}}

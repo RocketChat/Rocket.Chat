@@ -81,6 +81,11 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
