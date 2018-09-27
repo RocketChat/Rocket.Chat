@@ -1,6 +1,45 @@
 
 # 0.70.0 (Under Release Candidate Process)
 
+## 0.70.0-rc.2
+`2018-09-27  ·  1 🎉  ·  8 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Apps: API provider ([#11938](https://github.com/RocketChat/Rocket.Chat/pull/11938))
+
+### 🐛 Bug fixes
+
+- Real Name on Direct Messages  ([#12154](https://github.com/RocketChat/Rocket.Chat/pull/12154))
+- Position of popover component on mobile ([#12038](https://github.com/RocketChat/Rocket.Chat/pull/12038))
+- Duplicate email and auto-join on mentions ([#12168](https://github.com/RocketChat/Rocket.Chat/pull/12168))
+- Horizontal scroll on user info tab ([#12102](https://github.com/RocketChat/Rocket.Chat/pull/12102))
+- Markdown ampersand escape on links ([#12140](https://github.com/RocketChat/Rocket.Chat/pull/12140))
+- Saving user preferences ([#12170](https://github.com/RocketChat/Rocket.Chat/pull/12170))
+- Apps being able to see hidden settings ([#12159](https://github.com/RocketChat/Rocket.Chat/pull/12159))
+- Allow user with "bulk-register-user" permission to send invitations ([#12112](https://github.com/RocketChat/Rocket.Chat/pull/12112))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Improve: Moved the e2e password request to an alert instead of a popup ([#12172](https://github.com/RocketChat/Rocket.Chat/pull/12172))
+- New: Option to change E2E key ([#12169](https://github.com/RocketChat/Rocket.Chat/pull/12169))
+- Improve: Decrypt last message ([#12173](https://github.com/RocketChat/Rocket.Chat/pull/12173))
+- Fix: e2e password visible on always-on alert message. ([#12139](https://github.com/RocketChat/Rocket.Chat/pull/12139))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@mrsimpson](https://github.com/mrsimpson)
+- [@rodrigok](https://github.com/rodrigok)
+- [@rssilva](https://github.com/rssilva)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.70.0-rc.1
 `2018-09-24  ·  3 🔍  ·  3 👩‍💻👨‍💻`
 

@@ -18680,6 +18680,72 @@
         }
       ]
     },
+    "0.69.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12026",
+          "title": "Release 0.69.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
     "0.70.0-rc.0": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
@@ -19170,13 +19236,7 @@
           "contributors": [
             "rodrigok"
           ]
-        }
-      ]
-    },
-    "0.69.2": {
-      "node_version": "8.11.3",
-      "npm_version": "5.6.0",
-      "pull_requests": [
+        },
         {
           "pr": "12026",
           "title": "Release 0.69.2",
@@ -19269,6 +19329,141 @@
           "userLogin": "geekgonecrazy",
           "milestone": "0.70.0",
           "contributors": [
+            "geekgonecrazy"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12154",
+          "title": "[FIX] Real Name on Direct Messages ",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12038",
+          "title": "[FIX] Position of popover component on mobile",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12168",
+          "title": "[FIX] Duplicate email and auto-join on mentions",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12172",
+          "title": "Improve: Moved the e2e password request to an alert instead of a popup",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12169",
+          "title": "New: Option to change E2E key",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12173",
+          "title": "Improve: Decrypt last message",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12102",
+          "title": "[FIX] Horizontal scroll on user info tab",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "12140",
+          "title": "[FIX] Markdown ampersand escape on links",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "11938",
+          "title": "[NEW] Apps: API provider",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12170",
+          "title": "[FIX] Saving user preferences",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12139",
+          "title": "Fix: e2e password visible on always-on alert message.",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12159",
+          "title": "[FIX] Apps being able to see hidden settings",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12112",
+          "title": "[FIX] Allow user with \"bulk-register-user\" permission to send invitations",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow",
             "geekgonecrazy"
           ]
         }
