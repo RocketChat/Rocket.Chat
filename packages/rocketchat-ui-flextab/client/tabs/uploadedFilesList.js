@@ -118,7 +118,7 @@ Template.uploadedFilesList.events({
 		}
 	}, 200),
 
-	'click .attachments__item-link'(e, t) {
+	'click .attachments__item-link'(e) {
 		e.preventDefault();
 
 		const config = {
