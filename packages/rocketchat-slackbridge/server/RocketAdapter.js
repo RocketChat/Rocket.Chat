@@ -233,7 +233,7 @@ export default class RocketAdapter {
 		let slackResults = null;
 		let isGroup = false;
 		if (slackChannelID.charAt(0) === 'C') {
-			slackResults = HTTP.get('https://slack.com/api/channels.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
+			slackResults = HTTP.get('https://slack.com/api/conversations.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
 		} else if (slackChannelID.charAt(0) === 'G') {
 			slackResults = HTTP.get('https://slack.com/api/groups.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
 			isGroup = true;
