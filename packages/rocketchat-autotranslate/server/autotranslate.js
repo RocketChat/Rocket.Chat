@@ -1,22 +1,54 @@
-import _ from 'underscore';
+/* globals SystemLogger, RocketChat */
+
 import s from 'underscore.string';
+import _ from 'underscore';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
-class AutoTranslate {
+/**
+ * Generic auto translate base implementation.
+ * Can be used as superclass for translation providers
+ * @abstract
+ * @class
+ */
+export class AutoTranslate {
+	/**
+	 * Encapsulate the api key and provider settings.
+	 * @constructor
+	 */
 	constructor() {
+		this.name = '';
 		this.languages = [];
-		this.enabled = RocketChat.settings.get('AutoTranslate_Enabled');
-		this.apiKey = RocketChat.settings.get('AutoTranslate_GoogleAPIKey');
 		this.supportedLanguages = {};
-		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, 'AutoTranslate');
-
-		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
-			this.enabled = value;
-		});
-		RocketChat.settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+		// Get the service provide API key.
+		RocketChat.settings.get('AutoTranslate_APIKey', (key, value) => {
 			this.apiKey = value;
+		});
+		// Get Service provider URL.
+		RocketChat.settings.get('AutoTranslate_ServiceProviderURL', (key, value) => {
+			this.apiEndPointUrl = value;
+		});
+		// Get Auto Translate Active flag
+		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
+			this.autoTranslateEnabled = value;
+		});
+		/** Register the active service provider on the 'AfterSaveMessage' callback.
+		 *  So the registered provider will be invoked when a message is saved.
+		 *  All the other inactive service provider must be deactivated.
+		 */
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+			if (this.name === value) {
+				this.registerAfterSaveMsgCallBack(this.name);
+			} else {
+				this.unRegisterAfterSaveMsgCallBack(this.name);
+			}
 		});
 	}
 
+	/**
+	 * Extracts non-translatable parts of a message
+	 * @param {object} message
+	 * @return {object} message
+	 */
 	tokenize(message) {
 		if (!message.tokens || !Array.isArray(message.tokens)) {
 			message.tokens = [];
@@ -146,8 +178,17 @@ class AutoTranslate {
 		return message.msg;
 	}
 
+	/**
+	 * Triggers the translation of the prepared (tokenized) message
+	 * and persists the result
+	 * @public
+	 * @param {object} message
+	 * @param {object} room
+	 * @param {object} targetLanguage
+	 * @returns {object} unmodified message object.
+	 */
 	translateMessage(message, room, targetLanguage) {
-		if (this.enabled && this.apiKey) {
+		if (this.autoTranslateEnabled && this.apiKey) {
 			let targetLanguages;
 			if (targetLanguage) {
 				targetLanguages = [targetLanguage];
@@ -156,33 +197,10 @@ class AutoTranslate {
 			}
 			if (message.msg) {
 				Meteor.defer(() => {
-					const translations = {};
 					let targetMessage = Object.assign({}, message);
-
 					targetMessage.html = s.escapeHTML(String(targetMessage.msg));
 					targetMessage = this.tokenize(targetMessage);
-
-					let msgs = targetMessage.msg.split('\n');
-					msgs = msgs.map((msg) => encodeURIComponent(msg));
-					const query = `q=${ msgs.join('&q=') }`;
-
-					const supportedLanguages = this.getSupportedLanguages('en');
-					targetLanguages.forEach((language) => {
-						if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-							language = language.substr(0, 2);
-						}
-						let result;
-						try {
-							result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query });
-						} catch (e) {
-							console.log('Error translating message', e);
-							return message;
-						}
-						if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-							const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
-							translations[language] = this.deTokenize(Object.assign({}, targetMessage, { msg: txt }));
-						}
-					});
+					const translations = this._translateMessage(targetMessage, targetLanguages);
 					if (!_.isEmpty(translations)) {
 						RocketChat.models.Messages.addTranslations(message._id, translations);
 					}
@@ -194,20 +212,8 @@ class AutoTranslate {
 					for (const index in message.attachments) {
 						if (message.attachments.hasOwnProperty(index)) {
 							const attachment = message.attachments[index];
-							const translations = {};
 							if (attachment.description || attachment.text) {
-								const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
-								const supportedLanguages = this.getSupportedLanguages('en');
-								targetLanguages.forEach((language) => {
-									if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-										language = language.substr(0, 2);
-									}
-									const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query });
-									if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-										const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
-										translations[language] = txt;
-									}
-								});
+								const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
 								if (!_.isEmpty(translations)) {
 									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
 								}
@@ -220,38 +226,95 @@ class AutoTranslate {
 		return message;
 	}
 
+	/**
+	 * On changing the service provider, the callback in which the translation
+	 * is being requested needs to be switched to the new provider
+	 * @protected
+	 * @param {string} provider
+	 */
+	registerAfterSaveMsgCallBack(provider) {
+		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, provider);
+	}
+
+	/**
+	 * On changing the service provider, the callback in which the translation
+	 * is being requested needs to be deactivated for the all other translation providers
+	 * @protected
+	 * @param {string} provider
+	 */
+	unRegisterAfterSaveMsgCallBack(provider) {
+		RocketChat.callbacks.remove('afterSaveMessage', provider);
+	}
+
+	/**
+	 * Returns metadata information about the service provider which is used by
+	 * the generic implementation
+	 * @abstract
+	 * @protected
+	 * @returns { name, displayName, settings }
+		};
+	 */
+	_getProviderMetadata() {
+		SystemLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
+	}
+
+
+	/**
+	 * Provides the possible languages _from_ which a message can be translated into a target language
+	 * @abstract
+	 * @protected
+	 * @param {string} target - the language into which shall be translated
+	 * @returns [{ language, name }]
+	 */
 	getSupportedLanguages(target) {
-		if (this.enabled && this.apiKey) {
-			if (this.supportedLanguages[target]) {
-				return this.supportedLanguages[target];
-			}
+		SystemLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
+	}
 
-			let result;
-			const params = { key: this.apiKey };
-			if (target) {
-				params.target = target;
-			}
+	/**
+	 * Performs the actual translation of a message,
+	 * usually by sending a REST API call to the service provider.
+	 * @abstract
+	 * @protected
+	 * @param {object} message
+	 * @param {object} targetLanguages
+	 * @return {object}
+	 */
+	_translateMessage(message, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
+	}
 
-			try {
-				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
-			} catch (e) {
-				if (e.response && e.response.statusCode === 400 && e.response.data && e.response.data.error && e.response.data.error.status === 'INVALID_ARGUMENT') {
-					params.target = 'en';
-					target = 'en';
-					if (!this.supportedLanguages[target]) {
-						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
-					}
-				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					return this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
-				}
-			}
-		}
+	/**
+	 * Performs the actual translation of an attachment (precisely its description),
+	 * usually by sending a REST API call to the service provider.
+	 * @abstract
+	 * @param {object} attachment
+	 * @param {object} targetLanguages
+	 * @returns {object} translated messages for each target language
+	 */
+	_translateAttachmentDescriptions(attachment, targetLanguages) {
+		SystemLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 
-RocketChat.AutoTranslate = new AutoTranslate;
+export class TranslationProviderRegistry {
+	static registerProvider(provider) {
+		// get provider information
+		const metadata = provider._getProviderMetadata();
+		if (!TranslationProviderRegistry._providers) {
+			TranslationProviderRegistry._providers = {};
+		}
+		TranslationProviderRegistry._providers[metadata.name] = provider;
+	}
+
+	static loadActiveServiceProvider() {
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+			TranslationProviderRegistry._activeProvider = value;
+			RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
+		});
+	}
+}
+
+Meteor.startup(() => {
+	TranslationProviderRegistry.loadActiveServiceProvider();
+});
+

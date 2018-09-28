@@ -2,6 +2,7 @@
 /* globals _ */
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
+import toastr from 'toastr';
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';
@@ -234,6 +235,7 @@ Template.CreateThread.events({
 		const parentChannel = instance.parentChannel.get();
 		const parentChannelId = instance.parentChannelId.get();
 		const openingQuestion = instance.openingQuestion.get();
+		let errorText = '';
 		if (parentChannelId) {
 			instance.error.set(null);
 			Meteor.call('createThread', parentChannelId, {
@@ -243,19 +245,19 @@ Template.CreateThread.events({
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							instance.error.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+							break;
 						case 'error-duplicate-channel-name':
-							instance.error.set(TAPi18n.__('Request_already_exists'));
-							return;
+							errorText = TAPi18n.__('Request_already_exists');
+							break;
 						case 'error-archived-duplicate-name':
-							instance.error.set(TAPi18n.__('Duplicate_archived_channel_name', name));
-							return;
+							errorText = TAPi18n.__('Duplicate_archived_channel_name', name);
+							break;
 						case 'error-invalid-room-name':
 							console.log('room name slug error');
 							// 	toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
-							instance.error.set(TAPi18n.__('Invalid_room_name', err.details.channel_name));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', err.details.channel_name);
+							break;
 						default:
 							return handleError(err);
 					}
@@ -267,6 +269,15 @@ Template.CreateThread.events({
 					RocketChat.roomTypes.openRouteLink(result.t, result);
 				}
 			});
+		} else {
+			errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+		}
+
+		if (errorText) {
+			instance.parentChannelError.set(errorText);
+			if (!instance.selectParent.get()) {
+				toastr.error(errorText);
+			}
 		}
 	},
 	'click .full-modal__back-button'() {
@@ -346,7 +357,7 @@ Template.CreateThread.onCreated(function() {
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
 			if (!result) {
 				instance.parentChannelId.set(false);
-				instance.parentChannelError.set('Parent_channel_doesnt_exist');
+				instance.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
 			} else {
 				instance.parentChannelError.set('');
 				instance.parentChannelId.set(result); // assign parent channel Id

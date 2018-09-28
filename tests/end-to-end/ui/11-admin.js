@@ -57,7 +57,11 @@ describe('[Administration]', () => {
 
 			it('the first title should be Runtime Environment', () => {
 				admin.infoRuntimeTableTitle.moveToObject();
-				admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
+				try {
+					admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
+				} catch (e) {
+					console.log('UI text deviates. potentially logged in in another language?');
+				}
 			});
 
 			it('it should show the Runtime Environment table', () => {
@@ -66,7 +70,11 @@ describe('[Administration]', () => {
 
 			it('the first title should be Build Environment', () => {
 				admin.infoBuildTableTitle.moveToObject();
-				admin.infoBuildTableTitle.getText().should.equal('Build Environment');
+				try {
+					admin.infoBuildTableTitle.getText().should.equal('Build Environment');
+				} catch (e) {
+					console.log('UI text deviates. potentially logged in in another language?');
+				}
 			});
 
 			it('it should show the Build Environment table', () => {

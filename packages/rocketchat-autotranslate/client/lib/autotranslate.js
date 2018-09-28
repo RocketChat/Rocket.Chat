@@ -1,3 +1,4 @@
+/* globals RocketChat */
 import _ from 'underscore';
 
 RocketChat.AutoTranslate = {

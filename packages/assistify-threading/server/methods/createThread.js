@@ -98,7 +98,18 @@ export class ThreadBuilder {
 
 			linkMessage.urls = [{ url: this._getMessageUrl(repostedMessage._id) }];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, { ts: this._openingQuestion.ts });
+			// we want to create a system message for linking the thread from the parent room - so the parent room
+			// has to support system messages at least for this interaction
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, true);
+			}
+			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, { ts: this._openingQuestion.ts });
+
+			// reset it if necessary
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, false);
+			}
+			return true;
 		}
 	}
 
@@ -136,9 +147,9 @@ export class ThreadBuilder {
 				ls: -1,
 			},
 		}).fetch().map((s) => ({
-				id: s.u._id,
-				username: s.u.username
-			}));
+			id: s.u._id,
+			username: s.u.username,
+		}));
 		if (this._parentRoom.t === 'c') {
 			// only add online users
 			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.slice(0, maxInvitationCount).map((user) => user.id)).fetch().map((user) => user.username);

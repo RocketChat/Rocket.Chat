@@ -1,4 +1,4 @@
-/* globals ChatSubscription */
+/* globals ChatSubscription, RocketChat */
 import _ from 'underscore';
 import toastr from 'toastr';
 
