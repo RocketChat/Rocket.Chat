@@ -48,6 +48,6 @@ Meteor.methods({
 
 		message.u = originalMessage.u;
 
-		return RocketChat.updateMessage(message, Meteor.user());
+		return RocketChat.updateMessage(message, Meteor.user(), originalMessage);
 	},
 });

@@ -86,6 +86,11 @@ class AppClientOrchestrator {
 			}
 		});
 	}
+
+	async getAppApis(appId) {
+		const result = await RocketChat.API.get(`apps/${ appId }/apis`);
+		return result.apis;
+	}
 }
 
 Meteor.startup(function _rlClientOrch() {
