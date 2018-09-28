@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 		'rocketchat:push',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
+		'rocketchat:e2e',
 	]);
 
 	api.use('kadira:flow-router', 'client');

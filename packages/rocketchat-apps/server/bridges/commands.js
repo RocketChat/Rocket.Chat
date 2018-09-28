@@ -83,7 +83,7 @@ export class AppCommandsBridge {
 	}
 
 	registerCommand(command, appId) {
-		console.log(`The App ${ appId } is registerin the command: "${ command.command }"`);
+		console.log(`The App ${ appId } is registering the command: "${ command.command }"`);
 
 		this._verifyCommand(command);
 

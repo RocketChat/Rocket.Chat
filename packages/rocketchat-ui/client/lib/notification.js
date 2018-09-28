@@ -1,6 +1,7 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
 import _ from 'underscore';
 import s from 'underscore.string';
+import { e2e } from 'meteor/rocketchat:e2e';
 
 const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
@@ -63,7 +64,7 @@ const KonchatNotification = {
 		}
 	},
 
-	showDesktop(notification) {
+	async showDesktop(notification) {
 		if ((notification.payload.rid === Session.get('openedRoom')) && (typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)) {
 			return;
 		}
@@ -71,6 +72,14 @@ const KonchatNotification = {
 		if ((Meteor.user().status === 'busy') || (Meteor.settings.public.sandstorm != null)) {
 			return;
 		}
+
+		if (notification.payload.message && notification.payload.message.t === 'e2e') {
+			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
+			if (e2eRoom) {
+				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
+			}
+		}
+
 		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
