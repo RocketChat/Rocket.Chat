@@ -61,10 +61,6 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
-	findWithUsername(username, options) {
-		return this.find({ usernames: username }, options);
-	}
-
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
