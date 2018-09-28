@@ -20,8 +20,9 @@ services:
   mongo:
     image: mongo:3.4.5
     restart: unless-stopped
-    - ./data/db:/data/db
-    - ./data/dump:/dump
+    volumes:
+     - ./data/db:/data/db
+     - ./data/dump:/dump
     ports:
       - 27018:27017
     command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
