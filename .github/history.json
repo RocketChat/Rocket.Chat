@@ -19468,6 +19468,143 @@
           ]
         }
       ]
+    },
+    "0.70.0-rc.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12196",
+          "title": "Improve: Expose apps enable setting at `General > Apps`",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12188",
+          "title": "Fix: Message changing order when been edited with apps enabled",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12009",
+          "title": "[BREAK][IMPROVE] New emails design",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11906",
+          "title": "[FIX] IRC Federation no longer working",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12191",
+          "title": "Improve: E2E setting description and alert",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12189",
+          "title": "[NEW] Apps are enabled by default now",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12184",
+          "title": "[NEW] Add Livechat Analytics permission",
+          "userLogin": "renatobecker",
+          "milestone": "0.70.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12192",
+          "title": "Improve: Do not start E2E Encryption when accessing admin as embedded",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11679",
+          "title": "[NEW] WebDAV Integration (User file provider)",
+          "userLogin": "karakayasemi",
+          "milestone": "0.70.0",
+          "contributors": [
+            "karakayasemi",
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12187",
+          "title": "Fix: Add e2e doc to the alert",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.70.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11565",
+          "title": "[FIX] Files list missing from popover menu when owner of room",
+          "userLogin": "tassoevan",
+          "milestone": "Short-term",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "11927",
+          "title": "[FIX] Not able to set per-channel retention policies if no global policy is set for this channel type",
+          "userLogin": "vynmera",
+          "contributors": [
+            "vynmera",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "12126",
+          "title": "[FIX] app engine verbose log typo",
+          "userLogin": "williamriancho",
+          "contributors": [
+            "williamriancho",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        }
+      ]
     }
   }
 }

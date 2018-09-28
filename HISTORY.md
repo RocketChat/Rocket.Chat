@@ -1,6 +1,53 @@
 
 # 0.70.0 (Under Release Candidate Process)
 
+## 0.70.0-rc.3
+`2018-09-27  ·  1 ️️️⚠️  ·  3 🎉  ·  4 🐛  ·  5 🔍  ·  10 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+- [IMPROVE] New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
+
+### 🎉 New features
+
+- Apps are enabled by default now ([#12189](https://github.com/RocketChat/Rocket.Chat/pull/12189))
+- Add Livechat Analytics permission ([#12184](https://github.com/RocketChat/Rocket.Chat/pull/12184))
+- WebDAV Integration (User file provider) ([#11679](https://github.com/RocketChat/Rocket.Chat/pull/11679) by [@karakayasemi](https://github.com/karakayasemi))
+
+### 🐛 Bug fixes
+
+- IRC Federation no longer working ([#11906](https://github.com/RocketChat/Rocket.Chat/pull/11906))
+- Files list missing from popover menu when owner of room ([#11565](https://github.com/RocketChat/Rocket.Chat/pull/11565))
+- Not able to set per-channel retention policies if no global policy is set for this channel type ([#11927](https://github.com/RocketChat/Rocket.Chat/pull/11927) by [@vynmera](https://github.com/vynmera))
+- app engine verbose log typo ([#12126](https://github.com/RocketChat/Rocket.Chat/pull/12126) by [@williamriancho](https://github.com/williamriancho))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Improve: Expose apps enable setting at `General > Apps` ([#12196](https://github.com/RocketChat/Rocket.Chat/pull/12196))
+- Fix: Message changing order when been edited with apps enabled ([#12188](https://github.com/RocketChat/Rocket.Chat/pull/12188))
+- Improve: E2E setting description and alert ([#12191](https://github.com/RocketChat/Rocket.Chat/pull/12191))
+- Improve: Do not start E2E Encryption when accessing admin as embedded ([#12192](https://github.com/RocketChat/Rocket.Chat/pull/12192))
+- Fix: Add e2e doc to the alert ([#12187](https://github.com/RocketChat/Rocket.Chat/pull/12187))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@karakayasemi](https://github.com/karakayasemi)
+- [@vynmera](https://github.com/vynmera)
+- [@williamriancho](https://github.com/williamriancho)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 0.70.0-rc.2
 `2018-09-27  ·  1 🎉  ·  8 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
 
