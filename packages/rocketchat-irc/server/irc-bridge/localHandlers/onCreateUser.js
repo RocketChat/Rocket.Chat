@@ -26,7 +26,7 @@ export default function handleOnCreateUser(newUser) {
 
 	this.sendCommand('registerUser', user);
 
-	const rooms = RocketChat.models.Rooms.findWithUsername(user.username).fetch();
+	const rooms = RocketChat.models.Rooms.findBySubscriptionUserId(user._id).fetch();
 
 	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
 }

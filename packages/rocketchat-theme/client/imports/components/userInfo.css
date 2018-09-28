@@ -73,13 +73,15 @@
 	}
 
 	&__name {
+
+		width: 100%;
+
 		text-align: center;
 		word-wrap: break-word;
 
 		font-size: 22px;
 		font-weight: 500;
 		line-height: 28px;
-		width: 100%;
 	}
 
 	&__username {
@@ -167,6 +169,7 @@
 
 	&-action {
 		display: flex;
+		overflow: hidden;
 
 		margin-bottom: var(--default-padding);
 		justify-content: center;
@@ -276,9 +279,10 @@
 
 			cursor: pointer;
 
+			text-transform: capitalize;
+
 			color: #1d73f3;
 			align-items: flex-end;
-			text-transform: capitalize;
 		}
 	}
 }
@@ -290,7 +294,7 @@
 
 	word-break: break-word;
 
-	color: #444;
+	color: #444444;
 
 	&__description {
 		margin: 5px 2px;

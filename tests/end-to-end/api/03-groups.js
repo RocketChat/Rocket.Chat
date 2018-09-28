@@ -430,6 +430,22 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.setAnnouncement', (done) => {
+		request.post(api('groups.setAnnouncement'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				announcement: 'this is an announcement of a group for api tests',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
+			})
+			.end(done);
+	});
+
 	it('/groups.setType', (done) => {
 		request.post(api('groups.setType'))
 			.set(credentials)
@@ -734,6 +750,54 @@ describe('[Groups]', function() {
 					expect(res.body.roles[1]).to.have.a.property('u').that.is.an('object');
 					expect(res.body.roles[1].u).to.have.a.property('_id').that.is.a('string');
 					expect(res.body.roles[1].u).to.have.a.property('username').that.is.a('string');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/groups.moderators', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.roles.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('/groups.invite', async(done) => {
+			request.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('/groups.addModerator', (done) => {
+			request.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.end(done);
+		});
+		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
+			request.get(api('groups.moderators'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
+					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
 		});

@@ -12,7 +12,6 @@ export class WebdavStore extends UploadFS.Store {
 
 		super(options);
 
-
 		const client = new Webdav(
 			options.connection.credentials.server,
 			options.connection.credentials.username,
@@ -127,7 +126,6 @@ export class WebdavStore extends UploadFS.Store {
 			writeStream.pipe(webdavStream);
 			return writeStream;
 		};
-
 	}
 }
 
