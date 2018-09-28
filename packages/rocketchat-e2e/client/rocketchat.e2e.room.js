@@ -183,7 +183,7 @@ export class E2ERoom {
 			}
 
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call('updateGroupE2EKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
 		}
 	}
 
