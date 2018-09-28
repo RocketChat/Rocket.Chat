@@ -125,7 +125,6 @@ Template.uploadedFilesList.events({
 			template: 'uploadedFilesListMenu',
 			data: {
 				file: this,
-				username: 'instance.data.username',
 			},
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 5,
