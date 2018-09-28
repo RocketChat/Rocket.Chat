@@ -12,6 +12,10 @@ Template.livechatTriggersForm.helpers({
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
 		return trigger && trigger.enabled;
 	},
+	runOnce() {
+		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		return (trigger && trigger.runOnce) || false;
+	},
 	conditions() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
 		if (!trigger) {
@@ -43,6 +47,7 @@ Template.livechatTriggersForm.events({
 			name: instance.$('input[name=name]').val(),
 			description: instance.$('input[name=description]').val(),
 			enabled: instance.$('input[name=enabled]:checked').val() === '1',
+			runOnce: instance.$('input[name=runOnce]:checked').val() === '1',
 			conditions: [],
 			actions: [],
 		};

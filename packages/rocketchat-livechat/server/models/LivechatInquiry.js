@@ -37,7 +37,7 @@ class LivechatInquiry extends RocketChat.models._Base {
 				closer: closeInfo.closer,
 				closedBy: closeInfo.closedBy,
 				closedAt: closeInfo.closedAt,
-				chatDuration: closeInfo.chatDuration,
+				'metrics.chatDuration': closeInfo.chatDuration,
 			},
 		});
 	}

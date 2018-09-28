@@ -28,7 +28,7 @@ export default class {
 		return typeof this._useRealName === 'function' ? this._useRealName() : this._useRealName;
 	}
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|<p>)@(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>|<br> ?)@(${ this.pattern })`, 'gm');
 	}
 	get channelMentionRegex() {
 		return new RegExp(`(^|\\s|<p>)#(${ this.pattern })`, 'gm');
