@@ -2,7 +2,7 @@
 
 this.modal = {
 	renderedModal: null,
-	open(config = {}, fn) {
+	open(config = {}, fn, onCancel) {
 		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
@@ -20,10 +20,11 @@ this.modal = {
 
 		this.close();
 		this.fn = fn;
+		this.onCancel = onCancel;
 		this.config = config;
 
 		if (config.dontAskAgain) {
-			const dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			const dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
 			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
 				this.confirm(true);
@@ -42,6 +43,10 @@ this.modal = {
 			Blaze.remove(this.renderedModal);
 		}
 		this.fn = null;
+		if (this.onCancel) {
+			this.onCancel();
+		}
+		this.onCancel = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
@@ -61,7 +66,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && !/input|textarea|button/i.test(e.currentTarget.activeElement.tagName)) {
 			e.preventDefault();
 			e.stopPropagation();
 

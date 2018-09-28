@@ -134,6 +134,7 @@ rocketchat:authorization@0.0.1
 rocketchat:autolinker@0.0.1
 rocketchat:autotranslate@0.0.1
 rocketchat:bigbluebutton@0.0.1
+rocketchat:blockstack@0.0.1
 rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
@@ -145,6 +146,7 @@ rocketchat:custom-oauth@1.0.0
 rocketchat:custom-sounds@1.0.0
 rocketchat:dolphin@0.0.2
 rocketchat:drupal@0.0.1
+rocketchat:e2e@0.0.1
 rocketchat:emoji@1.0.0
 rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
@@ -182,6 +184,7 @@ rocketchat:livestream@0.0.5
 rocketchat:logger@0.0.1
 rocketchat:login-token@1.0.0
 rocketchat:mailer@0.0.1
+rocketchat:mailmessages@0.0.1
 rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
 rocketchat:mentions@0.0.1
@@ -248,6 +251,7 @@ rocketchat:user-data-download@1.0.0
 rocketchat:version@1.0.0
 rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
+rocketchat:webdav@0.0.1
 rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.0.13
