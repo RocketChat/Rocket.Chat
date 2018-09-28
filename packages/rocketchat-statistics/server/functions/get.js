@@ -2,6 +2,7 @@
 import _ from 'underscore';
 import os from 'os';
 import { getUsages } from './getUsages';
+import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
 const wizardFields = [
 	'Organization_Type',
@@ -55,6 +56,9 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count();
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
 	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
+
+	// livechat visitors
+	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();

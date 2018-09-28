@@ -62,10 +62,6 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
-	findWithUsername(username, options) {
-		return this.find({ usernames: username }, options);
-	}
-
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
@@ -681,6 +677,18 @@ class ModelRooms extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
 			},
 		};
 

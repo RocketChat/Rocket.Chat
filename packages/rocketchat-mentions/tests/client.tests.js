@@ -239,6 +239,14 @@ describe('replace methods', function() {
 			assert.equal(result, `hello <a class="mention-link " data-username="${ specialchars.replace('@', '') }" title="${ specialchars.replace('@', '') }">${ specialcharsName }</a>`);
 		});
 
+		it(`should render for "hello<br>${ str2 } <br>"`, () => {
+			const result = mention.replaceUsers(`hello<br>${ str2 } <br>`, message, 'me');
+			const replaced = str2.replace('@', '');
+			const expected = `hello<br><a class="mention-link " data-username="${ replaced }" title="${ replaced }">${ str2Name }</a> <br>`;
+
+			assert.equal(result, expected);
+		});
+
 		it('should render for unknow/private user "hello @unknow"', () => {
 			const result = mention.replaceUsers('hello @unknow', message, 'me');
 			assert.equal(result, 'hello @unknow');

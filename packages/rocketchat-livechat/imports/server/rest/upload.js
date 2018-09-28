@@ -23,7 +23,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(visitorToken, this.urlParams.rid);
+		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
 			return RocketChat.API.v1.unauthorized();
 		}

@@ -159,7 +159,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		return subscription && subscription.ls;
 	}
 
-	findByRoomIdAndUserIds(roomId, userIds) {
+	findByRoomIdAndUserIds(roomId, userIds, options) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -167,7 +167,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 			},
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByRoomIdAndUserIdsOrAllMessages(roomId, userIds) {

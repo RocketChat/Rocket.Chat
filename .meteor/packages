@@ -155,6 +155,7 @@ rocketchat:ui-vrecord
 rocketchat:user-data-download
 rocketchat:version
 rocketchat:videobridge
+rocketchat:webdav
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:nrr
@@ -191,6 +192,9 @@ steffo:meteor-accounts-saml
 todda00:friendly-slugs
 yasaricli:slugify
 yasinuslu:blaze-meta
+rocketchat:e2e
+
+rocketchat:blockstack
 rocketchat:version-check
 
 rocketchat:search
@@ -206,3 +210,4 @@ assistify:configuration
 overture8:wordcloud2
 
 rocketchat:bigbluebutton
+rocketchat:mailmessages

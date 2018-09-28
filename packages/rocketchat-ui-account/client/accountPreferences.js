@@ -141,6 +141,7 @@ Template.accountPreferences.onCreated(function() {
 
 		data.newRoomNotification = $('select[name=newRoomNotification]').val();
 		data.newMessageNotification = $('select[name=newMessageNotification]').val();
+		data.clockMode = parseInt($('select[name=clockMode]').val());
 		data.useEmojis = JSON.parse($('input[name=useEmojis]:checked').val());
 		data.convertAsciiEmoji = JSON.parse($('input[name=convertAsciiEmoji]:checked').val());
 		data.saveMobileBandwidth = JSON.parse($('input[name=saveMobileBandwidth]:checked').val());
