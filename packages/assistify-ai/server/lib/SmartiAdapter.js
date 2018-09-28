@@ -92,17 +92,17 @@ export class SmartiAdapter {
 			if (message.editedAt) {
 				SystemLogger.debug('Trying to update existing message...');
 				// update existing message
-				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, requestBodyMessage, (error) => {
+				request_result = SmartiProxy.propagateToSmarti(verbs.put, `conversation/${ conversationId }/message/${ requestBodyMessage.id }`, null, requestBodyMessage, (error) => {
 					// 404 is expected if message doesn't exist
 					if (!error.response || error.response.statusCode === 404) {
 						SystemLogger.debug('Message not found!');
 						SystemLogger.debug('Adding new message to conversation...');
-						request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+						request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, null, requestBodyMessage);
 					}
 				});
 			} else {
 				SystemLogger.debug('Adding new message to conversation...');
-				request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, requestBodyMessage);
+				request_result = SmartiProxy.propagateToSmarti(verbs.post, `conversation/${ conversationId }/message`, null, requestBodyMessage);
 			}
 
 			if (request_result) {
@@ -150,7 +150,7 @@ export class SmartiAdapter {
 		const conversationId = SmartiAdapter.getConversationId(room._id);
 
 		if (conversationId) {
-			const res = SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, 'Complete');
+			const res = SmartiProxy.propagateToSmarti(verbs.put, `/conversation/${ conversationId }/meta.status`, null, 'Complete');
 			if (!res) {
 				Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(room._id));
 			}
@@ -188,7 +188,7 @@ export class SmartiAdapter {
 		let conversationId = null;
 		// uncached conversation
 		SystemLogger.debug('Trying Smarti legacy service to retrieve conversation...');
-		const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ roomId }`, null, (error) => {
+		const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ roomId }`, null, null, (error) => {
 			// 404 is expected if no mapping exists in Smarti
 			if (error.response.statusCode === 404) {
 				SystemLogger.warn(`No Smarti conversationId found (Server Error 404) for room: ${ roomId }`);
@@ -237,7 +237,7 @@ export class SmartiAdapter {
 
 		// conversation updated or created => request analysis results
 		SystemLogger.debug(`Smarti - conversation updated or created -> get analysis result asynch [ callback=${ SmartiAdapter.rocketWebhookUrl } ] for conversation: ${ conversationId } and room: ${ roomId }`);
-		SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis?callback=${ SmartiAdapter.rocketWebhookUrl }`); // asynch
+		SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`, { callback: SmartiAdapter.rocketWebhookUrl }); // asynch
 	}
 
 	/**
@@ -376,7 +376,7 @@ export class SmartiAdapter {
 			const conversationId = SmartiAdapter.getConversationId(room._id);
 			if (conversationId) {
 				SystemLogger.debug(`Conversation found ${ conversationId } - delete and create new conversation`);
-				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`, null);
+				SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }`);
 			}
 
 			// get the messages of the room and create a conversation from it
@@ -456,7 +456,7 @@ export class SmartiAdapter {
 		}
 
 		// post the conversation
-		const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', conversationBody, (error) => {
+		const conversation = SmartiProxy.propagateToSmarti(verbs.post, 'conversation', null, conversationBody, (error) => {
 			SystemLogger.error(`Smarti - unexpected server error: ${ JSON.stringify(error, null, 2) } occured when creating a new conversation: ${ JSON.stringify(conversationBody, null, 2) }`);
 		});
 		if (!conversation && !conversation.id) {
@@ -563,7 +563,7 @@ export class SmartiAdapter {
 
 	static _smartiAvailable() {
 		// if Smarti is not available stop immediately
-		const resp = SmartiProxy.propagateToSmarti(verbs.get, 'system/health', null, (error) => {
+		const resp = SmartiProxy.propagateToSmarti(verbs.get, 'system/health', null, null, (error) => {
 			if (error.statusCode !== 200) {
 				const e = new Meteor.Error('Smarti not reachable!');
 				SystemLogger.error('Stop synchronizing with Smarti immediately:', e);
