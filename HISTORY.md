@@ -1,6 +1,23 @@
 
 # 0.70.0 (Under Release Candidate Process)
 
+## 0.70.0-rc.4
+`2018-09-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Improve: Switch e2e doc to target _blank ([#12195](https://github.com/RocketChat/Rocket.Chat/pull/12195))
+- Improve: Rename E2E methods ([#12175](https://github.com/RocketChat/Rocket.Chat/pull/12175))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@rodrigok](https://github.com/rodrigok)
+
 ## 0.70.0-rc.3
 `2018-09-27  ·  1 ️️️⚠️  ·  3 🎉  ·  4 🐛  ·  5 🔍  ·  10 👩‍💻👨‍💻`
 
