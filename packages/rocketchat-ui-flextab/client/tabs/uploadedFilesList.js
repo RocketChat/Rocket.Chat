@@ -1,3 +1,4 @@
+/* globals popover */
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
@@ -116,4 +117,20 @@ Template.uploadedFilesList.events({
 			return t.limit.set(t.limit.get() + 50);
 		}
 	}, 200),
+
+	'click .attachments__item-link'(e, t) {
+		e.preventDefault();
+
+		const config = {
+			template: 'uploadedFilesListMenu',
+			data: {
+				file: this,
+				username: 'instance.data.username',
+			},
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 5,
+		};
+
+		popover.open(config);
+	},
 });

@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/uploadedFilesList.html', 'client');
 	api.addFiles('client/tabs/userEdit.html', 'client');
 	api.addFiles('client/tabs/userInfo.html', 'client');
+	api.addFiles('client/tabs/uploadedFilesListMenu.html', 'client');
 
 	api.addFiles('client/flexTabBar.js', 'client');
 	api.addFiles('client/tabs/inviteUsers.js', 'client');
@@ -32,4 +33,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/tabs/userEdit.js', 'client');
 	api.addFiles('client/tabs/userInfo.js', 'client');
 	api.addFiles('client/tabs/keyboardShortcuts.html', 'client');
+	api.addFiles('client/tabs/uploadedFilesListMenu.js', 'client');
 });

@@ -85,5 +85,4 @@ Meteor.startup(() => {
 	};
 
 	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
-	$(document).on('click', '.room-files-image', createEventListenerFor('.room-files-image'));
 });

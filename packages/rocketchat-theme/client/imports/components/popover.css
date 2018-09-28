@@ -118,6 +118,10 @@
 		&--star-filled .rc-icon {
 			fill: currentColor;
 		}
+
+		a {
+			color: inherit;
+		}
 	}
 
 	&__label {
