@@ -19605,6 +19605,32 @@
           ]
         }
       ]
+    },
+    "0.70.0-rc.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12195",
+          "title": "Improve: Switch e2e doc to target _blank",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12175",
+          "title": "Improve: Rename E2E methods",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        }
+      ]
     }
   }
 }
