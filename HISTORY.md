@@ -1,6 +1,140 @@
 
+# 0.70.0
+`2018-09-27  ·  2 ️️️⚠️  ·  18 🎉  ·  3 🚀  ·  31 🐛  ·  17 🔍  ·  32 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### ⚠️ BREAKING CHANGES
+
+- Update the default port of the Prometheus exporter ([#11351](https://github.com/RocketChat/Rocket.Chat/pull/11351) by [@thaiphv](https://github.com/thaiphv))
+- [IMPROVE] New emails design ([#12009](https://github.com/RocketChat/Rocket.Chat/pull/12009))
+
+### 🎉 New features
+
+- Allow multiple subcommands in MIGRATION_VERSION env variable ([#11184](https://github.com/RocketChat/Rocket.Chat/pull/11184) by [@arch119](https://github.com/arch119))
+- Support for end to end encryption ([#10094](https://github.com/RocketChat/Rocket.Chat/pull/10094))
+- Livechat Analytics and Reports ([#11238](https://github.com/RocketChat/Rocket.Chat/pull/11238) by [@pkgodara](https://github.com/pkgodara))
+- Apps: Add handlers for message updates ([#11993](https://github.com/RocketChat/Rocket.Chat/pull/11993))
+- Livechat notifications on new incoming inquiries for guest-pool ([#10588](https://github.com/RocketChat/Rocket.Chat/pull/10588))
+- Customizable default directory view ([#11965](https://github.com/RocketChat/Rocket.Chat/pull/11965) by [@ohmonster](https://github.com/ohmonster))
+- Blockstack as decentralized auth provider ([#12047](https://github.com/RocketChat/Rocket.Chat/pull/12047))
+- Livechat REST endpoints ([#11900](https://github.com/RocketChat/Rocket.Chat/pull/11900))
+- REST endpoints to get moderators from groups and channels ([#11909](https://github.com/RocketChat/Rocket.Chat/pull/11909))
+- User preference for 24- or 12-hour clock ([#11169](https://github.com/RocketChat/Rocket.Chat/pull/11169) by [@vynmera](https://github.com/vynmera))
+- REST endpoint to set groups' announcement ([#11905](https://github.com/RocketChat/Rocket.Chat/pull/11905))
+- Livechat trigger option to run only once ([#12068](https://github.com/RocketChat/Rocket.Chat/pull/12068) by [@edzluhan](https://github.com/edzluhan))
+- REST endpoints to create roles and assign roles to users ([#11855](https://github.com/RocketChat/Rocket.Chat/pull/11855) by [@aferreira44](https://github.com/aferreira44))
+- Informal German translations ([#9984](https://github.com/RocketChat/Rocket.Chat/pull/9984))
+- Apps: API provider ([#11938](https://github.com/RocketChat/Rocket.Chat/pull/11938))
+- Apps are enabled by default now ([#12189](https://github.com/RocketChat/Rocket.Chat/pull/12189))
+- Add Livechat Analytics permission ([#12184](https://github.com/RocketChat/Rocket.Chat/pull/12184))
+- WebDAV Integration (User file provider) ([#11679](https://github.com/RocketChat/Rocket.Chat/pull/11679) by [@karakayasemi](https://github.com/karakayasemi))
+
+### 🚀 Improvements
+
+- Cache livechat get agent trigger call ([#12083](https://github.com/RocketChat/Rocket.Chat/pull/12083))
+- BigBlueButton joinViaHtml5 and video icon on sidebar ([#12107](https://github.com/RocketChat/Rocket.Chat/pull/12107))
+- Use eslint-config package ([#12044](https://github.com/RocketChat/Rocket.Chat/pull/12044))
+
+### 🐛 Bug fixes
+
+- Livechat agent joining on pick from guest pool ([#12097](https://github.com/RocketChat/Rocket.Chat/pull/12097))
+- Apps: Add missing reactions and actions properties to app message object ([#11780](https://github.com/RocketChat/Rocket.Chat/pull/11780))
+- Broken slack compatible webhook ([#11742](https://github.com/RocketChat/Rocket.Chat/pull/11742))
+- Changing Mentions.userMentionRegex pattern to include <br> tag ([#12043](https://github.com/RocketChat/Rocket.Chat/pull/12043))
+- Double output of message actions ([#11902](https://github.com/RocketChat/Rocket.Chat/pull/11902))
+- Login error message not obvious if user not activated ([#11785](https://github.com/RocketChat/Rocket.Chat/pull/11785) by [@crazy-max](https://github.com/crazy-max))
+- Adding scroll bar to read receipts modal ([#11919](https://github.com/RocketChat/Rocket.Chat/pull/11919))
+- Fixing translation on 'yesterday' word when calling timeAgo function ([#11946](https://github.com/RocketChat/Rocket.Chat/pull/11946))
+- Fixing spacement between tags and words on some labels ([#12018](https://github.com/RocketChat/Rocket.Chat/pull/12018))
+- video message recording, issue #11651 ([#12031](https://github.com/RocketChat/Rocket.Chat/pull/12031) by [@flaviogrossi](https://github.com/flaviogrossi))
+- Prevent form submission in Files List search ([#11999](https://github.com/RocketChat/Rocket.Chat/pull/11999))
+- Re-add the eye-off icon ([#12079](https://github.com/RocketChat/Rocket.Chat/pull/12079) by [@MIKI785](https://github.com/MIKI785))
+- Internal error when cross-origin with CORS is disabled ([#11953](https://github.com/RocketChat/Rocket.Chat/pull/11953))
+- Message reaction in GraphQL API ([#11967](https://github.com/RocketChat/Rocket.Chat/pull/11967))
+- Direct messages leaking into logs ([#11863](https://github.com/RocketChat/Rocket.Chat/pull/11863))
+- Wrong build path in install.sh ([#11879](https://github.com/RocketChat/Rocket.Chat/pull/11879))
+- Permission check on joinRoom for private room ([#11857](https://github.com/RocketChat/Rocket.Chat/pull/11857))
+- Close popover on shortcuts and writing ([#11562](https://github.com/RocketChat/Rocket.Chat/pull/11562))
+- Typo in a configuration key for SlackBridge excluded bot names ([#11872](https://github.com/RocketChat/Rocket.Chat/pull/11872) by [@TobiasKappe](https://github.com/TobiasKappe))
+- Real Name on Direct Messages  ([#12154](https://github.com/RocketChat/Rocket.Chat/pull/12154))
+- Position of popover component on mobile ([#12038](https://github.com/RocketChat/Rocket.Chat/pull/12038))
+- Duplicate email and auto-join on mentions ([#12168](https://github.com/RocketChat/Rocket.Chat/pull/12168))
+- Horizontal scroll on user info tab ([#12102](https://github.com/RocketChat/Rocket.Chat/pull/12102))
+- Markdown ampersand escape on links ([#12140](https://github.com/RocketChat/Rocket.Chat/pull/12140))
+- Saving user preferences ([#12170](https://github.com/RocketChat/Rocket.Chat/pull/12170))
+- Apps being able to see hidden settings ([#12159](https://github.com/RocketChat/Rocket.Chat/pull/12159))
+- Allow user with "bulk-register-user" permission to send invitations ([#12112](https://github.com/RocketChat/Rocket.Chat/pull/12112))
+- IRC Federation no longer working ([#11906](https://github.com/RocketChat/Rocket.Chat/pull/11906))
+- Files list missing from popover menu when owner of room ([#11565](https://github.com/RocketChat/Rocket.Chat/pull/11565))
+- Not able to set per-channel retention policies if no global policy is set for this channel type ([#11927](https://github.com/RocketChat/Rocket.Chat/pull/11927) by [@vynmera](https://github.com/vynmera))
+- app engine verbose log typo ([#12126](https://github.com/RocketChat/Rocket.Chat/pull/12126) by [@williamriancho](https://github.com/williamriancho))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- LingoHub based on develop ([#11936](https://github.com/RocketChat/Rocket.Chat/pull/11936))
+- Better organize package.json ([#12115](https://github.com/RocketChat/Rocket.Chat/pull/12115))
+- Fix using wrong variable ([#12114](https://github.com/RocketChat/Rocket.Chat/pull/12114))
+- Fix the style lint ([#11991](https://github.com/RocketChat/Rocket.Chat/pull/11991))
+- Merge master into develop & Set version to 0.70.0-develop ([#11921](https://github.com/RocketChat/Rocket.Chat/pull/11921) by [@c0dzilla](https://github.com/c0dzilla) & [@rndmh3ro](https://github.com/rndmh3ro) & [@ubarsaiyan](https://github.com/ubarsaiyan) & [@vynmera](https://github.com/vynmera))
+- Regression: fix message box autogrow ([#12138](https://github.com/RocketChat/Rocket.Chat/pull/12138))
+- Regression: Modal height ([#12122](https://github.com/RocketChat/Rocket.Chat/pull/12122))
+- Fix: Change wording on e2e to make a little more clear ([#12124](https://github.com/RocketChat/Rocket.Chat/pull/12124))
+- Improve: Moved the e2e password request to an alert instead of a popup ([#12172](https://github.com/RocketChat/Rocket.Chat/pull/12172))
+- New: Option to change E2E key ([#12169](https://github.com/RocketChat/Rocket.Chat/pull/12169))
+- Improve: Decrypt last message ([#12173](https://github.com/RocketChat/Rocket.Chat/pull/12173))
+- Fix: e2e password visible on always-on alert message. ([#12139](https://github.com/RocketChat/Rocket.Chat/pull/12139))
+- Improve: Expose apps enable setting at `General > Apps` ([#12196](https://github.com/RocketChat/Rocket.Chat/pull/12196))
+- Fix: Message changing order when been edited with apps enabled ([#12188](https://github.com/RocketChat/Rocket.Chat/pull/12188))
+- Improve: E2E setting description and alert ([#12191](https://github.com/RocketChat/Rocket.Chat/pull/12191))
+- Improve: Do not start E2E Encryption when accessing admin as embedded ([#12192](https://github.com/RocketChat/Rocket.Chat/pull/12192))
+- Fix: Add e2e doc to the alert ([#12187](https://github.com/RocketChat/Rocket.Chat/pull/12187))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@MIKI785](https://github.com/MIKI785)
+- [@TobiasKappe](https://github.com/TobiasKappe)
+- [@aferreira44](https://github.com/aferreira44)
+- [@arch119](https://github.com/arch119)
+- [@c0dzilla](https://github.com/c0dzilla)
+- [@crazy-max](https://github.com/crazy-max)
+- [@edzluhan](https://github.com/edzluhan)
+- [@flaviogrossi](https://github.com/flaviogrossi)
+- [@karakayasemi](https://github.com/karakayasemi)
+- [@ohmonster](https://github.com/ohmonster)
+- [@pkgodara](https://github.com/pkgodara)
+- [@rndmh3ro](https://github.com/rndmh3ro)
+- [@thaiphv](https://github.com/thaiphv)
+- [@ubarsaiyan](https://github.com/ubarsaiyan)
+- [@vynmera](https://github.com/vynmera)
+- [@williamriancho](https://github.com/williamriancho)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@cardoso](https://github.com/cardoso)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@mrinaldhar](https://github.com/mrinaldhar)
+- [@mrsimpson](https://github.com/mrsimpson)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@rssilva](https://github.com/rssilva)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@timkinnane](https://github.com/timkinnane)
+
 # 0.69.2
-`2018-09-11  ·  1 🎉  ·  4 🐛  ·  6 👩‍💻👨‍💻`
+`2018-09-11  ·  1 🎉  ·  4 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
@@ -16,6 +150,13 @@
 - Apps: setting with 'code' type only saving last line ([#11992](https://github.com/RocketChat/Rocket.Chat/pull/11992))
 - Update user information not possible by admin if disabled to users ([#11955](https://github.com/RocketChat/Rocket.Chat/pull/11955) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Hidden admin sidenav on embedded layout ([#12025](https://github.com/RocketChat/Rocket.Chat/pull/12025))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.69.2 ([#12026](https://github.com/RocketChat/Rocket.Chat/pull/12026) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+
+</details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
