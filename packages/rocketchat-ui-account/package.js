@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/account.html', 'client');
 	api.addFiles('client/accountFlex.html', 'client');
+	api.addFiles('client/accountIntegrations.html', 'client');
 	api.addFiles('client/accountPreferences.html', 'client');
 	api.addFiles('client/accountProfile.html', 'client');
 	api.addFiles('client/avatar/avatar.html', 'client');
@@ -28,6 +29,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/account.js', 'client');
 	api.addFiles('client/accountFlex.js', 'client');
+	api.addFiles('client/accountIntegrations.js', 'client');
 	api.addFiles('client/accountPreferences.js', 'client');
 	api.addFiles('client/accountProfile.js', 'client');
 	api.addFiles('client/avatar/avatar.js', 'client');
