@@ -2,7 +2,7 @@ version: '2'
 
 services:
   rocketchat:
-    image:kodumaja/km-chat:1.4
+    image: kodumaja/km-chat:1.4
     restart: unless-stopped
     environment:
       - PORT=3000
