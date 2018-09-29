@@ -444,7 +444,7 @@ export default class SlackAdapter {
 
 	postFindChannel(rocketChannelName) {
 		logger.slack.debug('Searching for Slack channel or group', rocketChannelName);
-		let response = HTTP.get('https://slack.com/api/conversations.list', { params: { token: this.apiToken , types: 'public_channel,private_channel' } });
+		let response = HTTP.get('https://slack.com/api/conversations.list', { params: { token: this.apiToken, types: 'public_channel,private_channel' } });
 		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
 			for (const channel of response.data.channels) {
 				if (channel.name === rocketChannelName && channel.is_member === true) {
