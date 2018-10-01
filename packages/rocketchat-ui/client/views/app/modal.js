@@ -38,14 +38,17 @@ this.modal = {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
 	},
+	cancel() {
+		if (this.onCancel) {
+			this.onCancel();
+		}
+		this.close();
+	},
 	close() {
 		if (this.renderedModal) {
 			Blaze.remove(this.renderedModal);
 		}
 		this.fn = null;
-		if (this.onCancel) {
-			this.onCancel();
-		}
 		this.onCancel = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
@@ -117,7 +120,7 @@ Template.rc_modal.events({
 	},
 	'click .js-close'(e) {
 		e.stopPropagation();
-		modal.close();
+		modal.cancel();
 	},
 	'click .js-confirm'(e, instance) {
 		e.stopPropagation();
