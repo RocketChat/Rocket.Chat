@@ -47,6 +47,7 @@ Meteor.startup(function() {
 						showConfirmButton: false,
 						closeOnCancel: true,
 						html: true,
+						closeOnEnter: false,
 					});
 				},
 			});
