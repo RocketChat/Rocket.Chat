@@ -23,6 +23,8 @@ html.rtl .attachment {
 }
 
 .attachment {
+	direction: rtl;
+
 	& .attachment-block {
 		position: relative;
 
@@ -150,23 +152,31 @@ html.rtl .attachment {
 	}
 
 	& .google-drive-upload-container {
-		border-width: 1px;
-		border-radius: 5px;
-		cursor: pointer;
 		display: block;
-		height: 2rem;
+
 		width: 13.5rem;
+		height: 2rem;
+
 		margin-top: 5px;
-		padding-left: 12px;
+
 		padding-top: 2px;
+		padding-left: 12px;
+
+		cursor: pointer;
+
+		border-width: 1px;
+
+		border-radius: 5px;
 	}
 
 	& .logo-google-drive {
 		display: inline-block;
+
+		width: 1.5rem;
+		height: 1.5rem;
+
 		background-image: url('/images/logo/google-drive.svg');
 		background-size: 100% auto;
-		height: 1.5rem;
-		width: 1.5rem;
 	}
 
 	& .google-drive-upload-text {
@@ -175,9 +185,5 @@ html.rtl .attachment {
 
 	& .icon-spinner {
 		vertical-align: super;
-
-	& .actions-container {
-		margin-top: 6px;
 	}
-
 }
