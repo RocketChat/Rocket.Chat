@@ -94,7 +94,7 @@ Template.videoFlexTab.onRendered(function() {
 
 						jitsiRoomActive = jitsiRoom;
 
-						RocketChat.TabBar.updateButton('video', {class: 'red'});
+						RocketChat.TabBar.updateButton('video', { class: 'red' });
 
 						// we need to token authentication for our domain - travelmeet.de
 						console.log('Your personal access token: ' + accessToken);
@@ -125,10 +125,11 @@ Template.videoFlexTab.onRendered(function() {
 								newWindow.focus();
 							}
 
-							// Lets make sure its loaded before we try to show it.
+
+						// Lets make sure its loaded before we try to show it.
 						} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
-							// Keep it from showing duplicates when re-evaluated on variable change.
+						// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
 
 								console.log('Opening a conference in THIS tab');
