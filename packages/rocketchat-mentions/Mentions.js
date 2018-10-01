@@ -55,7 +55,7 @@ export default class {
 				return match;
 			}
 
-			const channel = message.channels && message.channels.find(c => c.name === name);
+			const channel = message.channels && message.channels.find((c) => c.name === name);
 			const roomNameorId = channel ? channel._id : name;
 			return `${ prefix }<a class="mention-link" data-channel="${ roomNameorId }">${ `#${ name }` }</a>`;
 		});

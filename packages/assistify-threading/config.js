@@ -40,7 +40,7 @@ Meteor.startup(() => {
 		i18nLabel: 'Thread_invitations_threshold',
 		i18nDescription: 'Thread_invitations_threshold_description',
 		type: 'int',
-		public: true
+		public: true,
 	});
 
 	RocketChat.settings.add('Thread_from_context_menu', 'button', {

@@ -7,5 +7,5 @@ import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 
 export {
 	AutoTranslate,
-	TranslationProviderRegistry
+	TranslationProviderRegistry,
 };

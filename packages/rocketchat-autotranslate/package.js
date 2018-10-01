@@ -45,6 +45,6 @@ Package.onUse(function(api) {
  * cld - Text language detector
  */
 Npm.depends({
-	cld: '2.4.8'
+	cld: '2.4.8',
 });
 
