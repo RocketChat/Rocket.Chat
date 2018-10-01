@@ -98,7 +98,18 @@ export class ThreadBuilder {
 
 			linkMessage.urls = [{url: this._getMessageUrl(repostedMessage._id)}];
 
-			return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+			// we want to create a system message for linking the thread from the parent room - so the parent room
+			// has to support system messages at least for this interaction
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, true);
+			}
+			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, {ts: this._openingQuestion.ts});
+
+			// reset it if necessary
+			if (!parentRoom.sysMes) {
+				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, false);
+			}
+			return true;
 		}
 	}
 
@@ -121,6 +132,7 @@ export class ThreadBuilder {
 
 	_getMembers() {
 		const checkRoles = ['owner', 'moderator', 'leader'];
+		const maxInvitationCount = Math.max(RocketChat.models.Settings.findOneById('Thread_invitations_threshold').value, 0) || 0;
 		let members = [];
 		const admins = RocketChat.models.Subscriptions.findByRoomIdAndRoles(this._parentRoomId, checkRoles).fetch().map(s => {
 			return {
@@ -131,6 +143,10 @@ export class ThreadBuilder {
 			fields: {
 				'u._id': 1,
 				'u.username': 1
+			},
+			sort: {
+				open: -1,
+				ls: -1
 			}
 		}).fetch().map(s => {
 			return {
@@ -140,7 +156,7 @@ export class ThreadBuilder {
 		});
 		if (this._parentRoom.t === 'c') {
 			// only add online users
-			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.map(user=>user.id)).fetch().map(user=>user.username);
+			members = RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(users.slice(0, maxInvitationCount).map(user=>user.id)).fetch().map(user=>user.username);
 			// add admins to the member list and avoid duplicates
 			members = Array.from(new Set(members.concat(admins.map(user=>user.username))));
 		} else {

@@ -68,7 +68,7 @@ function startApp(callback) {
 function startChimp() {
 	startProcess({
 		name: 'Chimp',
-		command: 'npm run chimp-test',
+		command: '.scripts/separateTesting.sh',
 		options: {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: `${ process.env.NODE_PATH +

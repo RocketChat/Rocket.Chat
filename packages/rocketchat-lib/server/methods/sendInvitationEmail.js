@@ -8,7 +8,7 @@ Meteor.methods({
 				method: 'sendInvitationEmail'
 			});
 		}
-		if (!RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'bulk-register-user')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'sendInvitationEmail'
 			});
