@@ -9,7 +9,7 @@ Template.uploadedFilesListMenu.helpers({
 Template.uploadedFilesListMenu.onCreated(function() {});
 
 Template.uploadedFilesListMenu.events({
-	'click .rc-popover__item'() {
+	'click .download-button'() {
 		popover.close();
 	},
 });
