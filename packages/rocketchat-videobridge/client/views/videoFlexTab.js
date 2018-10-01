@@ -82,20 +82,18 @@ Template.videoFlexTab.onRendered(function () {
                     } else {
 
                         console.log('Init conference...');
-                        // console.log(Meteor.user());
 
                         jitsiRoomActive = jitsiRoom;
 
                         RocketChat.TabBar.updateButton('video', {class: 'red'});
 
                         var api = this.api;
-
                         Meteor.call('jitsi:generateAccessToken', function (error, accessToken) {
                             if (error) {
                                 console.log('ERROR - jitsi:generateAccessToken');
                             } else {
 
-                                // we need to token authentication
+                                // we need to token authentication for our domain - travelmeet.de
                                 console.log('Your personal access token: ' + accessToken);
 
                                 if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
