@@ -136,12 +136,12 @@ Meteor.startup(function() {
 
 			function createPicker() {
 				const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() });
-				const picker = new google.picker.PickerBuilder().
-					addView(google.picker.ViewId.DOCS).
-					setOAuthToken(user.services.google.accessToken).
-					setDeveloperKey(RocketChat.settings.get('Google_Picker_key')).
-					setCallback(pickerCallback).
-					build();
+				const picker = new google.picker.PickerBuilder()
+					.addView(google.picker.ViewId.DOCS)
+					.setOAuthToken(user.services.google.accessToken)
+					.setDeveloperKey(RocketChat.settings.get('Google_Picker_key'))
+					.setCallback(pickerCallback)
+					.build();
 				picker.setVisible(true);
 			}
 

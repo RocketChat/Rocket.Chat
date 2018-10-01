@@ -1,5 +1,11 @@
 import s from 'underscore.string';
-
+import * as Mailer from 'meteor/rocketchat:mailer';
+let verifyEmailTemplate = '';
+Meteor.startup(() => {
+	Mailer.getTemplateWrapped('Verification_Email', (value) => {
+		verifyEmailTemplate = value;
+	});
+});
 Meteor.methods({
 	registerUser(formData) {
 		const AllowAnonymousRead = RocketChat.settings.get('Accounts_AllowAnonymousRead');
@@ -62,12 +68,11 @@ Meteor.methods({
 		RocketChat.saveCustomFields(userId, formData);
 
 		try {
-			if (RocketChat.settings.get('Verification_Customized')) {
-				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
-				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');
-				Accounts.emailTemplates.verifyEmail.subject = () => subject;
-				Accounts.emailTemplates.verifyEmail.html = (userModel, url) => html.replace(/\[Verification_Url]/g, url);
-			}
+
+			const subject = Mailer.replace(RocketChat.settings.get('Verification_Email_Subject'));
+
+			Accounts.emailTemplates.verifyEmail.subject = () => subject;
+			Accounts.emailTemplates.verifyEmail.html = (userModel, url) => Mailer.replace(Mailer.replacekey(verifyEmailTemplate, 'Verification_Url', url), userModel);
 
 			Accounts.sendVerificationEmail(userId, userData.email);
 		} catch (error) {

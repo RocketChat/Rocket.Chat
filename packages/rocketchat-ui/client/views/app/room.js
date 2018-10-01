@@ -211,7 +211,7 @@ Template.room.helpers({
 	},
 
 	embeddedVersion() {
-		RocketChat.Layout.isEmbedded();
+		return RocketChat.Layout.isEmbedded();
 	},
 
 	subscribed() {

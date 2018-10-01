@@ -24,6 +24,7 @@ Meteor.publish('userData', function() {
 			'services.gitlab': 1,
 			'services.tokenpass': 1,
 			'services.google': 1,
+			'services.blockstack': 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,

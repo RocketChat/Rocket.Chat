@@ -1,6 +1,7 @@
 /* globals renderEmoji renderMessageBody */
 import _ from 'underscore';
 import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -15,6 +16,9 @@ Template.message.helpers({
 	},
 	ignoredClass() {
 		return this.ignored ? 'message--ignored' : '';
+	},
+	isDecrypting() {
+		return this.e2e === 'pending';
 	},
 	isBot() {
 		if (this.bot != null) {
@@ -98,10 +102,10 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.ts);
 	},
 	date() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.ts);
 	},
 	isTemp() {
 		if (this.temp === true) {
@@ -139,7 +143,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		if (Template.instance().wasEdited) {
-			return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			return DateFormat.formatDateAndTime(this.editedAt);
 		}
 	},
 	editedBy() {
