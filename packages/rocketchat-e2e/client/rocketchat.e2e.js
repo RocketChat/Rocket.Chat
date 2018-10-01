@@ -309,8 +309,10 @@ class E2E {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			let showAlert;
+			let needsAlertOnClose = true;
 
 			const showModal = () => {
+				needsAlertOnClose = true;
 				modal.open({
 					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
 					type: 'input',
@@ -323,12 +325,15 @@ class E2E {
 					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 				}, (password) => {
 					if (password) {
+						needsAlertOnClose = false;
 						alerts.close();
 						resolve(password);
 					}
 				}, () => {
 					failedToDecodeKey = false;
-					showAlert();
+					if (needsAlertOnClose) {
+						showAlert();
+					}
 				});
 			};
 
