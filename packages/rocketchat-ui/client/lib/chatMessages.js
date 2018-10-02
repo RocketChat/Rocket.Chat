@@ -13,16 +13,33 @@ Meteor.startup(() => {
 	});
 });
 
+export const getPermaLinks = async(replies) => {
+	const promises = replies.map(async(reply) =>
+		RocketChat.MessageAction.getPermaLink(reply._id)
+	);
+
+	const links = Promise.all(promises);
+
+	return links;
+};
+
 export const mountReply = async(msg, input) => {
-	const reply = $(input).data('reply');
+	const replies = $(input).data('reply');
 	const mentionUser = $(input).data('mention-user') || false;
 
-	if (reply !== undefined) {
-		msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
-		const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
-		if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-			msg += `@${ reply.u.username } `;
-		}
+	if (replies && replies.length) {
+		const permalinks = await getPermaLinks(replies);
+
+		replies.forEach(async(reply, replyIndex) => {
+			if (reply !== undefined) {
+				msg += `[ ](${ permalinks[replyIndex] }) `;
+
+				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+					msg += `@${ reply.u.username } `;
+				}
+			}
+		});
 	}
 
 	return msg;
