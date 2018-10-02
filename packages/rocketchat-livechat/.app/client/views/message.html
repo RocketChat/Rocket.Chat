@@ -11,6 +11,9 @@
 			</span>
 			<div class="body" dir="auto">
 				{{{body}}}
+				{{#each attachments}}
+					{{> messageAttachment}}
+				{{/each}}
 				<span class="info">
 					<span class="time">{{time}}</span>
 					{{#if edit}}

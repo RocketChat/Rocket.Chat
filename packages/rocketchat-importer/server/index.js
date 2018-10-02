@@ -21,5 +21,5 @@ export {
 	RawImports,
 	Selection,
 	SelectionChannel,
-	SelectionUser
+	SelectionUser,
 };

@@ -2,7 +2,6 @@
 	/*
 	* General Colors
 	*/
-
 	--color-darkest: #1f2329;
 	--color-dark: #2f343d;
 	--color-dark-medium: #414852;
@@ -13,24 +12,20 @@
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-
 	--rc-color-error: #f5455c;
 	--rc-color-error-light: #e1364c;
 	--rc-color-alert: #ffd21f;
 	--rc-color-alert-light: #f6c502;
 	--rc-color-success: #2de0a5;
 	--rc-color-success-light: #25d198;
-
 	--rc-color-button-primary: #1d74f5;
 	--rc-color-button-primary-light: #175cc4;
-
 	--rc-color-alert-message-primary: var(--rc-color-button-primary);
 	--rc-color-alert-message-primary-background: #f1f6ff;
 	--rc-color-alert-message-secondary: #7ca52b;
 	--rc-color-alert-message-secondary-background: #fafff1;
 	--rc-color-alert-message-warning: #d52d24;
 	--rc-color-alert-message-warning-background: #fff3f3;
-
 	--rc-color-primary: var(--color-dark);
 	--rc-color-primary-darkest: var(--color-darkest);
 	--rc-color-primary-dark: var(--color-dark-medium);
@@ -38,9 +33,7 @@
 	--rc-color-primary-light-medium: var(--color-gray-medium);
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
-
 	--rc-color-link-active: var(--rc-color-button-primary);
-
 
 	/*
 	* General
@@ -67,7 +60,6 @@
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
-
 
 	/*
 	* General Typography
@@ -164,7 +156,7 @@
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
 	--sidebar-extra-small-default-padding: 12px;
-	--sidebar-footer-height: 70px;
+	--sidebar-footer-height: 48px;
 	--sidebar-small-header-padding: var(--sidebar-small-default-padding);
 
 	/*
@@ -205,6 +197,7 @@
 	--sidebar-item-active-background: var(--rc-color-primary-dark);
 	--sidebar-item-active-color: var(--sidebar-item-text-color);
 	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-unread-font-weight: 600;
 	--sidebar-item-popup-background: var(--color-dark-medium);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;
@@ -333,5 +326,4 @@
 	--alerts-background: #1d73f5;
 	--alerts-color: var(--color-white);
 	--alerts-font-size: var(--text-default-size);
-
 }

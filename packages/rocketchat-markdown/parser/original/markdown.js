@@ -16,7 +16,7 @@ const parseNotEscaped = function(msg, message) {
 		const token = `=!=${ Random.id() }=!=`;
 		message.tokens.push({
 			token,
-			text: html
+			text: html,
 		});
 
 		return token;
@@ -72,7 +72,12 @@ const parseNotEscaped = function(msg, message) {
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\)]+)\\)`, 'gm'), (match, title, url) => {
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
-		return addAsToken(`<a href="${ s.escapeHTML(url) }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		title = title.replace(/&amp;/g, '&');
+
+		let escapedUrl = s.escapeHTML(url);
+		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
+
+		return addAsToken(`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
