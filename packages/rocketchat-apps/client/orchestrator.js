@@ -1,4 +1,5 @@
 import { AppWebsocketReceiver } from './communication';
+import { Utilities } from '../lib/misc/Utilities';
 
 class AppClientOrchestrator {
 	constructor() {
@@ -67,18 +68,28 @@ class AppClientOrchestrator {
 
 	_loadLanguages() {
 		return RocketChat.API.get('apps/languages').then((info) => {
-			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages));
+			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
 		});
 	}
 
-	parseAndLoadLanguages(languages) {
-		Object.keys(languages).forEach((key) => {
+	parseAndLoadLanguages(languages, id) {
+		Object.entries(languages).forEach(([language, translations]) => {
 			try {
-				TAPi18next.addResourceBundle(key, 'project', languages[key]);
+				translations = Object.entries(translations).reduce((newTranslations, [key, value]) => {
+					newTranslations[Utilities.getI18nKeyForApp(key, id)] = value;
+					return newTranslations;
+				}, {});
+
+				TAPi18next.addResourceBundle(language, 'project', translations);
 			} catch (e) {
 				// Failed to parse the json
 			}
 		});
+	}
+
+	async getAppApis(appId) {
+		const result = await RocketChat.API.get(`apps/${ appId }/apis`);
+		return result.apis;
 	}
 }
 
@@ -95,7 +106,7 @@ Meteor.startup(function _rlClientOrch() {
 const appsRouteAction = function _theRealAction(whichCenter) {
 	Meteor.defer(() => window.Apps.getLoadingPromise().then((isEnabled) => {
 		if (isEnabled) {
-			BlazeLayout.render('main', { center: whichCenter });
+			BlazeLayout.render('main', { center: whichCenter, old: true }); // TODO remove old
 		} else {
 			FlowRouter.go('app-what-is-it');
 		}

@@ -9,6 +9,7 @@ export const RoomSettingsEnum = {
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
+	E2E: 'encrypted',
 };
 
 export const UiTextContext = {

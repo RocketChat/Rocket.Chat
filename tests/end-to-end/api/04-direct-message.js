@@ -229,4 +229,23 @@ describe('[Direct Messages]', function() {
 				.end(done);
 		});
 	});
+	describe('/im.members', () => {
+		it('should return and array with two members', (done) => {
+			request.get(api('im.members'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').and.to.be.equal(2);
+					expect(res.body).to.have.property('offset').and.to.be.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.equal(2);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
+				})
+				.end(done);
+		});
+	});
 });
