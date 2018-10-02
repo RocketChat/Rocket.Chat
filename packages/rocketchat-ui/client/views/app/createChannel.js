@@ -1,5 +1,6 @@
 import _ from 'underscore';
 
+
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -113,8 +114,11 @@ Template.createChannel.helpers({
 		const extensions_invalid = instance.extensions_invalid.get();
 		const inUse = instance.inUse.get();
 		const name = instance.name.get();
-
-		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid) {
+		const valdkond = instance.field1.get();
+		const projekt = instance.field2.get();
+		
+		//EKM FIX - valdkond ja projekt ei tohi m6lemad olla valimata
+		if (name.length === 0 || invalid || inUse === true || inUse === undefined || extensions_invalid || (valdkond == '' &&  projekt == '')) {
 			return 'disabled';
 		}
 		return '';
@@ -207,6 +211,14 @@ Template.createChannel.events({
 			t.name.set(modified);
 		}
 	},
+	////EKM FIX
+	'change .dropdownlist_field1'(e, t) {
+		t.field1.set(e.target.value);
+	},
+	'change .dropdownlist_field2'(e, t) {
+		t.field2.set(e.target.value);
+	},
+   	 ////
 	'submit .create-channel__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -216,7 +228,14 @@ Template.createChannel.events({
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
-
+		/// EKM FIX ///
+		const valdkond = instance.field1.get();
+		const projekt = instance.field2.get();
+		const customFields = {
+			valdkond: valdkond,
+			projekt: projekt
+		}
+		////////////////
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
@@ -227,7 +246,7 @@ Template.createChannel.events({
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, customFields, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -249,6 +268,45 @@ Template.createChannel.events({
 });
 
 Template.createChannel.onRendered(function() {
+	////////EKM FIX
+	let dropdown = document.getElementById('kmproj');
+	dropdown.length = 0;
+
+	let defaultOption = document.createElement('option');
+	defaultOption.text = 'Vali vestlusega seotud projekt';
+	defaultOption.value = '';
+
+	dropdown.add(defaultOption);
+	dropdown.selectedIndex = 0;
+
+	const url = 'http://ttop.kodumaja.ee/index.php?seckood=mitte_nii_kaval-kood';
+
+	const request = new XMLHttpRequest();
+	request.open('GET', url, true);
+
+	request.onload = function() {
+	  if (request.status === 200) {
+	    const data = JSON.parse(request.responseText);
+	    let option;
+	    for (let i = 0; i < data.length; i++) {
+	      option = document.createElement('option');
+	      option.text = data[i].kood + "   " + data[i].nimi;
+	      option.value = data[i].id;
+	      dropdown.add(option);
+	    }
+	   } else {
+	    // VIGA
+	  }   
+	}
+
+	request.onerror = function() {
+	  console.error('JSONi p2rimise viga ' + url);
+	};
+
+	request.send();
+	/////////////////
+	
+	
 	const users = this.selectedUsers;
 
 	this.firstNode.querySelector('[name="users"]').focus();
@@ -278,6 +336,10 @@ Template.createChannel.onCreated(function() {
 	this.encrypted = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
+	///EKM FIX
+	this.field1 = new ReactiveVar('');
+	this.field2 = new ReactiveVar('');
+	/////
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
@@ -410,3 +472,6 @@ Template.tokenpass.events({
 		i.requireAll.set(e.currentTarget.checked);
 	},
 });
+
+
+
