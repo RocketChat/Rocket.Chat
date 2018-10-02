@@ -18,7 +18,7 @@ Object.assign(FileUpload, {
 		delete stores[name];
 
 		return new UploadFS.store[store](Object.assign({
-			name
+			name,
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
@@ -26,7 +26,7 @@ Object.assign(FileUpload, {
 		return {
 			collection: RocketChat.models.Uploads.model,
 			filter: new UploadFS.Filter({
-				onCheck: FileUpload.validateFileUpload
+				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file) {
 				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
@@ -40,7 +40,7 @@ Object.assign(FileUpload, {
 
 				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
 				return true;
-			}
+			},
 		};
 	},
 
@@ -54,7 +54,7 @@ Object.assign(FileUpload, {
 				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
-			onFinishUpload: FileUpload.avatarsOnFinishUpload
+			onFinishUpload: FileUpload.avatarsOnFinishUpload,
 		};
 	},
 
@@ -73,7 +73,7 @@ Object.assign(FileUpload, {
 
 				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
 				return true;
-			}
+			},
 		};
 	},
 
@@ -107,13 +107,13 @@ Object.assign(FileUpload, {
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
 				.toBuffer()
-				.then(Meteor.bindEnvironment(outputBuffer => {
-					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment(err => {
+				.then(Meteor.bindEnvironment((outputBuffer) => {
+					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment((err) => {
 						if (err != null) {
 							console.error(err);
 						}
-						const size = fs.lstatSync(tempFilePath).size;
-						this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+						const { size } = fs.lstatSync(tempFilePath);
+						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
 						future.return();
 					}));
 				}));
@@ -157,11 +157,11 @@ Object.assign(FileUpload, {
 				format: metadata.format,
 				size: {
 					width: metadata.width,
-					height: metadata.height
-				}
+					height: metadata.height,
+				},
 			};
 
-			const reorientation = cb => {
+			const reorientation = (cb) => {
 				if (metadata.orientation) {
 					s.rotate()
 						.toFile(`${ tmpFile }.tmp`)
@@ -183,9 +183,9 @@ Object.assign(FileUpload, {
 			};
 
 			reorientation(() => {
-				const size = fs.lstatSync(tmpFile).size;
-				this.getCollection().direct.update({_id: file._id}, {
-					$set: { size, identify }
+				const { size } = fs.lstatSync(tmpFile);
+				this.getCollection().direct.update({ _id: file._id }, {
+					$set: { size, identify },
 				});
 
 				fut.return();
@@ -273,7 +273,7 @@ Object.assign(FileUpload, {
 		}
 
 		return false;
-	}
+	},
 });
 
 export class FileUploadClass {

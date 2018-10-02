@@ -20,7 +20,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -29,7 +29,7 @@ Template.userEdit.helpers({
 
 	name() {
 		return this.description || this._id;
-	}
+	},
 });
 
 Template.userEdit.events({
@@ -44,7 +44,7 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		let roles = t.roles.get();
-		roles = roles.filter(el => el !== this.valueOf());
+		roles = roles.filter((el) => el !== this.valueOf());
 		t.roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
@@ -84,7 +84,7 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
-	}
+	},
 });
 
 Template.userEdit.onCreated(function() {
@@ -117,10 +117,8 @@ Template.userEdit.onCreated(function() {
 		const roleSelect = this.$('.remove-role').toArray();
 
 		if (roleSelect.length > 0) {
-			const notSorted = roleSelect.map(role => {
-				return role.title;
-			});
-			//Remove duplicate strings from the array
+			const notSorted = roleSelect.map((role) => role.title);
+			// Remove duplicate strings from the array
 			userData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
 		return userData;
@@ -151,7 +149,7 @@ Template.userEdit.onCreated(function() {
 		return errors.length === 0;
 	};
 
-	this.save = form => {
+	this.save = (form) => {
 		if (!this.validate()) {
 			return;
 		}

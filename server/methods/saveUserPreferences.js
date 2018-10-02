@@ -4,6 +4,7 @@ Meteor.methods({
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
 			newMessageNotification: Match.Optional(String),
+			clockMode: Match.Optional(Number),
 			useEmojis: Match.Optional(Boolean),
 			convertAsciiEmoji: Match.Optional(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),
@@ -31,7 +32,7 @@ Meteor.methods({
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
-			muteFocusedConversations: Match.Optional(Boolean)
+			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		const user = Meteor.user();
@@ -43,7 +44,7 @@ Meteor.methods({
 		const {
 			desktopNotifications: oldDesktopNotifications,
 			mobileNotifications: oldMobileNotifications,
-			emailNotificationMode: oldEmailNotifications
+			emailNotificationMode: oldEmailNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -99,5 +100,5 @@ Meteor.methods({
 		});
 
 		return true;
-	}
+	},
 });

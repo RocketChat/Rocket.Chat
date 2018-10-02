@@ -1,23 +1,23 @@
 Package.describe({
 	name: 'rocketchat:livechat',
 	version: '0.0.1',
-	summary: 'Livechat plugin for Rocket.Chat'
+	summary: 'Livechat plugin for Rocket.Chat',
 });
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
 	use: [],
 	sources: [
-		'plugin/build-livechat.js'
+		'plugin/build-livechat.js',
 	],
 	npmDependencies: {
-		'shelljs': '0.8.1',
-		'uglify-js': '2.8.29'
-	}
+		shelljs: '0.8.1',
+		'uglify-js': '2.8.29',
+	},
 });
 
 Npm.depends({
-	'ua-parser-js': '0.7.17'
+	'ua-parser-js': '0.7.17',
 });
 
 Package.onUse(function(api) {
@@ -61,6 +61,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/collections/LivechatDepartment.js', 'client');
 	api.addFiles('client/collections/LivechatDepartmentAgents.js', 'client');
 	api.addFiles('client/collections/LivechatIntegration.js', 'client');
+	api.addFiles('client/collections/LivechatMonitoring.js', 'client');
 	api.addFiles('client/collections/LivechatPageVisited.js', 'client');
 	api.addFiles('client/collections/LivechatQueueUser.js', 'client');
 	api.addFiles('client/collections/LivechatTrigger.js', 'client');
@@ -70,8 +71,18 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/methods/changeLivechatStatus.js', 'client');
 
-	//client startup
+	// client startup
 	api.addFiles('client/startup/notifyUnreadRooms.js', 'client');
+
+	// analytics views
+	api.addFiles('client/views/app/analytics/livechatAnalytics.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalytics.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsCustomDaterange.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsCustomDaterange.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsDaterange.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatAnalyticsDaterange.js', 'client');
+	api.addFiles('client/views/app/analytics/livechatRealTimeMonitoring.html', 'client');
+	api.addFiles('client/views/app/analytics/livechatRealTimeMonitoring.js', 'client');
 
 	// client views
 	api.addFiles('client/views/app/livechatAppearance.html', 'client');
@@ -140,6 +151,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/hooks/markRoomResponded.js', 'server');
 	api.addFiles('server/hooks/offlineMessage.js', 'server');
 	api.addFiles('server/hooks/RDStation.js', 'server');
+	api.addFiles('server/hooks/saveAnalyticsData.js', 'server');
 	api.addFiles('server/hooks/sendToCRM.js', 'server');
 	api.addFiles('server/hooks/sendToFacebook.js', 'server');
 
@@ -152,6 +164,9 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/facebook.js', 'server');
 	api.addFiles('server/methods/getCustomFields.js', 'server');
 	api.addFiles('server/methods/getAgentData.js', 'server');
+	api.addFiles('server/methods/getAgentOverviewData.js', 'server');
+	api.addFiles('server/methods/getAnalyticsChartData.js', 'server');
+	api.addFiles('server/methods/getAnalyticsOverviewData.js', 'server');
 	api.addFiles('server/methods/getInitialData.js', 'server');
 	api.addFiles('server/methods/getNextAgent.js', 'server');
 	api.addFiles('server/methods/loadHistory.js', 'server');
@@ -201,6 +216,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/LivechatOfficeHour.js', 'server');
 
 	// server lib
+	api.addFiles('server/lib/Analytics.js', 'server');
 	api.addFiles('server/lib/Livechat.js', 'server');
 	api.addFiles('server/lib/QueueMethods.js', 'server');
 	api.addFiles('server/lib/OfficeClock.js', 'server');
@@ -217,9 +233,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/publications/livechatDepartments.js', 'server');
 	api.addFiles('server/publications/livechatIntegration.js', 'server');
 	api.addFiles('server/publications/livechatManagers.js', 'server');
+	api.addFiles('server/publications/livechatMonitoring.js', 'server');
 	api.addFiles('server/publications/livechatRooms.js', 'server');
 	api.addFiles('server/publications/livechatQueue.js', 'server');
 	api.addFiles('server/publications/livechatTriggers.js', 'server');
+	api.addFiles('server/publications/livechatVisitors.js', 'server');
 	api.addFiles('server/publications/visitorHistory.js', 'server');
 	api.addFiles('server/publications/visitorInfo.js', 'server');
 	api.addFiles('server/publications/visitorPageVisited.js', 'server');
@@ -228,6 +246,7 @@ Package.onUse(function(api) {
 
 	// REST endpoints
 	api.addFiles('server/api.js', 'server');
+	api.addFiles('server/api/rest.js', 'server');
 
 	// livechat app
 	api.addAssets('assets/demo.html', 'client');

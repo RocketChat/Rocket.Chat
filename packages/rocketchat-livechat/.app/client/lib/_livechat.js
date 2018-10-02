@@ -49,7 +49,7 @@ this.Livechat = new (class Livechat {
 						this._agent.set(result);
 					}
 				});
-				this.stream.on(this._room.get(), { visitorToken: visitor.getToken() }, (eventData) => {
+				this.stream.on(this._room.get(), { token: visitor.getToken() }, (eventData) => {
 					if (!eventData || !eventData.type) {
 						return;
 					}
@@ -133,6 +133,9 @@ this.Livechat = new (class Livechat {
 	}
 	get guestEmail() {
 		return this._guestEmail.get();
+	}
+	get room() {
+		return this._room.get();
 	}
 
 	set online(value) {

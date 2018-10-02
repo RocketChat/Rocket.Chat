@@ -1,5 +1,5 @@
 /* global SnippetedMessages */
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
 
 Template.snippetPage.helpers({
 	snippet() {
@@ -23,9 +23,9 @@ Template.snippetPage.helpers({
 	time() {
 		const snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
-			return moment(snippet.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+			return DateFormat.formatTime(snippet.ts);
 		}
-	}
+	},
 });
 
 Template.snippetPage.onCreated(function() {
@@ -34,4 +34,3 @@ Template.snippetPage.onCreated(function() {
 		Meteor.subscribe('snippetedMessage', snippetId);
 	});
 });
-
