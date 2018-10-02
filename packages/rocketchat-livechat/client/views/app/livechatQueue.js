@@ -3,11 +3,11 @@
 Template.livechatQueue.helpers({
 	departments() {
 		return LivechatDepartment.find({
-			enabled: true
+			enabled: true,
 		}, {
 			sort: {
-				name: 1
-			}
+				name: 1,
+			},
 		});
 	},
 
@@ -17,13 +17,13 @@ Template.livechatQueue.helpers({
 		const showOffline = Template.instance().showOffline.get();
 
 		LivechatQueueUser.find({
-			departmentId: this._id
+			departmentId: this._id,
 		}, {
 			sort: {
 				count: 1,
 				order: 1,
-				username: 1
-			}
+				username: 1,
+			},
 		}).forEach((user) => {
 			const options = { fields: { _id: 1 } };
 			const userFilter = { _id: user.agentId, status: { $ne: 'offline' } };
@@ -40,7 +40,7 @@ Template.livechatQueue.helpers({
 	hasPermission() {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
 		return RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager') || (user.statusLivechat === 'available' && RocketChat.settings.get('Livechat_show_queue_list_link'));
-	}
+	},
 });
 
 Template.livechatQueue.events({
@@ -50,7 +50,7 @@ Template.livechatQueue.events({
 		showOffline[this._id] = event.currentTarget.checked;
 
 		instance.showOffline.set(showOffline);
-	}
+	},
 });
 
 Template.livechatQueue.onCreated(function() {

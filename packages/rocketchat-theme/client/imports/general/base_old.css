@@ -54,9 +54,12 @@
 .rc-old blockquote {
 	position: relative;
 
+	display: block;
+
 	clear: both;
 
-	margin: 0.5em 0;
+	min-height: 20px;
+
 	padding-left: 10px;
 
 	&::after {
@@ -74,17 +77,23 @@
 		margin-bottom: 0;
 	}
 
+	&:first-child::before {
+		border-radius: 2px 2px 0 0;
+	}
+
+	&:last-child::before {
+		border-radius: 0 0 2px 2px;
+	}
+
 	&::before {
 		position: absolute;
-		top: -1px;
-		bottom: -1px;
+		top: 0;
+		bottom: 0;
 		left: 0;
 
-		width: 4px;
+		width: 2px;
 
 		content: ' ';
-
-		border-radius: 2px;
 	}
 }
 
@@ -121,7 +130,6 @@
 
 .copyonly {
 	display: inline-block;
-	float: left;
 
 	width: 0;
 	height: 0;
@@ -131,6 +139,10 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
+
+	code & {
+		float: left;
+	}
 }
 
 .rc-old .text-center {
@@ -398,7 +410,8 @@
 
 /* .rc-old textarea, */
 
-/*.rc-old select,
+/*
+rc-old select,
 .rc-old input[type='text'],
 .rc-old input[type='number'],
 .rc-old input[type='email'],
@@ -417,7 +430,8 @@
 
 	line-height: normal;
 	appearance: none;
-}*/
+}
+*/
 
 .rc-old input {
 	& .input-forward {
@@ -2317,6 +2331,12 @@
 	}
 
 	& .footer {
+		z-index: 1;
+
+		background-color: transparent;
+		background-image: linear-gradient(rgba(254, 254, 255, 0.95), #ffffff);
+
+		box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.95);
 		flex-shrink: 0;
 	}
 
@@ -2618,6 +2638,34 @@
 
 .rc-old .message-popup-position {
 	position: relative;
+
+	.message-popup {
+		display: flex;
+		flex-direction: column;
+
+		max-height: 20rem;
+		align-items: stretch;
+
+		.message-popup-items {
+			overflow-y: auto;
+
+			.popup-slash-command {
+				display: flex;
+				flex-flow: row wrap;
+
+				&-format {
+					flex-grow: 1;
+				}
+
+				&-description {
+					text-align: right;
+
+					font-style: italic;
+					flex-grow: 2;
+				}
+			}
+		}
+	}
 }
 
 .rc-old .message-popup-items.preview-items {
@@ -2627,19 +2675,22 @@
 
 .rc-old .preview-items .popup-item {
 	padding: 5px;
+
 	line-height: unset;
 }
 
 .rc-old .rc-message-box .reply-preview {
 
 	position: relative;
+
 	display: flex;
+
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
 
 	padding-left: 15px;
 
-	background-color:#ffffff;
+	background-color: #ffffff;
 	align-items: center;
 	justify-content: space-between;
 }
@@ -2648,8 +2699,7 @@
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	border-bottom-left-radius: 5px;
-	border-bottom-left-radius: 5px;
-	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);;
+	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
 }
 
 .rc-old .reply-preview .cancel-reply {
@@ -2665,10 +2715,7 @@
 }
 
 .rc-old .message-popup.popup-with-reply-preview {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
+	border-radius: 5px 5px 0 0;
 }
 
 .rc-old .message-popup {
@@ -2780,14 +2827,12 @@
 	border-radius: 10px;
 }
 
-.rc-old .popup-slash-command-description {
-	float: right;
-}
-
 .messages-box {
 	position: relative;
 
 	overflow: hidden;
+
+	margin-bottom: -24px;
 	flex-grow: 1;
 
 	& .message-cog-container .message-action.jump-to-search-message {
@@ -2806,6 +2851,15 @@
 		margin-top: 12px;
 
 		text-align: center;
+
+		& .start__purge-warning {
+			margin-top: -33px;
+			margin-bottom: 0.5rem;
+			padding: 0.5rem;
+
+			border-width: 1px 0 0;
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
+		}
 	}
 
 	& .new-message {
@@ -2900,8 +2954,9 @@
 	}
 }
 
-.rc-old .message {
+.message {
 	position: relative;
+	z-index: 1;
 
 	min-height: 40px;
 	padding: 8px 50px 4px 70px;
@@ -3075,7 +3130,10 @@
 		& .role-tag {
 			padding: 1px 4px;
 
-			border-radius: 2px;
+			border-width: 1px;
+
+			border-radius: 4px;
+			background: #ffffff;
 		}
 	}
 
@@ -3106,7 +3164,8 @@
 			text-align: right;
 
 			& .time,
-			& .role-tag {
+			& .role-tag,
+			& .is-bot {
 				display: none;
 			}
 
@@ -3135,7 +3194,6 @@
 		&:hover .edited {
 			display: none;
 		}
-
 	}
 
 	&.system .body {
@@ -3181,9 +3239,9 @@
 			& img {
 				max-width: 100%;
 				max-height: 200px;
-				object-fit: contain;
 
 				cursor: pointer;
+				object-fit: contain;
 			}
 		}
 
@@ -3280,7 +3338,9 @@
 	}
 
 	&.livechat_navigation_history {
-		& .thumb, & .user, & .info {
+		& .thumb,
+		& .user,
+		& .info {
 			display: none;
 		}
 	}
@@ -3626,7 +3686,8 @@ body:not(.is-cordova) {
 			}
 		}
 
-		/*& .close-flex-tab {
+		/*
+		& .close-flex-tab {
 			position: absolute;
 			z-index: 20;
 			top: 3px;
@@ -3652,7 +3713,8 @@ body:not(.is-cordova) {
 					font-size: 10px;
 				}
 			}
-		}*/
+		}
+		*/
 	}
 
 	& .flex-tab-bar {
@@ -3871,12 +3933,6 @@ body:not(.is-cordova) {
 			font-size: 12px;
 			font-weight: 300;
 			line-height: 18px;
-		}
-
-		& .role-tag {
-			padding: 1px 4px;
-
-			border-radius: 2px;
 		}
 	}
 
@@ -4548,6 +4604,7 @@ body:not(.is-cordova) {
 		& select {
 
 			position: relative;
+
 			width: 100%;
 
 			padding: 4px 8px;
@@ -4632,6 +4689,12 @@ body:not(.is-cordova) {
 	margin: auto;
 
 	text-align: center;
+
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+
+	background-position: center;
+	background-size: cover;
 	align-items: center;
 	flex-flow: row nowrap;
 
@@ -4658,7 +4721,6 @@ body:not(.is-cordova) {
 
 			max-width: 100%;
 			max-height: 150px;
-			padding: 10px;
 		}
 	}
 
@@ -4678,6 +4740,10 @@ body:not(.is-cordova) {
 		z-index: 1;
 
 		display: block;
+
+		max-width: 520px;
+		margin: auto;
+		padding: 0 20px;
 	}
 
 	& .text {
@@ -4798,8 +4864,11 @@ body:not(.is-cordova) {
 }
 
 .rc-old .mention-link {
-	border-radius: 4px;
+
 	padding: 0 4px 2px;
+
+	border-radius: 4px;
+
 	font-weight: bold;
 }
 
@@ -5506,10 +5575,6 @@ body:not(.is-cordova) {
 }
 
 .rc-old .embedded-view {
-	& .flex-tab-bar {
-		display: none;
-	}
-
 	& .messages-container {
 		border-width: 0;
 
@@ -5688,7 +5753,7 @@ body:not(.is-cordova) {
 	}
 }
 
-.room-leader a.chat-now {
+.room-leader .chat-now {
 	position: absolute;
 	top: 15px;
 	right: 25px;
@@ -5715,7 +5780,7 @@ body:not(.is-cordova) {
 
 .room-leader {
 	position: absolute;
-	z-index: 1;
+	z-index: 9;
 	right: 0;
 	left: 0;
 

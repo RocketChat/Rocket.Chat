@@ -97,43 +97,6 @@
 	}
 }
 
-.rtl .messages-box .user-typing {
-	right: 0;
-}
-
-.messages-box {
-	& .user-typing {
-		height: 24px;
-
-		padding: 0 24px;
-
-		color: var(--message-box-user-typing-color);
-
-		font-size: var(--message-box-user-typing-text-size);
-
-		line-height: 24px;
-
-		& .user-typing-wrapper::after {
-			display: inline-block;
-			overflow: hidden;
-
-			width: 0;
-
-			content: "\2026"; /* ascii code for the ellipsis character */
-			animation: ellipsis steps(4, end) 1.5s infinite;
-			vertical-align: bottom;
-		}
-
-		&__user {
-			color: var(--message-box-user-typing-user-color);
-		}
-	}
-
-	& .rc-popover__list {
-		padding: 0;
-	}
-}
-
 .messages-container .wrapper {
 	position: absolute;
 	top: 0;

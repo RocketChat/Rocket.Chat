@@ -26,7 +26,7 @@ Template.visitorEdit.helpers({
 
 	joinTags() {
 		return this.tags && this.tags.join(', ');
-	}
+	},
 });
 
 Template.visitorEdit.onCreated(function() {
@@ -48,12 +48,12 @@ Template.visitorEdit.events({
 		const userData = { _id: instance.visitor.get()._id };
 		const roomData = { _id: instance.room.get()._id };
 
-		userData.name = event.currentTarget.elements['name'].value;
-		userData.email = event.currentTarget.elements['email'].value;
-		userData.phone = event.currentTarget.elements['phone'].value;
+		userData.name = event.currentTarget.elements.name.value;
+		userData.email = event.currentTarget.elements.email.value;
+		userData.phone = event.currentTarget.elements.phone.value;
 
-		roomData.topic = event.currentTarget.elements['topic'].value;
-		roomData.tags = event.currentTarget.elements['tags'].value;
+		roomData.topic = event.currentTarget.elements.topic.value;
+		roomData.tags = event.currentTarget.elements.tags.value;
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
@@ -70,5 +70,5 @@ Template.visitorEdit.events({
 
 	'click .cancel'() {
 		this.cancel();
-	}
+	},
 });

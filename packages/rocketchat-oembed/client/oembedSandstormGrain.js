@@ -13,7 +13,7 @@ Template.oembedSandstormGrain.helpers({
 	},
 	descriptor() {
 		return this.meta.sandstorm.grain.descriptor;
-	}
+	},
 });
 
 window.sandstormOembed = function(e) {

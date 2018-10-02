@@ -13,5 +13,5 @@ export const ProgressStep = Object.freeze({
 	FINISHING: 'importer_finishing',
 	DONE: 'importer_done',
 	ERROR: 'importer_import_failed',
-	CANCELLED: 'importer_import_cancelled'
+	CANCELLED: 'importer_import_cancelled',
 });

@@ -2,7 +2,7 @@
 	position: relative;
 
 	width: 100%;
-	padding: 0 24px 24px;
+	padding: var(--message-box-container-padding);
 
 	font-size: var(--message-box-text-size);
 
@@ -51,6 +51,32 @@
 		}
 	}
 
+	&__typing {
+		position: absolute;
+		top: 4px;
+		left: 0;
+
+		margin-left: var(--message-box-container-padding);
+
+		color: var(--message-box-user-typing-color);
+
+		font-size: var(--message-box-user-typing-text-size);
+
+		&__user {
+			color: var(--message-box-user-typing-user-color);
+		}
+
+		&::after {
+			display: inline-block;
+			overflow: hidden;
+
+			width: 0;
+
+			content: "\2026"; /* ascii code for the ellipsis character */
+			animation: ellipsis steps(4, end) 1.5s infinite;
+			vertical-align: bottom;
+		}
+	}
 
 	&__container {
 		display: flex;
@@ -151,7 +177,6 @@
 				display: flex;
 			}
 		}
-
 	}
 
 	&__action-menu {
@@ -166,11 +191,11 @@
 		display: none;
 	}
 
-	&__audio-message{
+	&__audio-message {
 		display: flex;
 	}
 
-	&__timer-box{
+	&__timer-box {
 		display: none;
 
 		width: 50px;
@@ -180,7 +205,8 @@
 		}
 	}
 
-	&__timer-dot{
+	&__timer-dot {
+
 		color: #d60000;
 
 		font-size: 1.5em;
@@ -284,4 +310,8 @@
 			margin-top: var(--popover-column-padding);
 		}
 	}
+}
+
+.message:last-child {
+	margin-bottom: var(--message-box-container-padding);
 }

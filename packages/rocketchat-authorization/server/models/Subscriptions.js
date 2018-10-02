@@ -16,7 +16,7 @@ RocketChat.models.Subscriptions.findUsersInRoles = function(roles, scope, option
 	roles = [].concat(roles);
 
 	const query = {
-		roles: { $in: roles }
+		roles: { $in: roles },
 	};
 
 	if (scope) {

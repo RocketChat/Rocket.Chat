@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:i18n',
 	version: '0.0.1',
 	summary: 'RocketChat i18n',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
