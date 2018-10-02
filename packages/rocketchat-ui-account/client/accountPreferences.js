@@ -102,7 +102,7 @@ Template.accountPreferences.helpers({
 	},
 	dontAskAgainList() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
-	}
+	},
 });
 
 Template.accountPreferences.onCreated(function() {

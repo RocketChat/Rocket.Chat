@@ -38,7 +38,7 @@ Template.sideNav.helpers({
 
 	sidebarHideAvatar() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
-	}
+	},
 });
 
 Template.sideNav.events({
