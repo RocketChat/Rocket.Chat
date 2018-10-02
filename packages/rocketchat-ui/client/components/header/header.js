@@ -81,6 +81,11 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
@@ -92,6 +97,10 @@ Template.header.helpers({
 
 	fixedHeight() {
 		return Template.instance().data.fixedHeight;
+	},
+
+	fullpage() {
+		return Template.instance().data.fullpage;
 	},
 
 	isChannel() {
@@ -134,5 +143,5 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = (this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id)) || undefined;
 });

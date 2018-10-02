@@ -75,7 +75,7 @@ class SearchProviderService {
 	start() {
 		SearchLogger.debug('Load data for all providers');
 
-		const providers = this.providers;
+		const { providers } = this;
 
 		// add settings for admininistration
 		RocketChat.settings.addGroup('Search', function() {

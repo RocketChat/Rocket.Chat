@@ -36,6 +36,12 @@ Meteor.methods({
 			});
 		}
 
+		if (!RocketChat.authz.hasPermission(to._id, 'view-d-room')) {
+			throw new Meteor.Error('error-not-allowed', 'Target user not allowed to receive messages', {
+				method: 'createDirectMessage',
+			});
+		}
+
 		const rid = [me._id, to._id].sort().join('');
 
 		const now = new Date();
@@ -60,7 +66,6 @@ Meteor.methods({
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
-				ts: now,
 				ls: now,
 				open: true,
 			},
@@ -77,6 +82,7 @@ Meteor.methods({
 					_id: me._id,
 					username: me.username,
 				},
+				ts: now,
 				...myNotificationPref,
 			},
 		};
@@ -97,7 +103,7 @@ Meteor.methods({
 			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
-				fname: me.username,
+				fname: me.name,
 				name: me.username,
 				t: 'd',
 				open: false,
@@ -110,6 +116,7 @@ Meteor.methods({
 					_id: to._id,
 					username: to.username,
 				},
+				ts: now,
 				...toNotificationPref,
 			},
 		});

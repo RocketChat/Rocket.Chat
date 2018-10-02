@@ -12,6 +12,12 @@ export function parseMessageTextPerUser(messageText, message, receiver) {
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}
 
+	if (message.msg && message.t === 'e2e') {
+		const lng = receiver.language || RocketChat.settings.get('language') || 'en';
+
+		return TAPi18n.__('Encrypted_message', { lng });
+	}
+
 	return messageText;
 }
 
@@ -52,9 +58,9 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-export function callJoinRoom(user, rid) {
+export function callJoinRoom(userId, rid) {
 	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(user._id, () => Meteor.call('joinRoom', rid, (error, result) => {
+		Meteor.runAsUser(userId, () => Meteor.call('joinRoom', rid, (error, result) => {
 			if (error) {
 				return reject(error);
 			}

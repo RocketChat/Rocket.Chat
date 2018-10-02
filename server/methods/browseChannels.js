@@ -23,7 +23,7 @@ const sortUsers = function(field, direction) {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10 }) {
+	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
@@ -34,17 +34,20 @@ Meteor.methods({
 			return;
 		}
 
+		if ((!page && page !== 0) && (!offset && offset !== 0)) {
+			return;
+		}
 
 		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
 			return;
 		}
 
-		page = page > -1 ? page : 0;
+		const skip = Math.max(0, offset || (page > -1 ? limit * page : 0));
 
 		limit = limit > 0 ? limit : 10;
 
 		const options = {
-			skip: limit * page,
+			skip,
 			limit,
 		};
 

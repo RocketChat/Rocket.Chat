@@ -2,10 +2,10 @@
 
 import _ from 'underscore';
 
-const _unstoreLoginToken = Accounts._unstoreLoginToken;
-Accounts._unstoreLoginToken = function() {
+const { _unstoreLoginToken } = Accounts;
+Accounts._unstoreLoginToken = function(...args) {
 	RocketChat.iframeLogin.tryLogin();
-	_unstoreLoginToken.apply(Accounts, arguments);
+	_unstoreLoginToken.apply(Accounts, args);
 };
 
 class IframeLogin {
@@ -54,7 +54,7 @@ class IframeLogin {
 			},
 		};
 
-		let iframeUrl = this.iframeUrl;
+		let { iframeUrl } = this;
 		let separator = '?';
 		if (iframeUrl.indexOf('?') > -1) {
 			separator = '&';

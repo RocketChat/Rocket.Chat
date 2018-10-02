@@ -150,13 +150,15 @@ Template.channelSettingsEditing.events({
 			value: 'disabled',
 		}];
 
-		const value = this.value.get() ? 'enabled' : this.value.get() === false ? 'disabled' : 'default';
+		const falseOrDisabled = this.value.get() === false ? 'disabled' : 'default';
+		const value = this.value.get() ? 'enabled' : falseOrDisabled;
 		const config = {
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
 				change : (value) => {
-					const realValue = value === 'enabled' ? true : value === 'disabled' ? false : undefined;
+					const falseOrUndefined = value === 'disabled' ? false : undefined;
+					const realValue = value === 'enabled' ? true : falseOrUndefined;
 					return this.value.set(realValue);
 				},
 				value,
@@ -622,6 +624,25 @@ Template.channelSettingsEditing.onCreated(function() {
 				);
 			},
 		},
+		encrypted: {
+			type: 'boolean',
+			label: 'Encrypted',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
+					toastr.success(
+						t('Encrypted_setting_changed_successfully')
+					);
+				});
+			},
+		},
 	};
 	Object.keys(this.settings).forEach((key) => {
 		const setting = this.settings[key];
@@ -695,7 +716,7 @@ Template.channelSettingsEditing.helpers({
 	},
 	retentionEnabled(value) {
 		const { room } = Template.instance();
-		return value || value === undefined && retentionEnabled(room);
+		return (value || value === undefined) && retentionEnabled(room);
 	},
 	retentionMaxAgeLabel(label) {
 		const { room } = Template.instance();

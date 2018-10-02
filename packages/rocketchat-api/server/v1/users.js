@@ -200,6 +200,12 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			username: Match.Maybe(String),
 		}));
 
+		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+				method: 'users.setAvatar',
+			});
+		}
+
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
@@ -320,7 +326,7 @@ RocketChat.API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = RocketChat.models.Users.findOneById(this.userId);
 		if (user.settings) {
-			const preferences = user.settings.preferences;
+			const { preferences } = user.settings;
 			preferences.language = user.language;
 
 			return RocketChat.API.v1.success({
@@ -339,6 +345,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			data: Match.ObjectIncluding({
 				newRoomNotification: Match.Maybe(String),
 				newMessageNotification: Match.Maybe(String),
+				clockMode: Match.Maybe(Number),
 				useEmojis: Match.Maybe(Boolean),
 				convertAsciiEmoji: Match.Maybe(Boolean),
 				saveMobileBandwidth: Match.Maybe(Boolean),
@@ -379,7 +386,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		};
 
 		if (this.bodyParams.data.language) {
-			const language = this.bodyParams.data.language;
+			const { language } = this.bodyParams.data;
 			delete this.bodyParams.data.language;
 			userData.language = language;
 		}
@@ -416,5 +423,63 @@ RocketChat.API.v1.addRoute('users.getUsernameSuggestion', { authRequired: true }
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('getUsernameSuggestion'));
 
 		return RocketChat.API.v1.success({ result });
+	},
+});
+
+RocketChat.API.v1.addRoute('users.generatePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:generateToken', { tokenName }));
+
+		return RocketChat.API.v1.success({ token });
+	},
+});
+
+RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		const token = Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:regenerateToken', { tokenName }));
+
+		return RocketChat.API.v1.success({ token });
+	},
+});
+
+RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
+	get() {
+		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
+			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled');
+		}
+		const loginTokens = RocketChat.models.Users.getLoginTokensByUserId(this.userId).fetch()[0];
+		const getPersonalAccessTokens = () => loginTokens.services.resume.loginTokens
+			.filter((loginToken) => loginToken.type && loginToken.type === 'personalAccessToken')
+			.map((loginToken) => ({
+				name: loginToken.name,
+				createdAt: loginToken.createdAt,
+				lastTokenPart: loginToken.lastTokenPart,
+			}));
+
+		return RocketChat.API.v1.success({
+			tokens: getPersonalAccessTokens(),
+		});
+	},
+});
+
+RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
+	post() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return RocketChat.API.v1.failure('The \'tokenName\' param is required');
+		}
+		Meteor.runAsUser(this.userId, () => Meteor.call('personalAccessTokens:removeToken', {
+			tokenName,
+		}));
+
+		return RocketChat.API.v1.success();
 	},
 });

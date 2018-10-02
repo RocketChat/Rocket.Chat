@@ -12,6 +12,12 @@ Template.accountFlex.helpers({
 	allowUserProfileChange() {
 		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
 	},
+	accessTokensEnabled() {
+		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
+	},
+	encryptionEnabled() {
+		return RocketChat.settings.get('E2E_Enable');
+	},
 	menuItem(name, icon, section, group) {
 		return {
 			name: t(name),

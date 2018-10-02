@@ -210,7 +210,7 @@ Template.room.helpers({
 	},
 
 	embeddedVersion() {
-		RocketChat.Layout.isEmbedded();
+		return RocketChat.Layout.isEmbedded();
 	},
 
 	subscribed() {
@@ -498,7 +498,7 @@ Template.room.events({
 	},
 
 	'touchstart .message'(e, t) {
-		const touches = e.originalEvent.touches;
+		const { touches } = e.originalEvent;
 		if (touches && touches.length) {
 			lastTouchX = touches[0].pageX;
 			lastTouchY = touches[0].pagey;
@@ -563,7 +563,7 @@ Template.room.events({
 	},
 
 	'touchmove .message'(e, t) {
-		const touches = e.originalEvent.touches;
+		const { touches } = e.originalEvent;
 		if (touches && touches.length) {
 			const deltaX = Math.abs(lastTouchX - touches[0].pageX);
 			const deltaY = Math.abs(lastTouchY - touches[0].pageY);
@@ -630,7 +630,7 @@ Template.room.events({
 			return;
 		}
 
-		const username = this._arguments[1].u.username;
+		const { username } = this._arguments[1].u;
 
 		openProfileTabOrOpenDM(e, instance, username);
 	},
@@ -649,7 +649,7 @@ Template.room.events({
 		}
 		lastScrollTop = e.target.scrollTop;
 
-		if (RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true || RoomHistoryManager.hasMoreNext(this._id) === true) {
+		if ((RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true) || RoomHistoryManager.hasMoreNext(this._id) === true) {
 			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
 				RoomHistoryManager.getMore(this._id);
 			} else if (RoomHistoryManager.hasMoreNext(this._id) === true && e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
@@ -834,6 +834,17 @@ Template.room.events({
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	},
+	'click .js-actionButton-sendMessage'(event, instance) {
+		const rid = instance.data._id;
+		const msg = event.currentTarget.value;
+		const msgObject = { _id: Random.id(), rid, msg };
+		if (!msg) {
+			return;
+		}
+		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			Meteor.call('sendMessage', msgObject);
+		});
+	},
 });
 
 
@@ -926,7 +937,7 @@ Template.room.onCreated(function() {
 			handleError(error);
 		}
 
-		return Array.from(results).map((record) => {
+		return Array.from(results).forEach((record) => {
 			delete record._id;
 			RoomRoles.upsert({ rid: record.rid, 'u._id': record.u._id }, record);
 		});

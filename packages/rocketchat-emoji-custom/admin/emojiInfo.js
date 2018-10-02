@@ -46,7 +46,7 @@ Template.emojiInfo.events({
 		e.preventDefault();
 		const emoji = instance.emoji.get();
 		if (emoji != null) {
-			const _id = emoji._id;
+			const { _id } = emoji;
 			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Emoji_Delete_Warning'),
