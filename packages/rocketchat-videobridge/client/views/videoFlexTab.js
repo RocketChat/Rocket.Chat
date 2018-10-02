@@ -53,14 +53,21 @@ Template.videoFlexTab.onRendered(function() {
 			return closePanel();
 		}
 		this.timeout = null;
-		this.autorun(() => {
+		this.autorun(async () => {
 			if (RocketChat.settings.get('Jitsi_Enabled')) {
 				if (this.tabBar.getState() === 'opened') {
 					const roomId = Session.get('openedRoom');
 
 					const domain = RocketChat.settings.get('Jitsi_Domain');
-					const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId;
+					const uniqueID = RocketChat.settings.get('uniqueID');
 					const noSsl = !RocketChat.settings.get('Jitsi_SSL');
+
+					let jitsiRoom = '';
+					if (typeof uniqueID !== 'undefined') {
+						jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + uniqueID + roomId;
+					} else {
+						jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + roomId;
+					}
 
 					if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 						jitsiRoomActive = null;
@@ -73,21 +80,39 @@ Template.videoFlexTab.onRendered(function() {
 							clearInterval(timeOut);
 						}
 					} else {
+
+						let accessToken = await new Promise((resolve, reject) =>
+							Meteor.call('jitsi:generateAccessToken', (error, result) => {
+								if (error) {
+									return reject(error);
+								}
+								resolve(result);
+							})
+						);
+
+						console.log('Init conference...');
+
 						jitsiRoomActive = jitsiRoom;
 
 						RocketChat.TabBar.updateButton('video', { class: 'red' });
 
+						// we need to token authentication for our domain - travelmeet.de
+						console.log('Your personal access token: ' + accessToken);
+
 						if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
+
+							console.log('Opening a conference in a NEW tab');
+
 							Meteor.call('jitsi:updateTimeout', roomId);
 
 							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
 							let newWindow = null;
 							if (Meteor.isCordova) {
-								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, '_system');
+								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }?jwt=${ accessToken }`, '_system');
 								closePanel();
 								clearInterval(timeOut);
 							} else {
-								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, jitsiRoom);
+								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }?jwt=${ accessToken }`, jitsiRoom);
 								const closeInterval = setInterval(() => {
 									if (newWindow.closed !== false) {
 										closePanel();
@@ -106,7 +131,10 @@ Template.videoFlexTab.onRendered(function() {
 
 						// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
-								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
+
+								console.log('Opening a conference in THIS tab');
+
+								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
 
 								/*
 								* Hack to send after frame is loaded.
