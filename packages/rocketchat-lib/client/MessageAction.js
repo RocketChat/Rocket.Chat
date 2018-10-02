@@ -24,10 +24,8 @@ const success = function success(fn) {
 };
 
 const addMessageToList = (messagesList, message) => {
-	const ids = messagesList.map((msg) => msg._id);
-
 	// checks if the message is not already on the list
-	if (!ids.includes(message._id)) {
+	if (!messagesList.find(({ _id }) => _id === message._id)) {
 		messagesList.push(message);
 	}
 
@@ -146,9 +144,7 @@ Meteor.startup(function() {
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message, input);
+			const messages = addMessageToList($input.data('reply') || [], message, input);
 
 			$(input)
 				.focus()
