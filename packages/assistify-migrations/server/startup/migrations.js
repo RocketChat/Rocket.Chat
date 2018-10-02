@@ -6,8 +6,8 @@ on startup which migrate data - ignoring the actual version
 
 Meteor.startup(() => {
 
-	const _guessNameFromUsername = function(username) {
-		return username
+	const _guessNameFromUsername = function(username = '', email = '') {
+		return (username || email.replace(/@.*/, ''))
 			.replace(/\W/g, ' ')
 			.replace(/\s(.)/g, function($1) { return $1.toUpperCase(); })
 			.replace(/^(.)/, function($1) { return $1.toLowerCase(); })
@@ -16,7 +16,9 @@ Meteor.startup(() => {
 
 	const usersWithoutName = RocketChat.models.Users.find({name: null}).fetch();
 	usersWithoutName.forEach((user)=>{
-		RocketChat.models.Users.update({_id: user._id}, {$set: {name: _guessNameFromUsername(user.username)}});
+		if (user.username || (user.emails && user.emails.length > 0)) {
+			RocketChat.models.Users.update({_id: user._id}, {$set: {name: _guessNameFromUsername(user.username, user.emails[0].address)}});
+		}
 	});
 
 });
