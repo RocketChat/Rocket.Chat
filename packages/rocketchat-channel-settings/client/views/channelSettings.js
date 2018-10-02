@@ -624,6 +624,25 @@ Template.channelSettingsEditing.onCreated(function() {
 				);
 			},
 		},
+		encrypted: {
+			type: 'boolean',
+			label: 'Encrypted',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
+					toastr.success(
+						t('Encrypted_setting_changed_successfully')
+					);
+				});
+			},
+		},
 	};
 	Object.keys(this.settings).forEach((key) => {
 		const setting = this.settings[key];
