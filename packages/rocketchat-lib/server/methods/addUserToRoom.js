@@ -2,7 +2,7 @@ Meteor.methods({
 	addUserToRoom(data) {
 		return Meteor.call('addUsersToRoom', {
 			rid: data.rid,
-			users: [ data.username ]
+			users: [data.username],
 		});
-	}
+	},
 });

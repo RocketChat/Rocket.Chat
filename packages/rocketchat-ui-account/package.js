@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -16,11 +16,12 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'sha',
-		'rocketchat:lazy-load'
+		'rocketchat:lazy-load',
 	]);
 
 	api.addFiles('client/account.html', 'client');
 	api.addFiles('client/accountFlex.html', 'client');
+	api.addFiles('client/accountIntegrations.html', 'client');
 	api.addFiles('client/accountPreferences.html', 'client');
 	api.addFiles('client/accountProfile.html', 'client');
 	api.addFiles('client/avatar/avatar.html', 'client');
@@ -28,6 +29,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/account.js', 'client');
 	api.addFiles('client/accountFlex.js', 'client');
+	api.addFiles('client/accountIntegrations.js', 'client');
 	api.addFiles('client/accountPreferences.js', 'client');
 	api.addFiles('client/accountProfile.js', 'client');
 	api.addFiles('client/avatar/avatar.js', 'client');

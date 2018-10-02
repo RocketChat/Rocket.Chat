@@ -20,10 +20,10 @@ Meteor.startup(() => {
 		bgOpacity: 0.8,
 		showHideOpacity: true,
 		counterEl: false,
-		shareEl: false
+		shareEl: false,
 	};
 
-	const createEventListenerFor = className => event => {
+	const createEventListenerFor = (className) => (event) => {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -38,7 +38,7 @@ Meteor.startup(() => {
 				captionEl.children[0].innerHTML =
 					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
 				return true;
-			}
+			},
 		};
 
 		const items = Array.from(document.querySelectorAll(className))
@@ -68,7 +68,7 @@ Meteor.startup(() => {
 					return {
 						html: '',
 						title: element.dataset.title || element.title,
-						description: element.dataset.description
+						description: element.dataset.description,
 					};
 				}
 
@@ -77,7 +77,7 @@ Meteor.startup(() => {
 					w: element.naturalWidth,
 					h: element.naturalHeight,
 					title: element.dataset.title || element.title,
-					description: element.dataset.description
+					description: element.dataset.description,
 				};
 			});
 

@@ -1,6 +1,6 @@
 /* globals fireGlobalEvent*/
 
-const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
+const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
@@ -81,6 +81,11 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
@@ -94,13 +99,17 @@ Template.header.helpers({
 		return Template.instance().data.fixedHeight;
 	},
 
+	fullpage() {
+		return Template.instance().data.fullpage;
+	},
+
 	isChannel() {
 		return Template.instance().currentChannel != null;
 	},
 
 	isSection() {
 		return Template.instance().data.sectionName != null;
-	}
+	},
 });
 
 Template.header.events({
@@ -117,7 +126,7 @@ Template.header.events({
 			'toggleFavorite',
 			this._id,
 			!$(event.currentTarget).hasClass('favorite-room'),
-			err => err && handleError(err)
+			(err) => err && handleError(err)
 		);
 	},
 
@@ -130,9 +139,9 @@ Template.header.events({
 				.focus()
 				.select(),
 		10);
-	}
+	},
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = (this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id)) || undefined;
 });

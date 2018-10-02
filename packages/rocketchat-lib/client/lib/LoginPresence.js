@@ -1,5 +1,5 @@
 export const LoginPresence = {
-	awayTime: 600000, //10 minutes
+	awayTime: 600000, // 10 minutes
 	started: false,
 
 	startTimer() {
@@ -46,7 +46,7 @@ export const LoginPresence = {
 		}
 
 		LoginPresence.started = true;
-	}
+	},
 };
 
 LoginPresence.start();

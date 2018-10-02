@@ -9,7 +9,7 @@ if (!RocketChat.models.OAuthApps.findOne('zapier')) {
 		_createdAt: new Date,
 		_createdBy: {
 			_id: 'system',
-			username: 'system'
-		}
+			username: 'system',
+		},
 	});
 }

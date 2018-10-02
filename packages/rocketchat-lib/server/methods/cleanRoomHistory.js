@@ -22,5 +22,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
-	}
+	},
 });

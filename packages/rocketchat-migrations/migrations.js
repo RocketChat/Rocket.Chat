@@ -15,15 +15,16 @@ import moment from 'moment';
 
 	The ordering of migrations is determined by the version you set.
 
-	To run the migrations, set the MIGRATE environment variable to either
+	To run the migrations, set the MIGRATION_VERSION environment variable to either
 	'latest' or the version number you want to migrate to. Optionally, append
 	',exit' if you want the migrations to exit the meteor process, e.g if you're
 	migrating from a script (remember to pass the --once parameter).
 
 	e.g:
-	MIGRATE="latest" mrt # ensure we'll be at the latest version and run the app
-	MIGRATE="latest,exit" mrt --once # ensure we'll be at the latest version and exit
-	MIGRATE="2,exit" mrt --once # migrate to version 2 and exit
+	MIGRATION_VERSION="latest" mrt # ensure we'll be at the latest version and run the app
+	MIGRATION_VERSION="latest,exit" mrt --once # ensure we'll be at the latest version and exit
+	MIGRATION_VERSION="2,exit" mrt --once # migrate to version 2 and exit
+	MIGRATION_VERSION="2,rerun,exit" mrt --once # rerun migration script for version 2 and exit
 
 	Note: Migrations will lock ensuring only 1 app can be migrating at once. If
 	a migration crashes, the control record in the migrations collection will
@@ -37,7 +38,7 @@ const DefaultMigration = {
 	up() {
 		// @TODO: check if collection "migrations" exist
 		// If exists, rename and rerun _migrateTo
-	}
+	},
 };
 
 const Migrations = this.Migrations = {
@@ -56,12 +57,12 @@ const Migrations = this.Migrations = {
 		// max number of attempts to retry unlock
 		maxAttempts: 30,
 		// migrations collection name
-		collectionName: 'migrations'
+		collectionName: 'migrations',
 		// collectionName: "rocketchat_migrations"
 	},
 	config(opts) {
 		this.options = _.extend({}, this.options, opts);
-	}
+	},
 };
 
 Migrations._collection = new Mongo.Collection(Migrations.options.collectionName);
@@ -74,9 +75,7 @@ function makeABox(message, color = 'red') {
 	const len = _(message).reduce(function(memo, msg) {
 		return Math.max(memo, msg.length);
 	}, 0) + 4;
-	const text = message.map((msg) => {
-		return '|' [color] + s.lrpad(msg, len)[color] + '|' [color];
-	}).join('\n');
+	const text = message.map((msg) => '|' [color] + s.lrpad(msg, len)[color] + '|' [color]).join('\n');
 	const topLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
 	const separator = '|' [color] + s.pad('', len, '') + '|' [color];
 	const bottomLine = '+' [color] + s.pad('', len, '-')[color] + '+' [color];
@@ -111,12 +110,12 @@ function createLogger(prefix) {
 			logger({
 				level,
 				message,
-				tag: prefix
+				tag: prefix,
 			});
 
 		} else {
 			Log[level]({
-				message: `${ prefix }: ${ message }`
+				message: `${ prefix }: ${ message }`,
 			});
 		}
 	};
@@ -162,22 +161,21 @@ Migrations.migrateTo = function(command) {
 	if (_.isUndefined(command) || command === '' || this._list.length === 0) { throw new Error(`Cannot migrate using invalid command: ${ command }`); }
 
 	let version;
-	let subcommand;
+	let subcommands;
 	if (typeof command === 'number') {
 		version = command;
 	} else {
 		version = command.split(',')[0];
-		subcommand = command.split(',')[1];
+		subcommands = command.split(',').slice(1);
 	}
 
-	const maxAttempts = Migrations.options.maxAttempts;
-	const retryInterval = Migrations.options.retryInterval;
+	const { maxAttempts, retryInterval } = Migrations.options;
 	let migrated;
 	for (let attempts = 1; attempts <= maxAttempts; attempts++) {
 		if (version === 'latest') {
 			migrated = this._migrateTo(_.last(this._list).version);
 		} else {
-			migrated = this._migrateTo(parseInt(version), (subcommand === 'rerun'));
+			migrated = this._migrateTo(parseInt(version), (subcommands.includes('rerun')));
 		}
 		if (migrated) {
 			break;
@@ -208,13 +206,13 @@ Migrations.migrateTo = function(command) {
 			`Commit: ${ RocketChat.Info.commit.hash }`,
 			`Date: ${ RocketChat.Info.commit.date }`,
 			`Branch: ${ RocketChat.Info.commit.branch }`,
-			`Tag: ${ RocketChat.Info.commit.tag }`
+			`Tag: ${ RocketChat.Info.commit.tag }`,
 		]));
 		process.exit(1);
 	}
 
 	// remember to run meteor with --once otherwise it will restart
-	if (subcommand === 'exit') { process.exit(0); }
+	if (subcommands.includes('exit')) { process.exit(0); }
 };
 
 // just returns the current version
@@ -290,7 +288,7 @@ Migrations._migrateTo = function(version, rerun) {
 				`Commit: ${ RocketChat.Info.commit.hash }`,
 				`Date: ${ RocketChat.Info.commit.date }`,
 				`Branch: ${ RocketChat.Info.commit.branch }`,
-				`Tag: ${ RocketChat.Info.commit.tag }`
+				`Tag: ${ RocketChat.Info.commit.tag }`,
 			]));
 			process.exit(1);
 		}
@@ -308,22 +306,22 @@ Migrations._migrateTo = function(version, rerun) {
 		return self._collection.update({
 			_id: 'control',
 			$or: [{
-				locked: false
+				locked: false,
 			}, {
 				lockedAt: {
-					$lt: dateMinusInterval
-				}
+					$lt: dateMinusInterval,
+				},
 			}, {
 				buildAt: {
-					$ne: build
-				}
-			}]
+					$ne: build,
+				},
+			}],
 		}, {
 			$set: {
 				locked: true,
 				lockedAt: date,
-				buildAt: build
-			}
+				buildAt: build,
+			},
 		}) === 1;
 	}
 
@@ -332,7 +330,7 @@ Migrations._migrateTo = function(version, rerun) {
 	function unlock() {
 		self._setControl({
 			locked: false,
-			version: currentVersion
+			version: currentVersion,
 		});
 	}
 
@@ -342,7 +340,7 @@ Migrations._migrateTo = function(version, rerun) {
 			currentVersion = self._list[i + 1].version;
 			self._setControl({
 				locked: true,
-				version: currentVersion
+				version: currentVersion,
 			});
 		}
 	} else {
@@ -351,7 +349,7 @@ Migrations._migrateTo = function(version, rerun) {
 			currentVersion = self._list[i - 1].version;
 			self._setControl({
 				locked: true,
-				version: currentVersion
+				version: currentVersion,
 			});
 		}
 	}
@@ -363,12 +361,12 @@ Migrations._migrateTo = function(version, rerun) {
 // gets the current control record, optionally creating it if non-existant
 Migrations._getControl = function() {
 	const control = this._collection.findOne({
-		_id: 'control'
+		_id: 'control',
 	});
 
 	return control || this._setControl({
 		version: 0,
-		locked: false
+		locked: false,
 	});
 };
 
@@ -379,14 +377,14 @@ Migrations._setControl = function(control) {
 	check(control.locked, Boolean);
 
 	this._collection.update({
-		_id: 'control'
+		_id: 'control',
 	}, {
 		$set: {
 			version: control.version,
-			locked: control.locked
-		}
+			locked: control.locked,
+		},
 	}, {
-		upsert: true
+		upsert: true,
 	});
 
 	return control;
@@ -401,11 +399,11 @@ Migrations._findIndexByVersion = function(version) {
 	throw new Meteor.Error(`Can't find migration version ${ version }`);
 };
 
-//reset (mainly intended for tests)
+// reset (mainly intended for tests)
 Migrations._reset = function() {
 	this._list = [{
 		version: 0,
-		up() {}
+		up() {},
 	}];
 	this._collection.remove({});
 };
