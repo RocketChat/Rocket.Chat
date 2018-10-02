@@ -29,6 +29,10 @@ export function notifyDesktopUser({
 			sender: message.u,
 			type: room.t,
 			name: room.name,
+			message: {
+				msg: message.msg,
+				t: message.t,
+			},
 		},
 	});
 }
