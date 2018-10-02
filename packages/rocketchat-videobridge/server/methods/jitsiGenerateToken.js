@@ -9,9 +9,8 @@ Meteor.methods({
         }
 
         const jitsiDomain = RocketChat.settings.get('Jitsi_Domain');
-        if (jitsiDomain !== "travelmeet.de") {
-            return "";
-        }
+        const jitsiApplicationId = RocketChat.settings.get('Jitsi_Application_ID');
+        const jitsiApplicationSecret = RocketChat.settings.get('Jitsi_Application_Secret');
 
         function addUserContextToPayload(payload) {
             let user = Meteor.user();
@@ -28,11 +27,9 @@ Meteor.methods({
 
         const JITSI_OPTIONS = {
             "jitsi_domain": jitsiDomain,
-            "jitsi_lifetime_token": "1hour",
-
-            // these parameters are specific to the jitsiDomain - travelmeet.de ONLY
-            "jitsi_application_id": "gs2SMqqF3dqVs7VFzsz7J7gDxKTmnbpR",
-            "jitsi_application_secret": "267a93kqmbyusxa5r5n2wn2ugaen8sgx"
+            "jitsi_lifetime_token": "1hour", // only 1 hour (for security reasons)
+            "jitsi_application_id": jitsiApplicationId,
+            "jitsi_application_secret": jitsiApplicationSecret
         };
 
         const HEADER = {
