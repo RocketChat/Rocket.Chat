@@ -656,6 +656,7 @@ Template.messageBox.onCreated(function() {
 	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
+	RocketChat.messageBox.emit('created', this);
 });
 
 Meteor.startup(function() {
