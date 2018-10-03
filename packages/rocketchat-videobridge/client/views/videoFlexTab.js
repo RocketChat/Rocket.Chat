@@ -53,7 +53,7 @@ Template.videoFlexTab.onRendered(function() {
 			return closePanel();
 		}
 		this.timeout = null;
-		this.autorun(async () => {
+		this.autorun(async() => {
 			if (RocketChat.settings.get('Jitsi_Enabled')) {
 				if (this.tabBar.getState() === 'opened') {
 					const roomId = Session.get('openedRoom');
@@ -103,10 +103,11 @@ Template.videoFlexTab.onRendered(function() {
 							Meteor.call('jitsi:updateTimeout', roomId);
 
 							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
-							let newWindow = null,
-								queryString = "";
+
+							let newWindow = null;
+							let queryString = '';
 							if (accessToken) {
-								queryString = "?jwt=" + accessToken;
+								queryString = `?jwt=${ accessToken }`;
 							}
 							if (Meteor.isCordova) {
 								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, '_system');

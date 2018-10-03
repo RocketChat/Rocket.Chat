@@ -1,56 +1,56 @@
 // we need only jws functionality
-import {jws} from 'jsrsasign';
+import { jws } from 'jsrsasign';
 
 Meteor.methods({
-    'jitsi:generateAccessToken': () => {
+	'jitsi:generateAccessToken': () => {
 
-        if (!Meteor.userId()) {
-            throw new Meteor.Error('error-invalid-user', 'Invalid user', {method: 'jitsi:generateToken'});
-        }
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
+		}
 
-        const jitsiDomain = RocketChat.settings.get('Jitsi_Domain');
-        const jitsiApplicationId = RocketChat.settings.get('Jitsi_Application_ID');
-        const jitsiApplicationSecret = RocketChat.settings.get('Jitsi_Application_Secret');
+		const jitsiDomain = RocketChat.settings.get('Jitsi_Domain');
+		const jitsiApplicationId = RocketChat.settings.get('Jitsi_Application_ID');
+		const jitsiApplicationSecret = RocketChat.settings.get('Jitsi_Application_Secret');
 
-        function addUserContextToPayload(payload) {
-            let user = Meteor.user();
-            payload.context = {
-                "user": {
-                    "name": user.name,
-                    "email": user.emails[0]["address"],
-                    "avatar": Meteor.absoluteUrl(`avatar/${ user.username }`),
-                    "id": user._id
-                }
-            };
-            return payload;
-        }
+		function addUserContextToPayload(payload) {
+			const user = Meteor.user();
+			payload.context = {
+				user: {
+					name: user.name,
+					email: user.emails[0].address,
+					avatar: Meteor.absoluteUrl(`avatar/${ user.username }`),
+					id: user._id,
+				},
+			};
+			return payload;
+		}
 
-        const JITSI_OPTIONS = {
-            "jitsi_domain": jitsiDomain,
-            "jitsi_lifetime_token": "1hour", // only 1 hour (for security reasons)
-            "jitsi_application_id": jitsiApplicationId,
-            "jitsi_application_secret": jitsiApplicationSecret
-        };
+		const JITSI_OPTIONS = {
+			jitsi_domain: jitsiDomain,
+			jitsi_lifetime_token: '1hour', // only 1 hour (for security reasons)
+			jitsi_application_id: jitsiApplicationId,
+			jitsi_application_secret: jitsiApplicationSecret,
+		};
 
-        const HEADER = {
-            "typ": "JWT",
-            "alg": "HS256"
-        };
+		const HEADER = {
+			typ: 'JWT',
+			alg: 'HS256'
+		};
 
-        const commonPayload = {
-            "iss": JITSI_OPTIONS.jitsi_application_id,
-            "sub": JITSI_OPTIONS.jitsi_domain,
-            "iat": jws.IntDate.get('now'),
-            "nbf": jws.IntDate.get('now'),
-            "exp": jws.IntDate.get('now + ' + JITSI_OPTIONS.jitsi_lifetime_token),
-            "aud": "eip", // this is our service
-            "room": "*",
-            "context": ""
-        };
+		const commonPayload = {
+			'iss': JITSI_OPTIONS.jitsi_application_id,
+			'sub': JITSI_OPTIONS.jitsi_domain,
+			'iat': jws.IntDate.get('now'),
+			'nbf': jws.IntDate.get('now'),
+			'exp': jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
+			'aud': 'eip', // this is our service
+			'room': '*',
+			'context': ''
+		};
 
-        let header = JSON.stringify(HEADER),
-            payload = JSON.stringify(addUserContextToPayload(commonPayload));
+		let header = JSON.stringify(HEADER),
+			payload = JSON.stringify(addUserContextToPayload(commonPayload));
 
-        return jws.JWS.sign(HEADER.alg, header, payload, {rstr: JITSI_OPTIONS.jitsi_application_secret});
-    },
+		return jws.JWS.sign(HEADER.alg, header, payload, {rstr: JITSI_OPTIONS.jitsi_application_secret});
+	},
 });

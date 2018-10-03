@@ -141,8 +141,8 @@ Meteor.startup(function() {
 			this.add('Jitsi_Application_ID', '', {
 				type: 'string',
 				enableQuery: [
-					{_id: 'Jitsi_Enabled', value: true},
-					{_id: 'Jitsi_Enabled_TokenAuth', value: true}
+					{ _id: 'Jitsi_Enabled', value: true },
+					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],
 				i18nLabel: 'Jitsi_Application_ID',
 				public: true,
@@ -151,8 +151,8 @@ Meteor.startup(function() {
 			this.add('Jitsi_Application_Secret', '', {
 				type: 'string',
 				enableQuery: [
-					{_id: 'Jitsi_Enabled', value: true},
-					{_id: 'Jitsi_Enabled_TokenAuth', value: true}
+					{ _id: 'Jitsi_Enabled', value: true },
+					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],
 				i18nLabel: 'Jitsi_Application_Secret',
 				public: true,
