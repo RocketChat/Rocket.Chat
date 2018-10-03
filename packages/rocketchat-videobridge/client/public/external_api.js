@@ -115,8 +115,7 @@ function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, conf
     this.frameName = "jitsiConferenceFrame" + id;
     this.url = (noSsl ? "http" : "https") + "://" + domain + "/";
     if (room_name) this.url += room_name;
-    if (typeof token !== "undefined" && domain === "travelmeet.de") {
-        // we need to token authentication for our domain - travelmeet.de
+    if (token) {
         this.url += "?jwt=" + token;
     }
     this.url += "#jitsi_meet_external_api_id=" + id;
