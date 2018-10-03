@@ -50,14 +50,11 @@ Channel exists on both w/ rocketbot
 ** Send message from slack
 ** Send message from rocket
 
-<<<<<<< HEAD
-=======
 Reactions:
 * Disabled (default)
 ** Try to react to Slack and Rocket messages
 * Enable it
 ** Try to react to Slack and Rocket messages
->>>>>>> develop
 
 
 
