@@ -1,6 +1,11 @@
 .rc-modal {
+	display: flex;
+	flex-direction: column;
+
 	min-width: 400px;
 	max-width: 500px;
+	height: auto;
+	max-height: 100%;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -41,6 +46,7 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
+		flex: 0 0;
 
 		margin-bottom: -16px;
 		padding: 16px;
@@ -53,15 +59,17 @@
 		position: relative;
 
 		display: flex;
+		overflow: auto;
 
 		flex-direction: column;
+
+		min-height: 72px;
+		max-height: 90%;
 
 		padding: 16px;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		align-items: stretch;
-
-		min-height: 72px;
 	}
 
 	&__content-icon {
@@ -112,6 +120,8 @@
 	&__footer {
 		display: flex;
 
+		flex: 0 0;
+
 		padding: 16px;
 
 		background: #f7f8fa;
@@ -123,6 +133,7 @@
 
 		&--empty {
 			padding: 0;
+
 			background: transparent;
 		}
 	}

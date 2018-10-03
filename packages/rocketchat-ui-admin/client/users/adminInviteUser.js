@@ -2,12 +2,12 @@ import _ from 'underscore';
 import toastr from 'toastr';
 
 Template.adminInviteUser.helpers({
-	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+	isAllowed() {
+		return RocketChat.authz.hasAtLeastOnePermission('bulk-register-user');
 	},
 	inviteEmails() {
 		return Template.instance().inviteEmails.get();
-	}
+	},
 });
 
 Template.adminInviteUser.events({
@@ -37,7 +37,7 @@ Template.adminInviteUser.events({
 		instance.clearForm();
 		instance.inviteEmails.set([]);
 		Template.currentData().tabBar.close();
-	}
+	},
 });
 
 Template.adminInviteUser.onCreated(function() {

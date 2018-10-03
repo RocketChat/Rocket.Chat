@@ -11,12 +11,18 @@ class SlackBridge {
 	constructor() {
 		this.slack = new SlackAdapter(this);
 		this.rocket = new RocketAdapter(this);
-		this.reactionsMap = new Map();	//Sync object between rocket and slack
+		this.reactionsMap = new Map();	// Sync object between rocket and slack
 
 		this.connected = false;
 		this.rocket.addSlack(this.slack);
 		this.slack.setRocket(this.rocket);
 
+
+		// Settings that we cache versus looking up at runtime
+		this.apiToken = false;
+		this.aliasFormat = '';
+		this.excludeBotnames = '';
+		this.isReactionsEnabled = true;
 		this.processSettings();
 	}
 
@@ -43,7 +49,7 @@ class SlackBridge {
 	}
 
 	processSettings() {
-		//Slack installation API token
+		// Slack installation API token
 		RocketChat.settings.get('SlackBridge_APIToken', (key, value) => {
 			if (value !== this.apiToken) {
 				this.apiToken = value;
@@ -56,35 +62,25 @@ class SlackBridge {
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
+		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		RocketChat.settings.get('SlackBridge_AliasFormat', (key, value) => {
 			this.aliasFormat = value;
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
+		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		RocketChat.settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
 			this.excludeBotnames = value;
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Choose whether SlackBridge should also send your messages back to Slack
-		RocketChat.settings.get('SlackBridge_Out_Enabled', (key, value) => {
+		// Reactions
+		RocketChat.settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
+			this.isReactionsEnabled = value;
 			logger.class.debug(`Setting: ${ key }`, value);
 		});
 
-		//Send messages from all channels that exist in Slack and the bot has joined
-		RocketChat.settings.get('SlackBridge_Out_All', (key, value) => {
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-		//Choose which channels will send messages back to Slack
-		RocketChat.settings.get('SlackBridge_Out_Channels', (key, value) => {
-			logger.class.debug(`Setting: ${ key }`, value);
-		});
-
-
-		//Is this entire SlackBridge enabled
+		// Is this entire SlackBridge enabled
 		RocketChat.settings.get('SlackBridge_Enabled', (key, value) => {
 			if (value && this.apiToken) {
 				this.connect();

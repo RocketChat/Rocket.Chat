@@ -5,43 +5,41 @@ RocketChat.Migrations.add({
 	up() {
 
 
-
-
 		RocketChat.models.Users.update({
-			'preferences.roomsListExhibitionMode': 'activity'
+			'preferences.roomsListExhibitionMode': 'activity',
 		}, {
 			$unset: {
-				'preferences.roomsListExhibitionMode': 1
+				'preferences.roomsListExhibitionMode': 1,
 			},
 			$set: {
 				'preferences.sidebarSortby': 'activity',
-				'preferences.sidebarShowFavorites': true
-			}
+				'preferences.sidebarShowFavorites': true,
+			},
 		});
 
 		RocketChat.models.Users.update({
-			'preferences.roomsListExhibitionMode': 'unread'
+			'preferences.roomsListExhibitionMode': 'unread',
 		}, {
 			$unset: {
-				'preferences.roomsListExhibitionMode': 1
+				'preferences.roomsListExhibitionMode': 1,
 			},
 			$set: {
 				'preferences.sidebarSortby': 'alphabetical',
 				'preferences.sidebarShowUnread' : true,
-				'preferences.sidebarShowFavorites': true
-			}
+				'preferences.sidebarShowFavorites': true,
+			},
 		});
 
 		RocketChat.models.Users.update({
-			'preferences.roomsListExhibitionMode': 'category'
+			'preferences.roomsListExhibitionMode': 'category',
 		}, {
 			$unset: {
-				'preferences.roomsListExhibitionMode': 1
+				'preferences.roomsListExhibitionMode': 1,
 			},
 			$set: {
 				'preferences.sidebarSortby': 'alphabetical',
-				'preferences.sidebarShowFavorites': true
-			}
+				'preferences.sidebarShowFavorites': true,
+			},
 		});
-	}
+	},
 });

@@ -7,6 +7,6 @@ logger = new Logger('SlackBridge', {
 		events: 'Events',
 		class: 'Class',
 		slack: 'Slack',
-		rocket: 'Rocket'
-	}
+		rocket: 'Rocket',
+	},
 });

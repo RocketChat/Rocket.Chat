@@ -17,9 +17,7 @@ this.SideNav = new class {
 			this.flexNav.addClass('animated-hidden');
 		} else {
 			this.flexNav.opened = true;
-			setTimeout(() => {
-				return this.flexNav.removeClass('animated-hidden');
-			}, 50);
+			setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
 		}
 		return setTimeout(() => {
 			this.animating = false;
@@ -34,7 +32,7 @@ this.SideNav = new class {
 			return i.route.name;
 		}).includes(FlowRouter.current().route.name)) {
 			subscription = RocketChat.models.Subscriptions.findOne({
-				rid: Session.get('openedRoom')
+				rid: Session.get('openedRoom'),
 			});
 			if (subscription != null) {
 				RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
@@ -60,7 +58,7 @@ this.SideNav = new class {
 	getFlex() {
 		return {
 			template: Session.get('flex-nav-template'),
-			data: Session.get('flex-nav-data')
+			data: Session.get('flex-nav-data'),
 		};
 	}
 
@@ -72,12 +70,10 @@ this.SideNav = new class {
 		}
 	}
 	focusInput() {
-		const sideNavDivs = [...this.sideNav[0].children].filter(el => {
-			return el.tagName === 'DIV' && !el.classList.contains('hidden');
-		});
+		const sideNavDivs = [...this.sideNav[0].children].filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
 		let highestZidx = 0;
 		let highestZidxElem;
-		sideNavDivs.forEach(el => {
+		sideNavDivs.forEach((el) => {
 			const zIndex = Number(window.getComputedStyle(el).zIndex);
 			if (zIndex > highestZidx) {
 				highestZidx = zIndex;
@@ -106,7 +102,7 @@ this.SideNav = new class {
 		if (!this.initiated) {
 			return this.openQueue.push({
 				config: this.getFlex(),
-				callback
+				callback,
 			});
 		}
 		if (this.animating === true) {

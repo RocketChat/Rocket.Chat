@@ -4,7 +4,10 @@ import moment from 'moment';
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
-		return args.some(arg => arg);
+		return args.some((arg) => arg);
+	},
+	streaming() {
+		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
 	isRoom() {
 		return this.rid || this._id;
@@ -18,15 +21,12 @@ Template.sidebarItem.helpers({
 	lastMessageTs() {
 		return this.lastMessage && Template.instance().lastMessageTs.get();
 	},
-	colorStyle() {
-		return `background-color: ${ RocketChat.getAvatarColor(this.name) }`;
-	},
 	mySelf() {
 		return this.t === 'd' && this.name === Template.instance().user.username;
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
-	}
+	},
 });
 
 function timeAgo(time) {
@@ -34,8 +34,8 @@ function timeAgo(time) {
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
 		moment(time).format('L')
 	);
 }
@@ -52,7 +52,7 @@ function setLastMessageTs(instance, ts) {
 }
 
 Template.sidebarItem.onCreated(function() {
-	this.user = RocketChat.models.Users.findOne(Meteor.userId(), {fields: {username: 1}});
+	this.user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
@@ -70,6 +70,12 @@ Template.sidebarItem.onCreated(function() {
 			return this.renderedMessage = currentData.lastMessage.msg;
 		}
 
+		setLastMessageTs(this, currentData.lastMessage.ts);
+
+		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
+			return this.renderedMessage = '******';
+		}
+
 		const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
@@ -77,16 +83,25 @@ Template.sidebarItem.onCreated(function() {
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', {user: sender}) : `${ sender }: ${ renderedMessage }`;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
 		}
-
-		setLastMessageTs(this, currentData.lastMessage.ts);
 	});
 });
 
 Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
+	},
+	'mouseenter .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
+		const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+
+		if (isTextEllipsed) {
+			element.setAttribute('title', element.getAttribute('aria-label'));
+		} else {
+			element.removeAttribute('title');
+		}
 	},
 	'click .sidebar-item__menu'(e) {
 		e.preventDefault();
@@ -115,7 +130,7 @@ Template.sidebarItem.events({
 			icon: 'eye-off',
 			name: t('Hide_room'),
 			type: 'sidebar-item',
-			id: 'hide'
+			id: 'hide',
 		}];
 
 		if (this.alert) {
@@ -123,14 +138,14 @@ Template.sidebarItem.events({
 				icon: 'flag',
 				name: t('Mark_as_read'),
 				type: 'sidebar-item',
-				id: 'read'
+				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
 				name: t('Mark_as_unread'),
 				type: 'sidebar-item',
-				id: 'unread'
+				id: 'unread',
 			});
 		}
 
@@ -140,7 +155,7 @@ Template.sidebarItem.events({
 				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
 				modifier: isFavorite() ? 'star-filled' : 'star',
 				type: 'sidebar-item',
-				id: 'favorite'
+				id: 'favorite',
 			});
 		}
 
@@ -150,7 +165,7 @@ Template.sidebarItem.events({
 				name: t('Leave_room'),
 				type: 'sidebar-item',
 				id: 'leave',
-				modifier: 'error'
+				modifier: 'error',
 			});
 		}
 
@@ -160,27 +175,37 @@ Template.sidebarItem.events({
 				{
 					groups: [
 						{
-							items
-						}
-					]
-				}
+							items,
+						},
+					],
+				},
 			],
 			data: {
 				template: this.t,
 				rid: this.rid,
-				name: this.name
+				name: this.name,
 			},
 			currentTarget: e.currentTarget,
-			offsetHorizontal: -e.currentTarget.clientWidth
+			offsetHorizontal: -e.currentTarget.clientWidth,
 		};
 
 		popover.open(config);
-	}
+	},
 });
 
-Template.sidebarItemStatus.helpers({
-	statusClass() {
-		const instance = Template.instance();
-		return instance.data.t === 'd' ? Session.get(`user_${ instance.data.username }_status`) || 'offline' : instance.data.t === 'l' ? RocketChat.roomTypes.getUserStatus('l', instance.data.rid) || 'offline' : false;
-	}
+Template.sidebarItemIcon.helpers({
+	isRoom() {
+		return this.rid || this._id;
+	},
+	status() {
+		if (this.t === 'd') {
+			return Session.get(`user_${ this.username }_status`) || 'offline';
+		}
+
+		if (this.t === 'l') {
+			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
+
+		return false;
+	},
 });

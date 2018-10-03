@@ -9,11 +9,11 @@
 		</p>
 		<form id="livechat-registration">
 			{{#if showNameFieldRegisterForm}}
-				<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}">
-			{{/if}}	
+				<input type="text" name="name" id="guestName" placeholder="{{_ "Name"}}" value={{getName}}>
+			{{/if}}
 			{{#if showEmailFieldRegisterForm}}
-				<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}">
-			{{/if}}	
+				<input type="email" name="email" id="guestEmail" placeholder="{{_ "Email"}}" value={{getEmail}}>
+			{{/if}}
 			{{#if showDepartments}}
 				<select name="department">
 					<option value="">{{_ "Select_a_department"}}</option>

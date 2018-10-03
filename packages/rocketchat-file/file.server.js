@@ -8,7 +8,7 @@ import mkdirp from 'mkdirp';
 Grid.prototype.tryParseObjectId = function() {
 	return false;
 };
-//TODO: REMOVE RocketChatFile from globals
+// TODO: REMOVE RocketChatFile from globals
 RocketChatFile = {};
 
 RocketChatFile.bufferToStream = function(buffer) {
@@ -21,7 +21,7 @@ RocketChatFile.dataURIParse = function(dataURI) {
 	const imageData = dataURI.split(';base64,');
 	return {
 		image: imageData[1],
-		contentType: imageData[0].replace('data:', '')
+		contentType: imageData[0].replace('data:', ''),
 	};
 };
 
@@ -33,12 +33,12 @@ RocketChatFile.addPassThrough = function(st, fn) {
 
 RocketChatFile.GridFS = class {
 	constructor(config = {}) {
-		const {name = 'file', transformWrite} = config;
+		const { name = 'file', transformWrite } = config;
 
 		this.name = name;
 		this.transformWrite = transformWrite;
 		const mongo = Package.mongo.MongoInternals.NpmModule;
-		const db = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo.db;
+		const { db } = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo;
 		this.store = new Grid(db, mongo);
 		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));
@@ -48,14 +48,14 @@ RocketChatFile.GridFS = class {
 
 	findOne(fileName) {
 		return this.findOneSync({
-			_id: fileName
+			_id: fileName,
 		});
 	}
 
 	remove(fileName) {
 		return this.removeSync({
 			_id: fileName,
-			root: this.name
+			root: this.name,
 		});
 	}
 
@@ -66,14 +66,14 @@ RocketChatFile.GridFS = class {
 			filename: fileName,
 			mode: 'w',
 			root: this.name,
-			content_type: contentType
+			content_type: contentType,
 		});
 		if (self.transformWrite != null) {
 			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
 				const file = {
 					name: self.name,
 					fileName,
-					contentType
+					contentType,
 				};
 				return self.transformWrite(file, rs, ws);
 			});
@@ -87,7 +87,7 @@ RocketChatFile.GridFS = class {
 	createReadStream(fileName) {
 		return this.store.createReadStream({
 			_id: fileName,
-			root: this.name
+			root: this.name,
 		});
 	}
 
@@ -101,7 +101,7 @@ RocketChatFile.GridFS = class {
 			readStream: rs,
 			contentType: file.contentType,
 			length: file.length,
-			uploadDate: file.uploadDate
+			uploadDate: file.uploadDate,
 		};
 	}
 
@@ -119,7 +119,7 @@ RocketChatFile.GridFS = class {
 				buffer: Buffer.concat(data),
 				contentType: file.contentType,
 				length: file.length,
-				uploadDate: file.uploadDate
+				uploadDate: file.uploadDate,
 			});
 		}));
 	}
@@ -137,8 +137,8 @@ RocketChatFile.GridFS = class {
 
 RocketChatFile.FileSystem = class {
 	constructor(config = {}) {
-		let {absolutePath = '~/uploads'} = config;
-		const {transformWrite} = config;
+		let { absolutePath = '~/uploads' } = config;
+		const { transformWrite } = config;
 
 		this.transformWrite = transformWrite;
 		if (absolutePath.split(path.sep)[0] === '~') {
@@ -163,7 +163,7 @@ RocketChatFile.FileSystem = class {
 			ws = RocketChatFile.addPassThrough(ws, function(rs, ws) {
 				const file = {
 					fileName,
-					contentType
+					contentType,
 				};
 				return self.transformWrite(file, rs, ws);
 			});
@@ -193,7 +193,7 @@ RocketChatFile.FileSystem = class {
 			return {
 				readStream: rs,
 				// contentType: file.contentType
-				length: stat.size
+				length: stat.size,
 			};
 		} catch (error1) {
 			return null;
@@ -214,8 +214,8 @@ RocketChatFile.FileSystem = class {
 				buffer: Buffer.concat(data)({
 					contentType: file.contentType,
 					length: file.length,
-					uploadDate: file.uploadDate
-				})
+					uploadDate: file.uploadDate,
+				}),
 			};
 		}));
 	}
