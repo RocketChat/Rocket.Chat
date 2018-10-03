@@ -26,6 +26,10 @@ export default class RocketAdapter {
 		}
 	}
 
+	clearSlackAdapters() {
+		this.slackAdapters = [];
+	}
+
 	registerForEvents() {
 		logger.rocket.debug('Register for events');
 		RocketChat.callbacks.add('afterSaveMessage', this.onMessage.bind(this), RocketChat.callbacks.priority.LOW, 'SlackBridge_Out');
