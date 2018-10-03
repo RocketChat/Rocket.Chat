@@ -216,7 +216,7 @@
 							<div class="input-line double-col" id="emailNotificationMode">
  								<label>{{_ "Email_Notification_Mode"}}</label>
  								<div>
-								{{# with canChange=allowNotificationsChange}}
+								{{# with canChange=emailNotificationsAllowed}}
  									<select class="input-monitor rc-input__element" name="emailNotificationMode" {{ifThenElse canChange '' 'disabled'}}>
  										<option value="disabled" selected="{{selected 'emailNotificationMode' 'disabled'}}" >{{_ "Email_Notification_Mode_Disabled"}}</option>
  										<option value="all" selected="{{selected 'emailNotificationMode' 'all'}}">{{_ "Email_Notification_Mode_All"}}</option>
