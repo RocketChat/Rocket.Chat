@@ -53,11 +53,17 @@ function getEmailContent({ messageContent, message, user, room }) {
 }
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+	// skips this callback if e-mail notifications were disabled globally
+	const emailNotificationsAllowed = RocketChat.settings.get('Accounts_AllowEmailNotifications');
+	if (!emailNotificationsAllowed) {
+		return message;
+	}
+
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
 	}
-
+	
 	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
 		return message;
 	}
@@ -167,7 +173,6 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 		if (usersOfMention && usersOfMention.length > 0) {
 			usersOfMention.forEach((user) => {
-				const emailNotificationsAllowed = RocketChat.settings.get('Accounts_AllowEmailNotifications');
 				const emailNotificationMode = RocketChat.getUserPreference(user, 'emailNotificationMode');
 				if (usersToSendEmail[user._id] === 'default') {
 					if (emailNotificationMode === 'all' && emailNotificationsAllowed) { //Mention/DM
@@ -178,7 +183,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 				}
 
 				if (usersToSendEmail[user._id] === 'direct') {
-					const userEmailPreferenceIsDisabled = emailNotificationMode === 'disabled' || !emailNotificationsAllowed;
+					const userEmailPreferenceIsDisabled = emailNotificationMode === 'disabled';
 					const directMessageEmailPreference = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, message.rid.replace(message.u._id, '')).emailNotifications;
 
 					if (directMessageEmailPreference === 'nothing') {
