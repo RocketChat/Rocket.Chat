@@ -63,7 +63,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	if (message.editedAt) {
 		return message;
 	}
-	
+
 	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
 		return message;
 	}
