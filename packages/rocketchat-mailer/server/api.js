@@ -19,6 +19,7 @@ export const replace = function replace(str, data = {}) {
 	const options = {
 		Site_Name: Settings.get('Site_Name'),
 		Site_URL: Settings.get('Site_Url'),
+		Site_URL_Slash: Settings.get('Site_Url').replace(/\/?$/, '/'),
 		...(data.name && {
 			fname: s.strLeft(data.name, ' '),
 			lname: s.strRightBack(data.name, ' '),
