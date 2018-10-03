@@ -28,6 +28,7 @@ import {
 } from './helper';
 
 let failedToDecodeKey = false;
+let showingE2EAlert = false;
 
 class E2E {
 	constructor() {
@@ -92,6 +93,7 @@ class E2E {
 		if (this.started) {
 			return;
 		}
+		const self = this;
 
 		this.started = true;
 		let public_key = localStorage.getItem('public_key');
@@ -109,7 +111,7 @@ class E2E {
 			} catch (error) {
 				this.started = false;
 				failedToDecodeKey = true;
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
 					modifiers: ['large', 'danger'],
@@ -117,7 +119,7 @@ class E2E {
 					icon: 'key',
 					action: () => {
 						this.startClient();
-						alerts.close();
+						this.closeAlert();
 					},
 				});
 				return;
@@ -145,7 +147,7 @@ class E2E {
 				sprintf: [randomPassword],
 			});
 
-			alerts.open({
+			this.openAlert({
 				title: TAPi18n.__('Save_your_encryption_password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
@@ -165,7 +167,7 @@ class E2E {
 							return;
 						}
 						localStorage.removeItem('e2e.randomPassword');
-						alerts.close();
+						self.closeAlert();
 					});
 				},
 			});
@@ -177,6 +179,17 @@ class E2E {
 
 		this.decryptPendingMessages();
 		this.decryptPendingSubscriptions();
+	}
+
+	async stopClient() {
+		// This flag is used to avoid closing unrelated alerts.
+		if (showingE2EAlert) {
+			alerts.close();
+		}
+
+		localStorage.removeItem('public_key');
+		localStorage.removeItem('private_key');
+		this.started = false;
 	}
 
 	setupListeners() {
@@ -323,7 +336,7 @@ class E2E {
 					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 				}, (password) => {
 					if (password) {
-						alerts.close();
+						this.closeAlert();
 						resolve(password);
 					}
 				}, () => {
@@ -333,7 +346,7 @@ class E2E {
 			};
 
 			showAlert = () => {
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Enter_your_E2E_password'),
 					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
@@ -443,6 +456,16 @@ class E2E {
 				$ne: 'done',
 			},
 		}).forEach(this.decryptSubscription.bind(this));
+	}
+
+	openAlert(config) {
+		showingE2EAlert = true;
+		alerts.open(config);
+	}
+
+	closeAlert() {
+		showingE2EAlert = false;
+		alerts.close();
 	}
 }
 

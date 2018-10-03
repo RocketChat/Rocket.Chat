@@ -18,6 +18,8 @@ Package.onUse(function(api) {
 	]);
 
 	api.mainModule('client/rocketchat.e2e.js', 'client');
+	api.addFiles('client/events.js', 'client');
+
 	api.addFiles('client/accountEncryption.html', 'client');
 	api.addFiles('client/accountEncryption.js', 'client');
 
