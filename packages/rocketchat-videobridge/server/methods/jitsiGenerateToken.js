@@ -34,23 +34,23 @@ Meteor.methods({
 
 		const HEADER = {
 			typ: 'JWT',
-			alg: 'HS256'
+			alg: 'HS256',
 		};
 
 		const commonPayload = {
-			'iss': JITSI_OPTIONS.jitsi_application_id,
-			'sub': JITSI_OPTIONS.jitsi_domain,
-			'iat': jws.IntDate.get('now'),
-			'nbf': jws.IntDate.get('now'),
-			'exp': jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
-			'aud': 'eip', // this is our service
-			'room': '*',
-			'context': ''
+			iss: JITSI_OPTIONS.jitsi_application_id,
+			sub: JITSI_OPTIONS.jitsi_domain,
+			iat: jws.IntDate.get('now'),
+			nbf: jws.IntDate.get('now'),
+			exp: jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
+			aud: 'RocketChat',
+			room: '*',
+			context: '', // first empty
 		};
 
-		let header = JSON.stringify(HEADER),
-			payload = JSON.stringify(addUserContextToPayload(commonPayload));
+		const header = JSON.stringify(HEADER);
+		const payload = JSON.stringify(addUserContextToPayload(commonPayload));
 
-		return jws.JWS.sign(HEADER.alg, header, payload, {rstr: JITSI_OPTIONS.jitsi_application_secret});
+		return jws.JWS.sign(HEADER.alg, header, payload, { rstr: JITSI_OPTIONS.jitsi_application_secret });
 	},
 });
