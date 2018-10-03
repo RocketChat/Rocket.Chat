@@ -1,5 +1,3 @@
-/* globals alerts */
-
 import { Accounts } from 'meteor/accounts-base';
 import { e2e } from 'meteor/rocketchat:e2e';
 
@@ -9,7 +7,4 @@ Accounts.onLogin(() => {
 
 Accounts.onLogout(() => {
 	e2e.stopClient();
-	
-
-
 });
