@@ -1,6 +1,50 @@
 
+# 0.70.1
+`2018-10-04  ·  8 🐛  ·  3 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- E2E data not cleared on logout ([#12254](https://github.com/RocketChat/Rocket.Chat/pull/12254))
+- E2E password request not closing after entering password ([#12232](https://github.com/RocketChat/Rocket.Chat/pull/12232))
+- Message editing was duplicating reply quotes ([#12263](https://github.com/RocketChat/Rocket.Chat/pull/12263))
+- Livechat integration with RDStation ([#12257](https://github.com/RocketChat/Rocket.Chat/pull/12257))
+- Livechat triggers being registered twice after setting department via API ([#12255](https://github.com/RocketChat/Rocket.Chat/pull/12255) by [@edzluhan](https://github.com/edzluhan))
+- Livechat CRM integration running when disabled  ([#12242](https://github.com/RocketChat/Rocket.Chat/pull/12242))
+- Emails' logo and links ([#12241](https://github.com/RocketChat/Rocket.Chat/pull/12241))
+- Set default action for Setup Wizard form submit ([#12240](https://github.com/RocketChat/Rocket.Chat/pull/12240))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Merge master into develop & Set version to 0.71.0-develop ([#12264](https://github.com/RocketChat/Rocket.Chat/pull/12264) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
+- Regression: fix modal submit ([#12233](https://github.com/RocketChat/Rocket.Chat/pull/12233))
+- Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@edzluhan](https://github.com/edzluhan)
+- [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@cardoso](https://github.com/cardoso)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@theorenck](https://github.com/theorenck)
+- [@timkinnane](https://github.com/timkinnane)
+
 # 0.70.0
-`2018-09-27  ·  2 ️️️⚠️  ·  18 🎉  ·  3 🚀  ·  31 🐛  ·  21 🔍  ·  33 👩‍💻👨‍💻`
+`2018-09-28  ·  2 ️️️⚠️  ·  18 🎉  ·  3 🚀  ·  31 🐛  ·  21 🔍  ·  33 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`
