@@ -8,7 +8,7 @@ this.modal = {
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
-		config.closeOnEnter = config.closeOnEnter || true;
+		config.confirmOnEnter = config.confirmOnEnter || true;
 
 		if (config.type === 'input') {
 			config.input = true;
@@ -67,7 +67,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (this.config.closeOnEnter && e.key === 'Enter') {
+		if (this.config.confirmOnEnter && e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
 
