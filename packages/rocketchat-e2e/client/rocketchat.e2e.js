@@ -27,6 +27,10 @@ import {
 	deriveKey,
 } from './helper';
 
+import './events.js';
+import './accountEncryption.html';
+import './accountEncryption.js';
+
 let failedToDecodeKey = false;
 let showingE2EAlert = false;
 
@@ -93,7 +97,6 @@ class E2E {
 		if (this.started) {
 			return;
 		}
-		const self = this;
 
 		this.started = true;
 		let public_key = localStorage.getItem('public_key');
@@ -153,7 +156,7 @@ class E2E {
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
-				action() {
+				action: () => {
 					modal.open({
 						title: TAPi18n.__('Save_your_encryption_password'),
 						html: true,
@@ -167,7 +170,7 @@ class E2E {
 							return;
 						}
 						localStorage.removeItem('e2e.randomPassword');
-						self.closeAlert();
+						this.closeAlert();
 					});
 				},
 			});
