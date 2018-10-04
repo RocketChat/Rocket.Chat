@@ -1,8 +1,10 @@
 
-# 0.70.1 (Under Release Candidate Process)
-
-## 0.70.1-rc.0
+# 0.70.1
 `2018-10-04  ·  8 🐛  ·  3 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### 🐛 Bug fixes
 
