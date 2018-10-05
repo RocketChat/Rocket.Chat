@@ -157,7 +157,6 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('channel').and.to.be.an('object');
 					const { channel } = res.body;
-					console.log(channel.lastMessage)
 					expect(channel).to.have.property('lastMessage').and.to.be.an('object');
 					expect(channel.lastMessage).to.have.property('reactions').and.to.be.an('object');
 					expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
