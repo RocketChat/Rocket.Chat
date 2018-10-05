@@ -144,7 +144,7 @@
 		"supertest": "^3.3.0"
 	},
 	"dependencies": {
-		"@babel/runtime": "7.0.0-beta.55",
+		"@babel/runtime": "^7.1.2",
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^2.0.3",
 		"@google-cloud/vision": "^0.22.0",
@@ -173,9 +173,9 @@
 		"core-js": "^2.5.7",
 		"csv-parse": "^3.0.0",
 		"emailreplyparser": "^0.0.5",
+		"express": "^4.16.3",
 		"fibers": "^3.0.0",
 		"file-type": "^9.0.0",
-		"express": "^4.16.3",
 		"filesize": "^3.6.1",
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
