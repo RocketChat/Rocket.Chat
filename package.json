@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.70.0-develop",
+	"version": "0.71.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -148,7 +148,7 @@
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^2.0.3",
 		"@google-cloud/vision": "^0.22.0",
-		"@rocket.chat/apps-engine": "^1.0.0",
+		"@rocket.chat/apps-engine": "~1.1.1",
 		"@slack/client": "^4.6.0",
 		"adm-zip": "^0.4.11",
 		"archiver": "^3.0.0",
@@ -175,6 +175,7 @@
 		"emailreplyparser": "^0.0.5",
 		"fibers": "^3.0.0",
 		"file-type": "^9.0.0",
+		"express": "^4.16.3",
 		"filesize": "^3.6.1",
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
@@ -186,6 +187,7 @@
 		"ip-range-check": "^0.0.2",
 		"jquery": "^3.3.1",
 		"jschardet": "^1.6.0",
+		"juice": "^4.3.2",
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "^2.0.0",

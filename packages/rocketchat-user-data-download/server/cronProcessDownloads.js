@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 let zipFolder = '/tmp/zipFiles';
 if (RocketChat.settings.get('UserData_FileSystemZipPath') != null) {
@@ -285,33 +286,32 @@ const isDownloadFinished = function(exportOperation) {
 
 const sendEmail = function(userId) {
 	const lastFile = RocketChat.models.UserDataFiles.findLastFileByUser(userId);
-	if (lastFile) {
-		const userData = RocketChat.models.Users.findOneById(userId);
-
-		if (userData && userData.emails && userData.emails[0] && userData.emails[0].address) {
-			const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
-			const fromAddress = RocketChat.settings.get('From_Email');
-			const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-
-			const download_link = lastFile.url;
-			const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
-
-			const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
-
-			if (rfcMailPatternWithName.test(emailAddress)) {
-				Meteor.defer(function() {
-					return Email.send({
-						to: emailAddress,
-						from: fromAddress,
-						subject,
-						html: body,
-					});
-				});
-
-				return console.log(`Sending email to ${ emailAddress }`);
-			}
-		}
+	if (!lastFile) {
+		return;
 	}
+	const userData = RocketChat.models.Users.findOneById(userId);
+
+	if (!userData || userData.emails || userData.emails[0] || userData.emails[0].address) {
+		return;
+	}
+	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
+	const fromAddress = RocketChat.settings.get('From_Email');
+	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
+
+	const download_link = lastFile.url;
+	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
+
+	if (!Mailer.checkAddressFormat(emailAddress)) {
+		return;
+	}
+
+	return Mailer.sendNoWrap({
+		to: emailAddress,
+		from: fromAddress,
+		subject,
+		html: body,
+	});
+
 };
 
 const makeZipFile = function(exportOperation) {

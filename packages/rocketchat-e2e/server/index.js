@@ -4,10 +4,9 @@ import './settings';
 import './models/Users';
 import './models/Rooms';
 import './models/Subscriptions';
-import './methods/addKeyToChain';
+import './methods/setUserPublicAndPivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
-import './methods/fetchKeychain';
-import './methods/updateGroupE2EKey';
+import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
 import './methods/fetchMyKeys';
 

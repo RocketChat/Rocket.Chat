@@ -241,6 +241,7 @@
 @media (width <= 500px) {
 	.rc-popover {
 		& .rc-popover__content {
+			position: fixed;
 			top: initial !important;
 			bottom: 0;
 			left: 0 !important;

@@ -153,6 +153,7 @@ rocketchat:ui-vrecord
 rocketchat:user-data-download
 rocketchat:version
 rocketchat:videobridge
+rocketchat:webdav
 rocketchat:webrtc
 rocketchat:wordpress
 rocketchat:nrr
@@ -201,3 +202,4 @@ tap:i18n
 underscore@1.0.10
 rocketchat:bigbluebutton
 juliancwirko:postcss
+rocketchat:mailmessages
