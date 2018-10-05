@@ -1,22 +1,10 @@
 
-# 0.70.1 (Under Release Candidate Process)
+# 0.70.1
+`2018-10-05  ·  8 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
 
-## 0.70.1-rc.1
-`2018-10-05  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 0.70.1-rc.0
-`2018-10-04  ·  8 🐛  ·  3 🔍  ·  11 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### 🐛 Bug fixes
 
@@ -35,6 +23,7 @@
 - Merge master into develop & Set version to 0.71.0-develop ([#12264](https://github.com/RocketChat/Rocket.Chat/pull/12264) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Regression: fix modal submit ([#12233](https://github.com/RocketChat/Rocket.Chat/pull/12233))
 - Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227))
+- Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
 
 </details>
 
