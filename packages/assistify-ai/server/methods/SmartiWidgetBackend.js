@@ -79,14 +79,14 @@ Meteor.methods({
 
 		const solrFilterBooleanLimit = 256; // there is a limit for boolean expressinos in a filter query of default 1024 and an additional limiter by the HTTP-server. Experiments showed this limit as magic number.
 		const findOptions = { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { _id: 1 } };
-		const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map(subscription => subscription.rid);
-		const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}, findOptions).fetch().map(room => room._id) : [];
-		const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}, findOptions).fetch().map(room => room._id) : [];
+		const subscribedRooms = RocketChat.models.Subscriptions.find({ 'u._id': Meteor.userId() }, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map((subscription) => subscription.rid);
+		const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({ t: 'c' }, findOptions).fetch().map((room) => room._id) : [];
+		const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({ t: 'l' }, findOptions).fetch().map((room) => room._id) : [];
 
 		const accessibleRooms = livechats.concat(subscribedRooms).concat(publicChannels);
 
 		let fq = `${ accessibleRooms.filter(unique).slice(0, solrFilterBooleanLimit).join(' OR ') }`;
-		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""'}; //fallback: if the user's not authorized to view any room, filter for "nothing"
+		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""' }; // fallback: if the user's not authorized to view any room, filter for "nothing"
 		const params = Object.assign(queryParams, fq);
 
 		const searchResult = RocketChat.RateLimiter.limitFunction(

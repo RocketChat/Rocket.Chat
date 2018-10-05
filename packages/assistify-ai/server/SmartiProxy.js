@@ -46,9 +46,9 @@ export class SmartiProxy {
 			const response = HTTP.call(method, url, {
 				params: parameters,
 				data: body,
-				headers: header
+				headers: header,
 			});
-      
+
 			if (response.statusCode < 400) {
 				return response.data || response.content; // .data if it's a json-response
 			} else {
