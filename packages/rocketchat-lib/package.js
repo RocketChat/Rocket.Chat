@@ -88,6 +88,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/archiveRoom.js', 'server');
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
+	api.addFiles('server/functions/composeMessageObjectWithUser.js', 'server');
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/cleanRoomHistory.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
