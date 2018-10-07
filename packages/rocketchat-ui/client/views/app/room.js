@@ -849,7 +849,7 @@ Template.room.events({
 		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
 			Meteor.call('sendMessage', msgObject);
 		});
-	},
+	}
 });
 
 

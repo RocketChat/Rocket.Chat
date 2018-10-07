@@ -10,7 +10,6 @@ class FlexTab extends Page {
 	get archiveBtn() { return browser.element('.clearfix:last-child .icon-pencil'); }
 	get archiveRadio() { return browser.element('.editing'); }
 	get archiveSave() { return browser.element('.save'); }
-	get deleteBtn() { return browser.element('.js-delete'); }
 	get editNameBtn() { return browser.element('[data-edit="name"]'); }
 	get editTopicBtn() { return browser.element('[data-edit="topic"]'); }
 	get editAnnouncementBtn() { return browser.element('[data-edit="announcement"]'); }

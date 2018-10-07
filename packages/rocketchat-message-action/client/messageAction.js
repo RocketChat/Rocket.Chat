@@ -4,5 +4,5 @@ Template.messageAction.helpers({
 	},
 	areButtonsHorizontal() {
 		return Template.parentData(1).button_alignment === 'horizontal';
-	},
+	}
 });
