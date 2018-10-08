@@ -1,6 +1,25 @@
 
+# 0.70.3
+`2018-10-08  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.70.2 ([#12276](https://github.com/RocketChat/Rocket.Chat/pull/12276))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.70.2
-`2018-10-08  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2018-10-05  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.3`

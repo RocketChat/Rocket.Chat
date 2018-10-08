@@ -19847,6 +19847,30 @@
           ]
         }
       ]
+    },
+    "0.70.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12272",
+          "title": "[FIX] E2E alert shows up when encryption is disabled",
+          "userLogin": "Hudell",
+          "milestone": "0.70.2",
+          "contributors": [
+            "Hudell"
+          ]
+        }
+      ]
     }
   }
 }
