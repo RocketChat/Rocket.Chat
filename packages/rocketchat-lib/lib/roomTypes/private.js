@@ -29,7 +29,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 		const query = {
 			t: 'p',
 			name: identifier,
-			'u.username': user.username
+			'u.username': user.username,
 		};
 		/**
 		 * ChatRoom findOne is not synced after the subscribed user removed from the room.

@@ -6,19 +6,19 @@ import main from '../../pageobjects/main-content.page';
 import global from '../../pageobjects/global';
 import flexTab from '../../pageobjects/flex-tab.page';
 
-import {checkIfUserIsAdmin, checkIfUserIsValid} from '../../data/checks';
-import {adminEmail, adminPassword, adminUsername, username, email, password} from '../../data/user';
+import { checkIfUserIsAdmin, checkIfUserIsValid } from '../../data/checks';
+import { adminEmail, adminPassword, adminUsername, username, email, password } from '../../data/user';
 const privateChannelName = 'privatetestchannel';
 
 describe('[Join Room Request]', function() {
 
 	describe('Create private channel', function() {
 
-		before(()=>{
+		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		});
 
-		it('create private channel', (done)=> {
+		it('create private channel', (done) => {
 			try {
 				sideNav.spotlightSearchIcon.click();
 				sideNav.spotlightSearch.waitForVisible(10000);
@@ -48,7 +48,7 @@ describe('[Join Room Request]', function() {
 			sideNav.searchDirectory(privateChannelName, 'p');
 		});
 
-		it('Send join request', (done)=> {
+		it('Send join request', (done) => {
 			main.requestToJoinRoom.click();
 			global.enterModalText('Allow me to join this room');
 			global.confirmPopup();
@@ -57,14 +57,14 @@ describe('[Join Room Request]', function() {
 	});
 
 	describe('Decline request as room owner', function() {
-		before(()=>{
+		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('decline join request', (done)=> {
+		it('decline join request', (done) => {
 			main.declineJoinRequest.click();
 			done();
 		});
@@ -72,7 +72,7 @@ describe('[Join Room Request]', function() {
 
 	describe('Request access for the second time.', function() {
 
-		before(()=>{
+		before(() => {
 			checkIfUserIsValid(username, email, password);
 		});
 
@@ -80,7 +80,7 @@ describe('[Join Room Request]', function() {
 			sideNav.searchDirectory(privateChannelName, 'p');
 		});
 
-		it('Request access to join the private room', (done)=> {
+		it('Request access to join the private room', (done) => {
 			main.requestToJoinRoom.click();
 			global.enterModalText('Will you allow me to join for the second time?');
 			global.confirmPopup();
@@ -90,14 +90,14 @@ describe('[Join Room Request]', function() {
 
 	describe('Accept request as room owner', function() {
 
-		before(()=>{
+		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('accept join request', (done)=> {
+		it('accept join request', (done) => {
 			main.acceptJoinRequest.click();
 			done();
 		});
@@ -105,7 +105,7 @@ describe('[Join Room Request]', function() {
 
 	describe('Check if Requestor is able to access the room', function() {
 
-		before(()=>{
+		before(() => {
 			checkIfUserIsValid(username, email, password);
 		});
 
@@ -115,7 +115,7 @@ describe('[Join Room Request]', function() {
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('Send Message', (done)=> {
+		it('Send Message', (done) => {
 			main.sendMessage('Thanks for the adding me!!');
 			done();
 		});
@@ -124,14 +124,14 @@ describe('[Join Room Request]', function() {
 
 	describe('[Cleanup]', function() {
 
-		before(()=>{
+		before(() => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel(privateChannelName);
 		});
 
-		it('Delete rooms', (done)=> {
+		it('Delete rooms', (done) => {
 			flexTab.operateFlexTab('info', true);
 			flexTab.deleteBtn.click();
 			global.modal.waitForVisible(500);

@@ -9,6 +9,5 @@ Meteor.methods({
 		const count = RocketChat.models.Rooms.findByNameAndType(regex, type).count();
 		const listableRooms = RocketChat.models.Rooms.findListableByNameAndType(regex, type).count();
 		return count > listableRooms;
-
-	}
+	},
 });

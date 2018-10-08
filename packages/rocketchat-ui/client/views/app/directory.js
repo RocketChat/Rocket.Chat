@@ -3,12 +3,12 @@ import { timeAgo } from './helpers';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
-		cb(result && result.results && result.results.length && result.results.map(result => {
+		cb(result && result.results && result.results.length && result.results.map((result) => {
 			if (config.type === 'users') {
 				return {
 					name: result.name,
 					username: result.username,
-					createdAt: timeAgo(result.createdAt)
+					createdAt: timeAgo(result.createdAt),
 				};
 			} else {
 				return {
@@ -87,10 +87,10 @@ Template.directory.helpers({
 		};
 		const privateChannels = {
 			label: t('Private_Groups'),
-			value: 'p',
+			value: 'private_groups',
 			condition() {
 				return true;
-			}
+			},
 		};
 		if (searchType.get() === 'channels') {
 			channelsTab.active = true;
@@ -102,12 +102,12 @@ Template.directory.helpers({
 			onChange(value) {
 				results.set([]);
 				end.set(false);
-				if (value === 'channels') {
-					searchSortBy.set('usersCount');
-					sortDirection.set('desc');
-				} else {
+				if (value === 'users') {
 					searchSortBy.set('name');
 					sortDirection.set('asc');
+				} else {
+					searchSortBy.set('usersCount');
+					sortDirection.set('desc');
 				}
 				page.set(0);
 				searchType.set(value);
@@ -215,12 +215,12 @@ Template.directory.onRendered(function() {
 Template.directory.onCreated(function() {
 	const viewType = RocketChat.settings.get('Accounts_Directory_DefaultView') || 'channels';
 	this.searchType = new ReactiveVar(viewType);
-	if (viewType === 'c') {
-		this.searchSortBy = new ReactiveVar('usersCount');
-		this.sortDirection = new ReactiveVar('desc');
-	} else {
+	if (viewType === 'users') {
 		this.searchSortBy = new ReactiveVar('name');
 		this.sortDirection = new ReactiveVar('asc');
+	} else {
+		this.searchSortBy = new ReactiveVar('usersCount');
+		this.sortDirection = new ReactiveVar('desc');
 	}
 	this.searchText = new ReactiveVar('');
 	this.limit = new ReactiveVar(0);
@@ -232,7 +232,7 @@ Template.directory.onCreated(function() {
 
 	this.isLoading = new ReactiveVar(false);
 
-	//check for secret room
+	// check for secret room
 	Meteor.call('checkSecretRoomExists', this.searchText.get(), 'p', (err, res) => {
 		if (err) {
 			return false;

@@ -140,7 +140,7 @@ Template.createChannel.helpers({
 	extensionsConfig() {
 		const instance = Template.instance();
 		return {
-			validations: instance.extensions_validations,
+			validations : instance.extensions_validations,
 			submits: instance.extensions_submits,
 			change: instance.change,
 		};
@@ -238,24 +238,24 @@ Template.createChannel.events({
 
 		const extraData = Object.keys(instance.extensions_submits)
 			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted }, { secret: instance.secret.get() });
-		
+
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
-		if (err) {
-			if (err.error === 'error-invalid-name') {
-				return instance.invalid.set(true);
+			if (err) {
+				if (err.error === 'error-invalid-name') {
+					return instance.invalid.set(true);
+				}
+				if (err.error === 'error-duplicate-channel-name') {
+					return instance.inUse.set(true);
+				}
+				return;
 			}
-			if (err.error === 'error-duplicate-channel-name') {
-				return instance.inUse.set(true);
+
+			if (!isPrivate) {
+				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
-			return;
-		}
 
-		if (!isPrivate) {
-			RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
-		}
-
-		return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
-	});
+			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
+		});
 		return false;
 	},
 });

@@ -315,7 +315,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room.default) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
 			},
 			showSecretSetting(secret) {
-				//The state of secret channel setting must be changed with respect to the private <-> public setting.
+				// The state of secret channel setting must be changed with respect to the private <-> public setting.
 				if (this.canView()) {
 					if (this.value.get() === false) {
 						secret.value.set(false);
@@ -375,7 +375,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			},
 			secretDescription() {
 				return this.value.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search-short');
-			}
+			},
 		},
 		ro: {
 			type: 'boolean',

@@ -12,12 +12,12 @@ const renderers = {};
 export function registerFieldTemplate(fieldType, templateName, events) {
 	renderers[fieldType] = templateName;
 
-	//propagate helpers and events to the room template, changing the selectors
+	// propagate helpers and events to the room template, changing the selectors
 	// loop at events. For each event (like 'click .accept'), copy the function to a function of the room events.
 	// While doing that, add the fieldType as class selector to the events function in order to avoid naming clashes
 	if (events != null) {
 		const uniqueEvents = {};
-		//rename the event handlers so they are unique in the "parent" template to which the events bubble
+		// rename the event handlers so they are unique in the "parent" template to which the events bubble
 		for (const property in events) {
 			if (events.hasOwnProperty(property)) {
 				const event = property.substr(0, property.indexOf(' '));
@@ -26,7 +26,7 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 					`${ event } .${ fieldType } ${ selector }`,
 					{
 						value: events[property],
-						enumerable: true //assign as a own property
+						enumerable: true, // assign as a own property
 					});
 			}
 		}
@@ -35,14 +35,14 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 }
 
 Template.renderField.helpers({
-	specializedRendering({hash: {field, message}}) {
+	specializedRendering({ hash: { field, message } }) {
 		let html = '';
 		if (field.type && renderers[field.type]) {
-			html = Blaze.toHTMLWithData(Template[renderers[field.type]], {field, message});
+			html = Blaze.toHTMLWithData(Template[renderers[field.type]], { field, message });
 		} else {
 			// consider the value already formatted as html
 			html = field.value;
 		}
 		return `<div class="${ field.type }">${ html }</div>`;
-	}
+	},
 });

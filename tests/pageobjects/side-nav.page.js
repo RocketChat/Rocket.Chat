@@ -81,7 +81,7 @@ class SideNav extends Page {
 		}
 	}
 
-	//search channel on Directory
+	// search channel on Directory
 	searchDirectory(searchTerm, tab) { // c- public, u-user, p-private
 		this.openDirectoryIcon.click();
 		browser.click(`[data-value="${ tab }"]`);

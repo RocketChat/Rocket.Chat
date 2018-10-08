@@ -57,6 +57,6 @@ Meteor.startup(function() {
 			return {
 				user: `<a class="mention-link" data-username= "${ message.attachments[0].fields[0].requester }" >${ message.attachments[0].fields[0].requester } </a>`
 			};
-		}
+		},
 	});
 });

@@ -192,8 +192,8 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						t: 'channels'
-					})
+						t: 'channels',
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -216,7 +216,7 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						t: 'channels'
+						t: 'channels',
 					}),
 					sort: JSON.stringify(({
 						name: 1,
@@ -259,7 +259,7 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						t: 'channels'
+						t: 'channels',
 					}),
 					sort: JSON.stringify(({
 						name: 1,

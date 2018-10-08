@@ -14,7 +14,7 @@
 				<div class="create-channel__switches">
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked= {{roomTypeIsP}} disabled="{{cantCreateBothTypes}}">
+							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked={{roomTypeIsP}} disabled="{{cantCreateBothTypes}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
@@ -26,7 +26,7 @@
 					</div>
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="readOnly" checked= {{readOnly}} disabled="{{broadcast}}">
+							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
@@ -89,7 +89,8 @@
 								<div class="rc-input__icon">
 									{{> icon block="rc-input__icon-svg" icon=iconType }}
 								</div>
-								<input name="name" type="text" class="rc-input__element" placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
+								<input name="name" type="text" class="rc-input__element" 
+										placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
 							</div>
 						</label>
 						{{#if inUse}}
@@ -112,7 +113,8 @@
 									{{#each user in selectedUsers}}
 										{{> tag user}}
 									{{/each}}
-									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off" />
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" 
+										   name="users" autocomplete="off"/>
 								</div>
 							</div>
 							{{#with config}}
@@ -146,8 +148,7 @@
 					{{/if}}
 				{{/if}}
 				<div class="create-channel__inputs">
-					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}"
-					/>
+					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
 				</div>
 			</form>
 		</div>
@@ -191,8 +192,7 @@
 			<label class="rc-input__label">
 				<div class="rc-input__title">{{_ "Tokens_Minimum_Needed_Balance"}}</div>
 				<div class="rc-input__wrapper">
-					<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}"
-					 min="0">
+					<input name="tokenMinimumNeededBalance" type="number" class="rc-input__element" placeholder="{{_ "Tokens_Minimum_Needed_Balance_Placeholder"}}" min="0">
 				</div>
 			</label>
 			<div class="rc-input__description">{{_ "Tokens_Minimum_Needed_Balance_Description"}}</div>

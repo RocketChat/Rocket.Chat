@@ -23,8 +23,12 @@ const sortUsers = function(field, direction) {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', type = 'c', sortBy = 'name', sortDirection = 'asc', page = 0, offset, limit = 10 }) {
+	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+
+		if (!['channels', 'users'].includes(type)) {
+			return;
+		}
 
 		if (!['asc', 'desc'].includes(sortDirection)) {
 			return;
@@ -34,7 +38,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'c' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -62,10 +66,10 @@ Meteor.methods({
 						username: 1,
 						name: 1,
 						createdAt: 1,
-						emails: 1
-					}
+						emails: 1,
+					},
 				}).fetch(),
-				total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count()
+				total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
 			};
 		}
 		const sort = sortChannels(sortBy, sortDirection);
@@ -83,10 +87,10 @@ Meteor.methods({
 					lastMessage: 1,
 					ts: 1,
 					archived: 1,
-					usersCount: 1
-				}
+					usersCount: 1,
+				},
 			}).fetch(),
-			total: RocketChat.models.Rooms.findListableByNameAndType(regex, type).count()
+			total: RocketChat.models.Rooms.findListableByNameAndType(regex, type).count(),
 		};
 	},
 });

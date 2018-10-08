@@ -21,7 +21,7 @@ export function setDirectMessageCreated(status) {
 const createUserAndLogin = function(username, email, password) {
 	console.log('	User dont exist. Creating user...');
 	loginPage.gotToRegister();
-	loginPage.registerNewUser({username, email, password});
+	loginPage.registerNewUser({ username, email, password });
 	browser.waitForExist('form#login-card input#username', 5000);
 	browser.click('.submit > button');
 	mainContent.mainContent.waitForExist(5000);
@@ -55,10 +55,10 @@ export function checkIfUserIsValid(username, email, password) {
 			sideNav.logout.click();
 
 			loginPage.open();
-			loginPage.loginSucceded({email, password});
+			loginPage.loginSucceded({ email, password });
 			mainContent.mainContent.waitForExist(5000);
 		} catch (e) {
-			//if the user dont exist.
+			// if the user dont exist.
 			console.log('user does not exist. so creating user');
 			createUserAndLogin(username, email, password);
 		}

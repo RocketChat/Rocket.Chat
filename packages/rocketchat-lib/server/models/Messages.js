@@ -14,11 +14,11 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ msg: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'pinned': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'snippeted': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'location': '2dsphere' });
-		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 't': 1, 'attachments.fields.requester': 1 }, { unique: false });
+		this.tryEnsureIndex({ pinned: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ location: '2dsphere' });
+		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ t: 1, 'attachments.fields.requester': 1 }, { unique: false });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -382,8 +382,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = { t: msgType, rid };
 		const options = {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		};
 		return this.find(query, options);
 	}
@@ -392,9 +392,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = { t: msgType, rid, 'attachments.fields.requester': userName };
 		const options = {
 			sort: {
-				ts: -1
+				ts: -1,
 			},
-			limit: 1
+			limit: 1,
 		};
 		return this.find(query, options);
 

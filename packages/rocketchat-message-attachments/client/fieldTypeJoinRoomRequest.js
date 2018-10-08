@@ -1,5 +1,5 @@
-import {registerFieldTemplate} from './renderField';
-import {TAPi18n} from 'meteor/tap:i18n';
+import { registerFieldTemplate } from './renderField';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 Template.JoinRoomRequest.helpers({
 	takeAction(status) {
@@ -10,7 +10,7 @@ Template.JoinRoomRequest.helpers({
 	},
 	getStatus() {
 		return TAPi18n.__(this.status);
-	}
+	},
 });
 
 const events = {
@@ -19,12 +19,12 @@ const events = {
 		const status = 'accepted';
 		const responder = Meteor.user().name;
 		const roomId = t.data._id;
-		Meteor.call('addUserToRoom', {rid: roomId, username: message.attachments[0].fields[0].requester}, (err) => {
+		Meteor.call('addUserToRoom', { rid: roomId, username: message.attachments[0].fields[0].requester }, (err) => {
 			if (err) {
 				return err;
 			}
 			Meteor.call('updateJoinRoomStatus', roomId, message, status, responder);
-			//Meteor.call('notifyUser', roomId, 'user');
+			// Meteor.call('notifyUser', roomId, 'user');
 		});
 	},
 	'click [name="decline"]'(e, t) {
@@ -33,8 +33,8 @@ const events = {
 		const responder = Meteor.user().name;
 		const roomId = t.data._id;
 		Meteor.call('updateJoinRoomStatus', roomId, message, status, responder);
-		//Meteor.call('notifyUser', roomId, 'user');
-	}
+		// Meteor.call('notifyUser', roomId, 'user');
+	},
 };
 
 

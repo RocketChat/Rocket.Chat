@@ -1,4 +1,4 @@
-import {TAPi18n} from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 Template.privateNoPermission.helpers({
 	data() {
@@ -21,7 +21,7 @@ Template.privateNoPermission.helpers({
 	requestStatus() {
 		const instance = Template.instance();
 		return TAPi18n.__(instance.joinRoomStatus.get());
-	}
+	},
 });
 
 Template.privateNoPermission.events({
@@ -36,7 +36,7 @@ Template.privateNoPermission.events({
 			closeOnConfirm: true,
 			html: false,
 			type: 'input',
-			inputPlaceholder: TAPi18n.__('Room_join_request_comment')
+			inputPlaceholder: TAPi18n.__('Room_join_request_comment'),
 		};
 		modal.open(
 			modalConfig, (inputValue) => {
@@ -49,7 +49,7 @@ Template.privateNoPermission.events({
 				});
 			});
 
-	}
+	},
 });
 
 Template.privateNoPermission.onCreated(function() {
@@ -62,11 +62,11 @@ Template.privateNoPermission.onCreated(function() {
 		if (err) {
 			instance.joinRoomStatus.set(false);
 		}
-		result.forEach(object => {
+		result.forEach((object) => {
 			if (object.hasOwnProperty('attachments')) {
-				object.attachments.forEach(object => {
+				object.attachments.forEach((object) => {
 					if (object.hasOwnProperty('fields')) {
-						object.fields.forEach(object => {
+						object.fields.forEach((object) => {
 							if (object.hasOwnProperty('status')) {
 								instance.joinRoomStatus.set(object.status);
 								if (object.status === 'pending') {
