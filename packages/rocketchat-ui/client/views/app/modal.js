@@ -8,7 +8,7 @@ this.modal = {
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
-		config.confirmOnEnter = config.confirmOnEnter || true;
+		config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
 
 		if (config.type === 'input') {
 			config.input = true;
@@ -70,7 +70,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (this.config.confirmOnEnter && e.key === 'Enter') {
+		if (modal.config.confirmOnEnter && e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -106,7 +106,7 @@ Template.rc_modal.onRendered(function() {
 		$('.js-modal-input').focus();
 	}
 
-	document.addEventListener('keydown', modal.onKeydown.bind(this));
+	document.addEventListener('keydown', modal.onKeydown);
 });
 
 Template.rc_modal.onDestroyed(function() {
