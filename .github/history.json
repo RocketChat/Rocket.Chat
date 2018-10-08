@@ -19814,7 +19814,39 @@
     "0.70.1": {
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
-      "pull_requests": []
+      "pull_requests": [
+        {
+          "pr": "12270",
+          "title": "Release 0.70.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "theorenck",
+            "rodrigok",
+            "tassoevan",
+            "ggazzo",
+            "sampaiodiego",
+            "renatobecker",
+            "edzluhan",
+            "web-flow",
+            "Hudell"
+          ]
+        }
+      ]
+    },
+    "0.70.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12272",
+          "title": "[FIX] E2E alert shows up when encryption is disabled",
+          "userLogin": "Hudell",
+          "milestone": "0.70.2",
+          "contributors": [
+            "Hudell"
+          ]
+        }
+      ]
     }
   }
 }
