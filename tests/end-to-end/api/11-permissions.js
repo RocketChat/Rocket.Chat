@@ -8,26 +8,6 @@ describe('[Permissions]', function() {
 
 	before((done) => getCredentials(done));
 
-	// DEPRECATED
-	// TODO: Remove this after three versions have been released. That means at 0.69 this should be gone.
-	describe('[/permissions]', () => {
-		it('should return all permissions that exists on the server, with respective roles', (done) => {
-			request.get(api('permissions'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.be.a('array');
-
-					const firstElement = res.body[0];
-					expect(firstElement).to.have.property('_id');
-					expect(firstElement).to.have.property('roles').and.to.be.a('array');
-					expect(firstElement).to.have.property('_updatedAt');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/permissions.list]', () => {
 		it('should return all permissions that exists on the server, with respective roles', (done) => {
 			request.get(api('permissions.list'))
