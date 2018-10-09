@@ -9,11 +9,11 @@ Meteor.methods({
 			});
 		}
 
-		const messageFrom = RocketChat.settings.get('Invitation_SMS_Twilio_From')
+		const messageFrom = RocketChat.settings.get('Invitation_SMS_Twilio_From');
 		if (!twilioService.accountSid || ! twilioService.authToken || !messageFrom) {
 			throw new Meteor.Error('error-twilio-not-configured', 'Twilio service not configured', {
-                                method: 'sendInvitationSMS',
-                        });
+				method: 'sendInvitationSMS',
+			});
 		}
 
 		check(phones, [String]);
