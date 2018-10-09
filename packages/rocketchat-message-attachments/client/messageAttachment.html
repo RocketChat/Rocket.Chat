@@ -54,6 +54,14 @@
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
 						{{/if}}
+						{{#if googleDriveAvailable}}
+							<span class="google-drive-upload-container google-drive-upload" data-title="{{title}}" data-type="{{fileType}}" data-url="{{fixCordova title_link}}">
+								<span class="logo-google-drive"></span>
+								<span class="google-drive-upload-text">
+									{{_ "Upload_To_Drive"}}
+								</span>
+							</span>
+						{{/if}}
 					{{else}}
 						{{title}}
 					{{/if}}

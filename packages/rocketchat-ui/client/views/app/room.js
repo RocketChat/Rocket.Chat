@@ -5,6 +5,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
+import toastr from 'toastr';
 
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
@@ -744,6 +745,90 @@ Template.room.events({
 		if ((this._arguments[1] != null ? this._arguments[1].urls : undefined) != null) {
 			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
+	},
+
+	'click .google-drive-upload'(e) {
+
+		const target = $(e.target).closest('.google-drive-upload-container')[0];
+
+		function disable() {
+			$('.google-drive-upload-container').removeClass('google-drive-upload');
+			$('.google-drive-upload-container').css('cursor', 'auto');
+			$(target).find('.logo-google-drive').addClass('icon-spinner');
+			$(target).find('.logo-google-drive').removeClass('logo-google-drive');
+			$(target).find('.google-drive-upload-text').text(t('Uploading_file'));
+		}
+
+		function enable() {
+			$('.google-drive-upload-container').addClass('google-drive-upload');
+			$('.google-drive-upload-container').css('cursor', 'pointer');
+			$(target).find('.icon-spinner').addClass('logo-google-drive');
+			$(target).find('.icon-spinner').removeClass('icon-spinner');
+			$(target).find('.google-drive-upload-text').text(t('Upload_To_Drive'));
+		}
+
+		const url = target.getAttribute('data-url');
+		const title = target.getAttribute('data-title');
+		const type = target.getAttribute('data-type');
+
+		disable();
+
+		const metaData = {
+			name: `${ title }`,
+			mimeType: `${ type }`,
+		};
+
+		const fileRequest = new XMLHttpRequest();
+		fileRequest.open('GET', url, true);
+		fileRequest.responseType = 'arraybuffer';
+
+		fileRequest.onload = function() {
+			const arrayBuffer = fileRequest.response;
+			if (arrayBuffer) {
+				const fileData = new Uint8Array(arrayBuffer);
+				Meteor.call('checkDriveAccess', (error) => {
+					if (error && error.error !== 'error-unauthenticated-user') {
+						enable();
+						return toastr.error(t(error.error));
+					} else if (error) {
+						Meteor.loginWithGoogle({
+							requestPermissions: ['profile', 'https://www.googleapis.com/auth/drive'],
+						}, function(error) {
+							if (error) {
+								enable();
+								return;
+							}
+							Meteor.call('uploadFileToDrive', { fileData, metaData }, (error, status) => {
+								enable();
+								if (error) {
+									return toastr.error(t(error.error));
+								} else if (status === false) {
+									return toastr.error(t('Failed_Drive_Upload'));
+								} else {
+									return toastr.success(t('Success_Drive_Upload'));
+								}
+							});
+						});
+					} else {
+						Meteor.call('uploadFileToDrive', { fileData, metaData }, (error, status) => {
+							enable();
+							if (error) {
+								return toastr.error(t(error.error));
+							} else if (status === false) {
+								return toastr.error(t('Failed_Drive_Upload'));
+							} else {
+								return toastr.success(t('Success_Drive_Upload'));
+							}
+						});
+					}
+				});
+			} else {
+				enable();
+				return toastr.error(t('Failed_Drive_Upload'));
+			}
+		};
+
+		fileRequest.send(null);
 	},
 
 	'dragenter .dropzone'(e) {
