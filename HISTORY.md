@@ -1,4 +1,26 @@
 
+# 0.70.4
+`2018-10-09  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Modal confirm on enter ([#12283](https://github.com/RocketChat/Rocket.Chat/pull/12283))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Add wizard opt-in fields ([#12298](https://github.com/RocketChat/Rocket.Chat/pull/12298))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.70.3
 `2018-10-08  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
