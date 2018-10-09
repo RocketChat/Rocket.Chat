@@ -59,6 +59,43 @@ Template.livechatCurrentChats.events({
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	},
+	'click .delete-all'() {
+		LivechatRoom.find({
+			t: 'l',
+		}).forEach(function(room) {
+			const now = new Date();
+
+			const closeData = {
+				closedAt: now,
+				chatDuration: (now.getTime() - room.ts) / 1000,
+			};
+
+			closeData.closer = 'visitor';
+			closeData.closedBy = {
+				_id: room.v._id,
+				username: room.v.username,
+			};
+
+			Meteor.call('livechat:closeRoom', room._id, function(error/* , result*/) {
+				if (error) {
+					return handleError(error);
+				} else {
+					Meteor.call('livechat:removeRoom', room._id, function(error/* , result*/) {
+						if (error) {
+							return handleError(error);
+						}
+					});
+				}
+			});
+		});
+		modal.open({
+			title: t('Deleted'),
+			text: t('All_rooms_has_been_deleted'),
+			type: 'success',
+			timer: 1000,
+			showConfirmButton: false,
+		});
+	},
 	'click .remove-livechat-room'(event) {
 		event.preventDefault();
 		event.stopPropagation();
