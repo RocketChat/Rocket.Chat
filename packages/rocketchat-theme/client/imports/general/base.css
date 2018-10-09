@@ -34,6 +34,12 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+@media (width <= 500px) {
+	body {
+		position: fixed;
+	}
+}
+
 :focus {
 	outline: 0 !important;
 	outline-style: none;

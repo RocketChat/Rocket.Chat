@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:mailer');
 	api.use('rocketchat:custom-oauth');
 	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
@@ -239,6 +240,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/customFieldsForm.js', 'client');
 
 	api.addFiles('startup/defaultRoomTypes.js');
+	api.addFiles('startup/index.js', 'server');
 
 	// VERSION
 	api.addFiles('rocketchat.info');
