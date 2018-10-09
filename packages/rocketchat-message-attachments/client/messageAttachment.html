@@ -157,10 +157,6 @@
 				</div>
 			{{/if}}
 
-			{{#each actions}}
-				{{> messageAction}}
-			{{/each}}
-
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}
 			{{/each}}

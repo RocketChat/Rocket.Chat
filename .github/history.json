@@ -17641,6 +17641,2049 @@
       "node_version": "8.11.3",
       "npm_version": "5.6.0",
       "pull_requests": []
+    },
+    "0.68.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11616",
+          "title": "Release 0.68.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "engelgabriel",
+            "sampaiodiego",
+            "tassoevan",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11613",
+          "title": "[FIX] `Jump to message` search result action",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11597",
+          "title": "[FIX] HipChat importer wasn’t compatible with latest exports",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11630",
+          "title": "Release 0.68.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "c0dzilla",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11544",
+          "title": "[FIX] Incorrect migration version in v130.js",
+          "userLogin": "c0dzilla",
+          "contributors": [
+            "c0dzilla",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11650",
+          "title": "Release 0.68.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "rndmh3ro",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11639",
+          "title": "[FIX] Missing chat history for users without permission `preview-c-room`",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11625",
+          "title": "[FIX] User info APIs not returning customFields correctly",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.3",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11631",
+          "title": "[FIX] Prune translations in German",
+          "userLogin": "rndmh3ro",
+          "milestone": "0.68.3",
+          "contributors": [
+            "rndmh3ro",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11635",
+          "title": "[FIX] Prune translation on room info panel",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11642",
+          "title": "[FIX] SAML login not working when user has multiple emails",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.68.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11719",
+          "title": "[FIX] Default server language not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11708",
+          "title": "[FIX] Broken logo on setup wizard",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11646",
+          "title": "[FIX] Regression in prune by user, and update lastMessage",
+          "userLogin": "vynmera",
+          "milestone": "0.68.4",
+          "contributors": [
+            "vynmera",
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "0.68.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11830",
+          "title": "[FIX] Livechat open room method",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "0.69.0-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11852",
+          "title": "Release 0.68.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11613",
+          "title": "[FIX] `Jump to message` search result action",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11597",
+          "title": "[FIX] HipChat importer wasn’t compatible with latest exports",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10700",
+          "title": "[FIX] Delete removed user's subscriptions",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "Hudell",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11837",
+          "title": "[NEW] Beta support for Big Blue Button video conferencing system",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11011",
+          "title": "[FIX] LiveChat switch department not working",
+          "userLogin": "renatobecker",
+          "milestone": "Short-term",
+          "contributors": [
+            "renatobecker",
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "10269",
+          "title": "[NEW] Slackbridge: send attachment notifications",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "kable-wilmoth",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11796",
+          "title": "[FIX] Some assets were pointing to nonexistent path",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11733",
+          "title": "[IMPROVE] Start storing Livechat department within rooms",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11638",
+          "title": "[NEW] Personal access tokens for users to create API tokens",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11522",
+          "title": "[FIX] Revoked `view-d-room` permission logics",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11821",
+          "title": "[FIX] REST `im.members` endpoint not working without sort parameter",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11697",
+          "title": "[NEW] REST endpoint to manage server assets",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "10217",
+          "title": "[NEW] Setting to enable/disable slack bridge reactions",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "kable-wilmoth",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11691",
+          "title": "Fixed deutsch message pruning translations",
+          "userLogin": "TheReal1604",
+          "milestone": "0.69.0",
+          "contributors": [
+            "TheReal1604",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11794",
+          "title": "Fixed the Finnish translation and removed some profanities",
+          "userLogin": "jukper",
+          "milestone": "0.69.0",
+          "contributors": [
+            "jukper"
+          ]
+        },
+        {
+          "pr": "11834",
+          "title": "[FIX] Livechat rooms starting with two unread message counter",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "11551",
+          "title": "[FIX] Results pagination on /directory REST endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11838",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11778",
+          "title": "[FIX] re-adding margin to menu icon on header",
+          "userLogin": "rssilva",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "11797",
+          "title": "[FIX] minor fixes in hungarian i18n ",
+          "userLogin": "Atisom",
+          "contributors": [
+            "Atisom",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11836",
+          "title": "[FIX] permissions name no break",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11657",
+          "title": "[FIX] Searching by `undefined` via REST when using `query` param",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11781",
+          "title": "[FIX] Fix permalink of message when running system with subdir",
+          "userLogin": "ura14h",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ura14h",
+            "web-flow",
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11543",
+          "title": "[FIX] Fix links in `onTableItemClick` of the directroy page",
+          "userLogin": "ura14h",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ura14h",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11830",
+          "title": "[FIX] Livechat open room method",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "11473",
+          "title": "[NEW] Rich message text and image buttons",
+          "userLogin": "ubarsaiyan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ubarsaiyan",
+            "ggazzo",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11802",
+          "title": "[FIX] App's i18nAlert is only being displayed as \"i18nAlert\"",
+          "userLogin": "graywolf336",
+          "milestone": "0.69.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "11627",
+          "title": "[FIX] Removed hardcoded values.",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "9749",
+          "title": "[NEW] Setting to block unauthenticated access to avatars",
+          "userLogin": "Hudell",
+          "milestone": "Short-term",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11643",
+          "title": "[FIX] SAML is flooding logfile",
+          "userLogin": "Hudell",
+          "milestone": "0.69.0",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11809",
+          "title": " [FIX] directory search table not clickable lines",
+          "userLogin": "tassoevan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11814",
+          "title": "Regression: Fix livechat code issues after new lint rules",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.69.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11816",
+          "title": "Do not remove package-lock.json of livechat package",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11815",
+          "title": "Run eslint and unit tests on pre-push hook",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11474",
+          "title": "[FIX] REST endpoints to update user not respecting some settings",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.69.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11779",
+          "title": "[NEW] Setting to set a JS/CSS CDN",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.69.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11804",
+          "title": "Additional eslint rules ",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11807",
+          "title": "[FIX] Apply Cordova fix in lazy-loaded images sources",
+          "userLogin": "tassoevan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11800",
+          "title": "Add new eslint rules (automatically fixed)",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "8602",
+          "title": "[NEW] Make font of unread items bolder for better contrast",
+          "userLogin": "ausminternet",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ausminternet",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11775",
+          "title": "[FIX]  Cannot set property 'input' of undefined",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11644",
+          "title": "[IMPROVE] Escape parameters before send them to email template",
+          "userLogin": "tassoevan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11784",
+          "title": "[IMPROVE] Warn about push settings that need server restart",
+          "userLogin": "tassoevan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11687",
+          "title": "[FIX] Missing twitter:image and og:image tags",
+          "userLogin": "engelgabriel",
+          "milestone": "0.69.0",
+          "contributors": [
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11674",
+          "title": "[IMPROVE] Role tag UI",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.0",
+          "contributors": [
+            "timkinnane"
+          ]
+        },
+        {
+          "pr": "11703",
+          "title": "[FIX] Return room ID for groups where user joined",
+          "userLogin": "timkinnane",
+          "contributors": [
+            "timkinnane"
+          ]
+        },
+        {
+          "pr": "11670",
+          "title": "[FIX]  \"User is typing\" not working in new Livechat session",
+          "userLogin": "renatobecker",
+          "milestone": "0.69.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "11682",
+          "title": "[FIX] wrong create date of channels and users on directory view",
+          "userLogin": "gsperezb",
+          "milestone": "0.69.0",
+          "contributors": [
+            "gsperezb",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11730",
+          "title": "[FIX] Escape meta data before inject in head tag",
+          "userLogin": "tassoevan",
+          "milestone": "0.69.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11761",
+          "title": "[FIX] minor fixes in i18n",
+          "userLogin": "Atisom",
+          "milestone": "0.69.0",
+          "contributors": [
+            "Atisom",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11467",
+          "title": "[FIX] Code tag duplicating characters",
+          "userLogin": "vynmera",
+          "milestone": "0.69.0",
+          "contributors": [
+            "vynmera",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11139",
+          "title": "[FIX] Custom sound uploader not working in Firefox and IE",
+          "userLogin": "vynmera",
+          "milestone": "0.69.0",
+          "contributors": [
+            "vynmera"
+          ]
+        },
+        {
+          "pr": "11728",
+          "title": "[FIX] Fixing timeAgo function on directory",
+          "userLogin": "rssilva",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "11578",
+          "title": "[FIX] Render Attachment Pretext When Markdown Specified",
+          "userLogin": "glstewart17",
+          "milestone": "0.69.0",
+          "contributors": [
+            "glstewart17"
+          ]
+        },
+        {
+          "pr": "11686",
+          "title": "[IMPROVE] Messagebox fix performance",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11740",
+          "title": "[FIX] Message attachments was not respecting sort and lost spacing",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11662",
+          "title": "[IMPROVE] Add template tag #{userdn} to filter LDAP group member format",
+          "userLogin": "crazy-max",
+          "milestone": "0.69.0",
+          "contributors": [
+            "crazy-max"
+          ]
+        },
+        {
+          "pr": "11719",
+          "title": "[FIX] Default server language not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11709",
+          "title": "[FIX] Closed connections being storing on db",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11708",
+          "title": "[FIX] Broken logo on setup wizard",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11646",
+          "title": "[FIX] Regression in prune by user, and update lastMessage",
+          "userLogin": "vynmera",
+          "milestone": "0.68.4",
+          "contributors": [
+            "vynmera",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11626",
+          "title": "[FIX] Login logo now centered on small screens",
+          "userLogin": "wreiske",
+          "milestone": "0.69.0",
+          "contributors": [
+            "wreiske",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11667",
+          "title": "[FIX] Push notifications stuck after db failure",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.69.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11684",
+          "title": "[IMPROVE] Add nyan rocket on Rocket.Chat preview Docker image",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11645",
+          "title": "[IMPROVE] Reducing `saveUser` code complexity",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11642",
+          "title": "[FIX] SAML login not working when user has multiple emails",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11635",
+          "title": "[FIX] Prune translation on room info panel",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.68.3",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11631",
+          "title": "[FIX] Prune translations in German",
+          "userLogin": "rndmh3ro",
+          "milestone": "0.68.3",
+          "contributors": [
+            "rndmh3ro",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11625",
+          "title": "[FIX] User info APIs not returning customFields correctly",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.68.3",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11639",
+          "title": "[FIX] Missing chat history for users without permission `preview-c-room`",
+          "userLogin": "Hudell",
+          "milestone": "0.68.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11544",
+          "title": "[FIX] Incorrect migration version in v130.js",
+          "userLogin": "c0dzilla",
+          "contributors": [
+            "c0dzilla",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11597",
+          "title": "[FIX] HipChat importer wasn’t compatible with latest exports",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11613",
+          "title": "[FIX] `Jump to message` search result action",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11606",
+          "title": "Merge master into develop & Set version to 0.69.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11590",
+          "title": "Regression: Fix purge message's translations",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.69.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11835",
+          "title": "App engine merge",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11864",
+          "title": "[NEW] Internal marketplace for apps",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "gdelavald",
+            "rssilva",
+            "rodrigok",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11878",
+          "title": "[FIX] Translations were not unique per app allowing conflicts among apps",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11861",
+          "title": "Regression: role tag background, unread item font and message box autogrow",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.69.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11852",
+          "title": "Release 0.68.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11613",
+          "title": "[FIX] `Jump to message` search result action",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11597",
+          "title": "[FIX] HipChat importer wasn’t compatible with latest exports",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.69.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11892",
+          "title": "[FIX] Hipchat import was failing when importing messages from a non existent user",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11910",
+          "title": "[FIX] Hipchat importer was not importing users without emails and uploaded files",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11893",
+          "title": " [FIX] App updates were not being shown correctly",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11853",
+          "title": "[FIX] Duplicated message buttons",
+          "userLogin": "ubarsaiyan",
+          "milestone": "0.69.1",
+          "contributors": [
+            "ubarsaiyan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.69.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11184",
+          "title": "[NEW] Allow multiple subcommands in MIGRATION_VERSION env variable",
+          "userLogin": "arch119",
+          "contributors": [
+            null,
+            "arch119",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10094",
+          "title": "[NEW] Support for end to end encryption",
+          "userLogin": "mrinaldhar",
+          "milestone": "Short-term",
+          "contributors": [
+            "mrinaldhar"
+          ]
+        },
+        {
+          "pr": "11936",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12083",
+          "title": "[IMPROVE] Cache livechat get agent trigger call",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12097",
+          "title": "[FIX] Livechat agent joining on pick from guest pool",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson"
+          ]
+        },
+        {
+          "pr": "12107",
+          "title": "[IMPROVE] BigBlueButton joinViaHtml5 and video icon on sidebar",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11238",
+          "title": "[NEW] Livechat Analytics and Reports",
+          "userLogin": "pkgodara",
+          "milestone": "0.70.0",
+          "contributors": [
+            "pkgodara",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12115",
+          "title": "Better organize package.json",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12114",
+          "title": "Fix using wrong variable",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11993",
+          "title": "[NEW] Apps: Add handlers for message updates",
+          "userLogin": "cardoso",
+          "contributors": [
+            "cardoso",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11780",
+          "title": "[FIX] Apps: Add missing reactions and actions properties to app message object",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "10588",
+          "title": "[NEW] Livechat notifications on new incoming inquiries for guest-pool",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson"
+          ]
+        },
+        {
+          "pr": "11742",
+          "title": "[FIX] Broken slack compatible webhook",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.70.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11965",
+          "title": "[NEW] Customizable default directory view",
+          "userLogin": "ohmonster",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ohmonster",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12047",
+          "title": "[NEW] Blockstack as decentralized auth provider",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "timkinnane"
+          ]
+        },
+        {
+          "pr": "11900",
+          "title": "[NEW] Livechat REST endpoints",
+          "userLogin": "renatobecker",
+          "milestone": "0.70.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12043",
+          "title": "[FIX] Changing Mentions.userMentionRegex pattern to include <br> tag",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11902",
+          "title": "[FIX] Double output of message actions",
+          "userLogin": "timkinnane",
+          "milestone": "0.70.0",
+          "contributors": [
+            "timkinnane",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11785",
+          "title": "[FIX]  Login error message not obvious if user not activated",
+          "userLogin": "crazy-max",
+          "milestone": "0.70.0",
+          "contributors": [
+            "crazy-max",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11909",
+          "title": "[NEW] REST endpoints to get moderators from groups and channels",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.70.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11169",
+          "title": "[NEW] User preference for 24- or 12-hour clock",
+          "userLogin": "vynmera",
+          "milestone": "0.70.0",
+          "contributors": [
+            "vynmera",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11919",
+          "title": "[FIX] Adding scroll bar to read receipts modal",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11946",
+          "title": "[FIX] Fixing translation on 'yesterday' word when calling timeAgo function",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "12018",
+          "title": "[FIX] Fixing spacement between tags and words on some labels",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "12031",
+          "title": "[FIX] video message recording, issue #11651",
+          "userLogin": "flaviogrossi",
+          "milestone": "0.70.0",
+          "contributors": [
+            "flaviogrossi"
+          ]
+        },
+        {
+          "pr": "11999",
+          "title": "[FIX] Prevent form submission in Files List search",
+          "userLogin": "tassoevan",
+          "milestone": "0.70.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "11905",
+          "title": "[NEW] REST endpoint to set groups' announcement",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.70.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12079",
+          "title": "[FIX] Re-add the eye-off icon",
+          "userLogin": "MIKI785",
+          "contributors": [
+            "MIKI785"
+          ]
+        },
+        {
+          "pr": "12068",
+          "title": "[NEW] Livechat trigger option to run only once",
+          "userLogin": "edzluhan",
+          "contributors": [
+            "edzluhan"
+          ]
+        },
+        {
+          "pr": "12044",
+          "title": "[IMPROVE] Use eslint-config package",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11953",
+          "title": "[FIX] Internal error when cross-origin with CORS is disabled",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.70.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11967",
+          "title": "[FIX] Message reaction in GraphQL API",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.70.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "11863",
+          "title": "[FIX] Direct messages leaking into logs",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "11991",
+          "title": "Fix the style lint",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11855",
+          "title": "[NEW] REST endpoints to create roles and assign roles to users",
+          "userLogin": "aferreira44",
+          "milestone": "0.70.0",
+          "contributors": [
+            "aferreira44",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11879",
+          "title": "[FIX] Wrong build path in install.sh",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.69.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11857",
+          "title": "[FIX] Permission check on joinRoom for private room",
+          "userLogin": "timkinnane",
+          "contributors": [
+            "timkinnane",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "9984",
+          "title": "[NEW] Informal German translations",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11562",
+          "title": "[FIX] Close popover on shortcuts and writing",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "11351",
+          "title": "[BREAK] Update the default port of the Prometheus exporter",
+          "userLogin": "thaiphv",
+          "milestone": "0.70.0",
+          "contributors": [
+            "thaiphv",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11872",
+          "title": "[FIX] Typo in a configuration key for SlackBridge excluded bot names",
+          "userLogin": "TobiasKappe",
+          "milestone": "0.70.0",
+          "contributors": [
+            "TobiasKappe"
+          ]
+        },
+        {
+          "pr": "11921",
+          "title": "Merge master into develop & Set version to 0.70.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "engelgabriel",
+            "sampaiodiego",
+            "tassoevan",
+            "rodrigok",
+            "web-flow",
+            "c0dzilla",
+            "Hudell",
+            "rndmh3ro",
+            "MarcosSpessatto",
+            "vynmera",
+            "renatobecker",
+            "ubarsaiyan"
+          ]
+        },
+        {
+          "pr": "11853",
+          "title": "[FIX] Duplicated message buttons",
+          "userLogin": "ubarsaiyan",
+          "milestone": "0.69.1",
+          "contributors": [
+            "ubarsaiyan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11893",
+          "title": " [FIX] App updates were not being shown correctly",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11910",
+          "title": "[FIX] Hipchat importer was not importing users without emails and uploaded files",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11892",
+          "title": "[FIX] Hipchat import was failing when importing messages from a non existent user",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12026",
+          "title": "Release 0.69.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12138",
+          "title": "Regression: fix message box autogrow",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "12122",
+          "title": "Regression: Modal height",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12124",
+          "title": "Fix: Change wording on e2e to make a little more clear",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.70.0",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12154",
+          "title": "[FIX] Real Name on Direct Messages ",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12038",
+          "title": "[FIX] Position of popover component on mobile",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12168",
+          "title": "[FIX] Duplicate email and auto-join on mentions",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12172",
+          "title": "Improve: Moved the e2e password request to an alert instead of a popup",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12169",
+          "title": "New: Option to change E2E key",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12173",
+          "title": "Improve: Decrypt last message",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12102",
+          "title": "[FIX] Horizontal scroll on user info tab",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "12140",
+          "title": "[FIX] Markdown ampersand escape on links",
+          "userLogin": "rssilva",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rssilva"
+          ]
+        },
+        {
+          "pr": "11938",
+          "title": "[NEW] Apps: API provider",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12170",
+          "title": "[FIX] Saving user preferences",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12139",
+          "title": "Fix: e2e password visible on always-on alert message.",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12159",
+          "title": "[FIX] Apps being able to see hidden settings",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12112",
+          "title": "[FIX] Allow user with \"bulk-register-user\" permission to send invitations",
+          "userLogin": "mrsimpson",
+          "contributors": [
+            "mrsimpson",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12196",
+          "title": "Improve: Expose apps enable setting at `General > Apps`",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12188",
+          "title": "Fix: Message changing order when been edited with apps enabled",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12009",
+          "title": "[BREAK][IMPROVE] New emails design",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11906",
+          "title": "[FIX] IRC Federation no longer working",
+          "userLogin": "Hudell",
+          "milestone": "0.70.0",
+          "contributors": [
+            "Hudell",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12191",
+          "title": "Improve: E2E setting description and alert",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12189",
+          "title": "[NEW] Apps are enabled by default now",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12184",
+          "title": "[NEW] Add Livechat Analytics permission",
+          "userLogin": "renatobecker",
+          "milestone": "0.70.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12192",
+          "title": "Improve: Do not start E2E Encryption when accessing admin as embedded",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11679",
+          "title": "[NEW] WebDAV Integration (User file provider)",
+          "userLogin": "karakayasemi",
+          "milestone": "0.70.0",
+          "contributors": [
+            "karakayasemi",
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12187",
+          "title": "Fix: Add e2e doc to the alert",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.70.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11565",
+          "title": "[FIX] Files list missing from popover menu when owner of room",
+          "userLogin": "tassoevan",
+          "milestone": "Short-term",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "11927",
+          "title": "[FIX] Not able to set per-channel retention policies if no global policy is set for this channel type",
+          "userLogin": "vynmera",
+          "contributors": [
+            "vynmera",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "12126",
+          "title": "[FIX] app engine verbose log typo",
+          "userLogin": "williamriancho",
+          "contributors": [
+            "williamriancho",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        }
+      ]
+    },
+    "0.70.0-rc.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12195",
+          "title": "Improve: Switch e2e doc to target _blank",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12175",
+          "title": "Improve: Rename E2E methods",
+          "userLogin": "Hudell",
+          "contributors": [
+            "Hudell",
+            "rodrigok",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        }
+      ]
+    },
+    "0.70.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12026",
+          "title": "Release 0.69.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "11812",
+          "title": "[NEW] Include room name in stream for bots",
+          "userLogin": "timkinnane",
+          "milestone": "0.69.2",
+          "contributors": [
+            "timkinnane",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12022",
+          "title": "[FIX] Reset password link error if already logged in",
+          "userLogin": "rodrigok",
+          "milestone": "0.69.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "11992",
+          "title": "[FIX] Apps: setting with 'code' type only saving last line",
+          "userLogin": "cardoso",
+          "milestone": "0.69.2",
+          "contributors": [
+            "cardoso"
+          ]
+        },
+        {
+          "pr": "11955",
+          "title": "[FIX] Update user information not possible by admin if disabled to users",
+          "userLogin": "kaiiiiiiiii",
+          "milestone": "0.69.2",
+          "contributors": [
+            "kaiiiiiiiii"
+          ]
+        },
+        {
+          "pr": "12025",
+          "title": "[FIX] Hidden admin sidenav on embedded layout",
+          "userLogin": "ggazzo",
+          "milestone": "0.69.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }

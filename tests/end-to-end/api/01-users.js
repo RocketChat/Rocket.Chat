@@ -234,6 +234,17 @@ describe('[Users]', function() {
 				})
 				.end(resolve);
 		});
+		const updatePermission = (permission, roles) => new Promise((resolve) => {
+			request.post(api('permissions.update'))
+				.set(credentials)
+				.send({ permissions: [{ _id: permission, roles }] })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(resolve);
+		});
 		before((done) => {
 			updateSetting('Accounts_AllowUserProfileChange', true)
 				.then(() => updateSetting('Accounts_AllowUsernameChange', true))
@@ -315,103 +326,223 @@ describe('[Users]', function() {
 		});
 
 		it('should return an error when trying update username and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowUsernameChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								username: 'fake.name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			updatePermission('edit-other-user-info', ['user']).then(() => {
+				updateSetting('Accounts_AllowUsernameChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									username: 'fake.name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
+					});
+			});
+		});
+
+		it('should update the user name when the required permission is applied', (done) => {
+			updatePermission('edit-other-user-info', ['admin']).then(() => {
+				updateSetting('Accounts_AllowUsernameChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									username: 'fake.name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+			});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowRealNameChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								name: 'Fake name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			updatePermission('edit-other-user-info', ['user']).then(() => {
+				updateSetting('Accounts_AllowRealNameChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									name: 'Fake name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
+					});
+			});
+		});
+
+		it('should update user real name when the required permission is applied', (done) => {
+			updatePermission('edit-other-user-info', ['admin']).then(() => {
+				updateSetting('Accounts_AllowRealNameChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									name: 'Fake name',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+			});
 		});
 
 		it('should return an error when trying update user email and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowEmailChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								email: 'itsnotworking@email.com',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			updatePermission('edit-other-user-info', ['user']).then(() => {
+				updateSetting('Accounts_AllowEmailChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									email: 'itsnotworking@email.com',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
+					});
+			});
+		});
+
+		it('should update user email when the required permission is applied', (done) => {
+			updatePermission('edit-other-user-info', ['admin']).then(() => {
+				updateSetting('Accounts_AllowEmailChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									email: apiEmail,
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+			});
 		});
 
 		it('should return an error when trying update user password and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowPasswordChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								password: 'itsnotworking',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			updatePermission('edit-other-user-password', ['user']).then(() => {
+				updateSetting('Accounts_AllowPasswordChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									password: 'itsnotworking',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
+					});
+			});
+		});
+
+		it('should update user password when the required permission is applied', (done) => {
+			updatePermission('edit-other-user-password', ['admin']).then(() => {
+				updateSetting('Accounts_AllowPasswordChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									password: 'itsnotworking',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+			});
 		});
 
 		it('should return an error when trying update profile and it is not allowed', (done) => {
-			updateSetting('Accounts_AllowUserProfileChange', false)
-				.then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								verified: true,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			updatePermission('edit-other-user-info', ['user']).then(() => {
+				updateSetting('Accounts_AllowUserProfileChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									verified: true,
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+							})
+							.end(done);
+					});
+			});
+		});
+
+		it('should update profile when the required permission is applied', (done) => {
+			updatePermission('edit-other-user-info', ['admin']).then(() => {
+				updateSetting('Accounts_AllowUserProfileChange', false)
+					.then(() => {
+						request.post(api('users.update'))
+							.set(credentials)
+							.send({
+								userId: targetUser._id,
+								data: {
+									verified: true,
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+							})
+							.end(done);
+					});
+			});
 		});
 	});
 
@@ -918,6 +1049,203 @@ describe('[Users]', function() {
 						.end(done);
 				});
 		});
+	});
 
+	describe('Personal Access Tokens', () => {
+		const tokenName = `${ Date.now() }token`;
+		describe('successful cases', () => {
+			it('Enable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
+				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
+					.set(credentials)
+					.send({ value: true })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			describe('[/users.generatePersonalAccessToken]', () => {
+				it('should return a personal access token to user', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('token');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries generate a token with the same name', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.regeneratePersonalAccessToken]', () => {
+				it('should return a personal access token to user when user regenerates the token', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('token');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries regenerate a token that does not exist', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.getPersonalAccessTokens]', () => {
+				it('should return my personal access tokens', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('tokens').and.to.be.an('array');
+						})
+						.end(done);
+				});
+			});
+			describe('[/users.removePersonalAccessToken]', () => {
+				it('should return success when user remove a personal access token', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries remove a token that does not exist', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+		describe('unsuccessful cases', () => {
+			it('disable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
+				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
+					.set(credentials)
+					.send({ value: false })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			describe('should return an error when setting "API_Enable_Personal_Access_Tokens" is disabled for the following routes', () => {
+				it('/users.generatePersonalAccessToken', (done) => {
+					request.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.regeneratePersonalAccessToken', (done) => {
+					request.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.getPersonalAccessTokens', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('/users.removePersonalAccessToken', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+				it('should throw an error when user tries remove a token that does not exist', (done) => {
+					request.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({
+							tokenName: 'tokenthatdoesnotexist',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+						})
+						.end(done);
+				});
+			});
+		});
 	});
 });

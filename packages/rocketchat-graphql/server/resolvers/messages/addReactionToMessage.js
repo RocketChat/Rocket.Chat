@@ -6,9 +6,9 @@ import schema from '../../schemas/messages/addReactionToMessage.graphqls';
 
 const resolver = {
 	Mutation: {
-		addReactionToMessage: authenticated((root, { id, icon }, { user }) => new Promise((resolve) => {
+		addReactionToMessage: authenticated((root, { id, icon, shouldReact }, { user }) => new Promise((resolve) => {
 			Meteor.runAsUser(user._id, () => {
-				Meteor.call('setReaction', id.messageId, icon, () => {
+				Meteor.call('setReaction', icon, id.messageId, shouldReact, () => {
 					resolve(RocketChat.models.Messages.findOne(id.messageId));
 				});
 			});
