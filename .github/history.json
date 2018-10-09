@@ -19871,6 +19871,28 @@
           ]
         }
       ]
+    },
+    "0.70.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12283",
+          "title": "[FIX] Modal confirm on enter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12298",
+          "title": "Fix: Add wizard opt-in fields",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
