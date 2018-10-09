@@ -3,11 +3,19 @@ import _ from 'underscore';
 Meteor.methods({
 	sendInvitationSMS(phones) {
 		const twilioService = RocketChat.SMS.getService('twilio');
-		if (!twilioService) {
+		if (!RocketChat.SMS.enabled || !twilioService) {
 			throw new Meteor.Error('error-twilio-not-active', 'Twilio service not active', {
 				method: 'sendInvitationSMS',
 			});
 		}
+
+		const messageFrom = RocketChat.settings.get('Invitation_SMS_Twilio_From')
+		if (!twilioService.accountSid || ! twilioService.authToken || !messageFrom) {
+			throw new Meteor.Error('error-twilio-not-configured', 'Twilio service not configured', {
+                                method: 'sendInvitationSMS',
+                        });
+		}
+
 		check(phones, [String]);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -40,8 +48,7 @@ Meteor.methods({
 		body = RocketChat.placeholders.replace(body);
 		validPhones.forEach((phone) => {
 			try {
-				// validate response
-				twilioService.send(RocketChat.settings.get('Invitation_SMS_Twilio_From'), phone, body);
+				twilioService.send(messageFrom, phone, body);
 			} catch ({ message }) {
 				throw new Meteor.Error('error-sms-send-failed', `Error trying to send SMS: ${ message }`, {
 					method: 'sendInvitationSMS',

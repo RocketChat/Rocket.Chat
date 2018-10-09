@@ -34,13 +34,13 @@ Meteor.startup(function() {
 		});
 
 		this.section('Invitation', function() {
-			this.add('Invitation_SMS_Customized', false, {
-				type: 'boolean',
-				i18nLabel: 'Custom_SMS',
-			});
 			this.add('Invitation_SMS_Twilio_From', '', {
 				type: 'string',
 				i18nLabel: 'Invitation_SMS_Twilio_From',
+			});
+			this.add('Invitation_SMS_Customized', false, {
+				type: 'boolean',
+				i18nLabel: 'Custom_SMS',
 			});
 			return this.add('Invitation_SMS_Customized_Body', '', {
 				type: 'code',
