@@ -261,6 +261,23 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	getOldest(fields = { _id: 1 }) {
+		const query = {
+			_id: {
+				$ne: 'rocket.cat',
+			},
+		};
+
+		const options = {
+			fields,
+			sort: {
+				createdAt: 1,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
