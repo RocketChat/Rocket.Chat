@@ -126,18 +126,7 @@ Meteor.startup(function() {
 		}
 
 		if (_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
-			const oldestUser = RocketChat.models.Users.findOne({
-				_id: {
-					$ne: 'rocket.cat',
-				},
-			}, {
-				fields: {
-					username: 1,
-				},
-				sort: {
-					createdAt: 1,
-				},
-			});
+			const oldestUser = RocketChat.models.Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
