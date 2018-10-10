@@ -56,8 +56,8 @@ Template.privateNoPermission.onCreated(function() {
 	const instance = this;
 	instance.showSendReqeust = new ReactiveVar(true);
 	instance.joinRoomStatus = new ReactiveVar(null);
-
 	const room = Session.get('privateNoPermission');
+
 	Meteor.call('getJoinRoomStatus', room.name, (err, result) => {
 		if (err) {
 			instance.joinRoomStatus.set(false);
@@ -78,5 +78,22 @@ Template.privateNoPermission.onCreated(function() {
 				});
 			}
 		});
+	});
+
+	/**
+	 * Auto-Refresh the page for the requestor to load the room content after the request was approved.
+	 */
+	Tracker.autorun(() => {
+		const roomId = ChatRoom.findOne({ name: room.name, t: room.type }, {
+			fields: {
+				_id: 1,
+			},
+		});
+		if (roomId) {
+			const isSubscribed = ChatSubscription.findOne({ rid: roomId._id }); // user is not subscribed on loading.
+			if (isSubscribed) {
+				document.location.reload(true); // Reload the page to display the room content.
+			}
+		}
 	});
 });

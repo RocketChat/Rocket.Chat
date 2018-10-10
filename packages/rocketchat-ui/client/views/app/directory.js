@@ -8,7 +8,7 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
-					createdAt: timeAgo(result.createdAt),
+					// createdAt: timeAgo(result.createdAt),
 				};
 			} else {
 				return {
@@ -87,15 +87,17 @@ Template.directory.helpers({
 		};
 		const privateChannels = {
 			label: t('Private_Groups'),
-			value: 'private_groups',
+			value: 'p',
 			condition() {
 				return true;
 			},
 		};
-		if (searchType.get() === 'channels') {
+		if (searchType.get() === 'users') {
+			usersTab.active = true;
+		} else if (searchType.get() === 'channels') {
 			channelsTab.active = true;
 		} else {
-			usersTab.active = true;
+			privateChannels.active = true;
 		}
 		return {
 			tabs: [channelsTab, privateChannels, usersTab],

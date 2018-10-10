@@ -226,6 +226,7 @@ Template.createChannel.events({
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
+		const secret = instance.secret.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
 
@@ -237,7 +238,7 @@ Template.createChannel.events({
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted }, { secret: instance.secret.get() });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted, secret });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {

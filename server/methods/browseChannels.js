@@ -26,8 +26,12 @@ Meteor.methods({
 	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'p'].includes(type)) {
 			return;
+		}
+
+		if (type === 'channels') {
+			type = 'c';
 		}
 
 		if (!['asc', 'desc'].includes(sortDirection)) {
