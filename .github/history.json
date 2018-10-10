@@ -19684,6 +19684,132 @@
           ]
         }
       ]
+    },
+    "0.70.1-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12264",
+          "title": "Merge master into develop & Set version to 0.71.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12254",
+          "title": "[FIX] E2E data not cleared on logout",
+          "userLogin": "Hudell",
+          "milestone": "0.70.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12232",
+          "title": "[FIX] E2E password request not closing after entering password",
+          "userLogin": "Hudell",
+          "milestone": "0.70.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12263",
+          "title": "[FIX] Message editing was duplicating reply quotes",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12257",
+          "title": "[FIX] Livechat integration with RDStation",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12233",
+          "title": "Regression: fix modal submit",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.1",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12255",
+          "title": "[FIX] Livechat triggers being registered twice after setting department via API",
+          "userLogin": "edzluhan",
+          "milestone": "0.70.1",
+          "contributors": [
+            "edzluhan"
+          ]
+        },
+        {
+          "pr": "12242",
+          "title": "[FIX] Livechat CRM integration running when disabled ",
+          "userLogin": "renatobecker",
+          "milestone": "0.70.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12241",
+          "title": "[FIX] Emails' logo and links",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12240",
+          "title": "[FIX] Set default action for Setup Wizard form submit",
+          "userLogin": "tassoevan",
+          "milestone": "0.71.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12227",
+          "title": "Add reetp to the issues' bot whitelist",
+          "userLogin": "theorenck",
+          "contributors": [
+            "theorenck",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.70.1-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12268",
+          "title": "Fix: Remove semver satisfies from Apps details that is already done my marketplace",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
