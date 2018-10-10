@@ -19,6 +19,7 @@ Meteor.startup(function() {
 		{ _id: 'create-c',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-d',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
+		{ _id: 'create-personal-access-tokens', roles : ['admin', 'user'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
 		{ _id: 'clean-channel-history',         roles : ['admin'] },
 		{ _id: 'delete-c',                      roles : ['admin', 'owner'] },
