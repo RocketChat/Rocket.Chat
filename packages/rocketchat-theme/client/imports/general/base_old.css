@@ -2123,10 +2123,11 @@ rc-old select,
 
 .rc-old .room-not-found-wrapper {
 	position: relative;
-	flex-direction: column;
-	flex: 1 1 auto;
 
 	display: flex;
+
+	flex-direction: column;
+	flex: 1 1 auto;
 
 	height: calc(100% - 50px);
 }
