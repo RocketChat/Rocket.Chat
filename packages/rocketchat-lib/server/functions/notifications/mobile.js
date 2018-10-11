@@ -26,7 +26,12 @@ async function getBadgeCount(userId) {
 	return total;
 }
 
-function canSendMessageToRoom(room, username) {
+function enableNotificationReplyButton(room, username) {
+	// Some users may have permission to send messages even on readonly rooms, but we're ok with false negatives here in exchange of better perfomance
+	if (room.ro === true) {
+		return true;
+	}
+
 	return !((room.muted || []).includes(username));
 }
 
@@ -52,7 +57,7 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 		usersTo: {
 			userId,
 		},
-		category: canSendMessageToRoom(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	});
 }
 

@@ -81,8 +81,25 @@ RocketChat.processDirectEmail = function(email) {
 		}
 
 		if ((room.muted || []).includes(user.username)) {
-			// room is muted
+			// user is muted
 			return false;
+		}
+
+		if (room.ro === true) {
+			const userOwner = RocketChat.models.Roles.findOne({
+				rid: room._id,
+				'u._id': user._id,
+				roles: 'owner',
+			}, {
+				fields: {
+					_id: 1,
+				},
+			});
+
+			if (!userOwner && !RocketChat.authz.hasPermission(Meteor.userId(), 'post-readonly')) {
+				// room is readonly
+				return false;
+			}
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {

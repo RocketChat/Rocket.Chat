@@ -62,17 +62,38 @@ Meteor.methods({
 			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
-		if ((room.muted || []).includes(user.username)) {
-			if (!room.ro || !RocketChat.authz.hasPermission(Meteor.userId(), 'post-readonly')) {
+		if (room.ro === true) {
+			const userOwner = RocketChat.models.Roles.findOne({
+				rid: room._id,
+				'u._id': user._id,
+				roles: 'owner',
+			}, {
+				fields: {
+					_id: 1,
+				},
+			});
+
+			if (!userOwner && !RocketChat.authz.hasPermission(Meteor.userId(), 'post-readonly')) {
 				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 					_id: Random.id(),
 					rid: room._id,
 					ts: new Date,
-					msg: TAPi18n.__('You_have_been_muted', {}, user.language),
+					msg: TAPi18n.__('room_is_read_only', {}, user.language),
 				});
 
-				throw new Meteor.Error('You can\'t send messages because you have been muted');
+				throw new Meteor.Error('You can\'t send messages because the room is readonly.');
 			}
+		}
+
+		if ((room.muted || []).includes(user.username)) {
+			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				_id: Random.id(),
+				rid: room._id,
+				ts: new Date,
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
+			});
+
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {

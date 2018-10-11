@@ -69,14 +69,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	for (const username of members) {
 		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
-		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
-		}
-
-		// make all room members (Except the owner) muted by default
-		if (readOnly === true && !isTheOwner) {
-			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
 		const extra = { open: true };

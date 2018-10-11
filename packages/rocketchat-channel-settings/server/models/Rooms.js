@@ -17,22 +17,8 @@ RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 	const update = {
 		$set: {
 			ro: readOnly,
-			muted: [],
 		},
 	};
-	if (readOnly) {
-		RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
-			return update.$set.muted.push(user.username);
-		});
-	} else {
-		update.$unset = {
-			muted: '',
-		};
-	}
-
-	if (update.$set.muted.length === 0) {
-		delete update.$set.muted;
-	}
 
 	return this.update(query, update);
 };

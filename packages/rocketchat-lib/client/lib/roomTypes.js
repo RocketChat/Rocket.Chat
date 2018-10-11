@@ -59,7 +59,20 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 				_id: 1,
 			},
 		});
-		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner && !RocketChat.authz.hasAtLeastOnePermission('post-readonly'));
+
+		if (userOwner) {
+			return false;
+		}
+
+		if (room) {
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+				return true;
+			}
+
+			return (room.ro === true && !RocketChat.authz.hasAtLeastOnePermission('post-readonly'));
+		} else {
+			return false;
+		}
 	}
 	archived(roomId) {
 		const fields = {
