@@ -1,3 +1,12 @@
+# Assistify 0.9.2
+
+This is a bugfix release.
+
+Major changes:
+
+- Threading can now be configured to limit the number of users invited
+- A username is now being generated from the SAML Identity - this shall fix some other nasty bugs.
+
 # Assistify 0.9.1
 
 This is a bugfix release:
