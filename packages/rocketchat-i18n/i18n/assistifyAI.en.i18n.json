@@ -33,7 +33,7 @@
     "Assistify_AI_Resync_Full_Description": "Triggers a complete Rocket.Chat/Smarti synchronization",
     "Assistify_AI_Resync_Message_Limit": "Max. number of messages to sync per room",
     "Widget_could_not_load": "The knowledge base cannot be displayed. We're more than sorry for that! If you're connected to the intranet (you have to in order to fetch results), please let us know so we can fix the issue!",
-    "Widget_loading": "Knowledge-base has been loading for a while now. Something seems to wrong here...",
+    "Widget_loading": "Knowledge-base has been loading for a while now. Something seems to be wrong here...",
     "Reload_Settings": "Reload settings",
     "settings-reloaded-successfully": "Settings have been successfully reloaded",
     "error-unreachable-url": "URL not reachable"
