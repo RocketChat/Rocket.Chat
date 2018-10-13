@@ -413,7 +413,7 @@ It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branchi
 See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
 ## Translations
-We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
+We are experimenting [Lingohub](https://translate.lingohub.com/rocketchat/dashboard).
 If you want to help, send an email to support at rocket.chat to be invited to the translation project.
 
 ## How to Contribute
