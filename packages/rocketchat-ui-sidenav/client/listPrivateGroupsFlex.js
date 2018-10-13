@@ -13,7 +13,7 @@ Template.listPrivateGroupsFlex.helpers({
 	},
 	hidden() {
 		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
-	}
+	},
 });
 
 Template.listPrivateGroupsFlex.events({
@@ -23,14 +23,6 @@ Template.listPrivateGroupsFlex.events({
 
 	'click .channel-link'() {
 		return SideNav.closeFlex();
-	},
-
-	'mouseenter header'() {
-		return SideNav.overArrow();
-	},
-
-	'mouseleave header'() {
-		return SideNav.leaveArrow();
 	},
 
 	'scroll .content': _.throttle(function(e, t) {
@@ -47,7 +39,7 @@ Template.listPrivateGroupsFlex.events({
 
 	'change #sort'(e, instance) {
 		return instance.sort.set($(e.currentTarget).val());
-	}
+	},
 });
 
 Template.listPrivateGroupsFlex.onCreated(function() {
@@ -77,7 +69,7 @@ Template.listPrivateGroupsFlex.onCreated(function() {
 		this.groups.set(RocketChat.models.Subscriptions.find({
 			name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
 			t: 'p',
-			archived: { $ne: true }
+			archived: { $ne: true },
 		}, options).fetch()
 		);
 		if (this.groups.get().length < this.limit.get()) {

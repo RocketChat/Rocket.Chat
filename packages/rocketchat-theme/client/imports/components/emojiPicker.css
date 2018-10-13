@@ -254,7 +254,7 @@
 
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: cover;
+	background-size: contain;
 
 	font-size: inherit;
 	line-height: normal;

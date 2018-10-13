@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
-		'rocketchat:ui-vrecord'
+		'rocketchat:ui-vrecord',
 	]);
 
 	api.addFiles('client/message.html', 'client');
@@ -29,6 +29,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/popup/messagePopupConfig.html', 'client');
 	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
 	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommandPreview.html', 'client');
+	api.addFiles('client/popup/messagePopupSlashCommandPreview.js', 'client');
 	api.addFiles('client/popup/messagePopupUser.html', 'client');
 
 	api.addFiles('client/message.js', 'client');

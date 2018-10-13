@@ -1,9 +1,10 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 const accountsConfig = {
 	forbidClientAccountCreation: true,
-	loginExpirationInDays: RocketChat.settings.get('Accounts_LoginExpiration')
+	loginExpirationInDays: RocketChat.settings.get('Accounts_LoginExpiration'),
 };
 
 Accounts.config(accountsConfig);
@@ -12,51 +13,78 @@ Accounts.emailTemplates.siteName = RocketChat.settings.get('Site_Name');
 
 Accounts.emailTemplates.from = `${ RocketChat.settings.get('Site_Name') } <${ RocketChat.settings.get('From_Email') }>`;
 
-const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
+Accounts.emailTemplates.userToActivate = {
+	subject() {
+		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
+		const siteName = RocketChat.settings.get('Site_Name');
 
+		return `[${ siteName }] ${ subject }`;
+	},
+
+	html(options = {}) {
+		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
+
+		return Mailer.replace(TAPi18n.__(email), {
+			name: s.escapeHTML(options.name),
+			email: s.escapeHTML(options.email),
+			reason: s.escapeHTML(options.reason),
+		});
+	},
+};
+
+Accounts.emailTemplates.userActivated = {
+	subject({ active, username }) {
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
+		const subject = `Accounts_Email_${ action }_Subject`;
+		const siteName = RocketChat.settings.get('Site_Name');
+
+		return `[${ siteName }] ${ TAPi18n.__(subject) }`;
+	},
+
+	html({ active, name, username }) {
+		const activated = username ? 'Activated' : 'Approved';
+		const action = active ? activated : 'Deactivated';
+
+		return Mailer.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
+			name: s.escapeHTML(name),
+		});
+	},
+};
+
+
+// const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.html;
+let verifyEmailTemplate = '';
+let enrollAccountTemplate = '';
+Meteor.startup(() => {
+	Mailer.getTemplateWrapped('Verification_Email', (value) => {
+		verifyEmailTemplate = value;
+	});
+	Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
+		enrollAccountTemplate = value;
+	});
+});
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return verifyEmailHtml(user, url);
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url });
 };
 
-const resetPasswordHtml = Accounts.emailTemplates.resetPassword.text;
-
-Accounts.emailTemplates.resetPassword.html = function(user, url) {
-	url = url.replace(/\/#\//, '/');
-	return resetPasswordHtml(user, url);
+Accounts.urls.resetPassword = function(token) {
+	return Meteor.absoluteUrl(`reset-password/${ token }`);
 };
 
-Accounts.emailTemplates.enrollAccount.subject = function(user = {}) {
-	let subject;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
-	} else {
-		subject = TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en'
-		});
-	}
-	return RocketChat.placeholders.replace(subject);
+Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
+
+Accounts.emailTemplates.enrollAccount.subject = function(user) {
+	const subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
+	return Mailer.replace(subject, user);
 };
 
-Accounts.emailTemplates.enrollAccount.html = function(user = {}/*, url*/) {
-	let html;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		html = RocketChat.settings.get('Accounts_Enrollment_Email');
-	} else {
-		html = TAPi18n.__('Accounts_Enrollment_Email_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en'
-		});
-	}
-
-	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
-	html = RocketChat.placeholders.replace(html, {
-		name: user.name,
-		email: user.emails && user.emails[0] && user.emails[0].address
+Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
+	return Mailer.replace(enrollAccountTemplate, {
+		name: s.escapeHTML(user.name),
+		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
 	});
-
-	return header + html + footer;
 };
 
 Accounts.onCreateUser(function(options, user = {}) {
@@ -88,10 +116,31 @@ Accounts.onCreateUser(function(options, user = {}) {
 			if (!user.emails && service.email) {
 				user.emails = [{
 					address: service.email,
-					verified: true
+					verified: true,
 				}];
 			}
 		}
+	}
+
+	if (!user.active) {
+		const destinations = [];
+
+		RocketChat.models.Roles.findUsersInRole('admin').forEach((adminUser) => {
+			if (Array.isArray(adminUser.emails)) {
+				adminUser.emails.forEach((email) => {
+					destinations.push(`${ adminUser.name }<${ email.address }>`);
+				});
+			}
+		});
+
+		const email = {
+			to: destinations,
+			from: RocketChat.settings.get('From_Email'),
+			subject: Accounts.emailTemplates.userToActivate.subject(),
+			html: Accounts.emailTemplates.userToActivate.html(options),
+		};
+
+		Mailer.send(email);
 	}
 
 	return user;
@@ -109,7 +158,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	if (user.services && !user.services.password) {
 		const defaultAuthServiceRoles = String(RocketChat.settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
-			roles = roles.concat(defaultAuthServiceRoles.map(s => s.trim()));
+			roles = roles.concat(defaultAuthServiceRoles.map((s) => s.trim()));
 		}
 	}
 
@@ -120,7 +169,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	const _id = insertUserDoc.call(Accounts, options, user);
 
 	user = Meteor.users.findOne({
-		_id
+		_id,
 	});
 
 	if (user.username) {
@@ -140,17 +189,20 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	if (roles.length === 0) {
 		const hasAdmin = RocketChat.models.Users.findOne({
 			roles: 'admin',
-			type: 'user'
+			type: 'user',
 		}, {
 			fields: {
-				_id: 1
-			}
+				_id: 1,
+			},
 		});
 
 		if (hasAdmin) {
 			roles.push('user');
 		} else {
 			roles.push('admin');
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 		}
 	}
 
@@ -172,18 +224,18 @@ Accounts.validateLoginAttempt(function(login) {
 
 	if (!!login.user.active !== true) {
 		throw new Meteor.Error('error-user-is-not-activated', 'User is not activated', {
-			'function': 'Accounts.validateLoginAttempt'
+			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
 	if (!login.user.roles || !Array.isArray(login.user.roles)) {
 		throw new Meteor.Error('error-user-has-no-roles', 'User has no roles', {
-			'function': 'Accounts.validateLoginAttempt'
+			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
 	if (login.user.roles.includes('admin') === false && login.type === 'password' && RocketChat.settings.get('Accounts_EmailVerification') === true) {
-		const validEmail = login.user.emails.filter(email => email.verified === true);
+		const validEmail = login.user.emails.filter((email) => email.verified === true);
 		if (validEmail.length === 0) {
 			throw new Meteor.Error('error-invalid-email', 'Invalid email __email__');
 		}
@@ -221,11 +273,11 @@ Accounts.validateNewUser(function(user) {
 		return true;
 	}
 
-	domainWhiteList = domainWhiteList.split(',').map(domain => domain.trim());
+	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
 
 	if (user.emails && user.emails.length > 0) {
 		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some(domain => email.match(`@${ RegExp.escape(domain) }$`));
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${ RegExp.escape(domain) }$`));
 
 		if (inWhiteList === false) {
 			throw new Meteor.Error('error-invalid-domain');

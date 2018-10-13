@@ -123,6 +123,7 @@
 
 	&__icon {
 		display: flex;
+		flex: auto 0 0;
 
 		width: 50px;
 		height: 21px;
@@ -136,7 +137,48 @@
 		}
 
 		& .rc-input__icon-svg--plus {
-			transition: transform 0.2s linear;
+			transition: transform 0.1s linear;
+		}
+
+		&.check {
+
+			display: none;
+
+			color: red;
+
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.cross {
+
+			display: none;
+
+			color: red;
+
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.loading {
+
+			display: none;
+
+			cursor: pointer;
+
+			&.active {
+				display: flex;
+			}
+		}
+
+		&.mic {
+			display: none;
+
+			&.active {
+				display: flex;
+			}
 		}
 	}
 
@@ -144,12 +186,35 @@
 		position: relative;
 
 		&.active .rc-input__icon-svg--plus {
-			transform: rotate(135deg);
+			transform: rotate(45deg);
 		}
 	}
 
 	& [data-small] {
 		display: none;
+	}
+
+	&__audio-message {
+		display: flex;
+	}
+
+	&__timer-box {
+		display: none;
+
+		width: 50px;
+
+		&.active {
+			display: flex;
+		}
+	}
+
+	&__timer-dot {
+
+		color: #d60000;
+
+		font-size: 1.5em;
+
+		line-height: 0.8em;
 	}
 }
 
@@ -219,11 +284,15 @@
 			order: 3;
 		}
 
+		&__audio-message {
+			order: 4;
+		}
+
 		&__send {
 			flex: 0;
 
 			font-size: 20px;
-			order: 4;
+			order: 5;
 		}
 	}
 }

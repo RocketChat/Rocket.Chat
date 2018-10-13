@@ -10,8 +10,8 @@ const config = {
 	tokenPath: '/login/oauth/access_token',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.github-enterprise'],
-		forOtherUsers: ['services.github-enterprise.username']
-	}
+		forOtherUsers: ['services.github-enterprise.username'],
+	},
 };
 
 const GitHubEnterprise = new CustomOAuth('github_enterprise', config);

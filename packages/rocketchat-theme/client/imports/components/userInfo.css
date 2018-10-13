@@ -34,8 +34,6 @@
 		overflow-y: auto;
 
 		flex: 1 1;
-
-		padding: 0 var(--default-padding);
 	}
 
 	&__banner {
@@ -75,6 +73,9 @@
 	}
 
 	&__name {
+
+		width: 100%;
+
 		text-align: center;
 		word-wrap: break-word;
 
@@ -168,6 +169,7 @@
 
 	&-action {
 		display: flex;
+		overflow: hidden;
 
 		margin-bottom: var(--default-padding);
 		justify-content: center;
@@ -277,9 +279,10 @@
 
 			cursor: pointer;
 
+			text-transform: capitalize;
+
 			color: #1d73f3;
 			align-items: flex-end;
-			text-transform: capitalize;
 		}
 	}
 }
@@ -290,6 +293,8 @@
 	width: 100%;
 
 	word-break: break-word;
+
+	color: #444444;
 
 	&__description {
 		margin: 5px 2px;
@@ -311,7 +316,7 @@
 		}
 
 		&.disabled {
-			color: #a1a1a1;
+			opacity: 0.3;
 		}
 	}
 

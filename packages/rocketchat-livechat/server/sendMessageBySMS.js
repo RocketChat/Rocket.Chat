@@ -33,7 +33,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
 
-	if (!visitor || !visitor.profile || !visitor.phone || visitor.phone.length === 0) {
+	if (!visitor || !visitor.phone || visitor.phone.length === 0) {
 		return message;
 	}
 

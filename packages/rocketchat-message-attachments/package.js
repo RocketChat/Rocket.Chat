@@ -2,14 +2,16 @@ Package.describe({
 	name: 'rocketchat:message-attachments',
 	version: '0.0.1',
 	summary: 'Widget for message attachments',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'rocketchat:lazy-load',
+		'rocketchat:e2e',
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');

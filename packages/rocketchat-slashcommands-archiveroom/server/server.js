@@ -23,8 +23,8 @@ function Archive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 	}
 
@@ -40,8 +40,8 @@ function Archive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Duplicate_archived_channel_name', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -54,11 +54,14 @@ function Archive(command, params, item) {
 		ts: new Date(),
 		msg: TAPi18n.__('Channel_Archived', {
 			postProcess: 'sprintf',
-			sprintf: [channel]
-		}, user.language)
+			sprintf: [channel],
+		}, user.language),
 	});
 
 	return Archive;
 }
 
-RocketChat.slashCommands.add('archive', Archive);
+RocketChat.slashCommands.add('archive', Archive, {
+	description: 'Archive',
+	params: '#channel',
+});

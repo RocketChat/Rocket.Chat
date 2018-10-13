@@ -1,7 +1,7 @@
 /* eslint object-shorthand: 0, prefer-template: 0 */
 
 const path = require('path');
-var pkgJson = {};
+let pkgJson = {};
 
 try {
 	pkgJson = require(path.resolve(

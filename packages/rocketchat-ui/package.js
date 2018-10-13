@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -22,8 +22,10 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:ui-master',
-		'raix:push',
-		'raix:ui-dropped-event'
+		'rocketchat:push',
+		'raix:ui-dropped-event',
+		'rocketchat:lazy-load',
+		'rocketchat:e2e',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -83,12 +85,13 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/createChannel.html', 'client');
 	api.addFiles('client/views/app/fullModal.html', 'client');
 	api.addFiles('client/views/app/home.html', 'client');
+	api.addFiles('client/views/app/directory.html', 'client');
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
 	api.addFiles('client/views/app/pageSettingsContainer.html', 'client');
 	api.addFiles('client/views/app/popout.html', 'client');
+	api.addFiles('client/views/app/alerts.html', 'client');
 
-	api.addFiles('client/views/app/privateHistory.html', 'client');
 	api.addFiles('client/views/app/room.html', 'client');
 	api.addFiles('client/views/app/roomSearch.html', 'client');
 	api.addFiles('client/views/app/secretURL.html', 'client');
@@ -107,12 +110,13 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/createChannel.js', 'client');
 	api.addFiles('client/views/app/fullModal.js', 'client');
 	api.addFiles('client/views/app/home.js', 'client');
-	api.addFiles('client/views/app/privateHistory.js', 'client');
+	api.addFiles('client/views/app/directory.js', 'client');
 	api.addFiles('client/views/app/room.js', 'client');
 	api.addFiles('client/views/app/roomSearch.js', 'client');
 	api.addFiles('client/views/app/secretURL.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoButtons.js', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.js', 'client');
+	api.addFiles('client/views/app/alerts.js', 'client');
 	api.addFiles('client/views/app/popover.js', 'client');
 	api.addFiles('client/views/app/popout.js', 'client');
 	api.addFiles('client/views/app/modal.js', 'client');
@@ -120,6 +124,12 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/icon.html', 'client');
 	api.addFiles('client/components/icon.js', 'client');
+
+	api.addFiles('client/components/table.html', 'client');
+	api.addFiles('client/components/table.js', 'client');
+
+	api.addFiles('client/components/tabs.html', 'client');
+	api.addFiles('client/components/tabs.js', 'client');
 
 	api.addFiles('client/components/popupList.html', 'client');
 	api.addFiles('client/components/popupList.js', 'client');

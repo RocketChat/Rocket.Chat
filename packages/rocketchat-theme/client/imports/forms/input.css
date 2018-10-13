@@ -67,6 +67,10 @@
 		&::placeholder {
 			color: var(--input-placeholder-color);
 		}
+
+		&[type=color] {
+			height: 45px;
+		}
 	}
 
 	&__description {
@@ -99,12 +103,19 @@
 	}
 
 	&--small {
+		font-size: 14px;
+
 		& .rc-input__element {
-			padding: 8px;
+			padding-top: 8px;
+			padding-bottom: 8px;
 		}
 	}
 
 	&--error {
+		.rc-tags {
+			border-color: var(--input-error-color);
+		}
+
 		& .rc-input {
 			&__element {
 				border-color: var(--input-error-color);
@@ -113,12 +124,90 @@
 	}
 }
 
-select.rc-input {
-	padding: 0.782rem;
-	margin: 0.5rem 0;
-	appearance: none;
+.rc-input-file {
+	position: relative;
 
 	width: 100%;
+
+	&__label {
+		cursor: pointer;
+	}
+
+	&__title {
+		font-size: var(--input-font-size);
+	}
+
+	&__wrapper {
+		display: flex;
+		flex-direction: row;
+
+		width: 100%;
+		margin: 0.5rem 0;
+		padding: 0.3rem;
+
+		color: var(--input-text-color);
+
+		border-width: var(--input-border-width);
+		border-color: var(--input-border-color);
+		border-radius: var(--input-border-radius);
+		background-color: transparent;
+
+		font-size: var(--input-font-size);
+		align-items: center;
+		justify-content: flex-end;
+
+		&::placeholder {
+			color: var(--input-placeholder-color);
+		}
+
+		& > .rc-button {
+			flex: 0 0 auto;
+
+			height: 10px;
+			min-height: 31px;
+			margin: 0;
+			padding: 8px;
+
+			border-color: #e1e5e8;
+			border-radius: 2px;
+			background: #f1f1f1;
+		}
+	}
+
+	&__name {
+
+		overflow: hidden;
+
+		flex: 0 1 auto;
+
+		width: 100%;
+
+		padding: 0 5px;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+
+		line-height: 16px;
+	}
+
+	&__element {
+		display: none;
+	}
+
+	&__description {
+
+		color: var(--color-gray);
+
+		font-size: 0.875rem;
+	}
+}
+
+select.rc-input {
+
+	width: 100%;
+	margin: 0.5rem 0;
+	padding: 0.782rem;
 
 	color: var(--input-text-color);
 
@@ -128,6 +217,7 @@ select.rc-input {
 	background-color: transparent;
 
 	font-size: var(--input-font-size);
+	appearance: none;
 
 	&--small {
 		padding: 0.5rem 1rem;

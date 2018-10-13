@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:slashcommands-join',
 	version: '0.0.1',
 	summary: 'Command handler for the /join command',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
 
 	api.use('templating', 'client');

@@ -1,5 +1,5 @@
 /*
- * Hilights is a named function that will process Highlights
+ * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
 import _ from 'underscore';

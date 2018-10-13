@@ -9,23 +9,35 @@ if (!Accounts.saml) {
 // If we find a samlProvider, and we are using single
 // logout we will initiate logout from rocketchat via saml.
 // If not using single logout, we just do the standard logout.
+// This can be overridden by a configured logout behaviour.
 //
 // TODO: This may need some work as it is not clear if we are really
 // logging out of the idp when doing the standard logout.
 
 const MeteorLogout = Meteor.logout;
+const logoutBehaviour = {
+	TERMINATE_SAML: 'SAML',
+	ONLY_RC: 'Local',
+};
 
-Meteor.logout = function() {
-	const samlService = ServiceConfiguration.configurations.findOne({service: 'saml'});
+Meteor.logout = function(...args) {
+	const samlService = ServiceConfiguration.configurations.findOne({ service: 'saml' });
 	if (samlService) {
 		const provider = samlService.clientConfig && samlService.clientConfig.provider;
 		if (provider) {
-			if (samlService.idpSLORedirectURL) {
-				return Meteor.logoutWithSaml({ provider });
+			if (samlService.logoutBehaviour == null || samlService.logoutBehaviour === logoutBehaviour.TERMINATE_SAML) {
+				if (samlService.idpSLORedirectURL) {
+					console.info('SAML session terminated via SLO');
+					return Meteor.logoutWithSaml({ provider });
+				}
+			}
+
+			if (samlService.logoutBehaviour === logoutBehaviour.ONLY_RC) {
+				console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 			}
 		}
 	}
-	return MeteorLogout.apply(Meteor, arguments);
+	return MeteorLogout.apply(Meteor, args);
 };
 
 const openCenteredPopup = function(url, width, height) {
@@ -37,7 +49,7 @@ const openCenteredPopup = function(url, width, height) {
 
 		const intervalId = setInterval(function() {
 			newwindow.executeScript({
-				'code': 'document.getElementsByTagName("script")[0].textContent'
+				code: 'document.getElementsByTagName("script")[0].textContent',
 			}, function(data) {
 				if (data && data.length > 0 && data[0] === 'window.close()') {
 					newwindow.close();
@@ -104,26 +116,26 @@ Meteor.loginWithSaml = function(options, callback) {
 	const credentialToken = `id-${ Random.id() }`;
 	options.credentialToken = credentialToken;
 
-	Accounts.saml.initiateLogin(options, function(/*error, result*/) {
+	Accounts.saml.initiateLogin(options, function(/* error, result*/) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
-				credentialToken
+				credentialToken,
 			}],
-			userCallback: callback
+			userCallback: callback,
 		});
 	});
 };
 
-Meteor.logoutWithSaml = function(options/*, callback*/) {
-	//Accounts.saml.idpInitiatedSLO(options, callback);
+Meteor.logoutWithSaml = function(options/* , callback*/) {
+	// Accounts.saml.idpInitiatedSLO(options, callback);
 	Meteor.call('samlLogout', options.provider, function(err, result) {
 		if (err || !result) {
 			MeteorLogout.apply(Meteor);
 			return;
 		}
 		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-		//window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
+		// window.location.replace(Meteor.absoluteUrl('_saml/sloRedirect/' + options.provider + '/?redirect='+result));
 		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };

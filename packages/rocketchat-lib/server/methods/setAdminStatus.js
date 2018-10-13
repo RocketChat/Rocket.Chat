@@ -19,5 +19,5 @@ Meteor.methods({
 		} else {
 			return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
 		}
-	}
+	},
 });

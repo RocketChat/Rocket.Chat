@@ -7,7 +7,9 @@ class Twilio {
 		this.authToken = RocketChat.settings.get('SMS_Twilio_authToken');
 	}
 	parse(data) {
-		return {
+		let numMedia = 0;
+
+		const returnData = {
 			from: data.From,
 			to: data.To,
 			body: data.Body,
@@ -20,9 +22,37 @@ class Twilio {
 				fromCountry: data.FromCountry,
 				fromState: data.FromState,
 				fromCity: data.FromCity,
-				fromZip: data.FromZip
-			}
+				fromZip: data.FromZip,
+			},
 		};
+
+		if (data.NumMedia) {
+			numMedia = parseInt(data.NumMedia, 10);
+		}
+
+		if (isNaN(numMedia)) {
+			console.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			return returnData;
+		}
+
+		returnData.media = [];
+
+		for (let mediaIndex = 0; mediaIndex < numMedia; mediaIndex++) {
+			const media = {
+				url: '',
+				contentType: '',
+			};
+
+			const mediaUrl = data[`MediaUrl${ mediaIndex }`];
+			const contentType = data[`MediaContentType${ mediaIndex }`];
+
+			media.url = mediaUrl;
+			media.contentType = contentType;
+
+			returnData.media.push(media);
+		}
+
+		return returnData;
 	}
 	send(fromNumber, toNumber, message) {
 		const client = twilio(this.accountSid, this.authToken);
@@ -30,15 +60,15 @@ class Twilio {
 		client.messages.create({
 			to: toNumber,
 			from: fromNumber,
-			body: message
+			body: message,
 		});
 	}
 	response(/* message */) {
 		return {
 			headers: {
-				'Content-Type': 'text/xml'
+				'Content-Type': 'text/xml',
 			},
-			body: '<Response></Response>'
+			body: '<Response></Response>',
 		};
 	}
 	error(error) {
@@ -48,9 +78,9 @@ class Twilio {
 		}
 		return {
 			headers: {
-				'Content-Type': 'text/xml'
+				'Content-Type': 'text/xml',
 			},
-			body: `<Response>${ message }</Response>`
+			body: `<Response>${ message }</Response>`,
 		};
 	}
 }

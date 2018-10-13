@@ -586,6 +586,7 @@ RocketChat.emailDomainDefaultBlackList = [
 	'one-time.email',
 	'oneoffemail.com',
 	'oneoffmail.com',
+	'one2mail.info',
 	'onewaymail.com',
 	'onlatedotcom.info',
 	'online.ms',
@@ -940,6 +941,6 @@ RocketChat.emailDomainDefaultBlackList = [
 	'zomg.info',
 	'zxcv.com',
 	'zxcvbnm.com',
-	'zzz.com'
+	'zzz.com',
 ];
 

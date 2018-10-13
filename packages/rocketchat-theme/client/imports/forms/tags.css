@@ -40,6 +40,8 @@
 		&-icon {
 			width: 10px;
 			height: 10px;
+
+			pointer-events: none;
 			stroke: #9d9fa3;
 		}
 	}
