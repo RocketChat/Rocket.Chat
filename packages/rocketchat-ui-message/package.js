@@ -19,7 +19,6 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
-		'kb0304:pdfjs'
 	]);
 
 	api.addFiles('client/message.html', 'client');
@@ -44,6 +43,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/renderMessageBody.js', 'client');
 
 	api.addFiles('startup/messageBoxActions.js', 'client');
+
+	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
 
 	api.export('renderMessageBody');
 });

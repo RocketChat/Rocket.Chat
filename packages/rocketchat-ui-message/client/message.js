@@ -1,25 +1,26 @@
-/* globals pdfjsLib renderEmoji renderMessageBody */
+/* globals renderEmoji renderMessageBody */
 import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/packages/kb0304_pdfjs/build/pdf.worker.js';
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	if (!pdfLink || !pdfLink.endsWith('.pdf')) { return; }
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) { return; }
+	const pdfjsLib = await import('pdfjs-dist');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
 	const loader = document.getElementById('js-loading-${canvasId}');
 	if (loader) { loader.style.display = 'block'; }
 	const pdf = await pdfjsLib.getDocument(pdfLink);
 	const page = await pdf.getPage(1);
-	const scale = 0.75;
+	const scale = 0.5;
 	const viewport = page.getViewport(scale);
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
 	page.render({
 		canvasContext: context,
-		viewport
+		viewport,
 	});
 	if (loader) { loader.style.display = 'none'; }
 	canvas.style.maxWidth = '-webkit-fill-available';
@@ -390,7 +391,7 @@ Template.message.onCreated(function() {
 Template.message.onViewRendered = function(context) {
 	return this._domrange.onAttached((domRange) => {
 		if (context.file && context.file.type === 'application/pdf') {
-			Meteor.defer(()=>{ renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
 		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;

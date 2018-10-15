@@ -150,9 +150,10 @@ html.rtl .attachment {
 	}
 
 	& .attachment-pdf-loading {
-		font-size: 1.5rem;
 		display: none;
-  }
+
+		font-size: 1.5rem;
+	}
 
 	& .actions-container {
 		margin-top: 6px;

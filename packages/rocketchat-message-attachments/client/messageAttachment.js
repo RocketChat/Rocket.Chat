@@ -75,5 +75,5 @@ Template.messageAttachment.helpers({
 			return true;
 		}
 		return false;
-	}
+	},
 });
