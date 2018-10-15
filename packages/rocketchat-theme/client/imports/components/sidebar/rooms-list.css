@@ -43,7 +43,7 @@
 
 		font-size: var(--rooms-list-empty-text-size);
 	}
-	
+
 	&__direct-plus {
 		&:hover {
 			background-color: var(--sidebar-background-light-hover);
@@ -53,7 +53,7 @@
 			background-color: var(--sidebar-item-active-background);
 		}
 	}
-	
+
 	&__toolbar-search {
 		position: absolute;
 		z-index: 1;
