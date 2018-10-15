@@ -12,6 +12,7 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 			showFooter: false,
 			closeOnCancel: true,
 			html: true,
+			confirmOnEnter: false,
 		});
 	},
 });
