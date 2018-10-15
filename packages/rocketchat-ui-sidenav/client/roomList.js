@@ -72,7 +72,11 @@ Template.roomList.helpers({
 	isLivechat() {
 		return this.identifier === 'l';
 	},
-
+	
+	isDirect(room) {
+		return room.identifier === 'd';
+	},
+	
 	shouldAppear(group, rooms) {
 		/*
 		if is a normal group ('channel' 'private' 'direct')
@@ -96,6 +100,12 @@ Template.roomList.helpers({
 
 	showRoomCounter() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+	},
+});
+
+Template.roomList.events({
+	'click .rooms-list__direct-plus'() {
+		FlowRouter.go('directory');
 	},
 });
 
