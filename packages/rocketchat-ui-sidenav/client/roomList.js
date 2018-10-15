@@ -72,11 +72,11 @@ Template.roomList.helpers({
 	isLivechat() {
 		return this.identifier === 'l';
 	},
-	
+
 	isDirect(room) {
 		return room.identifier === 'd';
 	},
-	
+
 	shouldAppear(group, rooms) {
 		/*
 		if is a normal group ('channel' 'private' 'direct')
