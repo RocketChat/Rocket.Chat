@@ -195,7 +195,6 @@ rocketchat:e2e
 
 rocketchat:blockstack
 rocketchat:version-check
-
 rocketchat:search
 chatpal:search
 rocketchat:lazy-load
