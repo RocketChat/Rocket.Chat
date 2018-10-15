@@ -13,6 +13,11 @@
 								{{/if}}
 							{{/with}}
 						{{/if}}
+						{{#if isDirect ..}}
+							<span class="badge rooms-list__direct-plus">
+								{{> icon block="rc-input__icon-svg" icon="plus"}}
+							</span>
+						{{/if}}
 					</h3>
 					<ul class="rooms-list__list {{ roomType ..}}">
 						{{#each room in this}}
