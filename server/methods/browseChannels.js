@@ -28,7 +28,7 @@ Meteor.methods({
 	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'federated_users'].includes(type)) {
 			return;
 		}
 
@@ -54,27 +54,33 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		if (type === 'channels') {
 
+		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
+
 			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
+
+			const results = RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+				...options,
+				sort,
+				fields: {
+					description: 1,
+					topic: 1,
+					name: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					usersCount: 1,
+				},
+			}).fetch();
+
+			const total = RocketChat.models.Rooms.findByNameAndType(regex, 'c').count();
+
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
-					...options,
-					sort,
-					fields: {
-						description: 1,
-						topic: 1,
-						name: 1,
-						lastMessage: 1,
-						ts: 1,
-						archived: 1,
-						usersCount: 1,
-					},
-				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
+				results,
+				total,
 			};
 		}
 
@@ -82,19 +88,32 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
+
+		let methodToCall = 'findByActiveUsersExcept';
+
+		if (type === 'federated_users') {
+			methodToCall = 'findByFederatedActiveUsersExcept';
+		}
+
 		const sort = sortUsers(sortBy, sortDirection);
+
+		const results = RocketChat.models.Users[methodToCall](text, [user.username], {
+			...options,
+			sort,
+			fields: {
+				username: 1,
+				name: 1,
+				createdAt: 1,
+				emails: 1,
+				federation: 1,
+			},
+		}).fetch();
+
+		const total = RocketChat.models.Users[methodToCall](text, [user.username]).count();
+
 		return {
-			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
-				...options,
-				sort,
-				fields: {
-					username: 1,
-					name: 1,
-					createdAt: 1,
-					emails: 1,
-				},
-			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
+			results,
+			total,
 		};
 	},
 });

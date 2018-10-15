@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
+RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '', options = {}) {
 	let slugifiedName = displayName;
 
 	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -17,11 +17,17 @@ RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 	}
 
 	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
+
+	if (options.nameValidationRegex) {
+		nameValidation = new RegExp(options.nameValidationRegex);
+	} else {
+		try {
+			nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+		} catch (error) {
+			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
+		}
 	}
+
 	if (!nameValidation.test(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${ slugifiedName } is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
@@ -30,6 +36,7 @@ RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 	}
 
 	const room = RocketChat.models.Rooms.findOneByName(slugifiedName);
+
 	if (room && room._id !== rid) {
 		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
 			let tmpName = slugifiedName;

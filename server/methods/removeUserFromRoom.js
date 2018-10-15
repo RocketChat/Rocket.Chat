@@ -32,6 +32,8 @@ Meteor.methods({
 
 		const removedUser = RocketChat.models.Users.findOneByUsername(data.username);
 
+		const fromUser = RocketChat.models.Users.findOneById(fromId);
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -49,19 +51,23 @@ Meteor.methods({
 			}
 		}
 
+		RocketChat.callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
 			RocketChat.authz.removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
-		const fromUser = RocketChat.models.Users.findOneById(fromId);
-
 		RocketChat.models.Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
 			},
+		});
+
+		Meteor.defer(function() {
+			RocketChat.callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
 
 		return true;

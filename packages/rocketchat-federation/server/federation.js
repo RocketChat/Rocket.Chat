@@ -5,25 +5,28 @@ if (!!RocketChat.settings.get('FEDERATION_Enabled') === true) {
 	// Normalize the config values
 	const config = {
 		identifier: RocketChat.settings.get('FEDERATION_Peer_Identifier'),
-		client: {
-			hub: {
-				host: RocketChat.settings.get('FEDERATION_Hub_Host'),
-				port: RocketChat.settings.get('FEDERATION_Hub_Port'),
-			},
+		domains: (RocketChat.settings.get('FEDERATION_Peer_Domains') || '').split(','),
+		dns: {
+			host: RocketChat.settings.get('FEDERATION_DNS_Host'),
+			port: RocketChat.settings.get('FEDERATION_DNS_Port'),
 		},
-		server: {
-			host: RocketChat.settings.get('FEDERATION_Peer_Server_Host'),
-			port: RocketChat.settings.get('FEDERATION_Peer_Server_Port'),
+		peer: {
+			host: RocketChat.settings.get('FEDERATION_Peer_Host'),
+			port: RocketChat.settings.get('FEDERATION_Peer_Port'),
 		},
 	};
 
-	const peerClient = new PeerClient(config);
-	const peerServer = new PeerServer(config);
+	Meteor.peerClient = new PeerClient(config);
+	Meteor.peerServer = new PeerServer(config);
+
+	const { peerClient, peerServer } = Meteor;
 
 	Meteor.startup(() => {
-		console.log('[federation] Starting!');
+		console.log('[federation] Booting...');
+
+		// Stop if registering was not possible
+		if (!peerClient.register()) { return; }
 
 		peerServer.start();
-		peerClient.register();
 	});
 }

@@ -78,7 +78,7 @@ RocketChat.callbacks.remove = function(hook, id) {
 * @returns {Object} Returns the item after it's been through all the callbacks for this hook
 */
 
-RocketChat.callbacks.run = function(hook, item, constant) {
+RocketChat.callbacks.run = function(hook, item, ...constant) {
 	const callbacks = RocketChat.callbacks[hook];
 	if (!callbacks || !callbacks.length) {
 		return item;
@@ -97,7 +97,7 @@ RocketChat.callbacks.run = function(hook, item, constant) {
 		}
 		const time = RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true ? Date.now() : 0;
 
-		const callbackResult = callback(result, constant);
+		const callbackResult = callback(result, ...constant);
 
 		if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
 			const currentTime = Date.now() - time;
@@ -144,7 +144,7 @@ RocketChat.callbacks.runAsync = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
 	if (Meteor.isServer && callbacks && callbacks.length) {
 		Meteor.defer(function() {
-			callbacks.forEach((callback) => callback(item, constant));
+			callbacks.forEach((callback) => callback(item, ...constant));
 		});
 	}
 	return item;

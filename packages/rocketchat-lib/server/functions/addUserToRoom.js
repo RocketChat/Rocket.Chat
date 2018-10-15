@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
+RocketChat.addUserToRoom = function(rid, user, inviter, silenced, options = {}) {
 	const now = new Date();
 	const room = RocketChat.models.Rooms.findOneById(rid);
 
@@ -10,7 +10,11 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		return;
 	}
 
-	if (room.t === 'c' || room.t === 'p') {
+	if ((room.t === 'c' || room.t === 'p') && !options.skipCallbacks) {
+		// Add a new event, with an optional inviter
+		RocketChat.callbacks.run('beforeAddedToRoom', { user, inviter }, room);
+
+		// Keep the current event
 		RocketChat.callbacks.run('beforeJoinRoom', user, room);
 	}
 
@@ -42,8 +46,12 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 		}
 	}
 
-	if (room.t === 'c' || room.t === 'p') {
+	if ((room.t === 'c' || room.t === 'p') && !options.skipCallbacks) {
 		Meteor.defer(function() {
+			// Add a new event, with an optional inviter
+			RocketChat.callbacks.run('afterAddedToRoom', { user, inviter }, room);
+
+			// Keep the current event
 			RocketChat.callbacks.run('afterJoinRoom', user, room);
 		});
 	}
