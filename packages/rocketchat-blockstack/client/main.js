@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { check, Match } from 'meteor/check';
 import { Session } from 'meteor/session';
-
 import './routes';
-import { redirectToSignIn, signUserOut } from 'blockstack';
 
 const handleError = (error) => error && Session.set('errorMessage', error.reason || 'Unknown error');
 
 // TODO: allow serviceConfig.loginStyle == popup
-Meteor.loginWithBlockstack = (options, callback = handleError) => {
+Meteor.loginWithBlockstack = async(options, callback = handleError) => {
+	const { redirectToSignIn } = await import('blockstack/dist/blockstack');
+
 	if (!options || !options.redirectURI) {
 		options = ServiceConfiguration.configurations.findOne({
 			service: 'blockstack',
@@ -29,14 +29,16 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 			manifestURI: String,
 		}));
 
-		return redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes);
+		redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes);
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
 };
 
 const meteorLogout = Meteor.logout;
-Meteor.logout = (...args) => {
+Meteor.logout = async(...args) => {
+	const { signUserOut } = await import('blockstack/dist/blockstack');
+
 	const serviceConfig = ServiceConfiguration.configurations.findOne({
 		service: 'blockstack',
 	});
