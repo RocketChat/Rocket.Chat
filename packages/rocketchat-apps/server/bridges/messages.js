@@ -47,13 +47,31 @@ export class AppMessageBridge {
 			_id: Random.id(),
 			ts: new Date(),
 			u: undefined,
-			editor: undefined
+			editor: undefined,
 		}));
 	}
 
 	async notifyRoom(room, message, appId) {
 		console.log(`The App ${ appId } is notifying a room's users.`);
 
-		throw new Error('Not implemented yet.');
+		if (room) {
+			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+			const rmsg = Object.assign(msg, {
+				_id: Random.id(),
+				rid: room.id,
+				ts: new Date(),
+				u: undefined,
+				editor: undefined,
+			});
+
+			const users = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
+				.fetch()
+				.map((s) => s.u._id);
+			RocketChat.models.Users.findByIds(users, { fields: { _id: 1 } })
+				.fetch()
+				.forEach(({ _id }) =>
+					RocketChat.Notifications.notifyUser(_id, 'message', rmsg)
+				);
+		}
 	}
 }

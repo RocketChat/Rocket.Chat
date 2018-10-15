@@ -16,7 +16,7 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 		}
 
 		if (!value || typeof value !== 'string') {
-			throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
+			throw new Meteor.Error('error-token-param-not-valid', 'The required "value" body param is missing or invalid.');
 		}
 
 		if (!appName || typeof appName !== 'string') {
@@ -29,7 +29,7 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 			id,
 			token: { [type]: value },
 			appName,
-			userId: this.userId
+			userId: this.userId,
 		}));
 
 		return RocketChat.API.v1.success({ result });
@@ -43,11 +43,11 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 
 		const affectedRecords = Push.appCollection.remove({
 			$or: [{
-				'token.apn': token
+				'token.apn': token,
 			}, {
-				'token.gcm': token
+				'token.gcm': token,
 			}],
-			userId: this.userId
+			userId: this.userId,
 		});
 
 		if (affectedRecords === 0) {
@@ -55,5 +55,5 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });

@@ -4,6 +4,8 @@
 
 	width: 100%;
 
+	margin: 0 -25px;
+
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
@@ -12,6 +14,8 @@
 		overflow-y: auto;
 
 		height: 100%;
+
+		padding: 0 25px;
 	}
 
 	&__header,

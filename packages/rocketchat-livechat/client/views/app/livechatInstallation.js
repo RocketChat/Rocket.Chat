@@ -14,5 +14,5 @@ Template.livechatInstallation.helpers({
 })(window, document, 'script', '${ siteUrl }/livechat');
 </script>
 <!-- End of Rocket.Chat Livechat Script -->`;
-	}
+	},
 });

@@ -25,14 +25,20 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 						const jumpToMessage = recursiveRemove(RocketChat.models.Messages.findOneById(queryString.msg));
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];
+
+							const index = msg.attachments.findIndex((a) => a.message_link === item.url);
+							if (index > -1) {
+								msg.attachments.splice(index, 1);
+							}
+
 							msg.attachments.push({
-								'text' : jumpToMessage.msg,
-								'translations': jumpToMessage.translations,
-								'author_name' : jumpToMessage.alias || jumpToMessage.u.username,
-								'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username),
-								'message_link' : item.url,
-								'attachments' : jumpToMessage.attachments || [],
-								'ts': jumpToMessage.ts
+								text: jumpToMessage.msg,
+								translations: jumpToMessage.translations,
+								author_name: jumpToMessage.alias || jumpToMessage.u.username,
+								author_icon: getAvatarUrlFromUsername(jumpToMessage.u.username),
+								message_link: item.url,
+								attachments: jumpToMessage.attachments || [],
+								ts: jumpToMessage.ts,
 							});
 							item.ignoreParse = true;
 						}

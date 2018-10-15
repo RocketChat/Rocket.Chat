@@ -1,4 +1,6 @@
-Meteor.subscribe('roles');
+RocketChat.CachedCollectionManager.onLogin(() => {
+	Meteor.subscribe('roles');
+});
 
 RocketChat.AdminBox.addOption({
 	href: 'admin-permissions',
@@ -6,5 +8,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'lock',
 	permissionGranted() {
 		return RocketChat.authz.hasAllPermission('access-permissions');
-	}
+	},
 });

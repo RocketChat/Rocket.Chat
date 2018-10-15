@@ -8,7 +8,7 @@ function trackEvent(category, action, label) {
 }
 
 if (!window._paq || window.ga) {
-	//Trigger the trackPageView manually as the page views are only loaded when the loadScript.js code is executed
+	// Trigger the trackPageView manually as the page views are only loaded when the loadScript.js code is executed
 	FlowRouter.triggers.enter([(route) => {
 		if (window._paq) {
 			const http = location.protocol;
@@ -22,12 +22,12 @@ if (!window._paq || window.ga) {
 		}
 	}]);
 
-	//Login page has manual switches
+	// Login page has manual switches
 	RocketChat.callbacks.add('loginPageStateChange', (state) => {
 		trackEvent('Navigation', 'Login Page State Change', state);
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-login-state-change');
 
-	//Messsages
+	// Messsages
 	RocketChat.callbacks.add('afterSaveMessage', (message) => {
 		if ((window._paq || window.ga) && RocketChat.settings.get('Analytics_features_messages')) {
 			const room = ChatRoom.findOne({ _id: message.rid });
@@ -35,7 +35,7 @@ if (!window._paq || window.ga) {
 		}
 	}, 2000, 'trackEvents');
 
-	//Rooms
+	// Rooms
 	RocketChat.callbacks.add('afterCreateChannel', (owner, room) => {
 		if (RocketChat.settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Create', `${ room.name } (${ room._id })`);
@@ -78,8 +78,8 @@ if (!window._paq || window.ga) {
 		}
 	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-unarchive-room');
 
-	//Users
-	//Track logins and associate user ids with piwik
+	// Users
+	// Track logins and associate user ids with piwik
 	(() => {
 		let oldUserId = null;
 

@@ -1,51 +1,90 @@
-const validateAttachmentsFields = attachmentFields => {
-	check(attachmentFields, Match.ObjectIncluding({
-		short: Match.Maybe(Boolean),
+const objectMaybeIncluding = (types) => Match.Where((value) => {
+	Object.keys(types).forEach((field) => {
+		if (value[field] != null) {
+			try {
+				check(value[field], types[field]);
+			} catch (error) {
+				error.path = field;
+				throw error;
+			}
+		}
+	});
+
+	return true;
+});
+
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
+		short: Boolean,
 		title: String,
-		value: String
+		value: Match.OneOf(String, Match.Integer, Boolean),
+	}));
+
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
+};
+
+const validateAttachmentsActions = (attachmentActions) => {
+	check(attachmentActions, objectMaybeIncluding({
+		type: String,
+		text: String,
+		url: String,
+		image_url: String,
+		is_webview: Boolean,
+		webview_height_ratio: String,
+		msg: String,
+		msg_in_chat_window: Boolean,
 	}));
 };
 
-const validateAttachment = attachment => {
-	check(attachment, Match.ObjectIncluding({
-		color: Match.Maybe(String),
-		text: Match.Maybe(String),
-		ts: Match.Maybe(String),
-		thumb_url: Match.Maybe(String),
-		message_link: Match.Maybe(String),
-		collapsed: Match.Maybe(Boolean),
-		author_name: Match.Maybe(String),
-		author_link: Match.Maybe(String),
-		author_icon: Match.Maybe(String),
-		title: Match.Maybe(String),
-		title_link: Match.Maybe(String),
-		title_link_download: Match.Maybe(Boolean),
-		image_url: Match.Maybe(String),
-		audio_url: Match.Maybe(String),
-		video_url: Match.Maybe(String),
-		fields: Match.Maybe(Array)
+const validateAttachment = (attachment) => {
+	check(attachment, objectMaybeIncluding({
+		color: String,
+		text: String,
+		ts: Match.OneOf(String, Match.Integer),
+		thumb_url: String,
+		button_alignment: String,
+		actions: [Match.Any],
+		message_link: String,
+		collapsed: Boolean,
+		author_name: String,
+		author_link: String,
+		author_icon: String,
+		title: String,
+		title_link: String,
+		title_link_download: Boolean,
+		image_url: String,
+		audio_url: String,
+		video_url: String,
+		fields: [Match.Any],
 	}));
 
 	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
+
+	if (attachment.actions && attachment.actions.length) {
+		attachment.actions.map(validateAttachmentsActions);
+	}
 };
 
-const validateBodyAttachments = attachments => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
 RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 
-	check(message, Match.ObjectIncluding({
-		_id: Match.Maybe(String),
-		msg: Match.Maybe(String),
-		text: Match.Maybe(String),
-		alias: Match.Maybe(String),
-		emoji: Match.Maybe(String),
-		avatar: Match.Maybe(String),
-		attachments: Match.Maybe(Array)
+	check(message, objectMaybeIncluding({
+		_id: String,
+		msg: String,
+		text: String,
+		alias: String,
+		emoji: String,
+		avatar: String,
+		attachments: [Match.Any],
 	}));
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -59,7 +98,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	message.u = {
 		_id,
 		username,
-		name
+		name,
 	};
 	message.rid = room._id;
 
@@ -71,15 +110,6 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		message.ts = new Date();
 	}
 
-	if (!room.usernames || room.usernames.length === 0) {
-		const updated_room = RocketChat.models.Rooms.findOneById(room._id);
-		if (updated_room) {
-			room = updated_room;
-		} else {
-			room.usernames = [];
-		}
-	}
-
 	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
@@ -88,7 +118,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
 		}
 
 		let result;
@@ -101,31 +131,18 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	}
 
 	if (message.parseUrls !== false) {
-		const urlRegex = /([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g;
-		const urls = message.msg.match(urlRegex);
+		message.html = message.msg;
+		message = RocketChat.Markdown.code(message);
+
+		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 		if (urls) {
-			// ignoredUrls contain blocks of quotes with urls inside
-			const ignoredUrls = message.msg.match(/(?:(?:\`{1,3})(?:[\n\r]*?.*?)*?)(([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?)(?:(?:[\n\r]*.*?)*?(?:\`{1,3}))/gm);
-			if (ignoredUrls) {
-				ignoredUrls.forEach((url) => {
-					const shouldBeIgnored = url.match(urlRegex);
-					if (shouldBeIgnored) {
-						shouldBeIgnored.forEach((match) => {
-							const matchIndex = urls.indexOf(match);
-							urls.splice(matchIndex, 1);
-						});
-					}
-				});
-			}
-			if (urls) {
-				// use the Set to remove duplicity, so it doesn't embed the same link twice
-				message.urls = [...new Set(urls)].map(function(url) {
-					return {
-						url
-					};
-				});
-			}
+			message.urls = urls.map((url) => ({ url }));
 		}
+
+		message = RocketChat.Markdown.mountTokensBack(message, false);
+		message.msg = message.html;
+		delete message.html;
+		delete message.tokens;
 	}
 
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
@@ -138,11 +155,11 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		}
 
 		if (message._id && upsert) {
-			const _id = message._id;
+			const { _id } = message;
 			delete message._id;
 			RocketChat.models.Messages.upsert({
 				_id,
-				'u._id': message.u._id
+				'u._id': message.u._id,
 			}, message);
 			message._id = _id;
 		} else {

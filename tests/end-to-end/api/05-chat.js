@@ -5,20 +5,15 @@
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	message,
-	log,
-	apiPrivateChannelName
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('[Chat]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('/chat.postMessage', () => {
 
@@ -29,7 +24,7 @@ describe('[Chat]', function() {
 					text: 'Sample message',
 					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png'
+					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -65,8 +60,8 @@ describe('[Chat]', function() {
 						image_url: 'http://res.guggy.com/logo_128.png',
 						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: ''
-					}]
+						fields: '',
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -105,9 +100,9 @@ describe('[Chat]', function() {
 						fields: [{
 							short: true,
 							title: 12,
-							value: false
-						}]
-					}]
+							value: false,
+						}],
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -146,13 +141,13 @@ describe('[Chat]', function() {
 						fields: [{
 							short: true,
 							title: 'Test',
-							value: 'Testing out something or other'
+							value: 'Testing out something or other',
 						}, {
 							short: true,
 							title: 'Another Test',
-							value: '[Link](https://google.com/) something and this and that.'
-						}]
-					}]
+							value: '[Link](https://google.com/) something and this and that.',
+						}],
+					}],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -163,6 +158,7 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
 	});
 
 	describe('/chat.getMessage', () => {
@@ -170,7 +166,7 @@ describe('[Chat]', function() {
 			request.get(api('chat.getMessage'))
 				.set(credentials)
 				.query({
-					msgId: message._id
+					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -192,8 +188,8 @@ describe('[Chat]', function() {
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png'
-					}
+						avatar: 'http://res.guggy.com/logo_128.png',
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -230,9 +226,9 @@ describe('[Chat]', function() {
 							image_url: 'http://res.guggy.com/logo_128.png',
 							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
 							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: ''
-						}]
-					}
+							fields: '',
+						}],
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -274,14 +270,14 @@ describe('[Chat]', function() {
 							fields: [{
 								short: true,
 								title: 'Test',
-								value: 'Testing out something or other'
+								value: 'Testing out something or other',
 							}, {
 								short: true,
 								title: 'Another Test',
-								value: '[Link](https://google.com/) something and this and that.'
-							}]
-						}]
-					}
+								value: '[Link](https://google.com/) something and this and that.',
+							}],
+						}],
+					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -291,6 +287,44 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+
+		describe('Read only channel', () => {
+			let readOnlyChannel;
+
+			it('Creating a read-only channel', (done) => {
+				request.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `readonlychannel${ +new Date() }`,
+						readOnly: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						readOnlyChannel = res.body.channel;
+					})
+					.end(done);
+			});
+			it('should send a message when the user is the owner of a readonly channel', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample message',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').and.to.be.an('object');
+					})
+					.end(done);
+			});
+		});
+
 	});
 
 	describe('/chat.update', () => {
@@ -300,7 +334,7 @@ describe('[Chat]', function() {
 				.send({
 					roomId: 'GENERAL',
 					msgId: message._id,
-					text: 'This message was edited via API'
+					text: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -318,7 +352,23 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API'
+					searchText: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+				})
+				.end(done);
+		});
+		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'This message was edited via API',
+					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -329,14 +379,28 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 	});
-
-	describe('/chat.react', () => {
+	describe('[/chat.react]', () => {
+		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		it('should react a message successfully', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
 				.send({
 					emoji: 'smile',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -351,7 +415,7 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					emoji: ':squid:',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -360,13 +424,57 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
+		it('should return statusCode: 200 and success when try react a message that\'s already reacted', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: message._id,
+					shouldReact: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
 				.send({
 					emoji: 'bee',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -375,13 +483,12 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
 		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
 			request.post(api('chat.react'))
 				.set(credentials)
 				.send({
 					reaction: 'ant',
-					messageId: message._id
+					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -430,7 +537,7 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						messageId: message._id,
-						description: 'test'
+						description: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -446,7 +553,7 @@ describe('[Chat]', function() {
 				request.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
-						messageId: message._id
+						messageId: message._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

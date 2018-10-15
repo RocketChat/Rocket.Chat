@@ -27,8 +27,8 @@ const configureSlingshot = _.debounce(() => {
 					_id: id,
 					rid: metaContext.rid,
 					AmazonS3: {
-						path
-					}
+						path,
+					},
 				};
 
 				RocketChat.models.Uploads.insertFileInit(this.userId, 'AmazonS3:Uploads', file, upload);
@@ -36,7 +36,7 @@ const configureSlingshot = _.debounce(() => {
 				return path;
 			},
 			AWSAccessKeyId: accessKey,
-			AWSSecretAccessKey: secretKey
+			AWSSecretAccessKey: secretKey,
 		};
 
 		if (!_.isEmpty(acl)) {
@@ -67,7 +67,6 @@ RocketChat.settings.get('FileUpload_Storage_Type', configureSlingshot);
 RocketChat.settings.get(/^FileUpload_S3_/, configureSlingshot);
 
 
-
 const createGoogleStorageDirective = _.debounce(() => {
 	const type = RocketChat.settings.get('FileUpload_Storage_Type');
 	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
@@ -93,14 +92,14 @@ const createGoogleStorageDirective = _.debounce(() => {
 					_id: id,
 					rid: metaContext.rid,
 					GoogleStorage: {
-						path
-					}
+						path,
+					},
 				};
 
 				RocketChat.models.Uploads.insertFileInit(this.userId, 'GoogleCloudStorage:Uploads', file, upload);
 
 				return path;
-			}
+			},
 		};
 
 		try {
