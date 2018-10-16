@@ -14,7 +14,7 @@ update_caddyfile(){
 # Config file path for Caddyfile
 Caddyfile=$SNAP_DATA/Caddyfile
 
-# add or replace an option inside the config file. Create the file if doesn't exist
+# replace an option inside the config file. 
 refresh_opt_in_config() {
     opt=$1
     value="$2"
