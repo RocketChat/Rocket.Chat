@@ -3,11 +3,11 @@ const shell = Npm.require('shelljs');
 const fs = Npm.require('fs');
 const UglifyJS = Npm.require('uglify-js');
 
-const result = UglifyJS.minify(path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js'));
+const result = UglifyJS.minify(path.resolve('packages', 'rocketchat_livechat', 'assets', 'rocket-livechat.js'));
 
-fs.writeFileSync(path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocketchat-livechat.min.js'), result.code);
+fs.writeFileSync(path.resolve('packages', 'rocketchat_livechat', 'assets', 'rocketchat-livechat.min.js'), result.code);
 
-const packagePath = path.join(path.resolve('.'), 'packages', 'rocketchat-livechat');
+const packagePath = path.join(path.resolve('.'), 'packages', 'rocketchat_livechat');
 const pluginPath = path.join(packagePath, 'plugin');
 
 if (process.platform === 'win32') {

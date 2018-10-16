@@ -41,7 +41,7 @@
 .loadpath
 .map
 .metadata
-packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
+packages/rocketchat_livechat/assets/rocketchat-livechat.min.js
 .mule
 .pmd
 .project
