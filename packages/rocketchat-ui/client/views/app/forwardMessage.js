@@ -1,3 +1,10 @@
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 Template.forwardMessage.helpers({
@@ -19,7 +26,7 @@ Template.forwardMessage.helpers({
 					field: 'name',
 					matchAll: true,
 					filter: {
-						exceptions: Template.instance().forwardRoomsList.get().map(u => u.name)
+						exceptions: Template.instance().forwardRoomsList.get().map((u) => u.name),
 					},
 					template: Template.roomSearch,
 					noMatchTemplate: Template.roomSearchEmpty,
@@ -27,24 +34,24 @@ Template.forwardMessage.helpers({
 					selector(match) {
 						return { name: match };
 					},
-					sort: 'name'
-				}
-			]
+					sort: 'name',
+				},
+			],
 		};
-	}
+	},
 });
 
 Template.forwardMessage.onCreated(function() {
 	const message = ChatMessage.findOne(FlowRouter.getQueryParam('id'));
 	this.data.message = message;
 	this.data.attachment = {
-		'text' : message.msg,
-		'translations': message.translations,
-		'author_name' : message.alias || message.u.username,
-		'author_icon' : getAvatarUrlFromUsername(message.u.username),
-		'message_link' : message.url,
-		'attachments' : message.attachments || [],
-		'ts': message.ts.toISOString()
+		text : message.msg,
+		translations: message.translations,
+		author_name : message.alias || message.u.username,
+		author_icon : getAvatarUrlFromUsername(message.u.username),
+		message_link : message.url,
+		attachments : message.attachments || [],
+		ts: message.ts.toISOString(),
 	};
 	this.forwardRoomsList = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
@@ -63,9 +70,9 @@ Template.forwardMessage.events({
 			return rooms.set(roomsArr);
 		}
 	},
-	'click .rc-tags__tag'({target}, t) {
-		const {name} = Blaze.getData(target);
-		t.forwardRoomsList.set(t.forwardRoomsList.get().filter(room => room.name !== name));
+	'click .rc-tags__tag'({ target }, t) {
+		const { name } = Blaze.getData(target);
+		t.forwardRoomsList.set(t.forwardRoomsList.get().filter((room) => room.name !== name));
 	},
 	'autocompleteselect input[name=recipients]'(event, template, item) {
 		const rooms = template.forwardRoomsList;
@@ -81,11 +88,11 @@ Template.forwardMessage.events({
 		const rooms = instance.forwardRoomsList.get();
 
 		if (rooms.length > 0) {
-			rooms.forEach(room => {
+			rooms.forEach((room) => {
 				Meteor.call('sendMessage', {
 					_id: Random.id(),
 					rid: room._id,
-					attachments: [instance.data.attachment]
+					attachments: [instance.data.attachment],
 				});
 			});
 
@@ -95,5 +102,5 @@ Template.forwardMessage.events({
 		} else {
 			toastr.error(TAPi18n.__('Forward_Has_Empty_Destination'));
 		}
-	}
+	},
 });
