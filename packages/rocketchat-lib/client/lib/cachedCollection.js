@@ -337,8 +337,9 @@ class CachedCollection {
 			this.log('record received', t, record);
 			RocketChat.callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
+				const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
 				this.collection.remove(record._id);
-				RoomManager.close(record.t + record.name);
+				RoomManager.close(type + FlowRouter.getParam('name'));
 			} else {
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}
