@@ -4,5 +4,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'user',
 	permissionGranted() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-user-status']);
-	}
+	},
 });

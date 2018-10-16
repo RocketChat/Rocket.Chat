@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:user-status',
 	version: '1.0.0',
 	summary: '',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
-		'rocketchat:ui'
+		'rocketchat:ui',
 	]);
 
 	api.addFiles('client/userStatus.js');

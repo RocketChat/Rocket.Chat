@@ -4,5 +4,5 @@ Meteor.methods({
 
 		const userId = Meteor.userId();
 		RocketChat.models.Users.updateStatusText(userId, statusText);
-	}
+	},
 });

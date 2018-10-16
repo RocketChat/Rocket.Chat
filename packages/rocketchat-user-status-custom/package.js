@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:user-status-custom',
 	version: '1.0.0',
 	summary: '',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 		'rocketchat:file',
 		'rocketchat:lib',
 		'templating',
-		'webapp'
+		'webapp',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 		'server/publications/fullUserStatusData.js',
 		'server/methods/insertOrUpdateUserStatus.js',
 		'server/methods/listCustomUserStatus.js',
-		'server/methods/deleteCustomUserStatus.js'
+		'server/methods/deleteCustomUserStatus.js',
 	], 'server');
 
 	api.addFiles([
@@ -39,6 +39,6 @@ Package.onUse(function(api) {
 		'client/models/CustomUserStatus.js',
 		'client/lib/customUserStatus.js',
 		'client/notifications/deleteCustomUserStatus.js',
-		'client/notifications/updateCustomUserStatus.js'
+		'client/notifications/updateCustomUserStatus.js',
 	], 'client');
 });

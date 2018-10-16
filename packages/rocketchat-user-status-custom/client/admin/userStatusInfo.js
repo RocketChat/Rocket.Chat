@@ -26,9 +26,9 @@ Template.userStatusInfo.helpers({
 						return instance.loadedName.set(name);
 					}
 				}
-			}
+			},
 		};
-	}
+	},
 });
 
 Template.userStatusInfo.events({
@@ -41,7 +41,7 @@ Template.userStatusInfo.events({
 		e.preventDefault();
 		const userStatus = instance.userStatus.get();
 		if (userStatus != null) {
-			const _id = userStatus._id;
+			const { _id } = userStatus;
 			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_User_Status_Delete_Warning'),
@@ -51,9 +51,9 @@ Template.userStatusInfo.events({
 				confirmButtonText: t('Yes_delete_it'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, function() {
-				Meteor.call('deleteCustomUserStatus', _id, (error/*, result*/) => {
+				Meteor.call('deleteCustomUserStatus', _id, (error/* , result */) => {
 					if (error) {
 						return handleError(error);
 					} else {
@@ -62,7 +62,7 @@ Template.userStatusInfo.events({
 							text: t('Custom_User_Status_Has_Been_Deleted'),
 							type: 'success',
 							timer: 2000,
-							showConfirmButton: false
+							showConfirmButton: false,
 						});
 
 						instance.tabBar.close();
@@ -77,7 +77,7 @@ Template.userStatusInfo.events({
 		e.preventDefault();
 
 		instance.editingUserStatus.set(instance.userStatus.get()._id);
-	}
+	},
 });
 
 Template.userStatusInfo.onCreated(function() {

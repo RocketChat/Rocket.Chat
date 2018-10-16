@@ -80,7 +80,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	getUserStatusText(roomId) {
 		const userId = roomId.replace(Meteor.userId(), '');
-		const userData = RocketChat.models.Users.findOne({_id: userId});
+		const userData = RocketChat.models.Users.findOne({ _id: userId });
 		if (userData) {
 			if (userData.statusText) {
 				return userData.statusText;

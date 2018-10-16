@@ -1,6 +1,6 @@
 /* globals deleteCustomUserStatus:true, updateCustomUserStatus:true */
 RocketChat.userStatus.packages.customUserStatus = {
-	list: []
+	list: [],
 };
 
 deleteCustomUserStatus = function(customUserStatusData) {
@@ -17,7 +17,7 @@ updateCustomUserStatus = function(customUserStatusData) {
 		name: customUserStatusData.name,
 		id: customUserStatusData._id,
 		statusType: customUserStatusData.statusType,
-		localizeName: false
+		localizeName: false,
 	};
 
 	const arrayIndex = RocketChat.userStatus.packages.customUserStatus.list.indexOf(newUserStatus.id);
@@ -37,7 +37,7 @@ Meteor.startup(() =>
 				name: userStatus.name,
 				id: userStatus._id,
 				statusType: userStatus.statusType,
-				localizeName: false
+				localizeName: false,
 			};
 
 			RocketChat.userStatus.packages.customUserStatus.list.push(newUserStatus);

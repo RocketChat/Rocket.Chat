@@ -11,11 +11,14 @@ Template.adminUserStatus.helpers({
 	},
 	customUserStatus() {
 		return Template.instance().customUserStatus().map((userStatus) => {
+			const { _id, name, statusType } = userStatus;
+			const localizedStatusType = t(statusType);
+
 			return {
-				_id : userStatus._id,
-				name : userStatus.name,
-				statusType: userStatus.statusType,
-				localizedStatusType: t(userStatus.statusType)
+				_id,
+				name,
+				statusType,
+				localizedStatusType,
 			};
 		});
 	},
@@ -37,9 +40,9 @@ Template.adminUserStatus.helpers({
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get()
+			data: Template.instance().tabBarData.get(),
 		};
-	}
+	},
 });
 
 Template.adminUserStatus.onCreated(function() {
@@ -58,7 +61,7 @@ Template.adminUserStatus.onCreated(function() {
 		i18nTitle: 'Custom_User_Status_Add',
 		icon: 'plus',
 		template: 'adminUserStatusEdit',
-		order: 1
+		order: 1,
 	});
 
 	RocketChat.TabBar.addButton({
@@ -67,7 +70,7 @@ Template.adminUserStatus.onCreated(function() {
 		i18nTitle: 'Custom_User_Status_Info',
 		icon: 'customize',
 		template: 'adminUserStatusInfo',
-		order: 2
+		order: 2,
 	});
 
 	this.autorun(function() {
@@ -83,12 +86,12 @@ Template.adminUserStatus.onCreated(function() {
 
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [ { name: filterReg } ] };
+			query = { $or: [{ name: filterReg }] };
 		}
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomUserStatus.find(query, { limit, sort: { name: 1 }}).fetch();
+		return RocketChat.models.CustomUserStatus.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -101,7 +104,7 @@ Template.adminUserStatus.onRendered(() =>
 
 Template.adminUserStatus.events({
 	'keydown #user-status-filter'(e) {
-		//stop enter key
+		// stop enter key
 		if (e.which === 13) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -116,7 +119,7 @@ Template.adminUserStatus.events({
 
 	'click .user-status-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.CustomUserStatus.findOne({_id: this._id}));
+		instance.tabBarData.set(RocketChat.models.CustomUserStatus.findOne({ _id: this._id }));
 		instance.tabBar.open('admin-user-status-info');
 	},
 
@@ -124,5 +127,5 @@ Template.adminUserStatus.events({
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
-	}
+	},
 });

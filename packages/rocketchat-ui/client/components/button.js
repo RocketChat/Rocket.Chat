@@ -4,5 +4,5 @@ Template.button.events({
 			e.currentTarget.blur();
 		}
 		return this.action && this.action.apply(this, [e]);
-	}
+	},
 });

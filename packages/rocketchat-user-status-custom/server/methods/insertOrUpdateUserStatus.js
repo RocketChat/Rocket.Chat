@@ -13,8 +13,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-the-field-is-required', 'The field Status Type is required', { method: 'insertOrUpdateUserStatus', field: 'StatusType' });
 		}
 
-		//allow all characters except >, <, &, ", '
-		//more practical than allowing specific sets of characters; also allows foreign languages
+		// allow all characters except >, <, &, ", '
+		// more practical than allowing specific sets of characters; also allows foreign languages
 		const nameValidation = /[><&"']/;
 
 		if (nameValidation.test(userStatusData.name)) {
@@ -39,19 +39,19 @@ Meteor.methods({
 		}
 
 		if (!userStatusData._id) {
-			//insert user status
+			// insert user status
 			const createUserStatus = {
 				name: userStatusData.name,
-				statusType: userStatusData.statusType
+				statusType: userStatusData.statusType,
 			};
 
 			const _id = RocketChat.models.CustomUserStatus.create(createUserStatus);
 
-			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', {userStatusData: createUserStatus});
+			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', { userStatusData: createUserStatus });
 
 			return _id;
 		} else {
-			//update User status
+			// update User status
 			if (userStatusData.name !== userStatusData.previousName) {
 				RocketChat.models.CustomUserStatus.setName(userStatusData._id, userStatusData.name);
 			}
@@ -59,9 +59,9 @@ Meteor.methods({
 				RocketChat.models.CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 			}
 
-			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', {userStatusData});
+			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
 
 			return true;
 		}
-	}
+	},
 });

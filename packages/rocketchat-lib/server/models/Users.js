@@ -298,8 +298,8 @@ class ModelUsers extends RocketChat.models._Base {
 	updateStatusText(_id, statusText) {
 		const update = {
 			$set: {
-				statusText
-			}
+				statusText,
+			},
 		};
 
 		return this.update(_id, update);

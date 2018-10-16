@@ -7,7 +7,7 @@ Meteor.publish('fullUserStatusData', function(filter, limit) {
 
 	const fields = {
 		name: 1,
-		statusType: 1
+		statusType: 1,
 	};
 
 	filter = s.trim(filter);
@@ -15,7 +15,7 @@ Meteor.publish('fullUserStatusData', function(filter, limit) {
 	const options = {
 		fields,
 		limit,
-		sort: { name: 1 }
+		sort: { name: 1 },
 	};
 
 	if (filter) {

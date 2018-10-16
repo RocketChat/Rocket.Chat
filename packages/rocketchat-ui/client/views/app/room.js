@@ -281,13 +281,13 @@ Template.room.helpers({
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
 			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
-			const statusDisplay = (status => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline');
+			const statusDisplay = ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline');
 
 			return {
 				...roles.u,
 				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
 				status: leader.status || 'offline',
-				statusDisplay: leader.statusText || statusDisplay,\
+				statusDisplay: leader.statusText || statusDisplay,
 			};
 		}
 	},

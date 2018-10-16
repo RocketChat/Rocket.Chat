@@ -13,8 +13,8 @@ Meteor.methods({
 		}
 
 		RocketChat.models.CustomUserStatus.removeByID(userStatusID);
-		RocketChat.Notifications.notifyLogged('deleteCustomUserStatus', {userStatusData: userStatus});
+		RocketChat.Notifications.notifyLogged('deleteCustomUserStatus', { userStatusData: userStatus });
 
 		return true;
-	}
+	},
 });

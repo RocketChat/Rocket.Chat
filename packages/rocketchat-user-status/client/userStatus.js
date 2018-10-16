@@ -3,34 +3,34 @@ RocketChat.userStatus = {
 		base: {
 			render(html) {
 				return html;
-			}
-		}
+			},
+		},
 	},
 
 	list: {
-		'online': {
+		online: {
 			name: 'online',
 			localizeName: true,
 			id: 'online',
-			statusType: 'online'
+			statusType: 'online',
 		},
-		'away' : {
+		away: {
 			name: 'away',
 			localizeName: true,
 			id: 'away',
-			statusType: 'away'
+			statusType: 'away',
 		},
-		'busy' : {
+		busy: {
 			name: 'busy',
 			localizeName: true,
 			id: 'busy',
-			statusType: 'busy'
+			statusType: 'busy',
 		},
-		'invisible': {
+		invisible: {
 			name: 'invisible',
 			localizeName: true,
 			id: 'offline',
-			statusType: 'offline'
-		}
-	}
+			statusType: 'offline',
+		},
+	},
 };

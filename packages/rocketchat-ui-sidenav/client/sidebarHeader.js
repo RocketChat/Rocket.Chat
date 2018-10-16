@@ -241,11 +241,11 @@ Template.sidebarHeader.events({
 					icon: 'circle',
 					name,
 					modifier: status.statusType,
-					action: () => setStatus(status.statusType, customName)
+					action: () => setStatus(status.statusType, customName),
 				};
 			});
 
-			let statusText = user.statusText;
+			let { statusText } = user;
 			if (!statusText) {
 				const userStatus = t(user.status);
 				statusText = userStatus[0].toUpperCase() + userStatus.substr(1);
@@ -261,12 +261,12 @@ Template.sidebarHeader.events({
 								items: [{
 									icon: 'circle',
 									name: statusText,
-									modifier: user.status
-								}]
+									modifier: user.status,
+								}],
 							},
 							{
 								title: t('User'),
-								items: userStatus
+								items: userStatus,
 							},
 							{
 								title: t('Custom Status'),
@@ -282,26 +282,26 @@ Template.sidebarHeader.events({
 											{
 												value: 'online',
 												title: t('online'),
-												selected: user.status === 'online'
+												selected: user.status === 'online',
 											},
 											{
 												value: 'away',
 												title: t('away'),
-												selected: user.status === 'away'
+												selected: user.status === 'away',
 											},
 											{
 												value: 'busy',
 												title: t('busy'),
-												selected: user.status === 'busy'
+												selected: user.status === 'busy',
 											},
 											{
 												value: 'offline',
 												title: t('invisible'),
-												selected: user.status === 'offline'
-											}
+												selected: user.status === 'offline',
+											},
 										],
 										buttonTitle: t('Update'),
-										buttonAction: () => {
+										buttonAction() {
 											return () => {
 												const elText = $('input[type=text][name=custom-status]')[0];
 												const elType = $('select[name=status-type]')[0];
@@ -311,9 +311,9 @@ Template.sidebarHeader.events({
 
 												setStatus(statusType, statusText);
 											};
-										}
-									}
-								]
+										},
+									},
+								],
 							},
 							{
 								items: [
