@@ -7,8 +7,8 @@ mock('meteor/meteor', {
 	Meteor: {
 		absoluteUrl() {
 			return 'http://localhost:3000/';
-		}
-	}
+		},
+	},
 });
 
 mock('meteor/rocketchat:lib', {
@@ -29,17 +29,17 @@ mock('meteor/rocketchat:lib', {
 					default:
 						throw new Error(`Missing setting mock ${ setting }`);
 				}
-			}
-		}
-	}
+			},
+		},
+	},
 });
 
 mock('meteor/random', {
 	Random: {
 		id() {
 			return Math.random();
-		}
-	}
+		},
+	},
 });
 
 global.s = s;

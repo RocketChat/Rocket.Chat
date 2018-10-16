@@ -4,5 +4,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'emoji',
 	permissionGranted() {
 		return RocketChat.authz.hasAtLeastOnePermission(['manage-emoji']);
-	}
+	},
 });

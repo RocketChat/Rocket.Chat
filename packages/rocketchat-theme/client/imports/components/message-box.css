@@ -123,6 +123,7 @@
 
 	&__icon {
 		display: flex;
+		flex: auto 0 0;
 
 		width: 50px;
 		height: 21px;
@@ -140,24 +141,33 @@
 		}
 
 		&.check {
-			color: red;
+
 			display: none;
+
+			color: red;
+
 			&.active {
 				display: flex;
 			}
 		}
 
 		&.cross {
-			color: red;
+
 			display: none;
+
+			color: red;
+
 			&.active {
 				display: flex;
 			}
 		}
 
 		&.loading {
-			cursor: pointer;
+
 			display: none;
+
+			cursor: pointer;
+
 			&.active {
 				display: flex;
 			}
@@ -165,11 +175,11 @@
 
 		&.mic {
 			display: none;
+
 			&.active {
 				display: flex;
 			}
 		}
-
 	}
 
 	&__action-menu {
@@ -184,21 +194,26 @@
 		display: none;
 	}
 
-	&__audio-message{
+	&__audio-message {
 		display: flex;
 	}
 
-	&__timer-box{
+	&__timer-box {
 		display: none;
+
 		width: 50px;
+
 		&.active {
 			display: flex;
 		}
 	}
 
-	&__timer-dot{
-		font-size: 1.5em;
+	&__timer-dot {
+
 		color: #d60000;
+
+		font-size: 1.5em;
+
 		line-height: 0.8em;
 	}
 }

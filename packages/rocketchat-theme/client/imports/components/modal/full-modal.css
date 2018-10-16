@@ -25,6 +25,8 @@
 
 		display: flex;
 
+		margin: 0 30px;
+
 		color: var(--modal-back-button-color);
 		align-items: center;
 	}
@@ -62,8 +64,8 @@
 
 .rtl .full-modal {
 	&__back-button {
-	  right: auto;
-	  left: 0;
+		right: auto;
+		left: 0;
 	}
 
 	&__back-text {

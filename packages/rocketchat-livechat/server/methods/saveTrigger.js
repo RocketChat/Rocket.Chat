@@ -9,8 +9,9 @@ Meteor.methods({
 			name: String,
 			description: String,
 			enabled: Boolean,
+			runOnce: Boolean,
 			conditions: Array,
-			actions: Array
+			actions: Array,
 		});
 
 		if (trigger._id) {
@@ -18,5 +19,5 @@ Meteor.methods({
 		} else {
 			return RocketChat.models.LivechatTrigger.insert(trigger);
 		}
-	}
+	},
 });

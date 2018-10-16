@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:drupal',
 	version: '0.0.1',
-	summary: 'RocketChat settings for Drupal oAuth2'
+	summary: 'RocketChat settings for Drupal oAuth2',
 });
 
 Package.onUse(function(api) {

@@ -5,13 +5,13 @@ RocketChat.Migrations.add({
 		 * Set GENERAL room to be default
 		 */
 		RocketChat.models.Rooms.update({
-			_id: 'GENERAL'
+			_id: 'GENERAL',
 		}, {
 			$set: {
-				'default': true
-			}
+				default: true,
+			},
 		});
 
 		return console.log('Set GENERAL room to be default');
-	}
+	},
 });

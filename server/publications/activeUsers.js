@@ -9,7 +9,7 @@ Meteor.publish('activeUsers', function() {
 			name: 1,
 			status: 1,
 			utcOffset: 1,
-			statusText: 1
-		}
+			statusText: 1,
+		},
 	});
 });

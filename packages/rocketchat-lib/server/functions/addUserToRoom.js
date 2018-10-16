@@ -13,14 +13,17 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 	}
 
 	const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
-	RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
+	if (muted) {
+		RocketChat.models.Rooms.muteUsernameByRoomId(rid, user.username);
+	}
+
 	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,
 		alert: true,
 		unread: 1,
 		userMentions: 1,
-		groupMentions: 0
+		groupMentions: 0,
 	});
 
 	if (!silenced) {
@@ -29,8 +32,8 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 				ts: now,
 				u: {
 					_id: inviter._id,
-					username: inviter.username
-				}
+					username: inviter.username,
+				},
 			});
 		} else {
 			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });

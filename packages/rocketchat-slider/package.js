@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'UI slider component for input range.',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
