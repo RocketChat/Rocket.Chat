@@ -13,7 +13,7 @@
 
 const reg = /--(rc-color-.*?): (.*?);/igm;
 
-const colors = [...Assets.getText('client/imps/general/variables.css').match(reg)].map((color) => {
+const colors = [...Assets.getText('client/imports/general/variables.css').match(reg)].map((color) => {
 	const [name, value] = color.split(': ');
 	return [name.replace('--', ''), value.replace(';', '')];
 });
