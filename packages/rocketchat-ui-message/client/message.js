@@ -3,6 +3,31 @@ import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 
+async function renderPdfToCanvas(canvasId, pdfLink) {
+	if (!pdfLink || !pdfLink.endsWith('.pdf')) { return; }
+	const canvas = document.getElementById(canvasId);
+	if (!canvas) { return; }
+	const pdfjsLib = await import('pdfjs-dist');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
+	const loader = document.getElementById('js-loading-${canvasId}');
+	if (loader) { loader.style.display = 'block'; }
+	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const page = await pdf.getPage(1);
+	const scale = 0.5;
+	const viewport = page.getViewport(scale);
+	const context = canvas.getContext('2d');
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
+	page.render({
+		canvasContext: context,
+		viewport,
+	});
+	if (loader) { loader.style.display = 'none'; }
+	canvas.style.maxWidth = '-webkit-fill-available';
+	canvas.style.maxWidth = '-moz-available';
+	canvas.style.display = 'block';
+}
+
 Template.message.helpers({
 	encodeURI(text) {
 		return encodeURI(text);
@@ -364,7 +389,10 @@ Template.message.onCreated(function() {
 });
 
 Template.message.onViewRendered = function(context) {
-	return this._domrange.onAttached(function(domRange) {
+	return this._domrange.onAttached((domRange) => {
+		if (context.file && context.file.type === 'application/pdf') {
+			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
 		const getPreviousSentMessage = (currentNode) => {

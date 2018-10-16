@@ -29,6 +29,12 @@ RocketChat.statistics.get = function _getStatistics() {
 		}
 	});
 
+	if (statistics.wizard.allowMarketingEmails) {
+		const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+		statistics.wizard.contactName = firstUser && firstUser.name;
+		statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
+	}
+
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');
 	if (RocketChat.models.Settings.findOne('uniqueID')) {
