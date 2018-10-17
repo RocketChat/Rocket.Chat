@@ -80,6 +80,8 @@ jobs:
 
       - run:
           name: Build Rocket.Chat
+          environment:
+            TOOL_NODE_FLAGS: --max_old_space_size=4096
           command: |
             if [[ $CIRCLE_TAG ]]; then meteor reset; fi
             set +e
