@@ -39,7 +39,7 @@ RocketChat.deleteMessage = function(message, user) {
 	if (RocketChat.settings.get('Store_Last_Message')) {
 		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
 		if (!room.lastMessage || room.lastMessage._id === message._id) {
-			RocketChat.models.Rooms.resetLastMessageById(message.rid);
+			RocketChat.models.Rooms.resetLastMessageById(message.rid, message._id);
 		}
 	}
 
