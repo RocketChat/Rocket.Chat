@@ -133,8 +133,16 @@ this.Triggers = (function() {
 		triggers = newTriggers;
 	};
 
-	const init = function() {
+	const init = function(newTriggers) {
+		if (initiated) {
+			return;
+		}
+
 		initiated = true;
+
+		if (newTriggers) {
+			setTriggers(newTriggers);
+		}
 
 		firedTriggers.forEach((triggerId) => {
 			triggers.forEach((trigger) => {
