@@ -24,7 +24,5 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
-	express: '4.16.3',
-	'body-parser': '1.18.3',
 	'queue-fifo': '0.2.5',
 });

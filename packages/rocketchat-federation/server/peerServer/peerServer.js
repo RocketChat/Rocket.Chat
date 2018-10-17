@@ -1,15 +1,9 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-
 import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
 import FederatedUser from '../federatedResources/FederatedUser';
 
 import federationEventsRoutes from './routes/federation/events';
 import usersRoutes from './routes/users';
-
-const app = express();
-app.use(bodyParser.json());
 
 class PeerServer {
 	constructor(config) {
@@ -22,32 +16,13 @@ class PeerServer {
 	}
 
 	start() {
-		const { identifier, peer: { port } } = this.config;
-
-		// Default router
-		const apiRouter = express.Router(); /* eslint-disable-line new-cap */
-
-		apiRouter.use((req, res, next) => {
-			this.log(`Got request: ${ req.method.toUpperCase() } - ${ req.originalUrl }`);
-
-			next();
-		});
-
-		// Federation router
-		const federationRouter = express.Router(); /* eslint-disable-line new-cap */
+		const { identifier } = this.config;
 
 		// Setup routes
-		usersRoutes.call(this, federationRouter);
-		federationEventsRoutes.call(this, federationRouter);
+		usersRoutes.call(this);
+		federationEventsRoutes.call(this);
 
-		// Federation API route
-		apiRouter.use('/federation', federationRouter);
-
-		// API route
-		app.use('/api', apiRouter);
-
-		// Start listening
-		app.listen(port, () => this.log(`${ identifier }'s server is listening on ${ port }`));
+		this.log(`${ identifier }'s routes are set`);
 	}
 
 	handleDirectRoomCreatedEvent(e) {

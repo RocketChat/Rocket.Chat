@@ -7,12 +7,10 @@ if (!!RocketChat.settings.get('FEDERATION_Enabled') === true) {
 		identifier: RocketChat.settings.get('FEDERATION_Peer_Identifier'),
 		domains: (RocketChat.settings.get('FEDERATION_Peer_Domains') || '').split(','),
 		dns: {
-			host: RocketChat.settings.get('FEDERATION_DNS_Host'),
-			port: RocketChat.settings.get('FEDERATION_DNS_Port'),
+			url: RocketChat.settings.get('FEDERATION_DNS_URL'),
 		},
 		peer: {
-			host: RocketChat.settings.get('FEDERATION_Peer_Host'),
-			port: RocketChat.settings.get('FEDERATION_Peer_Port'),
+			url: RocketChat.settings.get('Site_Url'),
 		},
 	};
 

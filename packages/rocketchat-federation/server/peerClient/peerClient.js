@@ -15,9 +15,9 @@ class PeerClient {
 		this.config = config;
 
 		// Setup DNSServerPeer
-		const { dns: { host, port } } = this.config;
+		const { dns: { url } } = this.config;
 
-		this.DNSServerPeer = { server: { host, port } };
+		this.DNSServerPeer = { server: { url } };
 	}
 
 	log(message) {
@@ -59,10 +59,9 @@ class PeerClient {
 	}
 
 	doRequest(peer, method, uri, body) {
-		const { server: { host, port } } = peer;
+		const { server: { url: serverBaseURL } } = peer;
 
-		const baseUrl = `http://${ host }:${ port }`;
-		const url = `${ baseUrl }${ uri }`;
+		const url = `${ serverBaseURL }${ uri }`;
 
 		let data = null;
 
@@ -72,7 +71,7 @@ class PeerClient {
 
 		this.log(`Sending request: ${ method } - ${ url }`);
 
-		return HTTP.call(method, url, { data });
+		return HTTP.call(method, url, { data, timeout: 2000 });
 	}
 
 	request(peer, method, uri, body) {
@@ -153,23 +152,23 @@ class PeerClient {
 		let peer = null;
 		let queryObject = {};
 
-		if (email) {
-			peer = this.getPeerByEmail(email);
+		try {
+			if (email) {
+				peer = this.getPeerByEmail(email);
 
-			queryObject = { email };
-		} else {
-			peer = this.getPeerByIdentifier(identifier);
+				queryObject = { email };
+			} else {
+				peer = this.getPeerByIdentifier(identifier);
 
-			queryObject = { username };
-		}
-
-		if (!peer) {
-			this.log(`Peer does not exist for domain ${ email }`);
-			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find a valid peer for "${ email }"`);
+				queryObject = { username };
+			}
+		} catch (err) {
+			this.log(`Could not find peer using: ${ email ? `email:${ email }` : `identifier:${ identifier }` }`);
+			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using: ${ email ? `email:${ email }` : `identifier:${ identifier }` }`);
 		}
 
 		try {
-			const { data: { federatedUser: federatedUserObject } } = this.request(peer, 'GET', `/api/federation/users?${ qs.stringify(queryObject) }`);
+			const { data: { federatedUser: federatedUserObject } } = this.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify(queryObject) }`);
 
 			const federatedUser = new FederatedUser(localPeerIdentifier, federatedUserObject);
 
@@ -321,7 +320,7 @@ class PeerClient {
 			RocketChat.models.FederationEvents.setEventAsErrored(e, 'Could not find valid peer');
 		} else {
 			try {
-				this.request(peer, 'POST', '/api/federation/events', { event: e });
+				this.request(peer, 'POST', '/api/v1/federation.events', { event: e });
 
 				RocketChat.models.FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {

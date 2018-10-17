@@ -13,6 +13,7 @@ Meteor.startup(function() {
 			type: 'string',
 			i18nLabel: 'FEDERATION_Peer_Identifier',
 			i18nDescription: 'FEDERATION_Peer_Identifier_Description',
+			alert: 'FEDERATION_Peer_Identifier_Alert',
 		});
 
 		this.add('FEDERATION_Peer_Domains', '', {
@@ -22,32 +23,11 @@ Meteor.startup(function() {
 			i18nDescription: 'FEDERATION_Peer_Domains_Description',
 		});
 
-		this.add('FEDERATION_Peer_Host', 'localhost', {
-			group: 'Peer',
-			type: 'string',
-			i18nLabel: 'FEDERATION_Peer_Host',
-			i18nDescription: 'FEDERATION_Peer_Host_Description',
-		});
-
-		this.add('FEDERATION_Peer_Port', 3300, {
-			group: 'Peer',
-			type: 'string',
-			i18nLabel: 'FEDERATION_Peer_Port',
-			i18nDescription: 'FEDERATION_Peer_Port_Description',
-		});
-
-		this.add('FEDERATION_DNS_Host', 'localhost', {
+		this.add('FEDERATION_DNS_URL', 'localhost', {
 			group: 'DNS Server',
 			type: 'string',
-			i18nLabel: 'FEDERATION_DNS_Host',
-			i18nDescription: 'FEDERATION_DNS_Host_Description',
-		});
-
-		this.add('FEDERATION_DNS_Port', 8080, {
-			group: 'DNS Server',
-			type: 'string',
-			i18nLabel: 'FEDERATION_DNS_Port',
-			i18nDescription: 'FEDERATION_DNS_Port_Description',
+			i18nLabel: 'FEDERATION_DNS_URL',
+			i18nDescription: 'FEDERATION_DNS_URL_Description',
 		});
 	});
 });

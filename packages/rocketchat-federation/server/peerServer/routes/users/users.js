@@ -1,40 +1,35 @@
-import express from 'express';
 import FederationUser from '../../../federatedResources/FederatedUser';
 
-const router = express.Router(); /* eslint-disable-line new-cap */
-
-export default function usersRoutes(app) {
+export default function usersRoutes() {
 	const self = this;
 
-	app.use('/users', router);
+	RocketChat.API.v1.addRoute('federation.users', { authRequired: false }, {
+		get() {
+			const { identifier: localPeerIdentifier } = self.config;
 
-	router.get('/', async function(req, res) {
-		const { identifier: localPeerIdentifier } = self.config;
+			const { username, email } = this.requestParams();
 
-		const {
-			query: { username, email },
-		} = req;
+			const options = { fields: { services: 0, roles: 0 } };
 
-		const options = { fields: { services: 0, roles: 0 } };
+			let user = null;
 
-		let user = null;
+			if (username) {
+				self.log(`[users] Trying to find user:${ username }`);
 
-		if (username) {
-			self.log(`[users] Trying to find user:${ username }`);
+				user = RocketChat.models.Users.findOneByUsername(username, options);
+			} else {
+				self.log(`[users] Trying to find user:${ email }`);
 
-			user = RocketChat.models.Users.findOneByUsername(username, options);
-		} else {
-			self.log(`[users] Trying to find user:${ email }`);
+				user = RocketChat.models.Users.findOneByEmailAddress(email, options);
+			}
 
-			user = RocketChat.models.Users.findOneByEmailAddress(email, options);
-		}
+			if (!user) {
+				return RocketChat.API.v1.failure('There is no such user in this server');
+			}
 
-		if (!user) {
-			return res.sendStatus(404);
-		}
+			const federatedUser = new FederationUser(localPeerIdentifier, user);
 
-		const federatedUser = new FederationUser(localPeerIdentifier, user);
-
-		res.send({ federatedUser });
+			return RocketChat.API.v1.success({ federatedUser });
+		},
 	});
 }
