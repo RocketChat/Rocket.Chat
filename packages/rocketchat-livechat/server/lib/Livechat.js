@@ -221,7 +221,8 @@ RocketChat.Livechat = {
 		}
 
 		if (department) {
-			updateUser.$set.department = department;
+			const dep = RocketChat.models.LivechatDepartment.findOneByIdOrName(department);
+			updateUser.$set.department = dep && dep._id;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
