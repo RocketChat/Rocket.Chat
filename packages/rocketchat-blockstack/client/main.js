@@ -7,9 +7,7 @@ import './routes';
 const handleError = (error) => error && Session.set('errorMessage', error.reason || 'Unknown error');
 
 // TODO: allow serviceConfig.loginStyle == popup
-Meteor.loginWithBlockstack = async(options, callback = handleError) => {
-	const { redirectToSignIn } = await import('blockstack/dist/blockstack');
-
+Meteor.loginWithBlockstack = (options, callback = handleError) => {
 	if (!options || !options.redirectURI) {
 		options = ServiceConfiguration.configurations.findOne({
 			service: 'blockstack',
@@ -29,16 +27,15 @@ Meteor.loginWithBlockstack = async(options, callback = handleError) => {
 			manifestURI: String,
 		}));
 
-		redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes);
+		import('blockstack/dist/blockstack').then(({ redirectToSignIn }) =>
+			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes));
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
 };
 
 const meteorLogout = Meteor.logout;
-Meteor.logout = async(...args) => {
-	const { signUserOut } = await import('blockstack/dist/blockstack');
-
+Meteor.logout = (...args) => {
 	const serviceConfig = ServiceConfiguration.configurations.findOne({
 		service: 'blockstack',
 	});
@@ -47,7 +44,8 @@ Meteor.logout = async(...args) => {
 
 	if (serviceConfig && blockstackAuth) {
 		Session.delete('blockstack_auth');
-		signUserOut(window.location.href);
+		import('blockstack/dist/blockstack').then(({ signUserOut }) =>
+			signUserOut(window.location.href));
 	}
 
 	return meteorLogout(...args);
