@@ -132,7 +132,7 @@ Template.rc_modal.events({
 				label: dontAskAgain.label,
 			};
 
-			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			let dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 			if (dontAskAgainList) {
 				dontAskAgainList.push(dontAskAgainObject);
 			} else {
