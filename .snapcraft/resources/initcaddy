@@ -3,19 +3,8 @@
 # Config options for Caddyfile
 options="protocol siteurl port"
 
-create_caddyfile(){
-# Copy template to config Caddyfile
-cp $SNAP/bin/Caddyfile $SNAP_DATA/Caddyfile
-
-}
-
-update_caddyfile(){
-
-# Config file path for Caddyfile
-Caddyfile=$SNAP_DATA/Caddyfile
-
-# replace an option inside the config file. 
 refresh_opt_in_config() {
+# replace an option inside the config file.
     opt=$1
     value="$2"
     if $(grep -q "_${opt}_" $Caddyfile); then
@@ -26,15 +15,23 @@ refresh_opt_in_config() {
     fi
 }
 
+create_caddyfile(){
+# Copy template to config Caddyfile
+cp $SNAP/bin/Caddyfile $SNAP_DATA/Caddyfile
+}
+
+update_caddyfile(){
+# Config file path for Caddyfile
+Caddyfile=$SNAP_DATA/Caddyfile
+
 # Iterate through the config options array
 for opt in $options
     do
     # Use snapctl to get the value registered by the snap set command
     refresh_opt_in_config $opt $(snapctl get $opt)
 done
-
 }
 
-create_caddy
+create_caddyfile
 update_caddyfile
 
