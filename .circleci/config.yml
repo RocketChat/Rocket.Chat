@@ -139,7 +139,7 @@ jobs:
 
     environment:
       TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_URL: mongodb://localhost:27017/rocketchat
       MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
     steps:
@@ -172,7 +172,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
@@ -185,7 +185,7 @@ jobs:
 
     environment:
       TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
+      MONGO_URL: mongodb://localhost:27017/rocketchat
 
     steps:
       - attach_workspace:
@@ -209,7 +209,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            for i in $(seq 1 5); do npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+            for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
       - store_artifacts:
           path: .screenshots/
