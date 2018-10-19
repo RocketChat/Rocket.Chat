@@ -1,5 +1,6 @@
 // Dolphin OAuth2
 /* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
 
 const config = {
 	serverURL: '',

@@ -1,4 +1,5 @@
 /* global AutoComplete Deps */
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 

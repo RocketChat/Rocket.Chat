@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('AtlassianCrowd', function() {
 		const enableQuery = { _id: 'CROWD_Enable', value: true };

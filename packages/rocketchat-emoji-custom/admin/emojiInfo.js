@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.emojiInfo.helpers({
 	name() {
 		const emoji = Template.instance().emoji.get();

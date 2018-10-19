@@ -1,4 +1,5 @@
 /* globals Accounts, OAuth */
+import { Meteor } from 'meteor/meteor';
 
 Accounts.registerLoginHandler('iframe', function(result) {
 	if (!result.iframe) {

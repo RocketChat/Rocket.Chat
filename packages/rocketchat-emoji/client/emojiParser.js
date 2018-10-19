@@ -1,4 +1,5 @@
 /* globals isSetNotNull */
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 /*

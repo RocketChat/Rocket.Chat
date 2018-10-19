@@ -1,4 +1,5 @@
 /* globals UserRoles, RoomRoles */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

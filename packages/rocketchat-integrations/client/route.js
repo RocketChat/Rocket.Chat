@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 FlowRouter.route('/admin/integrations', {
 	name: 'admin-integrations',
 	subscriptions() {

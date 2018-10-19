@@ -1,4 +1,5 @@
 /* globals OAuth*/
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.deleteUser = function(userId) {
 	const user = RocketChat.models.Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1 },

@@ -1,4 +1,6 @@
 /* globals RocketChatFileEmojiCustomInstance */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	uploadEmojiCustom(binaryContent, contentType, emojiData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {

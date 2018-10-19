@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
 	if (!this.userId) {
 		return this.ready();

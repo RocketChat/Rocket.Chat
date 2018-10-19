@@ -1,4 +1,5 @@
 /* globals fireGlobalEvent readMessage currentTracker*/
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 currentTracker = undefined;

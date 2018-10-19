@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 FlowRouter.route('/admin/emoji-custom', {
 	name: 'emoji-custom',
 	subscriptions(/* params, queryParams*/) {

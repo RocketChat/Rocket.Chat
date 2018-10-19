@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 FlowRouter.route('/admin/custom-sounds', {
 	name: 'custom-sounds',
 	subscriptions(/* params, queryParams*/) {

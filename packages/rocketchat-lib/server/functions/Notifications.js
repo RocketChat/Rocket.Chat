@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.Notifications = new class {
 	constructor() {
 		this.debug = false;
