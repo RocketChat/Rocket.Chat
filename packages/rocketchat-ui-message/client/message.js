@@ -7,7 +7,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 
 	if (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
-		if (version < 12) {
+		if (version <= 12) {
 			return;
 		}
 	}
