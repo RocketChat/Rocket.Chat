@@ -137,7 +137,7 @@
 		width: 20%;
 		max-width: 20%;
 
-		& &__toolbar {
+		&__toolbar {
 			justify-content: flex-end;
 
 			&-button {
