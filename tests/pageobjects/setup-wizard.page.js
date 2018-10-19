@@ -1,4 +1,5 @@
-import { Meteor } from 'meteor/meteor';
+/* globals Meteor */
+
 import Page from './Page';
 import { adminEmail, adminPassword } from '../data/user';
 
