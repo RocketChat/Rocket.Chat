@@ -1,6 +1,7 @@
 /* globals logger*/
 
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 

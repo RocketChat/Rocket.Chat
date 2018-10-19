@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import toastr from 'toastr';
 import s from 'underscore.string';
 

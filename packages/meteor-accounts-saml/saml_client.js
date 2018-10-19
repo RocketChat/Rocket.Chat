@@ -1,5 +1,7 @@
 /* globals cordova */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 if (!Accounts.saml) {
 	Accounts.saml = {};
 }

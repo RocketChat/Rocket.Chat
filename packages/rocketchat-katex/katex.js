@@ -3,6 +3,7 @@
  * https://github.com/Khan/KaTeX
  */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 

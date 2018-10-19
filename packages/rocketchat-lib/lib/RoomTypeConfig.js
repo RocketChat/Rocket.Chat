@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 export const RoomSettingsEnum = {
 	NAME: 'roomName',

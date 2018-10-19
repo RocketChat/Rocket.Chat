@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 /*
 * Leave is a named function that will replace /leave commands

@@ -1,5 +1,7 @@
 /* globals Commands, Livechat, UserPresence */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {

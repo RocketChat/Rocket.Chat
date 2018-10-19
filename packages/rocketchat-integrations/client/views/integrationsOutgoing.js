@@ -1,6 +1,7 @@
 /* global ChatIntegrations */
 
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
