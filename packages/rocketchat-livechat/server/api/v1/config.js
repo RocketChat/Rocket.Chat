@@ -12,7 +12,7 @@ RocketChat.API.v1.addRoute('livechat/config', {
 				return RocketChat.API.v1.success({ config: { enabled: false } });
 			}
 
-			const { status } = online();
+			const status = online();
 
 			let guest;
 			let room;
