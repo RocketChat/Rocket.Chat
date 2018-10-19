@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
 		return;

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
 		return;

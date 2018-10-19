@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Page from './Page';
 import { adminEmail, adminPassword } from '../data/user';
 

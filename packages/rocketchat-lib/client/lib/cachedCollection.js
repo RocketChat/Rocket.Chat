@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import localforage from 'localforage';
 import _ from 'underscore';
 

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
 Template.ChatpalAdmin.onCreated(function() {

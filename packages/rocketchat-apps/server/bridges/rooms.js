@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {

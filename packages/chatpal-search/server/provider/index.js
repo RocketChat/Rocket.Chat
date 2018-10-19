@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
 

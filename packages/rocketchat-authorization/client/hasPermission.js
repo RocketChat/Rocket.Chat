@@ -1,4 +1,5 @@
 /* globals ChatPermissions */
+import { Meteor } from 'meteor/meteor';
 
 function atLeastOne(permissions = [], scope) {
 	return permissions.some((permissionId) => {

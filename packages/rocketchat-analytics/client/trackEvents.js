@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 function trackEvent(category, action, label) {
 	if (window._paq) {
 		window._paq.push(['trackEvent', category, action, label]);

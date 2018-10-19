@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 RocketChat.API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
 		const emojis = Meteor.call('listEmojiCustom');

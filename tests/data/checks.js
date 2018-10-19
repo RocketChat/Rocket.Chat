@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import loginPage from '../pageobjects/login.page';
 import mainContent from '../pageobjects/main-content.page';
 import sideNav from '../pageobjects/side-nav.page';

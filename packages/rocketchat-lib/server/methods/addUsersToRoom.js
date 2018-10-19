@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	addUsersToRoom(data = {}) {
 		// Validate user and room

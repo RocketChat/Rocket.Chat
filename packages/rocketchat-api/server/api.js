@@ -1,4 +1,6 @@
 /* global Restivus, DDP, DDPCommon */
+import { Meteor } from 'meteor/meteor';
+
 import _ from 'underscore';
 const logger = new Logger('API', {});
 

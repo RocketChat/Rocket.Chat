@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import { Meteor } from 'meteor/meteor';
 import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
 

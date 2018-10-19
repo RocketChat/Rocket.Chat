@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { searchProviderService, SearchProvider } from 'meteor/rocketchat:search';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';

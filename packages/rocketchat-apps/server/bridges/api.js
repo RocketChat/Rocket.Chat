@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 

@@ -1,4 +1,5 @@
 /* globals KonchatNotification, fireGlobalEvent, readMessage, CachedChatSubscription */
+import { Meteor } from 'meteor/meteor';
 
 // Show notifications and play a sound for new messages.
 // We trust the server to only send notifications for interesting messages, e.g. direct messages or

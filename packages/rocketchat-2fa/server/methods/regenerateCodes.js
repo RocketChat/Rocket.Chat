@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.methods({
 	'2fa:regenerateCodes'(userToken) {
 		if (!Meteor.userId()) {
