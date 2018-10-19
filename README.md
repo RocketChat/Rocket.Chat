@@ -399,7 +399,7 @@ Now just clone and start the app:
 ```sh
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
-npm install
+meteor npm install
 meteor npm start
 ```
 
