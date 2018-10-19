@@ -1,6 +1,7 @@
 /* globals logger*/
 
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 export default class RocketAdapter {

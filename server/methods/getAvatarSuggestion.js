@@ -1,5 +1,6 @@
 /* global Gravatar */
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 
 function getAvatarSuggestionForUser(user) {
 	check(user, Object);

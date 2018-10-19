@@ -21,7 +21,6 @@
 		"DDPRateLimiter"              : false,
 		"FlowRouter"                  : false,
 		"FileUpload"                  : false,
-		"HTTP"                        : false,
 		"getNextAgent"                : false,
 		"handleError"                 : false,
 		"getAvatarUrlFromUsername"    : false,
