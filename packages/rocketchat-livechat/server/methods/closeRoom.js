@@ -5,23 +5,17 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
-
-		if (!room || room.t !== 'l') {
-			throw new Meteor.Error('invalid-room', 'Invalid room', { method: 'livechat:closeRoom' });
-		}
-
 		const user = Meteor.user();
-
-		if (!RocketChat.Livechat.closeRoom({ user, room, comment })) {
-			return false;
-		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
 		if (!subscription && !RocketChat.authz.hasPermission(userId, 'close-others-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
-		return true;
+		return RocketChat.Livechat.closeRoom({
+			user,
+			room: RocketChat.models.Rooms.findOneById(roomId),
+			comment,
+		});
 	},
 });
