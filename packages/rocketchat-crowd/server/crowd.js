@@ -1,5 +1,6 @@
 /* globals:CROWD:true */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
+import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 const logger = new Logger('CROWD', {});
 

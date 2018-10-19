@@ -1,3 +1,4 @@
+import { SHA256 } from 'meteor/sha';
 import speakeasy from 'speakeasy';
 
 RocketChat.TOTP = {
