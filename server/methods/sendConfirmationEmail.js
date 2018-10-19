@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
 let subject = '';

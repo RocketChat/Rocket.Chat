@@ -4,7 +4,6 @@
 	"globals": {
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
-		"Accounts"                    : false,
 		"AgentUsers"                  : false,
 		"Apps"                        : false,
 		"Assets"                      : false,

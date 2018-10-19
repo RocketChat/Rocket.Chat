@@ -2,6 +2,7 @@
 
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 
