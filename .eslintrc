@@ -40,7 +40,6 @@
 		"Package"                     : false,
 		"parentCall"                  : false,
 		"Promise"                     : false,
-		"ReactiveVar"                 : false,
 		"Reload"                      : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,

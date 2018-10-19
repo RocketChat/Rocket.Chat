@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 const visitorHistory = new Mongo.Collection('visitor_history');
 

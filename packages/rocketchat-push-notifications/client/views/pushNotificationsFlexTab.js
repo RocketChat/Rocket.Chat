@@ -1,5 +1,6 @@
 /* globals ChatSubscription popover */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 const notificationLabels = {
 	all: 'All_messages',

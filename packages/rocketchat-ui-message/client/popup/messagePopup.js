@@ -3,6 +3,7 @@
 // it is just to improve readability in this file
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 

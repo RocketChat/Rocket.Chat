@@ -1,6 +1,7 @@
 /* globals fileUploadHandler */
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import mime from 'mime-type/with-db';

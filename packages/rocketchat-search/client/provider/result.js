@@ -1,5 +1,6 @@
 /* globals FlowRouter, RoomHistoryManager */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 Meteor.startup(function() {

@@ -1,4 +1,6 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
+
 RocketChat.ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});

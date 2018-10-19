@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 

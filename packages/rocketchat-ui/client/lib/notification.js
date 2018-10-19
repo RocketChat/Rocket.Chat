@@ -1,5 +1,6 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';

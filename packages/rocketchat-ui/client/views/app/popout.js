@@ -1,4 +1,5 @@
 /* globals popout */
+import { ReactiveVar } from 'meteor/reactive-var';
 
 this.popout = {
 	context: null,

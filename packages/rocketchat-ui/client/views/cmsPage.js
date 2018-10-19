@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');
