@@ -59,8 +59,36 @@ Template.livechatWindow.helpers({
 });
 
 Template.livechatWindow.events({
+	'mousedown .title'({ target, clientX: x, clientY: y }) {
+		parentCall('startDragWindow', { x, y });
+
+		this.onDrag = ({ clientX: x, clientY: y }) => {
+			parentCall('dragWindow', {
+				x: x - target.getBoundingClientRect().left,
+				y: y - target.getBoundingClientRect().top,
+			});
+		};
+
+		this.onDragStop = () => {
+			parentCall('stopDragWindow');
+			window.removeEventListener('mousemove', this.onDrag);
+			window.removeEventListener('mousedown', this.onDragStop);
+			this.onDrag = this.onDragStop = null;
+		};
+
+		window.addEventListener('mousemove', this.onDrag);
+		window.addEventListener('mouseup', this.onDragStop);
+	},
 	'click .title'() {
+		parentCall('restoreWindow');
+	},
+	'click .maximize'(e) {
 		parentCall('toggleWindow');
+		e.stopPropagation();
+	},
+	'click .minimize'(e) {
+		parentCall('toggleWindow');
+		e.stopPropagation();
 	},
 	'click .popout'(event) {
 		event.stopPropagation();
