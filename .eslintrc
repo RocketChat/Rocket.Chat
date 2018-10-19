@@ -19,7 +19,6 @@
 		"CryptoJS"                    : false,
 		"Department"                  : false,
 		"DDPRateLimiter"              : false,
-		"EJSON"                       : false,
 		"Email"                       : false,
 		"FlowRouter"                  : false,
 		"FileUpload"                  : false,

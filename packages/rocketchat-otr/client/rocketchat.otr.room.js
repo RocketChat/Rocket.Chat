@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { EJSON } from 'meteor/ejson';
 import _ from 'underscore';
 import toastr from 'toastr';
 /* globals crypto */
