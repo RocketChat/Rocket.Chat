@@ -1,5 +1,6 @@
 /* globals WebAppInternals */
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import url from 'url';

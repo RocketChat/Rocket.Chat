@@ -1,6 +1,7 @@
 /* globals RoutePolicy, logger */
 /* jshint newcap: false */
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import fiber from 'fibers';
