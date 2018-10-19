@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Email } from 'meteor/email';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
