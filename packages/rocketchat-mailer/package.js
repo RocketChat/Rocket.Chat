@@ -8,6 +8,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'ddp-rate-limiter',
+		'rocketchat:i18n',
 	]);
 
 	api.mainModule('server/api.js', 'server');

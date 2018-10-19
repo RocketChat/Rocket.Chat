@@ -117,23 +117,14 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 		logger.info('Logging user');
 
-		const stampedToken = Accounts._generateStampedLoginToken();
-
-		Meteor.users.update(user._id, {
-			$push: {
-				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
-			},
-		});
-
 		syncUserData(user, ldapUser);
 
 		if (RocketChat.settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
-
+		RocketChat.callbacks.run('afterLDAPLogin', { user, ldapUser, ldap });
 		return {
 			userId: user._id,
-			token: stampedToken.token,
 		};
 	}
 
@@ -153,6 +144,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (result instanceof Error) {
 		throw result;
 	}
+	RocketChat.callbacks.run('afterLDAPLogin', { user: result, ldapUser, ldap });
 
 	return result;
 });

@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 this.getAvatarUrlFromUsername = function(username) {
 	const key = `avatar_random_${ username }`;
-	const random = typeof Session !== 'undefined' ? Session.keys[key] : 0;
+	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
 	if (username == null) {
 		return;
 	}
