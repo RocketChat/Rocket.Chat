@@ -167,6 +167,45 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.register]', () => {
+		const email = `email@email${ Date.now() }.com`;
+		const username = `myusername${ Date.now() }`;
+		it('should register new user', (done) => {
+			request.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username,
+					pass: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.username', username);
+					expect(res.body).to.have.nested.property('user.emails[0].address', email);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', 'name');
+				})
+				.end(done);
+		});
+		it('should return an error when trying register new user with an existing username', (done) => {
+			request.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('Username is already in use');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.info]', () => {
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -1044,7 +1083,7 @@ describe('[Users]', function() {
 				})
 				.end(resolve);
 		});
-		const testUsername = `testuser${ +new Date() }`;
+		const testUsername = `testuserdelete${ +new Date() }`;
 		let targetUser;
 		it('register a new user...', (done) => {
 			request.post(api('users.register'))

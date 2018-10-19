@@ -15,7 +15,7 @@ function HighlightWordsClient(message) {
 		}
 	}
 
-	const to_highlight = RocketChat.getUserPreference(Meteor.user(), 'highlights');
+	const to_highlight = RocketChat.getUserPreference(Meteor.userId(), 'highlights');
 	if (Array.isArray(to_highlight)) {
 		to_highlight.forEach((highlight) => {
 			if (!s.isBlank(highlight)) {
