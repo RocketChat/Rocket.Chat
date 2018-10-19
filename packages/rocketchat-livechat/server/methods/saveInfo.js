@@ -1,4 +1,5 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	'livechat:saveInfo'(guestData, roomData) {

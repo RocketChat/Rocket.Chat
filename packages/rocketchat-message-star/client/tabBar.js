@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],

@@ -1,6 +1,7 @@
 /* global CodeMirrors */
 CodeMirrors = {};
 
+import { Meteor } from 'meteor/meteor';
 import 'codemirror/lib/codemirror.css';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 

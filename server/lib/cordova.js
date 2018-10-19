@@ -1,4 +1,5 @@
 /* global Push, SystemLogger */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	// log() {

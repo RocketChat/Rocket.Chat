@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('userChannels', function(userId) {
 	if (!this.userId) {
 		return this.ready();

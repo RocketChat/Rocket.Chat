@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.livechatCustomFields.helpers({
 	customFields() {
 		return LivechatCustomField.find();

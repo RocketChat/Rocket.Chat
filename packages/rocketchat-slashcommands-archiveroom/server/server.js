@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
 		return;

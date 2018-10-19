@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'livechat:closeRoom'(roomId, comment) {
 		const userId = Meteor.userId();

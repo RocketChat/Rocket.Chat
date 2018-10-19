@@ -1,5 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.Optional"]}] */
 
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({

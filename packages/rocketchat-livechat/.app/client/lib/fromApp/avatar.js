@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 this.getAvatarUrlFromUsername = (username) => {
 	const key = `avatar_random_${ username }`;
 	const random = Session.keys[key] || 0;

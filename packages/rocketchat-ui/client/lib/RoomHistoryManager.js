@@ -1,4 +1,5 @@
 /* globals readMessage UserRoles RoomRoles*/
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 export const upsertMessage = ({ msg, subscription }) => {

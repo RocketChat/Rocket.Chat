@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 let audio = null;
 
 const stop = (audio) => {

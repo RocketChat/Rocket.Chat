@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 const colors = {

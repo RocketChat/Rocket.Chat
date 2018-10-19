@@ -1,4 +1,6 @@
 /* globals Mailer */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'Mailer:unsubscribe'(_id, createdAt) {
 		return Mailer.unsubscribe(_id, createdAt);

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const cannotSetup = () => {
 	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 	if (!showSetupWizard) {

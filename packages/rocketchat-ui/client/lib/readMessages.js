@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 /* DEFINITIONS
@@ -140,15 +141,11 @@ const readMessage = new class {
 			ts: {
 				$lt: subscription.ls,
 			},
-		}
-			// 'u._id':
-			// 	$ne: Meteor.userId()
-			, {
+		}, {
 			sort: {
 				ts: -1,
 			},
-		}
-		);
+		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
 			lastReadRecord =
@@ -170,13 +167,11 @@ const readMessage = new class {
 				'u._id': {
 					$ne: Meteor.userId(),
 				},
-			}
-				, {
+			}, {
 				sort: {
 					ts: 1,
 				},
-			}
-			);
+			});
 
 			if (firstUnreadRecord != null) {
 				room.unreadFirstId = firstUnreadRecord._id;

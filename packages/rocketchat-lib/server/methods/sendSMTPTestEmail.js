@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({

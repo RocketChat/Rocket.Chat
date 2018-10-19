@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest, findRoom } from '../lib/livechat';
 

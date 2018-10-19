@@ -1,4 +1,5 @@
 /* globals alerts */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {

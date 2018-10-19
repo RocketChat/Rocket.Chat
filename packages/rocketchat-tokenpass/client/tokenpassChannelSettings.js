@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
 		const { balance, token } = Template.instance();

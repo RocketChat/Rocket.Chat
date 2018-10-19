@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 this.stdout = new Mongo.Collection('stdout');
 

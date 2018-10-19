@@ -1,4 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'livechat:startVideoCall'(roomId) {
 		if (!Meteor.userId()) {

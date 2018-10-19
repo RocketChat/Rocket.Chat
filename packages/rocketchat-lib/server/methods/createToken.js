@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	createToken(userId) {
 		if (Meteor.userId() !== userId && !RocketChat.authz.hasPermission(Meteor.userId(), 'user-generate-access-token')) {

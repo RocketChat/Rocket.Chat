@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');
 	return Meteor.autorun(() => {

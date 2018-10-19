@@ -1,5 +1,6 @@
 
 // Kick is a named function that will replace /kick commands
+import { Meteor } from 'meteor/meteor';
 
 const Kick = function(command, params, { rid }) {
 	if (command !== 'kick' || !Match.test(params, String)) {

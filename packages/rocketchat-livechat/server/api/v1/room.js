@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/room', {

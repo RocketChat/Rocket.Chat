@@ -1,4 +1,5 @@
 /* globals fireGlobalEvent*/
+import { Meteor } from 'meteor/meteor';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 

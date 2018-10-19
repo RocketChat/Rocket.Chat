@@ -1,4 +1,6 @@
 /* globals KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+
 Template.secretURL.helpers({
 	registrationAllowed() {
 		const { hashIsValid } = Template.instance();

@@ -1,4 +1,6 @@
 /* global FileUpload */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteFileMessage(fileID) {
 		check(fileID, String);

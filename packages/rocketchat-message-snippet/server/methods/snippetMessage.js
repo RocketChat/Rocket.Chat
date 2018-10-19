@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	snippetMessage(message, filename) {
 		if (Meteor.userId() == null) {

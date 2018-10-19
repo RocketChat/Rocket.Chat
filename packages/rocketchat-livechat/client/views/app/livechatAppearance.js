@@ -1,5 +1,6 @@
 /* globals jscolor*/
 /* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';

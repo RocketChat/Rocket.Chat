@@ -1,4 +1,5 @@
 /* globals CustomFields, Livechat */
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
 
 const api = {

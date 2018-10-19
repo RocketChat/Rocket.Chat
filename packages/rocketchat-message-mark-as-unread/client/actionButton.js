@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(() => {
 	RocketChat.MessageAction.addButton({
 		id: 'mark-message-as-unread',

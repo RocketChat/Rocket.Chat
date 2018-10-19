@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/video.call/:token', {

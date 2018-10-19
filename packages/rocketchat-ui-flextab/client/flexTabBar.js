@@ -1,4 +1,5 @@
 /* globals popover */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const commonHelpers = {

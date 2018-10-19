@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
+
 Template.resetPassword.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();

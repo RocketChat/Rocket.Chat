@@ -2,6 +2,7 @@
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {

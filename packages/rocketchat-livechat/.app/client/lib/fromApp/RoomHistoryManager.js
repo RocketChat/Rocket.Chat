@@ -1,5 +1,6 @@
 /* globals readMessage UserRoles RoomRoles*/
 
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../../imports/client/visitor';
 import _ from 'underscore';
 

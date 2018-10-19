@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 function Create(command, params, item) {
 	function getParams(str) {
 		const regex = /(--(\w+))+/g;

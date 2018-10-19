@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 /*
 * Msg is a named function that will replace /msg commands

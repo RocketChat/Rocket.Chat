@@ -36,7 +36,6 @@
 		"LivechatTrigger"             : false,
 		"Logger"                      : false,
 		"Match"                       : false,
-		"Meteor"                      : false,
 		"modal"                       : false,
 		"moment"                      : false,
 		"Mongo"                       : false,
