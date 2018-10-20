@@ -95,7 +95,7 @@ function validateUserData(userId, userData) {
 }
 
 function validateUserEditing(userId, userData) {
-	const editingMyself = userData._id && userId !== userData._id;
+	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = RocketChat.authz.hasPermission(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = RocketChat.authz.hasPermission(userId, 'edit-other-user-password');
@@ -107,28 +107,28 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || !editingMyself)) {
+	if (userData.username && !RocketChat.settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || !editingMyself)) {
+	if (userData.name && !RocketChat.settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange') && (!canEditOtherUserInfo || !editingMyself)) {
+	if (userData.email && !RocketChat.settings.get('Accounts_AllowEmailChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || !editingMyself)) {
+	if (userData.password && !RocketChat.settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
