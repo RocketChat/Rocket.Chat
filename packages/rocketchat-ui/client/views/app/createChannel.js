@@ -86,6 +86,15 @@ Template.createChannel.helpers({
 	broadcast() {
 		return Template.instance().broadcast.get();
 	},
+	encrypted() {
+		return Template.instance().encrypted.get();
+	},
+	encryptedDisabled() {
+		return Template.instance().type.get() !== 'p' || Template.instance().broadcast.get();
+	},
+	e2eEnabled() {
+		return RocketChat.settings.get('E2E_Enable');
+	},
 	readOnly() {
 		return Template.instance().readOnly.get();
 	},
@@ -159,11 +168,15 @@ Template.createChannel.events({
 		t.change();
 	},
 	'change [name="type"]'(e, t) {
-		t.type.set(e.target.checked ? e.target.value : 'd');
+		t.type.set(e.target.checked ? e.target.value : 'c');
 		t.change();
 	},
 	'change [name="broadcast"]'(e, t) {
 		t.broadcast.set(e.target.checked);
+		t.change();
+	},
+	'change [name="encrypted"]'(e, t) {
+		t.encrypted.set(e.target.checked);
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {
@@ -201,6 +214,7 @@ Template.createChannel.events({
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
+		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -211,7 +225,7 @@ Template.createChannel.events({
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -261,6 +275,7 @@ Template.createChannel.onCreated(function() {
 	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
+	this.encrypted = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
@@ -274,6 +289,12 @@ Template.createChannel.onCreated(function() {
 		const broadcast = this.broadcast.get();
 		if (broadcast) {
 			this.readOnly.set(true);
+			this.encrypted.set(false);
+		}
+
+		const type = this.type.get();
+		if (type !== 'p') {
+			this.encrypted.set(false);
 		}
 	});
 

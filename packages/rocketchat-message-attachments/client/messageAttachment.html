@@ -130,6 +130,14 @@
 				{{/unless}}
 			{{/if}}
 
+			{{#if isPDF}}
+				{{#unless collapsed}}
+					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+						{{> icon block="rc-input__icon-svg" icon="loading"}}
+					</div>
+					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+				{{/unless}}
+			{{/if}}
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
@@ -156,10 +164,6 @@
 					{{/each}}
 				</div>
 			{{/if}}
-
-			{{#each actions}}
-				{{> messageAction}}
-			{{/each}}
 
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}

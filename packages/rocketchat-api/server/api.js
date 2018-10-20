@@ -11,6 +11,7 @@ class API extends Restivus {
 			joinCode: 0,
 			members: 0,
 			importIds: 0,
+			e2e: 0,
 		};
 		this.limitedUserFieldsToExclude = {
 			avatarOrigin: 0,
@@ -30,24 +31,6 @@ class API extends Restivus {
 		};
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
-		};
-
-		this._config.defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
-			if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
-				if (RocketChat.settings.get('API_Enable_CORS') === true) {
-					this.response.writeHead(200, {
-						'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
-						'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token',
-					});
-				} else {
-					this.response.writeHead(405);
-					this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-				}
-			} else {
-				this.response.writeHead(404);
-			}
-
-			this.done();
 		};
 	}
 
@@ -279,16 +262,6 @@ class API extends Restivus {
 
 				this.userId = this.user._id;
 
-				// Remove tokenExpires to keep the old behavior
-				Meteor.users.update({
-					_id: this.user._id,
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(auth.token),
-				}, {
-					$unset: {
-						'services.resume.loginTokens.$.when': 1,
-					},
-				});
-
 				const response = {
 					status: 'success',
 					data: {
@@ -401,6 +374,23 @@ RocketChat.API = {
 	ApiClass: API,
 };
 
+const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
+	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
+		if (RocketChat.settings.get('API_Enable_CORS') === true) {
+			this.response.writeHead(200, {
+				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token',
+			});
+		} else {
+			this.response.writeHead(405);
+			this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
+		}
+	} else {
+		this.response.writeHead(404);
+	}
+	this.done();
+};
+
 const createApi = function _createApi(enableCors) {
 	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
 		RocketChat.API.v1 = new API({
@@ -408,6 +398,7 @@ const createApi = function _createApi(enableCors) {
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
+			defaultOptionsEndpoint,
 			auth: getUserAuth(),
 		});
 	}
@@ -417,6 +408,7 @@ const createApi = function _createApi(enableCors) {
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
+			defaultOptionsEndpoint,
 			auth: getUserAuth(),
 		});
 	}

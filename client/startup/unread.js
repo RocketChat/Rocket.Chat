@@ -32,7 +32,7 @@ Meteor.startup(function() {
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.user(), 'unreadAlert');
+					const userUnreadAlert = RocketChat.getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}

@@ -166,6 +166,10 @@ RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
 			username: String,
 		}));
 
+		if (!RocketChat.checkUsernameAvailability(this.bodyParams.username)) {
+			return RocketChat.API.v1.failure('Username is already in use');
+		}
+
 		// Register the user
 		const userId = Meteor.call('registerUser', this.bodyParams);
 
@@ -365,6 +369,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			data: Match.ObjectIncluding({
 				newRoomNotification: Match.Maybe(String),
 				newMessageNotification: Match.Maybe(String),
+				clockMode: Match.Maybe(Number),
 				useEmojis: Match.Maybe(Boolean),
 				convertAsciiEmoji: Match.Maybe(Boolean),
 				saveMobileBandwidth: Match.Maybe(Boolean),
