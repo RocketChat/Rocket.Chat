@@ -3,7 +3,7 @@ Meteor.methods({
 		check(userId, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-invalid-user', 'Invalid current user', {
 				method: 'deleteUser',
 			});
 		}
@@ -16,7 +16,7 @@ Meteor.methods({
 
 		const user = RocketChat.models.Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
 			});
 		}
