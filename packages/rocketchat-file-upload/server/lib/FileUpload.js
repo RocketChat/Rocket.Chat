@@ -162,24 +162,23 @@ Object.assign(FileUpload, {
 			};
 
 			const reorientation = (cb) => {
-				if (metadata.orientation) {
-					s.rotate()
-						.toFile(`${ tmpFile }.tmp`)
-						.then(Meteor.bindEnvironment(() => {
-							fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
-								fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
-									cb();
-								}));
-							}));
-						})).catch((err) => {
-							console.error(err);
-							fut.return();
-						});
-
-					return;
+				if (!metadata.orientation) {
+					return cb();
 				}
+				s.rotate()
+					.toFile(`${ tmpFile }.tmp`)
+					.then(Meteor.bindEnvironment(() => {
+						fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+							fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+								cb();
+							}));
+						}));
+					})).catch((err) => {
+						console.error(err);
+						fut.return();
+					});
 
-				cb();
+				return;
 			};
 
 			reorientation(() => {
