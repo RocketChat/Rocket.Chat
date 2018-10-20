@@ -14,14 +14,43 @@ import {
 	targetUser,
 	log,
 } from '../../data/api-data.js';
-import { adminEmail, preferences, password } from '../../data/user.js';
+import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
+
+const updateSetting = (setting, value) => new Promise((resolve) => {
+	request.post(`/api/v1/settings/${ setting }`)
+		.set(credentials)
+		.send({ value })
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.expect((res) => {
+			expect(res.body).to.have.property('success', true);
+		})
+		.end(resolve);
+});
 
 describe('[Users]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	it('enabling E2E in server and generating keys to user...', (done) => {
+		updateSetting('E2E_Enable', true).then(() => {
+			request.post(api('e2e.setUserPublicAndPivateKeys'))
+				.set(credentials)
+				.send({
+					private_key: 'test',
+					public_key: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 
 	describe('[/users.create]', () => {
 		before((done) => clearCustomFields(done));
@@ -48,6 +77,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
+					expect(res.body).to.not.have.nested.property('user.e2e');
 
 					expect(res.body).to.not.have.nested.property('user.customFields');
 
@@ -88,6 +118,7 @@ describe('[Users]', function() {
 						expect(res.body).to.have.nested.property('user.active', true);
 						expect(res.body).to.have.nested.property('user.name', username);
 						expect(res.body).to.have.nested.property('user.customFields.customFieldText', 'success');
+						expect(res.body).to.not.have.nested.property('user.e2e');
 					})
 					.end(done);
 			});
@@ -136,6 +167,45 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.register]', () => {
+		const email = `email@email${ Date.now() }.com`;
+		const username = `myusername${ Date.now() }`;
+		it('should register new user', (done) => {
+			request.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username,
+					pass: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.username', username);
+					expect(res.body).to.have.nested.property('user.emails[0].address', email);
+					expect(res.body).to.have.nested.property('user.active', true);
+					expect(res.body).to.have.nested.property('user.name', 'name');
+				})
+				.end(done);
+		});
+		it('should return an error when trying register new user with an existing username', (done) => {
+			request.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('Username is already in use');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/users.info]', () => {
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
@@ -151,6 +221,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', apiUsername);
+					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
@@ -183,6 +254,8 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
+					const myself = res.body.users.find((user) => user.username === adminUsername);
+					expect(myself).to.not.have.property('e2e');
 				})
 				.end(done);
 		});
@@ -223,17 +296,6 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.update]', () => {
-		const updateSetting = (setting, value) => new Promise((resolve) => {
-			request.post(`/api/v1/settings/${ setting }`)
-				.set(credentials)
-				.send({ value })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(resolve);
-		});
 		const updatePermission = (permission, roles) => new Promise((resolve) => {
 			request.post(api('permissions.update'))
 				.set(credentials)
@@ -284,6 +346,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property('user.name', `edited${ apiUsername }`);
+					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
@@ -303,6 +366,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${ apiEmail }`);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
+					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
@@ -321,6 +385,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
 		});
@@ -588,6 +653,23 @@ describe('[Users]', function() {
 		const editedName = `basic-info-test-name${ +new Date() }`;
 		const editedEmail = `test${ +new Date() }@mail.com`;
 
+		it('enabling E2E in server and generating keys to user...', (done) => {
+			updateSetting('E2E_Enable', true).then(() => {
+				request.post(api('e2e.setUserPublicAndPivateKeys'))
+					.set(userCredentials)
+					.send({
+						private_key: 'test',
+						public_key: 'test',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
 		it('should update the user own basic information', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
@@ -606,6 +688,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
 					expect(user.name).to.be.equal(editedName);
+					expect(user).to.not.have.property('e2e');
 				})
 				.end(done);
 		});
@@ -624,6 +707,7 @@ describe('[Users]', function() {
 					const { user } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(user.username).to.be.equal(editedUsername);
+					expect(user).to.not.have.property('e2e');
 				})
 				.end(done);
 		});
@@ -686,6 +770,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
+					expect(user).to.not.have.property('e2e');
 				})
 				.end(done);
 		});
@@ -998,7 +1083,7 @@ describe('[Users]', function() {
 				})
 				.end(resolve);
 		});
-		const testUsername = `testuser${ +new Date() }`;
+		const testUsername = `testuserdelete${ +new Date() }`;
 		let targetUser;
 		it('register a new user...', (done) => {
 			request.post(api('users.register'))
