@@ -1,6 +1,40 @@
 /* globals renderEmoji renderMessageBody */
 import _ from 'underscore';
 import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
+
+async function renderPdfToCanvas(canvasId, pdfLink) {
+
+	if (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) {
+		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
+		if (version <= 12) {
+			return;
+		}
+	}
+
+	if (!pdfLink || /\.pdf$/i.test(pdfLink)) { return; }
+	const canvas = document.getElementById(canvasId);
+	if (!canvas) { return; }
+	const pdfjsLib = await import('pdfjs-dist');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
+	const loader = document.getElementById('js-loading-${canvasId}');
+	if (loader) { loader.style.display = 'block'; }
+	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const page = await pdf.getPage(1);
+	const scale = 0.5;
+	const viewport = page.getViewport(scale);
+	const context = canvas.getContext('2d');
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
+	page.render({
+		canvasContext: context,
+		viewport,
+	});
+	if (loader) { loader.style.display = 'none'; }
+	canvas.style.maxWidth = '-webkit-fill-available';
+	canvas.style.maxWidth = '-moz-available';
+	canvas.style.display = 'block';
+}
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -16,14 +50,16 @@ Template.message.helpers({
 	ignoredClass() {
 		return this.ignored ? 'message--ignored' : '';
 	},
+	isDecrypting() {
+		return this.e2e === 'pending';
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';
 		}
 	},
 	roleTags() {
-		const user = Meteor.user();
-		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(Meteor.userId(), 'hideRoles')) {
 			return [];
 		}
 
@@ -98,10 +134,10 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.ts);
 	},
 	date() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.ts);
 	},
 	isTemp() {
 		if (this.temp === true) {
@@ -139,7 +175,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		if (Template.instance().wasEdited) {
-			return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			return DateFormat.formatDateAndTime(this.editedAt);
 		}
 	},
 	editedBy() {
@@ -360,7 +396,10 @@ Template.message.onCreated(function() {
 });
 
 Template.message.onViewRendered = function(context) {
-	return this._domrange.onAttached(function(domRange) {
+	return this._domrange.onAttached((domRange) => {
+		if (context.file && context.file.type === 'application/pdf') {
+			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
 		const getPreviousSentMessage = (currentNode) => {

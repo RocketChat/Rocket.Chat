@@ -81,7 +81,7 @@ Meteor.methods({
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
 		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
-			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {

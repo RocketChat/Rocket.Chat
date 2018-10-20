@@ -474,7 +474,7 @@ Template.admin.events({
 			}
 		});
 	},
-	'click .rc-header__section-button .remove-custom-oauth'() {
+	'click .remove-custom-oauth'() {
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),

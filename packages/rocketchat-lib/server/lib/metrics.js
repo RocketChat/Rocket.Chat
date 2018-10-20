@@ -141,6 +141,21 @@ app.use('/metrics', (req, res) => {
 	res.end(RocketChat.promclient.register.metrics());
 });
 
+app.use('/', (req, res) => {
+	const html = `<html>
+		<head>
+			<title>Rocket.Chat Prometheus Exporter</title>
+		</head>
+		<body>
+			<h1>Rocket.Chat Prometheus Exporter</h1>
+			<p><a href="/metrics">Metrics</a></p>
+		</body>
+	</html>`;
+
+	res.write(html);
+	res.end();
+});
+
 const server = http.createServer(app);
 
 let timer;
