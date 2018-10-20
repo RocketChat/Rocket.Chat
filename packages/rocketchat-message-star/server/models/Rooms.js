@@ -11,7 +11,7 @@ RocketChat.models.Rooms.updateLastMessageStar = function(roomId, userId, starred
 	} else {
 		update = {
 			$pull: {
-				'lastMessage.starred': { _id: Meteor.userId() },
+				'lastMessage.starred': { _id: userId },
 			},
 		};
 	}
