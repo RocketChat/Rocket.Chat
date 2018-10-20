@@ -82,6 +82,7 @@ describe('[Users]', function() {
 					expect(res.body).to.not.have.nested.property('user.customFields');
 
 					targetUser._id = res.body.user._id;
+					targetUser.username = res.body.user.username;
 				})
 				.end(done);
 		});
@@ -282,10 +283,82 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.setAvatar]', () => {
-		it.skip('should set the avatar of the auth user', (done) => {
+		let user;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+
+		let userCredentials;
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		after((done) => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			}).end(done);
+			user = undefined;
+		});
+
+		it('should set the avatar of the auth user by a local image', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(userCredentials)
+				.attach('image', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should prevent from updating someone else\'s avatar', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(userCredentials)
+				.attach('image', imgURL)
+				.field({ userId: targetUser._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should set the avatar of another user by username and local image', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
-				.attach('avatarUrl', imgURL)
+				.attach('image', imgURL)
+				.field({ username: targetUser.username })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should set the avatar of another user by userId and local image', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(credentials)
+				.attach('image', imgURL)
+				.field({ userId: targetUser._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
