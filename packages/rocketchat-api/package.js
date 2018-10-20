@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/settings.js', 'server');
 
 	// Register helpers
+	api.addFiles('server/helpers/composeRoomWithLastMessage.js', 'server');
 	api.addFiles('server/helpers/requestParams.js', 'server');
 	api.addFiles('server/helpers/getPaginationItems.js', 'server');
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
