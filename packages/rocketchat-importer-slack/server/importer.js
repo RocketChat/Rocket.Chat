@@ -308,10 +308,8 @@ export class SlackImporter extends Base {
 										const msgObj = {
 											...msgDataDefaults,
 											msg: this.convertSlackMessageToRocketChat(message.files[0].url_private_download),
-											
 										};
 										RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
-
 									}
 									if (message.subtype) {
 										if (message.subtype === 'channel_join') {
