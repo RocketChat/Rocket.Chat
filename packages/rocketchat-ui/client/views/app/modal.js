@@ -8,6 +8,7 @@ this.modal = {
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
+		config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
 
 		if (config.type === 'input') {
 			config.input = true;
@@ -38,14 +39,17 @@ this.modal = {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
 	},
+	cancel() {
+		if (this.onCancel) {
+			this.onCancel();
+		}
+		this.close();
+	},
 	close() {
 		if (this.renderedModal) {
 			Blaze.remove(this.renderedModal);
 		}
 		this.fn = null;
-		if (this.onCancel) {
-			this.onCancel();
-		}
 		this.onCancel = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
@@ -66,7 +70,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (e.key === 'Enter' && !/input|textarea|button/i.test(e.currentTarget.activeElement.tagName)) {
+		if (modal.config.confirmOnEnter && e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -117,7 +121,7 @@ Template.rc_modal.events({
 	},
 	'click .js-close'(e) {
 		e.stopPropagation();
-		modal.close();
+		modal.cancel();
 	},
 	'click .js-confirm'(e, instance) {
 		e.stopPropagation();
@@ -128,7 +132,7 @@ Template.rc_modal.events({
 				label: dontAskAgain.label,
 			};
 
-			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			let dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 			if (dontAskAgainList) {
 				dontAskAgainList.push(dontAskAgainObject);
 			} else {
