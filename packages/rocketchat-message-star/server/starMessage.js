@@ -17,6 +17,10 @@ Meteor.methods({
 		if (!subscription) {
 			return false;
 		}
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+		if (RocketChat.isTheLastMessage(room, message)) {
+			RocketChat.models.Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
+		}
 
 		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	},

@@ -49,7 +49,7 @@ this.Livechat = new (class Livechat {
 						this._agent.set(result);
 					}
 				});
-				this.stream.on(this._room.get(), { visitorToken: visitor.getToken() }, (eventData) => {
+				this.stream.on(this._room.get(), { token: visitor.getToken() }, (eventData) => {
 					if (!eventData || !eventData.type) {
 						return;
 					}
@@ -209,10 +209,7 @@ this.Livechat = new (class Livechat {
 	}
 	set department(departmentId) {
 		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
-
-		if (dept) {
-			this._department.set(dept._id);
-		}
+		this._department.set(dept && dept._id);
 	}
 	set agent(agentData) {
 		this._agent.set(agentData);

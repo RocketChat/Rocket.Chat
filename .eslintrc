@@ -1,5 +1,6 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
+	"parser": "babel-eslint",
 	"globals": {
 		"__meteor_runtime_config__"   : false,
 		"AccountBox"                  : false,
@@ -30,6 +31,7 @@
 		"LivechatDepartment"          : false,
 		"LivechatDepartmentAgents"    : false,
 		"livechatManagerRoutes"       : true,
+		"LivechatMonitoring"          : false,
 		"LivechatPageVisited"         : false,
 		"LivechatTrigger"             : false,
 		"Logger"                      : false,
