@@ -221,7 +221,8 @@ RocketChat.Livechat = {
 		}
 
 		if (department) {
-			updateUser.$set.department = department;
+			const dep = RocketChat.models.LivechatDepartment.findOneByIdOrName(department);
+			updateUser.$set.department = dep && dep._id;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -267,6 +268,10 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, visitor, room, comment }) {
+		if (!room || room.t !== 'l' || !room.open) {
+			return false;
+		}
+
 		const now = new Date();
 
 		const closeData = {

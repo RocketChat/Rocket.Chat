@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/settings.js', 'server');
 
 	// Register helpers
+	api.addFiles('server/helpers/composeRoomWithLastMessage.js', 'server');
 	api.addFiles('server/helpers/requestParams.js', 'server');
 	api.addFiles('server/helpers/getPaginationItems.js', 'server');
 	api.addFiles('server/helpers/getUserFromParams.js', 'server');
@@ -47,4 +48,5 @@ Package.onUse(function(api) {
 	api.addFiles('server/v1/stats.js', 'server');
 	api.addFiles('server/v1/users.js', 'server');
 	api.addFiles('server/v1/assets.js', 'server');
+	api.addFiles('server/v1/e2e.js', 'server');
 });
