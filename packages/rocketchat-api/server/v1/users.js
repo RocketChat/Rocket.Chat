@@ -113,8 +113,8 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username } = this.getUserFromParams();
+		const { fields } = this.parseJsonQuery();
 		let user = {};
-
 		let result;
 		Meteor.runAsUser(this.userId, () => {
 			result = Meteor.call('getFullUserData', { username, limit: 1 });
@@ -125,7 +125,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 		}
 
 		user = result[0];
-		if (RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
+		if (fields.userRooms === 1 && RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
 			user.rooms = RocketChat.models.Subscriptions.findByUserId(this.userId, {
 				fields: {
 					rid: 1,
