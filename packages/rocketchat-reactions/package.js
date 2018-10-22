@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/init.js', 'client');
 
 	api.addFiles('server/models/Messages.js');
+	api.addFiles('server/models/Rooms.js');
 	api.addFiles('client/methods/setReaction.js', 'client');
 	api.addFiles('setReaction.js', 'server');
 
