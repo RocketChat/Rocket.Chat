@@ -3,8 +3,7 @@
 # Obtain siteurl value
 siteurl="$(snapctl get siteurl)"
 # Validate it
-#siteurl_regex='^https?:\/\/([\da-z\.-]+)?(\.[a-z\.]{2,6})?([\/\w \.-]*)*\/?$'
-siteurl_regex='([\da-z\.-]+)?(\.[a-z\.]{2,6})?([\/\w \.-]*)*\/?$'
+siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]{1,})?(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$'
 if ! [[ $siteurl =~ $siteurl_regex ]] ; then
     echo "\"$siteurl\" is not a valid url" >&2
     exit 1
@@ -22,8 +21,7 @@ fi
 # Obtain mongourl value
 mongourl="$(snapctl get mongourl)"
 # Validate it
-mongourl_regex='^mongodb:\/\/([\da-z\.-]+)?(\.[a-z\.]{2,6})?:(\d{2,5})?\/parties$'
-mongourl_regex='mongodb://localhost:27017/parties'
+mongourl_regex='^mongodb:\/\/([0-9A-Za-z\.-]{1,})?(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/parties$'
 if ! [[ $mongourl =~ $mongourl_regex ]] ; then
     echo "\"$mongourl\" is not a valid url" >&2
     exit 1
@@ -33,9 +31,7 @@ fi
 # Obtain mongooplogurl value
 mongooplogurl="$(snapctl get mongooplogurl)"
 # Validate it
-mongooplogurl_regex='^mongodb:\/\/([\da-z\.-]+)?(\.[a-z\.]{2,6})?:(\d{2,5})?\/local$'
-mongooplogurl_regex='mongodb://localhost:27017/local'
-
+mongooplogurl_regex='^mongodb:\/\/([0-9A-Za-z\.-]+)?(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/local$'
 if ! [[ $mongooplogurl =~ $mongooplogurl_regex ]] ; then
     echo "\"$mongooplogurl\" is not a valid url" >&2
     exit 1
@@ -49,9 +45,19 @@ if ! [[ $https =~ $https_regex ]]; then
     echo "\"$https\" should be enable or disable" >&2
     exit 1
 else
-  if [[ $https == enable ]] ; then
-    snapctl set protocol=https
-  else snapctl set protocol=http
+  if [[ $https == enable ]] && [[ $siteurl =~ ^http: ]] ; then
+    echo "Error: You enabled https but your site URL starts with http, disabling https ..."
+    snapctl set https=disable
+    exit 1
+  elif [[ $https == enable ]] && [[ $siteurl =~ ^https: ]] ; then
+    domain=${siteurl#"https://"}
+    domain=${domain%%/*}
+    pubip=$(dig $domain |grep -A1 ";; ANSWER SECTION:" |tail -1 | awk '{print $5}')
+    if ! [ -z "$pubip" ] ; then
+      echo "Error: Can't resove DNS query for $domain, check your DNS configuration, disabling https ..."
+      snapctl set https=disable
+      exit 1
+    fi
   fi
 fi
 

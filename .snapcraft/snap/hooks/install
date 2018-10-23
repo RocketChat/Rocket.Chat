@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Initialize the SITE_URL (ROOT_URL) to a default
-snapctl set siteurl=localhost
+snapctl set siteurl=http://localhost
 
 # Initialize the PORT to a default
 snapctl set port=3000
