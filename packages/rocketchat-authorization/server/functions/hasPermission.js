@@ -1,8 +1,3 @@
-const checkPermission = (userId, permissionId, scope) => {
-	const permission = RocketChat.models.Permissions.findOne(permissionId);
-	return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
-};
-
 function atLeastOne(userId, permissions = [], scope) {
 	return permissions.some((permissionId) => {
 		const permission = RocketChat.models.Permissions.findOne(permissionId);
@@ -28,11 +23,12 @@ RocketChat.authz.hasAllPermission = function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, all);
 };
 
-RocketChat.authz.hasPermission = (userId, permission, scope) => {
+RocketChat.authz.hasPermission = (userId, permissionId, scope) => {
 	if (!userId) {
 		return false;
 	}
-	return checkPermission(userId, permission, scope);
+	const permission = RocketChat.models.Permissions.findOne(permissionId);
+	return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
 };
 
 RocketChat.authz.hasAtLeastOnePermission = function(userId, permissions, scope) {
