@@ -171,3 +171,25 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('invite.email', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.emails || !this.bodyParams.emails.length) {
+			throw new Meteor.Error('error-emails-param-not-provided', 'The required "emails" param is required.');
+		}
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', this.bodyParams.emails));
+		return RocketChat.API.v1.success(result);
+	},
+});
+
+RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.phones || !this.bodyParams.phones.length) {
+			throw new Meteor.Error('error-phones-param-not-provided', 'The required "phones" param is required.');
+		}
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', this.bodyParams.phones));
+		return RocketChat.API.v1.success(result);
+	},
+});
