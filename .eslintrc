@@ -31,7 +31,6 @@
 		"LivechatTrigger"             : false,
 		"Logger"                      : false,
 		"modal"                       : false,
-		"moment"                      : false,
 		"Npm"                         : false,
 		"Package"                     : false,
 		"parentCall"                  : false,

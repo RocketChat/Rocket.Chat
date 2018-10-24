@@ -1,6 +1,7 @@
 /* global SnippetedMessages */
 import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import moment from 'moment';
 
 Template.snippetPage.helpers({
 	snippet() {
