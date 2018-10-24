@@ -1,6 +1,7 @@
 /* globals popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';

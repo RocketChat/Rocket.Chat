@@ -1,5 +1,6 @@
 /* globals AdminChatRoom, RocketChat */
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import s from 'underscore.string';

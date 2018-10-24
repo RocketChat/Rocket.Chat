@@ -50,7 +50,6 @@
 		"Template"                    : false,
 		"TimeSync"                    : false,
 		"toastr"                      : false,
-		"Tracker"                     : false,
 		"Trigger"                     : false,
 		"Triggers"                    : false,
 		"UAParser"                    : false,

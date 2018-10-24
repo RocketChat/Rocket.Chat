@@ -1,6 +1,7 @@
 /* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
 /* exported fileUpload */
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
 
 const readAsDataURL = (file, callback) => {

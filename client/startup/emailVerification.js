@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		const user = Meteor.user();

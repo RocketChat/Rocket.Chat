@@ -1,4 +1,5 @@
 /* globals AutoComplete */
+import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 

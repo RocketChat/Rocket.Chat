@@ -1,5 +1,6 @@
 /* globals UserPresence, fireGlobalEvent */
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
