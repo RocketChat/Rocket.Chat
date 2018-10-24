@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
 this.stdout = new Mongo.Collection('stdout');
 

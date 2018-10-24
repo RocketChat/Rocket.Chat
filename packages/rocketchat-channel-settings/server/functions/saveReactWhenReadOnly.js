@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveReactWhenReadOnly = function(rid, allowReact) {
 	if (!Match.test(rid, String)) {

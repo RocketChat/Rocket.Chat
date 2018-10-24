@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveRoomTokenpass = function(rid, tokenpass) {
 	if (!Match.test(rid, String)) {

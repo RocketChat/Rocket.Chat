@@ -1,6 +1,7 @@
 /* globals SystemLogger */
 
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import fs from 'fs';
 import path from 'path';
 

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';

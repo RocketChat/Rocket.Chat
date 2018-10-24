@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
 let html = '';

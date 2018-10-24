@@ -1,3 +1,4 @@
+import { check } from 'meteor/check';
 RocketChat.models._Base = class {
 
 	_baseName() {

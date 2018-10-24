@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service) {

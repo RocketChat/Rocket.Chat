@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {

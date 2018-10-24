@@ -1,3 +1,5 @@
+import { check } from 'meteor/check';
+
 RocketChat.API.v1.addRoute('livechat/offline.message', {
 	post() {
 		try {

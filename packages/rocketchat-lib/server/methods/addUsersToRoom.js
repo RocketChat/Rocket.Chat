@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {

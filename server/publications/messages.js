@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import _ from 'underscore';
 
 Meteor.publish('messages', function(rid/* , start*/) {

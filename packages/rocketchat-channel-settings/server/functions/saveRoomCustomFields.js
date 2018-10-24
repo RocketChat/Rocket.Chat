@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveRoomCustomFields = function(rid, roomCustomFields) {
 	if (!Match.test(rid, String)) {
