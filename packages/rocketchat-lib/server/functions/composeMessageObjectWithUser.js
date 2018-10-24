@@ -4,7 +4,7 @@ const getUser = (userId) => RocketChat.models.Users.findOneById(userId);
 RocketChat.composeMessageObjectWithUser = function(message, userId) {
 	if (message) {
 		if (message.starred && Array.isArray(message.starred)) {
-			message.starred = message.starred.find((star) => star._id === userId);
+			message.starred = message.starred.filter((star) => star._id === userId);
 		}
 		if (message.u && message.u._id && UI_Use_Real_Name) {
 			const user = getUser(message.u._id);
