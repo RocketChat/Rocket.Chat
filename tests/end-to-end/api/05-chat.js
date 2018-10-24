@@ -9,6 +9,7 @@ import {
 	credentials,
 	message,
 } from '../../data/api-data.js';
+import { password } from '../../data/user';
 
 describe('[Chat]', function() {
 	this.retries(0);
