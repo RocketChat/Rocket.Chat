@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 const hideMessagesOfType = [];
 
 RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
