@@ -32,7 +32,6 @@
 		"Logger"                      : false,
 		"modal"                       : false,
 		"moment"                      : false,
-		"Mongo"                       : false,
 		"Npm"                         : false,
 		"Package"                     : false,
 		"parentCall"                  : false,

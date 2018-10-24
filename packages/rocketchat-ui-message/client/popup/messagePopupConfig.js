@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);

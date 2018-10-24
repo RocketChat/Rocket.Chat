@@ -2,6 +2,7 @@
 /* globals Log*/
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
