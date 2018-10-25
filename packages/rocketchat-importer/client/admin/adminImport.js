@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 Template.adminImport.helpers({
 	isAdmin() {

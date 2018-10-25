@@ -1,5 +1,6 @@
 /* globals RoomRoles, WebRTC*/
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 import toastr from 'toastr';
 

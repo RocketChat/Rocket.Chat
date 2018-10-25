@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 function trackEvent(category, action, label) {
 	if (window._paq) {
 		window._paq.push(['trackEvent', category, action, label]);

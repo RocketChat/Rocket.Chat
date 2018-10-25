@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 
 	api.use('mongo', ['client', 'server']);
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 	api.use('tracker', 'client');
 
 	api.use('templating', 'client');

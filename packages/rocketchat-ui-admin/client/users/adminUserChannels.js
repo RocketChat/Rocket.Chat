@@ -1,3 +1,5 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 Template.adminUserChannels.helpers({
 	type() {
 		if (this.t === 'd') {

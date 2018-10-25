@@ -1,4 +1,5 @@
 /* globals isFirefox, isChrome */
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const baseUrlFix = () => `${ window.location.origin }${ FlowRouter.current().path }`;
 

@@ -35,6 +35,7 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.addFiles('lib/core.js');
 

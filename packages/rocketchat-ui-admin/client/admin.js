@@ -4,6 +4,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';

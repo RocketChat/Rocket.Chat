@@ -1,3 +1,5 @@
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
 Template.fxOsInstallPrompt.onRendered(function() {
 
 	const showPrompt = function() {

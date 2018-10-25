@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
 
 class WebRTCTransportClass {
 	constructor(webrtcInstance) {

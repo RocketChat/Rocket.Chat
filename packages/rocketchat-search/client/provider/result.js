@@ -1,6 +1,7 @@
-/* globals FlowRouter, RoomHistoryManager */
+/* globals RoomHistoryManager */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 Meteor.startup(function() {

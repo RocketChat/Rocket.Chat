@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const cannotSetup = () => {
 	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');

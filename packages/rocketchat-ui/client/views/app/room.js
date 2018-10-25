@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';

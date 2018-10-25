@@ -1,8 +1,9 @@
 /* globals AdminChatRoom, RocketChat */
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import _ from 'underscore';
 import s from 'underscore.string';
 
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';

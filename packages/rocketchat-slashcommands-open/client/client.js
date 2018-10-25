@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 function Open(command, params /* , item*/) {
 	const dict = {

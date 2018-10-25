@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');

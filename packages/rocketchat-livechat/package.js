@@ -32,6 +32,7 @@ Package.onUse(function(api) {
 	api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 	api.use('templating', 'client');
 	api.use('http');
 	api.use('check');

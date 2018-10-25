@@ -1,7 +1,8 @@
-import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import s from 'underscore.string';
 
 Template.adminEmoji.helpers({
 	isReady() {

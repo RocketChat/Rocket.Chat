@@ -1,3 +1,5 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 this.SideNav = new class {
 	constructor() {
 		this.initiated = false;
