@@ -5,7 +5,7 @@ export class AppRoomBridge {
 		this.orch = orch;
 	}
 
-	async create(room, appId) {
+	async create(room, members, appId) {
 		console.log(`The App ${ appId } is creating a new room.`, room);
 
 		const rcRoom = this.orch.getConverters().get('rooms').convertAppRoom(room);
@@ -24,7 +24,7 @@ export class AppRoomBridge {
 
 		let rid;
 		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call(method, rcRoom.members);
+			const info = Meteor.call(method, members);
 			rid = info.rid;
 		});
 
@@ -67,15 +67,25 @@ export class AppRoomBridge {
 		return this.orch.getConverters().get('users').convertById(room.u._id);
 	}
 
-	async update(room, appId) {
+	async update(room, members = [], appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
-		if (!room.id || RocketChat.models.Rooms.findOneById(room.id)) {
+		if (!room.id || !RocketChat.models.Rooms.findOneById(room.id)) {
 			throw new Error('A room must exist to update.');
 		}
 
 		const rm = this.orch.getConverters().get('rooms').convertAppRoom(room);
 
 		RocketChat.models.Rooms.update(rm._id, rm);
+
+		for (const username of members) {
+			const member = RocketChat.models.Users.findOneByUsername(username);
+
+			if (!member) {
+				continue;
+			}
+
+			RocketChat.addUserToRoom(rm._id, member);
+		}
 	}
 }
