@@ -1,5 +1,5 @@
-_protocol_://_siteurl_
-proxy / localhost:_port_ {
+_site_
+proxy /_path_ localhost:_port_ {
   websocket
   transparent
 }

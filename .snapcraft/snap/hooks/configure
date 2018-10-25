@@ -1,12 +1,29 @@
 #!/bin/bash
 
 # Obtain siteurl value
-siteurl="$(snapctl get siteurl)"
+siteurl="$(snapctl get site-url)"
 # Validate it
-siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]{1,})?(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$'
+siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$'
 if ! [[ $siteurl =~ $siteurl_regex ]] ; then
     echo "\"$siteurl\" is not a valid url" >&2
     exit 1
+else
+  if [[ $siteurl =~ ^http: ]] && [[ $siteurl =~ ^http:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+    path=${siteurl#http://*/}
+    site=${siteurl#"http://"}
+    site=${site%%/*}
+    site=http://$site
+  elif [[ $siteurl =~ ^https: ]] && [[ $siteurl =~ ^https:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+    path=${siteurl#https://*/}
+    site=${siteurl#"https://"}
+    site=${site%%/*}
+    site=https://$site
+  else
+    path=""
+    site=$siteurl
+  fi
+  snapctl set path=$path
+  snapctl set site=$site
 fi
 
 # Obtain port value
@@ -19,9 +36,9 @@ if ! [[ $port =~ $port_regex ]]; then
 fi
 
 # Obtain mongourl value
-mongourl="$(snapctl get mongourl)"
+mongourl="$(snapctl get mongo-url)"
 # Validate it
-mongourl_regex='^mongodb:\/\/([0-9A-Za-z\.-]{1,})?(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/parties$'
+mongourl_regex='^mongodb:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/parties$'
 if ! [[ $mongourl =~ $mongourl_regex ]] ; then
     echo "\"$mongourl\" is not a valid url" >&2
     exit 1
@@ -29,9 +46,9 @@ fi
 
 
 # Obtain mongooplogurl value
-mongooplogurl="$(snapctl get mongooplogurl)"
+mongooplogurl="$(snapctl get mongo-oplog-url)"
 # Validate it
-mongooplogurl_regex='^mongodb:\/\/([0-9A-Za-z\.-]+)?(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/local$'
+mongooplogurl_regex='^mongodb:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?:([0-9]{2,5})?\/local$'
 if ! [[ $mongooplogurl =~ $mongooplogurl_regex ]] ; then
     echo "\"$mongooplogurl\" is not a valid url" >&2
     exit 1
