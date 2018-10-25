@@ -2,6 +2,9 @@ import express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 const apiServer = express();
+
+apiServer.set('x-powered-by', false);
+
 WebApp.connectHandlers.use(apiServer);
 
 export class AppApisBridge {

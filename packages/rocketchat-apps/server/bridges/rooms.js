@@ -24,7 +24,12 @@ export class AppRoomBridge {
 
 		let rid;
 		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call(method, members);
+			const extraData = Object.assign({}, rcRoom);
+			delete extraData.name;
+			delete extraData.t;
+			delete extraData.ro;
+			delete extraData.customFields;
+			const info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			rid = info.rid;
 		});
 
