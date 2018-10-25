@@ -1,4 +1,6 @@
 /* globals alerts */
+import { Blaze } from 'meteor/blaze';
+
 this.alerts = {
 	renderedAlert: null,
 	open(config) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 
 const getTitle = function(self) {

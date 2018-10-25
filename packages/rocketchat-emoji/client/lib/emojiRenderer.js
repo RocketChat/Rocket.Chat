@@ -1,4 +1,6 @@
 /* globals HTML, isSetNotNull, renderEmoji:true */
+import { Blaze } from 'meteor/blaze';
+
 renderEmoji = function(emoji) {
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
 		const { emojiPackage } = RocketChat.emoji.list[emoji];

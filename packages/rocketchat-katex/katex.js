@@ -4,6 +4,7 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import s from 'underscore.string';
 

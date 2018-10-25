@@ -1,3 +1,4 @@
+import { Blaze } from 'meteor/blaze';
 let oldRoute = '';
 const parent = document.querySelector('.main-content');
 

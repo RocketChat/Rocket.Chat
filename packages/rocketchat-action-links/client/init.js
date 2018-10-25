@@ -1,4 +1,6 @@
 /* globals fireGlobalEvent */
+import { Blaze } from 'meteor/blaze';
+
 Template.room.events({
 	'click .action-link'(event, instance) {
 		event.preventDefault();

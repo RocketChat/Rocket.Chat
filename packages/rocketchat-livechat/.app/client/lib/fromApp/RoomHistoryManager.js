@@ -2,6 +2,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
 import visitor from '../../../imports/client/visitor';
 import _ from 'underscore';
 

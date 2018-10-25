@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 Blaze.registerHelper('avatarUrlFromUsername', getAvatarUrlFromUsername);
 
 this.getAvatarAsPng = function(username, cb) {

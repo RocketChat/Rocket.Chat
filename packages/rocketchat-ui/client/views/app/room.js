@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';

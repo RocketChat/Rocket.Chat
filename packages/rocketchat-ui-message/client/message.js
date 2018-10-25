@@ -1,5 +1,6 @@
 /* globals renderEmoji renderMessageBody */
 import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';

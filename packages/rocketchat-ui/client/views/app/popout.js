@@ -1,4 +1,5 @@
 /* globals popout */
+import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 this.popout = {

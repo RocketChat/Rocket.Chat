@@ -1,6 +1,7 @@
 /* globals popout */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';

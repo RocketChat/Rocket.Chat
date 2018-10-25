@@ -7,7 +7,6 @@
 		"AgentUsers"                  : false,
 		"Apps"                        : false,
 		"Assets"                      : false,
-		"Blaze"                       : false,
 		"BlazeLayout"                 : false,
 		"browser"                     : false,
 		"ChatMessage"                 : false,

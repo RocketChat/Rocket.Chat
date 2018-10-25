@@ -1,4 +1,6 @@
 /* globals currentTracker */
+import { Blaze } from 'meteor/blaze';
+
 this.roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI
 	if (window.matchMedia('(max-width: 500px)').matches) {
