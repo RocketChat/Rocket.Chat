@@ -1,25 +1,37 @@
 class RoomStreamer extends Meteor.Streamer {
-
 	_publish(publication, eventName, options) {
 		super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
-			const fn = (...args) => {
+			const roomEvent = (...args) => {
 				RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
 			};
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
 			rooms.forEach(({ rid }) => {
-				this.on(rid, fn);
+				this.on(rid, roomEvent);
 			});
+
+			const userEvent = (clientAction, { rid }) => {
+				switch (clientAction) {
+					case 'inserted':
+						rooms.push({ rid });
+						this.on(rid, roomEvent);
+						break;
+
+					case 'removed':
+						this.removeListener(rid, roomEvent);
+						break;
+				}
+			};
+			this.on(uid, userEvent);
+
 			publication.onStop(() => {
-				rooms.forEach(({ rid }) => this.removeListener(rid, fn));
+				this.removeListener(uid, userEvent);
+				rooms.forEach(({ rid }) => this.removeListener(rid, roomEvent));
 			});
 		}
-
 	}
-
 }
-
 
 RocketChat.Notifications = new class {
 	constructor() {

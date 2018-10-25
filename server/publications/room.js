@@ -126,8 +126,5 @@ RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 
 	if (data) {
 		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
-	// 	RocketChat.models.Subscriptions.findByRoomId(id, { fields: { 'u._id': 1 } }).forEach(({ u }) => {
-	// 		RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
-	// 	});
 	}
 });
