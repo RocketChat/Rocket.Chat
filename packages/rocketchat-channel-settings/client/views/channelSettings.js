@@ -1,6 +1,7 @@
 /* globals popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';

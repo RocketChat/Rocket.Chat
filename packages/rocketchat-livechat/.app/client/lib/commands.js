@@ -1,6 +1,7 @@
 /* globals LivechatVideoCall, Livechat */
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 

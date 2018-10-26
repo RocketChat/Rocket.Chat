@@ -1,5 +1,6 @@
 /* globals AutoComplete */
 import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 //  Events on template instances, sent to the autocomplete class

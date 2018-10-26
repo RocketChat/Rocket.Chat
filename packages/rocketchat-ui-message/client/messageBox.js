@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';

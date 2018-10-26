@@ -1,5 +1,6 @@
 /* globals WebRTC */
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 Template.videoButtons.helpers({
 	videoAvaliable() {

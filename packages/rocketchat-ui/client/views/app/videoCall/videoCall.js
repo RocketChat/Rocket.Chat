@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 Template.videoCall.onCreated(function() {
 	return this.mainVideo = new ReactiveVar('$auto');

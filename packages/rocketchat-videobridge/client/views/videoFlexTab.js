@@ -2,6 +2,7 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {

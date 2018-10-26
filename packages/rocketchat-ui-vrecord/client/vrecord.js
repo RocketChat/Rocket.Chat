@@ -1,5 +1,6 @@
 /* globals VideoRecorder, fileUpload */
 import { VRecDialog } from './VRecDialog';
+import { Template } from 'meteor/templating';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
