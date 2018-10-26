@@ -30,7 +30,6 @@
 		"Npm"                         : false,
 		"Package"                     : false,
 		"parentCall"                  : false,
-		"Promise"                     : false,
 		"Reload"                      : false,
 		"RocketChat"                  : true,
 		"RocketChatFile"              : false,
