@@ -14,7 +14,6 @@
 		"ChatSubscription"            : false,
 		"CryptoJS"                    : false,
 		"Department"                  : false,
-		"DDPRateLimiter"              : false,
 		"FileUpload"                  : false,
 		"getNextAgent"                : false,
 		"handleError"                 : false,

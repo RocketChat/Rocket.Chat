@@ -1,5 +1,6 @@
 /* globals Mailer */
 import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 Meteor.methods({
 	'Mailer:unsubscribe'(_id, createdAt) {
