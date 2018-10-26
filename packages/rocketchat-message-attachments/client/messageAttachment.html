@@ -156,13 +156,15 @@
 					<div class="attachment-description">{{description}}</div>
 				{{/if}}
 			{{/unless}}
-					
+
 			{{#if actions}}
-				<div class="actions-container">
-					{{#each actions}}
-						{{> messageAction}}
-					{{/each}}
-				</div>
+				{{#unless collapsed}}
+					<div class="actions-container">
+						{{#each actions}}
+							{{> messageAction}}
+						{{/each}}
+					</div>
+				{{/unless}}
 			{{/if}}
 
 			{{#each attachments}}

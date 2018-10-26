@@ -636,7 +636,6 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-
 		lazyloadtick();
 
 		const $roomLeader = $('.room-leader');
@@ -649,10 +648,14 @@ Template.room.events({
 		}
 		lastScrollTop = e.target.scrollTop;
 
-		if ((RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true) || RoomHistoryManager.hasMoreNext(this._id) === true) {
-			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
+		const isLoading = RoomHistoryManager.isLoading(this._id);
+		const hasMore = RoomHistoryManager.hasMore(this._id);
+		const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
+
+		if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
+			if (hasMore === true && e.target.scrollTop === 0) {
 				RoomHistoryManager.getMore(this._id);
-			} else if (RoomHistoryManager.hasMoreNext(this._id) === true && e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
+			} else if (hasMoreNext === true && Math.ceil(e.target.scrollTop) >= e.target.scrollHeight - e.target.clientHeight) {
 				RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
