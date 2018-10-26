@@ -1,4 +1,6 @@
 /* globals fireGlobalEvent*/
+import toastr from 'toastr';
+import { call, RoomSettingsEnum } from 'meteor/rocketchat:lib';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -81,9 +83,14 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
-	encryptedChannel() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return roomData && roomData.encrypted;
+	canViewEncryption() {
+		const room = ChatRoom.findOne(this._id);
+		return room && RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+	},
+
+	encryptionState() {
+		const room = ChatRoom.findOne(this._id);
+		return (room && room.encrypted) ? 'encrypted' : 'empty';
 	},
 
 	userStatus() {
@@ -128,6 +135,19 @@ Template.header.events({
 			!$(event.currentTarget).hasClass('favorite-room'),
 			(err) => err && handleError(err)
 		);
+	},
+
+	'click .rc-header__toggle-encryption'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		const room = ChatRoom.findOne(this._id);
+		if (RocketChat.authz.hasAllPermission('edit-room', this._id)) {
+			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
+				toastr.success(
+					t('Encrypted_setting_changed_successfully')
+				);
+			});
+		}
 	},
 
 	'click .edit-room-title'(event) {

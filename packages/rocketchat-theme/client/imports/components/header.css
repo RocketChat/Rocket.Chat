@@ -202,6 +202,24 @@
 		}
 	}
 
+	&__toggle-encryption {
+		color: var(--header-toggle-encryption-on-color);
+
+		font-size: 1.5rem;
+
+		&.empty {
+			color: var(--header-toggle-encryption-off-color);
+
+			& .rc-header__icon {
+				fill: none;
+			}
+		}
+
+		&:hover {
+			color: var(--header-toggle-encryption-on-color);
+		}
+	}
+
 	&__icon {
 		fill: currentColor;
 		stroke: currentColor;
