@@ -1,4 +1,6 @@
+import _ from 'underscore';
 import toastr from 'toastr';
+
 Template.livechatTriggersForm.helpers({
 	name() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -17,12 +19,7 @@ Template.livechatTriggersForm.helpers({
 		return (trigger && trigger.runOnce) || false;
 	},
 	conditions() {
-		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
-		if (!trigger) {
-			return [];
-		}
-
-		return trigger.conditions;
+		return Template.instance().conditions.get();
 	},
 	actions() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -34,7 +31,54 @@ Template.livechatTriggersForm.helpers({
 	},
 });
 
+Template.livechatTriggersForm.onCreated(function() {
+	this.conditions = new ReactiveVar([]);
+
+	this.subscribe('livechat:triggers', FlowRouter.getParam('_id'));
+
+	this.autorun(() => {
+		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		if (trigger) {
+			// to be backward compatible with conditions that exist prior to this update
+			// the system has to attribute a new id to these objects
+			if (trigger.conditions.length === 1) {
+				trigger.conditions[0].id = 1;
+			}
+
+			this.conditions.set(trigger.conditions);
+		} else {
+			this.conditions.set([{ id:1, name:'page-url', value:'' }]);
+		}
+	});
+});
+
 Template.livechatTriggersForm.events({
+	'click button.add-condition'(e, instance) {
+		e.preventDefault();
+		const newConditions = instance.conditions.get();
+		const idArray = newConditions.map(function(o) { return o.id; });
+		idArray.push(1);
+		const newId = Math.max.apply(Math, idArray);
+
+		const emptyCondition = { id: newId + 1, name:'page-url', value:'' };
+		newConditions.push(emptyCondition);
+		instance.conditions.set(newConditions);
+	},
+	'click .remove-condition'(e, instance) {
+		e.preventDefault();
+
+		let newConditions = instance.conditions.get();
+		newConditions = _.reject(newConditions, ((condition) => condition.id === this.id));
+		instance.conditions.set(newConditions);
+	},
+	'change .trigger-condition'(e, instance) {
+		const newName = e.currentTarget.value;
+
+		const newConditions = instance.conditions.get();
+		const index = newConditions.findIndex((i) => i.id === this.id);
+		newConditions[index].name = newName;
+		instance.conditions.set(newConditions);
+	},
 	'submit #trigger-form'(e, instance) {
 		e.preventDefault();
 		const $btn = instance.$('button.save');
@@ -48,16 +92,9 @@ Template.livechatTriggersForm.events({
 			description: instance.$('input[name=description]').val(),
 			enabled: instance.$('input[name=enabled]:checked').val() === '1',
 			runOnce: instance.$('input[name=runOnce]:checked').val() === '1',
-			conditions: [],
+			conditions: instance.conditions.get(),
 			actions: [],
 		};
-
-		$('.each-condition').each(function() {
-			data.conditions.push({
-				name: $('.trigger-condition', this).val(),
-				value: $(`.${ $('.trigger-condition', this).val() }-value`).val(),
-			});
-		});
 
 		$('.each-action').each(function() {
 			if ($('.trigger-action', this).val() === 'send-message') {
@@ -96,8 +133,4 @@ Template.livechatTriggersForm.events({
 		e.preventDefault();
 		FlowRouter.go('livechat-triggers');
 	},
-});
-
-Template.livechatTriggersForm.onCreated(function() {
-	this.subscribe('livechat:triggers', FlowRouter.getParam('_id'));
 });
