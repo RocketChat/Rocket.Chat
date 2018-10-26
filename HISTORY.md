@@ -1,8 +1,49 @@
 
 # 0.71.0 (Under Release Candidate Process)
 
+## 0.71.0-rc.1
+`2018-10-26  ·  1 🎉  ·  1 🚀  ·  3 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Add "help wanted" section to Readme ([#12432](https://github.com/RocketChat/Rocket.Chat/pull/12432))
+
+### 🚀 Improvements
+
+- Allow the imports to accept any file type ([#12425](https://github.com/RocketChat/Rocket.Chat/pull/12425))
+
+### 🐛 Bug fixes
+
+- E2E: Decrypting UTF-8 encoded messages ([#12398](https://github.com/RocketChat/Rocket.Chat/pull/12398) by [@pmmaga](https://github.com/pmmaga))
+- Ignore errors when creating image preview for uploads ([#12424](https://github.com/RocketChat/Rocket.Chat/pull/12424))
+- Attachment actions not being collapsable ([#12436](https://github.com/RocketChat/Rocket.Chat/pull/12436))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Update Apps Framework to version 1.2.1 ([#12442](https://github.com/RocketChat/Rocket.Chat/pull/12442))
+- Regression: Change `starred` message property from object to array ([#12405](https://github.com/RocketChat/Rocket.Chat/pull/12405))
+- Apps: Room’s usernames was not working ([#12409](https://github.com/RocketChat/Rocket.Chat/pull/12409))
+- Regression: Fix email headers not being used ([#12392](https://github.com/RocketChat/Rocket.Chat/pull/12392))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@pmmaga](https://github.com/pmmaga)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@Sing-Li](https://github.com/Sing-Li)
+- [@graywolf336](https://github.com/graywolf336)
+- [@isabellarussell](https://github.com/isabellarussell)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 0.71.0-rc.0
-`2018-10-20  ·  2 ️️️⚠️  ·  4 🎉  ·  4 🚀  ·  26 🐛  ·  9 🔍  ·  21 👩‍💻👨‍💻`
+`2018-10-20  ·  2 ️️️⚠️  ·  4 🎉  ·  4 🚀  ·  16 🐛  ·  4 🔍  ·  15 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -41,8 +82,94 @@
 - Links in home layout ([#12355](https://github.com/RocketChat/Rocket.Chat/pull/12355) by [@upiksaleh](https://github.com/upiksaleh))
 - Last message not updating after message delete if show deleted status is on ([#12350](https://github.com/RocketChat/Rocket.Chat/pull/12350))
 - Invalid destructuring on Livechat API endpoint ([#12354](https://github.com/RocketChat/Rocket.Chat/pull/12354))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: wrong saveUser permission validations ([#12384](https://github.com/RocketChat/Rocket.Chat/pull/12384))
+- Regression: do not render pdf preview on safari <= 12 ([#12375](https://github.com/RocketChat/Rocket.Chat/pull/12375))
+- Improve: Drop database between running tests on CI ([#12358](https://github.com/RocketChat/Rocket.Chat/pull/12358))
+- Fix: update check on err.details ([#12346](https://github.com/RocketChat/Rocket.Chat/pull/12346) by [@teresy](https://github.com/teresy))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@MarcosEllys](https://github.com/MarcosEllys)
+- [@crazy-max](https://github.com/crazy-max)
+- [@kb0304](https://github.com/kb0304)
+- [@madguy02](https://github.com/madguy02)
+- [@nikeee](https://github.com/nikeee)
+- [@nimetu](https://github.com/nimetu)
+- [@teresy](https://github.com/teresy)
+- [@upiksaleh](https://github.com/upiksaleh)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 0.70.4
+`2018-10-09  ·  1 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
 - Modal confirm on enter ([#12283](https://github.com/RocketChat/Rocket.Chat/pull/12283))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.70.4 ([#12299](https://github.com/RocketChat/Rocket.Chat/pull/12299))
+- Fix: Add wizard opt-in fields ([#12298](https://github.com/RocketChat/Rocket.Chat/pull/12298))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 0.70.3
+`2018-10-08  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
 - E2E alert shows up when encryption is disabled ([#12272](https://github.com/RocketChat/Rocket.Chat/pull/12272))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.70.3 ([#12281](https://github.com/RocketChat/Rocket.Chat/pull/12281))
+- Release 0.70.2 ([#12276](https://github.com/RocketChat/Rocket.Chat/pull/12276))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 0.70.1
+`2018-10-05  ·  8 🐛  ·  5 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
 - E2E data not cleared on logout ([#12254](https://github.com/RocketChat/Rocket.Chat/pull/12254))
 - E2E password request not closing after entering password ([#12232](https://github.com/RocketChat/Rocket.Chat/pull/12232))
 - Message editing was duplicating reply quotes ([#12263](https://github.com/RocketChat/Rocket.Chat/pull/12263))
@@ -55,37 +182,23 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
-- Fix: wrong saveUser permission validations ([#12384](https://github.com/RocketChat/Rocket.Chat/pull/12384))
-- Regression: do not render pdf preview on safari <= 12 ([#12375](https://github.com/RocketChat/Rocket.Chat/pull/12375))
-- Improve: Drop database between running tests on CI ([#12358](https://github.com/RocketChat/Rocket.Chat/pull/12358))
-- Fix: update check on err.details ([#12346](https://github.com/RocketChat/Rocket.Chat/pull/12346) by [@teresy](https://github.com/teresy))
-- Fix: Add wizard opt-in fields ([#12298](https://github.com/RocketChat/Rocket.Chat/pull/12298))
-- Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
+- Release 0.70.1 ([#12270](https://github.com/RocketChat/Rocket.Chat/pull/12270) by [@edzluhan](https://github.com/edzluhan))
 - Merge master into develop & Set version to 0.71.0-develop ([#12264](https://github.com/RocketChat/Rocket.Chat/pull/12264) by [@kaiiiiiiiii](https://github.com/kaiiiiiiiii))
 - Regression: fix modal submit ([#12233](https://github.com/RocketChat/Rocket.Chat/pull/12233))
 - Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227))
+- Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
 
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
-- [@MarcosEllys](https://github.com/MarcosEllys)
-- [@crazy-max](https://github.com/crazy-max)
 - [@edzluhan](https://github.com/edzluhan)
 - [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
-- [@kb0304](https://github.com/kb0304)
-- [@madguy02](https://github.com/madguy02)
-- [@nikeee](https://github.com/nikeee)
-- [@nimetu](https://github.com/nimetu)
-- [@teresy](https://github.com/teresy)
-- [@upiksaleh](https://github.com/upiksaleh)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@Hudell](https://github.com/Hudell)
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@cardoso](https://github.com/cardoso)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
