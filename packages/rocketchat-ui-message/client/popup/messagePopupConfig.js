@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);

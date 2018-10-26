@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 class GoogleVision {
 	constructor() {

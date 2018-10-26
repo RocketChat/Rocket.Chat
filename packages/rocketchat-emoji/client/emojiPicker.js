@@ -1,5 +1,6 @@
 /* globals Template, isSetNotNull */
 import { ReactiveVar } from 'meteor/reactive-var';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 const emojiCategories = {};
 /**

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 RocketChat.MessageTypes.registerType({
 	id: 'livechat_navigation_history',
