@@ -42,7 +42,10 @@ Meteor.methods({
 			try {
 				attachment.image_preview = await FileUpload.resizeImagePreview(file);
 			} catch (e) {
-				console.error(e.message);
+				delete attachment.image_url;
+				delete attachment.image_type;
+				delete attachment.image_size;
+				delete attachment.image_dimensions;
 			}
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
