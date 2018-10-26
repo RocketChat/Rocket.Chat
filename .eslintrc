@@ -47,7 +47,6 @@
 		"toastr"                      : false,
 		"Trigger"                     : false,
 		"Triggers"                    : false,
-		"UAParser"                    : false,
 		"visitor"                     : false,
 		"VideoRecorder"               : false,
 		"VRecDialog"                  : false
