@@ -60,9 +60,9 @@
 
 At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
 
-If you are passionate about our project, like to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!   
+If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
-Be sure to explore the following opennings available:
+Explore current openings below:
 
 - [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
 
