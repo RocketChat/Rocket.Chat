@@ -11,6 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
+* [Help Wanted](#help-wanted)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -55,6 +56,28 @@
 * [Credits](#credits)
 * [Donate](#donate)
 
+# Help Wanted
+
+As you know, our community is very important to us. So we thought: why not share our latest job vacancies with the community on GitHub?!
+
+If you think you'd be a great fit, apply now!
+If you know someone great, share the listing!
+
+Our latest openings are for the following positions:
+
+- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
+
+- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
+
+- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
+
+- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
+
+All roles require dynamic, pro-active individuals who are passionate about open source, and who are looking to join a growing team at a key time in its development.
+
+Click through using the links above to learn more about each role and to apply.
+
+We look forward to hearing from you! 
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -351,7 +374,7 @@ Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-e
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions. 
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
 
 ### Stack Overflow
 
