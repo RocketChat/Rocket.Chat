@@ -4,6 +4,7 @@ import moment from 'moment';
 import _ from 'underscore';
 
 let audioMessageIntervalId;
+const disableUserTyping = false;
 
 function katexSyntax() {
 	if (RocketChat.katex.katex_enabled()) {
@@ -223,6 +224,9 @@ Template.messageBox.helpers({
 	},
 	/* globals MsgTyping*/
 	usersTyping() {
+		if (disableUserTyping === true) {
+			return;
+		}
 		const users = MsgTyping.get(this._id);
 		if (users.length === 0) {
 			return;
