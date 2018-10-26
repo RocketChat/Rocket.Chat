@@ -1,7 +1,10 @@
 .rc-modal {
+	display: flex;
+	flex-direction: column;
+
 	min-width: 400px;
 	max-width: 500px;
-	height: 100%;
+	height: auto;
 	max-height: 100%;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
@@ -43,6 +46,7 @@
 	&__header {
 		display: flex;
 		flex-direction: row;
+		flex: 0 0;
 
 		margin-bottom: -16px;
 		padding: 16px;
@@ -55,7 +59,6 @@
 		position: relative;
 
 		display: flex;
-
 		overflow: auto;
 
 		flex-direction: column;
@@ -116,6 +119,8 @@
 
 	&__footer {
 		display: flex;
+
+		flex: 0 0;
 
 		padding: 16px;
 

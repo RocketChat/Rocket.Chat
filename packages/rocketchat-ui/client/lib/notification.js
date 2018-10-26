@@ -1,6 +1,7 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
 import _ from 'underscore';
 import s from 'underscore.string';
+import { e2e } from 'meteor/rocketchat:e2e';
 
 const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
@@ -29,8 +30,7 @@ const KonchatNotification = {
 					canReply: true,
 				});
 
-				const user = Meteor.user();
-				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(user, 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
 					setTimeout((() => n.close()), notificationDuration * 1000);
 				}
@@ -63,7 +63,7 @@ const KonchatNotification = {
 		}
 	},
 
-	showDesktop(notification) {
+	async showDesktop(notification) {
 		if ((notification.payload.rid === Session.get('openedRoom')) && (typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)) {
 			return;
 		}
@@ -71,6 +71,14 @@ const KonchatNotification = {
 		if ((Meteor.user().status === 'busy') || (Meteor.settings.public.sandstorm != null)) {
 			return;
 		}
+
+		if (notification.payload.message && notification.payload.message.t === 'e2e') {
+			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
+			if (e2eRoom) {
+				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
+			}
+		}
+
 		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
@@ -80,9 +88,9 @@ const KonchatNotification = {
 
 	newMessage(rid) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
-			const user = Meteor.user();
-			const newMessageNotification = RocketChat.getUserPreference(user, 'newMessageNotification');
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const userId = Meteor.userId();
+			const newMessageNotification = RocketChat.getUserPreference(userId, 'newMessageNotification');
+			const audioVolume = RocketChat.getUserPreference(userId, 'notificationsSoundVolume');
 
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 

@@ -42,7 +42,7 @@
 									<span class="sidebar-item__me">({{_ "You"}})</span>
 								{{/if}}
 							</div>
-							 <!-- {{#if streaming}} VIDEO {{/if}} -->
+							{{#if streaming}} {{>icon icon="video" block="sidebar-item__video pulse"}} {{/if}}
 						</div>
 						{{#if extended}}
 							{{#if lastMessageTs}}

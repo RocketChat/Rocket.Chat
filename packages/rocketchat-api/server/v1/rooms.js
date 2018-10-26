@@ -46,7 +46,10 @@ RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 			};
 		}
 
-		return RocketChat.API.v1.success(result);
+		return RocketChat.API.v1.success({
+			update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+			remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+		});
 	},
 });
 

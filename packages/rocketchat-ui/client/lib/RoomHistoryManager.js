@@ -12,6 +12,10 @@ export const upsertMessage = ({ msg, subscription }) => {
 		(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
 	].map((e) => e.roles);
 	msg.roles = _.union.apply(_.union, roles);
+	if (msg.t === 'e2e' && !msg.file) {
+		msg.e2e = 'pending';
+	}
+
 	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
@@ -71,6 +75,7 @@ export const RoomHistoryManager = new class {
 			if (err) {
 				return;
 			}
+
 			let previousHeight;
 			const { messages = [] } = result;
 			room.unreadNotLoaded.set(result.unreadNotLoaded);
