@@ -12,7 +12,6 @@
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
 		"ChatSubscription"            : false,
-		"CryptoJS"                    : false,
 		"Department"                  : false,
 		"FileUpload"                  : false,
 		"getNextAgent"                : false,
