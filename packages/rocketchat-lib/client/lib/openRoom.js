@@ -37,11 +37,17 @@ function openRoom(type, name) {
 						}
 					});
 				} else {
-					Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
-						if (error) {
-							Session.set('roomNotFound', { type, name, error });
-							return BlazeLayout.render('main', { center: 'roomNotFound' });
+					Meteor.call('getRoomByTypeAndName', type, name, function(err, record) {
+						if (err) {
+							if (type === 'p' && err.error === 'error-no-permission') {
+								Session.set('privateNoPermission', { type, name });
+								return BlazeLayout.render('main', { center: 'privateNoPermission' });
+							} else {
+								Session.set('roomNotFound', { type, name });
+								return BlazeLayout.render('main', { center: 'roomNotFound' });
+							}
 						} else {
+							delete record.$loki;
 							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
 							RoomManager.close(type + name);
 							return openRoom(type, name);

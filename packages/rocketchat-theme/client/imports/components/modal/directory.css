@@ -23,6 +23,22 @@
 	color: var(--color-dark-light);
 }
 
+.rc-directory-banner {
+	width: 100%;
+	margin: auto;
+	padding: 3px 0;
+
+	text-align: center;
+
+	background-color: var(--rc-color-alert);
+	box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
+
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: lighter;
+	font-style: oblique;
+}
+
 .rc-table-content {
 	display: flex;
 	overflow-x: auto;

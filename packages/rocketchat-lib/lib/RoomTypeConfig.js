@@ -205,6 +205,11 @@ export class RoomTypeConfig {
 		return false;
 	}
 
+	listInDirectory() {
+		return false; // default: not available for the directory search.
+	}
+
+
 	/**
 	 * Returns a text which can be used in generic UIs.
 	 * @param context The role of the text in the UI-Element

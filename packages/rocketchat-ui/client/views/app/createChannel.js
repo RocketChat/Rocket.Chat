@@ -101,6 +101,12 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
+	secretDescription() {
+		return t(Template.instance().secret.get() ? t('Channel_will_be_hidden_in_the_directory_search') : t('Channel_will_be_show_in_the_directory_search'));
+	},
+	isPrivateChannel() {
+		return (Template.instance().type.get() !== 'p');
+	},
 	cantCreateBothTypes() {
 		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
 	},
@@ -169,6 +175,9 @@ Template.createChannel.events({
 	},
 	'change [name="type"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'c');
+		if (t.type.get() !== 'p') {
+			t.secret.set(e.target.checked); // set secret to 'false' for non-private channels.
+		}
 		t.change();
 	},
 	'change [name="broadcast"]'(e, t) {
@@ -181,6 +190,9 @@ Template.createChannel.events({
 	},
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
+	},
+	'change [name="secret"]'(e, t) {
+		t.secret.set(e.target.checked);
 	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
@@ -214,6 +226,7 @@ Template.createChannel.events({
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
+		const secret = instance.secret.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
 
@@ -225,7 +238,7 @@ Template.createChannel.events({
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted, secret });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -274,6 +287,7 @@ Template.createChannel.onCreated(function() {
 	this.name = new ReactiveVar('');
 	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
+	this.secret = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.encrypted = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
@@ -323,7 +337,7 @@ Template.createChannel.onCreated(function() {
 			inputDelay: 300,
 			rules: [
 				{
-				// @TODO maybe change this 'collection' and/or template
+					// @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom',
 					subscription: 'userAutocomplete',
 					field: 'username',

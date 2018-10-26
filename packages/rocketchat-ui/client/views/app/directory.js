@@ -4,7 +4,13 @@ import { timeAgo } from './helpers';
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
 		cb(result && result.results && result.results.length && result.results.map((result) => {
-			if (config.type === 'channels') {
+			if (config.type === 'users') {
+				return {
+					name: result.name,
+					username: result.username,
+					// createdAt: timeAgo(result.createdAt),
+				};
+			} else {
 				return {
 					name: result.name,
 					users: result.usersCount || 0,
@@ -16,14 +22,6 @@ function directorySearch(config, cb) {
 				};
 			}
 
-			if (config.type === 'users') {
-				return {
-					name: result.name,
-					username: result.username,
-					createdAt: timeAgo(result.createdAt, t),
-				};
-			}
-			return null;
 		}));
 	});
 }
@@ -54,6 +52,16 @@ Template.directory.helpers({
 	createChannelOrGroup() {
 		return RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']);
 	},
+	secretRoomsExists() {
+		return Template.instance().secretRoomsExists.get();
+	},
+	getIcon() {
+		const instance = Template.instance();
+		if (instance.searchType.get() === 'p') {
+			return 'lock';
+		}
+		return 'hashtag';
+	},
 	tabsData() {
 		const {
 			sortDirection,
@@ -77,22 +85,31 @@ Template.directory.helpers({
 				return true;
 			},
 		};
-		if (searchType.get() === 'channels') {
+		const privateChannels = {
+			label: t('Private_Groups'),
+			value: 'p',
+			condition() {
+				return true;
+			},
+		};
+		if (searchType.get() === 'users') {
+			usersTab.active = true;
+		} else if (searchType.get() === 'channels') {
 			channelsTab.active = true;
 		} else {
-			usersTab.active = true;
+			privateChannels.active = true;
 		}
 		return {
-			tabs: [channelsTab, usersTab],
+			tabs: [channelsTab, privateChannels, usersTab],
 			onChange(value) {
 				results.set([]);
 				end.set(false);
-				if (value === 'channels') {
-					searchSortBy.set('usersCount');
-					sortDirection.set('desc');
-				} else {
+				if (value === 'users') {
 					searchSortBy.set('name');
 					sortDirection.set('asc');
+				} else {
+					searchSortBy.set('usersCount');
+					sortDirection.set('desc');
 				}
 				page.set(0);
 				searchType.set(value);
@@ -101,15 +118,15 @@ Template.directory.helpers({
 	},
 	onTableItemClick() {
 		const { searchType } = Template.instance();
-		let type;
 		let routeConfig;
+		let type;
 		return function(item) {
-			if (searchType.get() === 'channels') {
-				type = 'c';
-				routeConfig = { name: item.name };
-			} else {
+			if (searchType.get() === 'users') {
 				type = 'd';
 				routeConfig = { name: item.username };
+			} else {
+				type = searchType.get();
+				routeConfig = { name: item.name };
 			}
 			RocketChat.roomTypes.openRouteLink(type, routeConfig);
 		};
@@ -200,21 +217,30 @@ Template.directory.onRendered(function() {
 Template.directory.onCreated(function() {
 	const viewType = RocketChat.settings.get('Accounts_Directory_DefaultView') || 'channels';
 	this.searchType = new ReactiveVar(viewType);
-	if (viewType === 'channels') {
-		this.searchSortBy = new ReactiveVar('usersCount');
-		this.sortDirection = new ReactiveVar('desc');
-	} else {
+	if (viewType === 'users') {
 		this.searchSortBy = new ReactiveVar('name');
 		this.sortDirection = new ReactiveVar('asc');
+	} else {
+		this.searchSortBy = new ReactiveVar('usersCount');
+		this.sortDirection = new ReactiveVar('desc');
 	}
 	this.searchText = new ReactiveVar('');
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
+	this.secretRoomsExists = new ReactiveVar(null);
 
 	this.results = new ReactiveVar([]);
 
 	this.isLoading = new ReactiveVar(false);
+
+	// check for secret room
+	Meteor.call('checkSecretRoomExists', this.searchText.get(), 'p', (err, res) => {
+		if (err) {
+			return false;
+		}
+		this.secretRoomsExists.set(res);
+	});
 });
 
 Template.directory.onRendered(function() {

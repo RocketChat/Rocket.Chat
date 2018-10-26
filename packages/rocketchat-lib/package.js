@@ -178,6 +178,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/insertOrUpdateUser.js', 'server');
 	api.addFiles('server/methods/joinDefaultChannels.js', 'server');
 	api.addFiles('server/methods/joinRoom.js', 'server');
+	api.addFiles('server/methods/joinRoomRequest.js', 'server');
 	api.addFiles('server/methods/leaveRoom.js', 'server');
 	api.addFiles('server/methods/removeOAuthService.js', 'server');
 	api.addFiles('server/methods/restartServer.js', 'server');

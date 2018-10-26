@@ -26,8 +26,12 @@ Meteor.methods({
 	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'p'].includes(type)) {
 			return;
+		}
+
+		if (type === 'channels') {
+			type = 'c';
 		}
 
 		if (!['asc', 'desc'].includes(sortDirection)) {
@@ -52,47 +56,45 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		if (type === 'channels') {
-
-			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+		// type === users
+		if (type === 'users') {
+			const sort = sortUsers(sortBy, sortDirection);
+			if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
 				return;
 			}
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+				results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
 					...options,
 					sort,
 					fields: {
-						description: 1,
-						topic: 1,
+						username: 1,
 						name: 1,
-						lastMessage: 1,
-						ts: 1,
-						archived: 1,
-						usersCount: 1,
+						createdAt: 1,
+						emails: 1,
 					},
 				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
+				total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
 			};
 		}
-
-		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		const sort = sortChannels(sortBy, sortDirection);
+		if (!RocketChat.roomTypes.roomTypes[type].listInDirectory()) {
 			return;
 		}
-		const sort = sortUsers(sortBy, sortDirection);
 		return {
-			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
+			results: RocketChat.models.Rooms.findListableByNameAndType(regex, type, {
 				...options,
 				sort,
 				fields: {
-					username: 1,
+					description: 1,
+					topic: 1,
 					name: 1,
-					createdAt: 1,
-					emails: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					usersCount: 1,
 				},
 			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
+			total: RocketChat.models.Rooms.findListableByNameAndType(regex, type).count(),
 		};
 	},
 });

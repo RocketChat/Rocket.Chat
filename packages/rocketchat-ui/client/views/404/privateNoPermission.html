@@ -1,0 +1,26 @@
+<template name="privateNoPermission">
+	<section class="page-container page-list content-background-color">
+		{{> header sectionName="No_permission_to_enter_room"}}
+		<div class="room-not-found-wrapper">
+			<div class="room-not-found content error-color">
+				<i class="icon-attention"></i>
+				<span>{{{_ "You_are_not_authorized_to_view_this_page"}}}</span>
+			</div>
+			<footer class="footer">
+				{{#with data}}
+					<div class="rc-message-box rc-new">
+						{{#if showSendRequest}}
+							{{{_ "Room_join_request_send" roomName=roomName}}}
+							<button class="button joinRoomRequest"><span><i class="icon-login"></i> {{_
+									"Send_request"}}</span>
+							</button>
+						{{ else }}
+							{{{_ "Room_join_request_status" roomName=roomName status=requestStatus}}}
+						{{/if}}
+					</div>
+				{{/with}}
+			</footer>
+		</div>
+	</section>
+</template>
+

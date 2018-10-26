@@ -18,6 +18,15 @@ export function setDirectMessageCreated(status) {
 	directMessageCreated = status;
 }
 
+const createUserAndLogin = function(username, email, password) {
+	console.log('	User dont exist. Creating user...');
+	loginPage.gotToRegister();
+	loginPage.registerNewUser({ username, email, password });
+	browser.waitForExist('form#login-card input#username', 5000);
+	browser.click('.submit > button');
+	mainContent.mainContent.waitForExist(5000);
+};
+
 export function checkIfUserIsValid(username, email, password) {
 	if (!sideNav.sidebarHeader.isVisible()) {
 		// if the user is not logged in.
@@ -38,14 +47,21 @@ export function checkIfUserIsValid(username, email, password) {
 	} else if (browser.execute(() => Meteor.user().username).value !== username) {
 		// if the logged user is not the right one
 		console.log('	Wrong logged user. Changing user...');
-		sideNav.sidebarUserMenu.waitForVisible(5000);
-		sideNav.sidebarUserMenu.click();
-		sideNav.logout.waitForVisible(5000);
-		sideNav.logout.click();
 
-		loginPage.open();
-		loginPage.loginSucceded({ email, password });
-		mainContent.mainContent.waitForExist(5000);
+		try {
+			sideNav.sidebarUserMenu.waitForVisible(5000);
+			sideNav.sidebarUserMenu.click();
+			sideNav.logout.waitForVisible(5000);
+			sideNav.logout.click();
+
+			loginPage.open();
+			loginPage.loginSucceded({ email, password });
+			mainContent.mainContent.waitForExist(5000);
+		} catch (e) {
+			// if the user dont exist.
+			console.log('user does not exist. so creating user');
+			createUserAndLogin(username, email, password);
+		}
 	} else {
 		console.log('	User already logged');
 	}

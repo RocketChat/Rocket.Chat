@@ -9,6 +9,7 @@ class Global {
 	get modalFileDescription() { return browser.element('.rc-modal #file-description'); }
 	get modalFilePreview() { return browser.element('.rc-modal .upload-preview-file'); }
 	get modalFileTitle() { return browser.element('.rc-modal .upload-preview-title'); }
+	get modalInput() { return browser.element('.js-modal-input'); }
 
 	get toastAlert() { return browser.element('.toast'); }
 
@@ -17,6 +18,10 @@ class Global {
 		browser.pause(500);
 		this.modalConfirm.click();
 		this.modal.waitForVisible(5000, true);
+	}
+
+	enterModalText(input) {
+		this.modalInput.setValue(input);
 	}
 
 	setWindowSize(width, height) {

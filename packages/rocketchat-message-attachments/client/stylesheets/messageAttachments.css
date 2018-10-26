@@ -89,25 +89,18 @@ html.rtl .attachment {
 	& .attachment-fields {
 		display: flex;
 
-		margin-top: 4px;
-		flex-wrap: wrap;
-
 		& .attachment-field {
-			flex: 1 0 100%;
-
-			padding-top: 5px;
-			padding-bottom: 5px;
+			margin-top: 4px;
 
 			&.attachment-field-short {
 				display: inline-block;
-
-				flex: 1 1;
 
 				margin-right: 12px;
 			}
 
 			& .attachment-field-title {
 				font-weight: 600;
+
 				line-height: 1rem;
 			}
 		}
@@ -157,5 +150,28 @@ html.rtl .attachment {
 
 	& .actions-container {
 		margin-top: 6px;
+	}
+
+	& .join-room-request {
+		color: black;
+	}
+
+	& .join-room-request-reason {
+		font-weight: 500;
+	}
+
+	& .field button {
+		width: fit-content;
+		min-height: 20px;
+		padding: 3px 10px;
+
+		& > svg {
+			margin-right: 8px;
+			margin-left: -4px;
+		}
+
+		&:hover {
+			text-decoration: none;
+		}
 	}
 }

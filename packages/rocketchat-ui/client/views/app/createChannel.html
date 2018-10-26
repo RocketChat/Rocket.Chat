@@ -28,8 +28,8 @@
 						<label class="rc-switch__label">
 							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
 							<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
+								<span class="rc-switch__button-inside"></span>
+							</span>
 							<span class="rc-switch__text">
 								{{_ "Read_only_channel"}}
 							</span>
@@ -56,8 +56,8 @@
 						<label class="rc-switch__label">
 							<input type="checkbox" class="rc-switch__input" name="broadcast">
 							<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
+								<span class="rc-switch__button-inside"></span>
+							</span>
 							<span class="rc-switch__text">
 								{{_"Broadcast_channel"}}
 							</span>
@@ -66,6 +66,20 @@
 							{{_"Broadcast_channel_Description"}}
 						</span>
 					</div>
+					{{#unless isPrivateChannel}}
+						<div class="rc-switch">
+							<label class="rc-switch__label">
+								<input type="checkbox" class="rc-switch__input" name="secret" value="false">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+								<span class="rc-switch__text">
+									{{_ "Secret_Channel"}}
+								</span>
+							</label>
+							<span class="rc-switch__description">{{secretDescription}}</span>
+						</div>
+					{{/unless}}
 				</div>
 				<div class="create-channel__inputs">
 					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
@@ -75,8 +89,8 @@
 								<div class="rc-input__icon">
 									{{> icon block="rc-input__icon-svg" icon=iconType }}
 								</div>
-								<input name="name" type="text" class="rc-input__element"
-									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
+								<input name="name" type="text" class="rc-input__element" 
+										placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
 							</div>
 						</label>
 						{{#if inUse}}
@@ -99,7 +113,7 @@
 									{{#each user in selectedUsers}}
 										{{> tag user}}
 									{{/each}}
-									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}"
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" 
 										   name="users" autocomplete="off"/>
 								</div>
 							</div>
