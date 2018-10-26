@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
 
 // Show notifications and play a sound for new messages.
 // We trust the server to only send notifications for interesting messages, e.g. direct messages or

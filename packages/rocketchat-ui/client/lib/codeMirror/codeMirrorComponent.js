@@ -2,6 +2,7 @@
 CodeMirrors = {};
 
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import 'codemirror/lib/codemirror.css';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 

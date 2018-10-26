@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
 
 Template.roomNotFound.helpers({
 	data() {

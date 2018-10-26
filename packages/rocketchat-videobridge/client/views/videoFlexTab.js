@@ -1,6 +1,7 @@
 /* globals JitsiMeetExternalAPI */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {

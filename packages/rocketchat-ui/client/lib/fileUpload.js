@@ -2,6 +2,7 @@
 /* exported fileUpload */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import s from 'underscore.string';
 
 const readAsDataURL = (file, callback) => {

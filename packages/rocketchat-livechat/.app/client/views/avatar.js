@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import visitor from '../../imports/client/visitor';
 
 Template.avatar.helpers({

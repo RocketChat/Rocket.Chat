@@ -1,6 +1,7 @@
 /* globals menu popover renderMessageBody */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import moment from 'moment';
 
 Template.sidebarItem.helpers({

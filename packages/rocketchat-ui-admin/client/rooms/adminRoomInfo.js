@@ -1,7 +1,9 @@
 /* globals AdminChatRoom */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import toastr from 'toastr';
+
 Template.adminRoomInfo.helpers({
 	selectedRoom() {
 		return Session.get('adminRoomsSelected');

@@ -1,6 +1,7 @@
 /* globals WebRTC */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 
 Template.videoCall.onCreated(function() {
 	return this.mainVideo = new ReactiveVar('$auto');

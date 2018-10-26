@@ -37,7 +37,6 @@
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
 		"ServiceConfiguration"        : false,
-		"Session"                     : false,
 		"Settings"                    : false,
 		"SideNav"                     : false,
 		"t"                           : false,

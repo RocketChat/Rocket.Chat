@@ -1,4 +1,5 @@
 import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 
 Template.chatRoomItem.helpers({
 	roomData() {

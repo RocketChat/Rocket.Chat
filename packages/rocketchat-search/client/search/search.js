@@ -1,5 +1,6 @@
 /* globals ReactiveVar, TAPi18n */
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import toastr from 'toastr';
 import _ from 'underscore';
 

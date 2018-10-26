@@ -3,6 +3,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

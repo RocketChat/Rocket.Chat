@@ -1,4 +1,5 @@
 import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
 
 Blaze.registerHelper('avatarUrlFromUsername', getAvatarUrlFromUsername);
 

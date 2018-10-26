@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
 
 const msgStream = new Meteor.Streamer('room-messages');
 
