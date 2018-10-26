@@ -11,7 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
-* [Help Wanted](#help-wanted)
+* [**NEW!** Help Wanted](#help-wanted)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -58,12 +58,11 @@
 
 # Help Wanted
 
-As you know, our community is very important to us. So we thought: why not share our latest job vacancies with the community on GitHub?!
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
 
-If you think you'd be a great fit, apply now!
-If you know someone great, share the listing!
+If you are passionate about our project, like to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!   
 
-Our latest openings are for the following positions:
+Be sure to explore the following opennings available:
 
 - [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
 
@@ -72,12 +71,6 @@ Our latest openings are for the following positions:
 - [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
 
 - [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
-
-All roles require dynamic, pro-active individuals who are passionate about open source, and who are looking to join a growing team at a key time in its development.
-
-Click through using the links above to learn more about each role and to apply.
-
-We look forward to hearing from you! 
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
