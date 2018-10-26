@@ -178,12 +178,12 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
 			});
 		}
+	}
 
-		if (user.type !== 'visitor') {
-			Meteor.defer(function() {
-				return RocketChat.callbacks.run('afterCreateUser', user);
-			});
-		}
+	if (user.type !== 'visitor') {
+		Meteor.defer(function() {
+			return RocketChat.callbacks.run('afterCreateUser', user);
+		});
 	}
 
 	if (roles.length === 0) {
