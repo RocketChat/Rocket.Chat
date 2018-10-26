@@ -285,7 +285,7 @@ export class E2ERoom {
 
 		try {
 			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
-			return EJSON.parse(toString(result));
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			return console.error('E2E -> Error decrypting message: ', error, message);
 		}
