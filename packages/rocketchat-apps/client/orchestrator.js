@@ -3,6 +3,7 @@ import { AppWebsocketReceiver } from './communication';
 import { Utilities } from '../lib/misc/Utilities';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { TAPi18next } from 'meteor/tap:i18n';
 
 class AppClientOrchestrator {
 	constructor() {

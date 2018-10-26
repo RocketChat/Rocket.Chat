@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18next } from 'meteor/tap:i18n';
 
 RocketChat.applyCustomTranslations = function applyCustomTranslations() {
 	let CustomTranslations = RocketChat.settings.get('Custom_Translations');
