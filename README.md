@@ -11,6 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
+* [**NEW!** Help Wanted](#help-wanted)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -55,6 +56,21 @@
 * [Credits](#credits)
 * [Donate](#donate)
 
+# Help Wanted
+
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+
+If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
+
+Explore current openings below:
+
+- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
+
+- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
+
+- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
+
+- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -351,7 +367,7 @@ Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-e
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions. 
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
 
 ### Stack Overflow
 
@@ -413,7 +429,7 @@ It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branchi
 See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
 ## Translations
-We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
+We are experimenting [Lingohub](https://translate.lingohub.com/rocketchat/dashboard).
 If you want to help, send an email to support at rocket.chat to be invited to the translation project.
 
 ## How to Contribute

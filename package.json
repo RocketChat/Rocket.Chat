@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.70.4",
+	"version": "0.71.0-rc.2",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -91,6 +91,7 @@
 		"@octokit/rest": "^15.8.1",
 		"@rocket.chat/eslint-config": "^0.1.2",
 		"autoprefixer": "^8.6.0",
+		"babel-eslint": "^10.0.1",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
 		"chimp": "^0.51.1",
@@ -116,7 +117,7 @@
 		"@google-cloud/language": "^1.2.0",
 		"@google-cloud/storage": "^1.7.0",
 		"@google-cloud/vision": "^0.19.0",
-		"@rocket.chat/apps-engine": "1.1.1",
+		"@rocket.chat/apps-engine": "1.2.1",
 		"@slack/client": "^4.2.2",
 		"adm-zip": "^0.4.11",
 		"archiver": "^2.1.1",
@@ -171,6 +172,7 @@
 		"moment-timezone": "^0.5.17",
 		"node-dogstatsd": "^0.0.7",
 		"object-path": "^0.11.4",
+		"pdfjs-dist": "^2.0.489",
 		"photoswipe": "^4.1.2",
 		"poplib": "^0.1.7",
 		"prom-client": "^11.0.0",
