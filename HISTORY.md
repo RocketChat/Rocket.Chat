@@ -1,61 +1,10 @@
 
-# 0.71.0 (Under Release Candidate Process)
+# 0.71.0
+`2018-10-27  ·  2 ️️️⚠️  ·  5 🎉  ·  5 🚀  ·  21 🐛  ·  8 🔍  ·  20 👩‍💻👨‍💻`
 
-## 0.71.0-rc.2
-`2018-10-27  ·  2 🐛  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Attachment timestamp from and to Apps system not working ([#12445](https://github.com/RocketChat/Rocket.Chat/pull/12445))
-- Apps not being able to state how the action buttons are aligned ([#12391](https://github.com/RocketChat/Rocket.Chat/pull/12391))
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@graywolf336](https://github.com/graywolf336)
-
-## 0.71.0-rc.1
-`2018-10-26  ·  1 🎉  ·  1 🚀  ·  3 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-- Add "help wanted" section to Readme ([#12432](https://github.com/RocketChat/Rocket.Chat/pull/12432))
-
-### 🚀 Improvements
-
-- Allow the imports to accept any file type ([#12425](https://github.com/RocketChat/Rocket.Chat/pull/12425))
-
-### 🐛 Bug fixes
-
-- E2E: Decrypting UTF-8 encoded messages ([#12398](https://github.com/RocketChat/Rocket.Chat/pull/12398) by [@pmmaga](https://github.com/pmmaga))
-- Ignore errors when creating image preview for uploads ([#12424](https://github.com/RocketChat/Rocket.Chat/pull/12424))
-- Attachment actions not being collapsable ([#12436](https://github.com/RocketChat/Rocket.Chat/pull/12436))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Update Apps Framework to version 1.2.1 ([#12442](https://github.com/RocketChat/Rocket.Chat/pull/12442))
-- Regression: Change `starred` message property from object to array ([#12405](https://github.com/RocketChat/Rocket.Chat/pull/12405))
-- Apps: Room’s usernames was not working ([#12409](https://github.com/RocketChat/Rocket.Chat/pull/12409))
-- Regression: Fix email headers not being used ([#12392](https://github.com/RocketChat/Rocket.Chat/pull/12392))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@pmmaga](https://github.com/pmmaga)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-- [@Sing-Li](https://github.com/Sing-Li)
-- [@graywolf336](https://github.com/graywolf336)
-- [@isabellarussell](https://github.com/isabellarussell)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 0.71.0-rc.0
-`2018-10-20  ·  2 ️️️⚠️  ·  4 🎉  ·  4 🚀  ·  16 🐛  ·  4 🔍  ·  15 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -68,6 +17,7 @@
 - sidenav size on large screens ([#12372](https://github.com/RocketChat/Rocket.Chat/pull/12372))
 - Ability to disable user presence monitor ([#12353](https://github.com/RocketChat/Rocket.Chat/pull/12353))
 - PDF message attachment preview (client side rendering) ([#10519](https://github.com/RocketChat/Rocket.Chat/pull/10519) by [@kb0304](https://github.com/kb0304))
+- Add "help wanted" section to Readme ([#12432](https://github.com/RocketChat/Rocket.Chat/pull/12432))
 
 ### 🚀 Improvements
 
@@ -75,6 +25,7 @@
 - Set Livechat department before register guest ([#12161](https://github.com/RocketChat/Rocket.Chat/pull/12161))
 - Add missing livechat i18n keys ([#12330](https://github.com/RocketChat/Rocket.Chat/pull/12330) by [@MarcosEllys](https://github.com/MarcosEllys))
 - Avoid unnecessary calls to Meteor.user() on client ([#11212](https://github.com/RocketChat/Rocket.Chat/pull/11212))
+- Allow the imports to accept any file type ([#12425](https://github.com/RocketChat/Rocket.Chat/pull/12425))
 
 ### 🐛 Bug fixes
 
@@ -94,6 +45,11 @@
 - Links in home layout ([#12355](https://github.com/RocketChat/Rocket.Chat/pull/12355) by [@upiksaleh](https://github.com/upiksaleh))
 - Last message not updating after message delete if show deleted status is on ([#12350](https://github.com/RocketChat/Rocket.Chat/pull/12350))
 - Invalid destructuring on Livechat API endpoint ([#12354](https://github.com/RocketChat/Rocket.Chat/pull/12354))
+- E2E: Decrypting UTF-8 encoded messages ([#12398](https://github.com/RocketChat/Rocket.Chat/pull/12398) by [@pmmaga](https://github.com/pmmaga))
+- Ignore errors when creating image preview for uploads ([#12424](https://github.com/RocketChat/Rocket.Chat/pull/12424))
+- Attachment actions not being collapsable ([#12436](https://github.com/RocketChat/Rocket.Chat/pull/12436))
+- Attachment timestamp from and to Apps system not working ([#12445](https://github.com/RocketChat/Rocket.Chat/pull/12445))
+- Apps not being able to state how the action buttons are aligned ([#12391](https://github.com/RocketChat/Rocket.Chat/pull/12391))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -102,6 +58,10 @@
 - Regression: do not render pdf preview on safari <= 12 ([#12375](https://github.com/RocketChat/Rocket.Chat/pull/12375))
 - Improve: Drop database between running tests on CI ([#12358](https://github.com/RocketChat/Rocket.Chat/pull/12358))
 - Fix: update check on err.details ([#12346](https://github.com/RocketChat/Rocket.Chat/pull/12346) by [@teresy](https://github.com/teresy))
+- Update Apps Framework to version 1.2.1 ([#12442](https://github.com/RocketChat/Rocket.Chat/pull/12442))
+- Regression: Change `starred` message property from object to array ([#12405](https://github.com/RocketChat/Rocket.Chat/pull/12405))
+- Apps: Room’s usernames was not working ([#12409](https://github.com/RocketChat/Rocket.Chat/pull/12409))
+- Regression: Fix email headers not being used ([#12392](https://github.com/RocketChat/Rocket.Chat/pull/12392))
 
 </details>
 
@@ -113,6 +73,7 @@
 - [@madguy02](https://github.com/madguy02)
 - [@nikeee](https://github.com/nikeee)
 - [@nimetu](https://github.com/nimetu)
+- [@pmmaga](https://github.com/pmmaga)
 - [@teresy](https://github.com/teresy)
 - [@upiksaleh](https://github.com/upiksaleh)
 
@@ -120,9 +81,13 @@
 
 - [@Hudell](https://github.com/Hudell)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@Sing-Li](https://github.com/Sing-Li)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@isabellarussell](https://github.com/isabellarussell)
 - [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
