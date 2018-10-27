@@ -30,8 +30,7 @@ const KonchatNotification = {
 					canReply: true,
 				});
 
-				const user = Meteor.user();
-				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(user, 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
 					setTimeout((() => n.close()), notificationDuration * 1000);
 				}
@@ -89,9 +88,9 @@ const KonchatNotification = {
 
 	newMessage(rid) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
-			const user = Meteor.user();
-			const newMessageNotification = RocketChat.getUserPreference(user, 'newMessageNotification');
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const userId = Meteor.userId();
+			const newMessageNotification = RocketChat.getUserPreference(userId, 'newMessageNotification');
+			const audioVolume = RocketChat.getUserPreference(userId, 'notificationsSoundVolume');
 
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 

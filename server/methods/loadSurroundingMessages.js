@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);
@@ -42,14 +40,7 @@ Meteor.methods({
 			};
 		}
 
-		const recordsBefore = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
-
-		const messages = recordsBefore.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreBefore = messages.length === options.limit;
 
@@ -61,18 +52,13 @@ Meteor.methods({
 
 		options.limit = Math.floor(limit / 2);
 
-		const recordsAfter = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
-		const afterMessages = recordsAfter.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
+		const afterMessages = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreAfter = afterMessages.length === options.limit;
 
 		return {
-			messages: messages.concat(afterMessages),
+			messages: messages.concat(afterMessages)
+				.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
 			moreBefore,
 			moreAfter,
 		};
