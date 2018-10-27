@@ -20342,6 +20342,29 @@
           ]
         }
       ]
+    },
+    "0.71.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12299",
+          "title": "Release 0.70.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
