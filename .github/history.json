@@ -20318,6 +20318,30 @@
           ]
         }
       ]
+    },
+    "0.71.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12445",
+          "title": "[FIX] Attachment timestamp from and to Apps system not working",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "12391",
+          "title": "[FIX] Apps not being able to state how the action buttons are aligned",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        }
+      ]
     }
   }
 }
