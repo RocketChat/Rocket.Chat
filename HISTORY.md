@@ -1,6 +1,18 @@
 
 # 0.71.0 (Under Release Candidate Process)
 
+## 0.71.0-rc.2
+`2018-10-27  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Attachment timestamp from and to Apps system not working ([#12445](https://github.com/RocketChat/Rocket.Chat/pull/12445))
+- Apps not being able to state how the action buttons are aligned ([#12391](https://github.com/RocketChat/Rocket.Chat/pull/12391))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@graywolf336](https://github.com/graywolf336)
+
 ## 0.71.0-rc.1
 `2018-10-26  ·  1 🎉  ·  1 🚀  ·  3 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
 
