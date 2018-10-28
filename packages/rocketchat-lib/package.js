@@ -82,11 +82,13 @@ Package.onUse(function(api) {
 
 	// SERVER FUNCTIONS
 	api.addFiles('server/functions/isDocker.js', 'server');
+	api.addFiles('server/functions/isTheLastMessage.js', 'server');
 	api.addFiles('server/functions/addUserToDefaultChannels.js', 'server');
 	api.addFiles('server/functions/addUserToRoom.js', 'server');
 	api.addFiles('server/functions/archiveRoom.js', 'server');
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
+	api.addFiles('server/functions/composeMessageObjectWithUser.js', 'server');
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/cleanRoomHistory.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
