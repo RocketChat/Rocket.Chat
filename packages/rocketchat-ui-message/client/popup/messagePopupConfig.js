@@ -159,7 +159,7 @@ const getEmojis = function(collection, filter) {
 		return [];
 	}
 
-	const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+	const regExp = new RegExp(RegExp.escape(filter), 'i');
 	const recents = RocketChat.EmojiPicker.getRecent().map((item) => `:${ item }:`);
 	return Object.keys(collection).map((_id) => {
 		const data = collection[key];
