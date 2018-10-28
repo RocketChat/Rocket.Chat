@@ -36,6 +36,10 @@ Meteor.methods({
 		// Create the SnippetMessage
 		RocketChat.models.Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
 			message.snippeted, Date.now, filename);
+		if (RocketChat.isTheLastMessage(room, message)) {
+			RocketChat.models.Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy,
+				message.snippeted, Date.now, filename);
+		}
 
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
 			'message_snippeted', message.rid, '', me, {	snippetId: message._id, snippetName: filename });

@@ -44,5 +44,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/messageBoxActions.js', 'client');
 
+	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
+
 	api.export('renderMessageBody');
 });

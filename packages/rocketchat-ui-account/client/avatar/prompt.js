@@ -65,7 +65,7 @@ Template.avatarPrompt.events({
 			if (s.trim($('#avatarurl').val())) {
 				Meteor.call('setAvatarFromService', $('#avatarurl').val(), '', this.service, function(err) {
 					if (err) {
-						if (err.details.timeToReset && err.details.timeToReset) {
+						if (err.details && err.details.timeToReset) {
 							toastr.error(t('error-too-many-requests', {
 								seconds: parseInt(err.details.timeToReset / 1000),
 							}));
