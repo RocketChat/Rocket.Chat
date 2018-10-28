@@ -3,6 +3,10 @@ export default function eventsRoutes() {
 
 	RocketChat.API.v1.addRoute('federation.events', { authRequired: false }, {
 		post() {
+			if (!this.bodyParams.event) {
+				return RocketChat.API.v1.failure('Event was not sent');
+			}
+
 			const {
 				event: e,
 			} = this.bodyParams;
@@ -11,35 +15,54 @@ export default function eventsRoutes() {
 
 			try {
 				switch (e.t) {
-					case 'rc':
-						self.handleRoomCreatedEvent(e);
-						break;
-					case 'dc':
+					case 'drc':
 						self.handleDirectRoomCreatedEvent(e);
 						break;
-					case 'uj':
-						self.handleUserJoinedRoomEvent(e);
+					case 'roc':
+						self.handleRoomCreatedEvent(e);
 						break;
-					case 'ua':
-						self.handleUserAddedToRoomEvent(e);
+					case 'usj':
+						self.handleUserJoinedEvent(e);
 						break;
-					case 'ul':
-						self.handleUserLeftRoomEvent(e);
+					case 'usa':
+						self.handleUserAddedEvent(e);
 						break;
-					case 'ur':
-						self.handleUserRemovedFromRoomEvent(e);
+					case 'usl':
+						self.handleUserLeftEvent(e);
 						break;
-					case 'ms':
-						self.handleMessageSentEvent(e);
+					case 'usr':
+						self.handleUserRemovedEvent(e);
 						break;
+					case 'usm':
+						self.handleUserMutedEvent(e);
+						break;
+					case 'usu':
+						self.handleUserUnmutedEvent(e);
+						break;
+					case 'msc':
+						self.handleMessageCreatedEvent(e);
+						break;
+					case 'msu':
+						self.handleMessageUpdatedEvent(e);
+						break;
+					case 'msd':
+						self.handleMessageDeletedEvent(e);
+						break;
+					case 'msr':
+						self.handleMessagesReadEvent(e);
+						break;
+					default:
+						throw new Error(`Invalid event:${ e.t }`);
 				}
 
+				self.log('Responding...');
+
 				// Respond
-				RocketChat.API.v1.success();
+				return RocketChat.API.v1.success();
 			} catch (err) {
 				self.log(`Error handling event:${ e.t } - ${ err.toString() }`);
 
-				RocketChat.API.v1.failure(err);
+				return RocketChat.API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`);
 			}
 		},
 	});

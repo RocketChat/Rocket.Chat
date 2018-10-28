@@ -89,15 +89,30 @@ Meteor.methods({
 			return;
 		}
 
-		let methodToCall = 'findByActiveUsersExcept';
+		let exceptions = [user.username];
 
+		// Get exceptions
 		if (type === 'federated_users') {
-			methodToCall = 'findByFederatedActiveUsersExcept';
+			const nonFederatedUsers = RocketChat.models.Users.find({
+				$or: [
+					{ federation: { $exists: false } },
+					{ 'federation.peer': Meteor.federationLocalIdentifier },
+				],
+			}, { fields: { username: 1 } }).map((u) => u.username);
+
+			exceptions = exceptions.concat(nonFederatedUsers);
+		} else {
+			const federatedUsers = RocketChat.models.Users.find({
+				federation: { $exists: true },
+				'federation.peer': { $ne: Meteor.federationLocalIdentifier },
+			}, { fields: { username: 1 } }).map((u) => u.username);
+
+			exceptions = exceptions.concat(federatedUsers);
 		}
 
 		const sort = sortUsers(sortBy, sortDirection);
 
-		const results = RocketChat.models.Users[methodToCall](text, [user.username], {
+		const results = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions, {
 			...options,
 			sort,
 			fields: {
@@ -109,7 +124,7 @@ Meteor.methods({
 			},
 		}).fetch();
 
-		const total = RocketChat.models.Users[methodToCall](text, [user.username]).count();
+		const total = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions).count();
 
 		return {
 			results,

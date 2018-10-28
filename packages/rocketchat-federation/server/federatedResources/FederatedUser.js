@@ -4,6 +4,10 @@ class FederatedUser extends FederatedResource {
 	constructor(localPeerIdentifier, userOrFederatedUser) {
 		super('user');
 
+		if (!userOrFederatedUser) {
+			throw new Error('userOrFederatedUser param cannot be empty');
+		}
+
 		this.localPeerIdentifier = localPeerIdentifier;
 
 		if (userOrFederatedUser.resourceName) {

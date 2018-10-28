@@ -8,7 +8,7 @@ Meteor.startup(function() {
 			public: true,
 		});
 
-		this.add('FEDERATION_Peer_Identifier', RocketChat.settings.get('Site_Name'), {
+		this.add('FEDERATION_Peer_Identifier', '@rocket.chat', {
 			group: 'Peer',
 			type: 'string',
 			i18nLabel: 'FEDERATION_Peer_Identifier',
@@ -16,18 +16,18 @@ Meteor.startup(function() {
 			alert: 'FEDERATION_Peer_Identifier_Alert',
 		});
 
-		this.add('FEDERATION_Peer_Domains', '', {
+		this.add('FEDERATION_Peer_Domains', '@rocket.chat', {
 			group: 'Peer',
 			type: 'string',
 			i18nLabel: 'FEDERATION_Peer_Domains',
 			i18nDescription: 'FEDERATION_Peer_Domains_Description',
 		});
 
-		this.add('FEDERATION_DNS_URL', 'localhost', {
-			group: 'DNS Server',
+		this.add('FEDERATION_Hub_URL', 'https://hub.rocket.chat', {
+			group: 'Federation Hub',
 			type: 'string',
-			i18nLabel: 'FEDERATION_DNS_URL',
-			i18nDescription: 'FEDERATION_DNS_URL_Description',
+			i18nLabel: 'FEDERATION_Hub_URL',
+			i18nDescription: 'FEDERATION_Hub_URL_Description',
 		});
 	});
 });

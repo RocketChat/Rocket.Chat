@@ -4,9 +4,7 @@ RocketChat.removeUserFromRoom = function(rid, user, options = {}) {
 	const room = RocketChat.models.Rooms.findOneById(rid);
 
 	if (room) {
-		if (!options.skipCallbacks) {
-			RocketChat.callbacks.run('beforeLeaveRoom', user, room);
-		}
+		RocketChat.callbacks.run('beforeLeaveRoom', user, room);
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
 
@@ -26,11 +24,8 @@ RocketChat.removeUserFromRoom = function(rid, user, options = {}) {
 
 		RocketChat.models.Subscriptions.removeByRoomIdAndUserId(rid, user._id);
 
-		if (!options.skipCallbacks) {
-			Meteor.defer(function() {
-			// TODO: CACHE: maybe a queue?
-				RocketChat.callbacks.run('afterLeaveRoom', user, room);
-			});
-		}
+		Meteor.defer(function() {
+			RocketChat.callbacks.run('afterLeaveRoom', user, room);
+		});
 	}
 };

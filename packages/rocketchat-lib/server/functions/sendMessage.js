@@ -75,7 +75,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-RocketChat.sendMessage = function(user, message, room, upsert = false, options = {}) {
+RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -148,9 +148,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false, options =
 		delete message.tokens;
 	}
 
-	if (!options.skipCallbacks) {
-		message = RocketChat.callbacks.run('beforeSaveMessage', message);
-	}
+	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
@@ -184,9 +182,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false, options =
 		Meteor.defer(() => {
 			// Execute all callbacks
 			message.sandstormSessionId = sandstormSessionId;
-			if (!options.skipCallbacks) {
-				RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
-			}
+			RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
 		});
 		return message;
 	}

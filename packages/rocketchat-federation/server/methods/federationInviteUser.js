@@ -1,31 +1,31 @@
 Meteor.methods({
-	federationInviteUser(email) {
+	federationInviteUser(usernameWithIdentifier) {
 		if (!Meteor.userId()) {
 			return false;
 		}
 
-		let user = RocketChat.models.Users.findOneByEmailAddress(email);
+		const [username, identifier] = usernameWithIdentifier.split('@');
 
-		if (user) {
-			throw new Meteor.Error('federation-user-already-exists', `A user with the email "${ email }" already exists`);
-		}
+		const { federationPeerClient } = Meteor;
 
-		const { peerClient } = Meteor;
-
-		if (!peerClient) {
+		if (!federationPeerClient) {
 			throw new Meteor.Error('federation-not-registered', 'Looks like this server is not registered to the DNS server');
 		}
 
-		const federatedUser = peerClient.findUser({ email });
+		const federatedUser = federationPeerClient.findUser({ username, identifier });
 
 		if (!federatedUser) {
-			throw new Meteor.Error('federation-user-not-found', `Could not find a federated user with the email "${ email }"`);
+			throw new Meteor.Error('federation-user-not-found', `Could not find a federated user:"${ usernameWithIdentifier }"`);
 		}
 
-		user = federatedUser.user;
+		let user = null;
 
-		// Create the local user
-		user = RocketChat.models.Users.create(user);
+		try {
+			// Create the local user
+			user = RocketChat.models.Users.create(federatedUser.user);
+		} catch (err) {
+			console.log(err);
+		}
 
 		return user;
 	},

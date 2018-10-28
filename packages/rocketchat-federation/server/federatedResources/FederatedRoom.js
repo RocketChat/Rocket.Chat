@@ -6,6 +6,10 @@ class FederatedRoom extends FederatedResource {
 	constructor(localPeerIdentifier, roomOrFederatedRoom, extras = {}) {
 		super('room');
 
+		if (!roomOrFederatedRoom) {
+			throw new Error('roomOrFederatedRoom param cannot be empty');
+		}
+
 		this.localPeerIdentifier = localPeerIdentifier;
 
 		if (roomOrFederatedRoom.resourceName) {
@@ -42,7 +46,7 @@ class FederatedRoom extends FederatedResource {
 			// Set the federated owner
 			const { owner } = extras;
 
-			if (!owner) {
+			if (!owner && room.federation) {
 				this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
 			} else {
 				this.federatedOwner = new FederatedUser(localPeerIdentifier, owner);
@@ -156,7 +160,7 @@ class FederatedRoom extends FederatedResource {
 
 			localRoom = localRoomObject;
 
-			const { t: type, name, federation } = localRoom;
+			const { t: type, name, broadcast, customFields, federation, sysMes } = localRoom;
 			const { federatedOwner, federatedUsers } = this;
 
 			// Get usernames for the owner and members
@@ -176,8 +180,23 @@ class FederatedRoom extends FederatedResource {
 				roomName = ownerUsername.indexOf('@') === -1 ? membersUsernames[0] : ownerUsername;
 			}
 
+			// Is this a broadcast channel? Then mute everyone but the owner
+			let muted = [];
+
+			if (broadcast) {
+				muted = membersUsernames.filter((u) => u !== ownerUsername);
+			}
+
 			// Set the extra data and create room options
-			const extraData = { federation };
+			const extraData = {
+				broadcast,
+				customFields,
+				encrypted: false, // Always false for now
+				federation,
+				muted,
+				sysMes,
+			};
+
 			const createRoomOptions = {
 				nameValidationRegex: '^[0-9a-zA-Z-_.@]+$',
 				subscriptionExtra: {
@@ -211,7 +230,7 @@ FederatedRoom.loadRoomUsers = function loadRoomUsers(room) {
 };
 
 FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, options = {}) {
-	this.log('federated-room', 'isFederated');
+	this.log('federated-room', `${ room._id } - isFederated?`);
 
 	let isFederated = false;
 
@@ -229,6 +248,8 @@ FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, opti
 	} else {
 		isFederated = room.federation && room.federation.peers.length > 1;
 	}
+
+	this.log('federated-room', `${ room._id } - isFederated? ${ isFederated ? 'yes' : 'no' }`);
 
 	return isFederated;
 };

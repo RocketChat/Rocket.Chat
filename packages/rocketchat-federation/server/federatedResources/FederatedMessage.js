@@ -6,11 +6,17 @@ class FederatedMessage extends FederatedResource {
 	constructor(localPeerIdentifier, messageOrFederatedMessage) {
 		super('message');
 
+		if (!messageOrFederatedMessage) {
+			throw new Error('messageOrFederatedMessage param cannot be empty');
+		}
+
 		this.localPeerIdentifier = localPeerIdentifier;
 
 		if (messageOrFederatedMessage.resourceName) {
 			// If resourceName exists, it means it is a federated resource
 			const federatedMessageObject = messageOrFederatedMessage;
+
+			const { federatedAuthor: federatedAuthorObject } = federatedMessageObject;
 
 			// This is a federated message resource
 			const { message } = federatedMessageObject;
@@ -19,6 +25,9 @@ class FederatedMessage extends FederatedResource {
 			message.ts = new Date(message.ts);
 			message._updatedAt = new Date(message._updatedAt);
 
+			// Load the author
+			this.federatedAuthor = new FederatedUser(localPeerIdentifier, federatedAuthorObject);
+
 			// Set message property
 			this.message = message;
 		} else {
@@ -26,13 +35,17 @@ class FederatedMessage extends FederatedResource {
 			const message = messageOrFederatedMessage;
 
 			// Set the message author
-			const author = RocketChat.models.Users.findOneById(message.u._id);
-			const federatedAuthor = new FederatedUser(localPeerIdentifier, author);
+			if (message.federation) {
+				this.federatedAuthor = FederatedUser.loadByFederationId(localPeerIdentifier, message.u._id);
+			} else {
+				const author = RocketChat.models.Users.findOneById(message.u._id);
+				this.federatedAuthor = new FederatedUser(localPeerIdentifier, author);
+			}
 
 			message.u = {
-				username: federatedAuthor.user.username,
+				username: this.federatedAuthor.user.username,
 				federation: {
-					_id: federatedAuthor.user.federation._id,
+					_id: this.federatedAuthor.user.federation._id,
 				},
 			};
 
@@ -59,6 +72,10 @@ class FederatedMessage extends FederatedResource {
 		}
 	}
 
+	getFederationId() {
+		return this.message.federation._id;
+	}
+
 	getLocalMessage() {
 		this.log('getLocalMessage');
 
@@ -66,14 +83,12 @@ class FederatedMessage extends FederatedResource {
 
 		const localMessage = Object.assign({}, message);
 
-		// Makre sure `u` is correct
-		const federatedAuthor = FederatedUser.loadByFederationId(localPeerIdentifier, message.u.federation._id);
-
-		if (!federatedAuthor) {
+		// Make sure `u` is correct
+		if (!this.federatedAuthor) {
 			throw new Error('Author does not exist');
 		}
 
-		const localAuthor = federatedAuthor.getLocalUser();
+		const localAuthor = this.federatedAuthor.getLocalUser();
 
 		localMessage.u = {
 			_id: localAuthor._id,
@@ -115,13 +130,47 @@ class FederatedMessage extends FederatedResource {
 			const localRoom = { _id: localMessage.rid };
 
 			// Create the message
-			const { _id } = RocketChat.sendMessage(localMessage.u, localMessage, localRoom, false, { skipCallbacks: true });
+			const { _id } = RocketChat.sendMessage(localMessage.u, localMessage, localRoom, false);
 
 			localMessage._id = _id;
 		}
 
 		return localMessage;
 	}
+
+	update(updatedByFederatedUser) {
+		this.log('update');
+
+		// Get the original message
+		const originalMessage = RocketChat.models.Messages.findOne({ 'federation._id': this.getFederationId() });
+
+		// Error if message does not exist
+		if (!originalMessage) {
+			throw new Error('Message does not exist');
+		}
+
+		// Get the local message object
+		const localMessage = this.getLocalMessage();
+
+		// Make sure the message has the correct _id
+		localMessage._id = originalMessage._id;
+
+		// Get the user who updated
+		const user = updatedByFederatedUser.getLocalUser();
+
+		// Update the message
+		RocketChat.updateMessage(localMessage, user, originalMessage);
+
+		return localMessage;
+	}
 }
+
+FederatedMessage.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
+	const localMessage = RocketChat.models.Messages.findOne({ 'federation._id': federationId });
+
+	if (!localMessage) { return; }
+
+	return new FederatedMessage(localPeerIdentifier, localMessage);
+};
 
 export default FederatedMessage;

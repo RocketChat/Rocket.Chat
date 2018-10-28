@@ -659,12 +659,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, extraData);
 	}
 
-	createUserMutedWithRoomIdAndUser(roomId, user, extraData) {
+	userMutedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('user-muted', roomId, message, user, extraData);
 	}
 
-	createUserUnmutedWithRoomIdAndUser(roomId, user, extraData) {
+	userUnmutedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('user-unmuted', roomId, message, user, extraData);
 	}

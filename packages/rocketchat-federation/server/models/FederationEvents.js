@@ -51,30 +51,30 @@ class FederationEvents extends RocketChat.models._Base {
 		return records;
 	}
 
-	// Create a `directRoomCreated(dc)` event
-	createDirectRoomCreated(federatedRoom, options = {}) {
+	// Create a `directRoomCreated(drc)` event
+	directRoomCreated(federatedRoom, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federatedRoom,
 		};
 
-		return this.createEventForPeers('dc', payload, peers);
+		return this.createEventForPeers('drc', payload, peers);
 	}
 
-	// Create a `roomCreated(rc)` event
-	createRoomCreated(federatedRoom, options = {}) {
+	// Create a `roomCreated(roc)` event
+	roomCreated(federatedRoom, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room: federatedRoom,
 		};
 
-		return this.createEventForPeers('rc', payload, peers);
+		return this.createEventForPeers('roc', payload, peers);
 	}
 
-	// Create a `userJoinedRoom(uj)` event
-	createUserJoinedRoom(federatedRoom, federatedUser, options = {}) {
+	// Create a `userJoined(usj)` event
+	userJoined(federatedRoom, federatedUser, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -82,11 +82,11 @@ class FederationEvents extends RocketChat.models._Base {
 			federated_user: federatedUser,
 		};
 
-		return this.createEventForPeers('uj', payload, peers);
+		return this.createEventForPeers('usj', payload, peers);
 	}
 
-	// Create a `userAddedToRoom(ua)` event
-	createUserAddedToRoom(federatedRoom, federatedUser, federatedInviter, options = {}) {
+	// Create a `userAdded(usa)` event
+	userAdded(federatedRoom, federatedUser, federatedInviter, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -95,11 +95,11 @@ class FederationEvents extends RocketChat.models._Base {
 			federated_inviter_id: federatedInviter.getFederationId(),
 		};
 
-		return this.createEventForPeers('ua', payload, peers);
+		return this.createEventForPeers('usa', payload, peers);
 	}
 
-	// Create a `userLeftRoom(ul)` event
-	createUserLeftRoom(federatedRoom, federatedUser, options = {}) {
+	// Create a `userLeft(usl)` event
+	userLeft(federatedRoom, federatedUser, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -107,11 +107,11 @@ class FederationEvents extends RocketChat.models._Base {
 			federated_user_id: federatedUser.getFederationId(),
 		};
 
-		return this.createEventForPeers('ul', payload, peers);
+		return this.createEventForPeers('usl', payload, peers);
 	}
 
-	// Create a `userRemovedFromRoom(ur)` event
-	createUserRemovedFromRoom(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
+	// Create a `userRemoved(usr)` event
+	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -120,18 +120,79 @@ class FederationEvents extends RocketChat.models._Base {
 			federated_removed_by_user_id: federatedRemovedByUser.getFederationId(),
 		};
 
-		return this.createEventForPeers('ur', payload, peers);
+		return this.createEventForPeers('usr', payload, peers);
 	}
 
-	// Create a `messageSent(ms)` event
-	createMessageSent(federatedRoom, federatedMessage, options = {}) {
+	// Create a `userMuted(usm)` event
+	userMuted(federatedRoom, federatedUser, federatedMutedByUser, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_room_id: federatedRoom.getFederationId(),
+			federated_user_id: federatedUser.getFederationId(),
+			federated_muted_by_user_id: federatedMutedByUser.getFederationId(),
+		};
+
+		return this.createEventForPeers('usm', payload, peers);
+	}
+
+	// Create a `userUnmuted(usu)` event
+	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_room_id: federatedRoom.getFederationId(),
+			federated_user_id: federatedUser.getFederationId(),
+			federated_unmuted_by_user_id: federatedUnmutedByUser.getFederationId(),
+		};
+
+		return this.createEventForPeers('usu', payload, peers);
+	}
+
+	// Create a `messageCreated(msc)` event
+	messageCreated(federatedRoom, federatedMessage, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_message: federatedMessage,
 		};
 
-		return this.createEventForPeers('ms', payload, peers);
+		return this.createEventForPeers('msc', payload, peers);
+	}
+
+	// Create a `messageUpdated(msu)` event
+	messageUpdated(federatedRoom, federatedMessage, federatedUser, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_message: federatedMessage,
+			federated_user_id: federatedUser.getFederationId(),
+		};
+
+		return this.createEventForPeers('msu', payload, peers);
+	}
+
+	// Create a `deleteMessage(dm)` event
+	messageDeleted(federatedRoom, federatedMessage, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_message_id: federatedMessage.getFederationId(),
+		};
+
+		return this.createEventForPeers('msd', payload, peers);
+	}
+
+	// Create a `messagesRead(msr)` event
+	messagesRead(federatedRoom, federatedUser, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_room_id: federatedRoom.getFederationId(),
+			federated_user_id: federatedUser.getFederationId(),
+		};
+
+		return this.createEventForPeers('msr', payload, peers);
 	}
 
 	// Get all unfulfilled events

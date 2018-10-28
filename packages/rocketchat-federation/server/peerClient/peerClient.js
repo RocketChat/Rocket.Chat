@@ -14,14 +14,40 @@ class PeerClient {
 		// General
 		this.config = config;
 
-		// Setup DNSServerPeer
-		const { dns: { url } } = this.config;
+		// Keep resources we should skip callbacks
+		this.callbacksToSkip = {};
 
-		this.DNSServerPeer = { server: { url } };
+		// Setup HubPeer
+		const { hub: { url } } = this.config;
+
+		// Remove trailing slash
+		this.HubPeer = { server: { url } };
 	}
 
 	log(message) {
 		console.log(`[federation-client] ${ message }`);
+	}
+
+	addCallbackToSkip(callback, resourceId) {
+		this.callbacksToSkip[`${ callback }_${ resourceId }`] = true;
+	}
+
+	skipCallbackIfNeeded(callback, resource) {
+		const { federation } = resource;
+
+		if (!federation) { return false; }
+
+		const { _id } = federation;
+
+		const callbackName = `${ callback }_${ _id }`;
+
+		const skipCallback = this.callbacksToSkip[callbackName];
+
+		delete this.callbacksToSkip[callbackName];
+
+		this.log(`${ callbackName } callback ${ skipCallback ? '' : 'not ' }skipped`);
+
+		return skipCallback;
 	}
 
 	register() {
@@ -33,7 +59,7 @@ class PeerClient {
 		try {
 			const {
 				data: { peer, otherPeers },
-			} = this.doRequest(this.DNSServerPeer, 'POST', '/peers', { identifier, domains, server });
+			} = this.doRequest(this.HubPeer, 'POST', '/peers', { identifier, domains, server });
 
 			// Keep peer reference
 			this.peer = peer;
@@ -80,65 +106,41 @@ class PeerClient {
 		} catch (err) {
 			if (err.code !== 'ENOTFOUND') {
 				this.log(err);
+
 				throw new Error(`Could not send request to ${ peer.identifier }`);
 			}
 
 			this.log(`Trying to update local DNS cache for peer:${ peer.identifier }`);
+
 			// If there is an error, try to update the cache and do it again
-			const newPeer = this.updateDNSCacheByIdentifier(peer.identifier);
+			const newPeer = this.updateDNSCache(peer.identifier);
 
 			try {
 				return this.doRequest(newPeer, method, uri, body);
 			} catch (err) {
 				this.log(err);
+
 				throw new Error(`Could not send request to ${ peer.identifier }`);
 			}
 		}
 	}
 
-	updateDNSCacheByEmail(email) {
-		const domain = FederationDNSCache.getEmailDomain(email);
-
+	updateDNSCache(identifier) {
 		const {
 			data: { peer },
-		} = this.doRequest(this.DNSServerPeer, 'GET', `/peers?domain=${ domain }`);
+		} = this.doRequest(this.HubPeer, 'GET', `/peers?search=${ identifier }`);
 
 		updateDNSCache.call(this, peer);
-
-		return peer;
 	}
 
-	updateDNSCacheByIdentifier(identifier) {
-		const {
-			data: { peer },
-		} = this.doRequest(this.DNSServerPeer, 'GET', `/peers?identifier=${ identifier }`);
-
-		updateDNSCache.call(this, peer);
-
-		return peer;
-	}
-
-	getPeerByEmail(email) {
-		let peer = FederationDNSCache.findOneByEmail(email);
+	searchPeer(identifier) {
+		let peer = FederationDNSCache.findOneByIdentifierOrDomain(identifier);
 
 		// Try to lookup at the DNS Cache
 		if (!peer) {
-			this.updateDNSCacheByEmail(email);
+			this.updateDNSCache(identifier);
 
-			peer = FederationDNSCache.findOneByEmail(email);
-		}
-
-		return peer;
-	}
-
-	getPeerByIdentifier(identifier) {
-		let peer = FederationDNSCache.findOneByIdentifier(identifier);
-
-		// Try to lookup at the DNS Cache
-		if (!peer) {
-			this.updateDNSCacheByIdentifier(identifier);
-
-			peer = FederationDNSCache.findOneByIdentifier(identifier);
+			peer = FederationDNSCache.findOneByIdentifierOrDomain(identifier);
 		}
 
 		return peer;
@@ -147,35 +149,26 @@ class PeerClient {
 	findUser(options) {
 		const { peer: { identifier: localPeerIdentifier } } = this;
 
-		const { email, identifier, username } = options;
+		const { identifier, username } = options;
 
 		let peer = null;
-		let queryObject = {};
 
 		try {
-			if (email) {
-				peer = this.getPeerByEmail(email);
-
-				queryObject = { email };
-			} else {
-				peer = this.getPeerByIdentifier(identifier);
-
-				queryObject = { username };
-			}
+			peer = this.searchPeer(identifier);
 		} catch (err) {
-			this.log(`Could not find peer using: ${ email ? `email:${ email }` : `identifier:${ identifier }` }`);
-			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using: ${ email ? `email:${ email }` : `identifier:${ identifier }` }`);
+			this.log(`Could not find peer using identifier:${ identifier }`);
+			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using identifier:${ identifier }`);
 		}
 
 		try {
-			const { data: { federatedUser: federatedUserObject } } = this.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify(queryObject) }`);
+			const { data: { federatedUser: federatedUserObject } } = this.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username }) }`);
 
 			const federatedUser = new FederatedUser(localPeerIdentifier, federatedUserObject);
 
 			return federatedUser;
 		} catch (err) {
-			this.log(`Could not find user ${ email } at ${ peer.identifier }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find a user - ${ email }@${ peer.identifier }`);
+			this.log(`Could not find user:${ username }@${ identifier } at ${ peer.identifier }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ username }@${ identifier } at ${ peer.identifier }`);
 		}
 	}
 
@@ -187,11 +180,9 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room, { checkUsingUsers: true })) { return; }
 
-		this.log('afterCreateDirectRoom - room is federated');
-
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
 
-		RocketChat.models.FederationEvents.createDirectRoomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
+		RocketChat.models.FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
 	}
 
 	afterCreateRoom({ _id: ownerId }, room) {
@@ -202,24 +193,23 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room, { checkUsingUsers: true })) { return; }
 
-		this.log('afterCreateRoom - room is federated');
-
 		const owner = RocketChat.models.Users.findOneById(ownerId);
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
 
-		RocketChat.models.FederationEvents.createRoomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
+		RocketChat.models.FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
 	}
 
 	afterAddedToRoom({ user: userWhoJoined, inviter: userWhoInvited }, room) {
 		this.log('afterAddedToRoom');
 
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('afterAddedToRoom', userWhoJoined)) { return; }
+
 		const { peer: { identifier: localPeerIdentifier } } = this;
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room, { checkUsingUsers: true })) { return; }
-
-		this.log('afterAddedToRoom - room is federated');
 
 		const extras = {};
 
@@ -232,7 +222,7 @@ class PeerClient {
 		// If the user who joined is from a different peer...
 		if (userWhoJoined.federation && userWhoJoined.federation.peer !== localPeerIdentifier) {
 			// ...create a "create room" event for that peer
-			RocketChat.models.FederationEvents.createRoomCreated(federatedRoom, { peers: [userWhoJoined.federation.peer] });
+			RocketChat.models.FederationEvents.roomCreated(federatedRoom, { peers: [userWhoJoined.federation.peer] });
 		}
 
 		// Then, create a "user join/added" event to the other peers
@@ -241,28 +231,29 @@ class PeerClient {
 		if (userWhoInvited) {
 			const federatedInviter = new FederatedUser(localPeerIdentifier, userWhoInvited);
 
-			RocketChat.models.FederationEvents.createUserAddedToRoom(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerIdentifier] });
+			RocketChat.models.FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerIdentifier] });
 		} else {
-			RocketChat.models.FederationEvents.createUserJoinedRoom(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerIdentifier] });
+			RocketChat.models.FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerIdentifier] });
 		}
 	}
 
 	beforeLeaveRoom(userWhoLeft, room) {
 		this.log('beforeLeaveRoom');
 
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('beforeLeaveRoom', userWhoLeft)) { return; }
+
 		const { peer: { identifier: localPeerIdentifier } } = this;
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
-
-		this.log('beforeLeaveRoom - room is federated');
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
 
 		const federatedUserWhoLeft = new FederatedUser(localPeerIdentifier, userWhoLeft);
 
 		// Then, create a "user left" event to the other peers
-		RocketChat.models.FederationEvents.createUserLeftRoom(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerIdentifier] });
+		RocketChat.models.FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerIdentifier] });
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -271,12 +262,13 @@ class PeerClient {
 	beforeRemoveFromRoom({ removedUser, userWhoRemoved }, room) {
 		this.log('beforeRemoveFromRoom');
 
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('beforeRemoveFromRoom', removedUser)) { return; }
+
 		const { peer: { identifier: localPeerIdentifier } } = this;
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
-
-		this.log('beforeRemoveFromRoom - room is federated');
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
 
@@ -284,27 +276,110 @@ class PeerClient {
 
 		const federatedUserWhoRemoved = new FederatedUser(localPeerIdentifier, userWhoRemoved);
 
-		RocketChat.models.FederationEvents.createUserRemovedFromRoom(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerIdentifier] });
+		RocketChat.models.FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerIdentifier] });
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 	}
 
-	afterSaveMessage(message, room) {
+	afterSaveMessage(message, room, userId) {
 		this.log('afterSaveMessage');
+
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('afterSaveMessage', message)) { return; }
 
 		const { peer: { identifier: localPeerIdentifier } } = this;
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		this.log('afterSaveMessage - room is federated');
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+
+		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
+
+		// If editedAt exists, it means it is an update
+		if (message.editedAt) {
+			const user = RocketChat.models.Users.findOneById(userId);
+
+			const federatedUser = new FederatedUser(localPeerIdentifier, user);
+
+			RocketChat.models.FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipPeers: [localPeerIdentifier] });
+		} else {
+			RocketChat.models.FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipPeers: [localPeerIdentifier] });
+		}
+	}
+
+	afterDeleteMessage(message) {
+		this.log('afterDeleteMessage');
+
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('afterDeleteMessage', message)) { return; }
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
 
 		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
 
-		RocketChat.models.FederationEvents.createMessageSent(federatedRoom, federatedMessage, { skipPeers: [localPeerIdentifier] });
+		RocketChat.models.FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerIdentifier] });
+	}
+
+	afterReadMessages(roomId, userId) {
+		this.log('afterReadMessages');
+
+		const room = RocketChat.models.Rooms.findOneById(roomId);
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
+
+		const user = RocketChat.models.Users.findOneById(userId);
+
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+
+		const federatedUser = new FederatedUser(localPeerIdentifier, user);
+
+		RocketChat.models.FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerIdentifier] });
+	}
+
+	afterMuteUser({ mutedUser, fromUser }, room) {
+		this.log('afterMuteUser');
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
+
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+
+		const federatedMutedUser = new FederatedUser(localPeerIdentifier, mutedUser);
+
+		const federatedUserWhoMuted = new FederatedUser(localPeerIdentifier, fromUser);
+
+		RocketChat.models.FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerIdentifier] });
+	}
+
+	afterUnmuteUser({ unmutedUser, fromUser }, room) {
+		this.log('afterUnmuteUser');
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
+
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+
+		const federatedUnmutedUser = new FederatedUser(localPeerIdentifier, unmutedUser);
+
+		const federatedUserWhoUnmuted = new FederatedUser(localPeerIdentifier, fromUser);
+
+		RocketChat.models.FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerIdentifier] });
 	}
 
 	propagateEvent(e) {
@@ -312,7 +387,7 @@ class PeerClient {
 
 		const { peer: identifier } = e;
 
-		const peer = this.getPeerByIdentifier(identifier);
+		const peer = this.searchPeer(identifier);
 
 		if (!peer) {
 			this.log(`Could not find valid peer:${ identifier }`);
@@ -324,7 +399,7 @@ class PeerClient {
 
 				RocketChat.models.FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
-				this.log(`Could not send message to peer:${ identifier }`);
+				this.log(`[${ e.t }] Event was refused by peer:${ identifier }`);
 
 				RocketChat.models.FederationEvents.setEventAsErrored(e, err.toString());
 			}
@@ -350,14 +425,16 @@ class PeerClient {
 
 		RocketChat.models.FederationEvents.on('createEvent', this.onCreateEvent.bind(this));
 
-		RocketChat.callbacks.add('afterCreateDirectRoom', this.afterCreateDirectRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-create-direct-room');
-		RocketChat.callbacks.add('afterCreateRoom', this.afterCreateRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-join-room');
-		RocketChat.callbacks.add('afterAddedToRoom', this.afterAddedToRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-join-room');
-		RocketChat.callbacks.add('beforeLeaveRoom', this.beforeLeaveRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-leave-room');
-		// RocketChat.callbacks.add('afterLeaveRoom', this.afterLeaveRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-leave-room');
-		RocketChat.callbacks.add('beforeRemoveFromRoom', this.beforeRemoveFromRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-leave-room');
-		// RocketChat.callbacks.add('afterRemoveFromRoom', this.afterRemoveFromRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-leave-room');
-		RocketChat.callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-on-save-message');
+		RocketChat.callbacks.add('afterCreateDirectRoom', this.afterCreateDirectRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-create-direct-room');
+		RocketChat.callbacks.add('afterCreateRoom', this.afterCreateRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-join-room');
+		RocketChat.callbacks.add('afterAddedToRoom', this.afterAddedToRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-join-room');
+		RocketChat.callbacks.add('beforeLeaveRoom', this.beforeLeaveRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-leave-room');
+		RocketChat.callbacks.add('beforeRemoveFromRoom', this.beforeRemoveFromRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-leave-room');
+		RocketChat.callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-save-message');
+		RocketChat.callbacks.add('afterDeleteMessage', this.afterDeleteMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-delete-message');
+		RocketChat.callbacks.add('afterReadMessages', this.afterReadMessages.bind(this), RocketChat.callbacks.priority.LOW, 'federation-read-messages');
+		RocketChat.callbacks.add('afterMuteUser', this.afterMuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-mute-user');
+		RocketChat.callbacks.add('afterUnmuteUser', this.afterUnmuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-unmute-user');
 
 		this.log('Callbacks set');
 	}

@@ -51,6 +51,10 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	if (type === 'd') {
 		room.usernames = members;
+
+		// Remove not needed room data
+		delete room.name;
+		delete room.fname;
 	}
 
 	if (Apps && Apps.isLoaded()) {

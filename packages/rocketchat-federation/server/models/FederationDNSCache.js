@@ -3,20 +3,16 @@ class FederationDNSCache extends RocketChat.models._Base {
 		super('federation_dns_cache');
 	}
 
-	getEmailDomain(email) {
-		return email.split('@')[1];
-	}
+	findOneByIdentifierOrDomain(search) {
+		const searchObject = {
+			$or: [{
+				identifier: search,
+			}, {
+				domains: search,
+			}],
+		};
 
-	findOneByEmail(email) {
-		const domain = this.getEmailDomain(email);
-
-		const peer = this.findOne({ domains: [domain] });
-
-		return peer;
-	}
-
-	findOneByIdentifier(identifier) {
-		const peer = this.findOne({ identifier });
+		const peer = this.findOne(searchObject);
 
 		return peer;
 	}

@@ -46,15 +46,21 @@ Meteor.methods({
 
 		const mutedUser = RocketChat.models.Users.findOneByUsername(data.username);
 
-		RocketChat.models.Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
-
 		const fromUser = RocketChat.models.Users.findOneById(fromId);
 
-		RocketChat.models.Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
+		RocketChat.callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
+
+		RocketChat.models.Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+
+		RocketChat.models.Messages.userMutedWithRoomIdAndUser(data.rid, mutedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
 			},
+		});
+
+		Meteor.defer(function() {
+			RocketChat.callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 		});
 
 		return true;
