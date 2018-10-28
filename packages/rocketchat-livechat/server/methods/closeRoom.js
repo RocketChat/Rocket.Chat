@@ -5,12 +5,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
-
-		if (!room || room.t !== 'l') {
-			throw new Meteor.Error('room-not-found', 'Room not found', { method: 'livechat:closeRoom' });
-		}
-
 		const user = Meteor.user();
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
@@ -20,7 +14,7 @@ Meteor.methods({
 
 		return RocketChat.Livechat.closeRoom({
 			user,
-			room,
+			room: RocketChat.models.Rooms.findOneById(roomId),
 			comment,
 		});
 	},
