@@ -162,7 +162,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('beforeRemoveFromRoom', federatedUser.getFederationId());
 
 		// Remove the user from the room
-		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved, skipCallbacks: true });
+		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved });
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();

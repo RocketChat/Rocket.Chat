@@ -165,48 +165,58 @@ class FederatedRoom extends FederatedResource {
 
 			// Get usernames for the owner and members
 			const ownerUsername = federatedOwner.user.username;
-			const membersUsernames = [];
+			const members = [];
 
-			for (const federatedUser of federatedUsers) {
-				const localUser = federatedUser.getLocalUser();
-				membersUsernames.push(localUser.username);
-			}
-
-			// Define the room name
-			let roomName = name;
-
-			if (type === 'd') {
-				// The name must be the remote user
-				roomName = ownerUsername.indexOf('@') === -1 ? membersUsernames[0] : ownerUsername;
+			if (type !== 'd') {
+				for (const federatedUser of federatedUsers) {
+					const localUser = federatedUser.getLocalUser();
+					members.push(localUser.username);
+				}
+			} else {
+				for (const federatedUser of federatedUsers) {
+					const localUser = federatedUser.getLocalUser();
+					members.push(localUser);
+				}
 			}
 
 			// Is this a broadcast channel? Then mute everyone but the owner
 			let muted = [];
 
 			if (broadcast) {
-				muted = membersUsernames.filter((u) => u !== ownerUsername);
+				muted = members.filter((u) => u !== ownerUsername);
 			}
 
 			// Set the extra data and create room options
-			const extraData = {
-				broadcast,
-				customFields,
-				encrypted: false, // Always false for now
+			let extraData = {
 				federation,
-				muted,
-				sysMes,
 			};
 
-			const createRoomOptions = {
-				nameValidationRegex: '^[0-9a-zA-Z-_.@]+$',
+			let createRoomOptions = {
 				subscriptionExtra: {
 					alert: true,
+					open: true,
 				},
-				skipCallbacks: true,
 			};
 
+			if (type !== 'd') {
+				extraData = Object.assign(extraData, {
+					broadcast,
+					customFields,
+					encrypted: false, // Always false for now
+					muted,
+					sysMes,
+				});
+
+				createRoomOptions = Object.assign(extraData, {
+					nameValidationRegex: '^[0-9a-zA-Z-_.@]+$',
+					subscriptionExtra: {
+						alert: true,
+					},
+				});
+			}
+
 			// Create the room
-			const { rid } = RocketChat.createRoom(type, roomName, ownerUsername, membersUsernames, false, extraData, createRoomOptions);
+			const { rid } = RocketChat.createRoom(type, name, ownerUsername, members, false, extraData, createRoomOptions);
 
 			localRoom._id = rid;
 		}

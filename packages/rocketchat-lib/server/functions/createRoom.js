@@ -2,7 +2,56 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
+function createDirectRoom(source, target, extraData, options) {
+	const rid = [source._id, target._id].sort().join('');
+
+	RocketChat.models.Rooms.upsert({ _id: rid }, {
+		$setOnInsert: Object.assign({
+			t: 'd',
+			msgs: 0,
+			ts: new Date(),
+		}, extraData),
+	});
+
+	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': target._id }, {
+		$setOnInsert: Object.assign({
+			name: source.username,
+			t: 'd',
+			open: true,
+			alert: true,
+			unread: 0,
+			u: {
+				_id: target._id,
+				username: target.username,
+			},
+		}, options.subscriptionExtra),
+	});
+
+	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': source._id }, {
+		$setOnInsert: Object.assign({
+			name: target.username,
+			t: 'd',
+			open: true,
+			alert: true,
+			unread: 0,
+			u: {
+				_id: source._id,
+				username: source.username,
+			},
+		}, options.subscriptionExtra),
+	});
+
+	return {
+		_id: rid,
+		t: 'd',
+	};
+}
+
 RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
+	if (type === 'd') {
+		return createDirectRoom(members[0], members[1], extraData, options);
+	}
+
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -51,10 +100,6 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	if (type === 'd') {
 		room.usernames = members;
-
-		// Remove not needed room data
-		delete room.name;
-		delete room.fname;
 	}
 
 	if (Apps && Apps.isLoaded()) {
@@ -72,7 +117,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		}
 	}
 
-	if (!options.skipCallbacks && type === 'c') {
+	if (type === 'c') {
 		RocketChat.callbacks.run('beforeCreateChannel', owner, room);
 	}
 
@@ -103,20 +148,18 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
 
-	if (!options.skipCallbacks) {
-		if (type === 'c') {
-			Meteor.defer(() => {
-				RocketChat.callbacks.run('afterCreateChannel', owner, room);
-			});
-		} else if (type === 'p') {
-			Meteor.defer(() => {
-				RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
-			});
-		}
+	if (type === 'c') {
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('afterCreateRoom', owner, room);
+			RocketChat.callbacks.run('afterCreateChannel', owner, room);
+		});
+	} else if (type === 'p') {
+		Meteor.defer(() => {
+			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
 		});
 	}
+	Meteor.defer(() => {
+		RocketChat.callbacks.run('afterCreateRoom', owner, room);
+	});
 
 	if (Apps && Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
