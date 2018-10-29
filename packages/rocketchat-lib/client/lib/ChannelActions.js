@@ -118,7 +118,7 @@ export function hideOldSubscriptions() {
 		closeOnConfirm: true,
 		html: false,
 	}, async function(inputValue) {
-		const days = parseInt(inputValue);
+		const days = parseInt(inputValue, 10);
 		if (!days) {
 			return false;
 		}
