@@ -83,7 +83,7 @@ if (!window._paq || window.ga) {
 	(() => {
 		let oldUserId = null;
 
-		Meteor.autorun(() => {
+		Tracker.autorun(() => {
 			const newUserId = Meteor.userId();
 			if (oldUserId === null && newUserId) {
 				if (window._paq && RocketChat.settings.get('Analytics_features_users')) {

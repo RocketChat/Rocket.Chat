@@ -1,7 +1,7 @@
 /* global InstanceStatus, MongoInternals */
 import _ from 'underscore';
 import os from 'os';
-import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+// import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
 const wizardFields = [
 	'Organization_Type',
@@ -63,7 +63,7 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
 
 	// livechat visitors
-	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
+	// statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();

@@ -4,7 +4,6 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import mime from 'mime-type/with-db';
 import crypto from 'crypto';
-import sharp from 'sharp';
 
 mime.extensions['image/vnd.microsoft.icon'] = ['ico'];
 
@@ -302,13 +301,6 @@ RocketChat.Assets = new (class {
 			hash,
 		};
 	}
-
-	getURL(assetName, options = { cdn: false, full: true }) {
-		const asset = RocketChat.settings.get(assetName);
-		const url = asset.url || asset.defaultUrl;
-
-		return RocketChat.getURL(url, options);
-	}
 });
 
 RocketChat.settings.addGroup('Assets');
@@ -390,8 +382,9 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 				size: value.cache.size,
 				hash: value.cache.hash,
 			};
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = value.cache;
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ value.cache.extension }`] = value.cache;
+			// TODO: fix meteor 1.7
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = value.cache;
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ value.cache.extension }`] = value.cache;
 		} else {
 			const extension = value.defaultUrl.split('.').pop();
 			cache = {
@@ -404,8 +397,9 @@ WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeCon
 				hash: 'v3',
 			};
 
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
-			WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ extension }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
+			// TODO: fix meteor 1.7
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
+			// WebAppInternals.staticFiles[`/__cordova/assets/${ key }.${ extension }`] = WebAppInternals.staticFiles[`/__cordova/${ value.defaultUrl }`];
 		}
 
 		const manifestItem = _.findWhere(manifest, {
@@ -486,13 +480,9 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	const file = assets[params.asset] && assets[params.asset].cache;
 
-	const format = req.url.replace(/.*\.([a-z]+)$/, '$1');
-
 	if (!file) {
-		const defaultUrl = assets[params.asset] && assets[params.asset].defaultUrl;
-		if (defaultUrl) {
-			const assetUrl = format && ['png', 'svg'].includes(format) ? defaultUrl.replace(/(svg|png)$/, format) : defaultUrl;
-			req.url = `/${ assetUrl }`;
+		if (assets[params.asset] && assets[params.asset].defaultUrl) {
+			req.url = `/${ assets[params.asset].defaultUrl }`;
 			WebAppInternals.staticFilesMiddleware(WebAppInternals.staticFiles, req, res, next);
 		} else {
 			res.writeHead(404);
@@ -514,15 +504,6 @@ WebApp.connectHandlers.use('/assets/', Meteor.bindEnvironment(function(req, res,
 
 	res.setHeader('Cache-Control', 'public, max-age=0');
 	res.setHeader('Expires', '-1');
-
-	if (format && format !== file.extension && ['png', 'jpg', 'jpeg'].includes(format)) {
-		res.setHeader('Content-Type', `image/${ format }`);
-		sharp(file.content)
-			.toFormat(format)
-			.pipe(res);
-		return;
-	}
-
 	res.setHeader('Last-Modified', (file.uploadDate && file.uploadDate.toUTCString()) || new Date().toUTCString());
 	res.setHeader('Content-Type', file.contentType);
 	res.setHeader('Content-Length', file.size);

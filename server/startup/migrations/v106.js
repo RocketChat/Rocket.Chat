@@ -1,4 +1,4 @@
-import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+// import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
 RocketChat.Migrations.add({
 	version: 106,
@@ -15,27 +15,27 @@ RocketChat.Migrations.add({
 
 				const {
 					_id,
-					name,
-					username,
-					deparment,
-					userAgent,
-					ip,
-					host,
-					visitorEmails,
-					phone,
+					// name,
+					// username,
+					// deparment,
+					// userAgent,
+					// ip,
+					// host,
+					// visitorEmails,
+					// phone,
 				} = user;
-				LivechatVisitors.insert({
-					_id,
-					name,
-					username,
-					deparment,
-					userAgent,
-					ip,
-					host,
-					visitorEmails,
-					phone,
-					token: user.profile.token,
-				});
+				// LivechatVisitors.insert({
+				// 	_id,
+				// 	name,
+				// 	username,
+				// 	deparment,
+				// 	userAgent,
+				// 	ip,
+				// 	host,
+				// 	visitorEmails,
+				// 	phone,
+				// 	token: user.profile.token,
+				// });
 
 				Meteor.users.remove({ _id });
 			});
