@@ -1,10 +1,10 @@
 {
+  "403": "Zakázaný",
+  "500": "Chyba serveru",
   "#channel": "#místnost",
   "0_Errors_Only": "0 - Pouze chyby",
   "1_Errors_and_Information": "1 - Chyby a informace",
   "2_Erros_Information_and_Debug": "2 - Chyby, informace a ladění",
-  "403": "Zakázaný",
-  "500": "Chyba serveru",
   "@username": "@uživatel",
   "@username_message": "@uživatel <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ již není __role__ (odebral/a __user_by__ )",

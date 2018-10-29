@@ -1,10 +1,10 @@
 {
+  "403": "விலக்கப்பட்டவர்கள்",
+  "500": "உள்ளக சர்வர் பிழை",
   "#channel": "#channel",
   "0_Errors_Only": "0 - பிழைகளை மட்டும்",
   "1_Errors_and_Information": "1 - பிழைகள் மற்றும் தகவல்",
   "2_Erros_Information_and_Debug": "2 - Erros, தகவல் மற்றும் பிழை",
-  "403": "விலக்கப்பட்டவர்கள்",
-  "500": "உள்ளக சர்வர் பிழை",
   "@username": "@ பயனர் பெயர்",
   "@username_message": "@ பயனர்பெயர் <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ __user_by__ மூலம், __role__ இனி ஆகிறது",
