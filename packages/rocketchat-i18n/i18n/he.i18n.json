@@ -1,10 +1,10 @@
 {
+  "403": "אסור",
+  "500": "שגיאת שרת פנימית",
   "#channel": "#ערוץ",
   "0_Errors_Only": "0 - שגיאות בלבד",
   "1_Errors_and_Information": "1 - טעויות ומידע",
   "2_Erros_Information_and_Debug": "2 - erros, מידע Debug",
-  "403": "אסור",
-  "500": "שגיאת שרת פנימית",
   "@username": "@שם-משתמש",
   "@username_message": "@שם-משתמש <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__שם משתמש__ הוא כבר לא __role__, על ידי __user_by__",
