@@ -35,7 +35,6 @@
   "Accounts_AllowUsernameChange": "Ändern des Benutzernamens erlauben",
   "Accounts_AllowUserProfileChange": "Benutzern das Ändern des Profils erlauben",
   "Accounts_AvatarBlockUnauthenticatedAccess": "Unberechtigter Zugriff auf die Avatare blockiert.",
-  "Accounts_AvatarCacheTime": "Avatar-Cache-Zeit",
   "Accounts_AvatarCacheTime_description": "Anzahl der Sekunden, die das HTTP-Protokoll zum Zwischenspeichern der Avatarbilder benötigt.",
   "Accounts_AvatarCacheTime": "Avatar-Cache-Dauer",
   "Accounts_AvatarResize": "Größe des Profilbilds anpassen",
