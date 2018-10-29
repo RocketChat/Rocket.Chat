@@ -1533,6 +1533,7 @@
   "Layout_Sidenav_Footer_description": "Die Größe der Fußzeile beträgt 260 x 70 Pixel.",
   "Layout_Sidenav_Footer": "Seitenfußzeile",
   "Layout_Terms_of_Service": "Nutzungsbedingungen",
+  "Layout_Legal_Notice": "Impressum",
   "Layout": "Layout",
   "LDAP_Authentication_Password": "Passwort",
   "LDAP_Authentication_UserDN_Description": "Der LDAP-Benutzer, der eine Benutzersuche durchführt, um andere Nutzer bei der Anmeldung zu authentifizieren. <br/>Dies ist in der Regel ein Servicekonto, welches für Drittintegrationen erstellt worden ist. Verwende einen vollen Namen, wie zum Beispiel `cn=Administrator,cn=Users,dc=Example,dc=com`.",

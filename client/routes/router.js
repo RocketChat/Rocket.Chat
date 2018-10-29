@@ -113,6 +113,15 @@ FlowRouter.route('/privacy-policy', {
 	},
 });
 
+FlowRouter.route('/legal-notice', {
+	name: 'legal-notice',
+
+	action() {
+		Session.set('cmsPage', 'Layout_Legal_Notice');
+		BlazeLayout.render('cmsPage');
+	},
+});
+
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 

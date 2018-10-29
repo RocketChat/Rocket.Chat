@@ -1206,12 +1206,18 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a> and <a href="privacy-policy">Privacy Policy</a>.', {
+		this.add('Layout_Login_Terms', 'By proceeding you are agreeing to our <a href="terms-of-service">Terms of Service</a>, <a href="privacy-policy">Privacy Policy</a> and <a href="legal-notice">Legal Notice</a>.', {
 			type: 'string',
 			multiline: true,
 			public: true,
 		});
 		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', {
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
+		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
