@@ -1,7 +1,9 @@
 {
   "#channel": "#채널",
   "0_Errors_Only": "0 - 오류 만",
+  "12_Hour": "12 시간으로 표기",
   "1_Errors_and_Information": "1 - 오류 및 정보",
+  "24_Hour": "24 시간으로 표기",
   "2_Erros_Information_and_Debug": "2 - 오류, 정보 및 디버그",
   "403": "금지됨",
   "500": "내부 서버 오류",
