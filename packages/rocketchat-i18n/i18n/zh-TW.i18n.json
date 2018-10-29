@@ -1,10 +1,10 @@
 {
+  "403": "被禁止",
+  "500": "內部伺服器錯誤",
   "#channel": "#頻道",
   "0_Errors_Only": "0 - 僅錯誤",
   "1_Errors_and_Information": "1  - 顯示錯誤及資訊",
   "2_Erros_Information_and_Debug": "2  - 錯誤、訊息與除錯",
-  "403": "被禁止",
-  "500": "內部伺服器錯誤",
   "@username": "@使用者名稱",
   "@username_message": "@使用者名稱 <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__不再是__role__，由__user_by__",

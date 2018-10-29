@@ -1,10 +1,10 @@
 {
+  "403": "Zakázané",
+  "500": "Interná chyba servera",
   "#channel": "#kanál",
   "0_Errors_Only": "0 - Len chyby",
   "1_Errors_and_Information": "1 - Chyby a informácie",
   "2_Erros_Information_and_Debug": "2 - Chyby, informácie a ladenie",
-  "403": "Zakázané",
-  "500": "Interná chyba servera",
   "@username": "@používateľ",
   "@username_message": "@používateľ <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "používateľovi __username__ bola zrušená funkcia __role__ používateľom __user_by__",

@@ -1,10 +1,10 @@
 {
+  "403": "Prepovedano",
+  "500": "Notranja napaka strežnika",
   "#channel": "#kanal",
   "0_Errors_Only": "0 - Samo napake",
   "1_Errors_and_Information": "1 - Napake in informacije",
   "2_Erros_Information_and_Debug": "2 – Napake, informacije in odpravljanje napak",
-  "403": "Prepovedano",
-  "500": "Notranja napaka strežnika",
   "@username": "@uporabnik",
   "@username_message": "@uporabnik <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ ni več __role__ by __user_by__",

@@ -1,10 +1,10 @@
 {
+  "403": "Tiltott",
+  "500": "Szerver oldali hiba",
   "#channel": "#csatorna",
   "0_Errors_Only": "0 - Csak hibák",
   "1_Errors_and_Information": "1 - Hibák és Információk",
   "2_Erros_Information_and_Debug": "2 - Hibák, információk és hibakeresés",
-  "403": "Tiltott",
-  "500": "Szerver oldali hiba",
   "@username": "@felhasználónév",
   "@username_message": "@felhasználónév <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ elvette __username__  __role__ jogosultságát",
