@@ -1,10 +1,10 @@
 {
+  "403": "Забранен",
+  "500": "Вътрешна грешка на сървъра",
   "#channel": "#канал",
   "0_Errors_Only": "0 - Само Грешки",
   "1_Errors_and_Information": "1 - Грешки и Информация",
   "2_Erros_Information_and_Debug": "2 - Грешки, Информация и Дебъг",
-  "403": "Забранен",
-  "500": "Вътрешна грешка на сървъра",
   "@username": "@потребителско име",
   "@username_message": "@потребителско име<message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ вече не е __role__ от __user_by__",

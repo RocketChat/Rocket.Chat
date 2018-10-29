@@ -1,10 +1,10 @@
 {
+  "403": "Forbudt",
+  "500": "Intern server feil",
   "#channel": "#kanal",
   "0_Errors_Only": "0 - Kun Feil",
   "1_Errors_and_Information": "1 - Feil og informasjon",
   "2_Erros_Information_and_Debug": "2 - Feil, Informasjon og Feilsøking",
-  "403": "Forbudt",
-  "500": "Intern server feil",
   "@username": "@brukernavn",
   "@username_message": "@brukernavn <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ er ikke lenger __role__ av __user_by__",

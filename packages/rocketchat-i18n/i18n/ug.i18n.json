@@ -1,9 +1,9 @@
 {
+  "403": "چەكلەندى",
+  "500": "ئىچكى مۇلازىمتېردا خاتالىق بار",
   "0_Errors_Only": "پەقەت 0 خاتالىق",
   "1_Errors_and_Information": "1 ئۇچۇر ۋە خاتالىق",
   "2_Erros_Information_and_Debug": "2 خاتالىق ئۇچۇر ۋە ئۇچۇرنى تەڭشەش",
-  "403": "چەكلەندى",
-  "500": "ئىچكى مۇلازىمتېردا خاتالىق بار",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ ئەمدى __username__ نىڭ __role__ رولىغا_ئېنىقلىما_بەرمەيدۇ",
   "__username__was_set__role__by__user_by_": "__user_by__ بۇ __username__ غا __role__ رولىنى_بەردە",
   "Access_not_authorized": "زىيارەت قىلىشقا ھوقۇق بېرىلمىدى",
