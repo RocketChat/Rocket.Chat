@@ -1,10 +1,10 @@
 {
+  "403": "已被禁止",
+  "500": "内部服务器错误",
   "#channel": "#频道",
   "0_Errors_Only": "0 - 仅错误 ",
   "1_Errors_and_Information": "1 - 错误和信息",
   "2_Erros_Information_and_Debug": "2 - 错误、信息和调试信息",
-  "403": "已被禁止",
-  "500": "内部服务器错误",
   "@username": "@用户名",
   "@username_message": "@用户名 <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__ 移除了 __username__ 的 __role__ 角色",

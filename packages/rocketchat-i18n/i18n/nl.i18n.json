@@ -1,10 +1,10 @@
 {
+  "403": "Verboden",
+  "500": "Interne Server Fout",
   "#channel": "#kanaal",
   "0_Errors_Only": "0 - Alleen fouten",
   "1_Errors_and_Information": "1 - Fouten en infomatie",
   "2_Erros_Information_and_Debug": "2 - Fouten, informatie en debuginformatie",
-  "403": "Verboden",
-  "500": "Interne Server Fout",
   "@username": "@username",
   "@username_message": "@gebruikersnaam <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is niet langer __role__, door __user_by__",

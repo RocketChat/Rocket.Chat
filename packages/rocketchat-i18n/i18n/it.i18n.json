@@ -1,10 +1,10 @@
 {
+  "403": "Proibito",
+  "500": "Errore interno del server",
   "#channel": "#canale",
   "0_Errors_Only": "0 - Solo errori",
   "1_Errors_and_Information": "1 - Errori e informazioni",
   "2_Erros_Information_and_Debug": "2 - Errori, informazioni e debug",
-  "403": "Proibito",
-  "500": "Errore interno del server",
   "@username": "@username",
   "@username_message": "@username <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ non è più __role__, da __user_by__",

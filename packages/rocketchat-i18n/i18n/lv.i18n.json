@@ -1,10 +1,10 @@
 {
+  "403": "Aizliegts",
+  "500": "Iekšējā servera kļūda",
   "#channel": "#kanāls",
   "0_Errors_Only": "0 - Tikai kļūdas",
   "1_Errors_and_Information": "1 - Kļūdas un informācija",
   "2_Erros_Information_and_Debug": "2 - Kļūdas, informācija un atkļūdošana",
-  "403": "Aizliegts",
-  "500": "Iekšējā servera kļūda",
   "@username": "@ lietotājvārds",
   "@username_message": "@ lietotājvārds <message>",
   "__username__is_no_longer__role__defined_by__user_by_": "lietotājvārds vairs nav loma lietotājs",
