@@ -29,7 +29,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
-		if (!RocketChat.authz.hasAtLeastOnePermission('view-d-room')) {
+		if (!RocketChat.authz.hasPermission('view-d-room')) {
 			return null;
 		}
 
