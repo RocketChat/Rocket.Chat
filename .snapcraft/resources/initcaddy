@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Config options for Caddyfile
-options="site path port"
+#options="site path port"
+options="site-url port"
 
 refresh_opt_in_config() {
 # replace an option inside the config file.

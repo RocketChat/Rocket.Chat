@@ -3,27 +3,28 @@
 # Obtain siteurl value
 siteurl="$(snapctl get site-url)"
 # Validate it
-siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$'
+#siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?([\/\da-z\.-]+)?$'
+siteurl_regex='^https?:\/\/([0-9A-Za-z\.-]+){1,}(\.[a-z\.]{2,6})?$'
 if ! [[ $siteurl =~ $siteurl_regex ]] ; then
     echo "\"$siteurl\" is not a valid url" >&2
     exit 1
-else
-  if [[ $siteurl =~ ^http: ]] && [[ $siteurl =~ ^http:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
-    path=${siteurl#http://*/}
-    site=${siteurl#"http://"}
-    site=${site%%/*}
-    site=http://$site
-  elif [[ $siteurl =~ ^https: ]] && [[ $siteurl =~ ^https:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
-    path=${siteurl#https://*/}
-    site=${siteurl#"https://"}
-    site=${site%%/*}
-    site=https://$site
-  else
-    path=""
-    site=$siteurl
-  fi
-  snapctl set path=$path
-  snapctl set site=$site
+#else
+#  if [[ $siteurl =~ ^http: ]] && [[ $siteurl =~ ^http:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+#    path=${siteurl#http://*/}
+#    site=${siteurl#"http://"}
+#    site=${site%%/*}
+#    site=http://$site
+#  elif [[ $siteurl =~ ^https: ]] && [[ $siteurl =~ ^https:\/\/([0-9A-Za-z\.-]+){1,}?(\.[a-z\.]{2,6})?\/([\/\da-z\.-]+){1,}$ ]]; then
+#    path=${siteurl#https://*/}
+#    site=${siteurl#"https://"}
+#    site=${site%%/*}
+#    site=https://$site
+#  else
+#    path=""
+#    site=$siteurl
+#  fi
+#  snapctl set path=$path
+#  snapctl set site=$site
 fi
 
 # Obtain port value
@@ -62,15 +63,15 @@ if ! [[ $https =~ $https_regex ]]; then
     echo "\"$https\" should be enable or disable" >&2
     exit 1
 else
-  if [[ $https == enable ]] && [[ $siteurl =~ ^http: ]] ; then
+  if [[ $https == enable ]] && [[ $siteurl =~ ^http: ]]; then
     echo "Error: You enabled https but your site URL starts with http, disabling https ..."
     snapctl set https=disable
     exit 1
-  elif [[ $https == enable ]] && [[ $siteurl =~ ^https: ]] ; then
+  elif [[ $https == enable ]] && [[ $siteurl =~ ^https: ]]; then
     domain=${siteurl#"https://"}
     domain=${domain%%/*}
     pubip=$(dig $domain |grep -A1 ";; ANSWER SECTION:" |tail -1 | awk '{print $5}')
-    if ! [ -z "$pubip" ] ; then
+    if ! [ -z "$pubip" ]; then
       echo "Error: Can't resove DNS query for $domain, check your DNS configuration, disabling https ..."
       snapctl set https=disable
       exit 1
