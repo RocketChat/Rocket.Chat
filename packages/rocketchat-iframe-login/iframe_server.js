@@ -1,10 +1,13 @@
 /* globals Accounts, OAuth */
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 Accounts.registerLoginHandler('iframe', function(result) {
 	if (!result.iframe) {
 		return;
 	}
+
+	check(result.token, String);
 
 	console.log('[Method] registerLoginHandler');
 
