@@ -60,7 +60,10 @@ RocketChat.API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			result,
+			result: {
+				updated: result.updated.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
+				deleted: result.deleted.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
+			},
 		});
 	},
 });
@@ -81,7 +84,7 @@ RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			message: msg,
+			message: RocketChat.composeMessageObjectWithUser(msg, this.userId),
 		});
 	},
 });
@@ -102,7 +105,7 @@ RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
 
 		return RocketChat.API.v1.success({
-			message: pinnedMessage,
+			message: RocketChat.composeMessageObjectWithUser(pinnedMessage, this.userId),
 		});
 	},
 });
@@ -118,7 +121,7 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 		return RocketChat.API.v1.success({
 			ts: Date.now(),
 			channel: messageReturn.channel,
-			message: messageReturn.message,
+			message: RocketChat.composeMessageObjectWithUser(messageReturn.message, this.userId),
 		});
 	},
 });
@@ -140,7 +143,7 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
 
 		return RocketChat.API.v1.success({
-			messages: result,
+			messages: result.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 		});
 	},
 });
@@ -158,7 +161,7 @@ RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
 
 		return RocketChat.API.v1.success({
-			message,
+			message: RocketChat.composeMessageObjectWithUser(message, this.userId),
 		});
 	},
 });
@@ -250,7 +253,7 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			message: RocketChat.models.Messages.findOneById(msg._id),
+			message: RocketChat.composeMessageObjectWithUser(RocketChat.models.Messages.findOneById(msg._id), this.userId),
 		});
 	},
 });

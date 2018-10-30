@@ -45,7 +45,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
+		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasPermission('view-l-room');
 	}
 
 	canSendMessage(roomId) {

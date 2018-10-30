@@ -46,7 +46,7 @@ Template.mailMessagesInstructions.helpers({
 	},
 	roomName() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return room && room.name;
+		return room && RocketChat.roomTypes.getRoomName(room.t, room);
 	},
 	erroredEmails() {
 		const instance = Template.instance();

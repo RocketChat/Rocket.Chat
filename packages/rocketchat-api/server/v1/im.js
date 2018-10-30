@@ -221,7 +221,7 @@ RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true 
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			messages,
+			messages: messages.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 			count: messages.length,
 			offset,
 			total: RocketChat.models.Messages.find(ourQuery).count(),
@@ -261,7 +261,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			messages: msgs,
+			messages: msgs.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 			offset,
 			count: msgs.length,
 			total: RocketChat.models.Messages.find(ourQuery).count(),
@@ -287,7 +287,7 @@ RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 		const rooms = cursor.fetch();
 
 		return RocketChat.API.v1.success({
-			ims: rooms,
+			ims: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			offset,
 			count: rooms.length,
 			total,
@@ -314,7 +314,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			ims: rooms,
+			ims: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			offset,
 			count: rooms.length,
 			total: RocketChat.models.Rooms.find(ourQuery).count(),
