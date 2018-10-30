@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import _ from 'underscore';
 
 const acEvents = {
@@ -266,7 +267,7 @@ Template.createChannel.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete */
+
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
