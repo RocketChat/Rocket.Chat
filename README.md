@@ -373,6 +373,9 @@ Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-e
 
 Please use the [Stack Overflow TAG](http://stackoverflow.com/questions/tagged/rocket.chat)
 
+## Languages Used
+Mocha, NodeJS, yml
+
 ## Integrations
 
 #### Hubot
