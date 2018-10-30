@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
@@ -39,15 +38,8 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch();
 		}
 
-		const messages = records.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
-
 		return {
-			messages,
+			messages: records.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
 		};
 	},
 });
