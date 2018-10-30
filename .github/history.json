@@ -19684,6 +19684,687 @@
           ]
         }
       ]
+    },
+    "0.70.1-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12264",
+          "title": "Merge master into develop & Set version to 0.71.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "timkinnane",
+            "rodrigok",
+            "cardoso",
+            "kaiiiiiiiii",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12254",
+          "title": "[FIX] E2E data not cleared on logout",
+          "userLogin": "Hudell",
+          "milestone": "0.70.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12232",
+          "title": "[FIX] E2E password request not closing after entering password",
+          "userLogin": "Hudell",
+          "milestone": "0.70.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12263",
+          "title": "[FIX] Message editing was duplicating reply quotes",
+          "userLogin": "rodrigok",
+          "milestone": "0.70.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12257",
+          "title": "[FIX] Livechat integration with RDStation",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12233",
+          "title": "Regression: fix modal submit",
+          "userLogin": "ggazzo",
+          "milestone": "0.70.1",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12255",
+          "title": "[FIX] Livechat triggers being registered twice after setting department via API",
+          "userLogin": "edzluhan",
+          "milestone": "0.70.1",
+          "contributors": [
+            "edzluhan"
+          ]
+        },
+        {
+          "pr": "12242",
+          "title": "[FIX] Livechat CRM integration running when disabled ",
+          "userLogin": "renatobecker",
+          "milestone": "0.70.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12241",
+          "title": "[FIX] Emails' logo and links",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12240",
+          "title": "[FIX] Set default action for Setup Wizard form submit",
+          "userLogin": "tassoevan",
+          "milestone": "0.71.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12227",
+          "title": "Add reetp to the issues' bot whitelist",
+          "userLogin": "theorenck",
+          "contributors": [
+            "theorenck",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "0.70.1-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12268",
+          "title": "Fix: Remove semver satisfies from Apps details that is already done my marketplace",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.70.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.70.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12270",
+          "title": "Release 0.70.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "theorenck",
+            "rodrigok",
+            "tassoevan",
+            "ggazzo",
+            "sampaiodiego",
+            "renatobecker",
+            "edzluhan",
+            "web-flow",
+            "Hudell"
+          ]
+        }
+      ]
+    },
+    "0.70.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": []
+    },
+    "0.70.3": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12281",
+          "title": "Release 0.70.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12272",
+          "title": "[FIX] E2E alert shows up when encryption is disabled",
+          "userLogin": "Hudell",
+          "milestone": "0.70.2",
+          "contributors": [
+            "Hudell"
+          ]
+        }
+      ]
+    },
+    "0.70.4": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12299",
+          "title": "Release 0.70.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12283",
+          "title": "[FIX] Modal confirm on enter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12298",
+          "title": "Fix: Add wizard opt-in fields",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.71.0-rc.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "11521",
+          "title": "[FIX] Add image dimensions to attachment even when no reorientation is required",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12158",
+          "title": "[FIX] iframe login token not checked",
+          "userLogin": "nimetu",
+          "contributors": [
+            "nimetu",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11431",
+          "title": "[FIX] REST `users.setAvatar` endpoint wasn't allowing update the avatar of other users even with correct permissions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11875",
+          "title": "[FIX] Slack importer: image previews not showing",
+          "userLogin": "madguy02",
+          "milestone": "0.71.0",
+          "contributors": [
+            "madguy02",
+            "Hudell",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12235",
+          "title": "[FIX] Edit room name with uppercase letters",
+          "userLogin": "nikeee",
+          "milestone": "0.71.0",
+          "contributors": [
+            "nikeee",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12256",
+          "title": "[FIX] Custom OAuth Configuration can't be removed",
+          "userLogin": "Hudell",
+          "milestone": "0.71.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12360",
+          "title": "[IMPROVE] Livechat room closure endpoints",
+          "userLogin": "renatobecker",
+          "milestone": "0.71.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12266",
+          "title": "[BREAK] Update `lastMessage` rooms property and convert the \"starred\" property, to the same format",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12384",
+          "title": "Fix: wrong saveUser permission validations",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "11860",
+          "title": "[NEW] Add delete channel mutation to GraphQL API",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12344",
+          "title": "[FIX] Remove e2e from users endpoint responses",
+          "userLogin": "MarcosSpessatto",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12372",
+          "title": "[NEW] sidenav size on large screens",
+          "userLogin": "ggazzo",
+          "milestone": "0.71.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12375",
+          "title": "Regression: do not render pdf preview on safari <= 12",
+          "userLogin": "ggazzo",
+          "milestone": "0.71.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12373",
+          "title": "[FIX] email api TAPi18n is undefined",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "12338",
+          "title": "[FIX] Blockstack errors in IE 11",
+          "userLogin": "tassoevan",
+          "milestone": "0.71.0",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12365",
+          "title": "[FIX] avatar?_dc=undefined",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12186",
+          "title": "[BREAK] Add expiration to API login tokens and fix duplicate login tokens created by LDAP",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12358",
+          "title": "Improve: Drop database between running tests on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12161",
+          "title": "[IMPROVE] Set Livechat department before register guest",
+          "userLogin": "renatobecker",
+          "milestone": "0.71.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "12330",
+          "title": "[IMPROVE] Add missing livechat i18n keys",
+          "userLogin": "MarcosEllys",
+          "contributors": [
+            "MarcosEllys",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12297",
+          "title": "[FIX] users.register endpoint to not create an user if username already being used",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12345",
+          "title": "[FIX] Date range check on livechat analytics",
+          "userLogin": "teresy",
+          "contributors": [
+            "teresy"
+          ]
+        },
+        {
+          "pr": "12194",
+          "title": "[FIX] Cast env var setting to int based on option type",
+          "userLogin": "crazy-max",
+          "milestone": "0.71.0",
+          "contributors": [
+            "crazy-max"
+          ]
+        },
+        {
+          "pr": "12355",
+          "title": "[FIX] Links in home layout",
+          "userLogin": "upiksaleh",
+          "contributors": [
+            "upiksaleh"
+          ]
+        },
+        {
+          "pr": "11212",
+          "title": "[IMPROVE] Avoid unnecessary calls to Meteor.user() on client",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12346",
+          "title": "Fix: update check on err.details",
+          "userLogin": "teresy",
+          "milestone": "0.71.0",
+          "contributors": [
+            "teresy"
+          ]
+        },
+        {
+          "pr": "12350",
+          "title": "[FIX] Last message not updating after message delete if show deleted status is on",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.71.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12353",
+          "title": "[NEW] Ability to disable user presence monitor",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.71.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12354",
+          "title": "[FIX] Invalid destructuring on Livechat API endpoint",
+          "userLogin": "renatobecker",
+          "milestone": "0.71.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "10519",
+          "title": "[NEW] PDF message attachment preview (client side rendering)",
+          "userLogin": "kb0304",
+          "milestone": "0.71.0",
+          "contributors": [
+            "kb0304",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12298",
+          "title": "Fix: Add wizard opt-in fields",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12283",
+          "title": "[FIX] Modal confirm on enter",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12272",
+          "title": "[FIX] E2E alert shows up when encryption is disabled",
+          "userLogin": "Hudell",
+          "milestone": "0.70.2",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12299",
+          "title": "Release 0.70.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.71.0-rc.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12398",
+          "title": "[FIX] E2E: Decrypting UTF-8 encoded messages",
+          "userLogin": "pmmaga",
+          "milestone": "0.71.0",
+          "contributors": [
+            "pmmaga",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12442",
+          "title": "Update Apps Framework to version 1.2.1",
+          "userLogin": "rodrigok",
+          "milestone": "0.71.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12424",
+          "title": "[FIX] Ignore errors when creating image preview for uploads",
+          "userLogin": "tassoevan",
+          "milestone": "0.71.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12405",
+          "title": "Regression: Change `starred` message property from object to array",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.71.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12425",
+          "title": "[IMPROVE] Allow the imports to accept any file type",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "12409",
+          "title": "Apps: Room’s usernames was not working",
+          "userLogin": "rodrigok",
+          "milestone": "0.71.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12436",
+          "title": "[FIX] Attachment actions not being collapsable",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "12432",
+          "title": "[NEW] Add \"help wanted\" section to Readme",
+          "userLogin": "isabellarussell",
+          "contributors": [
+            "isabellarussell",
+            "Sing-Li",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12392",
+          "title": "Regression: Fix email headers not being used",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.71.0-rc.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12445",
+          "title": "[FIX] Attachment timestamp from and to Apps system not working",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "12391",
+          "title": "[FIX] Apps not being able to state how the action buttons are aligned",
+          "userLogin": "graywolf336",
+          "milestone": "0.71.0",
+          "contributors": [
+            "graywolf336"
+          ]
+        }
+      ]
+    },
+    "0.71.0": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12299",
+          "title": "Release 0.70.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12276",
+          "title": "Release 0.70.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "Hudell",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

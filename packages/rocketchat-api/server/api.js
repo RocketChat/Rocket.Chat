@@ -14,6 +14,7 @@ class API extends Restivus {
 			joinCode: 0,
 			members: 0,
 			importIds: 0,
+			e2e: 0,
 		};
 		this.limitedUserFieldsToExclude = {
 			avatarOrigin: 0,

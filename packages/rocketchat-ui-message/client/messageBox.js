@@ -228,6 +228,7 @@ Template.messageBox.helpers({
 	},
 	/* globals MsgTyping*/
 	usersTyping() {
+		const maxUsernames = 4;
 		const users = MsgTyping.get(this._id);
 		if (users.length === 0) {
 			return;
@@ -240,10 +241,10 @@ Template.messageBox.helpers({
 			};
 		}
 		let last = users.pop();
-		if (users.length > 4) {
+		if (users.length >= maxUsernames) {
 			last = t('others');
 		}
-		let usernames = users.join(', ');
+		let usernames = users.slice(0, maxUsernames - 1).join(', ');
 		usernames = [usernames, last];
 		return {
 			multi: true,

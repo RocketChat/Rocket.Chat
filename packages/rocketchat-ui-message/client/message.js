@@ -8,7 +8,15 @@ import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	if (!pdfLink || !pdfLink.endsWith('.pdf')) { return; }
+
+	if (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) {
+		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
+		if (version <= 12) {
+			return;
+		}
+	}
+
+	if (!pdfLink || /\.pdf$/i.test(pdfLink)) { return; }
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) { return; }
 	const pdfjsLib = await import('pdfjs-dist');

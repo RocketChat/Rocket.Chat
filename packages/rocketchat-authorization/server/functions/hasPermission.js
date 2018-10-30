@@ -16,16 +16,20 @@ function hasPermission(userId, permissions, scope, strategy) {
 	if (!userId) {
 		return false;
 	}
-
-	permissions = [].concat(permissions);
-	return strategy(userId, permissions, scope);
+	return strategy(userId, [].concat(permissions), scope);
 }
 
 RocketChat.authz.hasAllPermission = function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, all);
 };
 
-RocketChat.authz.hasPermission = RocketChat.authz.hasAllPermission;
+RocketChat.authz.hasPermission = (userId, permissionId, scope) => {
+	if (!userId) {
+		return false;
+	}
+	const permission = RocketChat.models.Permissions.findOne(permissionId);
+	return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
+};
 
 RocketChat.authz.hasAtLeastOnePermission = function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, atLeastOne);
