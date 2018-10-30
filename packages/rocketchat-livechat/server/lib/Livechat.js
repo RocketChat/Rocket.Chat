@@ -270,6 +270,10 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, visitor, room, comment }) {
+		if (!room || room.t !== 'l' || !room.open) {
+			return false;
+		}
+
 		const now = new Date();
 
 		const closeData = {

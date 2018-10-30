@@ -7,6 +7,7 @@ import { AppListenerBridge } from './listeners';
 import { AppMessageBridge } from './messages';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoomBridge } from './rooms';
+import { AppInternalBridge } from './internal';
 import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 
@@ -22,4 +23,5 @@ export {
 	AppRoomBridge,
 	AppSettingBridge,
 	AppUserBridge,
+	AppInternalBridge,
 };
