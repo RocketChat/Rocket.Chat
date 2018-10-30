@@ -248,7 +248,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedUserWhoLeft = new FederatedUser(localPeerIdentifier, userWhoLeft);
 
@@ -270,7 +270,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedRemovedUser = new FederatedUser(localPeerIdentifier, removedUser);
 
@@ -293,7 +293,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
 
@@ -322,7 +322,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
 
@@ -341,7 +341,7 @@ class PeerClient {
 
 		const user = RocketChat.models.Users.findOneById(userId);
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedUser = new FederatedUser(localPeerIdentifier, user);
 
@@ -356,7 +356,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedMutedUser = new FederatedUser(localPeerIdentifier, mutedUser);
 
@@ -373,7 +373,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
 
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, room);
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
 		const federatedUnmutedUser = new FederatedUser(localPeerIdentifier, unmutedUser);
 
