@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {
