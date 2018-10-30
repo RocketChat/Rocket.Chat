@@ -25,16 +25,10 @@ Meteor.publish('messages', function(rid/* , start*/) {
 
 	const cursorHandle = cursor.observeChanges({
 		added(_id, record) {
-			record.starred = _.findWhere(record.starred, {
-				_id: publication.userId,
-			});
-			return publication.added('rocketchat_message', _id, record);
+			return publication.added('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
 		},
 		changed(_id, record) {
-			record.starred = _.findWhere(record.starred, {
-				_id: publication.userId,
-			});
-			return publication.changed('rocketchat_message', _id, record);
+			return publication.changed('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
 		},
 	});
 

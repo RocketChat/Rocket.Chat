@@ -38,15 +38,8 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch();
 		}
 
-		const messages = records.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
-
 		return {
-			messages,
+			messages: records.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
 		};
 	},
 });
