@@ -6,12 +6,10 @@ Package.describe({
 });
 
 Package.on_use(function(api) {
-	api.use('rocketchat:lib', 'server');
-	api.use('ecmascript');
-	api.use(['routepolicy', 'webapp', 'service-configuration'], 'server');
-	api.use(['http', 'accounts-base'], ['client', 'server']);
+	api.use([
+		'ecmascript',
+	]);
 
-	api.add_files(['saml_server.js', 'saml_utils.js'], 'server');
-	api.add_files(['saml_rocketchat.js'], 'server');
-	api.add_files('saml_client.js', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

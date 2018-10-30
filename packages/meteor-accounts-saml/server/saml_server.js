@@ -1,9 +1,10 @@
-/* globals RoutePolicy, SAML */
-/* jshint newcap: false */
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { SAML } from './saml_utils';
 import _ from 'underscore';
 
 if (!Accounts.saml) {
