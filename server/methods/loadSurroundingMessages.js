@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
