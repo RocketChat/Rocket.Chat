@@ -477,6 +477,21 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				name: t('Activate'),
 				action: prevent(getUser, ({ _id }) => Meteor.call('setUserActiveStatus', _id, true, success(() => toastr.success(t('User_has_been_activated'))))),
 			};
+		}, () => {
+			if (hideAdminControls || !hasPermission('reset-other-user-e2e-key')) {
+				return;
+			}
+			if (!RocketChat.settings.get('E2E_Enable')) {
+				return;
+			}
+
+			return {
+				group: 'admin',
+				icon: 'key',
+				id: 'reset-e2e',
+				name: t('Reset_E2E_Key'),
+				action: prevent(getUser, ({ _id }) => Meteor.call('resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
+			};
 		}];
 	return actions;
 };
