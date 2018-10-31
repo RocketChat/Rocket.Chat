@@ -20365,6 +20365,20 @@
           ]
         }
       ]
+    },
+    "0.71.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12487",
+          "title": "[FIX] Email sending with GDPR user data",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,4 +1,19 @@
 
+# 0.71.1
+`2018-10-31  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Email sending with GDPR user data ([#12487](https://github.com/RocketChat/Rocket.Chat/pull/12487))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.71.0
 `2018-10-27  ·  2 ️️️⚠️  ·  5 🎉  ·  5 🚀  ·  21 🐛  ·  8 🔍  ·  20 👩‍💻👨‍💻`
 
