@@ -232,7 +232,7 @@ rocketchat:smarsh-connector@0.0.1
 rocketchat:sms@0.0.1
 rocketchat:spotify@0.0.1
 rocketchat:statistics@0.0.1
-rocketchat:streamer@1.0.1
+rocketchat:streamer@1.0.2
 rocketchat:theme@0.0.1
 rocketchat:tokenpass@0.0.1
 rocketchat:tooltip@0.0.1

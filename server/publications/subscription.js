@@ -1,3 +1,4 @@
+/* globals msgStream */
 const fields = {
 	t: 1,
 	ts: 1,
@@ -78,7 +79,7 @@ RocketChat.models.Subscriptions.on('change', ({ clientAction, id, data }) => {
 			data = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1, rid: 1 } });
 			break;
 	}
-
+	msgStream.__emit(data.u._id, clientAction, data);
 	RocketChat.Notifications.streamUser.__emit(data.u._id, clientAction, data);
 
 	RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', clientAction, data);

@@ -59,7 +59,9 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should add text to the spotlight and show the channel list', () => {
-				sideNav.spotlightSearch.waitForVisible(5000);
+				mainContent.messageInput.click();
+				sideNav.spotlightSearchIcon.click();
+				sideNav.spotlightSearch.waitForVisible(10000);
 				sideNav.spotlightSearch.setValue('rocket.cat');
 				sideNav.spotlightSearchPopUp.waitForVisible(5000);
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
