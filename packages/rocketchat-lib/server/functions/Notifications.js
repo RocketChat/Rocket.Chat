@@ -151,7 +151,7 @@ RocketChat.Notifications = new class {
 };
 
 
-const allowWrite = memoize(function(uid, eventName, username, typing, extraData) {
+const allowWrite = memoize(function(uid, eventName, username, extraData) {
 	const [roomId, e] = eventName.split('/');
 
 	if (e === 'webrtc') {
@@ -181,9 +181,9 @@ const allowWrite = memoize(function(uid, eventName, username, typing, extraData)
 		return user[key] === username;
 	}
 	return false;
-}, { maxAge:10 * 1000 });
+}, { maxAge: 10 * 1000 });
 
 RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData = {}) {
-	const result = allowWrite(this.userId, eventName, username, typing, extraData);
+	const result = allowWrite(this.userId, eventName, username, extraData);
 	return result;
 });

@@ -69,7 +69,7 @@ describe('[Login]', () => {
 	});
 });
 
-describe('[Setup Wizard]', () => {
+describe.skip('[Setup Wizard]', () => {
 	before(() => {
 		setupWizard.login();
 		setupWizard.organizationType.waitForVisible(15000);
