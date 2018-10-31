@@ -1,3 +1,5 @@
+import memoize from 'mem';
+
 function atLeastOne(userId, permissions = [], scope) {
 	return permissions.some((permissionId) => {
 		const permission = RocketChat.models.Permissions.findOne(permissionId);
@@ -19,18 +21,18 @@ function hasPermission(userId, permissions, scope, strategy) {
 	return strategy(userId, [].concat(permissions), scope);
 }
 
-RocketChat.authz.hasAllPermission = function(userId, permissions, scope) {
+RocketChat.authz.hasAllPermission = memoize(function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, all);
-};
+}, { maxAge: 1000 });
 
-RocketChat.authz.hasPermission = (userId, permissionId, scope) => {
+RocketChat.authz.hasPermission = memoize(function(userId, permissionId, scope) {
 	if (!userId) {
 		return false;
 	}
 	const permission = RocketChat.models.Permissions.findOne(permissionId);
 	return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
-};
+}, { maxAge: 1000 });
 
-RocketChat.authz.hasAtLeastOnePermission = function(userId, permissions, scope) {
+RocketChat.authz.hasAtLeastOnePermission = memoize(function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, atLeastOne);
-};
+}, { maxAge: 1000 });

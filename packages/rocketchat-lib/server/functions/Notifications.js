@@ -1,3 +1,5 @@
+import memoize from 'mem';
+
 class RoomStreamer extends Meteor.Streamer {
 	_publish(publication, eventName, options) {
 		super._publish(publication, eventName, options);
@@ -148,12 +150,14 @@ RocketChat.Notifications = new class {
 	}
 };
 
-RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
+
+const allowWrite = memoize(function(uid, eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
 	if (e === 'webrtc') {
 		return true;
 	}
+
 	if (e === 'typing') {
 		const key = RocketChat.settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget
@@ -164,7 +168,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 			}
 		}
 
-		const user = Meteor.users.findOne(this.userId, {
+		const user = Meteor.users.findOne(uid, {
 			fields: {
 				[key]: 1,
 			},
@@ -177,4 +181,9 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 		return user[key] === username;
 	}
 	return false;
+}, { maxAge:10 * 1000 });
+
+RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData = {}) {
+	const result = allowWrite(this.userId, eventName, username, typing, extraData);
+	return result;
 });

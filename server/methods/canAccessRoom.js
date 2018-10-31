@@ -1,5 +1,6 @@
+import memoize from 'mem';
 Meteor.methods({
-	canAccessRoom(rid, userId, extraData) {
+	canAccessRoom: memoize(function(rid, userId, extraData) {
 		check(rid, String);
 		check(userId, Match.Maybe(String));
 
@@ -46,5 +47,5 @@ Meteor.methods({
 				method: 'canAccessRoom',
 			});
 		}
-	},
+	}, { maxAge: 1000 }),
 });

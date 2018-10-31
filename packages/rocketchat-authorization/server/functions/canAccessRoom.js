@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import memoize from 'mem';
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
 		if (room && room.t === 'c') {
@@ -21,9 +22,9 @@ RocketChat.authz.roomAccessValidators = [
 	},
 ];
 
-RocketChat.authz.canAccessRoom = function(room, user, extraData) {
+RocketChat.authz.canAccessRoom = memoize(function(room, user, extraData) {
 	return RocketChat.authz.roomAccessValidators.some((validator) => validator(room, user, extraData));
-};
+}, { maxAge: 1000 });
 
 RocketChat.authz.addRoomAccessValidator = function(validator) {
 	RocketChat.authz.roomAccessValidators.push(validator.bind(this));

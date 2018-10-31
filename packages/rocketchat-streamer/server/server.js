@@ -400,8 +400,6 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 	}
 
 	send(self, msg) {
-
-		console.log(typeof msg, msg);
 		if (!self._session.socket) {
 			return;
 		}
