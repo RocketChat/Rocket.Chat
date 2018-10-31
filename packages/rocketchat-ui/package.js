@@ -147,4 +147,5 @@ Package.onUse(function(api) {
 
 	api.export('fileUpload');
 	api.export('t');
+	api.export('modal');
 });
