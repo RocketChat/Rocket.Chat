@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
+	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
 	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
