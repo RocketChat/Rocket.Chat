@@ -149,4 +149,5 @@ Package.onUse(function(api) {
 	api.export('t', 'client');
 	api.export('modal', 'client');
 	api.export('fireGlobalEvent', 'client');
+	api.export('ChatRoom', 'client');
 });
