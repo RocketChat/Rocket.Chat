@@ -418,19 +418,24 @@ Template.messageBox.events({
 			return instance.isMessageFieldEmpty.set(false);
 		}
 	},
+
 	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
-		if ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey)) {
-			const action = markdownButtons.find((action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
+		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+		if (isMacOS && (event.metaKey || event.ctrlKey)) {
+			const action = markdownButtons.find(
+				(action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
 			if (action) {
 				applyMd.apply(action, [event, t]);
 			}
 		}
 		return chatMessages[this._id].keydown(this._id, event, Template.instance());
 	}),
+
 	'input .js-input-message'(event, instance) {
 		instance.sendIcon.set(event.target.value !== '');
 		return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 	},
+
 	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {
 			return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
