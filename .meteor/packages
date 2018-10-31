@@ -182,7 +182,6 @@ nimble:restivus
 nooitaf:colors
 ostrio:cookies
 pauli:accounts-linkedin
-percolate:synced-cron
 raix:handlebar-helpers
 rocketchat:push
 raix:ui-dropped-event
@@ -202,3 +201,4 @@ underscore@1.0.10
 rocketchat:bigbluebutton
 rocketchat:mailmessages
 juliancwirko:postcss
+littledata:synced-cron
