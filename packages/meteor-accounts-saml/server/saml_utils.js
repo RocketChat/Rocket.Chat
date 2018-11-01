@@ -9,7 +9,7 @@ import array2string from 'arraybuffer-to-string';
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
 
-const SAML = function(options) {
+export const SAML = function(options) {
 	this.options = this.initialize(options);
 };
 
@@ -544,8 +544,4 @@ SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
 		indent: '  ',
 		newline: '\n',
 	});
-};
-
-export {
-	SAML,
 };
