@@ -1,3 +1,5 @@
+import { Tracker } from 'meteor/tracker';
+
 RocketChat.Layout = new (class RocketChatLayout {
 	constructor() {
 		Tracker.autorun(() => {

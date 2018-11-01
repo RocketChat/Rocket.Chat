@@ -1,3 +1,5 @@
+import { Mongo } from 'meteor/mongo';
+
 RocketChat.models.Roles = new Mongo.Collection('rocketchat_roles');
 
 Object.assign(RocketChat.models.Roles, {

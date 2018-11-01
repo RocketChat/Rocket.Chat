@@ -1,6 +1,7 @@
 /* globals WebRTC popover isRtl */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import { getActions } from './userActions';
 

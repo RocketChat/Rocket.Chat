@@ -1,5 +1,6 @@
 /* globals chrome, ChromeScreenShare */
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 class WebRTCTransportClass {

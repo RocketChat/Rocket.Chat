@@ -1,6 +1,7 @@
 
 // Kick is a named function that will replace /kick commands
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 
 const Kick = function(command, params, { rid }) {

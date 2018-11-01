@@ -1,6 +1,7 @@
 /* globals ChatPermissions */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 Template.permissions.helpers({
 	role() {

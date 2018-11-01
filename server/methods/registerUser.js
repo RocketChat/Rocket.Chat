@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';

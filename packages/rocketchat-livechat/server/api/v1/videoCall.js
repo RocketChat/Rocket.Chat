@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 

@@ -1,3 +1,4 @@
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
