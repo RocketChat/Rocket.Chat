@@ -1,5 +1,4 @@
 /* General */
-@import 'imports/general/reset.css';
 @import 'imports/general/variables.css';
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
@@ -8,6 +7,7 @@
 
 /* Forms */
 @import 'imports/general/forms.css';
+@import 'imports/general/reset.css';
 @import 'imports/forms/button.css';
 @import 'imports/forms/input.css';
 @import 'imports/forms/select.css';

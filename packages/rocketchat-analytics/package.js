@@ -10,7 +10,14 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:lib',
+		'tracker',
 	]);
+	api.use([
+		'templating',
+		'kadira:flow-router',
+	], 'client');
+
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
