@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 RocketChat.models._Base.prototype.roleBaseQuery = function(/* userId, scope*/) {

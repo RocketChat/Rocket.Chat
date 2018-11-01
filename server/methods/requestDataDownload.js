@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import path from 'path';
 

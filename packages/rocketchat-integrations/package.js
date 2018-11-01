@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 	api.use('templating', 'client');
 
 	api.addFiles('lib/rocketchat.js', ['server', 'client']);

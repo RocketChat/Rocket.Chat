@@ -1,4 +1,5 @@
 /* globals openRoom, LivechatInquiry */
+import { Session } from 'meteor/session';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:lib';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {

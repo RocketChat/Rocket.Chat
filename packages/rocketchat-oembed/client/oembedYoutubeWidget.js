@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+
 Template.oembedYoutubeWidget.helpers({
 	collapsed() {
 		if (this.collapsed) {

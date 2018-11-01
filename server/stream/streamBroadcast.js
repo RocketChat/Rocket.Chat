@@ -1,5 +1,7 @@
 /* global InstanceStatus, DDP, LoggerManager */
 
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import _ from 'underscore';
 import { DDPCommon } from 'meteor/ddp-common';
 

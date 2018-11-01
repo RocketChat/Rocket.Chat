@@ -2,6 +2,9 @@
  * KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
  * https://github.com/Khan/KaTeX
  */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import s from 'underscore.string';
 

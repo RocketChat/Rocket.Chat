@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 class ErrorHandler {
 	constructor() {
 		this.reporting = false;

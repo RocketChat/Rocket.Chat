@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import memoize from 'mem';
 
 class RoomStreamer extends Meteor.Streamer {

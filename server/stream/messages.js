@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 const MY_MESSAGES = '__my_messages__';
 

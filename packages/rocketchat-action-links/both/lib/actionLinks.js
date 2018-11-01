@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 // Action Links namespace creation.
 RocketChat.actionLinks = {
 	actions: {},

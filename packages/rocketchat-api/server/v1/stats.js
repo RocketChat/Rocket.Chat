@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.API.v1.addRoute('statistics', { authRequired: true }, {
 	get() {
 		let refresh = false;

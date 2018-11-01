@@ -1,4 +1,5 @@
 /* global device */
+import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isCordova) {
 	window.addEventListener('native.keyboardshow', function() {

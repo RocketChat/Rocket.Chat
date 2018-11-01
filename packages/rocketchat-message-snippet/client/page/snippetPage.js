@@ -1,5 +1,9 @@
 /* global SnippetedMessages */
+import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import moment from 'moment';
 
 Template.snippetPage.helpers({
 	snippet() {

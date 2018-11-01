@@ -1,4 +1,6 @@
 /* global slugify */
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 function slug(text) {

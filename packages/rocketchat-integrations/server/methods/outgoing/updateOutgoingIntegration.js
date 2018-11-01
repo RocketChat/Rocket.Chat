@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	updateOutgoingIntegration(integrationId, integration) {
 		integration = RocketChat.integrations.validateOutgoing(integration, this.userId);

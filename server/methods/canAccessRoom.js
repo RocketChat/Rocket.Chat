@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import memoize from 'mem';
+
 Meteor.methods({
 	canAccessRoom: memoize(function(rid, userId, extraData) {
 		check(rid, String);

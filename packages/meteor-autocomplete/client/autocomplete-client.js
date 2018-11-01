@@ -1,4 +1,7 @@
 /* globals Deps, getCaretCoordinates*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import AutoCompleteRecords from './collection';
 

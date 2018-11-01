@@ -1,4 +1,5 @@
 /* global InstanceStatus, MongoInternals */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import os from 'os';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';

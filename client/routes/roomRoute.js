@@ -1,3 +1,5 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 FlowRouter.goToRoomById = (roomId) => {
 	const subscription = ChatSubscription.findOne({ rid: roomId });
 	if (subscription) {
