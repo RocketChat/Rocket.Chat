@@ -1,5 +1,8 @@
 /* globals Department, Livechat, LivechatVideoCall */
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {

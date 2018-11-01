@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
 RocketChat.applyCustomTranslations = function applyCustomTranslations() {

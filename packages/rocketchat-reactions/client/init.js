@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {

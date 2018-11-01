@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.addFiles('getAvatarUrlFromUsername.js');
 

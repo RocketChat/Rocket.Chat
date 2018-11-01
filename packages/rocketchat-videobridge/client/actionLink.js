@@ -1,4 +1,6 @@
+import { Session } from 'meteor/session';
 import toastr from 'toastr';
+
 RocketChat.actionLinks.register('joinJitsiCall', function(message, params, instance) {
 	if (Session.get('openedRoom')) {
 		const rid = Session.get('openedRoom');

@@ -8,6 +8,8 @@
 // then it will be enabled by default for development reasons. The server prefers a url
 // over the passed in body, so if both are found it will only use the url.
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 
 Template.appInstall.helpers({
 	appFile() {

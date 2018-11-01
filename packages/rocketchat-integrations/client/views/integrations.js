@@ -1,4 +1,5 @@
 /* global ChatIntegrations */
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 Template.integrations.helpers({

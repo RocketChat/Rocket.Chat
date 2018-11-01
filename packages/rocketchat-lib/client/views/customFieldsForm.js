@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
 
 Template.customFieldsForm.helpers({
 	new() {

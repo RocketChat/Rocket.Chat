@@ -1,4 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
 Template.cmsPage.onCreated(function() {
