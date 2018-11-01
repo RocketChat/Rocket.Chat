@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'less',
 		'rocketchat:lib',
 		'rocketchat:channel-settings',
+		'mizzao:autocomplete',
 		'mongo',
 	]);
 

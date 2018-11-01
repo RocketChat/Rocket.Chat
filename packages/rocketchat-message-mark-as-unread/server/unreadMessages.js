@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import logger from './logger';
 Meteor.methods({
 	unreadMessages(firstUnreadMessage, room) {

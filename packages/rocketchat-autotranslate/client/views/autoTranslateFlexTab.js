@@ -1,4 +1,8 @@
 /* globals ChatSubscription */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 

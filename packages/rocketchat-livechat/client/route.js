@@ -1,3 +1,5 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
 	name: 'livechat-manager',

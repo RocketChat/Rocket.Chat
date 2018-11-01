@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.add('Message_AllowSnippeting', false, {
 		type: 'boolean',

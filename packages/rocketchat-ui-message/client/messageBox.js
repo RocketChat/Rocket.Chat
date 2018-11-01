@@ -1,4 +1,10 @@
 /* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -223,6 +229,7 @@ Template.messageBox.helpers({
 	},
 	/* globals MsgTyping*/
 	usersTyping() {
+		const maxUsernames = 4;
 		const users = MsgTyping.get(this._id);
 		if (users.length === 0) {
 			return;
@@ -235,10 +242,10 @@ Template.messageBox.helpers({
 			};
 		}
 		let last = users.pop();
-		if (users.length > 4) {
+		if (users.length >= maxUsernames) {
 			last = t('others');
 		}
-		let usernames = users.join(', ');
+		let usernames = users.slice(0, maxUsernames - 1).join(', ');
 		usernames = [usernames, last];
 		return {
 			multi: true,

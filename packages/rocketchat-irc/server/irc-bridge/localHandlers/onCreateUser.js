@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export default function handleOnCreateUser(newUser) {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export const close = (popup) => new Promise(function(resolve) {
 	const checkInterval = setInterval(() => {
 		if (popup.closed) {

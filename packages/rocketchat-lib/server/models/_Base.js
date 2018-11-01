@@ -1,3 +1,4 @@
+import { check } from 'meteor/check';
 import ModelsBaseDb from './_BaseDb';
 import objectPath from 'object-path';
 import _ from 'underscore';

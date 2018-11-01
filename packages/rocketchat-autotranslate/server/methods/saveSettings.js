@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	'autoTranslate.saveSettings'(rid, field, value, options) {
 		if (!Meteor.userId()) {

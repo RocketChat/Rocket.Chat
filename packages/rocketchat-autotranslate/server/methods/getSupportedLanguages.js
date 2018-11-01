@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {

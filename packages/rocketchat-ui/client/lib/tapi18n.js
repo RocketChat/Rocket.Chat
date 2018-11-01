@@ -1,6 +1,7 @@
 import _ from 'underscore';
+import { TAPi18n } from 'meteor/tap:i18n';
 
-this.t = function(key, ...replaces) {
+t = function(key, ...replaces) {
 	if (_.isObject(replaces[0])) {
 		return TAPi18n.__(key, ...replaces);
 	} else {

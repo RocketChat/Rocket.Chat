@@ -1,5 +1,12 @@
-/* global Restivus, DDP, DDPCommon */
+import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+import { DDP } from 'meteor/ddp';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Restivus } from 'meteor/nimble:restivus';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
+
 const logger = new Logger('API', {});
 
 class API extends Restivus {

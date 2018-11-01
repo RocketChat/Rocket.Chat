@@ -134,7 +134,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('should return group structure with "lastMessage" object including pin, reaction and star infos', (done) => {
+		it('should return group structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
 			request.get(api('groups.info'))
 				.set(credentials)
 				.query({
@@ -151,11 +151,11 @@ describe('[Groups]', function() {
 					expect(group.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
 					expect(group.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
 					expect(group.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
-					expect(group.lastMessage).to.have.property('starred').and.to.be.an('object');
+					expect(group.lastMessage).to.have.property('starred').and.to.be.an('array');
 				})
 				.end(done);
 		});
-		it('should return all groups messages where the last message of array should have the "star" object with USERS star ONLY', (done) => {
+		it('should return all groups messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
 			request.get(api('groups.messages'))
 				.set(credentials)
 				.query({
@@ -168,8 +168,8 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
-					expect(lastMessage).to.have.property('starred').and.to.be.an('object');
-					expect(lastMessage.starred._id).to.be.equal(adminUsername);
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});

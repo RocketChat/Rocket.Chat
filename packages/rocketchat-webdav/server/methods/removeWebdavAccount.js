@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	removeWebdavAccount(accountId) {
 		if (!Meteor.userId()) {

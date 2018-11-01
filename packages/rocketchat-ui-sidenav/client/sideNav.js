@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 
 /* globals menu*/
 
