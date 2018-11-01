@@ -8,9 +8,17 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'templating',
+		'mongo',
+		'ddp',
 	]);
-	api.use('dandv:caret-position@2.1.0-3', 'client');
+
+	api.use([
+		'blaze',
+		'templating',
+		'jquery',
+		'dandv:caret-position@2.1.0-3',
+	], 'client');
+
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
