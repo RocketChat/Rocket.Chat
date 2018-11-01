@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 function updateSandstormMetaData(msg) {
 	return window.parent.postMessage(msg, '*');

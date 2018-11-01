@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:logger',
 		'rocketchat:search',
 		'kadira:flow-router',
+		'kadira:blaze-layout',
 		'meteorhacks:inject-initial',
 	]);
 

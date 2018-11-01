@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 Meteor.startup(function() {

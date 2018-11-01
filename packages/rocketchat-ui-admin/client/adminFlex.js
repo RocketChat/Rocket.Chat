@@ -1,4 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import s from 'underscore.string';
 

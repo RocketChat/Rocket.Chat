@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { drawLineChart, drawDoughnutChart, updateChart } from '../../../lib/chartHandler';

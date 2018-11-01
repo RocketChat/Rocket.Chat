@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import moment from 'moment';
 // TODO: remove this globals

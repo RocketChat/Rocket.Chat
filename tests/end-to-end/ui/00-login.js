@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* globals Meteor */
+/* globals Meteor, FlowRouter */
 
 import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
