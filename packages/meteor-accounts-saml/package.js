@@ -5,10 +5,18 @@ Package.describe({
 	git: 'https://github.com/steffow/meteor-accounts-saml.git',
 });
 
-Package.on_use(function(api) {
+Package.on_use(function (api) {
 	api.use([
 		'ecmascript',
+		'http',
+		'accounts-base',
 	]);
+	api.use([
+		'routepolicy',
+		'webapp',
+		'rocketchat:lib',
+		'service-configuration'
+	], 'server');
 
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
