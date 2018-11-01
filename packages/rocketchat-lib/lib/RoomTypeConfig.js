@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',

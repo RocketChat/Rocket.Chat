@@ -1,4 +1,5 @@
 /* globals popover isRtl */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hide, leave } from 'meteor/rocketchat:lib';

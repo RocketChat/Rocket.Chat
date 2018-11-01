@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 function updateSandstormMetaData(msg) {
 	return window.parent.postMessage(msg, '*');
 }

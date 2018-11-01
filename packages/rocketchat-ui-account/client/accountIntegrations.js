@@ -1,5 +1,6 @@
 /* global */
 
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
 Template.accountIntegrations.helpers({

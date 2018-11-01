@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.API.v1.addRoute('e2e.fetchMyKeys', { authRequired: true }, {
 	get() {
 		let result;

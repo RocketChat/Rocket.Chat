@@ -1,4 +1,5 @@
 /* globals modal */
+import { Meteor } from 'meteor/meteor';
 
 this.modal = {
 	renderedModal: null,

@@ -1,4 +1,5 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {

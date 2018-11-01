@@ -1,4 +1,5 @@
 /* globals popover */
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';

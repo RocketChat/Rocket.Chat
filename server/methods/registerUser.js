@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 let verifyEmailTemplate = '';

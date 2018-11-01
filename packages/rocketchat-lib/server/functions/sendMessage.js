@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {

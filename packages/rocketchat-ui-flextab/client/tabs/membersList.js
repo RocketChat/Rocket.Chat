@@ -1,4 +1,5 @@
 /* globals WebRTC popover isRtl */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { getActions } from './userActions';
 

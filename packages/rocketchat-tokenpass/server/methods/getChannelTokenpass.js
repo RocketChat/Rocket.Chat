@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	getChannelTokenpass(rid) {
 		check(rid, String);

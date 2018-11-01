@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.saveRoomCustomFields = function(rid, roomCustomFields) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export class AppMessageBridge {
 	constructor(orch) {
 		this.orch = orch;

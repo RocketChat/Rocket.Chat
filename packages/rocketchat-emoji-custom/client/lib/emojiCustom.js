@@ -1,4 +1,6 @@
 /* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.emoji.packages.emojiCustom = {
 	emojiCategories: { rocket: 'Custom' },
 	toneList: {},

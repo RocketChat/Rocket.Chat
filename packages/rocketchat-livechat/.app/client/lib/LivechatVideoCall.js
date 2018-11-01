@@ -1,4 +1,5 @@
 /* globals LivechatVideoCall, cordova, JitsiMeetExternalAPI */
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
 
 LivechatVideoCall = new (class LivechatVideoCall {

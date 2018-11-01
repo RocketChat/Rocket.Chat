@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.livechatTriggers.helpers({
 	triggers() {
 		return LivechatTrigger.find();

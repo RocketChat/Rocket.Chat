@@ -1,4 +1,5 @@
 /* globals popout */
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';

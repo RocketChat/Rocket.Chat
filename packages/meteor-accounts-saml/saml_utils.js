@@ -1,5 +1,6 @@
 /* globals SAML:true */
 
+import { Meteor } from 'meteor/meteor';
 import zlib from 'zlib';
 import xmlCrypto from 'xml-crypto';
 import crypto from 'crypto';

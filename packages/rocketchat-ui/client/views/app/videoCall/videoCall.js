@@ -1,4 +1,6 @@
 /* globals WebRTC */
+import { Meteor } from 'meteor/meteor';
+
 Template.videoCall.onCreated(function() {
 	return this.mainVideo = new ReactiveVar('$auto');
 });

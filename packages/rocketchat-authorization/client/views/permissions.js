@@ -1,4 +1,5 @@
 /* globals ChatPermissions */
+import { Meteor } from 'meteor/meteor';
 
 Template.permissions.helpers({
 	role() {

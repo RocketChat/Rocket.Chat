@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import moment from 'moment';
 import 'moment-timezone';

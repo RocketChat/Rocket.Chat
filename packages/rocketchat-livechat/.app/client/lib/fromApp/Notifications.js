@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../../imports/client/visitor';
 
 this.Notifications = new class {

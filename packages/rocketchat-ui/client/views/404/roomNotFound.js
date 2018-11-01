@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.roomNotFound.helpers({
 	data() {
 		return Session.get('roomNotFound');

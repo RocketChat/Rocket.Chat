@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	loadMissedMessages(rid, start) {
 		check(rid, String);

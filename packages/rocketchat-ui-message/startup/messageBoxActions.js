@@ -1,5 +1,6 @@
 /* globals fileUpload device modal */
 
+import { Meteor } from 'meteor/meteor';
 import mime from 'mime-type/with-db';
 import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
 

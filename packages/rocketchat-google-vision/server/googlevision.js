@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 class GoogleVision {
 	constructor() {
 		this.storage = require('@google-cloud/storage');

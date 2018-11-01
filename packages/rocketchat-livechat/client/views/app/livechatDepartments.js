@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.livechatDepartments.helpers({
 	departments() {
 		return LivechatDepartment.find();

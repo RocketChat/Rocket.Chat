@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Progress } from './ImporterProgress';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Selection } from './ImporterSelection';

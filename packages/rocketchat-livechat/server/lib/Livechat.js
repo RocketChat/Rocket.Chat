@@ -1,4 +1,5 @@
 /* globals HTTP */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	joinDefaultChannels(silenced) {
 		check(silenced, Match.Optional(Boolean));

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 FlowRouter.route('/mailer', {
 	name: 'mailer',
 	action() {

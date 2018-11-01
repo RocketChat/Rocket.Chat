@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	eraseRoom(rid) {

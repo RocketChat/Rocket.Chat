@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('OTR_Enable') && window.crypto) {

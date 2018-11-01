@@ -1,4 +1,6 @@
 /* globals LivechatInquiry, KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+
 Template.livechat.helpers({
 	isActive() {
 		const query = {

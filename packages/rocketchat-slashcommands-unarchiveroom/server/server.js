@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 function Unarchive(command, params, item) {
 	if (command !== 'unarchive' || !Match.test(params, String)) {
 		return;

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.loginWithCrowd = function(...args) {
 	// Pull username and password
 	const username = args.shift();

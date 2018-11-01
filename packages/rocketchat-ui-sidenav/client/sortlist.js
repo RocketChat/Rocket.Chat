@@ -1,4 +1,5 @@
 /* globals popover */
+import { Meteor } from 'meteor/meteor';
 
 const checked = function(prop, field) {
 	const userId = Meteor.userId();

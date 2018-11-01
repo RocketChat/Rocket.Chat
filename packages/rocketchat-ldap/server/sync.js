@@ -1,5 +1,6 @@
 /* globals slugify, SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import LDAP from './ldap';
 

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { call, UiTextContext } from 'meteor/rocketchat:lib';
 
 export function hide(type, rid, name) {

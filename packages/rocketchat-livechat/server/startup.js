@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(() => {
 	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id).fetch());
 

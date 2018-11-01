@@ -1,4 +1,5 @@
 /* globals LivechatVisitor */
+import { Meteor } from 'meteor/meteor';
 
 import toastr from 'toastr';
 Template.visitorEdit.helpers({

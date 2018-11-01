@@ -1,4 +1,6 @@
 /* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
+
 function removeUsersFromTokenChannels() {
 	const rooms = {};
 

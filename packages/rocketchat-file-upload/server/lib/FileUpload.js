@@ -1,5 +1,6 @@
 /* globals UploadFS */
 
+import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';

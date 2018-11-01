@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import qrcode from 'yaqrcode';
 

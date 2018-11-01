@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('snippetedMessage', function(_id) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();

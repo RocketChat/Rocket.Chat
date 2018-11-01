@@ -1,4 +1,5 @@
 /* globals FlowRouter, RoomHistoryManager */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.startup(function() {

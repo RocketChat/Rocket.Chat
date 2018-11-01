@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
 /* globals menu*/

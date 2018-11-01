@@ -1,5 +1,6 @@
 
 /* global menu */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 let isLoading;

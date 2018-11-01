@@ -1,4 +1,6 @@
 /* globals Template chatMessages*/
+import { Meteor } from 'meteor/meteor';
+
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();

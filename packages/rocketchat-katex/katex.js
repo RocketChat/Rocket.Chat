@@ -2,6 +2,7 @@
  * KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
  * https://github.com/Khan/KaTeX
  */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 

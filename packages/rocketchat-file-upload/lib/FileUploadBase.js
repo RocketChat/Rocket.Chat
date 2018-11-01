@@ -1,5 +1,6 @@
 /* globals FileUploadBase:true, UploadFS */
 /* exported FileUploadBase */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({

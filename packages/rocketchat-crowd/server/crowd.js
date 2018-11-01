@@ -1,5 +1,6 @@
 /* globals:CROWD:true */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
+import { Meteor } from 'meteor/meteor';
 const logger = new Logger('CROWD', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {

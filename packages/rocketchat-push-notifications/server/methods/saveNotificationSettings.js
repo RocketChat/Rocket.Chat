@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	saveNotificationSettings(roomId, field, value) {
 		if (!Meteor.userId()) {

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Busboy from 'busboy';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {

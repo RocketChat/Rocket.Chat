@@ -1,4 +1,5 @@
 /* globals OAuth*/
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 // Request custom OAuth credentials for the user

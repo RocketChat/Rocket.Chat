@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	roomNameExists(rid) {
 		check(rid, String);

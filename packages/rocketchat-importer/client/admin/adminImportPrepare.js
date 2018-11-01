@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import toastr from 'toastr';
 

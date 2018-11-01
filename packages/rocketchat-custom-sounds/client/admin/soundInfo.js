@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.soundInfo.helpers({
 	name() {
 		const sound = Template.instance().sound.get();

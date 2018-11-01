@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	addRoomModerator(rid, userId) {
 		check(rid, String);

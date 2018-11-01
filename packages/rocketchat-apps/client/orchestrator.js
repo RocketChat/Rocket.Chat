@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { AppWebsocketReceiver } from './communication';
 import { Utilities } from '../lib/misc/Utilities';
 

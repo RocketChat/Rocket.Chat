@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	removeUserFromRoom(data) {
 		check(data, Match.ObjectIncluding({

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 /*
 * Hide is a named function that will replace /hide commands

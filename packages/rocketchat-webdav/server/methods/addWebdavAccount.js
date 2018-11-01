@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Webdav from 'webdav';
 
 Meteor.methods({

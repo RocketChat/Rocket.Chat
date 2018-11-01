@@ -1,4 +1,6 @@
 /* globals Push Servers*/
+import { Meteor } from 'meteor/meteor';
+
 if (Meteor.isCordova) {
 	// Push.addListener 'token', (token) ->
 	// 	Meteor.call 'log', 'CLIENT', 'token', arguments

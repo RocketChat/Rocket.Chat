@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import bugsnag from 'bugsnag';
 
 RocketChat.bugsnag = bugsnag;

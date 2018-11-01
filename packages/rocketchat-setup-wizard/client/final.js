@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');
 	if (isSetupWizardDone === null) {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.loginWithLoginToken = function(token) {
 	Accounts.callLoginMethod({
 		methodArguments: [{

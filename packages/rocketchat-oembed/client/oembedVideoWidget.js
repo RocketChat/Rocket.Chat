@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const getTitle = function(self) {
 	if (self.meta == null) {
 		return;

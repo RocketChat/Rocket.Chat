@@ -1,4 +1,5 @@
 /* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload */
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';

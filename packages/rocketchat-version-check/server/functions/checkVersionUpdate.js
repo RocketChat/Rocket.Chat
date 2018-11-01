@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 import getNewUpdates from './getNewUpdates';
 import logger from '../logger';

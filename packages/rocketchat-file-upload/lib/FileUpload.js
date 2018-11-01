@@ -1,6 +1,7 @@
 /* globals FileUpload:true */
 /* exported FileUpload */
 
+import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
 let maxFileSize = 0;

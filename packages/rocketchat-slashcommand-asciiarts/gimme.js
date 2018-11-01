@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 /*
 * Gimme is a named function that will replace /gimme commands
 * @param {Object} message - The message object

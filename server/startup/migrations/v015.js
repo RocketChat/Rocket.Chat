@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.Migrations.add({
 	version: 15,
 	up() {

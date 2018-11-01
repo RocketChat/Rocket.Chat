@@ -1,5 +1,5 @@
 /* globals cordova */
-
+import { Meteor } from 'meteor/meteor';
 if (!Accounts.saml) {
 	Accounts.saml = {};
 }

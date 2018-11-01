@@ -1,4 +1,5 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding"]}] */
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from '../models/LivechatVisitors';
 import _ from 'underscore';
 

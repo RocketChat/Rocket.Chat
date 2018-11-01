@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
 		check(rid, String);

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.models.Subscriptions.updateAutoTranslateById = function(_id, autoTranslate) {
 	const query = {
 		_id,

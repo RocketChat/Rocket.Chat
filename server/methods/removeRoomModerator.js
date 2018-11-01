@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	removeRoomModerator(rid, userId) {
 		check(rid, String);

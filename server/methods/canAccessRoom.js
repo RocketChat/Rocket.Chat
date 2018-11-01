@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
 		check(rid, String);
