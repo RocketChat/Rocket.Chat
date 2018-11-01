@@ -6,6 +6,8 @@ class StreamerCentral extends EventEmitter {
 	constructor() {
 		super();
 
+		this.setMaxListeners(Infinity);
+
 		this.instances = {};
 	}
 }
@@ -20,6 +22,8 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 		}
 
 		super();
+
+		this.setMaxListeners(Infinity);
 
 		Meteor.StreamerCentral.instances[name] = this;
 

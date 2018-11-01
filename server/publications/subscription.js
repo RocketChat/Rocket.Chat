@@ -1,3 +1,5 @@
+/* globals msgStream */
+
 import { Meteor } from 'meteor/meteor';
 
 const fields = {
