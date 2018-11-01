@@ -1,6 +1,8 @@
 /* globals Meteor Restivus logger processWebhookMessage*/
 // TODO: remove globals
 
+import { HTTP } from 'meteor/http';
+import { Random } from 'meteor/random';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';

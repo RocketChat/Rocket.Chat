@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.livechatTriggerAction.helpers({
 	hiddenValue(current) {
 		if (this.name === undefined && Template.instance().firstAction) {

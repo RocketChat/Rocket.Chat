@@ -1,5 +1,7 @@
 /* globals chrome, ChromeScreenShare */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 class WebRTCTransportClass {
 	constructor(webrtcInstance) {
 		this.debug = false;

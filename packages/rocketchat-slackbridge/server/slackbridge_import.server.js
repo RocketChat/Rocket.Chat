@@ -1,5 +1,6 @@
 /* globals msgStream */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {

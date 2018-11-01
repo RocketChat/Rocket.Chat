@@ -1,5 +1,6 @@
 /* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';

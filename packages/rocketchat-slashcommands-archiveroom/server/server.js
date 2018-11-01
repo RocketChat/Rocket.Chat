@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {

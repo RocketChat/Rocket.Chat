@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 export class RocketChatTabBar {
 	constructor() {
 		this.template = new ReactiveVar();

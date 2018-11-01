@@ -1,4 +1,6 @@
 /* globals Template, isSetNotNull */
+import { ReactiveVar } from 'meteor/reactive-var';
+
 const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name

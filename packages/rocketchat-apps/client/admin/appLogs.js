@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 import hljs from 'highlight.js';
 

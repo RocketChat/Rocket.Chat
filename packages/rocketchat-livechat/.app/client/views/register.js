@@ -1,5 +1,6 @@
 /* globals Department, Livechat, LivechatVideoCall */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import s from 'underscore.string';

@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
 const logger = new Logger('steffo:meteor-accounts-saml', {
 	methods: {
 		updated: {

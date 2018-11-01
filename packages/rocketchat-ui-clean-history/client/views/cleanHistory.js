@@ -1,5 +1,6 @@
 /* globals AutoComplete */
 import moment from 'moment';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { call } from 'meteor/rocketchat:lib';
 

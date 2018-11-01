@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.selectDropdown.events({
 	'focus input'(e, i) {
 		i.open.set(true);

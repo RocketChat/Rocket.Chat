@@ -1,5 +1,6 @@
 /* globals LivechatQueueUser */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.livechatQueue.helpers({
 	departments() {

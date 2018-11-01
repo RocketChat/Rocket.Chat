@@ -1,3 +1,4 @@
+import { Random } from 'meteor/random';
 import './email';
 
 // Insert server unique id if it doesn't exist

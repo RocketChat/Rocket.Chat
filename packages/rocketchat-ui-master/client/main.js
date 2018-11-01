@@ -1,5 +1,6 @@
 /* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
