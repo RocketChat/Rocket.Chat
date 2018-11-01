@@ -1,5 +1,6 @@
 /* globals AdminChatRoom, RocketChat */
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
 import s from 'underscore.string';
 
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';

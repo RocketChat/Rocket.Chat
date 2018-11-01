@@ -3,6 +3,7 @@
  * @param {Object} message - The message object
  */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import qrcode from 'yaqrcode';
 

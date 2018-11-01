@@ -1,5 +1,6 @@
 /* globals Google */
 import _ from 'underscore';
+import { HTTP } from 'meteor/http';
 
 function getIdentity(accessToken) {
 	try {

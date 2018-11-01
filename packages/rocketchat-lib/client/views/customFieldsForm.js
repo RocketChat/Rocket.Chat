@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.customFieldsForm.helpers({
 	new() {
 		return this.new;

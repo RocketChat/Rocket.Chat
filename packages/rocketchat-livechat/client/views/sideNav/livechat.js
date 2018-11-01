@@ -1,5 +1,6 @@
 /* globals LivechatInquiry, KonchatNotification */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.livechat.helpers({
 	isActive() {

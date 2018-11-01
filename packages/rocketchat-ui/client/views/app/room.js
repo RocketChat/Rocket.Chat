@@ -1,5 +1,7 @@
 /* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';

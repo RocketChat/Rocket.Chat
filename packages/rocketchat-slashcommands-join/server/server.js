@@ -4,6 +4,7 @@
 * @param {Object} message - The message object
 */
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 
 RocketChat.slashCommands.add('join', function Join(command, params, item) {
 

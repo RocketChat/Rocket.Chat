@@ -1,5 +1,6 @@
 /* globals KonchatNotification */
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {

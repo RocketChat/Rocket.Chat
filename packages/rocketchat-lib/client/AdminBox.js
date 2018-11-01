@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 RocketChat.AdminBox = new class {

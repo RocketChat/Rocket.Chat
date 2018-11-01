@@ -1,6 +1,7 @@
 /* globals isRtl */
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import moment from 'moment';
 
 const currentLanguage = new ReactiveVar();

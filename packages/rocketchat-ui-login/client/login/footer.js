@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.loginFooter.onCreated(function() {
 	this.suggestedLanguage = new ReactiveVar();
 

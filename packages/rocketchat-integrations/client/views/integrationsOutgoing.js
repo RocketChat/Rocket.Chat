@@ -1,6 +1,8 @@
 /* global ChatIntegrations */
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 

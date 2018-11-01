@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 
 this.onYouTubePlayerAPIReady = function() {
 	const playerReadyEvent = new Event('playerReady');

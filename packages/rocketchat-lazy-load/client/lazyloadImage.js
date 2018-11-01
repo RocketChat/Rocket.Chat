@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import './lazyloadImage.html';
 import { addImage, fixCordova } from './';
 

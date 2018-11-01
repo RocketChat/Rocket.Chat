@@ -1,5 +1,6 @@
 /* globals StarredMessage */
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.starredMessages.helpers({
 	hasMessages() {

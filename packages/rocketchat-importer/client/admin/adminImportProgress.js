@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers, ImporterWebsocketReceiver, ProgressStep } from 'meteor/rocketchat:importer';
 
 import toastr from 'toastr';

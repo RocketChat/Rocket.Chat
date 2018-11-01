@@ -1,5 +1,6 @@
 /* globals KonchatNotification */
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.secretURL.helpers({
 	registrationAllowed() {

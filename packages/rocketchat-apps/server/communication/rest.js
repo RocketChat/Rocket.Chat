@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import Busboy from 'busboy';
 
 export class AppsRestApi {

@@ -1,4 +1,5 @@
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);

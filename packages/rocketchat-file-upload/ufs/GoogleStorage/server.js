@@ -1,4 +1,5 @@
 import { UploadFS } from 'meteor/jalik:ufs';
+import { Random } from 'meteor/random';
 import gcStorage from '@google-cloud/storage';
 
 /**
