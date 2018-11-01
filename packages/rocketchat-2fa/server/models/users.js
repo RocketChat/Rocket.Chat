@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Users.disable2FAAndSetTempSecretByUserId = function(userId, tempToken) {
 	return this.update({
 		_id: userId,
