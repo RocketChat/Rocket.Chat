@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
