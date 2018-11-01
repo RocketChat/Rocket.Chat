@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
 if (!Accounts.saml) {
 	Accounts.saml = {};
