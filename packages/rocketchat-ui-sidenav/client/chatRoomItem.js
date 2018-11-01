@@ -1,3 +1,5 @@
+import { Tracker } from 'meteor/tracker';
+
 Template.chatRoomItem.helpers({
 	roomData() {
 		let { name } = this;

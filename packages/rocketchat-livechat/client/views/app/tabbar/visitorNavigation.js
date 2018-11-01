@@ -1,4 +1,6 @@
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
+
 const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');
 
 Template.visitorNavigation.helpers({

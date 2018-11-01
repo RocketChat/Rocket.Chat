@@ -1,3 +1,5 @@
+import { Tracker } from 'meteor/tracker';
+
 window.fireGlobalEvent = function _fireGlobalEvent(eventName, params) {
 	window.dispatchEvent(new CustomEvent(eventName, { detail: params }));
 

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import toastr from 'toastr';
 /* globals crypto */

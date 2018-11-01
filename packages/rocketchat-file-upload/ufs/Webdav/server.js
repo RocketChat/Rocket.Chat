@@ -1,3 +1,4 @@
+import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import Webdav from 'webdav';

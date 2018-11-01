@@ -1,4 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');

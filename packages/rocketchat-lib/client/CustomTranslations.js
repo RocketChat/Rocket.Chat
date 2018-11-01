@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 RocketChat.applyCustomTranslations = function applyCustomTranslations() {
 	let CustomTranslations = RocketChat.settings.get('Custom_Translations');

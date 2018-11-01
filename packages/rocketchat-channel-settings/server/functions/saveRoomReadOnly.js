@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveRoomReadOnly = function(rid, readOnly) {
 	if (!Match.test(rid, String)) {

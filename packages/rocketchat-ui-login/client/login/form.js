@@ -1,6 +1,7 @@
 /* globals OnePassword, device */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';

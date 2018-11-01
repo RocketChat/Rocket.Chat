@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
 		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');

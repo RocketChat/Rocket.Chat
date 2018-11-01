@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest, findRoom } from '../lib/livechat';

@@ -2,6 +2,7 @@
 /* exported FileUpload */
 
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import filesize from 'filesize';
 
 let maxFileSize = 0;

@@ -1,5 +1,6 @@
 /* globals OAuth*/
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';

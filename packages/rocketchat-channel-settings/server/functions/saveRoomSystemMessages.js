@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 RocketChat.saveRoomSystemMessages = function(rid, systemMessages) {
 	if (!Match.test(rid, String)) {

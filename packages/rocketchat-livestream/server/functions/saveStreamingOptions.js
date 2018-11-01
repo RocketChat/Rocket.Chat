@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 RocketChat.saveStreamingOptions = function(rid, options) {
 	if (!Match.test(rid, String)) {
