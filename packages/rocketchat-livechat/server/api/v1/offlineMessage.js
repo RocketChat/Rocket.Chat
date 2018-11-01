@@ -1,4 +1,5 @@
 import { check } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 RocketChat.API.v1.addRoute('livechat/offline.message', {
 	post() {
