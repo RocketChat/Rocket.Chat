@@ -146,6 +146,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.js', 'client');
 
 	api.export('fileUpload');
-	api.export('t');
-	api.export('modal');
+	api.export('t', 'client');
+	api.export('modal', 'client');
+	api.export('fireGlobalEvent', 'client');
 });
