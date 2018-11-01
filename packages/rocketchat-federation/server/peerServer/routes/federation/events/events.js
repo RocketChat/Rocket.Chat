@@ -55,7 +55,7 @@ export default function eventsRoutes() {
 						throw new Error(`Invalid event:${ e.t }`);
 				}
 
-				self.log('Responding...');
+				self.log('Success, responding...');
 
 				// Respond
 				return RocketChat.API.v1.success();

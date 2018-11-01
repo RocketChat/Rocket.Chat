@@ -30,10 +30,13 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federatedRoom: federatedRoomObject } } = e;
+		const { payload: { room, owner, users } } = e;
 
 		// Load the federated room
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, federatedRoomObject);
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
+
+		// Set users
+		federatedRoom.setUsers(users);
 
 		// Create, if needed, all room's users
 		federatedRoom.createUsers();
@@ -47,10 +50,13 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federated_room: federatedRoomObject } } = e;
+		const { payload: { room, owner, users } } = e;
 
 		// Load the federated room
-		const federatedRoom = new FederatedRoom(localPeerIdentifier, federatedRoomObject);
+		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
+
+		// Set users
+		federatedRoom.setUsers(users);
 
 		// Create, if needed, all room's users
 		federatedRoom.createUsers();
@@ -64,13 +70,13 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federated_room_id, federated_user: federatedUserObject } } = e;
+		const { payload: { federated_room_id, user } } = e;
 
 		// Load the federated room
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, federated_room_id);
 
 		// Create the user, if needed
-		const federatedUser = new FederatedUser(localPeerIdentifier, federatedUserObject);
+		const federatedUser = FederatedUser.loadOrCreate(localPeerIdentifier, user);
 		const localUser = federatedUser.create();
 
 		// Callback management
@@ -78,6 +84,9 @@ class PeerServer {
 
 		// Add the user to the room
 		RocketChat.addUserToRoom(federatedRoom.room._id, localUser, null, false);
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -88,14 +97,10 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federated_room_id, federated_user: federatedUserObject, federated_inviter_id } } = e;
+		const { payload: { federated_room_id, federated_inviter_id, user } } = e;
 
 		// Load the federated room
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, federated_room_id);
-
-		// Create the user, if needed
-		const federatedUser = new FederatedUser(localPeerIdentifier, federatedUserObject);
-		const localUser = federatedUser.create();
 
 		// Load the inviter
 		const federatedInviter = FederatedUser.loadByFederationId(localPeerIdentifier, federated_inviter_id);
@@ -106,11 +111,18 @@ class PeerServer {
 
 		const localInviter = federatedInviter.getLocalUser();
 
+		// Create the user, if needed
+		const federatedUser = FederatedUser.loadOrCreate(localPeerIdentifier, user);
+		const localUser = federatedUser.create();
+
 		// Callback management
 		Meteor.federationPeerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
 
 		// Add the user to the room
 		RocketChat.addUserToRoom(federatedRoom.room._id, localUser, localInviter, false);
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -135,6 +147,9 @@ class PeerServer {
 
 		// Remove the user from the room
 		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser);
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -163,6 +178,9 @@ class PeerServer {
 
 		// Remove the user from the room
 		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved });
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -223,10 +241,10 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federated_message: federatedMessageObject } } = e;
+		const { payload: { message } } = e;
 
 		// Load the federated message
-		const federatedMessage = new FederatedMessage(localPeerIdentifier, federatedMessageObject);
+		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
 
 		// Callback management
 		Meteor.federationPeerClient.addCallbackToSkip('afterSaveMessage', federatedMessage.getFederationId());
@@ -240,10 +258,10 @@ class PeerServer {
 
 		const { identifier: localPeerIdentifier } = this.config;
 
-		const { payload: { federated_message: federatedMessageObject, federated_user_id } } = e;
+		const { payload: { message, federated_user_id } } = e;
 
 		// Load the federated message
-		const federatedMessage = new FederatedMessage(localPeerIdentifier, federatedMessageObject);
+		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
 
 		// Load the federated user
 		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, federated_user_id);

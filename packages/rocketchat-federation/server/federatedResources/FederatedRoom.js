@@ -3,78 +3,115 @@ import FederatedResource from './FederatedResource';
 import FederatedUser from './FederatedUser';
 
 class FederatedRoom extends FederatedResource {
-	constructor(localPeerIdentifier, roomOrFederatedRoom, extras = {}) {
+	constructor(localPeerIdentifier, room, extras = {}) {
 		super('room');
 
-		if (!roomOrFederatedRoom) {
-			throw new Error('roomOrFederatedRoom param cannot be empty');
+		if (!room) {
+			throw new Error('room param cannot be empty');
 		}
 
 		this.localPeerIdentifier = localPeerIdentifier;
 
-		if (roomOrFederatedRoom.resourceName) {
-			// If resourceName exists, it means it is a federated resource
-			const federatedRoomObject = roomOrFederatedRoom;
+		// if (roomOrFederatedRoom.resourceName) {
+		// 	// If resourceName exists, it means it is a federated resource
+		// 	const federatedRoomObject = roomOrFederatedRoom;
 
-			const { room, federatedOwner: federatedOwnerObject, federatedUsers } = federatedRoomObject;
+		// 	const { room, federatedOwner: federatedOwnerObject, federatedUsers } = federatedRoomObject;
 
-			// Make sure room dates are correct
-			room.ts = new Date(room.ts);
-			room._updatedAt = new Date(room._updatedAt);
+		// 	// Make sure room dates are correct
+		// 	room.ts = new Date(room.ts);
+		// 	room._updatedAt = new Date(room._updatedAt);
 
-			// Set room property
-			this.room = room;
+		// 	// Set room property
+		// 	this.room = room;
 
-			// Set the owner
-			this.federatedOwner = new FederatedUser(localPeerIdentifier, federatedOwnerObject);
+		// 	// Set the owner
+		// 	this.federatedOwner = new FederatedUser(localPeerIdentifier, federatedOwnerObject);
 
-			// Set the users
-			this.federatedUsers = [];
+		// 	// Set the users
+		// 	this.federatedUsers = [];
 
-			for (const federatedUserObject of federatedUsers) {
-				this.federatedUsers.push(new FederatedUser(localPeerIdentifier, federatedUserObject));
-			}
-		} else {
-			// If resourceName does not exist, this is a common resource
-			const room = roomOrFederatedRoom;
+		// 	for (const federatedUserObject of federatedUsers) {
+		// 		this.federatedUsers.push(new FederatedUser(localPeerIdentifier, federatedUserObject));
+		// 	}
+		// } else {
 
-			// Set the name
-			if (room.t !== 'd' && room.name.indexOf('@') === -1) {
-				room.name = `${ room.name }@${ localPeerIdentifier }`;
-			}
+		// Make sure room dates are correct
+		room.ts = new Date(room.ts);
+		room._updatedAt = new Date(room._updatedAt);
 
-			// Set the federated owner
-			const { owner } = extras;
-
-			if (!owner && room.federation) {
-				this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
-			} else {
-				this.federatedOwner = new FederatedUser(localPeerIdentifier, owner);
-			}
-
-			// Set base federation
-			room.federation = room.federation || {
-				_id: room._id,
-				peer: localPeerIdentifier,
-				ownerId: this.federatedOwner.getFederationId(),
-			};
-
-			// Set room property
-			this.room = room;
-
-			// Refresh federation
-			this.refreshFederation();
+		// Set the name
+		if (room.t !== 'd' && room.name.indexOf('@') === -1) {
+			room.name = `${ room.name }@${ localPeerIdentifier }`;
 		}
+
+		// Set the federated owner
+		const { owner } = extras;
+
+		if (!owner && room.federation) {
+			this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
+		} else {
+			this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
+		}
+
+		// Set base federation
+		room.federation = room.federation || {
+			_id: room._id,
+			peer: localPeerIdentifier,
+			ownerId: this.federatedOwner.getFederationId(),
+		};
+
+		// Set room property
+		this.room = room;
+
+		// }
 	}
 
-	refreshFederation() {
-		const { localPeerIdentifier, room } = this;
+	getFederationId() {
+		return this.room.federation._id;
+	}
+
+	getPeers() {
+		return this.room.federation.peers;
+	}
+
+	getRoom() {
+		return this.room;
+	}
+
+	getOwner() {
+		return this.federatedOwner.getUser();
+	}
+
+	getUsers() {
+		return this.federatedUsers.map((u) => u.getUser());
+	}
+
+	loadUsers() {
+		const { room } = this;
+
+		// Get all room users
+		const users = FederatedRoom.loadRoomUsers(room);
+
+		this.setUsers(users);
+	}
+
+	setUsers(users) {
+		const { localPeerIdentifier } = this;
 
 		// Initialize federatedUsers
 		this.federatedUsers = [];
 
-		// Get all room users
-		const users = FederatedRoom.loadRoomUsers(room);
+		for (const user of users) {
+			const federatedUser = FederatedUser.loadOrCreate(localPeerIdentifier, user);
+
+			// Keep the federated user
+			this.federatedUsers.push(federatedUser);
+		}
+	}
+
+	refreshFederation() {
+		const { room } = this;
 
 		// Prepare the federated users
 		let federation = {
@@ -83,12 +120,7 @@ class FederatedRoom extends FederatedResource {
 		};
 
 		// Check all the peers
-		for (const user of users) {
-			const federatedUser = new FederatedUser(localPeerIdentifier, user);
-
-			// Keep the federated user
-			this.federatedUsers.push(federatedUser);
-
+		for (const federatedUser of this.federatedUsers) {
 			// Add federation data to the room
 			const { user: { federation: { _id, peer } } } = federatedUser;
 
@@ -105,14 +137,6 @@ class FederatedRoom extends FederatedResource {
 
 		// Update the room
 		RocketChat.models.Rooms.update(room._id, { $set: { federation } });
-	}
-
-	getFederationId() {
-		return this.room.federation._id;
-	}
-
-	getPeers() {
-		return this.room.federation.peers;
 	}
 
 	getLocalRoom() {

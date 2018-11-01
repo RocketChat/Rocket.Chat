@@ -56,7 +56,9 @@ class FederationEvents extends RocketChat.models._Base {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
-			federatedRoom,
+			room: federatedRoom.getRoom(),
+			owner: federatedRoom.getOwner(),
+			users: federatedRoom.getUsers(),
 		};
 
 		return this.createEventForPeers('drc', payload, peers);
@@ -67,7 +69,9 @@ class FederationEvents extends RocketChat.models._Base {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
-			federated_room: federatedRoom,
+			room: federatedRoom.getRoom(),
+			owner: federatedRoom.getOwner(),
+			users: federatedRoom.getUsers(),
 		};
 
 		return this.createEventForPeers('roc', payload, peers);
@@ -79,7 +83,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
-			federated_user: federatedUser,
+			user: federatedUser.getUser(),
 		};
 
 		return this.createEventForPeers('usj', payload, peers);
@@ -91,8 +95,8 @@ class FederationEvents extends RocketChat.models._Base {
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
-			federated_user: federatedUser,
 			federated_inviter_id: federatedInviter.getFederationId(),
+			user: federatedUser.getUser(),
 		};
 
 		return this.createEventForPeers('usa', payload, peers);
@@ -154,7 +158,7 @@ class FederationEvents extends RocketChat.models._Base {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
-			federated_message: federatedMessage,
+			message: federatedMessage.getMessage(),
 		};
 
 		return this.createEventForPeers('msc', payload, peers);
@@ -165,7 +169,7 @@ class FederationEvents extends RocketChat.models._Base {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
-			federated_message: federatedMessage,
+			message: federatedMessage.getMessage(),
 			federated_user_id: federatedUser.getFederationId(),
 		};
 

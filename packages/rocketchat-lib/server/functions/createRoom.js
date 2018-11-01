@@ -8,6 +8,7 @@ function createDirectRoom(source, target, extraData, options) {
 	RocketChat.models.Rooms.upsert({ _id: rid }, {
 		$setOnInsert: Object.assign({
 			t: 'd',
+			usernames: [source.username, target.username],
 			msgs: 0,
 			ts: new Date(),
 		}, extraData),

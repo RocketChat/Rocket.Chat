@@ -9,7 +9,7 @@ export default function usersRoutes() {
 
 			const { username, email } = this.requestParams();
 
-			const options = { fields: { services: 0, roles: 0 } };
+			const options = { fields: { emails: 0, services: 0, roles: 0 } };
 
 			let user = null;
 

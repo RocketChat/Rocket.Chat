@@ -161,9 +161,9 @@ class PeerClient {
 		}
 
 		try {
-			const { data: { federatedUser: federatedUserObject } } = this.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username }) }`);
+			const { data: { federatedUser: { user } } } = this.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username }) }`);
 
-			const federatedUser = new FederatedUser(localPeerIdentifier, federatedUserObject);
+			const federatedUser = new FederatedUser(localPeerIdentifier, user);
 
 			return federatedUser;
 		} catch (err) {
@@ -182,6 +182,12 @@ class PeerClient {
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
 
+		// Load federated users
+		federatedRoom.loadUsers();
+
+		// Refresh room's federation
+		federatedRoom.refreshFederation();
+
 		RocketChat.models.FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
 	}
 
@@ -196,6 +202,12 @@ class PeerClient {
 		const owner = RocketChat.models.Users.findOneById(ownerId);
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, { owner });
+
+		// Load federated users
+		federatedRoom.loadUsers();
+
+		// Refresh room's federation
+		federatedRoom.refreshFederation();
 
 		RocketChat.models.FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerIdentifier] });
 	}
@@ -219,6 +231,12 @@ class PeerClient {
 
 		const federatedRoom = new FederatedRoom(localPeerIdentifier, room, extras);
 
+		// Load federated users
+		federatedRoom.loadUsers();
+
+		// Refresh room's federation
+		federatedRoom.refreshFederation();
+
 		// If the user who joined is from a different peer...
 		if (userWhoJoined.federation && userWhoJoined.federation.peer !== localPeerIdentifier) {
 			// ...create a "create room" event for that peer
@@ -226,10 +244,10 @@ class PeerClient {
 		}
 
 		// Then, create a "user join/added" event to the other peers
-		const federatedUserWhoJoined = new FederatedUser(localPeerIdentifier, userWhoJoined);
+		const federatedUserWhoJoined = FederatedUser.loadOrCreate(localPeerIdentifier, userWhoJoined);
 
 		if (userWhoInvited) {
-			const federatedInviter = new FederatedUser(localPeerIdentifier, userWhoInvited);
+			const federatedInviter = FederatedUser.loadOrCreate(localPeerIdentifier, userWhoInvited);
 
 			RocketChat.models.FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerIdentifier] });
 		} else {
@@ -250,10 +268,13 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedUserWhoLeft = new FederatedUser(localPeerIdentifier, userWhoLeft);
+		const federatedUserWhoLeft = FederatedUser.loadByFederationId(localPeerIdentifier, userWhoLeft.federation._id);
 
 		// Then, create a "user left" event to the other peers
 		RocketChat.models.FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerIdentifier] });
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -272,11 +293,14 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedRemovedUser = new FederatedUser(localPeerIdentifier, removedUser);
+		const federatedRemovedUser = FederatedUser.loadByFederationId(localPeerIdentifier, removedUser.federation._id);
 
-		const federatedUserWhoRemoved = new FederatedUser(localPeerIdentifier, userWhoRemoved);
+		const federatedUserWhoRemoved = FederatedUser.loadByFederationId(localPeerIdentifier, userWhoRemoved.federation._id);
 
 		RocketChat.models.FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerIdentifier] });
+
+		// Load federated users
+		federatedRoom.loadUsers();
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
@@ -295,13 +319,13 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedMessage = new FederatedMessage(localPeerIdentifier, message);
+		const federatedMessage = FederatedMessage.loadOrCreate(localPeerIdentifier, message);
 
 		// If editedAt exists, it means it is an update
 		if (message.editedAt) {
 			const user = RocketChat.models.Users.findOneById(userId);
 
-			const federatedUser = new FederatedUser(localPeerIdentifier, user);
+			const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, user.federation._id);
 
 			RocketChat.models.FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipPeers: [localPeerIdentifier] });
 		} else {
@@ -343,7 +367,7 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedUser = new FederatedUser(localPeerIdentifier, user);
+		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, user.federation._id);
 
 		RocketChat.models.FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerIdentifier] });
 	}
@@ -358,9 +382,9 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedMutedUser = new FederatedUser(localPeerIdentifier, mutedUser);
+		const federatedMutedUser = FederatedUser.loadByFederationId(localPeerIdentifier, mutedUser.federation._id);
 
-		const federatedUserWhoMuted = new FederatedUser(localPeerIdentifier, fromUser);
+		const federatedUserWhoMuted = FederatedUser.loadByFederationId(localPeerIdentifier, fromUser.federation._id);
 
 		RocketChat.models.FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerIdentifier] });
 	}
@@ -375,9 +399,9 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
 
-		const federatedUnmutedUser = new FederatedUser(localPeerIdentifier, unmutedUser);
+		const federatedUnmutedUser = FederatedUser.loadByFederationId(localPeerIdentifier, unmutedUser.federation._id);
 
-		const federatedUserWhoUnmuted = new FederatedUser(localPeerIdentifier, fromUser);
+		const federatedUserWhoUnmuted = FederatedUser.loadByFederationId(localPeerIdentifier, fromUser.federation._id);
 
 		RocketChat.models.FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerIdentifier] });
 	}

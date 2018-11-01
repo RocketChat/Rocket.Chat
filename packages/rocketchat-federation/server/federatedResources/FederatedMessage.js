@@ -3,77 +3,82 @@ import FederatedRoom from './FederatedRoom';
 import FederatedUser from './FederatedUser';
 
 class FederatedMessage extends FederatedResource {
-	constructor(localPeerIdentifier, messageOrFederatedMessage) {
+	constructor(localPeerIdentifier, message) {
 		super('message');
 
-		if (!messageOrFederatedMessage) {
-			throw new Error('messageOrFederatedMessage param cannot be empty');
+		if (!message) {
+			throw new Error('message param cannot be empty');
 		}
 
 		this.localPeerIdentifier = localPeerIdentifier;
 
-		if (messageOrFederatedMessage.resourceName) {
-			// If resourceName exists, it means it is a federated resource
-			const federatedMessageObject = messageOrFederatedMessage;
+		// if (messageOrFederatedMessage.resourceName) {
+		// 	// If resourceName exists, it means it is a federated resource
+		// 	const federatedMessageObject = messageOrFederatedMessage;
 
-			const { federatedAuthor: federatedAuthorObject } = federatedMessageObject;
+		// 	const { federatedAuthor: federatedAuthorObject } = federatedMessageObject;
 
-			// This is a federated message resource
-			const { message } = federatedMessageObject;
+		// 	// This is a federated message resource
+		// 	const { message } = federatedMessageObject;
 
-			// Make sure room dates are correct
-			message.ts = new Date(message.ts);
-			message._updatedAt = new Date(message._updatedAt);
+		// 	// Make sure room dates are correct
+		// 	message.ts = new Date(message.ts);
+		// 	message._updatedAt = new Date(message._updatedAt);
 
-			// Load the author
-			this.federatedAuthor = new FederatedUser(localPeerIdentifier, federatedAuthorObject);
+		// 	// Load the author
+		// 	this.federatedAuthor = new FederatedUser(localPeerIdentifier, federatedAuthorObject);
 
-			// Set message property
-			this.message = message;
+		// 	// Set message property
+		// 	this.message = message;
+		// } else {
+
+		// Make sure room dates are correct
+		message.ts = new Date(message.ts);
+		message._updatedAt = new Date(message._updatedAt);
+
+		// Set the message author
+		if (message.u.federation) {
+			this.federatedAuthor = FederatedUser.loadByFederationId(localPeerIdentifier, message.u.federation._id);
 		} else {
-			// If resourceName does not exist, this is a common resource
-			const message = messageOrFederatedMessage;
+			const author = RocketChat.models.Users.findOneById(message.u._id);
+			this.federatedAuthor = new FederatedUser(localPeerIdentifier, author);
+		}
 
-			// Set the message author
-			if (message.federation) {
-				this.federatedAuthor = FederatedUser.loadByFederationId(localPeerIdentifier, message.u._id);
-			} else {
-				const author = RocketChat.models.Users.findOneById(message.u._id);
-				this.federatedAuthor = new FederatedUser(localPeerIdentifier, author);
-			}
+		message.u = {
+			username: this.federatedAuthor.user.username,
+			federation: {
+				_id: this.federatedAuthor.user.federation._id,
+			},
+		};
 
-			message.u = {
-				username: this.federatedAuthor.user.username,
-				federation: {
-					_id: this.federatedAuthor.user.federation._id,
-				},
+		// Set the room
+		const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+		// Prepare the federation property
+		if (!message.federation) {
+			const federation = {
+				_id: message._id,
+				peer: localPeerIdentifier,
+				roomId: room.federation._id,
 			};
 
-			// Set the room
-			const room = RocketChat.models.Rooms.findOneById(message.rid);
-
-			// Prepare the federation property
-			if (!message.federation) {
-				const federation = {
-					_id: message._id,
-					peer: localPeerIdentifier,
-					roomId: room.federation._id,
-				};
-
 				// Prepare the user
-				message.federation = federation;
+			message.federation = federation;
 
-				// Update the user
-				RocketChat.models.Messages.update(message._id, { $set: { federation } });
-			}
-
-			// Set message property
-			this.message = message;
+			// Update the user
+			RocketChat.models.Messages.update(message._id, { $set: { federation } });
 		}
+
+		// Set message property
+		this.message = message;
 	}
 
 	getFederationId() {
 		return this.message.federation._id;
+	}
+
+	getMessage() {
+		return this.message;
 	}
 
 	getLocalMessage() {
@@ -171,6 +176,20 @@ FederatedMessage.loadByFederationId = function loadByFederationId(localPeerIdent
 	if (!localMessage) { return; }
 
 	return new FederatedMessage(localPeerIdentifier, localMessage);
+};
+
+FederatedMessage.loadOrCreate = function loadOrCreate(localPeerIdentifier, message) {
+	const { federation } = message;
+
+	if (federation) {
+		const federatedMessage = FederatedMessage.loadByFederationId(localPeerIdentifier, federation._id);
+
+		if (federatedMessage) {
+			return federatedMessage;
+		}
+	}
+
+	return new FederatedMessage(localPeerIdentifier, message);
 };
 
 export default FederatedMessage;
