@@ -8,9 +8,12 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'accounts-base',
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'sha',
+		'random',
 		'rocketchat:ui',
 	]);
 
