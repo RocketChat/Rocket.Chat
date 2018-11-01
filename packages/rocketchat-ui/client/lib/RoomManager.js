@@ -135,7 +135,7 @@ const RoomManager = new function() {
 
 
 		closeOlderRooms() {
-			const maxRoomsOpen = 2;
+			const maxRoomsOpen = 5;
 			if (Object.keys(openedRooms).length <= maxRoomsOpen) {
 				return;
 			}

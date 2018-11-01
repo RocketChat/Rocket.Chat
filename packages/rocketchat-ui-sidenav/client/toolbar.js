@@ -148,7 +148,7 @@ Template.toolbar.helpers({
 
 				const query = {
 					rid: {
-						$ne: Tracker.nonreactive(() => Session.get('openedRoom')),
+						$ne: Session.get('openedRoom'),
 					},
 				};
 
