@@ -293,7 +293,7 @@ const sendEmail = function(userId) {
 	}
 	const userData = RocketChat.models.Users.findOneById(userId);
 
-	if (!userData || userData.emails || userData.emails[0] || userData.emails[0].address) {
+	if (!userData || !userData.emails || !userData.emails[0] || !userData.emails[0].address) {
 		return;
 	}
 	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
