@@ -9,6 +9,9 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
+		'rocketchat:lib',
+		'rocketchat:theme',
+		'rocketchat:ui',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
