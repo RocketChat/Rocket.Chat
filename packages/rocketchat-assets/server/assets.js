@@ -1,8 +1,10 @@
-/* global WebAppHashing, WebAppInternals */
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { WebAppHashing } from 'meteor/webapp-hashing';
+import { WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
-
 import sizeOf from 'image-size';
 import mime from 'mime-type/with-db';
 import crypto from 'crypto';
