@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
+		'mizzao:autocomplete',
 	]);
 
 	api.use('kadira:flow-router', 'client');
