@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 RocketChat.applyCustomTranslations = function applyCustomTranslations() {
 	let CustomTranslations = RocketChat.settings.get('Custom_Translations');
@@ -20,7 +21,7 @@ RocketChat.applyCustomTranslations = function applyCustomTranslations() {
 };
 
 Meteor.startup(function() {
-	Meteor.autorun(function() {
+	Tracker.autorun(function() {
 		// Re apply translations if tap language was changed
 		Session.get(TAPi18n._loaded_lang_session_key);
 		RocketChat.applyCustomTranslations();
