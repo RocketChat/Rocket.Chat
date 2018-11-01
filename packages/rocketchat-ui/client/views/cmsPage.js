@@ -1,9 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');
-	return Meteor.autorun(() => {
+	return Tracker.autorun(() => {
 		const cmsPage = Session.get('cmsPage');
 		if (cmsPage != null) {
 			return this.page.set(RocketChat.settings.get(cmsPage));
