@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('service-configuration');
 	api.use('templating', 'client');
-	api.use('percolate:synced-cron');
+	api.use('littledata:synced-cron');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:custom-oauth');
