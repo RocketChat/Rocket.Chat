@@ -267,7 +267,7 @@
   "API_EmbedDisabledFor_Description": "Kommaseparierte Liste von Benutzernamen zum Einbetten von Link-Vorschauen",
   "API_EmbedDisabledFor": "Einbettungen für Benutzer deaktivieren",
   "API_EmbedIgnoredHosts_Description": "Kommagetrennte Liste von Hosts oder CIDR-Adressen, z. B. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
-  "API_EmbedIgnoredHosts": "Ignorierte Hosts einbetten",
+  "API_EmbedIgnoredHosts": "Einbettungen für Hosts deaktivieren",
   "API_EmbedSafePorts_Description": "Kommagetrennte Liste der Ports, für die eine Vorschau erlaubt ist.",
   "API_EmbedSafePorts": "Sichere Ports",
   "API_Enable_CORS": "CORS",
