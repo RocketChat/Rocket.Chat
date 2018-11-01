@@ -1,4 +1,6 @@
 /* globals RocketChatFileCustomSoundsInstance */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteCustomSound(_id) {
 		let sound = null;

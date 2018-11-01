@@ -1,4 +1,6 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 // GitHub Enterprise Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/github_enterprise
 // In RocketChat -> Administration the URL needs to be http(s)://{github.enterprise.server}/

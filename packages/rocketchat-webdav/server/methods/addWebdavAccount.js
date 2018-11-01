@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import Webdav from 'webdav';
 
 Meteor.methods({

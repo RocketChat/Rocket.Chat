@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 /**
 	This API returns all permissions that exists
 	on the server, with respective roles.

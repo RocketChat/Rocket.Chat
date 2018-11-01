@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { t, modal } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 
 function reportError(error, callback) {

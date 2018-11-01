@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export default function handleOnLogin(login) {
 	if (login.user === null) {
 		return this.log('Invalid handleOnLogin call');

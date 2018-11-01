@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('usersInRole', function(roleName, scope, limit = 50) {
 	if (!this.userId) {
 		return this.ready();

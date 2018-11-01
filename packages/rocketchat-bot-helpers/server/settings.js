@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('Bots', function() {
 		this.add('BotHelpers_userFields', '_id, name, username, emails, language, utcOffset', {

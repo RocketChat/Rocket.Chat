@@ -1,4 +1,5 @@
 /* globals InstanceStatus, UserPresence, UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 	const instance = {

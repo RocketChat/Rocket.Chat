@@ -1,8 +1,9 @@
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-this.handleError = function(error, useToastr = true) {
+handleError = function(error, useToastr = true) {
 	if (_.isObject(error.details)) {
 		for (const key in error.details) {
 			if (error.details.hasOwnProperty(key)) {

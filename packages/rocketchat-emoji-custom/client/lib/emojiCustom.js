@@ -1,4 +1,8 @@
 /* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+
 RocketChat.emoji.packages.emojiCustom = {
 	emojiCategories: { rocket: 'Custom' },
 	toneList: {},

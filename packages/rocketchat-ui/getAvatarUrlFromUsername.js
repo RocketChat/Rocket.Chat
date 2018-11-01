@@ -1,4 +1,7 @@
 // TODO: remove global
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+
 this.getAvatarUrlFromUsername = function(username) {
 	const key = `avatar_random_${ username }`;
 	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;

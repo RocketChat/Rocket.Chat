@@ -1,5 +1,9 @@
 /* globals RoutePolicy, logger */
 /* jshint newcap: false */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import fiber from 'fibers';

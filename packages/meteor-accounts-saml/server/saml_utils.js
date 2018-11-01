@@ -1,5 +1,4 @@
-/* globals SAML:true */
-
+import { Meteor } from 'meteor/meteor';
 import zlib from 'zlib';
 import xmlCrypto from 'xml-crypto';
 import crypto from 'crypto';
@@ -7,11 +6,10 @@ import xmldom from 'xmldom';
 import querystring from 'querystring';
 import xmlbuilder from 'xmlbuilder';
 import array2string from 'arraybuffer-to-string';
-
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
 
-SAML = function(options) {
+export const SAML = function(options) {
 	this.options = this.initialize(options);
 };
 

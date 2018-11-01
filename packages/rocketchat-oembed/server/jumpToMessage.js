@@ -1,4 +1,5 @@
 /* globals getAvatarUrlFromUsername */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';

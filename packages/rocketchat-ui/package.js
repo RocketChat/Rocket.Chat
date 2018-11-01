@@ -26,9 +26,11 @@ Package.onUse(function(api) {
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
+		'mizzao:autocomplete',
 	]);
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.addFiles('getAvatarUrlFromUsername.js');
 
@@ -144,4 +146,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.js', 'client');
 
 	api.export('fileUpload');
+	api.export('t', 'client');
+	api.export('modal', 'client');
+	api.export('fireGlobalEvent', 'client');
 });

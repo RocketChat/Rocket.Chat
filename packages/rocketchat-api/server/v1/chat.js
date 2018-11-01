@@ -1,4 +1,6 @@
 /* global processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {

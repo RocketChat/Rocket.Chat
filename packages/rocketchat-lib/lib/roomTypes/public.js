@@ -1,4 +1,5 @@
 /* globals openRoom */
+import { Meteor } from 'meteor/meteor';
 import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {

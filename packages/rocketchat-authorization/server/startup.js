@@ -1,4 +1,5 @@
 /* eslint no-multi-spaces: 0 */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 	// Note:
